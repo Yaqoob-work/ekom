@@ -174,7 +174,7 @@ class _VideoMovieScreenState extends State<VideoMovieScreen>
     }
 
     if (_controller.value.hasError) {
-      print('Video error: ${_controller.value.errorDescription}');
+      // print('Video error: ${_controller.value.errorDescription}');
       _handleNetworkError();
     }
   }
