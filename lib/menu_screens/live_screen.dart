@@ -664,6 +664,7 @@ class _LiveScreenState extends State<LiveScreen> {
               genres: newsItem.genres,
               status: newsItem.status, 
               index: newsItem.index,
+              image: '',
             );
             break; // Exit loop when URL is successfully updated
           } catch (e) {

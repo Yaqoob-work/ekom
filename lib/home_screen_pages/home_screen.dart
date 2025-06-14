@@ -7,6 +7,7 @@ import 'package:mobi_tv_entertainment/provider/focus_provider.dart';
 import 'package:mobi_tv_entertainment/video_widget/socket_service.dart';
 import 'package:mobi_tv_entertainment/widgets/small_widgets/loading_indicator.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter/services.dart';
 import 'banner_slider_screen/banner_slider_screen.dart';
 import 'movies_screen/movies.dart';
 import 'sub_live_screen/sub_live_screen.dart';
@@ -116,6 +117,14 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
 
+    // Handle back button press
+  Future<bool> _onWillPop() async {
+    // Close the app when back button is pressed
+    SystemNavigator.pop();
+    return false; // Return false to prevent default back navigation
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Consumer<ColorProvider>(builder: (context, colorProvider, child) {
@@ -128,7 +137,16 @@ class _HomeScreenState extends State<HomeScreen> {
       // final double manageWebseriesHeight =
       //     _calculateManageWebseriesHeight(context);
 
-      return Scaffold(
+      return 
+       PopScope(
+        canPop: false, // Prevent default back navigation
+        onPopInvoked: (didPop) {
+          if (!didPop) {
+            _onWillPop();
+          }
+        },
+        child:
+      Scaffold(
         backgroundColor: backgroundColor,
         body: Container(
           width: screenwdt,
@@ -175,25 +193,25 @@ class _HomeScreenState extends State<HomeScreen> {
                   SizedBox(
                     // Use the dynamically calculated height based on category count
                     // height: manageWebseriesHeight,
-                    height: screenhgt * 0.42,
+                    height: screenhgt * 0.5,
 
                     key: manageWebseriesKey,
                     child: ManageWebseries(
                       focusNode: manageWebseriesFocusNode,
                     ),
                   ),
-                  SizedBox(
-                    height: screenhgt * 4,
-                    key: homeCategoryFirstBannerKey,
-                    child: HomeCategory(),
-                  ),
+                  // SizedBox(
+                  //   height: screenhgt * 4,
+                  //   key: homeCategoryFirstBannerKey,
+                  //   child: HomeCategory(),
+                  // ),
                   if (_isLoading) Center(child: LoadingIndicator()),
                 ],
               ),
             ),
           ),
         ),
-      );
+      ));
     });
   }
 }

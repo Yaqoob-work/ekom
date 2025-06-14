@@ -252,6 +252,7 @@ print( 'FinalURL after conversion: $updatedUrl'); // Debugging line
             status: '1',
             banner: video['thumbnail_high'] ?? '',
             isFocused: false,
+            image: '',
           );
         }).toList();
       }

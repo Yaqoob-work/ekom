@@ -295,7 +295,7 @@ class TopNavigationBar extends StatefulWidget {
 
 class _TopNavigationBarState extends State<TopNavigationBar> {
   late List<FocusNode> _focusNodes;
-  final List<String> navItems = ['Vod', 'Live TV', 'Search', 'Youtube'];
+  final List<String> navItems = ['Vod', 'Live TV', 'Search'];
 
   @override
   void initState() {
