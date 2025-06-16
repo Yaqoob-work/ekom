@@ -3,6 +3,63 @@ import 'package:flutter/material.dart';
 import 'package:mobi_tv_entertainment/main.dart';
 
 class FocusProvider extends ChangeNotifier {
+
+
+
+    bool _shouldRefreshBanners = false;
+  bool _shouldRefreshLastPlayed = false;
+  String _refreshSource = '';
+  
+  // Getters
+  bool get shouldRefreshBanners => _shouldRefreshBanners;
+  bool get shouldRefreshLastPlayed => _shouldRefreshLastPlayed;
+  String get refreshSource => _refreshSource;
+
+  // Refresh banners
+  void refreshBanners({String source = 'unknown'}) {
+    _shouldRefreshBanners = true;
+    _refreshSource = source;
+    print('🔄 RefreshProvider: Banner refresh triggered from $source');
+    notifyListeners();
+  }
+
+  // Refresh last played videos
+  void refreshLastPlayed({String source = 'unknown'}) {
+    _shouldRefreshLastPlayed = true;
+    _refreshSource = source;
+    print('🔄 RefreshProvider: Last played refresh triggered from $source');
+    notifyListeners();
+  }
+
+  // Refresh both
+  void refreshAll({String source = 'unknown'}) {
+    _shouldRefreshBanners = true;
+    _shouldRefreshLastPlayed = true;
+    _refreshSource = source;
+    print('🔄 RefreshProvider: Full refresh triggered from $source');
+    notifyListeners();
+  }
+
+  // Reset flags after refresh is done
+  void markBannersRefreshed() {
+    _shouldRefreshBanners = false;
+    notifyListeners();
+  }
+
+  void markLastPlayedRefreshed() {
+    _shouldRefreshLastPlayed = false;
+    notifyListeners();
+  }
+
+  void markAllRefreshed() {
+    _shouldRefreshBanners = false;
+    _shouldRefreshLastPlayed = false;
+    _refreshSource = '';
+    notifyListeners();
+  }
+
+
+  
   // ScrollController for managing scroll position
   final ScrollController scrollController = ScrollController();
 
@@ -51,6 +108,10 @@ class FocusProvider extends ChangeNotifier {
 
 
 
+  
+
+
+
   FocusNode? _firstSubVodFocusNode;
 
  FocusNode? _homeCategoryFirstItemFocusNode;
@@ -89,6 +150,22 @@ void _scrollToFirstMovieItem() {
     );
   }
 }
+  // 4. FocusProvider में scroll functionality add करें  webseries
+ScrollController? _webseriesScrollController;
+
+void setwebseriesScrollController(ScrollController controller) {
+  _webseriesScrollController = controller;
+}
+
+void _scrolslToFirstwebseriesItem() {
+  if (_webseriesScrollController != null && _webseriesScrollController!.hasClients) {
+    _webseriesScrollController!.animateTo(
+      0.0,
+      duration: Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
+  }
+}
 
 
 
@@ -115,11 +192,7 @@ void requestFirstMoviesFocus() {
 
 
 
-// ScrollController? _moviesScrollController;
 
-// void setMoviesScrollController(ScrollController controller) {
-//   _moviesScrollController = controller;
-// }
 
 void requestManageMoviesFocusWithScroll() {
   // Pehle scroll करें
@@ -132,6 +205,46 @@ void requestManageMoviesFocusWithScroll() {
   // Phir focus request करें
   Future.delayed(Duration(milliseconds: 150), () {
     _firstManageMoviesFocusNode?.requestFocus();
+  });
+}
+
+
+
+// In your FocusProvider class, add this method:
+Map<String, ScrollController> _webseriesScrollControllers = {};
+
+void setWebseriesScrollControllers(Map<String, ScrollController> controllers) {
+  _webseriesScrollControllers = controllers;
+  notifyListeners();
+}
+
+void scrollWebseriesToFirst(String categoryId) {
+  final controller = _webseriesScrollControllers[categoryId];
+  if (controller != null && controller.hasClients) {
+    controller.animateTo(
+      0.0,
+      duration: Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
+  }
+}
+
+
+
+
+
+
+void requestManageWebseriesFocusWithScroll() {
+  // Pehle scroll करें
+  if (_webseriesScrollController?.hasClients == true) {
+    _webseriesScrollController!.animateTo(0.0,
+      duration: Duration(milliseconds: 300),
+      curve: Curves.easeInOut);
+  }
+  
+  // Phir focus request करें
+  Future.delayed(Duration(milliseconds: 150), () {
+    _firstManageWebseriesFocusNode?.requestFocus();
   });
 }
 
@@ -155,6 +268,9 @@ void requestManageMoviesFocusWithScroll() {
     }
   }
 
+
+  
+
   // Webseries focus management
   void prepareWebseriesFocus() {
     _webseriesFocusPrepared = true;
@@ -166,14 +282,46 @@ void requestManageMoviesFocusWithScroll() {
     notifyListeners();
   }
 
-    void requestFirstWebseriesFocus() {
-    if (_firstManageWebseriesFocusNode != null) {
-      print('🎭 Requesting focus on first webseries node');
+  //   void requestFirstWebseriesFocus() {
+  //   if (_firstManageWebseriesFocusNode != null) {
+  //     print('🎭 Requesting focus on first webseries node');
+  //     _scrolslToFirstwebseriesItem(); 
+  //     _firstManageWebseriesFocusNode!.requestFocus();
+  //   } else {
+  //     print('❌ First webseries focus node is null');
+  //   }
+  // }
+
+
+
+  // 3. FocusProvider में ये method add करें (MusicScreen pattern follow करते हुए)
+void requestFirstWebseriesFocus() {
+  if (_firstManageWebseriesFocusNode != null) {
+    // Pehle scroll करें first item को visible करने के लिए
+    _scrolslToFirstwebseriesItem();
+    
+    // Scroll के बाद focus request करें
+    Future.delayed(const Duration(milliseconds: 200), () {
       _firstManageWebseriesFocusNode!.requestFocus();
-    } else {
-      print('❌ First webseries focus node is null');
-    }
+      print('🎯 Requested focus for first movie item');
+      
+      // Double ensure visibility
+      Future.delayed(const Duration(milliseconds: 150), () {
+        _scrolslToFirstwebseriesItem();
+      });
+    });
+  } else {
+    print('⚠️ First movie focus node not available');
   }
+}
+
+
+
+
+
+
+
+  
 
   // void requestFirstWebseriesFocus() {
   //   if (_firstManageWebseriesFocusNode != null) {
@@ -391,7 +539,7 @@ FocusNode? _homeCategoryFirstBannerFocusNode;
     print("🎯 FocusProvider: First music item focus node SET!");
     node.addListener(() {
       if (node.hasFocus) {
-        scrollToElement('musicItem');
+        scrollToElement('subLiveScreen');
       }
     });
     notifyListeners();
@@ -415,7 +563,7 @@ FocusNode? _homeCategoryFirstBannerFocusNode;
         print("🎯 Delayed Focus Request for First Music Item.");
         firstMusicItemFocusNode!.requestFocus();
               resetFocus();
-      scrollToElement('musicItem');
+      scrollToElement('subLiveScreen');
       } else {
         print("⚠️ First Music Item FocusNode cannot request focus even after delay!");
       }

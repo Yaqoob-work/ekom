@@ -5,7 +5,7 @@ import 'package:mobi_tv_entertainment/provider/focus_provider.dart';
 import 'package:mobi_tv_entertainment/video_widget/socket_service.dart';
 import 'package:mobi_tv_entertainment/video_widget/video_screen.dart';
 import 'package:mobi_tv_entertainment/home_screen_pages/sub_live_screen/items/live_grid_item.dart';
-import 'package:mobi_tv_entertainment/home_screen_pages/sub_live_screen/items/news_item.dart';
+import 'package:mobi_tv_entertainment/home_screen_pages/sub_live_screen/items/sub_live_item.dart';
 import 'package:mobi_tv_entertainment/widgets/models/news_item_model.dart';
 import 'package:mobi_tv_entertainment/widgets/services/api_service.dart';
 import 'package:mobi_tv_entertainment/widgets/small_widgets/empty_state.dart';
@@ -464,7 +464,7 @@ class _LiveScreenState extends State<LiveScreen> {
     return Scaffold(
       backgroundColor: cardColor,
       body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: screenwdt * 0.03),
+        padding: EdgeInsets.symmetric(horizontal: screenwdt * 0.04),
         child: _buildBody(),
       ),
     );

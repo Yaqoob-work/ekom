@@ -110,9 +110,9 @@ class _NewsItemState extends State<NewsItem> {
       curve: Curves.ease,
       width: MediaQuery.of(context).size.width * 0.19,
       height: isFocused
-          ? MediaQuery.of(context).size.height * 0.22
+          ? MediaQuery.of(context).size.height * 0.25
           : MediaQuery.of(context).size.height * 0.2,
-      duration: const Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 800),
       decoration: BoxDecoration(
         border: Border.all(
           color: isFocused ? dominantColor : Colors.transparent,
@@ -190,6 +190,7 @@ class _NewsItemState extends State<NewsItem> {
       width: MediaQuery.of(context).size.width * 0.15,
       child: Column(
         children: [
+          
           Text(
             widget.item.name.toUpperCase(),
             style: TextStyle(

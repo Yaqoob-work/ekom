@@ -100,7 +100,7 @@ class _MoreChannelItemState extends State<MoreChannelItem> {
       curve: Curves.ease,
       width: MediaQuery.of(context).size.width * 0.19,
       height: isFocused
-          ? MediaQuery.of(context).size.height * 0.22
+          ? MediaQuery.of(context).size.height * 0.25
           : MediaQuery.of(context).size.height * 0.2,
       duration: const Duration(milliseconds: 300),
       decoration: BoxDecoration(

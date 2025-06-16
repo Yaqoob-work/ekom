@@ -168,7 +168,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                   Container(
-                    height: screenhgt * 0.5,
+                    height: screenhgt * 0.45,
                     key: subLiveKey,
                     child: SubLiveScreen(
                       focusNode: subLiveFocusNode,

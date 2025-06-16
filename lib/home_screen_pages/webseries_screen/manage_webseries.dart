@@ -106,7 +106,6 @@
 //         final node = focusNodesMap[firstCid]?[firstSid];
 //         if (node != null) {
 //           context.read<FocusProvider>().setFirstManageWebseriesFocusNode(node);
-//           print('🎭 Registered First Webseries FocusNode: $node');
 //         }
 //       }
 //     }
@@ -147,7 +146,6 @@
 //       }
 //     }
 //   } catch (e) {
-//     print('Error in background fetch: $e');
 //   } finally {
 //     setState(() {
 //       isLoading = false;
@@ -902,6 +900,215 @@ class _ManageWebseriesState extends State<ManageWebseries>
   // }
 
 
+
+
+
+  // 1. अपनी existing _initializeFocusNodes method को replace करें:
+void _initializeFocusNodes() {
+  focusNodesMap.clear();
+  for (var cat in categories) {
+    final catId = '${cat['id']}';
+    focusNodesMap[catId] = {};
+    final webSeriesList = cat['web_series'] as List<dynamic>;
+    
+    for (int idx = 0; idx < webSeriesList.length; idx++) {
+      final series = webSeriesList[idx];
+      final seriesId = '${series['id']}';
+      
+      // Create focus node with debug label
+      final focusNode = FocusNode(debugLabel: 'webseries_${catId}_${seriesId}_$idx');
+      
+      // ✅ IMPORTANT: Focus listener में scroll logic
+      focusNode.addListener(() {
+        if (focusNode.hasFocus && mounted && _scrollController.hasClients) {
+          
+          // Direct scroll call - यह guaranteed काम करेगा
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            _performReliableScroll(itemIndex: idx);
+          });
+        }
+      });
+      
+      focusNodesMap[catId]![seriesId] = focusNode;
+    }
+  }
+}
+
+// 2. Simple और Reliable Scroll Method:
+void _performReliableScroll({required int itemIndex}) {
+  if (!mounted || !_scrollController.hasClients) return;
+  
+  try {
+    // Calculate exact position based on your UI measurements
+    final double itemWidth = MediaQuery.of(context).size.width * 0.19; // Your item width ratio
+    final double horizontalPadding = 6.0; // Your horizontal padding per item  
+    final double totalItemWidth = itemWidth + (horizontalPadding * 2);
+    
+    // Calculate target scroll position
+    final double targetOffset = itemIndex * totalItemWidth;
+    final double maxOffset = _scrollController.position.maxScrollExtent;
+    final double clampedOffset = targetOffset.clamp(0.0, maxOffset);
+    
+    
+    // Perform scroll animation
+    _scrollController.animateTo(
+      clampedOffset,
+      duration: const Duration(milliseconds: 400),
+      curve: Curves.easeInOut,
+    ).then((_) {
+    }).catchError((error) {
+    });
+    
+  } catch (e) {
+  }
+}
+
+
+// 4. Build method में scroll controller का proper setup:
+@override
+Widget build(BuildContext context) {
+  super.build(context);
+  
+  // Debug scroll state
+  if (_scrollController.hasClients) {
+  } else {
+  }
+  
+  return Consumer<ColorProvider>(
+    builder: (context, colorProv, child) {
+      // ... existing code ...
+
+              final bgColor = colorProv.isItemFocused
+            ? colorProv.dominantColor.withOpacity(0.3)
+            : Colors.black;
+      
+      return Container(
+        color: bgColor,
+        child: Container(
+          color: Colors.black54,
+          child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            child: Column(
+              children: List.generate(categories.length, (catIdx) {
+                final cat = categories[catIdx];
+                final list = cat['web_series'] as List<dynamic>;
+                final catId = '${cat['id']}';
+
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      child: Text(
+                        cat['category'].toString().toUpperCase(),
+                        style: TextStyle(
+                          color: hintColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
+                      ),
+                    ),
+                    
+                    // ✅ Enhanced ListView with better key and controller
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.34,
+                      child: ListView.builder(
+                        key: ValueKey('webseries_listview_$catId'), // Unique key
+                        controller: _scrollController,
+                        scrollDirection: Axis.horizontal,
+                        physics: const BouncingScrollPhysics(),
+                        
+                        // ✅ IMPORTANT: Ensure physics allow scrolling
+                        clipBehavior: Clip.none,
+                        
+                        itemCount: list.length > 7 ? 8 : list.length + 1,
+                        itemBuilder: (context, idx) {
+                          if ((list.length >= 7 && idx == 7) ||
+                              (list.length < 7 && idx == list.length)) {
+                            return ViewAllWidget(
+                              categoryText: cat['category'],
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => CategoryMoviesGridView(
+                                      category: cat,
+                                      web_series: list,
+                                    ),
+                                  ),
+                                );
+                              },
+                            );
+                          }
+
+                          final item = list[idx];
+                          final sid = '${item['id']}';
+                          final node = focusNodesMap[catId]?[sid];
+
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 0),
+                            child: FocussableWebseriesWidget(
+                              // key: ValueKey('webseries_${item['id']}_$idx'),
+                              key: ValueKey('webseries_${item['id']}_$idx'),
+                              imageUrl: item['poster']?.toString() ?? '',
+                              name: item['name']?.toString() ?? '',
+                              focusNode: node ?? FocusNode(),
+                              
+                              onFocusChange: (hasFocus) {
+                                if (hasFocus) {
+                                  _performReliableScroll(itemIndex: idx);
+                                  
+                                  // Backup scroll
+                                  Future.delayed(Duration(milliseconds: 200), () {
+                                    if (mounted) _performReliableScroll(itemIndex: idx);
+                                  });
+                                }
+                              },
+                              
+                              onUpPress: () {
+                                context.read<FocusProvider>().requestFirstMoviesFocus();
+                              },
+                              
+                              onTap: () => navigateToDetails(
+                                item,
+                                cat['category'],
+                                item['banner']?.toString() ?? '',
+                                item['name']?.toString() ?? '',
+                                catIdx,
+                              ),
+                              
+                              fetchPaletteColor: (url) =>
+                                  PaletteColorService().getSecondaryColor(url),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    
+                    const SizedBox(height: 16),
+                  ],
+                );
+              }),
+            ),
+          ),
+        ),
+      );
+    },
+  );
+}
+
+// 5. ScrollController के साथ debug helper:
+void debugScrollController() {
+  
+  if (_scrollController.hasClients) {
+    final position = _scrollController.position;
+  }
+  
+}
+
+
+
+
 // Fixed _sortByIndex method - यह main issue है:
 
 List<dynamic> _sortByIndex(List<dynamic> list) {
@@ -934,11 +1141,8 @@ List<dynamic> _sortByIndex(List<dynamic> list) {
       return numA.compareTo(numB);
     });
     
-    // print('✅ Successfully sorted ${list.length} items by index');
     return list;
   } catch (e) {
-    // print('🚨 Error in _sortByIndex: $e');
-    // print('🚨 Returning unsorted list');
     return list; // Return unsorted list if sorting fails
   }
 }
@@ -952,7 +1156,6 @@ Future<void> _fetchWebseriesInBackground() async {
       authKey = prefs.getString('auth_key') ?? 'vLQTuPZUxktl5mVW';
     }
 
-    // print('🔑 Webseries - Using Auth Key: "$authKey"');
 
     final response = await http.get(
       Uri.parse('https://acomtv.coretechinfo.com/public/api/getAllWebSeries'),
@@ -963,21 +1166,16 @@ Future<void> _fetchWebseriesInBackground() async {
       },
     );
 
-    // print('📡 Webseries - Response Status: ${response.statusCode}');
-    // print('📄 Webseries - Response Body Length: ${response.body.length}');
     
     if (response.statusCode == 200) {
       if (response.body.isEmpty) {
-        // print('⚠️ Webseries - Empty response body');
         return;
       }
 
       try {
         final List<dynamic> flatData = jsonDecode(response.body);
-        print('📊 Webseries - Decoded ${flatData.length} items');
         
         if (flatData.isEmpty) {
-          print('⚠️ Webseries - No data in response');
           setState(() {
             categories = [];
             isLoading = false;
@@ -987,10 +1185,6 @@ Future<void> _fetchWebseriesInBackground() async {
 
         // Log first item structure
         if (flatData.isNotEmpty) {
-          // print('📋 Webseries - First item structure: ${flatData[0]}');
-          // print('📋 Webseries - First item keys: ${flatData[0].keys.toList()}');
-          // print('📋 Webseries - Index field type: ${flatData[0]['index'].runtimeType}');
-          // print('📋 Webseries - Index value: ${flatData[0]['index']}');
         }
         
         // ✅ Fix: Simple grouping without custom_tag dependency
@@ -1001,8 +1195,6 @@ Future<void> _fetchWebseriesInBackground() async {
           grouped['Web Series'] = flatData;
         }
         
-        print('📂 Webseries - Grouped into ${grouped.length} categories');
-        print('📂 Webseries - Category names: ${grouped.keys.toList()}');
         
         // ✅ Fix: Create categories with proper error handling
         final List<Map<String, dynamic>> newCats = [];
@@ -1015,9 +1207,7 @@ Future<void> _fetchWebseriesInBackground() async {
               'category': entry.key,
               'web_series': sortedItems,
             });
-            // print('📂 Webseries - Category: ${entry.key} (${sortedItems.length} items)');
           } catch (e) {
-            // print('🚨 Error processing category ${entry.key}: $e');
             // Add category without sorting if sorting fails
             newCats.add({
               'id': '1',
@@ -1027,7 +1217,6 @@ Future<void> _fetchWebseriesInBackground() async {
           }
         }
 
-        // print('📂 Webseries - Successfully created ${newCats.length} categories');
 
         // ✅ Fix: Safe JSON encoding with error handling
         try {
@@ -1036,7 +1225,6 @@ Future<void> _fetchWebseriesInBackground() async {
 
           if (cached == null || cached != newJson) {
             await prefs.setString('webseries_list', newJson);
-            // print('💾 Webseries - Cache updated');
             
             setState(() {
               categories = newCats;
@@ -1044,7 +1232,6 @@ Future<void> _fetchWebseriesInBackground() async {
             });
             _registerWebseriesFocus();
           } else {
-            // print('📋 Webseries - Data unchanged, using cache');
             // Even if cache unchanged, ensure UI is updated
             setState(() {
               categories = newCats;
@@ -1053,7 +1240,6 @@ Future<void> _fetchWebseriesInBackground() async {
             _registerWebseriesFocus();
           }
         } catch (e) {
-          print('🚨 Webseries - JSON Encode Error: $e');
           // Still update UI even if caching fails
           setState(() {
             categories = newCats;
@@ -1063,15 +1249,10 @@ Future<void> _fetchWebseriesInBackground() async {
         }
         
       } catch (e) {
-        // print('🚨 Webseries - JSON Decode Error: $e');
-        // print('📄 Webseries - Raw response: ${response.body}');
       }
     } else {
-      // print('❌ Webseries - API Error Status: ${response.statusCode}');
-      // print('❌ Webseries - Error Body: ${response.body}');
     }
   } catch (e) {
-    // print('🚨 Webseries - Network/Exception Error: $e');
   } finally {
     setState(() {
       isLoading = false;
@@ -1094,7 +1275,6 @@ Future<void> fetchData() async {
       authKey = prefs.getString('auth_key') ?? 'vLQTuPZUxktl5mVW';
     }
 
-    // print('🔑 fetchData - Using Auth Key: "$authKey"');
 
     final response = await http.get(
       Uri.parse('https://acomtv.coretechinfo.com/public/api/getAllWebSeries'),
@@ -1107,11 +1287,9 @@ Future<void> fetchData() async {
 
     if (!mounted) return;
 
-    // print('📡 fetchData - Response Status: ${response.statusCode}');
     
     if (response.statusCode == 200 && response.body.isNotEmpty) {
       final List<dynamic> flatData = jsonDecode(response.body);
-      print('📊 fetchData - Fetched ${flatData.length} items');
 
       // ✅ Fix: Simple grouping
       final Map<String, List<dynamic>> grouped = {};
@@ -1131,7 +1309,6 @@ Future<void> fetchData() async {
             'web_series': sortedItems,
           });
         } catch (e) {
-          // print('🚨 fetchData - Error processing category: $e');
           nonEmptyCategories.add({
             'id': '1',
             'category': entry.key,
@@ -1171,7 +1348,6 @@ Future<void> fetchData() async {
         }
       });
     } else {
-      // print('❌ fetchData - Error Response: ${response.statusCode} - ${response.body}');
       setState(() {
         isLoading = false;
         debugMessage = "Error: ${response.statusCode}";
@@ -1182,7 +1358,6 @@ Future<void> fetchData() async {
       // );
     }
   } catch (e) {
-    // print('🚨 fetchData - Exception: $e');
     setState(() {
       isLoading = false;
       debugMessage = "Network Error: $e";
@@ -1195,245 +1370,239 @@ Future<void> fetchData() async {
 
 // Debug method to check categories state:
 void debugCategoriesState() {
-  // print('🔍 === CATEGORIES DEBUG ===');
-  // print('🔍 categories.length: ${categories.length}');
-  // print('🔍 isLoading: $isLoading');
-  // print('🔍 debugMessage: "$debugMessage"');
   
   if (categories.isNotEmpty) {
     // for (int i = 0; i < categories.length; i++) {
     //   final cat = categories[i];
-    //   print('🔍 Category $i: ${cat['category']} (${cat['web_series'].length} items)');
     // }
   }
-  // print('🔍 === CATEGORIES DEBUG END ===');
 }
 
-// // Add this to your build method for debugging:
-// @override
-// Widget build(BuildContext context) {
-//   super.build(context);
+
+
+// void _scrollToFocusedItem(String catId, String seriesId) {
+//   final node = focusNodesMap[catId]?[seriesId];
+//   if (node?.hasFocus != true || !_scrollController.hasClients) return;
   
-//   // Debug categories state
-//   debugCategoriesState();
-  
-//   return Consumer<ColorProvider>(
-//     builder: (context, colorProv, child) {
-//       // ... rest of your build method
-//     },
-//   );
-// }
-
-// // 1. _fetchWebseriesInBackground method में grouping logic को update करें
-// Future<void> _fetchWebseriesInBackground() async {
-//   try {
-//     final prefs = await SharedPreferences.getInstance();
-//     String authKey = AuthManager.authKey;
-//     if (authKey.isEmpty) {
-//       authKey = prefs.getString('auth_key') ?? 'vLQTuPZUxktl5mVW';
-//     }
-
-//     print('🔑 Webseries - Using Auth Key: "$authKey"');
-
-//     final response = await http.get(
-//       Uri.parse('https://acomtv.coretechinfo.com/public/api/getAllWebSeries'),
-//       headers: {
-//         'auth-key': authKey,
-//         'Content-Type': 'application/json',
-//         'Accept': 'application/json',
-//       },
-//     );
-
-//     print('📡 Webseries - Response Status: ${response.statusCode}');
-//     print('📄 Webseries - Response Body Length: ${response.body.length}');
-    
-//     if (response.statusCode == 200) {
-//       if (response.body.isEmpty) {
-//         print('⚠️ Webseries - Empty response body');
-//         return;
-//       }
-
-//       try {
-//         final List<dynamic> flatData = jsonDecode(response.body);
-//         print('📊 Webseries - Decoded ${flatData.length} items');
-        
-//         if (flatData.isEmpty) {
-//           print('⚠️ Webseries - No data in response');
-//           setState(() {
-//             categories = [];
-//             isLoading = false;
-//           });
-//           return;
-//         }
-
-//         // Log first item structure
-//         if (flatData.isNotEmpty) {
-//           print('📋 Webseries - First item structure: ${flatData[0]}');
-//           print('📋 Webseries - First item keys: ${flatData[0].keys.toList()}');
-//         }
-        
-//         // ✅ Fix: API response में custom_tag नहीं है, सभी items को "Web Series" category में डालें
-//         final Map<String, List<dynamic>> grouped = {};
-        
-//         // Option 1: सभी items को single category में डालें
-//         if (flatData.isNotEmpty) {
-//           grouped['Web Series'] = flatData;
-//         }
-        
-//         // Option 2: अगर कोई category field है तो उसका use करें
-//         // for (var item in flatData) {
-//         //   // यहाँ आप कोई दूसरा field use कर सकते हैं category के लिए
-//         //   final categoryName = item['type'] == 1 ? 'Movies' : 'Web Series';
-//         //   grouped.putIfAbsent(categoryName, () => []).add(item);
-//         // }
-        
-//         print('📂 Webseries - Grouped into ${grouped.length} categories');
-//         print('📂 Webseries - Category names: ${grouped.keys.toList()}');
-        
-//         final List<Map<String, dynamic>> newCats = grouped.entries.map((e) => {
-//           'id': '1', // Default ID since no custom_tag
-//           'category': e.key,
-//           'web_series': _sortByIndex(e.value),
-//         }).toList();
-
-//         print('📂 Webseries - Created ${newCats.length} categories');
-//         for (var cat in newCats) {
-//           print('📂 Webseries - Category: ${cat['category']} (${(cat['web_series'] as List).length} items)');
-//         }
-
-//         final newJson = jsonEncode(newCats);
-//         final cached = prefs.getString('webseries_list');
-
-//         if (cached == null || cached != newJson) {
-//           await prefs.setString('webseries_list', newJson);
-//           print('💾 Webseries - Cache updated');
-//           setState(() {
-//             categories = newCats;
-//             _initializeFocusNodes();
-//           });
-//           _registerWebseriesFocus();
-//         } else {
-//           print('📋 Webseries - Data unchanged, using cache');
-//         }
-//       } catch (e) {
-//         print('🚨 Webseries - JSON Decode Error: $e');
-//         print('📄 Webseries - Raw response: ${response.body}');
-//       }
-//     } else {
-//       print('❌ Webseries - API Error Status: ${response.statusCode}');
-//       print('❌ Webseries - Error Body: ${response.body}');
-//     }
-//   } catch (e) {
-//     print('🚨 Webseries - Network/Exception Error: $e');
-//   } finally {
-//     setState(() {
-//       isLoading = false;
-//     });
-//   }
-// }
-
-// // 2. fetchData method को भी update करें
-// Future<void> fetchData() async {
-//   if (!mounted) return;
-//   setState(() {
-//     isLoading = true;
-//     debugMessage = "Loading...";
-//   });
-
-//   try {
-//     final prefs = await SharedPreferences.getInstance();
-//     String authKey = AuthManager.authKey;
-//     if (authKey.isEmpty) {
-//       authKey = prefs.getString('auth_key') ?? 'vLQTuPZUxktl5mVW';
-//     }
-
-//     print('🔑 fetchData - Using Auth Key: "$authKey"');
-
-//     final response = await http.get(
-//       Uri.parse('https://acomtv.coretechinfo.com/public/api/getAllWebSeries'),
-//       headers: {
-//         'auth-key': authKey,
-//         'Content-Type': 'application/json',
-//         'Accept': 'application/json',
-//       },
-//     ).timeout(const Duration(seconds: 15));
-
-//     if (!mounted) return;
-
-//     print('📡 fetchData - Response Status: ${response.statusCode}');
-    
-//     if (response.statusCode == 200 && response.body.isNotEmpty) {
-//       final List<dynamic> flatData = jsonDecode(response.body);
-//       print('📊 fetchData - Fetched ${flatData.length} items');
-
-//       // ✅ Fix: API response के अनुसार grouping
-//       final Map<String, List<dynamic>> grouped = {};
+//   final ctx = node!.context;
+//   if (ctx != null && mounted) {
+//     // Get the RenderBox of the focused item
+//     final RenderBox? renderBox = ctx.findRenderObject() as RenderBox?;
+//     if (renderBox != null) {
+//       // Get item's position relative to the viewport
+//       final position = renderBox.localToGlobal(Offset.zero);
+//       final itemWidth = renderBox.size.width;
+//       final screenWidth = MediaQuery.of(context).size.width;
       
-//       // Simple grouping - सभी items को "Web Series" में डालें
-//       if (flatData.isNotEmpty) {
-//         grouped['Web Series'] = flatData;
-//       }
-
-//       final List<Map<String, dynamic>> nonEmptyCategories = grouped.entries
-//           .map((e) => {
-//                 'id': '1', // Default ID
-//                 'category': e.key,
-//                 'web_series': e.value,
-//               })
-//           .toList();
-
-//       Provider.of<FocusProvider>(context, listen: false)
-//           .updateCategoryCountWebseries(nonEmptyCategories.length);
-
-//       final Map<String, Map<String, FocusNode>> newFocusMap = {};
-//       for (var cat in nonEmptyCategories) {
-//         final cid = '${cat['id']}';
-//         newFocusMap[cid] = {
-//           for (var series in cat['web_series']) '${series['id']}': FocusNode()
-//         };
-//       }
-
-//       setState(() {
-//         categories = nonEmptyCategories;
-//         focusNodesMap = newFocusMap;
-//         isLoading = false;
-//         debugMessage = "Loaded ${nonEmptyCategories.length} categories";
-//       });
-
-//       Future.delayed(const Duration(milliseconds: 300), () {
-//         if (mounted && categories.isNotEmpty) {
-//           final firstCid = '${categories[0]['id']}';
-//           final firstSid =
-//               '${(categories[0]['web_series'] as List).first['id']}';
-//           final node = focusNodesMap[firstCid]?[firstSid];
-//           if (node != null) {
-//             Provider.of<FocusProvider>(context, listen: false)
-//                 .setFirstManageWebseriesFocusNode(node);
-//           }
-//         }
-//       });
-//     } else {
-//       print('❌ fetchData - Error Response: ${response.statusCode} - ${response.body}');
-//       setState(() {
-//         isLoading = false;
-//         debugMessage = "Error: ${response.statusCode}";
-//       });
+//       // Calculate center position
+//       final targetScrollOffset = _scrollController.offset + 
+//           position.dx - (screenWidth / 2) + (itemWidth / 2);
       
-//       ScaffoldMessenger.of(context).showSnackBar(
-//         SnackBar(content: Text('API Error: ${response.statusCode}')),
+//       // Animate to center the focused item
+//       _scrollController.animateTo(
+//         targetScrollOffset.clamp(
+//           _scrollController.position.minScrollExtent,
+//           _scrollController.position.maxScrollExtent,
+//         ),
+//         duration: const Duration(milliseconds: 400),
+//         curve: Curves.easeInOut,
 //       );
 //     }
-//   } catch (e) {
-//     print('🚨 fetchData - Exception: $e');
-//     setState(() {
-//       isLoading = false;
-//       debugMessage = "Network Error: $e";
-//     });
-//     ScaffoldMessenger.of(context).showSnackBar(
-//       SnackBar(content: Text('Network Error: $e')),
-//     );
 //   }
 // }
+
+
+
+// void _initializeFocusNodes() {
+//   focusNodesMap.clear();
+//   for (var cat in categories) {
+//     final catId = '${cat['id']}';
+//     focusNodesMap[catId] = {};
+//     final webSeriesList = cat['web_series'] as List<dynamic>;
+//     for (var series in webSeriesList) {
+//       final seriesId = '${series['id']}';
+//       focusNodesMap[catId]![seriesId] = FocusNode()
+//         ..addListener(() {
+//           if (focusNodesMap[catId]![seriesId]!.hasFocus) {
+//             // Add a small delay to ensure widget is built
+//             Future.delayed(Duration(milliseconds: 150), () {
+//               // You need to provide the itemIndex as the third argument
+//               final webSeriesList = cat['web_series'] as List<dynamic>;
+//               final itemIndex = webSeriesList.indexWhere((s) => '${s['id']}' == seriesId);
+//               _performGuaranteedScroll(catId, seriesId, );
+//             });
+//           }
+//         });
+//     }
+//   }
+// }
+
+
+
+// 2. Guaranteed Scroll Method with multiple fallbacks
+void _performGuaranteedScroll(String catId, String seriesId) {
+  // Immediate scroll attempt
+  _scrollToFocusedItem(catId, seriesId);
+  
+  // Backup scroll attempts with delays
+  Future.delayed(Duration(milliseconds: 100), () {
+    _scrollToFocusedItem(catId, seriesId);
+  });
+  
+  Future.delayed(Duration(milliseconds: 300), () {
+    _scrollToFocusedItem(catId, seriesId);
+  });
+  
+  // Final fallback scroll
+  Future.delayed(Duration(milliseconds: 500), () {
+    _scrollToFocusedItem(catId, seriesId);
+  });
+}
+
+// 3. Enhanced scroll method with better error handling
+void _scrollToFocusedItem(String catId, String seriesId) {
+  try {
+    final node = focusNodesMap[catId]?[seriesId];
+    
+    // Check if node has focus और scroll controller available है
+    if (node?.hasFocus != true) {
+      return;
+    }
+    
+    if (!_scrollController.hasClients) {
+      return;
+    }
+    
+    final ctx = node!.context;
+    if (ctx == null) {
+      return;
+    }
+    
+    // Check if widget is still mounted
+    if (!mounted) {
+      return;
+    }
+    
+    // Get RenderBox for position calculation
+    final RenderBox? renderBox = ctx.findRenderObject() as RenderBox?;
+    if (renderBox == null) {
+      // Fallback to Scrollable.ensureVisible
+      _fallbackScroll(ctx);
+      return;
+    }
+    
+    // Calculate precise scroll position
+    final position = renderBox.localToGlobal(Offset.zero);
+    final itemWidth = renderBox.size.width;
+    final screenWidth = MediaQuery.of(context).size.width;
+    
+    // Calculate target scroll offset to center the item
+    final currentOffset = _scrollController.offset;
+    final targetOffset = currentOffset + position.dx - (screenWidth * 0.2); // 20% from left
+    
+    // Ensure offset is within bounds
+    final minOffset = _scrollController.position.minScrollExtent;
+    final maxOffset = _scrollController.position.maxScrollExtent;
+    final clampedOffset = targetOffset.clamp(minOffset, maxOffset);
+    
+    
+    // Animate to target position
+    _scrollController.animateTo(
+      clampedOffset,
+      duration: const Duration(milliseconds: 400),
+      curve: Curves.easeInOut,
+    ).catchError((error) {
+      // Try fallback scroll on error
+      _fallbackScroll(ctx);
+    });
+    
+  } catch (e) {
+    // Try fallback scroll method
+    final node = focusNodesMap[catId]?[seriesId];
+    if (node?.context != null) {
+      _fallbackScroll(node!.context!);
+    }
+  }
+}
+
+// 4. Fallback scroll method using Scrollable.ensureVisible
+void _fallbackScroll(BuildContext context) {
+  try {
+    Scrollable.ensureVisible(
+      context,
+      alignment: 0.2, // 20% from left
+      duration: const Duration(milliseconds: 400),
+      curve: Curves.easeInOut,
+    );
+  } catch (e) {
+  }
+}
+
+
+
+
+
+
+
+// 5. Alternative scroll method using item index (if you have item positions)
+void _scrollByIndex(String catId, String seriesId, int itemIndex) {
+  if (!_scrollController.hasClients) return;
+  
+  try {
+    // Calculate approximate position based on item width
+    final itemWidth = MediaQuery.of(context).size.width * 0.19; // Your item width
+    final itemSpacing = 12.0; // Your padding
+    final totalItemWidth = itemWidth + itemSpacing;
+    
+    final targetOffset = itemIndex * totalItemWidth;
+    final maxOffset = _scrollController.position.maxScrollExtent;
+    final clampedOffset = targetOffset.clamp(0.0, maxOffset);
+    
+    
+    _scrollController.animateTo(
+      clampedOffset,
+      duration: const Duration(milliseconds: 400),
+      curve: Curves.easeInOut,
+    );
+  } catch (e) {
+  }
+}
+
+
+
+// void _scrollToFocusedItem(String catId, String seriesId) {
+//   final node = focusNodesMap[catId]?[seriesId];
+//   if (node?.hasFocus != true || !_scrollController.hasClients) return;
+  
+//   final ctx = node!.context;
+//   if (ctx != null && mounted) {
+//     // Get the RenderBox of the focused item
+//     final RenderBox? renderBox = ctx.findRenderObject() as RenderBox?;
+//     if (renderBox != null) {
+//       // Calculate the position of the item relative to the viewport
+//       final position = renderBox.localToGlobal(Offset.zero);
+//       final itemWidth = renderBox.size.width;
+      
+//       // Calculate the scroll offset needed to bring the item to the left
+//       final targetOffset = _scrollController.offset + position.dx - 20; // 20 is padding
+      
+//       // Ensure the offset stays within valid bounds
+//       final clampedOffset = targetOffset.clamp(
+//         _scrollController.position.minScrollExtent,
+//         _scrollController.position.maxScrollExtent,
+//       );
+      
+//       // Animate to the calculated position
+//       _scrollController.animateTo(
+//         clampedOffset,
+//         duration: const Duration(milliseconds: 300),
+//         curve: Curves.easeOut,
+//       );
+//     }
+//   }
+// }
+
+
 
 // 3. अगर आप category based grouping चाहते हैं तो यह function use करें:
 Map<String, List<dynamic>> createSmartGrouping(List<dynamic> flatData) {
@@ -1451,20 +1620,7 @@ Map<String, List<dynamic>> createSmartGrouping(List<dynamic> flatData) {
       categoryName = 'Web Series';
     }
     
-    // Option 2: name के base पर (अगर name में कुछ pattern है)
-    // String name = item['name']?.toString()?.toLowerCase() ?? '';
-    // if (name.contains('wildlife') || name.contains('animals')) {
-    //   categoryName = 'Nature';
-    // } else if (name.contains('drama')) {
-    //   categoryName = 'Drama';
-    // }
-    
-    // Option 3: featured के base पर
-    // if (item['featured'] == 1) {
-    //   categoryName = 'Featured';
-    // } else {
-    //   categoryName = 'Regular';
-    // }
+
     
     grouped.putIfAbsent(categoryName, () => []).add(item);
   }
@@ -1472,24 +1628,20 @@ Map<String, List<dynamic>> createSmartGrouping(List<dynamic> flatData) {
   return grouped;
 }
 
-// 4. अगर आप smart grouping use करना चाहते हैं तो _fetchWebseriesInBackground में यह line replace करें:
-// final Map<String, List<dynamic>> grouped = createSmartGrouping(flatData);
 
-// 5. Enhanced initState with detailed debugging
+
+
+
+
 @override
 void initState() {
   super.initState();
   
-  // print('🔍 === WEBSERIES INIT START ===');
-  // print('🔍 AuthManager.authKey: "${AuthManager.authKey}"');
   
   // Check SharedPreferences
   SharedPreferences.getInstance().then((prefs) {
     final storedKey = prefs.getString('auth_key');
-    // print('🔍 SharedPreferences auth_key: "$storedKey"');
     final cachedData = prefs.getString('webseries_list');
-    // print('🔍 Cached webseries data exists: ${cachedData != null}');
-    // print('🔍 === WEBSERIES INIT END ===');
   });
   
   // Manual API test
@@ -1497,348 +1649,74 @@ void initState() {
   
   // Regular initialization
   _loadCachedWebseriesDataAndFetch();
+
+
+   WidgetsBinding.instance.addPostFrameCallback((_) {
+    if (mounted && categories.isNotEmpty) {
+      final firstCid = '${categories[0]['id']}';
+      final firstSid = '${categories[0]['web_series'].first['id']}';
+      final node = focusNodesMap[firstCid]?[firstSid];
+      if (node != null) {
+        Provider.of<FocusProvider>(context, listen: false)
+            .setFirstManageWebseriesFocusNode(node);
+      }
+      
+    }
+  });
 }
 
-// // 6. Updated testWebseriesAPI method
-// void testWebseriesAPI() async {
-//   try {
-//     print('🧪 Testing Webseries API manually...');
-    
-//     final response = await http.get(
-//       Uri.parse('https://acomtv.coretechinfo.com/public/api/getAllWebSeries'),
-//       headers: {
-//         'auth-key': 'vLQTuPZUxktl5mVW',
-//         'Content-Type': 'application/json',
-//         'Accept': 'application/json',
-//       },
-//     );
-    
-//     // print('🧪 Test Response Status: ${response.statusCode}');
-//     // print('🧪 Test Response Body Length: ${response.body.length}');
-    
-//     if (response.statusCode == 200) {
-//       try {
-//         final data = jsonDecode(response.body);
-//         print('🧪 Test Success - Data type: ${data.runtimeType}');
-//         if (data is List) {
-//           print('🧪 Test Success - Items count: ${data.length}');
-//           if (data.isNotEmpty) {
-//             print('🧪 Test Success - First item: ${data[0]}');
-//             print('🧪 Test Success - Available fields: ${data[0].keys.toList()}');
-            
-//             // Check for possible category fields
-//             var item = data[0];
-//             print('🧪 Possible category fields:');
-//             print('🧪 - content_type: ${item['content_type']}');
-//             print('🧪 - type: ${item['type']}');
-//             print('🧪 - featured: ${item['featured']}');
-//             print('🧪 - status: ${item['status']}');
-//             print('🧪 - name: ${item['name']}');
+
+// // Update your FocusNode listener initialization to use the new method:
+// void _initializeFocusNodes() {
+//   focusNodesMap.clear();
+//   for (var cat in categories) {
+//     final catId = '${cat['id']}';
+//     focusNodesMap[catId] = {};
+//     final webSeriesList = cat['web_series'] as List<dynamic>;
+//     for (var series in webSeriesList) {
+//       final seriesId = '${series['id']}';
+//       focusNodesMap[catId]![seriesId] = FocusNode()
+//         ..addListener(() {
+//           if (focusNodesMap[catId]![seriesId]!.hasFocus) {
+//             // Use any of the above methods:
+//             _scrollToFocusedItem(catId, seriesId); // Simplest
+//             // OR
+//             // _scrollToFocusedItemEnhanced(catId, seriesId); // More control
+//             // OR  
+//             // _smartScrollToFocusedItem(catId, seriesId, centerAlign: true); // Flexible
 //           }
-//         }
-//       } catch (e) {
-//         print('🧪 Test JSON Error: $e');
-//       }
-//     } else {
-//       print('🧪 Test Failed - Status: ${response.statusCode}');
-//       print('🧪 Test Failed - Body: ${response.body}');
+//         });
 //     }
-//   } catch (e) {
-//     print('🧪 Test Network Error: $e');
 //   }
 // }
 
 
-//   // 1. Enhanced debugging के साथ _fetchWebseriesInBackground
-// Future<void> _fetchWebseriesInBackground() async {
-//   try {
-//     final prefs = await SharedPreferences.getInstance();
-//     String authKey = AuthManager.authKey;
-//     if (authKey.isEmpty) {
-//       authKey = prefs.getString('auth_key') ?? 'vLQTuPZUxktl5mVW';
-//     }
-
-//     print('🔑 Webseries - Using Auth Key: "$authKey"');
-//     print('🔑 Webseries - AuthManager.authKey: "${AuthManager.authKey}"');
-//     print('🔑 Webseries - Key length: ${authKey.length}');
-
-//     final response = await http.get(
-//       Uri.parse('https://acomtv.coretechinfo.com/public/api/getAllWebSeries'),
-//       headers: {
-//         'auth-key': authKey,
-//         'Content-Type': 'application/json',
-//         'Accept': 'application/json',
-//       },
-//     );
-
-//     print('📡 Webseries - Response Status: ${response.statusCode}');
-//     print('📡 Webseries - Response Headers: ${response.headers}');
-//     print('📄 Webseries - Response Body Length: ${response.body.length}');
-    
-//     if (response.body.isNotEmpty) {
-//       print('📄 Webseries - Response Preview: ${response.body.substring(0, response.body.length > 200 ? 200 : response.body.length)}...');
-//     }
-    
-//     if (response.statusCode == 200) {
-//       if (response.body.isEmpty) {
-//         print('⚠️ Webseries - Empty response body');
-//         return;
-//       }
-
-//       try {
-//         final List<dynamic> flatData = jsonDecode(response.body);
-//         print('📊 Webseries - Decoded ${flatData.length} items');
-        
-//         if (flatData.isEmpty) {
-//           print('⚠️ Webseries - No data in response');
-//           setState(() {
-//             categories = [];
-//             isLoading = false;
-//           });
-//           return;
-//         }
-
-//         // Log first item structure
-//         if (flatData.isNotEmpty) {
-//           print('📋 Webseries - First item structure: ${flatData[0]}');
-//           print('📋 Webseries - First item keys: ${flatData[0].keys.toList()}');
-//           if (flatData[0]['custom_tag'] != null) {
-//             print('📋 Webseries - Custom tag: ${flatData[0]['custom_tag']}');
+// // Update your FocusNode listener initialization to use the new method:
+// void _initializeFocusNodes() {
+//   focusNodesMap.clear();
+//   for (var cat in categories) {
+//     final catId = '${cat['id']}';
+//     focusNodesMap[catId] = {};
+//     final webSeriesList = cat['web_series'] as List<dynamic>;
+//     for (var series in webSeriesList) {
+//       final seriesId = '${series['id']}';
+//       focusNodesMap[catId]![seriesId] = FocusNode()
+//         ..addListener(() {
+//           if (focusNodesMap[catId]![seriesId]!.hasFocus) {
+//             // Use any of the above methods:
+//             // _scrollToFocusedItemAlternative(catId, seriesId); // Simplest
+//             _scrollToFocusedItem(catId, seriesId); // Simplest
+//             // OR
+//             // _scrollToFocusedItemEnhanced(catId, seriesId); // More control
+//             // OR  
+//             // _smartScrollToFocusedItem(catId, seriesId, centerAlign: true); // Flexible
 //           }
-//         }
-        
-//         final Map<String, List<dynamic>> grouped = {};
-//         for (var item in flatData) {
-//           final tagName = item['custom_tag']?['custom_tags_name'] ?? 'Unknown';
-//           grouped.putIfAbsent(tagName, () => []).add(item);
-//         }
-        
-//         print('📂 Webseries - Grouped into ${grouped.length} categories');
-//         print('📂 Webseries - Category names: ${grouped.keys.toList()}');
-        
-//         final List<Map<String, dynamic>> newCats = grouped.entries.map((e) => {
-//           'id': e.value.first['custom_tag']?['custom_tags_id'] ?? '0',
-//           'category': e.key,
-//           'web_series': _sortByIndex(e.value),
-//         }).toList();
-
-//         print('📂 Webseries - Created ${newCats.length} categories');
-//         for (var cat in newCats) {
-//           print('📂 Webseries - Category: ${cat['category']} (${(cat['web_series'] as List).length} items)');
-//         }
-
-//         final newJson = jsonEncode(newCats);
-//         final cached = prefs.getString('webseries_list');
-
-//         if (cached == null || cached != newJson) {
-//           await prefs.setString('webseries_list', newJson);
-//           print('💾 Webseries - Cache updated');
-//           setState(() {
-//             categories = newCats;
-//             _initializeFocusNodes();
-//           });
-//           _registerWebseriesFocus();
-//         } else {
-//           print('📋 Webseries - Data unchanged, using cache');
-//         }
-//       } catch (e) {
-//         print('🚨 Webseries - JSON Decode Error: $e');
-//         print('📄 Webseries - Raw response: ${response.body}');
-//       }
-//     } else {
-//       print('❌ Webseries - API Error Status: ${response.statusCode}');
-//       print('❌ Webseries - Error Body: ${response.body}');
-      
-//       // Try to decode error response
-//       try {
-//         final errorData = jsonDecode(response.body);
-//         print('❌ Webseries - Error Data: $errorData');
-//       } catch (e) {
-//         print('❌ Webseries - Raw Error Response: ${response.body}');
-//       }
+//         });
 //     }
-//   } catch (e) {
-//     print('🚨 Webseries - Network/Exception Error: $e');
-//     print('🚨 Webseries - Error Type: ${e.runtimeType}');
-//   } finally {
-//     setState(() {
-//       isLoading = false;
-//     });
 //   }
 // }
 
 
-
-
-// // 2. Enhanced fetchData method
-// Future<void> fetchData() async {
-//   if (!mounted) return;
-//   setState(() {
-//     isLoading = true;
-//     debugMessage = "Loading...";
-//   });
-
-//   try {
-//     final prefs = await SharedPreferences.getInstance();
-//     String authKey = AuthManager.authKey;
-//     if (authKey.isEmpty) {
-//       authKey = prefs.getString('auth_key') ?? 'vLQTuPZUxktl5mVW';
-//     }
-
-//     print('🔑 fetchData - Using Auth Key: "$authKey"');
-
-//     final response = await http.get(
-//       Uri.parse('https://acomtv.coretechinfo.com/public/api/getAllWebSeries'),
-//       headers: {
-//         'auth-key': authKey,
-//         'Content-Type': 'application/json',
-//         'Accept': 'application/json',
-//       },
-//     ).timeout(const Duration(seconds: 15));
-
-//     if (!mounted) return;
-
-//     print('📡 fetchData - Response Status: ${response.statusCode}');
-    
-//     if (response.statusCode == 200 && response.body.isNotEmpty) {
-//       final List<dynamic> flatData = jsonDecode(response.body);
-//       print('📊 fetchData - Fetched ${flatData.length} items');
-
-//       final Map<String, List<dynamic>> grouped = {};
-//       for (var item in flatData) {
-//         final tagName = item['custom_tag']?['custom_tags_name'] ?? 'Unknown';
-//         grouped.putIfAbsent(tagName, () => []).add(item);
-//       }
-
-//       final List<Map<String, dynamic>> nonEmptyCategories = grouped.entries
-//           .map((e) => {
-//                 'id': e.value.first['custom_tag']?['custom_tags_id'] ?? '0',
-//                 'category': e.key,
-//                 'web_series': e.value,
-//               })
-//           .toList();
-
-//       Provider.of<FocusProvider>(context, listen: false)
-//           .updateCategoryCountWebseries(nonEmptyCategories.length);
-
-//       final Map<String, Map<String, FocusNode>> newFocusMap = {};
-//       for (var cat in nonEmptyCategories) {
-//         final cid = '${cat['id']}';
-//         newFocusMap[cid] = {
-//           for (var series in cat['web_series']) '${series['id']}': FocusNode()
-//         };
-//       }
-
-//       setState(() {
-//         categories = nonEmptyCategories;
-//         focusNodesMap = newFocusMap;
-//         isLoading = false;
-//         debugMessage = "Loaded ${nonEmptyCategories.length} categories";
-//       });
-
-//       Future.delayed(const Duration(milliseconds: 300), () {
-//         if (mounted && categories.isNotEmpty) {
-//           final firstCid = '${categories[0]['id']}';
-//           final firstSid =
-//               '${(categories[0]['web_series'] as List).first['id']}';
-//           final node = focusNodesMap[firstCid]?[firstSid];
-//           if (node != null) {
-//             Provider.of<FocusProvider>(context, listen: false)
-//                 .setFirstManageWebseriesFocusNode(node);
-//           }
-//         }
-//       });
-//     } else {
-//       print('❌ fetchData - Error Response: ${response.statusCode} - ${response.body}');
-//       setState(() {
-//         isLoading = false;
-//         debugMessage = "Error: ${response.statusCode} - ${response.body.length > 50 ? response.body.substring(0, 50) + '...' : response.body}";
-//       });
-      
-//       ScaffoldMessenger.of(context).showSnackBar(
-//         SnackBar(content: Text('API Error: ${response.statusCode}')),
-//       );
-//     }
-//   } catch (e) {
-//     print('🚨 fetchData - Exception: $e');
-//     setState(() {
-//       isLoading = false;
-//       debugMessage = "Network Error: $e";
-//     });
-//     ScaffoldMessenger.of(context).showSnackBar(
-//       SnackBar(content: Text('Network Error: $e')),
-//     );
-//   }
-// }
-
-// // 3. Manual API test with auth-key
-// void testWebseriesAPI() async {
-//   try {
-//     print('🧪 Testing Webseries API manually...');
-    
-//     // Test with default key
-//     var response = await http.get(
-//       Uri.parse('https://acomtv.coretechinfo.com/public/api/getAllWebSeries'),
-//       headers: {
-//         'auth-key': 'vLQTuPZUxktl5mVW',
-//         'Content-Type': 'application/json',
-//         'Accept': 'application/json',
-//       },
-//     );
-    
-//     print('🧪 Test Response Status: ${response.statusCode}');
-//     print('🧪 Test Response Headers: ${response.headers}');
-//     print('🧪 Test Response Body Length: ${response.body.length}');
-    
-//     if (response.body.isNotEmpty) {
-//       print('🧪 Test Response Preview: ${response.body.substring(0, response.body.length > 300 ? 300 : response.body.length)}...');
-//     }
-    
-//     if (response.statusCode == 200) {
-//       try {
-//         final data = jsonDecode(response.body);
-//         print('🧪 Test Success - Data type: ${data.runtimeType}');
-//         if (data is List) {
-//           print('🧪 Test Success - Items count: ${data.length}');
-//           if (data.isNotEmpty) {
-//             print('🧪 Test Success - First item keys: ${data[0].keys.toList()}');
-//             print('🧪 Test Success - First item: ${data[0]}');
-//           }
-//         }
-//       } catch (e) {
-//         print('🧪 Test JSON Error: $e');
-//       }
-//     } else {
-//       print('🧪 Test Failed - Status: ${response.statusCode}');
-//       print('🧪 Test Failed - Body: ${response.body}');
-//     }
-
-//     // Also test with AuthManager key
-//     final prefs = await SharedPreferences.getInstance();
-//     String authKey = AuthManager.authKey;
-//     if (authKey.isEmpty) {
-//       authKey = prefs.getString('auth_key') ?? 'vLQTuPZUxktl5mVW';
-//     }
-    
-//     if (authKey != 'vLQTuPZUxktl5mVW') {
-//       print('🧪 Testing with AuthManager key: "$authKey"');
-//       response = await http.get(
-//         Uri.parse('https://acomtv.coretechinfo.com/public/api/getAllWebSeries'),
-//         headers: {
-//           'auth-key': authKey,
-//           'Content-Type': 'application/json',
-//           'Accept': 'application/json',
-//         },
-//       );
-      
-//       print('🧪 AuthManager Test Status: ${response.statusCode}');
-//       print('🧪 AuthManager Test Body Length: ${response.body.length}');
-//     }
-    
-//   } catch (e) {
-//     print('🧪 Test Network Error: $e');
-//   }
-// }
 
   Future<void> _loadCachedWebseriesDataAndFetch() async {
     setState(() {
@@ -1870,24 +1748,24 @@ void initState() {
     }
   }
 
-  // Add this method to initialize focus nodes:
-  void _initializeFocusNodes() {
-    focusNodesMap.clear();
-    for (var cat in categories) {
-      final catId = '${cat['id']}';
-      focusNodesMap[catId] = {};
-      final webSeriesList = cat['web_series'] as List<dynamic>;
-      for (var series in webSeriesList) {
-        final seriesId = '${series['id']}';
-        focusNodesMap[catId]![seriesId] = FocusNode()
-          ..addListener(() {
-            if (focusNodesMap[catId]![seriesId]!.hasFocus) {
-              _scrollToFocusedItem(catId, seriesId);
-            }
-          });
-      }
-    }
-  }
+  // // Add this method to initialize focus nodes:
+  // void _initializeFocusNodes() {
+  //   focusNodesMap.clear();
+  //   for (var cat in categories) {
+  //     final catId = '${cat['id']}';
+  //     focusNodesMap[catId] = {};
+  //     final webSeriesList = cat['web_series'] as List<dynamic>;
+  //     for (var series in webSeriesList) {
+  //       final seriesId = '${series['id']}';
+  //       focusNodesMap[catId]![seriesId] = FocusNode()
+  //         ..addListener(() {
+  //           if (focusNodesMap[catId]![seriesId]!.hasFocus) {
+  //             _scrollToFocusedItem(catId, seriesId);
+  //           }
+  //         });
+  //     }
+  //   }
+  // }
 
   // Add this method to register focus with provider:
   void _registerWebseriesFocus() {
@@ -1900,182 +1778,13 @@ void initState() {
           final node = focusNodesMap[firstCid]?[firstSid];
           if (node != null) {
             context.read<FocusProvider>().setFirstManageWebseriesFocusNode(node);
-            print('🎭 Registered First Webseries FocusNode: $node');
           }
         }
       }
     });
   }
 
-  // // Update the _fetchWebseriesInBackground method with AuthKey:
-  // Future<void> _fetchWebseriesInBackground() async {
-  //   try {
-  //     final prefs = await SharedPreferences.getInstance();
-  //     String authKey = AuthManager.authKey;
-  //     if (authKey.isEmpty) {
-  //       // Fallback to SharedPreferences if AuthManager doesn't have it
-  //       authKey = prefs.getString('auth_key') ?? 'vLQTuPZUxktl5mVW';
-  //     }
 
-  //     final response = await http.get(
-  //       Uri.parse('https://acomtv.coretechinfo.com/public/api/getAllWebSeries'),
-  //       headers: {'auth-key': authKey}, // Updated header key
-  //     );
-
-  //     if (response.statusCode == 200) {
-  //       final List<dynamic> flatData = jsonDecode(response.body);
-  //       final Map<String, List<dynamic>> grouped = {};
-  //       for (var item in flatData) {
-  //         final tagName = item['custom_tag']?['custom_tags_name'] ?? 'Unknown';
-  //         grouped.putIfAbsent(tagName, () => []).add(item);
-  //       }
-  //       final List<Map<String, dynamic>> newCats = grouped.entries.map((e) => {
-  //         'id': e.value.first['custom_tag']?['custom_tags_id'] ?? '0',
-  //         'category': e.key,
-  //         'web_series': _sortByIndex(e.value),
-  //       }).toList();
-
-  //       final newJson = jsonEncode(newCats);
-  //       final cached = prefs.getString('webseries_list');
-
-  //       if (cached == null || cached != newJson) {
-  //         await prefs.setString('webseries_list', newJson);
-  //         setState(() {
-  //           categories = newCats;
-  //           _initializeFocusNodes(); // Re-initialize focus nodes
-  //         });
-  //         _registerWebseriesFocus(); // Re-register focus
-  //       }
-  //     }
-  //   } catch (e) {
-  //     print('Error in background fetch: $e');
-  //   } finally {
-  //     setState(() {
-  //       isLoading = false;
-  //     });
-  //   }
-  // }
-
-  // List<dynamic> _sortByIndex(List<dynamic> list) {
-  //   list.sort((a, b) =>
-  //       (int.tryParse(a['index'] ?? '0') ?? 0)
-  //           .compareTo(int.tryParse(b['index'] ?? '0') ?? 0));
-  //   return list;
-  // }
-
-  // Future<void> _fetchDataWithRetry() async {
-  //   try {
-  //     await fetchData();
-  //   } catch (_) {
-  //     Future.delayed(const Duration(seconds: 2), () {
-  //       if (mounted) fetchData();
-  //     });
-  //   }
-  // }
-
-  // @override
-  // void dispose() {
-  //   for (var cat in focusNodesMap.values) {
-  //     for (var node in cat.values) node.dispose();
-  //   }
-  //   _scrollController.dispose();
-  //   super.dispose();
-  // }
-
-  // Future<void> fetchData() async {
-  //   if (!mounted) return;
-  //   setState(() {
-  //     isLoading = true;
-  //     debugMessage = "Loading...";
-  //   });
-
-  //   try {
-  //     final prefs = await SharedPreferences.getInstance();
-  //     String authKey = AuthManager.authKey;
-  //     if (authKey.isEmpty) {
-  //       // Fallback to SharedPreferences if AuthManager doesn't have it
-  //       authKey = prefs.getString('auth_key') ?? 'vLQTuPZUxktl5mVW';
-  //     }
-
-  //     final response = await http.get(
-  //       Uri.parse('https://acomtv.coretechinfo.com/public/api/getAllWebSeries'),
-  //       headers: {'auth-key': authKey}, // Updated header key
-  //     ).timeout(const Duration(seconds: 15));
-
-  //     if (!mounted) return;
-
-  //     if (response.statusCode == 200 && response.body.isNotEmpty) {
-  //       // 1. Decode flat list
-  //       final List<dynamic> flatData = jsonDecode(response.body);
-
-  //       // 2. Group by custom_tag.custom_tags_name
-  //       final Map<String, List<dynamic>> grouped = {};
-  //       for (var item in flatData) {
-  //         final tagName = item['custom_tag']?['custom_tags_name'] ?? 'Unknown';
-  //         grouped.putIfAbsent(tagName, () => []).add(item);
-  //       }
-
-  //       // 3. Shape into [{ id, category, web_series: […] }, …]
-  //       final List<Map<String, dynamic>> nonEmptyCategories = grouped.entries
-  //           .map((e) => {
-  //                 'id': e.value.first['custom_tag']?['custom_tags_id'] ?? '0',
-  //                 'category': e.key,
-  //                 'web_series': e.value,
-  //               })
-  //           .toList();
-
-  //       // 4. Update provider & build focus nodes
-  //       Provider.of<FocusProvider>(context, listen: false)
-  //           .updateCategoryCountWebseries(nonEmptyCategories.length);
-
-  //       final Map<String, Map<String, FocusNode>> newFocusMap = {};
-  //       for (var cat in nonEmptyCategories) {
-  //         final cid = '${cat['id']}';
-  //         newFocusMap[cid] = {
-  //           for (var series in cat['web_series']) '${series['id']}': FocusNode()
-  //         };
-  //       }
-
-  //       // 5. Set state
-  //       setState(() {
-  //         categories = nonEmptyCategories;
-  //         focusNodesMap = newFocusMap;
-  //         isLoading = false;
-  //         debugMessage = "Loaded ${nonEmptyCategories.length} categories";
-  //       });
-
-  //       // 6. Give first item initial focus
-  //       Future.delayed(const Duration(milliseconds: 300), () {
-  //         if (mounted && categories.isNotEmpty) {
-  //           final firstCid = '${categories[0]['id']}';
-  //           final firstSid =
-  //               '${(categories[0]['web_series'] as List).first['id']}';
-  //           final node = focusNodesMap[firstCid]?[firstSid];
-  //           if (node != null) {
-  //             Provider.of<FocusProvider>(context, listen: false)
-  //                 .setFirstManageWebseriesFocusNode(node);
-  //           }
-  //         }
-  //       });
-  //     } else {
-  //       setState(() {
-  //         isLoading = false;
-  //         debugMessage = "Error: ${response.statusCode}";
-  //       });
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         const SnackBar(content: Text('Something went wrong')),
-  //       );
-  //     }
-  //   } catch (e) {
-  //     setState(() {
-  //       isLoading = false;
-  //       debugMessage = "Error: $e";
-  //     });
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(content: Text('Error: $e')),
-  //     );
-  //   }
-  // }
 
   void navigateToDetails(
       dynamic movie, String source, String banner, String name, int idx) {
@@ -2107,11 +1816,9 @@ void initState() {
       try {
         movieId = int.parse(movie['id']);
       } catch (e) {
-        print('Error parsing movie ID: ${movie['id']}');
         return; // Don't navigate if ID is invalid
       }
     } else {
-      print('Invalid movie ID type: ${movie['id'].runtimeType}');
       return; // Invalid ID, don't navigate
     }
 
@@ -2129,166 +1836,177 @@ void initState() {
     );
   }
 
-  void _scrollToFocusedItem(String catId, String seriesId) {
-    final node = focusNodesMap[catId]?[seriesId];
-    if (node?.hasFocus != true || !_scrollController.hasClients) return;
-    final ctx = node!.context;
-    if (ctx != null && mounted) {
-      Scrollable.ensureVisible(
-        ctx,
-        alignment: 0.05,
-        duration: const Duration(milliseconds: 400),
-      );
-    }
-  }
 
-  @override
-  Widget build(BuildContext context) {
-    super.build(context); // for AutomaticKeepAliveClientMixin
-    debugCategoriesState();
-    return Consumer<ColorProvider>(
-      builder: (context, colorProv, child) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (categories.isNotEmpty) {
-            final firstCid = '${categories[0]['id']}';
-            final firstSid = '${categories[0]['web_series'].first['id']}';
-            final node = focusNodesMap[firstCid]?[firstSid];
-            if (node != null) {
-              Provider.of<FocusProvider>(context, listen: false)
-                  .setFirstManageWebseriesFocusNode(node);
-            }
-          }
-        });
 
-        final bgColor = colorProv.isItemFocused
-            ? colorProv.dominantColor.withOpacity(0.3)
-            : Colors.black;
 
-        if (isLoading) {
-          return Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                loading_indicator.LoadingIndicator(),
-                const SizedBox(height: 12),
-                Text(debugMessage, style: const TextStyle(color: Colors.white)),
-              ],
-            ),
-          );
-        }
+  
 
-        if (categories.isEmpty) {
-          return const Center(
-            child: Text('No Content', style: TextStyle(color: Colors.white)),
-          );
-        }
+  // void _scrollToFocusedItem(String catId, String seriesId) {
+  //   final node = focusNodesMap[catId]?[seriesId];
+  //   if (node?.hasFocus != true || !_scrollController.hasClients) return;
+  //   final ctx = node!.context;
+  //   if (ctx != null && mounted) {
+  //     Scrollable.ensureVisible(
+  //       ctx,
+  //       alignment: 0.05,
+  //       duration: const Duration(milliseconds: 800),
+  //     );
+  //   }
+  // }
 
-        return Container(
-          color: bgColor,
-          child: Container(
-            color: Colors.black54,
-            child: SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              child: Column(
-                children: List.generate(categories.length, (catIdx) {
-                  final cat = categories[catIdx];
-                  final list = cat['web_series'] as List<dynamic>;
-                  final catId = '${cat['id']}';
 
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 8,
-                        ),
-                        child: Text(
-                          cat['category'].toString().toUpperCase(),
-                          style: TextStyle(
-                            color: hintColor,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.34,
-                        child: ListView.builder(
-                          controller: _scrollController,
-                          scrollDirection: Axis.horizontal,
-                          itemCount: list.length > 7 ? 8 : list.length + 1,
-                          itemBuilder: (_, idx) {
-                            if ((list.length >= 7 && idx == 7) ||
-                                (list.length < 7 && idx == list.length)) {
-                              return ViewAllWidget(
-                                categoryText: cat['category'],
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) => CategoryMoviesGridView(
-                                        category: cat,
-                                        web_series: list,
-                                      ),
-                                    ),
-                                  );
-                                },
-                              );
-                            }
 
-                            final item = list[idx];
-                            final sid = '${item['id']}';
-                            final node = focusNodesMap[catId]?[sid];
 
-                            return Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 6),
-                              child: FocussableWebseriesWidget(
-                                imageUrl: item['poster']?.toString() ?? '',
-                                name: item['name']?.toString() ?? '',
-                                focusNode: node ?? FocusNode(),
-                                onFocusChange: (hasFocus) {
-                                  if (hasFocus)
-                                    _scrollToFocusedItem(catId, sid);
-                                },
-                                onUpPress: () {
-                                  // Request focus for ManageMovies first item
-                                  context
-                                      .read<FocusProvider>()
-                                      .requestManageMoviesFocus();
-                                },
-                                onTap: () => navigateToDetails(
-                                  item,
-                                  cat['category'],
-                                  item['banner']?.toString() ?? '',
-                                  item['name']?.toString() ?? '',
-                                  catIdx,
-                                ),
-                                fetchPaletteColor: (url) =>
-                                    PaletteColorService()
-                                        .getSecondaryColor(url),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                    ],
-                  );
-                }),
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
+//   @override
+//   Widget build(BuildContext context) {
+//     super.build(context); // for AutomaticKeepAliveClientMixin
+//     debugCategoriesState();
+//     return Consumer<ColorProvider>(
+//       builder: (context, colorProv, child) {
+//         WidgetsBinding.instance.addPostFrameCallback((_) {
+//           if (categories.isNotEmpty) {
+//             final firstCid = '${categories[0]['id']}';
+//             final firstSid = '${categories[0]['web_series'].first['id']}';
+//             final node = focusNodesMap[firstCid]?[firstSid];
+//             if (node != null) {
+//               Provider.of<FocusProvider>(context, listen: false)
+//                   .setFirstManageWebseriesFocusNode(node);
+//             }
+//           }
+//         });
+
+//         final bgColor = colorProv.isItemFocused
+//             ? colorProv.dominantColor.withOpacity(0.3)
+//             : Colors.black;
+
+//         if (isLoading) {
+//           return Center(
+//             child: Column(
+//               mainAxisSize: MainAxisSize.min,
+//               children: [
+//                 loading_indicator.LoadingIndicator(),
+//                 const SizedBox(height: 12),
+//                 Text(debugMessage, style: const TextStyle(color: Colors.white)),
+//               ],
+//             ),
+//           );
+//         }
+
+//         if (categories.isEmpty) {
+//           return const Center(
+//             child: Text('No Content', style: TextStyle(color: Colors.white)),
+//           );
+//         }
+
+//         return Container(
+//           color: bgColor,
+//           child: Container(
+//             color: Colors.black54,
+//             child: SingleChildScrollView(
+//               physics: const BouncingScrollPhysics(),
+//               child: Column(
+//                 children: List.generate(categories.length, (catIdx) {
+//                   final cat = categories[catIdx];
+//                   final list = cat['web_series'] as List<dynamic>;
+//                   final catId = '${cat['id']}';
+
+//                   return Column(
+//                     crossAxisAlignment: CrossAxisAlignment.start,
+//                     children: [
+//                       Padding(
+//                         padding: EdgeInsets.symmetric(
+//                           horizontal: 12,
+//                           vertical: 8,
+//                         ),
+                        
+//                         child: Text(
+//                           cat['category'].toString().toUpperCase(),
+//                           style: TextStyle(
+//                             color: hintColor,
+//                             fontWeight: FontWeight.bold,
+//                             fontSize: 18,
+//                           ),
+//                         ),
+//                       ),
+//                       SizedBox(
+//                         height: MediaQuery.of(context).size.height * 0.34,
+//                         child: ListView.builder(
+//                           controller: _scrollController,
+//                           scrollDirection: Axis.horizontal,
+//                           itemCount: list.length > 7 ? 8 : list.length + 1,
+//                           itemBuilder: (_, idx) {
+//                             if ((list.length >= 7 && idx == 7) ||
+//                                 (list.length < 7 && idx == list.length)) {
+//                               return ViewAllWidget(
+//                                 categoryText: cat['category'],
+//                                 onTap: () {
+//                                   Navigator.push(
+//                                     context,
+//                                     MaterialPageRoute(
+//                                       builder: (_) => CategoryMoviesGridView(
+//                                         category: cat,
+//                                         web_series: list,
+//                                       ),
+//                                     ),
+//                                   );
+//                                 },
+//                               );
+//                             }
+
+//                             final item = list[idx];
+//                             final sid = '${item['id']}';
+//                             final node = focusNodesMap[catId]?[sid];
+
+//                             return Padding(
+//                               padding:
+//                                   const EdgeInsets.symmetric(horizontal: 0),
+//                                    key: ValueKey('webseries_${item['id']}'),
+//                               child: FocussableWebseriesWidget(
+//                                 imageUrl: item['poster']?.toString() ?? '',
+//                                 name: item['name']?.toString() ?? '',
+//                                 focusNode: node ?? FocusNode(),
+//                                 onFocusChange: (hasFocus) {
+//                                   if (hasFocus)
+//                                     _scrollToFocusedItem(catId, sid);
+//                                 },
+//                                 onUpPress: () {
+//                                   // Request focus for ManageMovies first item
+//                                   context
+//                                       .read<FocusProvider>()
+//                                       .requestFirstMoviesFocus();
+//                                 },
+//                                 onTap: () => navigateToDetails(
+//                                   item,
+//                                   cat['category'],
+//                                   item['banner']?.toString() ?? '',
+//                                   item['name']?.toString() ?? '',
+//                                   catIdx,
+//                                 ),
+//                                 fetchPaletteColor: (url) =>
+//                                     PaletteColorService()
+//                                         .getSecondaryColor(url),
+//                               ),
+//                             );
+//                           },
+//                         ),
+//                       ),
+//                       const SizedBox(height: 16),
+//                     ],
+//                   );
+//                 }),
+//               ),
+//             ),
+//           ),
+//         );
+//       },
+//     );
+//   }
 }
 
 // ----------------------------------------------
 // View All button at end of row
 // ----------------------------------------------
+
 class ViewAllWidget extends StatefulWidget {
   final VoidCallback onTap;
   final String categoryText;
@@ -2363,7 +2081,7 @@ class _ViewAllWidgetState extends State<ViewAllWidget> {
                 alignment: Alignment.center,
                 children: [
                   AnimatedPositioned(
-                    duration: const Duration(milliseconds: 400),
+                    duration: const Duration(milliseconds: 800),
                     top: isFocused
                         ? -(heightGrowth / 2)
                         : 0, // Move up when focused
@@ -2525,11 +2243,9 @@ class _CategoryMoviesGridViewState extends State<CategoryMoviesGridView> {
       try {
         movieId = int.parse(movie['id']);
       } catch (e) {
-        print('Error parsing movie ID: ${movie['id']}');
         return; // Don't navigate if ID is invalid
       }
     } else {
-      print('Invalid movie ID type: ${movie['id'].runtimeType}');
       return; // Invalid ID, don't navigate
     }
 
@@ -2567,7 +2283,9 @@ class _CategoryMoviesGridViewState extends State<CategoryMoviesGridView> {
               itemBuilder: (_, idx) {
                 final m = widget.web_series[idx];
                 final id = '${m['id']}';
+                
                 return FocussableWebseriesWidget(
+                  key: ValueKey('webseries_${m['id']}_$idx'),
                   imageUrl: m['poster']?.toString() ?? '',
                   name: m['name']?.toString() ?? '',
                   focusNode: _nodes[id]!,

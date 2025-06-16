@@ -1,5 +1,3 @@
-
-
 // import 'dart:async';
 // import 'dart:convert';
 // import 'dart:math';
@@ -74,7 +72,6 @@
 //       );
 //     }
 //   }
-
 
 //   // Add these to your _MoviesState class properties
 // Map<String, Widget> _imageCache = {};
@@ -155,7 +152,7 @@
 //           final String base64String = imageUrl.split(',')[1];
 //           final Uint8List bytes = base64Decode(base64String);
 //           _decodedImages[movieId] = bytes;
-          
+
 //           imageWidget = Image.memory(
 //             bytes,
 //             width: width,
@@ -163,18 +160,15 @@
 //             fit: BoxFit.cover,
 //             gaplessPlayback: true,
 //             errorBuilder: (context, error, stackTrace) {
-//               print('❌ Error displaying memory image for $movieId: $error');
 //               return _buildErrorWidget(width, height, 'Display error');
 //             },
 //           );
-          
-//           print('✅ Data image decoded and cached for: $movieId');
+
 //         } else {
 //           _decodedImages[movieId] = null;
 //           imageWidget = _buildErrorWidget(width, height, 'Invalid format');
 //         }
 //       } catch (e) {
-//         print('❌ Error decoding data image for $movieId: $e');
 //         _decodedImages[movieId] = null;
 //         imageWidget = _buildErrorWidget(width, height, 'Decode error');
 //       }
@@ -200,7 +194,6 @@
 //         ),
 //       ),
 //       errorWidget: (context, url, error) {
-//         print('❌ Network image error for $movieId: $error');
 //         return _buildErrorWidget(width, height, 'Network error');
 //       },
 //     );
@@ -279,24 +272,21 @@
 //   _registerMoviesFocus();
 // }
 
-
 //   // 2. _registerMoviesFocus method को update करें
 // void _registerMoviesFocus() {
 //   WidgetsBinding.instance.addPostFrameCallback((_) {
 //     final focusProvider = context.read<FocusProvider>();
-    
+
 //     if (moviesList.isNotEmpty) {
 //       final firstMovieId = moviesList[0]['id'];
 //       if (movieFocusNodes.containsKey(firstMovieId)) {
 //         focusProvider.setFirstManageMoviesFocusNode(
 //           movieFocusNodes[firstMovieId]!
 //         );
-//         print('🎬 Registered Movies FocusNode: ${movieFocusNodes[firstMovieId]}');
 //       }
 //     }
 //   });
 // }
-
 
 //   // // Update this method
 //   // void _initializeMovieFocusNodes() {
@@ -349,7 +339,6 @@
 //         await _fetchMovies();
 //       }
 //     } catch (e) {
-//       print('Error loading cached movies data: $e');
 //       // If cache fails, try to fetch from API
 //       await _fetchMovies();
 //     }
@@ -395,7 +384,6 @@
 //         }
 //       }
 //     } catch (e) {
-//       print('Error fetching movies data: $e');
 //     }
 //   }
 
@@ -555,7 +543,6 @@
 //           } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
 // // Also update the _buildViewAllItem arrow down handling:
 //             FocusScope.of(context).unfocus();
-//             print('⬇️ Arrow down pressed on Movie View All');
 
 //             Future.delayed(const Duration(milliseconds: 100), () {
 //               if (mounted) {
@@ -687,12 +674,11 @@
 //           } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
 //             context.read<FocusProvider>().requestSubVodFocus();
 //             return KeyEventResult.handled;
-            
+
 //           } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
 //             // Fix: Unfocus current and request webseries focus with delay
 //             _scrollToFirstItem();
 //             FocusScope.of(context).unfocus();
-//             print('⬇️ Arrow down pressed on Movie');
 //             Future.delayed(const Duration(milliseconds: 100), () {
 //               if (mounted) {
 //                 context.read<FocusProvider>().requestFirstWebseriesFocus();
@@ -752,7 +738,6 @@
 //   //   );
 //   // }
 
-
 // // // Updated _buildMoviePoster method - यहाँ original approach use करें
 // // Widget _buildMoviePoster(dynamic movie) {
 // //   bool isFocused = movieFocusNodes[movie['id']]?.hasFocus ?? false;
@@ -792,11 +777,9 @@
 
 // // Enhanced _buildImageWidget method with better error handling
 // Widget _buildImageWidget(String imageUrl, {required double width, required double height}) {
-//   print('🖼️ Loading image: ${imageUrl.substring(0, imageUrl.length > 50 ? 50 : imageUrl.length)}...');
-  
+
 //   // Check if imageUrl is null or empty
 //   if (imageUrl.isEmpty) {
-//     print('❌ Empty image URL');
 //     return Container(
 //       width: width,
 //       height: height,
@@ -808,44 +791,36 @@
 //       ),
 //     );
 //   }
-  
+
 //   if (imageUrl.startsWith('data:image/')) {
-//     print('📱 Data image detected');
 //     // Handle data:image format
 //     try {
 //       // Check if the format is correct
 //       if (!imageUrl.contains(',')) {
-//         print('❌ Invalid data image format - no comma separator');
 //         return _buildErrorWidget(width, height, 'Invalid data format');
 //       }
-      
+
 //       final String base64String = imageUrl.split(',')[1];
-//       print('🔍 Base64 length: ${base64String.length}');
-      
+
 //       if (base64String.isEmpty) {
-//         print('❌ Empty base64 string');
 //         return _buildErrorWidget(width, height, 'Empty base64');
 //       }
-      
+
 //       final Uint8List bytes = base64Decode(base64String);
-//       print('✅ Successfully decoded ${bytes.length} bytes');
-      
+
 //       return Image.memory(
 //         bytes,
 //         width: width,
 //         height: height,
 //         fit: BoxFit.cover,
 //         errorBuilder: (context, error, stackTrace) {
-//           print('❌ Error displaying memory image: $error');
 //           return _buildErrorWidget(width, height, 'Memory error');
 //         },
 //       );
 //     } catch (e) {
-//       print('❌ Error decoding base64 image: $e');
 //       return _buildErrorWidget(width, height, 'Decode error');
 //     }
 //   } else if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
-//     print('🌐 Network image detected');
 //     // Handle network images using CachedNetworkImage
 //     return CachedNetworkImage(
 //       imageUrl: imageUrl,
@@ -864,12 +839,10 @@
 //         ),
 //       ),
 //       errorWidget: (context, url, error) {
-//         print('❌ Error loading network image: $url, Error: $error');
 //         return _buildErrorWidget(width, height, 'Network error');
 //       },
 //     );
 //   } else {
-//     print('❓ Unknown image format: ${imageUrl.substring(0, imageUrl.length > 20 ? 20 : imageUrl.length)}...');
 //     return _buildErrorWidget(width, height, 'Unknown format');
 //   }
 // }
@@ -1091,11 +1064,6 @@
 //   }
 // }
 
-
-
-
-
-
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
@@ -1147,7 +1115,9 @@ class _MoviesState extends State<Movies> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<FocusProvider>().setMoviesScrollController(_scrollController);
+      // context.read<FocusProvider>().setMoviesScrollController(_scrollController);
+      Provider.of<FocusProvider>(context, listen: false)
+          .setMoviesScrollController(_scrollController);
     });
 
     _viewAllFocusNode = FocusNode()
@@ -1161,6 +1131,223 @@ class _MoviesState extends State<Movies> {
       });
     _loadCachedDataAndFetchMovies();
     _initializeMovieFocusNodes();
+  }
+
+// Fix 1: Update the sorting logic to handle null values safely
+  void _sortMoviesData(List<dynamic> data) {
+    if (data.isNotEmpty) {
+      data.sort((a, b) {
+        // Handle null values in index field
+        final aIndex = a['index'];
+        final bIndex = b['index'];
+
+        // If both are null, they're equal
+        if (aIndex == null && bIndex == null) return 0;
+
+        // If a is null but b isn't, a comes after b
+        if (aIndex == null) return 1;
+
+        // If b is null but a isn't, a comes before b
+        if (bIndex == null) return -1;
+
+        // Convert to int safely
+        int aVal = 0;
+        int bVal = 0;
+
+        if (aIndex is num) {
+          aVal = aIndex.toInt();
+        } else if (aIndex is String) {
+          aVal = int.tryParse(aIndex) ?? 0;
+        }
+
+        if (bIndex is num) {
+          bVal = bIndex.toInt();
+        } else if (bIndex is String) {
+          bVal = int.tryParse(bIndex) ?? 0;
+        }
+
+        return aVal.compareTo(bVal);
+      });
+    }
+  }
+
+// Fix 2: Update your _fetchMoviesInBackground method
+  Future<void> _fetchMoviesInBackground() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      String authKey = AuthManager.authKey;
+      if (authKey.isEmpty) {
+        authKey = prefs.getString('auth_key') ?? 'vLQTuPZUxktl5mVW';
+      }
+
+      final response = await http.get(
+        Uri.parse('https://acomtv.coretechinfo.com/public/api/getAllMovies'),
+        headers: {'auth-key': authKey},
+      );
+
+      if (response.statusCode == 200) {
+        List<dynamic> data = json.decode(response.body);
+
+        // Use the safe sorting method
+        _sortMoviesData(data);
+
+        // Compare with cached data
+        final prefs = await SharedPreferences.getInstance();
+        final cachedMovies = prefs.getString('movies_list');
+        final String newMoviesJson = json.encode(data);
+
+        if (cachedMovies == null || cachedMovies != newMoviesJson) {
+          await prefs.setString('movies_list', newMoviesJson);
+
+          setState(() {
+            moviesList = data;
+            _initializeMovieFocusNodes();
+          });
+        }
+      }
+    } catch (e) {}
+  }
+
+// Fix 3: Update your _fetchMovies method
+  Future<void> _fetchMovies() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = '';
+    });
+
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      String authKey = AuthManager.authKey;
+      if (authKey.isEmpty) {
+        authKey = prefs.getString('auth_key') ?? 'vLQTuPZUxktl5mVW';
+      }
+
+      final response = await http.get(
+        Uri.parse('https://acomtv.coretechinfo.com/public/api/getAllMovies'),
+        headers: {'auth-key': authKey},
+      );
+
+      if (response.statusCode == 200) {
+        List<dynamic> data = json.decode(response.body);
+
+        // Use the safe sorting method
+        _sortMoviesData(data);
+
+        // Save to cache
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('movies_list', json.encode(data));
+
+        setState(() {
+          moviesList = data;
+          _initializeMovieFocusNodes();
+          _isLoading = false;
+        });
+      } else {
+        setState(() {
+          _errorMessage = 'Failed to load movies';
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'Error fetching data: $e';
+        _isLoading = false;
+      });
+    }
+  }
+
+// Fix 4: Add null-safe helper methods for your data handling
+
+// Fix 5: Update your NewsItemModel conversion to be more robust
+  List<NewsItemModel> _convertToNewsItemModels(List<dynamic> movies) {
+    return movies.map((m) {
+      // Use null-safe conversion
+      Map<String, dynamic> movie = m as Map<String, dynamic>;
+
+      return NewsItemModel(
+        id: movie.safeString('id'),
+        name: movie.safeString('name'),
+        banner: movie.safeString('banner'),
+        poster: movie.safeString('poster'),
+        description: movie.safeString('description'),
+        url: movie.safeString('url'),
+        streamType: movie.safeString('streamType'),
+        type: movie.safeString('type'),
+        genres: movie.safeString('genres'),
+        status: movie.safeString('status'),
+        videoId: movie.safeString('videoId'),
+        index: movie.safeString('index'),
+        image: '',
+      );
+    }).toList();
+  }
+
+// Fix 6: Update your _handleMovieTap method
+  Future<void> _handleMovieTap(dynamic movie) async {
+    if (_isNavigating) return;
+    _isNavigating = true;
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return WillPopScope(
+          onWillPop: () async {
+            _isNavigating = false;
+            return true;
+          },
+          child: Center(child: CircularProgressIndicator()),
+        );
+      },
+    );
+
+    try {
+      // Use the safe conversion method
+      List<NewsItemModel> allMovies = _convertToNewsItemModels(moviesList);
+      print('allMovies: $allMovies');
+      Navigator.of(context, rootNavigator: true).pop();
+
+      // Safe ID handling
+      Map<String, dynamic> movieMap = movie as Map<String, dynamic>;
+      int movieId = movieMap.safeInt('id');
+
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => DetailsPage(
+            id: movieId,
+            channelList: allMovies,
+            source: 'isMovieScreen',
+            banner: movieMap.safeString('banner'),
+            name: movieMap.safeString('name'),
+          ),
+        ),
+      );
+    } catch (e) {
+      Navigator.of(context, rootNavigator: true).pop();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: ${e.toString()}')),
+      );
+    } finally {
+      _isNavigating = false;
+    }
+  }
+
+// Fix 7: Add retry mechanism for network failures
+  Future<void> _fetchMoviesWithRetry({int retryCount = 0}) async {
+    try {
+      await _fetchMovies();
+    } catch (e) {
+      if (retryCount < _maxRetries) {
+        await Future.delayed(Duration(seconds: _retryDelay));
+        await _fetchMoviesWithRetry(retryCount: retryCount + 1);
+      } else {
+        setState(() {
+          _errorMessage = 'Failed to load movies after $_maxRetries attempts';
+          _isLoading = false;
+        });
+      }
+    }
   }
 
   // Add this method to your _MoviesState class, similar to MusicScreen
@@ -1180,15 +1367,16 @@ class _MoviesState extends State<Movies> {
     bool isFocused = movieFocusNodes[movieId]?.hasFocus ?? false;
     Color dominantColor = context.watch<ColorProvider>().dominantColor;
 
-    final String imageUrl = movie['banner']?.toString() ?? movie['poster']?.toString() ?? '';
+    final String imageUrl =
+        movie['banner']?.toString() ?? movie['poster']?.toString() ?? '';
 
     return AnimatedContainer(
       curve: Curves.ease,
       width: MediaQuery.of(context).size.width * 0.19,
       height: isFocused
-          ? MediaQuery.of(context).size.height * 0.22
+          ? MediaQuery.of(context).size.height * 0.25
           : MediaQuery.of(context).size.height * 0.2,
-      duration: const Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 800),
       decoration: BoxDecoration(
         border: Border.all(
           color: isFocused ? dominantColor : Colors.transparent,
@@ -1217,7 +1405,8 @@ class _MoviesState extends State<Movies> {
   }
 
   // Optimized image building with caching
-  Widget _buildOptimizedImage(String imageUrl, String movieId, {required double width, required double height}) {
+  Widget _buildOptimizedImage(String imageUrl, String movieId,
+      {required double width, required double height}) {
     // Check cache first
     if (_imageCache.containsKey(movieId)) {
       return _imageCache[movieId]!;
@@ -1249,7 +1438,7 @@ class _MoviesState extends State<Movies> {
             final String base64String = imageUrl.split(',')[1];
             final Uint8List bytes = base64Decode(base64String);
             _decodedImages[movieId] = bytes;
-            
+
             imageWidget = Image.memory(
               bytes,
               width: width,
@@ -1257,23 +1446,20 @@ class _MoviesState extends State<Movies> {
               fit: BoxFit.cover,
               gaplessPlayback: true,
               errorBuilder: (context, error, stackTrace) {
-                print('❌ Error displaying memory image for $movieId: $error');
                 return _buildErrorWidget(width, height, 'Display error');
               },
             );
-            
-            print('✅ Data image decoded and cached for: $movieId');
           } else {
             _decodedImages[movieId] = null;
             imageWidget = _buildErrorWidget(width, height, 'Invalid format');
           }
         } catch (e) {
-          print('❌ Error decoding data image for $movieId: $e');
           _decodedImages[movieId] = null;
           imageWidget = _buildErrorWidget(width, height, 'Decode error');
         }
       }
-    } else if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
+    } else if (imageUrl.startsWith('http://') ||
+        imageUrl.startsWith('https://')) {
       // Handle network images
       imageWidget = CachedNetworkImage(
         imageUrl: imageUrl,
@@ -1282,20 +1468,9 @@ class _MoviesState extends State<Movies> {
         fit: BoxFit.cover,
         memCacheWidth: (width * 2).toInt(), // Optimize memory cache
         memCacheHeight: (height * 2).toInt(),
-        placeholder: (context, url) => Container(
-          width: width,
-          height: height,
-          color: Colors.grey[800],
-          child: Center(
-            child: CircularProgressIndicator(
-              strokeWidth: 2,
-              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-            ),
-          ),
-        ),
+        placeholder: (context, url) => localImage,
         errorWidget: (context, url, error) {
-          print('❌ Network image error for $movieId: $error');
-          return _buildErrorWidget(width, height, 'Network error');
+          return localImage;
         },
       );
     } else {
@@ -1378,14 +1553,13 @@ class _MoviesState extends State<Movies> {
   void _registerMoviesFocus() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final focusProvider = context.read<FocusProvider>();
-      
+
       if (moviesList.isNotEmpty) {
-        final firstMovieId = moviesList[0]['id'].toString(); // Convert to string
+        final firstMovieId =
+            moviesList[0]['id'].toString(); // Convert to string
         if (movieFocusNodes.containsKey(firstMovieId)) {
-          focusProvider.setFirstManageMoviesFocusNode(
-            movieFocusNodes[firstMovieId]!
-          );
-          print('🎬 Registered Movies FocusNode: ${movieFocusNodes[firstMovieId]}');
+          focusProvider
+              .setFirstManageMoviesFocusNode(movieFocusNodes[firstMovieId]!);
         }
       }
     });
@@ -1428,112 +1602,110 @@ class _MoviesState extends State<Movies> {
         await _fetchMovies();
       }
     } catch (e) {
-      // print('Error loading cached movies data: $e');
       // If cache fails, try to fetch from API
       await _fetchMovies();
     }
   }
 
-  Future<void> _fetchMoviesInBackground() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      String authKey = AuthManager.authKey;
-      if (authKey.isEmpty) {
-        // Fallback to SharedPreferences if AuthManager doesn't have it
-        authKey = prefs.getString('auth_key') ?? 'vLQTuPZUxktl5mVW';
-      }
+  // Future<void> _fetchMoviesInBackground() async {
+  //   try {
+  //     final prefs = await SharedPreferences.getInstance();
+  //     String authKey = AuthManager.authKey;
+  //     if (authKey.isEmpty) {
+  //       // Fallback to SharedPreferences if AuthManager doesn't have it
+  //       authKey = prefs.getString('auth_key') ?? 'vLQTuPZUxktl5mVW';
+  //     }
 
-      // Fetch new data from API
-      final response = await http.get(
-        Uri.parse('https://acomtv.coretechinfo.com/public/api/getAllMovies'),
-        headers: {'auth-key': authKey},
-      );
+  //     // Fetch new data from API
+  //     final response = await http.get(
+  //       Uri.parse('https://acomtv.coretechinfo.com/public/api/getAllMovies'),
+  //       headers: {'auth-key': authKey},
+  //     );
 
-      if (response.statusCode == 200) {
-        List<dynamic> data = json.decode(response.body);
+  //     if (response.statusCode == 200) {
+  //       List<dynamic> data = json.decode(response.body);
 
-        // Sort data by API index if available
-        if (data.isNotEmpty && data[0]['index'] != null) {
-          data.sort((a, b) => a['index'].compareTo(b['index']));
-        }
+  //       // Sort data by API index if available
+  //       if (data.isNotEmpty && data[0]['index'] != null) {
+  //         data.sort((a, b) => a['index'].compareTo(b['index']));
+  //       }
 
-        // Compare with cached data
-        final prefs = await SharedPreferences.getInstance();
-        final cachedMovies = prefs.getString('movies_list');
-        final String newMoviesJson = json.encode(data);
+  //       // Compare with cached data
+  //       final prefs = await SharedPreferences.getInstance();
+  //       final cachedMovies = prefs.getString('movies_list');
+  //       final String newMoviesJson = json.encode(data);
 
-        if (cachedMovies == null || cachedMovies != newMoviesJson) {
-          // Update cache if new data is different
-          await prefs.setString('movies_list', newMoviesJson);
+  //       if (cachedMovies == null || cachedMovies != newMoviesJson) {
+  //         // Update cache if new data is different
+  //         await prefs.setString('movies_list', newMoviesJson);
 
-          // Update UI with new data
-          setState(() {
-            moviesList = data;
-            _initializeMovieFocusNodes();
-          });
-        }
-      }
-    } catch (e) {
-      // print('Error fetching movies data: $e');
-    }
-  }
+  //         // Update UI with new data
+  //         setState(() {
+  //           moviesList = data;
+  //           _initializeMovieFocusNodes();
+  //         });
+  //       }
+  //     }
+  //   } catch (e) {
+  //   }
+  // }
 
-  Future<void> _fetchMovies() async {
-    setState(() {
-      _isLoading = true;
-      _errorMessage = '';
-    });
+  // Future<void> _fetchMovies() async {
+  //   setState(() {
+  //     _isLoading = true;
+  //     _errorMessage = '';
+  //   });
 
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      String authKey = AuthManager.authKey;
-      if (authKey.isEmpty) {
-        // Fallback to SharedPreferences if AuthManager doesn't have it
-        authKey = prefs.getString('auth_key') ?? 'vLQTuPZUxktl5mVW';
-      }
+  //   try {
+  //     final prefs = await SharedPreferences.getInstance();
+  //     String authKey = AuthManager.authKey;
+  //     if (authKey.isEmpty) {
+  //       // Fallback to SharedPreferences if AuthManager doesn't have it
+  //       authKey = prefs.getString('auth_key') ?? 'vLQTuPZUxktl5mVW';
+  //     }
 
-      final response = await http.get(
-        Uri.parse('https://acomtv.coretechinfo.com/public/api/getAllMovies'),
-        headers: {'auth-key': authKey},
-      );
+  //     final response = await http.get(
+  //       Uri.parse('https://acomtv.coretechinfo.com/public/api/getAllMovies'),
+  //       headers: {'auth-key': authKey},
+  //     );
 
-      if (response.statusCode == 200) {
-        List<dynamic> data = json.decode(response.body);
+  //     if (response.statusCode == 200) {
+  //       List<dynamic> data = json.decode(response.body);
 
-        // Sort data by API index if available
-        if (data.isNotEmpty && data[0]['index'] != null) {
-          data.sort((a, b) => a['index'].compareTo(b['index']));
-        }
+  //       // Sort data by API index if available
+  //       if (data.isNotEmpty && data[0]['index'] != null) {
+  //         data.sort((a, b) => a['index'].compareTo(b['index']));
+  //       }
 
-        // Save to cache
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('movies_list', json.encode(data));
+  //       // Save to cache
+  //       final prefs = await SharedPreferences.getInstance();
+  //       await prefs.setString('movies_list', json.encode(data));
 
-        setState(() {
-          moviesList = data;
-          _initializeMovieFocusNodes();
-          _isLoading = false;
-        });
-      } else {
-        setState(() {
-          _errorMessage = 'Failed to load movies';
-          _isLoading = false;
-        });
-      }
-    } catch (e) {
-      setState(() {
-        _errorMessage = 'Error fetching data: $e';
-        _isLoading = false;
-      });
-    }
-  }
+  //       setState(() {
+  //         moviesList = data;
+  //         _initializeMovieFocusNodes();
+  //         _isLoading = false;
+  //       });
+  //     } else {
+  //       setState(() {
+  //         _errorMessage = 'Failed to load movies';
+  //         _isLoading = false;
+  //       });
+  //     }
+  //   } catch (e) {
+  //     setState(() {
+  //       _errorMessage = 'Error fetching data: $e';
+  //       _isLoading = false;
+  //     });
+  //   }
+  // }
 
   void _scrollToFocusedItem(String itemId) {
     if (movieFocusNodes[itemId] != null && movieFocusNodes[itemId]!.hasFocus) {
       Scrollable.ensureVisible(
         movieFocusNodes[itemId]!.context!,
         alignment: 0.05,
-        duration: Duration(milliseconds: 1000),
+        duration: Duration(milliseconds: 800),
         curve: Curves.linear,
       );
     }
@@ -1624,7 +1796,6 @@ class _MoviesState extends State<Movies> {
           } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
             // Also update the _buildViewAllItem arrow down handling:
             FocusScope.of(context).unfocus();
-            print('⬇️ Arrow down pressed on Movie View All');
 
             Future.delayed(const Duration(milliseconds: 100), () {
               if (mounted) {
@@ -1645,10 +1816,10 @@ class _MoviesState extends State<Movies> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             AnimatedContainer(
-              duration: Duration(milliseconds: 300),
+              duration: Duration(milliseconds: 800),
               width: MediaQuery.of(context).size.width * 0.19,
               height: isFocused
-                  ? MediaQuery.of(context).size.height * 0.22
+                  ? MediaQuery.of(context).size.height * 0.25
                   : MediaQuery.of(context).size.height * 0.2,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(4.0),
@@ -1713,7 +1884,7 @@ class _MoviesState extends State<Movies> {
 
   Widget _buildMovieItem(dynamic movie, int index) {
     String movieId = movie['id'].toString(); // Convert to string consistently
-    
+
     movieFocusNodes.putIfAbsent(
       movieId,
       () => FocusNode()
@@ -1757,17 +1928,34 @@ class _MoviesState extends State<Movies> {
           } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
             context.read<FocusProvider>().requestSubVodFocus();
             return KeyEventResult.handled;
-          } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
-            // Fix: Unfocus current and request webseries focus with delay
-            _scrollToFirstItem();
+          }
+          //  else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+          //   // Fix: Unfocus current and request webseries focus with delay
+          //   _scrollToFirstItem();
+          //   FocusScope.of(context).unfocus();
+          //   Future.delayed(const Duration(milliseconds: 100), () {
+          //     if (mounted) {
+          //       context.read<FocusProvider>().requestFirstWebseriesFocus();
+          //     }
+          //   });
+          //   return KeyEventResult.handled;
+          // }
+
+          // In your Movies widget (where you handle key events):
+
+          else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+            // Unfocus current and request webseries focus
             FocusScope.of(context).unfocus();
-            print('⬇️ Arrow down pressed on Movie');
+
+            // Add a small delay to ensure widgets are built
             Future.delayed(const Duration(milliseconds: 100), () {
               if (mounted) {
-                context.read<FocusProvider>().requestFirstWebseriesFocus();
+                Provider.of<FocusProvider>(context, listen: false)
+                    .requestFirstWebseriesFocus();
               }
             });
-            return KeyEventResult.handled;
+
+            return KeyEventResult.ignored;
           } else if (event.logicalKey == LogicalKeyboardKey.select) {
             _handleMovieTap(movie);
             return KeyEventResult.handled;
@@ -1791,12 +1979,10 @@ class _MoviesState extends State<Movies> {
   }
 
   // Enhanced _buildImageWidget method with better error handling
-  Widget _buildImageWidget(String imageUrl, {required double width, required double height}) {
-    print('🖼️ Loading image: ${imageUrl.substring(0, imageUrl.length > 50 ? 50 : imageUrl.length)}...');
-    
+  Widget _buildImageWidget(String imageUrl,
+      {required double width, required double height}) {
     // Check if imageUrl is null or empty
     if (imageUrl.isEmpty) {
-      // print('❌ Empty image URL');
       return Container(
         width: width,
         height: height,
@@ -1808,44 +1994,37 @@ class _MoviesState extends State<Movies> {
         ),
       );
     }
-    
+
     if (imageUrl.startsWith('data:image/')) {
-      print('📱 Data image detected');
       // Handle data:image format
       try {
         // Check if the format is correct
         if (!imageUrl.contains(',')) {
-          print('❌ Invalid data image format - no comma separator');
           return _buildErrorWidget(width, height, 'Invalid data format');
         }
-        
+
         final String base64String = imageUrl.split(',')[1];
-        print('🔍 Base64 length: ${base64String.length}');
-        
+
         if (base64String.isEmpty) {
-          print('❌ Empty base64 string');
           return _buildErrorWidget(width, height, 'Empty base64');
         }
-        
+
         final Uint8List bytes = base64Decode(base64String);
-        print('✅ Successfully decoded ${bytes.length} bytes');
-        
+
         return Image.memory(
           bytes,
           width: width,
           height: height,
           fit: BoxFit.cover,
           errorBuilder: (context, error, stackTrace) {
-            print('❌ Error displaying memory image: $error');
             return _buildErrorWidget(width, height, 'Memory error');
           },
         );
       } catch (e) {
-        print('❌ Error decoding base64 image: $e');
         return _buildErrorWidget(width, height, 'Decode error');
       }
-    } else if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
-      print('🌐 Network image detected');
+    } else if (imageUrl.startsWith('http://') ||
+        imageUrl.startsWith('https://')) {
       // Handle network images using CachedNetworkImage
       return CachedNetworkImage(
         imageUrl: imageUrl,
@@ -1864,12 +2043,10 @@ class _MoviesState extends State<Movies> {
           ),
         ),
         errorWidget: (context, url, error) {
-          print('❌ Error loading network image: $url, Error: $error');
           return _buildErrorWidget(width, height, 'Network error');
         },
       );
     } else {
-      print('❓ Unknown image format: ${imageUrl.substring(0, imageUrl.length > 20 ? 20 : imageUrl.length)}...');
       return _buildErrorWidget(width, height, 'Unknown format');
     }
   }
@@ -1895,79 +2072,79 @@ class _MoviesState extends State<Movies> {
     );
   }
 
-  Future<void> _handleMovieTap(dynamic movie) async {
-    if (_isNavigating) return;
-    _isNavigating = true;
+//   Future<void> _handleMovieTap(dynamic movie) async {
+//     if (_isNavigating) return;
+//     _isNavigating = true;
 
-    // Show loading indicator
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return WillPopScope(
-          onWillPop: () async {
-            _isNavigating = false;
-            return true;
-          },
-          child: Center(child: CircularProgressIndicator()),
-        );
-      },
-    );
+//     // Show loading indicator
+//     showDialog(
+//       context: context,
+//       barrierDismissible: false,
+//       builder: (BuildContext context) {
+//         return WillPopScope(
+//           onWillPop: () async {
+//             _isNavigating = false;
+//             return true;
+//           },
+//           child: Center(child: CircularProgressIndicator()),
+//         );
+//       },
+//     );
 
-    try {
-      // Convert all movies to NewsItemModel list
-      List<NewsItemModel> allMovies = moviesList
-          .map((m) => NewsItemModel(
-                id: m['id'].toString(), // Convert to string safely
-                name: m['name']?.toString() ?? '',
-                banner: m['banner']?.toString() ?? '',
-                poster: m['poster']?.toString() ?? '',
-                description: m['description']?.toString() ?? '',
-                url: m['url']?.toString() ?? '',
-                streamType: m['streamType']?.toString() ?? '',
-                type: m['type']?.toString() ?? '',
-                genres: m['genres']?.toString() ?? '',
-                status: m['status']?.toString() ?? '',
-                videoId: m['videoId']?.toString() ?? '',
-                index: m['index']?.toString() ?? '',
-                image: '',
-              ))
-          .toList();
+//     try {
+//       // Convert all movies to NewsItemModel list
+//       List<NewsItemModel> allMovies = moviesList
+//           .map((m) => NewsItemModel(
+//                 id: m['id'].toString(), // Convert to string safely
+//                 name: m['name']?.toString() ?? '',
+//                 banner: m['banner']?.toString() ?? '',
+//                 poster: m['poster']?.toString() ?? '',
+//                 description: m['description']?.toString() ?? '',
+//                 url: m['url']?.toString() ?? '',
+//                 streamType: m['streamType']?.toString() ?? '',
+//                 type: m['type']?.toString() ?? '',
+//                 genres: m['genres']?.toString() ?? '',
+//                 status: m['status']?.toString() ?? '',
+//                 videoId: m['videoId']?.toString() ?? '',
+//                 index: m['index']?.toString() ?? '',
+//                 image: '',
+//               ))
+//           .toList();
 
-      // Close loading dialog
-      Navigator.of(context, rootNavigator: true).pop();
+//       // Close loading dialog
+//       Navigator.of(context, rootNavigator: true).pop();
 
-      // Navigate to details page - handle id conversion safely
-      int movieId;
-      if (movie['id'] is int) {
-        movieId = movie['id'];
-      } else if (movie['id'] is String) {
-        movieId = int.parse(movie['id']);
-      } else {
-        throw Exception('Invalid movie ID type');
-      }
+//       // Navigate to details page - handle id conversion safely
+//       int movieId;
+//       if (movie['id'] is int) {
+//         movieId = movie['id'];
+//       } else if (movie['id'] is String) {
+//         movieId = int.parse(movie['id']);
+//       } else {
+//         throw Exception('Invalid movie ID type');
+//       }
 
-      await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => DetailsPage(
-            id: movieId,
-            channelList: allMovies,
-            source: 'isMovieScreen',
-            banner: movie['banner']?.toString() ?? '',
-            name: movie['name']?.toString() ?? '',
-          ),
-        ),
-      );
-    } catch (e) {
-      Navigator.of(context, rootNavigator: true).pop();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: ${e.toString()}')),
-      );
-    } finally {
-      _isNavigating = false;
-    }
-  }
+//       await Navigator.push(
+//         context,
+//         MaterialPageRoute(
+//           builder: (context) => DetailsPage(
+//             id: movieId,
+//             channelList: allMovies,
+//             source: 'isMovieScreen',
+//             banner: movie['banner']?.toString() ?? '',
+//             name: movie['name']?.toString() ?? '',
+//           ),
+//         ),
+//       );
+//     } catch (e) {
+//       Navigator.of(context, rootNavigator: true).pop();
+//       ScaffoldMessenger.of(context).showSnackBar(
+//         SnackBar(content: Text('Error: ${e.toString()}')),
+//       );
+//     } finally {
+//       _isNavigating = false;
+//     }
+//   }
 
   void _navigateToMoviesGrid() {
     Navigator.push(
@@ -1996,7 +2173,7 @@ class _MoviesGridViewState extends State<MoviesGridView> {
   void initState() {
     super.initState();
     _movieFocusNodes = {
-      for (var movie in widget.moviesList) 
+      for (var movie in widget.moviesList)
         movie['id'].toString(): FocusNode() // Convert to string consistently
     };
   }
@@ -2026,8 +2203,9 @@ class _MoviesGridViewState extends State<MoviesGridView> {
             itemCount: widget.moviesList.length,
             itemBuilder: (context, index) {
               final movie = widget.moviesList[index];
-              String movieId = movie['id'].toString(); // Convert to string consistently
-              
+              String movieId =
+                  movie['id'].toString(); // Convert to string consistently
+
               return FocusableMoviesWidget(
                 imageUrl: movie['banner']?.toString() ?? '',
                 name: movie['name']?.toString() ?? '',
@@ -2060,11 +2238,9 @@ class _MoviesGridViewState extends State<MoviesGridView> {
                     try {
                       movieIdInt = int.parse(movie['id']);
                     } catch (e) {
-                      print('Error parsing movie ID: ${movie['id']}');
                       return; // Don't navigate if ID is invalid
                     }
                   } else {
-                    print('Invalid movie ID type: ${movie['id'].runtimeType}');
                     return; // Invalid ID, don't navigate
                   }
 

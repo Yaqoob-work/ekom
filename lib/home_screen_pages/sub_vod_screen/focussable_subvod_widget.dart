@@ -95,7 +95,7 @@ class _FocussableSubvodWidgetState extends State<FocussableSubvodWidget> {
   Widget build(BuildContext context) {
     final double containerWidth = widget.width ?? screenwdt * 0.19;
     final double normalHeight = widget.height ?? screenhgt * 0.21;
-    final double focusedHeight = widget.focusedHeight ?? screenhgt * 0.24;
+    final double focusedHeight = widget.focusedHeight ?? screenhgt * 0.25;
     
     // Calculate the growth in height when focused (difference between focused and normal height)
     final double heightGrowth = focusedHeight - normalHeight;
@@ -155,7 +155,7 @@ class _FocussableSubvodWidgetState extends State<FocussableSubvodWidget> {
                 children: [
                   // Animated container for the image
                   AnimatedPositioned(
-                    duration: const Duration(milliseconds: 400),
+                    duration: const Duration(milliseconds: 800),
                     top: isFocused ? -(heightGrowth / 2) : 0, // Move up when focused
                     left: 0,
                     width: containerWidth,
@@ -179,7 +179,7 @@ class _FocussableSubvodWidgetState extends State<FocussableSubvodWidget> {
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(4.0),
                         child: displayImage(
-                          widget.imageUrl,
+                          widget.imageUrl?? localImage,
                           width: containerWidth,
                           height: isFocused ? focusedHeight : normalHeight,
                         ),

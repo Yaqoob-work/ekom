@@ -621,12 +621,6 @@
 //   }
 // }
 
-
-
-
-
-
-
 // import 'dart:async';
 // import 'dart:convert';
 // import 'dart:io';
@@ -673,7 +667,6 @@
 //     ),
 //   );
 // }
-
 
 // String baseUrl = 'https://acomtv.coretechinfo.com/public/api/';
 // var highlightColor;
@@ -750,12 +743,12 @@
 //   Future<void> _checkLoginStatus() async {
 //     // Show splash for at least 2 seconds
 //     await Future.delayed(Duration(seconds: 2));
-    
+
 //     SharedPreferences prefs = await SharedPreferences.getInstance();
 //     bool isLoggedIn = prefs.getBool('is_logged_in') ?? false;
 //     String? authKey = prefs.getString('auth_key');
 //     String? userData = prefs.getString('user_data');
-    
+
 //     if (isLoggedIn && authKey != null && userData != null) {
 //       // User is already logged in, go to main app
 //       Navigator.pushReplacement(
@@ -837,7 +830,7 @@
 //   Future<String> _getDeviceSerialNumber() async {
 //     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
 //     String serialNumber = '';
-    
+
 //     try {
 //       if (Platform.isAndroid) {
 //         AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
@@ -849,49 +842,44 @@
 //     } catch (e) {
 //       serialNumber = '123456789'; // Fallback serial number
 //     }
-    
+
 //     return serialNumber;
 //   }
-
-
 
 // //   // Global auth key ko properly load karne ke liye yeh function replace karein
 // // Future<void> _loadGlobalAuthKey() async {
 // //   SharedPreferences prefs = await SharedPreferences.getInstance();
 // //   String? authKey = prefs.getString('auth_key');
-  
+
 // //   print('🔑 Checking auth key in SharedPreferences...');
 // //   print('🔑 Found auth key: $authKey');
-  
+
 // //   if (authKey != null && authKey.isNotEmpty) {
 // //     globalAuthKey = authKey; // Global variable set karein
 // //     print('✅ Global auth key loaded successfully: $globalAuthKey');
 // //   } else {
 // //     print('❌ No auth key found in SharedPreferences');
-    
+
 // //     // Debug: Check all keys in SharedPreferences
 // //     Set<String> allKeys = prefs.getKeys();
 // //     print('🔍 All SharedPreferences keys: $allKeys');
-    
+
 // //     // Check for alternative key names
 // //     String? altKey1 = prefs.getString('result_auth_key');
 // //     String? altKey2 = prefs.getString('user_auth_key');
 // //     String? altKey3 = prefs.getString('api_key');
-    
+
 // //     print('🔍 Alternative keys:');
 // //     print('  result_auth_key: $altKey1');
 // //     print('  user_auth_key: $altKey2');
 // //     print('  api_key: $altKey3');
-    
+
 // //     if (altKey1 != null) {
 // //       globalAuthKey = altKey1;
 // //       print('✅ Using alternative auth key: $globalAuthKey');
 // //     }
 // //   }
 // // }
-
-
-
 
 // // Login function mein yeh changes karein (main.dart mein)
 // Future<void> _login() async {
@@ -909,7 +897,7 @@
 
 //   try {
 //     String serialNumber = await _getDeviceSerialNumber();
-    
+
 //     final response = await https.post(
 //       Uri.parse('https://acomtv.coretechinfo.com/api/login'),
 //       headers: {
@@ -928,7 +916,7 @@
 //     if (data['status'] == true) {
 //       String authKey = data['result_auth_key'];
 //       print('✅ Login successful, received auth key: $authKey');
-      
+
 //       // Save auth data
 //       SharedPreferences prefs = await SharedPreferences.getInstance();
 //       await prefs.setString('auth_key', authKey);
@@ -937,11 +925,11 @@
 //       await prefs.setString('device_serial', serialNumber);
 //       await prefs.setBool('is_logged_in', true);
 //       await prefs.setInt('login_timestamp', DateTime.now().millisecondsSinceEpoch);
-      
+
 //       // Set global variable immediately
 //       globalAuthKey = authKey;
 //       print('✅ Global auth key set: $globalAuthKey');
-      
+
 //       // Verify that it's saved correctly
 //       String? savedKey = prefs.getString('auth_key');
 //       print('✅ Verified saved auth key: $savedKey');
@@ -967,8 +955,6 @@
 //   }
 // }
 
-
-
 //   // String globalAuthKey = '';
 
 //   // Future<void> _login() async {
@@ -986,7 +972,7 @@
 
 //   //   try {
 //   //     String serialNumber = await _getDeviceSerialNumber();
-      
+
 //   //     final response = await https.post(
 //   //       Uri.parse('https://acomtv.coretechinfo.com/api/login'),
 //   //       headers: {
@@ -1045,9 +1031,6 @@
 //       _errorMessage = 'Previous session cleared. Please login again.';
 //     });
 //   }
-
-
-
 
 //   @override
 // Widget build(BuildContext context) {
@@ -1210,9 +1193,6 @@
 //     ),
 //   );
 // }
-
-
-
 
 //   @override
 //   void dispose() {
@@ -1446,7 +1426,7 @@
 //   Future<void> _logout() async {
 //     SharedPreferences prefs = await SharedPreferences.getInstance();
 //     await prefs.clear(); // Clear all stored data
-    
+
 //     Navigator.pushAndRemoveUntil(
 //       context,
 //       MaterialPageRoute(builder: (context) => LoginScreen()),
@@ -1542,7 +1522,6 @@
 
 
 
-
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -1562,6 +1541,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'menu/top_navigation_bar.dart';
 import 'home_screen_pages/sub_vod_screen/sub_vod.dart';
+import 'widgets/small_widgets/loading_indicator.dart';
 
 // Global variable for authentication key
 String globalAuthKey = '';
@@ -1570,27 +1550,28 @@ String globalAuthKey = '';
 class AuthManager {
   static String _authKey = '';
   static bool _isInitialized = false;
-  
+
   static String get authKey => _authKey;
-  
+
   static Future<void> initialize() async {
     if (!_isInitialized) {
       await _loadAuthKey();
       _isInitialized = true;
     }
   }
-  
+
   static Future<void> _loadAuthKey() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? authKey = prefs.getString('auth_key');
-      
+
       print('🔑 Loading auth key from SharedPreferences...');
       print('🔑 Found auth key: $authKey');
-      
+
       if (authKey != null && authKey.isNotEmpty) {
         _authKey = authKey;
-        globalAuthKey = authKey; // Also set global variable for backward compatibility
+        globalAuthKey =
+            authKey; // Also set global variable for backward compatibility
         print('✅ Auth key loaded successfully: $_authKey');
       } else {
         print('❌ No auth key found in SharedPreferences');
@@ -1599,28 +1580,28 @@ class AuthManager {
       print('❌ Error loading auth key: $e');
     }
   }
-  
+
   static Future<void> setAuthKey(String authKey) async {
     _authKey = authKey;
     globalAuthKey = authKey; // Also set global variable
-    
+
     // Save to SharedPreferences
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('auth_key', authKey);
-    
+
     print('✅ Auth key set and saved: $authKey');
   }
-  
+
   static Future<void> clearAuthKey() async {
     _authKey = '';
     globalAuthKey = '';
-    
+
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.remove('auth_key');
-    
+
     print('🗑️ Auth key cleared');
   }
-  
+
   static bool get hasValidAuthKey => _authKey.isNotEmpty;
 }
 
@@ -1689,10 +1670,57 @@ class _MyAppState extends State<MyApp> {
     cardColor = const Color.fromARGB(200, 0, 0, 0).withOpacity(0.7);
     hintColor = Colors.white;
     borderColor = Color.fromARGB(255, 247, 6, 118);
-    localImage = Image.asset(
-      'assets/logo.png',
-      fit: BoxFit.fill,
-    );
+localImage = Container(
+  decoration: BoxDecoration(
+    borderRadius: BorderRadius.circular(screenwdt * 0.01),
+    boxShadow: [
+      // Much darker and stronger shadows
+      BoxShadow(
+        color: Colors.black.withOpacity(0.95), // Increased opacity
+        blurRadius: 25,
+        spreadRadius: 3,
+        offset: Offset(0, 10),
+      ),
+      BoxShadow(
+        color: Colors.black.withOpacity(0.8),
+        blurRadius: 50,
+        spreadRadius: 8,
+        offset: Offset(0, 20),
+      ),
+      // Additional deep shadow for more darkness
+      BoxShadow(
+        color: Colors.black.withOpacity(0.6),
+        blurRadius: 80,
+        spreadRadius: 15,
+        offset: Offset(0, 30),
+      ),
+    ],
+  ),
+  child: ClipRRect(
+    borderRadius: BorderRadius.circular(screenwdt * 0.0),
+    child: Container(
+      foregroundDecoration: BoxDecoration(
+        // Much darker gradient overlay
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            Colors.black.withOpacity(0.3),  // Much darker start
+            Colors.black.withOpacity(0.4),  // Darker middle
+            Colors.black.withOpacity(0.5),  // Very dark end
+          ],
+          stops: [0.0, 0.5, 1.0],
+        ),
+        borderRadius: BorderRadius.circular(screenwdt * 0.0),
+      ),
+      child: Image.asset(
+        'assets/logo.png',
+        fit: BoxFit.cover,
+      ),
+    ),
+  ),
+);
+
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -1724,25 +1752,25 @@ class _SplashScreenState extends State<SplashScreen> {
   Future<void> _checkLoginStatus() async {
     // Show splash for at least 2 seconds
     await Future.delayed(Duration(seconds: 2));
-    
+
     // Initialize auth manager first
     await AuthManager.initialize();
-    
+
     SharedPreferences prefs = await SharedPreferences.getInstance();
     bool isLoggedIn = prefs.getBool('is_logged_in') ?? false;
     String? authKey = prefs.getString('auth_key');
     String? userData = prefs.getString('user_data');
-    
+
     print('🔍 Checking login status...');
     print('🔍 Is logged in: $isLoggedIn');
     print('🔍 Auth key exists: ${authKey != null}');
     print('🔍 Auth key value: $authKey');
-    
+
     if (isLoggedIn && authKey != null && userData != null) {
       // Set auth key in AuthManager
       await AuthManager.setAuthKey(authKey);
       print('✅ User is already logged in, navigating to main app');
-      
+
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => MyHome()),
@@ -1769,18 +1797,12 @@ class _SplashScreenState extends State<SplashScreen> {
               height: 150,
               child: localImage,
             ),
-            SizedBox(height: 30),
-            CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(highlightColor),
-            ),
-            SizedBox(height: 20),
-            Text(
-              'Loading...',
-              style: TextStyle(
-                color: hintColor,
-                fontSize: nametextsz,
-              ),
-            ),
+            // SizedBox(height: 30),
+            // CircularProgressIndicator(
+            //   valueColor: AlwaysStoppedAnimation<Color>(highlightColor),
+            // ),
+            // SizedBox(height: 20),
+            LoadingIndicator(),
           ],
         ),
       ),
@@ -1788,59 +1810,111 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 }
 
+
+
 class LoginScreen extends StatefulWidget {
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends State<LoginScreen>
+    with TickerProviderStateMixin {
   final TextEditingController _pinController = TextEditingController();
   bool _isLoading = false;
   String _errorMessage = '';
   String _deviceSerial = '';
   late FocusNode _pinFocusNode;
+  late AnimationController _fadeController;
+  late AnimationController _slideController;
+  late Animation<double> _fadeAnimation;
+  late Animation<Offset> _slideAnimation;
 
   @override
   void initState() {
     super.initState();
     _pinFocusNode = FocusNode();
+
+    // Animation controllers
+    _fadeController = AnimationController(
+      duration: Duration(milliseconds: 800),
+      vsync: this,
+    );
+    _slideController = AnimationController(
+      duration: Duration(milliseconds: 600),
+      vsync: this,
+    );
+
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _fadeController, curve: Curves.easeInOut),
+    );
+
+    _slideAnimation = Tween<Offset>(
+      begin: Offset(0, 0.5),
+      end: Offset.zero,
+    ).animate(
+        CurvedAnimation(parent: _slideController, curve: Curves.easeOutCubic));
+
+    _initializeScreen();
+  }
+
+  Future<void> _initializeScreen() async {
+    // Load device serial in background
     _loadDeviceSerial();
-    Future.delayed(Duration(milliseconds: 100), () {
-      if (mounted) _pinFocusNode.requestFocus();
-    });
+
+    // Start animations
+    _fadeController.forward();
+    await Future.delayed(Duration(milliseconds: 200));
+    _slideController.forward();
+
+    // Focus on PIN field after animations
+    await Future.delayed(Duration(milliseconds: 400));
+    if (mounted) _pinFocusNode.requestFocus();
   }
 
   Future<void> _loadDeviceSerial() async {
-    String serial = await _getDeviceSerialNumber();
-    setState(() {
-      _deviceSerial = serial;
-    });
+    try {
+      String serial = await _getDeviceSerialNumber();
+      if (mounted) {
+        setState(() {
+          _deviceSerial = serial;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _deviceSerial = '123456789'; // Fallback
+        });
+      }
+    }
   }
 
   Future<String> _getDeviceSerialNumber() async {
-    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
-    String serialNumber = '';
-    
     try {
+      DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+
       if (Platform.isAndroid) {
         AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-        serialNumber = androidInfo.id;
+        return androidInfo.id;
       } else if (Platform.isIOS) {
         IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
-        serialNumber = iosInfo.identifierForVendor ?? '';
+        return iosInfo.identifierForVendor ??
+            'iOS-${DateTime.now().millisecondsSinceEpoch}';
       }
     } catch (e) {
-      serialNumber = '123456789';
+      print('Device info error: $e');
     }
-    
-    return serialNumber;
+
+    return 'DEVICE-${DateTime.now().millisecondsSinceEpoch}';
   }
 
   Future<void> _login() async {
-    if (_pinController.text.isEmpty) {
-      setState(() {
-        _errorMessage = 'Please enter your PIN';
-      });
+    if (_pinController.text.trim().isEmpty) {
+      _showError('Please enter your PIN');
+      return;
+    }
+
+    if (_pinController.text.trim().length < 4) {
+      _showError('PIN must be at least 4 digits');
       return;
     }
 
@@ -1850,429 +1924,475 @@ class _LoginScreenState extends State<LoginScreen> {
     });
 
     try {
-      String serialNumber = await _getDeviceSerialNumber();
-      
-      print('🔐 Starting login process...');
-      print('🔐 PIN: ${_pinController.text}');
-      print('🔐 Device Serial: $serialNumber');
-      
-      // Try multiple login endpoints
+      String serialNumber = _deviceSerial.isNotEmpty
+          ? _deviceSerial
+          : await _getDeviceSerialNumber();
+
+      print(
+          '🔐 Login attempt - PIN: ${_pinController.text}, Device: $serialNumber');
+
       bool loginSuccess = false;
       String authKey = '';
       Map<String, dynamic>? userData;
-      
-      // Login Endpoint 1: Original URL
-      try {
-        print('🌐 Trying login endpoint 1...');
-        final response1 = await https.post(
-          Uri.parse('https://acomtv.coretechinfo.com/api/login'),
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-          },
-          body: jsonEncode({
+
+      // Optimized login endpoints - try most likely to work first
+      final loginEndpoints = [
+        {
+          'url': 'https://acomtv.coretechinfo.com/public/api/login',
+          'body': {
             'token': '',
             'mac_address': serialNumber,
-            'login_pin': _pinController.text,
-          }),
-        );
-
-        print('🌐 Login API 1 Response Status: ${response1.statusCode}');
-        print('🌐 Login API 1 Response Headers: ${response1.headers}');
-        print('🌐 Login API 1 Response Body (first 200 chars): ${response1.body.length > 200 ? response1.body.substring(0, 200) : response1.body}');
-        
-        if (response1.statusCode == 200) {
-          // Check if response is JSON
-          String responseBody = response1.body.trim();
-          if (responseBody.startsWith('{') || responseBody.startsWith('[')) {
-            final data = jsonDecode(responseBody);
-            if (data['status'] == true && data['result_auth_key'] != null) {
-              authKey = data['result_auth_key'];
-              userData = data['data'];
-              loginSuccess = true;
-              print('✅ Login successful with endpoint 1');
-            }
-          } else {
-            print('❌ Response is not JSON, got HTML/Text');
+            'login_pin': _pinController.text.trim(),
           }
-        }
-      } catch (e) {
-        print('❌ Login endpoint 1 failed: $e');
-      }
-      
-      // Login Endpoint 2: Alternative URL structure
-      if (!loginSuccess) {
-        try {
-          print('🌐 Trying login endpoint 2...');
-          final response2 = await https.post(
-            Uri.parse('https://acomtv.coretechinfo.com/public/api/login'),
-            headers: {
-              'Content-Type': 'application/json',
-              'Accept': 'application/json',
-            },
-            body: jsonEncode({
-              'token': '',
-              'mac_address': serialNumber,
-              'login_pin': _pinController.text,
-            }),
-          );
-
-          print('🌐 Login API 2 Response Status: ${response2.statusCode}');
-          print('🌐 Login API 2 Response Body (first 200 chars): ${response2.body.length > 200 ? response2.body.substring(0, 200) : response2.body}');
-          
-          if (response2.statusCode == 200) {
-            String responseBody = response2.body.trim();
-            if (responseBody.startsWith('{') || responseBody.startsWith('[')) {
-              final data = jsonDecode(responseBody);
-              if (data['status'] == true && data['result_auth_key'] != null) {
-                authKey = data['result_auth_key'];
-                userData = data['data'];
-                loginSuccess = true;
-                print('✅ Login successful with endpoint 2');
-              }
-            }
-          }
-        } catch (e) {
-          print('❌ Login endpoint 2 failed: $e');
-        }
-      }
-      
-      // Login Endpoint 3: Different parameter structure
-      if (!loginSuccess) {
-        try {
-          print('🌐 Trying login endpoint 3...');
-          final response3 = await https.post(
-            Uri.parse('https://acomtv.coretechinfo.com/api/auth/login'),
-            headers: {
-              'Content-Type': 'application/json',
-              'Accept': 'application/json',
-            },
-            body: jsonEncode({
-              'mac_address': serialNumber,
-              'pin': _pinController.text,
-            }),
-          );
-
-          print('🌐 Login API 3 Response Status: ${response3.statusCode}');
-          print('🌐 Login API 3 Response Body (first 200 chars): ${response3.body.length > 200 ? response3.body.substring(0, 200) : response3.body}');
-          
-          if (response3.statusCode == 200) {
-            String responseBody = response3.body.trim();
-            if (responseBody.startsWith('{') || responseBody.startsWith('[')) {
-              final data = jsonDecode(responseBody);
-              if (data['status'] == true || data['success'] == true) {
-                authKey = data['result_auth_key'] ?? data['auth_key'] ?? data['token'] ?? '';
-                userData = data['data'] ?? data['user'] ?? {};
-                if (authKey.isNotEmpty) {
-                  loginSuccess = true;
-                  print('✅ Login successful with endpoint 3');
-                }
-              }
-            }
-          }
-        } catch (e) {
-          print('❌ Login endpoint 3 failed: $e');
-        }
-      }
-      
-      if (loginSuccess && authKey.isNotEmpty) {
-        print('✅ Login successful, received auth key: $authKey');
-        
-        // Test the auth key immediately
-        print('🧪 Testing auth key with API call...');
-        bool isAuthKeyValid = await _testAuthKey(authKey);
-        
-        if (!isAuthKeyValid) {
-          print('⚠️ Auth key validation failed, but proceeding with login');
-          // Don't throw error, sometimes auth key works later
-        }
-        
-        // Save auth data
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setString('auth_key', authKey);
-        await prefs.setString('user_data', jsonEncode(userData ?? {}));
-        await prefs.setString('user_pin', _pinController.text);
-        await prefs.setString('device_serial', serialNumber);
-        await prefs.setBool('is_logged_in', true);
-        await prefs.setInt('login_timestamp', DateTime.now().millisecondsSinceEpoch);
-        
-        // Set auth key in AuthManager
-        await AuthManager.setAuthKey(authKey);
-        
-        print('✅ Auth key set in AuthManager: ${AuthManager.authKey}');
-        print('✅ Global auth key: $globalAuthKey');
-
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => MyHome()),
-        );
-      } else {
-        print('❌ All login attempts failed');
-        setState(() {
-          _errorMessage = 'Login failed. Please check your PIN and try again.';
-        });
-      }
-    } catch (e) {
-      print('❌ Login error: $e');
-      String errorMessage = 'Login failed: ';
-      
-      if (e.toString().contains('FormatException')) {
-        errorMessage += 'Server returned invalid response. Please try again.';
-      } else if (e.toString().contains('SocketException')) {
-        errorMessage += 'Network error. Check your internet connection.';
-      } else {
-        errorMessage += e.toString();
-      }
-      
-      setState(() {
-        _errorMessage = errorMessage;
-      });
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
-    }
-  }
-
-  // Test auth key validity with better error handling
-  Future<bool> _testAuthKey(String authKey) async {
-    try {
-      print('🧪 Testing auth key: $authKey');
-      
-      // Test with multiple endpoints and headers
-      final testEndpoints = [
-        {
-          'url': 'https://acomtv.coretechinfo.com/public/api/getFeaturedLiveTV',
-          'headers': {'x-api-key': authKey, 'Accept': 'application/json'}
         },
         {
-          'url': 'https://acomtv.coretechinfo.com/api/getFeaturedLiveTV',
-          'headers': {'x-api-key': authKey, 'Accept': 'application/json'}
+          'url': 'https://acomtv.coretechinfo.com/api/login',
+          'body': {
+            'token': '',
+            'mac_address': serialNumber,
+            'login_pin': _pinController.text.trim(),
+          }
         },
         {
-          'url': 'https://api.ekomflix.com/android/getFeaturedLiveTV',
-          'headers': {'x-api-key': authKey, 'Accept': 'application/json'}
-        },
-        {
-          'url': 'https://acomtv.coretechinfo.com/public/api/getFeaturedLiveTV',
-          'headers': {'auth-key': authKey, 'Accept': 'application/json'}
+          'url': 'https://acomtv.coretechinfo.com/api/auth/login',
+          'body': {
+            'mac_address': serialNumber,
+            'pin': _pinController.text.trim(),
+          }
         },
       ];
 
-      for (var endpoint in testEndpoints) {
+      for (int i = 0; i < loginEndpoints.length && !loginSuccess; i++) {
         try {
-          final response = await https.get(
-            Uri.parse(endpoint['url'] as String),
-            headers: endpoint['headers'] as Map<String, String>,
-          ).timeout(Duration(seconds: 10));
-          
-          print('🧪 Test - URL: ${endpoint['url']}');
-          print('🧪 Test - Status: ${response.statusCode}');
-          print('🧪 Test - Response (first 100 chars): ${response.body.length > 100 ? response.body.substring(0, 100) : response.body}');
-          
+          final endpoint = loginEndpoints[i];
+          print('🌐 Trying endpoint ${i + 1}: ${endpoint['url']}');
+
+          final response = await https
+              .post(
+                Uri.parse(endpoint['url'] as String),
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Accept': 'application/json',
+                  'User-Agent': 'MobiTV-Flutter-App',
+                },
+                body: jsonEncode(endpoint['body']),
+              )
+              .timeout(Duration(seconds: 15));
+
+          print('🌐 Response ${i + 1}: Status ${response.statusCode}');
+
           if (response.statusCode == 200) {
-            // Check if response is valid JSON
             String responseBody = response.body.trim();
-            if (responseBody.startsWith('[') || responseBody.startsWith('{')) {
+
+            if (responseBody.startsWith('{') || responseBody.startsWith('[')) {
               try {
-                json.decode(responseBody);
-                print('✅ Auth key is valid with ${endpoint['url']}');
-                return true;
+                final data = jsonDecode(responseBody);
+                print('🌐 Response data: $data');
+
+                if (data['status'] == true || data['success'] == true) {
+                  authKey = data['result_auth_key'] ??
+                      data['auth_key'] ??
+                      data['token'] ??
+                      '';
+                  userData = data['data'] ?? data['user'] ?? {};
+
+                  if (authKey.isNotEmpty) {
+                    loginSuccess = true;
+                    print('✅ Login successful with endpoint ${i + 1}');
+                    break;
+                  }
+                }
               } catch (e) {
-                print('❌ Invalid JSON response from ${endpoint['url']}');
+                print('❌ JSON parse error for endpoint ${i + 1}: $e');
               }
             } else {
-              print('❌ Non-JSON response from ${endpoint['url']}');
+              print('❌ Non-JSON response from endpoint ${i + 1}');
             }
-          } else if (response.statusCode == 403) {
-            print('❌ 403 Forbidden with ${endpoint['url']}');
-          } else {
-            print('⚠️ Unexpected status ${response.statusCode} with ${endpoint['url']}');
           }
         } catch (e) {
-          print('❌ Test failed for ${endpoint['url']}: $e');
+          print('❌ Endpoint ${i + 1} failed: $e');
         }
       }
-      
-      print('❌ All auth key tests failed');
-      return false;
+
+      if (loginSuccess && authKey.isNotEmpty) {
+        print('✅ Login successful, auth key: $authKey');
+
+        // Save data efficiently
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await Future.wait([
+          prefs.setString('auth_key', authKey),
+          prefs.setString('user_data', jsonEncode(userData ?? {})),
+          prefs.setString('user_pin', _pinController.text.trim()),
+          prefs.setString('device_serial', serialNumber),
+          prefs.setBool('is_logged_in', true),
+          prefs.setInt(
+              'login_timestamp', DateTime.now().millisecondsSinceEpoch),
+        ]);
+
+        // Set auth key in AuthManager
+        await AuthManager.setAuthKey(authKey);
+
+        // Navigate with smooth transition
+        Navigator.pushReplacement(
+          context,
+          PageRouteBuilder(
+            pageBuilder: (context, animation, secondaryAnimation) => MyHome(),
+            transitionDuration: Duration(milliseconds: 500),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+              return FadeTransition(opacity: animation, child: child);
+            },
+          ),
+        );
+      } else {
+        _showError('Invalid PIN. Please check and try again.');
+      }
     } catch (e) {
-      print('❌ Auth key test error: $e');
-      return false;
+      print('❌ Login error: $e');
+
+      String errorMessage = 'Login failed. ';
+      if (e.toString().contains('TimeoutException') ||
+          e.toString().contains('SocketException')) {
+        errorMessage += 'Check your internet connection.';
+      } else {
+        errorMessage += 'Please try again.';
+      }
+
+      _showError(errorMessage);
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
-  Future<bool> _isAlreadyLoggedIn() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getBool('is_logged_in') ?? false;
-  }
+  void _showError(String message) {
+    if (mounted) {
+      setState(() {
+        _errorMessage = message;
+      });
 
-  Future<void> _logout() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.clear();
-    await AuthManager.clearAuthKey();
-    setState(() {
-      _errorMessage = 'Previous session cleared. Please login again.';
-    });
+      // Auto-clear error after 5 seconds
+      Timer(Duration(seconds: 5), () {
+        if (mounted) {
+          setState(() {
+            _errorMessage = '';
+          });
+        }
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: cardColor,
       resizeToAvoidBottomInset: true,
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: EdgeInsets.all(20),
-            child: Container(
-              margin: EdgeInsets.symmetric(horizontal: 20),
-              decoration: BoxDecoration(
-                color: cardColor,
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: borderColor, width: 2),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        child: Stack(
+          children: [
+            // Background image with gradient overlay
+            FadeTransition(
+              opacity: _fadeAnimation,
+              child: Container(
+                width: double.infinity,
+                height: double.infinity,
+                child: Stack(
+                  fit: StackFit.expand,
                   children: [
-                    SizedBox(height: 20),
-                    Text(
-                      'Enter PIN to Continue',
-                      style: TextStyle(
-                        color: hintColor,
-                        fontSize: Headingtextsz,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(height: 30),
-                    Container(
-                      width: double.infinity,
-                      padding: EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Colors.grey.withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: borderColor.withOpacity(0.5), width: 1),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Device Serial Number:',
-                            style: TextStyle(
-                              color: hintColor.withOpacity(0.7),
-                              fontSize: minitextsz,
+                    // Background image
+                    Image.asset(
+                      'assets/logo.png',
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          color: Color(0xFF1a1a1a),
+                          child: Center(
+                            child: Icon(
+                              Icons.tv,
+                              size: 100,
+                              color: Colors.white.withOpacity(0.1),
                             ),
                           ),
-                          SizedBox(height: 5),
-                          Text(
-                            _deviceSerial.isEmpty ? 'Loading...' : _deviceSerial,
-                            style: TextStyle(
-                              color: hintColor,
-                              fontSize: nametextsz,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 1,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 20),
-                    TextField(
-                      controller: _pinController,
-                      focusNode: _pinFocusNode,
-                      keyboardType: TextInputType.number,
-                      obscureText: true,
-                      maxLength: 10,
-                      style: TextStyle(
-                        color: hintColor,
-                        fontSize: nametextsz,
-                        letterSpacing: 2,
-                      ),
-                      decoration: InputDecoration(
-                        hintText: 'Enter your PIN',
-                        hintStyle: TextStyle(color: hintColor.withOpacity(0.7)),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide(color: borderColor, width: 1),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide(color: highlightColor, width: 2),
-                        ),
-                        counterText: '',
-                      ),
-                      onSubmitted: (value) => _login(),
-                    ),
-                    SizedBox(height: 20),
-                    if (_errorMessage.isNotEmpty)
-                      Container(
-                        padding: EdgeInsets.all(10),
-                        margin: EdgeInsets.only(bottom: 20),
-                        decoration: BoxDecoration(
-                          color: Colors.red.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(5),
-                          border: Border.all(color: Colors.red, width: 1),
-                        ),
-                        child: Text(
-                          _errorMessage,
-                          style: TextStyle(
-                            color: Colors.red,
-                            fontSize: minitextsz,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    SizedBox(
-                      width: double.infinity,
-                      height: 50,
-                      child: ElevatedButton(
-                        onPressed: _isLoading ? null : _login,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: highlightColor,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        child: _isLoading
-                            ? CircularProgressIndicator(
-                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                              )
-                            : Text(
-                                'LOGIN',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: nametextsz,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                      ),
-                    ),
-                    SizedBox(height: 20),
-                    FutureBuilder<bool>(
-                      future: _isAlreadyLoggedIn(),
-                      builder: (context, snapshot) {
-                        if (snapshot.data == true) {
-                          return TextButton(
-                            onPressed: _logout,
-                            child: Text(
-                              'Logout from previous session',
-                              style: TextStyle(
-                                color: Colors.red,
-                                fontSize: minitextsz,
-                              ),
-                            ),
-                          );
-                        }
-                        return SizedBox.shrink();
+                        );
                       },
+                    ),
+                    // Dark gradient overlay for better text readability
+                    Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Colors.black.withOpacity(0.7),
+                            Colors.black.withOpacity(0.85),
+                            Colors.black.withOpacity(0.9),
+                          ],
+                        ),
+                      ),
+                    ),
+                    // Additional overlay for better contrast
+                    Container(
+                      color: cardColor.withOpacity(0.3),
                     ),
                   ],
                 ),
               ),
             ),
-          ),
+
+            // Main content
+            SafeArea(
+              child: Center(
+                child: SingleChildScrollView(
+                  padding: EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+                  child: SlideTransition(
+                    position: _slideAnimation,
+                    child: FadeTransition(
+                      opacity: _fadeAnimation,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          // Logo container
+                          Container(
+                            width: 120,
+                            height: 120,
+                            margin: EdgeInsets.only(bottom: 40),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.white.withOpacity(0.1),
+                              border: Border.all(
+                                color: borderColor.withOpacity(0.3),
+                                width: 2,
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.3),
+                                  blurRadius: 20,
+                                  spreadRadius: 5,
+                                ),
+                              ],
+                            ),
+                            child: ClipOval(
+                              child: Container(
+                                padding: EdgeInsets.all(20),
+                                child: Image.asset(
+                                  'assets/logo.png',
+                                  fit: BoxFit.contain,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Icon(
+                                      Icons.tv,
+                                      size: 60,
+                                      color: borderColor,
+                                    );
+                                  },
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          // Welcome text
+                          Text(
+                            'Welcome',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: Headingtextsz * 1.2,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 1,
+                            ),
+                          ),
+
+                          SizedBox(height: 10),
+
+                          Text(
+                            'Enter your PIN to continue',
+                            style: TextStyle(
+                              color: Colors.white.withOpacity(0.8),
+                              fontSize: nametextsz,
+                              fontWeight: FontWeight.w300,
+                            ),
+                          ),
+
+                          SizedBox(height: 40),
+
+                          // PIN input container
+                          Container(
+                            padding: EdgeInsets.all(25),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.05),
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(
+                                color: borderColor.withOpacity(0.3),
+                                width: 1,
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.2),
+                                  blurRadius: 15,
+                                  spreadRadius: 2,
+                                ),
+                              ],
+                            ),
+                            child: Column(
+                              children: [
+                                // PIN input field
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(15),
+                                    border: Border.all(
+                                      color: borderColor.withOpacity(0.5),
+                                      width: 1,
+                                    ),
+                                  ),
+                                  child: TextField(
+                                    controller: _pinController,
+                                    focusNode: _pinFocusNode,
+                                    keyboardType: TextInputType.number,
+                                    maxLength: 10,
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: nametextsz * 1.1,
+                                      letterSpacing: 3,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                    decoration: InputDecoration(
+                                      hintText: 'Enter PIN',
+                                      hintStyle: TextStyle(
+                                        color: Colors.white.withOpacity(0.5),
+                                        letterSpacing: 1,
+                                      ),
+                                      border: InputBorder.none,
+                                      contentPadding: EdgeInsets.symmetric(
+                                        horizontal: 20,
+                                        vertical: 15,
+                                      ),
+                                      counterText: '',
+                                      prefixIcon: Icon(
+                                        Icons.lock_outline,
+                                        color: borderColor.withOpacity(0.7),
+                                      ),
+                                    ),
+                                    onSubmitted: (value) => _login(),
+                                  ),
+                                ),
+
+                                SizedBox(height: 25),
+
+                                // Login button
+                                AnimatedContainer(
+                                  duration: Duration(milliseconds: 200),
+                                  width: double.infinity,
+                                  height: 55,
+                                  child: ElevatedButton(
+                                    onPressed: _isLoading ? null : _login,
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: _isLoading
+                                          ? borderColor.withOpacity(0.5)
+                                          : borderColor,
+                                      elevation: _isLoading ? 0 : 8,
+                                      shadowColor: borderColor.withOpacity(0.3),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(15),
+                                      ),
+                                    ),
+                                    child: _isLoading
+                                        ? Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              SizedBox(
+                                                width: 20,
+                                                height: 20,
+                                                child:
+                                                    CircularProgressIndicator(
+                                                  valueColor:
+                                                      AlwaysStoppedAnimation<
+                                                          Color>(Colors.white),
+                                                  strokeWidth: 2,
+                                                ),
+                                              ),
+                                              SizedBox(width: 15),
+                                              Text(
+                                                'Logging in...',
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: nametextsz,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                              ),
+                                            ],
+                                          )
+                                        : Text(
+                                            'LOGIN',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: nametextsz,
+                                              fontWeight: FontWeight.bold,
+                                              letterSpacing: 2,
+                                            ),
+                                          ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          // Error message
+                          if (_errorMessage.isNotEmpty)
+                            Container(
+                              margin: EdgeInsets.only(top: 20),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 20, vertical: 12),
+                              decoration: BoxDecoration(
+                                color: Colors.red.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(
+                                  color: Colors.red.withOpacity(0.3),
+                                  width: 1,
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.error_outline,
+                                    color: Colors.red,
+                                    size: 20,
+                                  ),
+                                  SizedBox(width: 10),
+                                  Expanded(
+                                    child: Text(
+                                      _errorMessage,
+                                      style: TextStyle(
+                                        color: Colors.red,
+                                        fontSize: minitextsz,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                          SizedBox(height: 30),
+
+                          // Additional info
+                          Text(
+                            'Secure login with PIN authentication',
+                            style: TextStyle(
+                              color: Colors.white.withOpacity(0.4),
+                              fontSize: minitextsz,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -2282,6 +2402,8 @@ class _LoginScreenState extends State<LoginScreen> {
   void dispose() {
     _pinController.dispose();
     _pinFocusNode.dispose();
+    _fadeController.dispose();
+    _slideController.dispose();
     super.dispose();
   }
 }
@@ -2437,7 +2559,7 @@ class _MyHomeState extends State<MyHome> {
     _pageController = PageController(initialPage: _selectedPage);
     _fetchTvenableAllStatus();
     _updateChecker = UpdateChecker(context);
-    
+
     // Ensure auth key is loaded when entering main app
     _ensureAuthKeyLoaded();
   }
@@ -2520,7 +2642,7 @@ class _MyHomeState extends State<MyHome> {
   //   SharedPreferences prefs = await SharedPreferences.getInstance();
   //   await prefs.clear();
   //   await AuthManager.clearAuthKey();
-    
+
   //   Navigator.pushAndRemoveUntil(
   //     context,
   //     MaterialPageRoute(builder: (context) => LoginScreen()),

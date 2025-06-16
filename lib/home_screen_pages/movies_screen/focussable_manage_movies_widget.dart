@@ -568,8 +568,8 @@ class _FocusableMoviesWidgetState extends State<FocusableMoviesWidget> {
   @override
   Widget build(BuildContext context) {
     final double containerWidth = widget.width ?? screenwdt * 0.19;
-    final double normalHeight = widget.height ?? screenhgt * 0.21;
-    final double focusedHeight = widget.focusedHeight ?? screenhgt * 0.24;
+    final double normalHeight = widget.height ?? screenhgt * 0.20;
+    final double focusedHeight = widget.focusedHeight ?? screenhgt * 0.25;
     
     // Calculate the growth in height when focused (difference between focused and normal height)
     final double heightGrowth = focusedHeight - normalHeight;
