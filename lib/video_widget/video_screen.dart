@@ -24,8 +24,6 @@ import '../menu_screens/search_screen.dart';
 import '../widgets/models/news_item_model.dart';
 // First create an EventBus class (create a new file event_bus.dart)
 
-
-
 class GlobalVariables {
   static String unUpdatedUrl = '';
   static String UpdatedUrl = '';
@@ -35,9 +33,8 @@ class GlobalVariables {
   static String name = '';
   static bool liveStatus = false;
   static String slectedId = '';
+  static int seasonId = 0;
 }
-
-
 
 class VideoScreen extends StatefulWidget {
   final String videoUrl;
@@ -49,11 +46,13 @@ class VideoScreen extends StatefulWidget {
   final Duration startAtPosition;
   final bool isLive;
   final bool isVOD;
+  final bool isLastPlayedStored;
   final bool isSearch;
   final bool? isHomeCategory;
   final bool isBannerSlider;
   final String videoType;
   final int? videoId;
+  final int? seasonId;
   final String source;
   final Duration? totalDuration;
 
@@ -66,10 +65,12 @@ class VideoScreen extends StatefulWidget {
       required this.videoType,
       required this.isLive,
       required this.isVOD,
+      required this.isLastPlayedStored,
       required this.isSearch,
       this.isHomeCategory,
       required this.isBannerSlider,
       required this.videoId,
+      required this.seasonId,
       required this.source,
       required this.name,
       required this.liveStatus,
@@ -123,92 +124,471 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
 
   Map<String, Uint8List> _imageCache = {};
 
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addObserver(this);
-    _scrollController = ScrollController();
-    _scrollController.addListener(_scrollListener);
+//   @override
+//   void initState() {
+//     super.initState();
+//     WidgetsBinding.instance.addObserver(this);
+//     _scrollController = ScrollController();
+//     _scrollController.addListener(_scrollListener);
 
-    _previewPosition = _controller?.value.position ?? Duration.zero;
-    Timer.periodic(Duration(minutes: 5), (timer) {
-      if (mounted) {
-        // Speed control is different in video_player
-        _controller?.setPlaybackSpeed(1.0);
-      } else {
-        timer.cancel();
-      }
-    });
-    KeepScreenOn.turnOn();
-    _initializeVolume();
-    _listenToVolumeChanges();
-    // Initialize banner cache
-    _loadStoredBanners().then((_) {
-      // Store current banners after loading cached ones
-      _storeBannersLocally();
-    });
-    // Match channel by ID as strings
-    if (widget.isBannerSlider || widget.source == 'isLastPlayedVideos') {
-      _focusedIndex = widget.channelList.indexWhere(
-        (channel) =>
-            channel.contentId.toString() ==
-            (isOnItemTapUsed ? GlobalVariables.slectedId : widget.videoId)
-                .toString(),
-      );
-    } else if (widget.isVOD ||
-        widget.source == 'isLiveScreen' ||
-        widget.source == 'isYoutubeSearchScreen' ||
-        widget.source == 'isSearchScreenViaDetailsPageChannelList' || widget.source == 'isContentScreenViaDetailsPageChannelList' || widget.source == 'webseries_details_page' || widget.source == 'isMovieScreen')
-         {
-      _focusedIndex = widget.channelList.indexWhere(
-        (channel) =>
-            channel.id.toString() ==
-            (isOnItemTapUsed ? GlobalVariables.slectedId : widget.videoId)
-                .toString(),
-      );
-    } else if (widget.source == 'webseries_details_page') {
-      _focusedIndex = widget.channelList.indexWhere(
-        (channel) =>
-            channel.id.toString() ==
-            (isOnItemTapUsed ? GlobalVariables.slectedId : widget.videoId)
-                .toString(),
-      );
-      // }
-
-// // Update the initState focus index detection:
-//     if (widget.source == 'webseries_details_page') {
+//     _previewPosition = _controller?.value.position ?? Duration.zero;
+//     Timer.periodic(Duration(minutes: 5), (timer) {
+//       if (mounted) {
+//         // Speed control is different in video_player
+//         _controller?.setPlaybackSpeed(1.0);
+//       } else {
+//         timer.cancel();
+//       }
+//     });
+//     KeepScreenOn.turnOn();
+//     _initializeVolume();
+//     _listenToVolumeChanges();
+//     // Initialize banner cache
+//     _loadStoredBanners().then((_) {
+//       // Store current banners after loading cached ones
+//       _storeBannersLocally();
+//     });
+//     // Match channel by ID as strings
+//     if (widget.isBannerSlider || widget.source == 'isLastPlayedVideos') {
 //       _focusedIndex = widget.channelList.indexWhere(
-//         (channel) => channel.id.toString() == widget.videoId.toString(),
+//         (channel) =>
+//             channel.contentId.toString() ==
+//             (isOnItemTapUsed ? GlobalVariables.slectedId : widget.videoId)
+//                 .toString(),
 //       );
-//       // if (_focusedIndex == -1) {
-//       //   _focusedIndex = widget.channelList.indexWhere(
-//       //     (channel) =>
-//       //         channel.contentId.toString() == widget.videoId.toString(),
-//       //   );
+//     } else if (widget.isVOD ||
+//         widget.source == 'isLiveScreen' ||
+//         widget.source == 'isYoutubeSearchScreen' ||
+//         widget.source == 'isSearchScreenViaDetailsPageChannelList' ||
+//         widget.source == 'isContentScreenViaDetailsPageChannelList' ||
+//         widget.source == 'webseries_details_page' ||
+//         widget.source == 'isMovieScreen') {
+//       _focusedIndex = widget.channelList.indexWhere(
+//         (channel) =>
+//             channel.id.toString() ==
+//             (isOnItemTapUsed ? GlobalVariables.slectedId : widget.videoId)
+//                 .toString(),
+//       );
+//     } else if (widget.source == 'webseries_details_page') {
+//       _focusedIndex = widget.channelList.indexWhere(
+//         (channel) =>
+//             channel.id.toString() ==
+//             (isOnItemTapUsed ? GlobalVariables.slectedId : widget.videoId)
+//                 .toString(),
+//       );
 //       // }
+
+// // // Update the initState focus index detection:
+// //     if (widget.source == 'webseries_details_page') {
+// //       _focusedIndex = widget.channelList.indexWhere(
+// //         (channel) => channel.id.toString() == widget.videoId.toString(),
+// //       );
+// //       // if (_focusedIndex == -1) {
+// //       //   _focusedIndex = widget.channelList.indexWhere(
+// //       //     (channel) =>
+// //       //         channel.contentId.toString() == widget.videoId.toString(),
+// //       //   );
+// //       // }
+//     } else {
+//       _focusedIndex = widget.channelList.indexWhere(
+//         (channel) => channel.url == widget.videoUrl,
+//       );
+//     }
+
+//     // Default to 0 if no match is found
+//     _focusedIndex = (_focusedIndex >= 0) ? _focusedIndex : 0;
+
+//     // Initialize focus nodes
+//     focusNodes = List.generate(
+//       widget.channelList.length,
+//       (index) => FocusNode(),
+//     );
+//     // Set initial focus
+//     WidgetsBinding.instance.addPostFrameCallback((_) {
+//       _setInitialFocus();
+//     });
+//     _initializeVideoController(_focusedIndex);
+//     _startHideControlsTimer();
+//     _startNetworkMonitor();
+//     _startPositionUpdater();
+//   }
+
+
+
+// Update the VideoScreen initState method to work with new NewsItemModel structure
+
+@override
+void initState() {
+  super.initState();
+  WidgetsBinding.instance.addObserver(this);
+  _scrollController = ScrollController();
+  _scrollController.addListener(_scrollListener);
+
+  _previewPosition = _controller?.value.position ?? Duration.zero;
+  
+  // Print debug info for last played videos
+  if (widget.source == 'isLastPlayedVideos') {
+    print('🔄 Resuming last played video:');
+    print('   Name: ${widget.name}');
+    print('   URL: ${widget.videoUrl}');
+    print('   Start Position: ${widget.startAtPosition.inSeconds} seconds');
+    print('   Total Duration: ${widget.totalDuration?.inSeconds ?? 0} seconds');
+    print('   Live Status: ${widget.liveStatus}');
+    print('   Channel List Length: ${widget.channelList.length}');
+  }
+
+  Timer.periodic(Duration(minutes: 5), (timer) {
+    if (mounted) {
+      _controller?.setPlaybackSpeed(1.0);
     } else {
+      timer.cancel();
+    }
+  });
+  
+  KeepScreenOn.turnOn();
+  _initializeVolume();
+  _listenToVolumeChanges();
+
+  // Initialize banner cache
+  _loadStoredBanners().then((_) {
+    _storeBannersLocally();
+  });
+
+  // Updated focus index detection for new NewsItemModel structure
+  if (widget.source == 'isLastPlayedVideos') {
+    // For last played videos, find by URL since that's most reliable
+    _focusedIndex = widget.channelList.indexWhere(
+      (channel) => channel.url == widget.videoUrl || channel.unUpdatedUrl == widget.unUpdatedUrl,
+    );
+    print('🎯 Last played focus index by URL: $_focusedIndex');
+    
+    // If not found by URL, try by video ID
+    if (_focusedIndex == -1) {
       _focusedIndex = widget.channelList.indexWhere(
-        (channel) => channel.url == widget.videoUrl,
+        (channel) => channel.videoId == widget.videoId.toString(),
       );
+      print('🎯 Last played focus index by videoId: $_focusedIndex');
+    }
+  } else if (widget.isBannerSlider) {
+    _focusedIndex = widget.channelList.indexWhere(
+      (channel) =>
+          channel.contentId.toString() ==
+          (isOnItemTapUsed ? GlobalVariables.slectedId : widget.videoId)
+              .toString(),
+    );
+    print('🎯 Banner slider focus index: $_focusedIndex');
+  } else if (widget.isVOD ||
+      widget.source == 'isLiveScreen' ||
+      widget.source == 'isYoutubeSearchScreen' ||
+      widget.source == 'isSearchScreenViaDetailsPageChannelList' ||
+      widget.source == 'isContentScreenViaDetailsPageChannelList' ||
+      widget.source == 'webseries_details_page' ||
+      widget.source == 'isMovieScreen') {
+    _focusedIndex = widget.channelList.indexWhere(
+      (channel) =>
+          channel.id.toString() ==
+          (isOnItemTapUsed ? GlobalVariables.slectedId : widget.videoId)
+              .toString(),
+    );
+    print('🎯 VOD/Other focus index: $_focusedIndex');
+  } else {
+    _focusedIndex = widget.channelList.indexWhere(
+      (channel) => channel.url == widget.videoUrl,
+    );
+    print('🎯 Default focus index by URL: $_focusedIndex');
+  }
+
+  // Default to 0 if no match is found
+  _focusedIndex = (_focusedIndex >= 0) ? _focusedIndex : 0;
+  
+  print('🎯 Final focused index: $_focusedIndex');
+
+  // Initialize focus nodes
+  focusNodes = List.generate(
+    widget.channelList.length,
+    (index) => FocusNode(),
+  );
+  
+  // Set initial focus
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    _setInitialFocus();
+  });
+  
+  _initializeVideoController(_focusedIndex);
+  _startHideControlsTimer();
+  _startNetworkMonitor();
+  _startPositionUpdater();
+}
+
+// Update the _onItemTap method to work with new NewsItemModel structure
+Future<void> _onItemTap(int index) async {
+  if (index < 0 || index >= widget.channelList.length) return;
+
+  // Cancel any existing timeout timer
+  _webseriesTimeoutTimer?.cancel();
+
+  if (_controller != null) {
+    await _controller!.dispose();
+    _controller = null;
+  }
+
+  setState(() {
+    isOnItemTapUsed = true;
+    _loadingVisible = true;
+    _isVideoInitialized = false;
+    _showErrorMessage = false;
+    _hasVideoStartedPlaying = false;
+  });
+
+  final selectedChannel = widget.channelList[index];
+  String updatedUrl = selectedChannel.url ?? '';
+  String originalUrl = selectedChannel.unUpdatedUrl ?? selectedChannel.url ?? '';
+
+  print('🎬 _onItemTap for index $index');
+  print('   Channel Name: ${selectedChannel.name}');
+  print('   Original URL: $originalUrl');
+  print('   Current URL: $updatedUrl');
+  print('   Content Type: ${selectedChannel.contentType}');
+  print('   Stream Type: ${selectedChannel.streamType}');
+  print('   Source: ${widget.source}');
+
+  try {
+    // URL fetching based on contentType/source - updated for new structure
+    if (widget.source == 'isLastPlayedVideos') {
+      _startWebseriesTimeoutTimer();
+
+      // For last played videos, use the URL from the channel directly
+      updatedUrl = selectedChannel.url ?? '';
+      originalUrl = selectedChannel.unUpdatedUrl ?? updatedUrl;
+      print('📺 Last played video URL: $updatedUrl');
+
+      // Check if it's a YouTube URL
+      if (isYoutubeUrl(updatedUrl)) {
+        print("🔄 Processing YouTube URL from last played videos");
+        updatedUrl = await _socketService.getUpdatedUrl(updatedUrl);
+      }
+    } else {
+      // Your existing logic for other sources
+      if (widget.source == 'webseries_details_page') {
+        final playLink = await fetchEpisodeUrlById1(selectedChannel.contentId.toString());
+        if (playLink != null && playLink.isNotEmpty) updatedUrl = playLink;
+      } else if (widget.source == 'isBannerSlider') {
+        final playLink = await fetchVideoDataByIdFromBanners(selectedChannel.id);
+        if (playLink['url'] != null && playLink['url']!.isNotEmpty)
+          updatedUrl = playLink['url']!;
+      }
+
+      if (selectedChannel.contentType == '1' ||
+          widget.isVOD ||
+          widget.source == 'isMovieScreen') {
+        print('🎬 Processing movie/VOD content');
+        final playLink = await fetchMoviePlayLinkById(int.parse(selectedChannel.id));
+        if (playLink['source_url'] != null && playLink['source_url']!.isNotEmpty)
+          updatedUrl = playLink['source_url']!;
+      }
+
+      if (isYoutubeUrl(updatedUrl)) {
+        updatedUrl = await _socketService.getUpdatedUrl(updatedUrl);
+      }
     }
 
-    // Default to 0 if no match is found
-    _focusedIndex = (_focusedIndex >= 0) ? _focusedIndex : 0;
+    _controller = VideoPlayerController.network(updatedUrl);
 
-    // Initialize focus nodes
-    focusNodes = List.generate(
-      widget.channelList.length,
-      (index) => FocusNode(),
-    );
-    // Set initial focus
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _setInitialFocus();
+    await _controller!.initialize().timeout(Duration(seconds: 10));
+
+    if (_controller!.value.size.width <= 0 ||
+        _controller!.value.size.height <= 0) {
+      throw Exception("Invalid video dimensions.");
+    }
+
+    await _controller!.play();
+
+    // Immediately setup listeners after successful play
+    _setupVideoPlayerListeners();
+
+    // Start timeout timer for certain sources
+    if (widget.source == 'webseries_details_page' ||
+        widget.source == 'isMovieScreen') {
+      _startWebseriesTimeoutTimer();
+    }
+
+    setState(() {
+      _focusedIndex = index;
+      _isVideoInitialized = true;
+      _loadingVisible = false;
+      _currentModifiedUrl = updatedUrl;
     });
-    _initializeVideoController(_focusedIndex);
-    _startHideControlsTimer();
-    _startNetworkMonitor();
-    _startPositionUpdater();
+
+    // Update global variables - updated for new structure
+    GlobalVariables.unUpdatedUrl = originalUrl;
+    GlobalVariables.position = Duration.zero;
+    GlobalVariables.duration = _controller!.value.duration;
+    GlobalVariables.banner = selectedChannel.banner ?? '';
+    GlobalVariables.name = selectedChannel.name ?? '';
+    GlobalVariables.slectedId = selectedChannel.id ?? '';
+    GlobalVariables.liveStatus = selectedChannel.liveStatus;
+
+    _scrollToFocusedItem();
+    _resetHideControlsTimer();
+  } catch (error) {
+    print('❌ Error in _onItemTap: $error');
+    
+    if (_controller != null) {
+      await _controller!.dispose();
+      _controller = null;
+    }
+
+    setState(() {
+      _isVideoInitialized = false;
+      _loadingVisible = false;
+    });
+
+    // Error handling based on source
+    if (widget.source == 'isLastPlayedVideos') {
+      // For last played videos, show immediate error
+      String errorMessage = "This video is no longer available.\nIt may have been moved or deleted.";
+      _showVideoErrorMessage(errorMessage);
+    } else if (widget.source == 'webseries_details_page' ||
+        widget.source == 'isMovieScreen' ||
+        widget.isVOD ||
+        widget.source == 'isLastPlayedVideos'
+        ) {
+      // For webseries, wait before showing error
+      _startWebseriesTimeoutTimer();
+    } else {
+      // For all other sources, show immediate error
+      String errorMessage = "This video is temporarily unable to play.\nPlease choose another video.";
+      _showVideoErrorMessage(errorMessage);
+    }
   }
+}
+
+// Update the _buildChannelList method to work with new structure
+Widget _buildChannelList() {
+  return Positioned(
+    top: MediaQuery.of(context).size.height * 0.02,
+    bottom: MediaQuery.of(context).size.height * 0.1,
+    left: MediaQuery.of(context).size.width * 0.0,
+    right: MediaQuery.of(context).size.width * 0.78,
+    child: Container(
+      child: ListView.builder(
+        controller: _scrollController,
+        itemCount: widget.channelList.length,
+        itemBuilder: (context, index) {
+          final channel = widget.channelList[index];
+          
+          // Updated to use new NewsItemModel structure
+          final String channelId = channel.contentId.isNotEmpty 
+              ? channel.contentId 
+              : channel.id;
+
+          final String? banner = channel.banner.isNotEmpty 
+              ? channel.banner 
+              : channel.image;
+              
+          final bool isBase64 = banner?.startsWith('data:image') ?? false;
+
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+            child: Focus(
+              focusNode: focusNodes[index],
+              onFocusChange: (hasFocus) {
+                if (hasFocus) {
+                  setState(() {
+                    _focusedIndex = index;
+                  });
+                }
+              },
+              child: GestureDetector(
+                onTap: () {
+                  _onItemTap(index);
+                  _resetHideControlsTimer();
+                },
+                child: Container(
+                  width: screenwdt * 0.3,
+                  height: screenhgt * 0.18,
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: playPauseButtonFocusNode.hasFocus ||
+                              backwardButtonFocusNode.hasFocus ||
+                              forwardButtonFocusNode.hasFocus ||
+                              prevButtonFocusNode.hasFocus ||
+                              nextButtonFocusNode.hasFocus ||
+                              progressIndicatorFocusNode.hasFocus
+                          ? Colors.transparent
+                          : _focusedIndex == index
+                              ? const Color.fromARGB(211, 155, 40, 248)
+                              : Colors.transparent,
+                      width: 5.0,
+                    ),
+                    borderRadius: BorderRadius.circular(10),
+                    color: _focusedIndex == index
+                        ? Colors.black26
+                        : Colors.transparent,
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(6),
+                    child: Stack(
+                      children: [
+                        Positioned.fill(
+                          child: Opacity(
+                            opacity: 0.6,
+                            child: isBase64
+                                ? Image.memory(
+                                    _bannerCache[channelId] ??
+                                        _getCachedImage(banner ?? ''),
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (context, error, stackTrace) =>
+                                        Image.asset('assets/placeholder.png'),
+                                  )
+                                : CachedNetworkImage(
+                                    imageUrl: banner ?? '',
+                                    fit: BoxFit.cover,
+                                    errorWidget: (context, url, error) =>
+                                        Image.asset('assets/placeholder.png'),
+                                  ),
+                          ),
+                        ),
+                        if (_focusedIndex == index)
+                          Positioned.fill(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                  colors: [
+                                    Colors.transparent,
+                                    Colors.black.withOpacity(0.9),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        if (_focusedIndex == index)
+                          Positioned(
+                            left: 8,
+                            bottom: 8,
+                            child: Text(
+                              channel.name,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    ),
+  );
+}
 
   @override
   void dispose() {
@@ -242,8 +622,7 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
     // Dispose of socket service if necessary
     try {
       _socketService.dispose();
-    } catch (e) {
-    }
+    } catch (e) {}
 
     // Ensure screen-on feature is turned off
     KeepScreenOn.turnOff();
@@ -282,24 +661,25 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
             GlobalVariables.unUpdatedUrl,
             GlobalVariables.position,
             GlobalVariables.duration,
-            GlobalVariables.banner ,
+            GlobalVariables.banner,
             GlobalVariables.name,
             GlobalVariables.liveStatus,
+            GlobalVariables.seasonId,
           );
         } else if (!isOnItemTapUsed) {
           await _saveLastPlayedVideo(
             widget.unUpdatedUrl,
             position,
             duration,
-            widget.bannerImageUrl ,
+            widget.bannerImageUrl,
             widget.name,
             widget.liveStatus,
+            widget.seasonId ?? 0,
           );
         }
       }
       setState(() {});
-    } catch (e) {
-    }
+    } catch (e) {}
   }
 
   void _scrollListener() {
@@ -309,96 +689,55 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
     }
   }
 
-
-
-
 // Add these variables to your _VideoScreenState class
-bool _showErrorMessage = false;
-String _errorMessageText = '';
-Timer? _errorMessageTimer;
+  bool _showErrorMessage = false;
+  String _errorMessageText = '';
+  Timer? _errorMessageTimer;
 
 // Add this method to show error message with animation
-void _showVideoErrorMessage(String message) {
-  setState(() {
-    _showErrorMessage = true;
-    _errorMessageText = message;
-  });
+  void _showVideoErrorMessage(String message) {
+    setState(() {
+      _showErrorMessage = true;
+      _errorMessageText = message;
+    });
 
-  // If onItemTap was not used, auto-go back after showing message
-  if (!isOnItemTapUsed) {
-    _errorMessageTimer?.cancel();
-    _errorMessageTimer = Timer(Duration(seconds: 8), () {
-      if (mounted) {
-        // Go back to previous screen
-        context.read<FocusProvider>().refreshAll(source: 'video_screen_exit');
-        Navigator.of(context).pop(true);
-      }
-    });
-  } else {
-    // If onItemTap was used, let user manually dismiss or auto-hide after longer time
-    _errorMessageTimer?.cancel();
-    _errorMessageTimer = Timer(Duration(seconds: 10), () {
-      if (mounted) {
-        setState(() {
-          _showErrorMessage = false;
-          _resetHideControlsTimer();
-        });
-      }
-    });
+    // If onItemTap was not used, auto-go back after showing message
+    if (!isOnItemTapUsed) {
+      _errorMessageTimer?.cancel();
+      _errorMessageTimer = Timer(Duration(seconds: 8), () {
+        if (mounted) {
+          // Go back to previous screen
+          context.read<FocusProvider>().refreshAll(source: 'video_screen_exit');
+          Navigator.of(context).pop(true);
+        }
+      });
+    } else {
+      // If onItemTap was used, let user manually dismiss or auto-hide after longer time
+      _errorMessageTimer?.cancel();
+      _errorMessageTimer = Timer(Duration(seconds: 10), () {
+        if (mounted) {
+          setState(() {
+            _showErrorMessage = false;
+            _resetHideControlsTimer();
+          });
+        }
+      });
+    }
   }
-}
-
-
-
-
-
 
 // Add these variables to your _VideoScreenState class
-Timer? _webseriesTimeoutTimer;
-bool _hasVideoStartedPlaying = false;
+  Timer? _webseriesTimeoutTimer;
+  bool _hasVideoStartedPlaying = false;
 
 // Replace your existing _initializeVideoController method
-Future<void> _initializeVideoController(int index) async {
-  final String videoUrl = widget.videoUrl;
+  Future<void> _initializeVideoController(int index) async {
+    final String videoUrl = widget.videoUrl;
 
-  if (_controller != null) {
-    await _controller!.dispose();
-    _controller = null;
-  }
+    print('🎬 Initializing video controller for: ${widget.name}');
+    print('🔗 Video URL: $videoUrl');
+    print('📍 Source: ${widget.source}');
+    print('⏰ Start position: ${widget.startAtPosition.inSeconds} seconds');
 
-  setState(() {
-    _isVideoInitialized = false;
-    _loadingVisible = true;
-    _showErrorMessage = false; // Hide any existing error message
-    _hasVideoStartedPlaying = false; // Reset playing status
-  });
-
-  _controller = VideoPlayerController.network(videoUrl);
-
-  try {
-    await _controller!.initialize().timeout(Duration(seconds: 10));
-
-    if (_controller!.value.size.width <= 0 ||
-        _controller!.value.size.height <= 0) {
-      throw Exception("Invalid video dimensions.");
-    }
-
-    await _controller!.play();
-
-    // Setup listeners immediately after successful initialization
-    _setupVideoPlayerListeners();
-
-    // Start 30-second timeout timer specifically for webseries_details_page
-    if (widget.source == 'webseries_details_page' || widget.source == 'isMovieScreen') {
-      _startWebseriesTimeoutTimer();
-    }
-
-    setState(() {
-      _isVideoInitialized = true;
-      _loadingVisible = false;
-      _currentModifiedUrl = videoUrl;
-    });
-  } catch (error) {
     if (_controller != null) {
       await _controller!.dispose();
       _controller = null;
@@ -406,575 +745,584 @@ Future<void> _initializeVideoController(int index) async {
 
     setState(() {
       _isVideoInitialized = false;
-      _loadingVisible = false;
+      _loadingVisible = true;
+      _showErrorMessage = false; // Hide any existing error message
+      _hasVideoStartedPlaying = false; // Reset playing status
     });
 
-    // Different error handling for webseries vs others
-    if (widget.source == 'webseries_details_page' || widget.source == 'isMovieScreen') {
-      // For webseries, wait 30 seconds before showing error
-      _startWebseriesTimeoutTimer();
-    } else {
-      // For all other sources, show immediate error
-      String errorMessage = "Unable to play this video temporarily.\nPlease try selecting another video.";
-      _showVideoErrorMessage(errorMessage);
-    }
-  }
-}
+    _controller = VideoPlayerController.network(videoUrl);
 
-// Add this new method to start the 30-second timeout timer
-void _startWebseriesTimeoutTimer() {
-  _webseriesTimeoutTimer?.cancel();
-  _webseriesTimeoutTimer = Timer(Duration(seconds: 20), () {
-    if (mounted && !_hasVideoStartedPlaying) {
-      // Video hasn't started playing within 30 seconds
-      String errorMessage = "Unable to play this video temporarily.\nPlease try selecting another video.";
-      _showVideoErrorMessage(errorMessage);
-    }
-  });
-}
+    try {
+      await _controller!.initialize().timeout(Duration(seconds: 10));
 
-// Update your existing _onItemTap method
-Future<void> _onItemTap(int index) async {
-  if (index < 0 || index >= widget.channelList.length) return;
-  
-  // Cancel any existing timeout timer
-  _webseriesTimeoutTimer?.cancel();
-  
-  if (_controller != null) {
-    await _controller!.dispose();
-    _controller = null;
-  }
-
-  setState(() {
-    isOnItemTapUsed = true;
-    _loadingVisible = true;
-    _isVideoInitialized = false;
-    _showErrorMessage = false; // Hide any existing error message
-    _hasVideoStartedPlaying = false; // Reset playing status
-  });
-
-  final selectedChannel = widget.channelList[index];
-  String updatedUrl = selectedChannel.url ?? '';
-
-  try {
-    // URL fetching based on contentType/source
-    if (widget.source == 'webseries_details_page') {
-      final playLink =
-          await fetchEpisodeUrlById(selectedChannel.contentId.toString());
-      if (playLink != null && playLink.isNotEmpty) updatedUrl = playLink;
-    }
-    else if (widget.isBannerSlider) {
-      final playLink = await fetchVideoDataByIdFromBanners(selectedChannel.id);
-      if (playLink['url'] != null && playLink['url']!.isNotEmpty)
-        updatedUrl = playLink['url']!;
-    }
-    else if (selectedChannel.contentType == '1' ||
-        widget.isVOD ||
-        widget.source == 'isMovieScreen') {
-      final playLink =
-          await fetchMoviePlayLink(selectedChannel.id);
-      if (playLink['url'] != null && playLink['url']!.isNotEmpty)
-        updatedUrl = playLink['url']!;
-    }
-
-    if (isYoutubeUrl(updatedUrl)) {
-      updatedUrl = await _socketService.getUpdatedUrl(updatedUrl);
-    }
-
-    _controller = VideoPlayerController.network(updatedUrl);
-
-    await _controller!.initialize().timeout(Duration(seconds: 10));
-
-    if (_controller!.value.size.width <= 0 ||
-        _controller!.value.size.height <= 0) {
-      throw Exception("Invalid video dimensions.");
-    }
-
-    await _controller!.play();
-
-    // Immediately setup listeners after successful play
-    _setupVideoPlayerListeners();
-
-    // Start 30-second timeout timer specifically for webseries_details_page
-    if (widget.source == 'webseries_details_page' || widget.source == 'isMovieScreen' || widget.source == 'isMovieScreen') {
-      _startWebseriesTimeoutTimer();
-    }
-
-    setState(() {
-      _focusedIndex = index;
-      _isVideoInitialized = true;
-      _loadingVisible = false;
-      _currentModifiedUrl = updatedUrl;
-    });
-
-    GlobalVariables.unUpdatedUrl = updatedUrl;
-    GlobalVariables.position = Duration.zero;
-    GlobalVariables.duration = _controller!.value.duration;
-    GlobalVariables.banner = selectedChannel.banner ?? '';
-    GlobalVariables.name = selectedChannel.name ?? '';
-    GlobalVariables.slectedId = selectedChannel.id ?? '';
-    GlobalVariables.liveStatus =
-        !(selectedChannel.streamType == 'YoutubeLive' ||
-            selectedChannel.contentType == '1' );
-
-    _scrollToFocusedItem();
-    _resetHideControlsTimer();
-  } catch (error) {
-    if (_controller != null) {
-      await _controller!.dispose();
-      _controller = null;
-    }
-
-    setState(() {
-      _isVideoInitialized = false;
-      _loadingVisible = false;
-    });
-
-    // Different error handling for webseries vs others
-    if (widget.source == 'isSearchScreenViaDetailsPageChannelList' || widget.source == 'webseries_details_page' || widget.source == 'isMovieScreen' || widget.isVOD) {
-      // For webseries, wait 30 seconds before showing error
-      _startWebseriesTimeoutTimer();
-    } else {
-      // For all other sources, show immediate error
-      String errorMessage = "This video is temporarily unable to play.\nPlease choose another video.";
-      _showVideoErrorMessage(errorMessage);
-    }
-  }
-}
-
-// Update your existing _setupVideoPlayerListeners method
-void _setupVideoPlayerListeners() {
-  _controller!.addListener(() {
-    if (!mounted) return;
-
-    // Check if video has started playing (position > 0 and actually playing)
-    if (_controller!.value.position > Duration.zero && _controller!.value.isPlaying) {
-      if (!_hasVideoStartedPlaying) {
-        _hasVideoStartedPlaying = true;
-        // Cancel timeout timer since video started playing successfully
-        if (widget.source == 'isSearchScreenViaDetailsPageChannelList' || widget.source == 'webseries_details_page' || widget.source == 'isMovieScreen' || widget.isVOD) {
-          _webseriesTimeoutTimer?.cancel();
-        }
+      if (_controller!.value.size.width <= 0 ||
+          _controller!.value.size.height <= 0) {
+        throw Exception("Invalid video dimensions.");
       }
-    }
 
-    // Error Handling - Different behavior for webseries vs others
-    if (_controller!.value.hasError) {
-      if (widget.source == 'isSearchScreenViaDetailsPageChannelList' || widget.source == 'isContentScreenViaDetailsPageChannelList' || widget.source == 'webseries_details_page' || widget.source == 'isMovieScreen' || widget.isVOD) {
-        // For webseries, don't show immediate error - let timeout timer handle it
-        // Just cancel the timeout timer and let it handle the error
-        _webseriesTimeoutTimer?.cancel();
-        
-        // Start a new timeout specifically for error case
-        _webseriesTimeoutTimer = Timer(Duration(seconds: 20), () {
-          if (mounted && !_hasVideoStartedPlaying) {
-            String errorMessage = "This Video is temporary unavailable.\nPlease select another video.";
-            _showVideoErrorMessage(errorMessage);
-          }
-        });
-        return;
+      await _controller!.play();
+
+      // Setup listeners immediately after successful initialization
+      _setupVideoPlayerListeners();
+
+      // Start 30-second timeout timer specifically for webseries_details_page
+      if (widget.source == 'webseries_details_page' ||
+          widget.source == 'isMovieScreen' ||
+          widget.source == 'isLastPlayedVideos'
+          
+          ) {
+        _startWebseriesTimeoutTimer();
+      }
+
+      setState(() {
+        _isVideoInitialized = true;
+        _loadingVisible = false;
+        _currentModifiedUrl = videoUrl;
+      });
+    } catch (error) {
+      if (_controller != null) {
+        await _controller!.dispose();
+        _controller = null;
+      }
+
+      setState(() {
+        _isVideoInitialized = false;
+        _loadingVisible = false;
+      });
+
+      // Different error handling for webseries vs others
+      if (widget.source == 'webseries_details_page' ||
+          widget.source == 'isMovieScreen' ||
+          widget.source == 'isLastPlayedVideos'
+          
+          ) {
+        // For webseries, wait 30 seconds before showing error
+        _startWebseriesTimeoutTimer();
       } else {
         // For all other sources, show immediate error
-        String errorMessage = "This Channel is temporarily unable to play.\n Going... back to source page .";
+        String errorMessage =
+            "Unable to play this video temporarily.\nPlease try selecting another video.";
         _showVideoErrorMessage(errorMessage);
-        return;
       }
     }
+  }
 
-    setState(() {
-      _isBuffering = _controller!.value.isBuffering;
-      _loadingVisible =
-          _controller!.value.isBuffering && !_controller!.value.isPlaying;
-
-      // Update video progress
-      if (_controller!.value.duration > Duration.zero) {
-        _progress = _controller!.value.position.inMilliseconds /
-            _controller!.value.duration.inMilliseconds;
+// Add this new method to start the 30-second timeout timer
+  void _startWebseriesTimeoutTimer() {
+    _webseriesTimeoutTimer?.cancel();
+    _webseriesTimeoutTimer = Timer(Duration(seconds: 20), () {
+      if (mounted && !_hasVideoStartedPlaying) {
+        // Video hasn't started playing within 30 seconds
+        String errorMessage =
+            "Unable to play this video temporarily.\nPlease try selecting another video.";
+        _showVideoErrorMessage(errorMessage);
       }
-      
     });
+  }
 
-    // Auto-next for VOD near end (keep this functionality)
-    if (widget.isVOD &&
-        (_controller!.value.duration - _controller!.value.position <=
-            Duration(seconds: 5))) {
-      _playNext();
-    }
+// // Update your existing _onItemTap method
+//   Future<void> _onItemTap(int index) async {
+//     if (index < 0 || index >= widget.channelList.length) return;
 
-    // Auto-seek on resume position after reconnect
-    if (!_hasSeeked &&
-        widget.startAtPosition > Duration.zero &&
-        _controller!.value.position < widget.startAtPosition) {
-      _controller!.seekTo(widget.startAtPosition);
-      _hasSeeked = true;
-    }
-  });
-}
+//     // Cancel any existing timeout timer
+//     _webseriesTimeoutTimer?.cancel();
 
-// // Update your existing _setupVideoPlayerListeners method
-// void _setupVideoPlayerListeners() {
-//   _controller!.addListener(() {
-//     if (!mounted) return;
+//     if (_controller != null) {
+//       await _controller!.dispose();
+//       _controller = null;
+//     }
 
-//     // Check if video has started playing (position > 0 and actually playing)
-//     if (_controller!.value.position > Duration.zero && _controller!.value.isPlaying) {
-//       if (!_hasVideoStartedPlaying) {
-//         _hasVideoStartedPlaying = true;
-//         // Cancel timeout timer since video started playing successfully
+//     setState(() {
+//       isOnItemTapUsed = true;
+//       _loadingVisible = true;
+//       _isVideoInitialized = false;
+//       _showErrorMessage = false; // Hide any existing error message
+//       _hasVideoStartedPlaying = false; // Reset playing status
+//     });
+
+//     final selectedChannel = widget.channelList[index];
+//     String updatedUrl = selectedChannel.url ?? '';
+//     String originalUrl = selectedChannel.url ?? '';
+
+//     try {
+//       // URL fetching based on contentType/source
+//       // if (widget.source == 'isBannerSlider'  ) {
+//       //   // seasonId = 7 se API fetch karenge, selectedChannel.id se match karenge
+//       //   final playLink = await fetchEpisodeUrlById(
+//       //     selectedChannel.seasonId , // seasonId (hardcoded as 7 based on your API structure)
+//       //     selectedChannel.id.toString() // selectedChannel.id se match karne ke liye
+//       //   );
+//       //   if (playLink != null && playLink.isNotEmpty) {
+//       //     updatedUrl = playLink;
+//       //     print('✅ Final Episode URL: $updatedUrl for selectedChannel.id: ${selectedChannel.id}');
+//       //   } else {
+//       //     throw Exception('Could not fetch episode URL for seasonId: 7, selectedChannel.id: ${selectedChannel.id}');
+//       //   }
+//       // }
+
+//       if (widget.source == 'isLastPlayedVideos') {
+//         // For last played videos, just use the URL from the channel list directly
+//         updatedUrl = widget.channelList[index].url;
+//         print('isLastPlayedVideos : $updatedUrl ');
+
+//         // Check if it's a YouTube URL
+//         if (isYoutubeUrl(updatedUrl)) {
+//           print("Processing YouTube URL from last played videos");
+//           updatedUrl = await _socketService.getUpdatedUrl(updatedUrl);
+//         }
+//       } else {
 //         if (widget.source == 'webseries_details_page') {
-//           _webseriesTimeoutTimer?.cancel();
+//           final playLink =
+//               await fetchEpisodeUrlById1(selectedChannel.contentId.toString());
+//           if (playLink != null && playLink.isNotEmpty) updatedUrl = playLink;
+//         } else if (widget.source == 'isBannerSlider') {
+//           final playLink =
+//               await fetchVideoDataByIdFromBanners(selectedChannel.id);
+//           if (playLink['url'] != null && playLink['url']!.isNotEmpty)
+//             updatedUrl = playLink['url']!;
+//         }
+
+//         if (selectedChannel.contentType == '1' ||
+//             widget.isVOD ||
+//             widget.source == 'isMovieScreen') {
+//           print('matchedurlmovie : $updatedUrl ');
+
+//           final playLink =
+//               await fetchMoviePlayLinkById(int.parse(selectedChannel.id));
+//           if (playLink['source_url'] != null &&
+//               playLink['source_url']!.isNotEmpty)
+//             updatedUrl = playLink['source_url']!;
+//           print('matchedurlmovie2 : $updatedUrl ');
 //         }
 //       }
-//     }
 
-//     // Error Handling
-//     if (_controller!.value.hasError) {
-//       // Cancel timeout timer on error
-//       _webseriesTimeoutTimer?.cancel();
-      
-//       // Show error message instead of calling _playNext()
-//       String errorMessage = "Video playback error occurred.\nPlease select another video.";
-//       _showVideoErrorMessage(errorMessage);
-//       return;
-//     }
-
-//     setState(() {
-//       _isBuffering = _controller!.value.isBuffering;
-//       _loadingVisible =
-//           _controller!.value.isBuffering && !_controller!.value.isPlaying;
-
-//       // Update video progress
-//       if (_controller!.value.duration > Duration.zero) {
-//         _progress = _controller!.value.position.inMilliseconds /
-//             _controller!.value.duration.inMilliseconds;
+//       if (isYoutubeUrl(updatedUrl)) {
+//         updatedUrl = await _socketService.getUpdatedUrl(updatedUrl);
 //       }
-//     });
 
-//     // Auto-next for VOD near end (keep this functionality)
-//     if (widget.isVOD &&
-//         (_controller!.value.duration - _controller!.value.position <=
-//             Duration(seconds: 5))) {
-//       _playNext();
-//     }
+//       _controller = VideoPlayerController.network(updatedUrl);
 
-//     // Auto-seek on resume position after reconnect
-//     if (!_hasSeeked &&
-//         widget.startAtPosition > Duration.zero &&
-//         _controller!.value.position < widget.startAtPosition) {
-//       _controller!.seekTo(widget.startAtPosition);
-//       _hasSeeked = true;
-//     }
-//   });
-// }
+//       await _controller!.initialize().timeout(Duration(seconds: 10));
 
-
-
-// // Replace your existing _initializeVideoController method
-// Future<void> _initializeVideoController(int index) async {
-//   final String videoUrl = widget.videoUrl;
-
-
-//   if (_controller != null) {
-//     await _controller!.dispose();
-//     _controller = null;
-//   }
-
-//   setState(() {
-//     _isVideoInitialized = false;
-//     _loadingVisible = true;
-//     _showErrorMessage = false; // Hide any existing error message
-//   });
-
-//   _controller = VideoPlayerController.network(videoUrl);
-
-//   try {
-//     await _controller!.initialize().timeout(Duration(seconds: 10));
-
-//     if (_controller!.value.size.width <= 0 ||
-//         _controller!.value.size.height <= 0) {
-//       throw Exception("Invalid video dimensions.");
-//     }
-
-//     await _controller!.play();
-
-//     // Setup listeners immediately after successful initialization
-//     _setupVideoPlayerListeners();
-
-//     setState(() {
-//       _isVideoInitialized = true;
-//       _loadingVisible = false;
-//       _currentModifiedUrl = videoUrl;
-//     });
-//   } catch (error) {
-
-//     if (_controller != null) {
-//       await _controller!.dispose();
-//       _controller = null;
-//     }
-
-//     setState(() {
-//       _isVideoInitialized = false;
-//       _loadingVisible = false;
-//     });
-
-//     // Show error message instead of auto-playing next
-//     String errorMessage = "Sorry, unable to play this video.\nPlease try selecting another video.";
-//     _showVideoErrorMessage(errorMessage);
-//   }
-// }
-
-// // Update your _onItemTap method
-// Future<void> _onItemTap(int index) async {
-//   if (index < 0 || index >= widget.channelList.length) return;
-  
-//   if (_controller != null) {
-//     await _controller!.dispose();
-//     _controller = null;
-//   }
-
-//   setState(() {
-//     isOnItemTapUsed = true;
-//     _loadingVisible = true;
-//     _isVideoInitialized = false;
-//     _showErrorMessage = false; // Hide any existing error message
-//   });
-
-//   final selectedChannel = widget.channelList[index];
-//   String updatedUrl = selectedChannel.url ?? '';
-
-//   try {
-//     // URL fetching based on contentType/source
-//     if (widget.source == 'webseries_details_page') {
-//       final playLink =
-//           await fetchEpisodeUrlById(selectedChannel.contentId.toString());
-//       if (playLink != null && playLink.isNotEmpty) updatedUrl = playLink;
-//     }
-//     else if (widget.isBannerSlider) {
-//       final playLink = await fetchVideoDataByIdFromBanners(selectedChannel.id);
-//       if (playLink['url'] != null && playLink['url']!.isNotEmpty)
-//         updatedUrl = playLink['url']!;
-//     }
-//     else if (selectedChannel.contentType == '1' ||
-//         widget.isVOD ||
-//         widget.source == 'isMovieScreen') {
-//       final playLink =
-//           await fetchMoviePlayLink(int.parse(selectedChannel.id));
-//       if (playLink['url'] != null && playLink['url']!.isNotEmpty)
-//         updatedUrl = playLink['url']!;
-//     }
-
-//     if (isYoutubeUrl(updatedUrl)) {
-//       updatedUrl = await _socketService.getUpdatedUrl(updatedUrl);
-//     }
-
-//     _controller = VideoPlayerController.network(updatedUrl);
-
-//     await _controller!.initialize().timeout(Duration(seconds: 10));
-
-//     if (_controller!.value.size.width <= 0 ||
-//         _controller!.value.size.height <= 0) {
-//       throw Exception("Invalid video dimensions.");
-//     }
-
-//     await _controller!.play();
-
-//     // Immediately setup listeners after successful play
-//     _setupVideoPlayerListeners();
-
-//     setState(() {
-//       _focusedIndex = index;
-//       _isVideoInitialized = true;
-//       _loadingVisible = false;
-//       _currentModifiedUrl = updatedUrl;
-//     });
-
-//     GlobalVariables.unUpdatedUrl = updatedUrl;
-//     GlobalVariables.position = Duration.zero;
-//     GlobalVariables.duration = _controller!.value.duration;
-//     GlobalVariables.banner = selectedChannel.banner ?? '';
-//     GlobalVariables.name = selectedChannel.name ?? '';
-//     GlobalVariables.slectedId = selectedChannel.id ?? '';
-//     GlobalVariables.liveStatus =
-//         !(selectedChannel.streamType == 'YoutubeLive' ||
-//             selectedChannel.contentType == '1');
-
-//     _scrollToFocusedItem();
-//     _resetHideControlsTimer();
-//   } catch (error) {
-
-//     if (_controller != null) {
-//       await _controller!.dispose();
-//       _controller = null;
-//     }
-
-//     setState(() {
-//       _isVideoInitialized = false;
-//       _loadingVisible = false;
-//     });
-
-//     // Show error message instead of auto-playing next
-//     String errorMessage = "Unable to play selected video.\nPlease choose another video.";
-//     _showVideoErrorMessage(errorMessage);
-//   }
-// }
-
-// // Update your _setupVideoPlayerListeners method
-// void _setupVideoPlayerListeners() {
-//   _controller!.addListener(() {
-//     if (!mounted) return;
-
-//     // Error Handling
-//     if (_controller!.value.hasError) {
-      
-//       // Show error message instead of calling _playNext()
-//       String errorMessage = "Video playback error occurred.\nPlease select another video.";
-//       _showVideoErrorMessage(errorMessage);
-//       return;
-//     }
-
-//     setState(() {
-//       _isBuffering = _controller!.value.isBuffering;
-//       _loadingVisible =
-//           _controller!.value.isBuffering && !_controller!.value.isPlaying;
-
-//       // Update video progress
-//       if (_controller!.value.duration > Duration.zero) {
-//         _progress = _controller!.value.position.inMilliseconds /
-//             _controller!.value.duration.inMilliseconds;
+//       if (_controller!.value.size.width <= 0 ||
+//           _controller!.value.size.height <= 0) {
+//         throw Exception("Invalid video dimensions.");
 //       }
-//     });
 
-//     // Auto-next for VOD near end (keep this functionality)
-//     if (widget.isVOD &&
-//         (_controller!.value.duration - _controller!.value.position <=
-//             Duration(seconds: 5))) {
-//       _playNext();
+//       await _controller!.play();
+
+//       // Immediately setup listeners after successful play
+//       _setupVideoPlayerListeners();
+
+//       // Start 30-second timeout timer specifically for webseries_details_page
+//       if (widget.source == 'webseries_details_page' ||
+//           widget.source == 'isMovieScreen' ||
+//           widget.source == 'isMovieScreen') {
+//         _startWebseriesTimeoutTimer();
+//       }
+
+//       setState(() {
+//         _focusedIndex = index;
+//         _isVideoInitialized = true;
+//         _loadingVisible = false;
+//         _currentModifiedUrl = updatedUrl;
+//       });
+
+//       GlobalVariables.unUpdatedUrl = originalUrl;
+//       GlobalVariables.position = Duration.zero;
+//       GlobalVariables.duration = _controller!.value.duration;
+//       GlobalVariables.banner = selectedChannel.banner ?? '';
+//       GlobalVariables.name = selectedChannel.name ?? '';
+//       GlobalVariables.slectedId = selectedChannel.id ?? '';
+//       GlobalVariables.liveStatus =
+//           !(selectedChannel.streamType == 'YoutubeLive' ||
+//               selectedChannel.contentType == '1');
+
+//       _scrollToFocusedItem();
+//       _resetHideControlsTimer();
+//     } catch (error) {
+//       if (_controller != null) {
+//         await _controller!.dispose();
+//         _controller = null;
+//       }
+
+//       setState(() {
+//         _isVideoInitialized = false;
+//         _loadingVisible = false;
+//       });
+
+//       // Different error handling for webseries vs others
+//       if (widget.source == 'isSearchScreenViaDetailsPageChannelList' ||
+//           widget.source == 'webseries_details_page' ||
+//           widget.source == 'isMovieScreen' ||
+//           widget.isVOD) {
+//         // For webseries, wait 30 seconds before showing error
+//         _startWebseriesTimeoutTimer();
+//       } else {
+//         // For all other sources, show immediate error
+//         String errorMessage =
+//             "This video is temporarily unable to play.\nPlease choose another video.";
+//         _showVideoErrorMessage(errorMessage);
+//       }
 //     }
+//   }
 
-//     // Auto-seek on resume position after reconnect
-//     if (!_hasSeeked &&
-//         widget.startAtPosition > Duration.zero &&
-//         _controller!.value.position < widget.startAtPosition) {
-//       _controller!.seekTo(widget.startAtPosition);
-//       _hasSeeked = true;
-//     }
-//   });
-// }
+// Update your existing _setupVideoPlayerListeners method
+  void _setupVideoPlayerListeners() {
+    _controller!.addListener(() {
+      if (!mounted) return;
 
-// In your build method's Stack, add this after the loading indicators:
-// if (_showErrorMessage) _buildErrorMessage(),
+      // Check if video has started playing (position > 0 and actually playing)
+      if (_controller!.value.position > Duration.zero &&
+          _controller!.value.isPlaying) {
+        if (!_hasVideoStartedPlaying) {
+          _hasVideoStartedPlaying = true;
+          // Cancel timeout timer since video started playing successfully
+          if (widget.source == 'isSearchScreenViaDetailsPageChannelList' ||
+              widget.source == 'webseries_details_page' ||
+              widget.source == 'isMovieScreen' ||
+              widget.isVOD) {
+            _webseriesTimeoutTimer?.cancel();
+          }
+        }
+      }
 
-Widget _buildErrorMessage() {
-  return AnimatedOpacity(
-    opacity: _showErrorMessage ? 1.0 : 0.0,
-    duration: Duration(milliseconds: 500),
-    child: Container(
-      color: Colors.black87,
-      child: Center(
-        child: Container(
-          margin: EdgeInsets.all(40),
-          padding: EdgeInsets.all(30),
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.95),
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.3),
-                blurRadius: 10,
-                spreadRadius: 2,
-              ),
-            ],
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Error Icon with animation
-              TweenAnimationBuilder(
-                duration: Duration(seconds: 2),
-                tween: Tween<double>(begin: 0.0, end: 1.0),
-                builder: (context, double value, child) {
-                  return Transform.scale(
-                    scale: value,
-                    child: Icon(
-                      Icons.error_outline,
-                      size: 80,
-                      color: Colors.red,
-                    ),
-                  );
-                },
-              ),
-              
-              SizedBox(height: 20),
-              
-              // Error Message
-              Text(
-                _errorMessageText,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
+      // Error Handling - Different behavior for webseries vs others
+      if (_controller!.value.hasError) {
+        if (widget.source == 'isSearchScreenViaDetailsPageChannelList' ||
+            widget.source == 'isContentScreenViaDetailsPageChannelList' ||
+            widget.source == 'webseries_details_page' ||
+            widget.source == 'isMovieScreen' ||
+            widget.isVOD) {
+          // For webseries, don't show immediate error - let timeout timer handle it
+          // Just cancel the timeout timer and let it handle the error
+          _webseriesTimeoutTimer?.cancel();
+
+          // Start a new timeout specifically for error case
+          _webseriesTimeoutTimer = Timer(Duration(seconds: 20), () {
+            if (mounted && !_hasVideoStartedPlaying) {
+              String errorMessage =
+                  "This Video is temporary unavailable.\nPlease select another video.";
+              _showVideoErrorMessage(errorMessage);
+            }
+          });
+          return;
+        } else {
+          // For all other sources, show immediate error
+          String errorMessage =
+              "This Channel is temporarily unable to play.\n Going... back to source page .";
+          _showVideoErrorMessage(errorMessage);
+          return;
+        }
+      }
+
+      setState(() {
+        _isBuffering = _controller!.value.isBuffering;
+        _loadingVisible =
+            _controller!.value.isBuffering && !_controller!.value.isPlaying;
+
+        // Update video progress
+        if (_controller!.value.duration > Duration.zero) {
+          _progress = _controller!.value.position.inMilliseconds /
+              _controller!.value.duration.inMilliseconds;
+        }
+      });
+
+      // Auto-next for VOD near end (keep this functionality)
+      if (widget.isVOD &&
+          (_controller!.value.duration - _controller!.value.position <=
+              Duration(seconds: 5))) {
+        _playNext();
+      }
+
+      // Auto-seek on resume position after reconnect
+      if (!_hasSeeked &&
+          widget.startAtPosition > Duration.zero &&
+          _controller!.value.position < widget.startAtPosition) {
+        _controller!.seekTo(widget.startAtPosition);
+        _hasSeeked = true;
+      }
+    });
+  }
+
+  Future<String?> fetchEpisodeUrlById1(String episodeId) async {
+    const apiUrl = 'https://mobifreetv.com/android/getEpisodes/id/0';
+
+    try {
+      final response = await https.get(Uri.parse(apiUrl));
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
+
+        // Search for the matching episode by id
+        final matchedEpisode = data.firstWhere(
+          (item) => item['id'] == episodeId,
+          orElse: () => null,
+        );
+
+        if (matchedEpisode != null && matchedEpisode['url'] != null) {
+          return matchedEpisode['url'];
+        }
+      }
+    } catch (e) {}
+
+    return null;
+  }
+
+// Updated fetchEpisodeUrlById method
+  Future<String?> fetchEpisodeUrlById(
+      int seasonId, String selectedChannelId) async {
+    // seasonId se API call karenge
+    final apiUrl =
+        'https://acomtv.coretechinfo.com/public/api/getEpisodes/$seasonId/0';
+
+    try {
+      print(
+          '🔍 API Call: seasonId = $seasonId, looking for selectedChannelId = $selectedChannelId');
+      // final response = await https.get(Uri.parse(apiUrl));
+      final headers = await ApiService.getHeaders();
+
+      final response = await https.get(
+        Uri.parse(apiUrl),
+        headers: headers,
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
+        print(
+            '📡 API Response: Found ${data.length} episodes for seasonId: $seasonId');
+
+        // selectedChannelId se match karne ke liye
+        final matchedEpisode = data.firstWhere(
+          (item) => item['id'].toString() == selectedChannelId.toString(),
+          orElse: () => null,
+        );
+
+        if (matchedEpisode != null && matchedEpisode['url'] != null) {
+          String episodeUrl = matchedEpisode['url'];
+          print(
+              '✅ Match Found! selectedChannelId: $selectedChannelId → URL: $episodeUrl');
+          return episodeUrl;
+        } else {
+          print(
+              '❌ No match found for selectedChannelId: $selectedChannelId in fetched data');
+          // Debug: Print all available IDs
+          print('Available episode IDs: ${data.map((e) => e['id']).toList()}');
+        }
+      } else {
+        print('❌ API request failed with status: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('❌ Error fetching episode URL: $e');
+    }
+
+    return null;
+  }
+
+// Alternative simpler version if you want source_url and type
+  Future<Map<String, dynamic>> fetchMoviePlayLinkById(int movieId) async {
+    print('🔍 === Fetching Source URL and Type for Movie ID: $movieId ===');
+
+    final prefs = await SharedPreferences.getInstance();
+    final cacheKey = 'movie_source_data_$movieId';
+    final cachedSourceData = prefs.getString(cacheKey);
+
+    // Check cache first
+    if (cachedSourceData != null) {
+      try {
+        final Map<String, dynamic> cachedData = json.decode(cachedSourceData);
+        print('💾 Found cached source data: $cachedData');
+        return cachedData;
+      } catch (e) {
+        print('❌ Cache decode failed: $e');
+        prefs.remove(cacheKey);
+      }
+    }
+
+    try {
+      final headers = await ApiService.getHeaders();
+      final apiUrl = '${ApiService.baseUrl}getMoviePlayLinks/$movieId/0';
+
+      final response = await https.get(
+        Uri.parse(apiUrl),
+        headers: headers,
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> body = json.decode(response.body);
+
+        if (body.isNotEmpty) {
+          // Search for matching ID
+          for (var item in body) {
+            final Map<String, dynamic> itemMap = item as Map<String, dynamic>;
+            final int itemId = safeParseInt(itemMap['id']);
+
+            if (itemId == movieId) {
+              String sourceUrl = safeParseString(itemMap['source_url']);
+              int type = safeParseInt(itemMap['type']);
+              int linkType = safeParseInt(itemMap['link_type']);
+
+              // Handle YouTube IDs
+
+              final sourceData = {
+                'source_url': sourceUrl,
+                'type': type,
+                'link_type': linkType,
+                'id': itemId,
+                'name': safeParseString(itemMap['name']),
+                'quality': safeParseString(itemMap['quality']),
+              };
+
+              // Cache the source data
+              prefs.setString(cacheKey, json.encode(sourceData));
+              print('✅ Found and cached source data: $sourceData');
+              return sourceData;
+            }
+          }
+
+          // If no exact match, use first item
+          final Map<String, dynamic> firstItem =
+              body.first as Map<String, dynamic>;
+          String sourceUrl = safeParseString(firstItem['source_url']);
+          int type = safeParseInt(firstItem['type']);
+          int linkType = safeParseInt(firstItem['link_type']);
+
+          // if (sourceUrl.length == 11 && !sourceUrl.contains('http')) {
+          //   sourceUrl = 'https://www.youtube.com/watch?v=$sourceUrl';
+          // }
+
+          final sourceData = {
+            'source_url': sourceUrl,
+            'type': type,
+            'link_type': linkType,
+            'id': safeParseInt(firstItem['id']),
+            'name': safeParseString(firstItem['name']),
+            'quality': safeParseString(firstItem['quality']),
+          };
+
+          prefs.setString(cacheKey, json.encode(sourceData));
+          print('⚠️ No exact match, using first item source data: $sourceData');
+          return sourceData;
+        }
+      }
+
+      throw Exception('No valid source URL found');
+    } catch (e) {
+      print('❌ Error fetching source URL and type: $e');
+      rethrow;
+    }
+  }
+
+  Widget _buildErrorMessage() {
+    return AnimatedOpacity(
+      opacity: _showErrorMessage ? 1.0 : 0.0,
+      duration: Duration(milliseconds: 500),
+      child: Container(
+        color: Colors.black87,
+        child: Center(
+          child: Container(
+            margin: EdgeInsets.all(40),
+            padding: EdgeInsets.all(30),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.95),
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.3),
+                  blurRadius: 10,
+                  spreadRadius: 2,
                 ),
-              ),
-              
-              SizedBox(height: 30),
-              
-              // Conditional buttons based on whether onItemTap was used
-              if (!isOnItemTapUsed) 
-                // If onItemTap not used, show "Going back..." message
-                Column(
-                  children: [
-                    Text(
-                      "Going back to previous screen...",
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.grey[600],
-                        fontStyle: FontStyle.italic,
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Error Icon with animation
+                TweenAnimationBuilder(
+                  duration: Duration(seconds: 2),
+                  tween: Tween<double>(begin: 0.0, end: 1.0),
+                  builder: (context, double value, child) {
+                    return Transform.scale(
+                      scale: value,
+                      child: Icon(
+                        Icons.error_outline,
+                        size: 80,
+                        color: Colors.red,
                       ),
-                    ),
-                    SizedBox(height: 15),
-                    CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        Color.fromARGB(211, 155, 40, 248),
-                      ),
-                    ),
-                    
-                  ],
-                )
-              else
-                // If onItemTap was used, show manual dismiss button
-                ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      _showErrorMessage = false;
-                    });
-                    // Focus back to the channel list
-                    _safelyRequestFocus(focusNodes[_focusedIndex]);
+                    );
                   },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color.fromARGB(211, 155, 40, 248),
-                    padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  child: Text(
-                    'OK',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
+                ),
+
+                SizedBox(height: 20),
+
+                // Error Message
+                Text(
+                  _errorMessageText,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
                   ),
                 ),
-            ],
+
+                SizedBox(height: 30),
+
+                // Conditional buttons based on whether onItemTap was used
+                if (!isOnItemTapUsed)
+                  // If onItemTap not used, show "Going back..." message
+                  Column(
+                    children: [
+                      Text(
+                        "Going back to previous screen...",
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey[600],
+                          fontStyle: FontStyle.italic,
+                        ),
+                      ),
+                      SizedBox(height: 15),
+                      CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          Color.fromARGB(211, 155, 40, 248),
+                        ),
+                      ),
+                    ],
+                  )
+                else
+                  // If onItemTap was used, show manual dismiss button
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        _showErrorMessage = false;
+                      });
+                      // Focus back to the channel list
+                      _safelyRequestFocus(focusNodes[_focusedIndex]);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color.fromARGB(211, 155, 40, 248),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: Text(
+                      'OK',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
           ),
         ),
       ),
-    ),
-  );
-}
-
+    );
+  }
 
   void _scrollToFocusedItem() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -989,7 +1337,6 @@ Widget _buildErrorMessage() {
           _focusedIndex * (itemHeight + viewportPadding);
       final double maxScroll = _scrollController.position.maxScrollExtent;
       final double safeOffset = targetOffset.clamp(0, maxScroll);
-
 
       _scrollController.animateTo(
         safeOffset,
@@ -1035,9 +1382,7 @@ Widget _buildErrorMessage() {
       // Store timestamp
       await prefs.setInt(
           '${storageKey}_timestamp', DateTime.now().millisecondsSinceEpoch);
-
-    } catch (e) {
-    }
+    } catch (e) {}
   }
 
   // Add this method to load banners from SharedPreferences
@@ -1068,10 +1413,8 @@ Widget _buildErrorMessage() {
             _bannerCache[id] = _getCachedImage(bannerData);
           }
         });
-
       }
-    } catch (e) {
-    }
+    } catch (e) {}
   }
 
   // Modify your existing _getCachedImage method
@@ -1109,8 +1452,7 @@ Widget _buildErrorMessage() {
       if (_focusedIndex < focusNodes.length) {
         _safelyRequestFocus(focusNodes[_focusedIndex]);
         _scrollToFocusedItem();
-      } else {
-      }
+      } else {}
     });
   }
 
@@ -1221,7 +1563,6 @@ Widget _buildErrorMessage() {
             _controller?.value.position ?? Duration.zero;
         _wasPlayingBeforeDisconnection = _controller?.value.isPlaying ?? false;
 
-
         // Pause video on disconnect
         if (_controller != null && _controller!.value.isInitialized) {
           _controller?.pause();
@@ -1322,7 +1663,6 @@ Widget _buildErrorMessage() {
 
     _isSeekingOnNetReconnect = true;
     try {
-
       if (_controller!.value.position != position) {
         bool wasPlaying = _controller!.value.isPlaying;
         if (wasPlaying) await _controller!.pause();
@@ -1347,7 +1687,6 @@ Widget _buildErrorMessage() {
 
     _isSeeking = true;
     try {
-
       if (_controller!.value.position != position) {
         // Pehle pause karein taaki seek fast ho
         bool wasPlaying = _controller!.value.isPlaying;
@@ -1376,7 +1715,6 @@ Widget _buildErrorMessage() {
 
     _isSeekingOntap = true;
     try {
-
       if (_controller!.value.position != position) {
         // Pehle pause karein taaki seek fast ho
         bool wasPlaying = _controller!.value.isPlaying;
@@ -1590,8 +1928,6 @@ Widget _buildErrorMessage() {
 
 
 
-
-
   bool isYoutubeUrl(String? url) {
     if (url == null || url.isEmpty) {
       return false;
@@ -1621,18 +1957,18 @@ Widget _buildErrorMessage() {
       throw Exception("Empty URL provided");
     }
 
-    // Handle YouTube ID by converting to full URL if needed
-    if (RegExp(r'^[a-zA-Z0-9_-]{11}$').hasMatch(url)) {
-      url = "https://www.youtube.com/watch?v=$url";
-    }
+    // // Handle YouTube ID by converting to full URL if needed
+    // if (RegExp(r'^[a-zA-Z0-9_-]{11}$').hasMatch(url)) {
+    //   url = "https://www.youtube.com/watch?v=$url";
+    // }
 
     // Remove any existing query parameters
-    url = url.split('?')[0];
+    // url = url.split('?')[0];
 
     // Add new query parameters
-    if (params != null && params.isNotEmpty) {
-      url += '?' + params.entries.map((e) => '${e.key}=${e.value}').join('&');
-    }
+    // if (params != null && params.isNotEmpty) {
+    //   url += '?' + params.entries.map((e) => '${e.key}=${e.value}').join('&');
+    // }
 
     return url;
   }
@@ -1640,31 +1976,29 @@ Widget _buildErrorMessage() {
   bool isOnItemTapUsed = false;
   bool _hasSeekedOntap = false;
 
+  // Future<String?> fetchEpisodeUrlById(String episodeId) async {
+  //   const apiUrl = 'https://mobifreetv.com/android/getEpisodes/id/0';
 
-  Future<String?> fetchEpisodeUrlById(String episodeId) async {
-    const apiUrl = 'https://mobifreetv.com/android/getEpisodes/id/0';
+  //   try {
+  //     final response = await https.get(Uri.parse(apiUrl));
 
-    try {
-      final response = await https.get(Uri.parse(apiUrl));
+  //     if (response.statusCode == 200) {
+  //       final List<dynamic> data = json.decode(response.body);
 
-      if (response.statusCode == 200) {
-        final List<dynamic> data = json.decode(response.body);
+  //       // Search for the matching episode by id
+  //       final matchedEpisode = data.firstWhere(
+  //         (item) => item['id'] == episodeId,
+  //         orElse: () => null,
+  //       );
 
-        // Search for the matching episode by id
-        final matchedEpisode = data.firstWhere(
-          (item) => item['id'] == episodeId,
-          orElse: () => null,
-        );
+  //       if (matchedEpisode != null && matchedEpisode['url'] != null) {
+  //         return matchedEpisode['url'];
+  //       }
+  //     }
+  //   } catch (e) {}
 
-        if (matchedEpisode != null && matchedEpisode['url'] != null) {
-          return matchedEpisode['url'];
-        }
-      }
-    } catch (e) {
-    }
-
-    return null;
-  }
+  //   return null;
+  // }
 
 // // वीडियो प्लेयर लिसनर सेटअप के लिए एक अलग मेथड बनाएं
 //   void _setupVideoPlayerListeners() {
@@ -1719,8 +2053,7 @@ Widget _buildErrorMessage() {
           FocusScope.of(context).requestFocus(node);
         }
       });
-    } catch (e) {
-    }
+    } catch (e) {}
   }
 
 // Then replace direct focus calls with this method
@@ -1772,7 +2105,6 @@ Widget _buildErrorMessage() {
     }
 
     try {
-
       // Ensure previous controller is safely disposed
       if (_controller != null) {
         await _controller!.pause();
@@ -1901,8 +2233,7 @@ Widget _buildErrorMessage() {
           _isVolumeIndicatorVisible = false;
         });
       });
-    } catch (e) {
-    }
+    } catch (e) {}
   }
 
   // void _playNext() {
@@ -1970,6 +2301,7 @@ Widget _buildErrorMessage() {
     String bannerImageUrl,
     String name,
     bool liveStatus,
+    int seasonId,
   ) async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -1999,8 +2331,7 @@ Widget _buildErrorMessage() {
 
       // 🔹 Video entry format
       String newVideoEntry =
-          "$unUpdatedUrl|${position.inMilliseconds}|${duration.inMilliseconds}|$liveStatus|$bannerImageUrl|$videoId|$name";
-
+          "$unUpdatedUrl|${position.inMilliseconds}|${duration.inMilliseconds}|$liveStatus|$bannerImageUrl|$videoId|$name|$seasonId";
 
       // 🔹 Remove duplicate entries safely
       lastPlayedVideos.removeWhere((entry) {
@@ -2011,24 +2342,21 @@ Widget _buildErrorMessage() {
       });
 
       // 🔹 Ensure list has elements before accessing indices
-      if (lastPlayedVideos.isEmpty) {
-      }
+      if (lastPlayedVideos.isEmpty) {}
 
       lastPlayedVideos.insert(0, newVideoEntry);
 
       // 🔹 Avoid RangeError by limiting size safely
-      if (lastPlayedVideos.length > 25) {
+      if (lastPlayedVideos.length > 8) {
         lastPlayedVideos =
-            lastPlayedVideos.sublist(0, lastPlayedVideos.length.clamp(0, 25));
+            lastPlayedVideos.sublist(0, lastPlayedVideos.length.clamp(0, 8));
       }
 
       // 🔹 Save to SharedPreferences
       await prefs.setStringList('last_played_videos', lastPlayedVideos);
       await prefs.setInt('last_video_duration', duration.inMilliseconds);
       await prefs.setInt('last_video_position', position.inMilliseconds);
-
-    } catch (e) {
-    }
+    } catch (e) {}
   }
 
   int _accumulatedSeekForward = 0;
@@ -2177,7 +2505,6 @@ Widget _buildErrorMessage() {
 
       switch (event.logicalKey) {
         case LogicalKeyboardKey.arrowUp:
-
           _resetHideControlsTimer();
           if (playPauseButtonFocusNode.hasFocus ||
               backwardButtonFocusNode.hasFocus ||
@@ -2214,7 +2541,6 @@ Widget _buildErrorMessage() {
           break;
 
         case LogicalKeyboardKey.arrowDown:
-
           _resetHideControlsTimer();
           if (progressIndicatorFocusNode.hasFocus) {
             _safelyRequestFocus(focusNodes[_focusedIndex]);
@@ -2512,134 +2838,134 @@ Widget _buildErrorMessage() {
     );
   }
 
-  Widget _buildChannelList() {
-    return Positioned(
-      top: MediaQuery.of(context).size.height * 0.02,
-      bottom: MediaQuery.of(context).size.height * 0.1,
-      left: MediaQuery.of(context).size.width * 0.0,
-      right: MediaQuery.of(context).size.width * 0.78,
-      child: Container(
-        child: ListView.builder(
-          controller: _scrollController,
-          itemCount: widget.channelList.length,
-          itemBuilder: (context, index) {
-            final channel = widget.channelList[index];
-            final String channelId = widget.isBannerSlider
-                ? (channel.contentId?.toString() ??
-                    channel.contentId?.toString() ??
-                    '')
-                : (channel.id?.toString() ?? channel.id?.toString() ?? '');
+  // Widget _buildChannelList() {
+  //   return Positioned(
+  //     top: MediaQuery.of(context).size.height * 0.02,
+  //     bottom: MediaQuery.of(context).size.height * 0.1,
+  //     left: MediaQuery.of(context).size.width * 0.0,
+  //     right: MediaQuery.of(context).size.width * 0.78,
+  //     child: Container(
+  //       child: ListView.builder(
+  //         controller: _scrollController,
+  //         itemCount: widget.channelList.length,
+  //         itemBuilder: (context, index) {
+  //           final channel = widget.channelList[index];
+  //           final String channelId = widget.isBannerSlider
+  //               ? (channel.contentId?.toString() ??
+  //                   channel.contentId?.toString() ??
+  //                   '')
+  //               : (channel.id?.toString() ?? channel.id?.toString() ?? '');
 
-            final String? banner = channel is Map
-                ? channel['banner']?.toString()
-                : channel.banner?.toString();
-            final bool isBase64 =
-                channel.banner?.startsWith('data:image') ?? false;
+  //           final String? banner = channel is Map
+  //               ? channel['banner']?.toString()
+  //               : channel.banner?.toString();
+  //           final bool isBase64 =
+  //               channel.banner?.startsWith('data:image') ?? false;
 
-            return Padding(
-              padding:
-                  const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-              child: Focus(
-                focusNode: focusNodes[index],
-                onFocusChange: (hasFocus) {
-                  if (hasFocus) {
-                    setState(() {
-                      _focusedIndex = index;
-                    });
-                  }
-                },
-                child: GestureDetector(
-                  onTap: () {
-                    _onItemTap(index);
-                    _resetHideControlsTimer();
-                  },
-                  child: Container(
-                    width: screenwdt * 0.3,
-                    height: screenhgt * 0.18,
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: playPauseButtonFocusNode.hasFocus ||
-                                backwardButtonFocusNode.hasFocus ||
-                                forwardButtonFocusNode.hasFocus ||
-                                prevButtonFocusNode.hasFocus ||
-                                nextButtonFocusNode.hasFocus ||
-                                progressIndicatorFocusNode.hasFocus
-                            ? Colors.transparent
-                            : _focusedIndex == index
-                                ? const Color.fromARGB(211, 155, 40, 248)
-                                : Colors.transparent,
-                        width: 5.0,
-                      ),
-                      borderRadius: BorderRadius.circular(10),
-                      color: _focusedIndex == index
-                          ? Colors.black26
-                          : Colors.transparent,
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(6),
-                      child: Stack(
-                        children: [
-                          Positioned.fill(
-                            child: Opacity(
-                              opacity: 0.6,
-                              child: isBase64
-                                  ? Image.memory(
-                                      _bannerCache[channelId] ??
-                                          _getCachedImage(
-                                              channel.banner ?? localImage),
-                                      fit: BoxFit.cover,
-                                      errorBuilder: (context, error,
-                                              stackTrace) =>
-                                          Image.asset('assets/placeholder.png'),
-                                    )
-                                  : CachedNetworkImage(
-                                      imageUrl: channel.banner ?? localImage,
-                                      fit: BoxFit.cover,
-                                      errorWidget: (context, url, error) =>
-                                          localImage,
-                                    ),
-                            ),
-                          ),
-                          if (_focusedIndex == index)
-                            Positioned.fill(
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    begin: Alignment.topCenter,
-                                    end: Alignment.bottomCenter,
-                                    colors: [
-                                      Colors.transparent,
-                                      Colors.black.withOpacity(0.9),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          if (_focusedIndex == index)
-                            Positioned(
-                              left: 8,
-                              bottom: 8,
-                              child: Text(
-                                channel.name ?? '',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            );
-          },
-        ),
-      ),
-    );
-  }
+  //           return Padding(
+  //             padding:
+  //                 const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+  //             child: Focus(
+  //               focusNode: focusNodes[index],
+  //               onFocusChange: (hasFocus) {
+  //                 if (hasFocus) {
+  //                   setState(() {
+  //                     _focusedIndex = index;
+  //                   });
+  //                 }
+  //               },
+  //               child: GestureDetector(
+  //                 onTap: () {
+  //                   _onItemTap(index);
+  //                   _resetHideControlsTimer();
+  //                 },
+  //                 child: Container(
+  //                   width: screenwdt * 0.3,
+  //                   height: screenhgt * 0.18,
+  //                   decoration: BoxDecoration(
+  //                     border: Border.all(
+  //                       color: playPauseButtonFocusNode.hasFocus ||
+  //                               backwardButtonFocusNode.hasFocus ||
+  //                               forwardButtonFocusNode.hasFocus ||
+  //                               prevButtonFocusNode.hasFocus ||
+  //                               nextButtonFocusNode.hasFocus ||
+  //                               progressIndicatorFocusNode.hasFocus
+  //                           ? Colors.transparent
+  //                           : _focusedIndex == index
+  //                               ? const Color.fromARGB(211, 155, 40, 248)
+  //                               : Colors.transparent,
+  //                       width: 5.0,
+  //                     ),
+  //                     borderRadius: BorderRadius.circular(10),
+  //                     color: _focusedIndex == index
+  //                         ? Colors.black26
+  //                         : Colors.transparent,
+  //                   ),
+  //                   child: ClipRRect(
+  //                     borderRadius: BorderRadius.circular(6),
+  //                     child: Stack(
+  //                       children: [
+  //                         Positioned.fill(
+  //                           child: Opacity(
+  //                             opacity: 0.6,
+  //                             child: isBase64
+  //                                 ? Image.memory(
+  //                                     _bannerCache[channelId] ??
+  //                                         _getCachedImage(
+  //                                             channel.banner ?? localImage),
+  //                                     fit: BoxFit.cover,
+  //                                     errorBuilder: (context, error,
+  //                                             stackTrace) =>
+  //                                         Image.asset('assets/placeholder.png'),
+  //                                   )
+  //                                 : CachedNetworkImage(
+  //                                     imageUrl: channel.banner ?? localImage,
+  //                                     fit: BoxFit.cover,
+  //                                     errorWidget: (context, url, error) =>
+  //                                         localImage,
+  //                                   ),
+  //                           ),
+  //                         ),
+  //                         if (_focusedIndex == index)
+  //                           Positioned.fill(
+  //                             child: Container(
+  //                               decoration: BoxDecoration(
+  //                                 gradient: LinearGradient(
+  //                                   begin: Alignment.topCenter,
+  //                                   end: Alignment.bottomCenter,
+  //                                   colors: [
+  //                                     Colors.transparent,
+  //                                     Colors.black.withOpacity(0.9),
+  //                                   ],
+  //                                 ),
+  //                               ),
+  //                             ),
+  //                           ),
+  //                         if (_focusedIndex == index)
+  //                           Positioned(
+  //                             left: 8,
+  //                             bottom: 8,
+  //                             child: Text(
+  //                               channel.name ?? '',
+  //                               style: TextStyle(
+  //                                 color: Colors.white,
+  //                                 fontSize: 16,
+  //                                 fontWeight: FontWeight.bold,
+  //                               ),
+  //                             ),
+  //                           ),
+  //                       ],
+  //                     ),
+  //                   ),
+  //                 ),
+  //               ),
+  //             ),
+  //           );
+  //         },
+  //       ),
+  //     ),
+  //   );
+  // }
 
   // Widget _buildCustomProgressIndicator() {
 

@@ -393,6 +393,7 @@ class NewsItemModel {
   final String id;
   final String index;
   final String name;
+  final String unUpdatedUrl;
   final String description;
   final String thumbnail_high;
   final String banner;
@@ -432,6 +433,7 @@ class NewsItemModel {
     required this.id,
     this.index = '',
     required this.name,
+    required this.unUpdatedUrl,
     this.description = '',
     this.thumbnail_high = '',
     required this.banner,
@@ -487,6 +489,7 @@ class NewsItemModel {
       id: safeIntToString(json['id']),  // Convert int to String properly
       index: safeIntToString(json['index']),  // Convert int to String properly
       name: safeToString(json['name'] ?? json['Episoade_Name'] ?? json['session_name'], defaultValue: 'No Name'),
+      unUpdatedUrl: safeIntToString(json['unUpdatedUrl']),
       description: safeToString(json['description'] ?? json['episoade_description'] ?? json['session_description']),
       thumbnail_high: safeToString(json['thumbnail_high']),
       banner: safeToString(json['banner'] ?? json['session_image'] ?? json['episoade_image']),
@@ -530,6 +533,7 @@ class NewsItemModel {
       'id': id,
       'index': index,
       'name': name,
+      'unUpdatedUrl': unUpdatedUrl,
       'description': description,
       'thumbnail_high': thumbnail_high,
       'banner': banner,
@@ -569,6 +573,7 @@ class NewsItemModel {
     String? id,
     String? index,
     String? name,
+    String? unUpdatedUrl,
     String? description,
     String? thumbnail_high,
     String? banner,
@@ -606,6 +611,7 @@ class NewsItemModel {
       id: id ?? this.id,
       index: index ?? this.index,
       name: name ?? this.name,
+      unUpdatedUrl: unUpdatedUrl ?? this.unUpdatedUrl,
       description: description ?? this.description,
       thumbnail_high: thumbnail_high ?? this.thumbnail_high,
       banner: banner ?? this.banner,
@@ -648,6 +654,7 @@ class NewsItemModel {
     return other is NewsItemModel &&
         other.id == id &&
         other.name == name &&
+        other.unUpdatedUrl == unUpdatedUrl &&
         other.banner == banner &&
         other.poster == poster &&
         other.index == index &&

@@ -106,7 +106,7 @@ class _MoreChannelItemState extends State<MoreChannelItem> {
       decoration: BoxDecoration(
         border: Border.all(
           color: isFocused ? dominantColor : Colors.transparent,
-          width: 3.0,
+          width: 5.0,
         ),
         boxShadow: isFocused
             ? [

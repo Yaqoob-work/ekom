@@ -475,7 +475,7 @@ class _CategoryWidgetState extends State<CategoryWidget> {
                                 onTap: () {
                                   _dismissLoadingIndicator();
                                   Navigator.push(
-                                    context,///////////////
+                                    context, ///////////////
                                     MaterialPageRoute(
                                       builder: (context) => CategoryGridView(
                                         category: widget.category,
@@ -584,6 +584,8 @@ class _CategoryWidgetState extends State<CategoryWidget> {
                 unUpdatedUrl: originalUrl,
                 name: channels[index].name,
                 liveStatus: liveStatus,
+                seasonId: null,
+                isLastPlayedStored: false,
               ),
             ),
           ),
@@ -771,6 +773,7 @@ class _CategoryGridViewState extends State<CategoryGridView> {
                                 unUpdatedUrl: originalUrl,
                                 name: widget.filteredChannels[index].name,
                                 liveStatus: liveStatus,
+                                seasonId: null, isLastPlayedStored: false,
                               ),
                             ),
                           ).then((_) {

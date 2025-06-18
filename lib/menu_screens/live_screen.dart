@@ -652,7 +652,8 @@ class _LiveScreenState extends State<LiveScreen> {
             String updatedUrl =
                 await _socketService.getUpdatedUrl(newsItem.url);
             newsItem = NewsItemModel(
-              id: newsItem.id,videoId: '',
+              id: newsItem.id,
+              videoId: '',
               name: newsItem.name,
               description: newsItem.description,
               banner: newsItem.banner,
@@ -662,9 +663,10 @@ class _LiveScreenState extends State<LiveScreen> {
               streamType: 'M3u8',
               type: 'M3u8',
               genres: newsItem.genres,
-              status: newsItem.status, 
+              status: newsItem.status,
               index: newsItem.index,
               image: '',
+              unUpdatedUrl: '',
             );
             break; // Exit loop when URL is successfully updated
           } catch (e) {
@@ -700,6 +702,8 @@ class _LiveScreenState extends State<LiveScreen> {
               unUpdatedUrl: originalUrl,
               name: newsItem.name,
               liveStatus: liveStatus,
+              seasonId: null,
+              isLastPlayedStored: false,
             ),
           ),
         );

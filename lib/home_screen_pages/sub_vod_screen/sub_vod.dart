@@ -307,63 +307,10 @@ Future<List<NewsItemModel>> fetchContent(
   return content;
 }
 
-// Future<Map<String, dynamic>> fetchMoviePlayLink(int movieId) async {
-//   final prefs = await SharedPreferences.getInstance();
-//   final cachedPlayLink = prefs.getString('movie_playlink_$movieId');
-
-//   if (cachedPlayLink != null) {
-//     try {
-//       final Map<String, dynamic> cachedData = json.decode(cachedPlayLink);
-//       return {
-//         'url': safeParseString(cachedData['url']),
-//         'type': safeParseString(cachedData['type']),
-//         'id': safeParseInt(cachedData['id']), // Added id field
-//         'status': safeParseInt(cachedData['status']) // Added status field
-//       };
-//     } catch (e) {
-//       prefs.remove('movie_playlink_$movieId');
-//     }
-//   }
-
-//   try {
-//     final headers = await ApiService.getHeaders();
-
-//     final response = await https.get(
-//       Uri.parse('${ApiService.baseUrl}getMoviePlayLinks/$movieId/0'),
-//       headers: headers,
-//     );
-
-//     if (response.statusCode == 200) {
-//       final List<dynamic> body = json.decode(response.body);
-//       if (body.isNotEmpty) {
-//         final Map<String, dynamic> firstItem =
-//             body.first as Map<String, dynamic>;
-
-//         final playLinkData = {
-//           'url': safeParseString(firstItem['url']),
-//           'type': safeParseString(firstItem['type']),
-//           'id': safeParseInt(firstItem['id']),
-//           'status': safeParseInt(firstItem['status'])
-//         };
-
-//         prefs.setString('movie_playlink_$movieId', json.encode(playLinkData));
-//         return playLinkData;
-//       }
-//       return {'url': '', 'type': '', 'id': 0, 'status': 0};
-//     } else if (response.statusCode == 401 || response.statusCode == 403) {
-//       throw Exception('Something went wrong');
-//     } else {
-//       throw Exception('Something went wrong');
-//     }
-//   } catch (e) {
-//     rethrow;
-//   }
-// }
-
 // Alternative simpler version if you want source_url and type
 Future<Map<String, dynamic>> fetchMoviePlayLink(int movieId) async {
   print('🔍 === Fetching Source URL and Type for Movie ID: $movieId ===');
-  
+
   final prefs = await SharedPreferences.getInstance();
   final cacheKey = 'movie_source_data_$movieId';
   final cachedSourceData = prefs.getString(cacheKey);
@@ -383,7 +330,7 @@ Future<Map<String, dynamic>> fetchMoviePlayLink(int movieId) async {
   try {
     final headers = await ApiService.getHeaders();
     final apiUrl = '${ApiService.baseUrl}getMoviePlayLinks/$movieId/0';
-    
+
     final response = await https.get(
       Uri.parse(apiUrl),
       headers: headers,
@@ -391,21 +338,20 @@ Future<Map<String, dynamic>> fetchMoviePlayLink(int movieId) async {
 
     if (response.statusCode == 200) {
       final List<dynamic> body = json.decode(response.body);
-      
+
       if (body.isNotEmpty) {
         // Search for matching ID
         for (var item in body) {
           final Map<String, dynamic> itemMap = item as Map<String, dynamic>;
           final int itemId = safeParseInt(itemMap['id']);
-          
+
           if (itemId == movieId) {
             String sourceUrl = safeParseString(itemMap['source_url']);
             int type = safeParseInt(itemMap['type']);
             int linkType = safeParseInt(itemMap['link_type']);
-            
+
             // Handle YouTube IDs
 
-            
             final sourceData = {
               'source_url': sourceUrl,
               'type': type,
@@ -414,24 +360,25 @@ Future<Map<String, dynamic>> fetchMoviePlayLink(int movieId) async {
               'name': safeParseString(itemMap['name']),
               'quality': safeParseString(itemMap['quality']),
             };
-            
+
             // Cache the source data
             prefs.setString(cacheKey, json.encode(sourceData));
             print('✅ Found and cached source data: $sourceData');
             return sourceData;
           }
         }
-        
+
         // If no exact match, use first item
-        final Map<String, dynamic> firstItem = body.first as Map<String, dynamic>;
+        final Map<String, dynamic> firstItem =
+            body.first as Map<String, dynamic>;
         String sourceUrl = safeParseString(firstItem['source_url']);
         int type = safeParseInt(firstItem['type']);
         int linkType = safeParseInt(firstItem['link_type']);
-        
-        if (sourceUrl.length == 11 && !sourceUrl.contains('http')) {
-          sourceUrl = 'https://www.youtube.com/watch?v=$sourceUrl';
-        }
-        
+
+        // if (sourceUrl.length == 11 && !sourceUrl.contains('http')) {
+        //   sourceUrl = 'https://www.youtube.com/watch?v=$sourceUrl';
+        // }
+
         final sourceData = {
           'source_url': sourceUrl,
           'type': type,
@@ -440,13 +387,13 @@ Future<Map<String, dynamic>> fetchMoviePlayLink(int movieId) async {
           'name': safeParseString(firstItem['name']),
           'quality': safeParseString(firstItem['quality']),
         };
-        
+
         prefs.setString(cacheKey, json.encode(sourceData));
         print('⚠️ No exact match, using first item source data: $sourceData');
         return sourceData;
       }
     }
-    
+
     throw Exception('No valid source URL found');
   } catch (e) {
     print('❌ Error fetching source URL and type: $e');
@@ -462,113 +409,6 @@ Future<Color> fetchPaletteColor(String imageUrl) async {
     return Colors.grey; // Fallback color
   }
 }
-
-// // Updated NewsItemModel class to handle the API response correctly
-// class NewsItemModel {
-//   final int id;
-//   final String name;
-//   final String banner;
-//   final String poster;
-//   final String index;
-//   final int status;
-//   final String description;
-//   final String genres;
-
-//   NewsItemModel({
-//     required this.id,
-//     required this.name,
-//     required this.banner,
-//     required this.poster,
-//     required this.index,
-//     required this.status,
-//     this.description = '',
-//     this.genres = '',
-//   });
-
-//   factory NewsItemModel.fromJson(Map<String, dynamic> json) {
-//     return NewsItemModel(
-//       id: safeParseInt(json['id']),
-//       name: safeParseString(json['name'], defaultValue: 'No Name'),
-//       banner: safeParseString(json['banner'], defaultValue: 'localImage'),
-//       poster: safeParseString(json['poster'], defaultValue: 'localImage'),
-//       index: safeParseString(json['index'], defaultValue: '0'),
-//       status: safeParseInt(json['status']),
-//       description: safeParseString(json['description'], defaultValue: ''),
-//       genres: safeParseString(json['genres'], defaultValue: ''),
-//     );
-//   }
-
-//   // Helper method
-//   bool get isActive => status == 1;
-
-//   @override
-//   bool operator ==(Object other) {
-//     if (identical(this, other)) return true;
-//     return other is NewsItemModel &&
-//         other.id == id &&
-//         other.name == name &&
-//         other.banner == banner &&
-//         other.poster == poster &&
-//         other.index == index &&
-//         other.status == status;
-//   }
-
-//   @override
-//   int get hashCode =>
-//       id.hashCode ^
-//       name.hashCode ^
-//       banner.hashCode ^
-//       poster.hashCode ^
-//       index.hashCode ^
-//       status.hashCode;
-// }
-
-// // Also update your displayImage function to handle errors better
-// Widget displayImage(
-//   String imageUrl, {
-//   double? width,
-//   double? height,
-// }) {
-
-//   if (imageUrl.isEmpty || imageUrl == 'localImage') {
-//     return localImage;
-//   }
-
-//   if (imageUrl.startsWith('data:image')) {
-//     // Handle base64-encoded images
-//     try {
-//       Uint8List imageBytes = _getImageFromBase64String(imageUrl);
-//       return Image.memory(
-//         imageBytes,
-//         fit: BoxFit.fill,
-//         width: width,
-//         height: height,
-//         errorBuilder: (context, error, stackTrace) {
-//           return localImage;
-//         },
-//       );
-//     } catch (e) {
-//       return localImage;
-//     }
-//   } else if (imageUrl.startsWith('http') || imageUrl.startsWith('https')) {
-//     // Handle URL images
-//     return CachedNetworkImage(
-//       imageUrl: imageUrl,
-//       placeholder: (context, url) {
-//         return localImage;
-//       },
-//       errorWidget: (context, url, error) {
-//         return localImage;
-//       },
-//       fit: BoxFit.fill,
-//       width: width,
-//       height: height,
-//     );
-//   } else {
-//     // Fallback for invalid image data
-//     return localImage;
-//   }
-// }
 
 // Updated displayImage function with SVG support and better error handling
 Widget displayImage(
@@ -663,37 +503,6 @@ Uint8List _getImageFromBase64String(String base64String) {
   return base64Decode(base64String.split(',').last);
 }
 
-// // Widget to handle image loading (either base64 or URL)
-// Widget displayImage(
-//   String imageUrl, {
-//   double? width,
-//   double? height,
-// }) {
-//   if (imageUrl.startsWith('data:image')) {
-//     // Handle base64-encoded images
-//     Uint8List imageBytes = _getImageFromBase64String(imageUrl);
-//     return Image.memory(
-//       imageBytes,
-//       fit: BoxFit.fill,
-//       width: width,
-//       height: height,
-//     );
-//   } else if (imageUrl.startsWith('http') || imageUrl.startsWith('https')) {
-//     // Handle URL images
-//     return CachedNetworkImage(
-//       imageUrl: imageUrl,
-//       placeholder: (context, url) => localImage,
-//       errorWidget: (context, url, error) => localImage,
-//       fit: BoxFit.fill,
-//       width: width,
-//       height: height,
-//     );
-//   } else {
-//     // Fallback for invalid image data
-//     return localImage;
-//   }
-// }
-
 // Error handling helper for authentication errors
 class AuthErrorHandler {
   static void handleAuthError(BuildContext context, dynamic error) {
@@ -730,161 +539,6 @@ class SubVod extends StatefulWidget {
   @override
   _SubVodState createState() => _SubVodState();
 }
-
-// class _SubVodState extends State<SubVod> {
-//   List<NetworkApi> _networks = [];
-//   bool _isLoading = true;
-//   bool _cacheLoaded = false;
-//   late FocusNode firstSubVodFocusNode;
-
-//   @override
-//   void initState() {
-//     super.initState();
-
-//     firstSubVodFocusNode = FocusNode()
-//       ..onKey = (node, event) {
-//         if (event is RawKeyDownEvent) {
-//           if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
-//             context.read<FocusProvider>().requestMusicItemFocus(context);
-//             return KeyEventResult.handled;
-//           } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
-//             context.read<FocusProvider>().requestManageMoviesFocus;
-//             return KeyEventResult.handled;
-//           }
-//         }
-//         return KeyEventResult.ignored;
-//       };
-
-//     WidgetsBinding.instance.addPostFrameCallback((_) {
-//       context.read<FocusProvider>().setFirstSubVodFocusNode(firstSubVodFocusNode);
-//     });
-
-//     _loadCachedNetworks();
-//     _fetchNetworksInBackground();
-//   }
-
-//   Future<void> _loadCachedNetworks() async {
-//     final prefs = await SharedPreferences.getInstance();
-//     final cachedNetworks = prefs.getString('networks');
-
-//     if (cachedNetworks != null) {
-//       try {
-//         List<dynamic> cachedBody = json.decode(cachedNetworks);
-//         setState(() {
-//           _networks = cachedBody.map((dynamic item) => NetworkApi.fromJson(item)).toList();
-//           _isLoading = false;
-//           _cacheLoaded = true;
-//         });
-//       } catch (e) {
-//       }
-//     } else {
-//     }
-//   }
-
-//   Future<void> _fetchNetworksInBackground() async {
-//     try {
-//       final fetchedNetworks = await fetchNetworks(context);
-
-//       if (!listEquals(_networks, fetchedNetworks)) {
-//         setState(() {
-//           _networks = fetchedNetworks;
-//         });
-//       }
-//     } catch (e) {
-
-//       // Handle authentication errors
-//       AuthErrorHandler.handleAuthError(context, e);
-
-//       if (!_cacheLoaded) {
-//         setState(() {
-//           _isLoading = false;
-//         });
-//       }
-//     }
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Consumer<ColorProvider>(builder: (context, colorProvider, child) {
-//       Color backgroundColor = colorProvider.isItemFocused
-//           ? colorProvider.dominantColor.withOpacity(0.3)
-//           : Colors.black87;
-
-//       return Scaffold(
-//         backgroundColor: Colors.transparent,
-//         body: _isLoading
-//             ? Center(child: LoadingIndicator())
-//             : _buildNetworksList(),
-//       );
-//     });
-//   }
-
-//   Widget _buildNetworksList() {
-//     return Column(
-//       crossAxisAlignment: CrossAxisAlignment.start,
-//       children: [
-//         Consumer<ColorProvider>(builder: (context, colorProvider, child) {
-//           return Padding(
-//             padding: const EdgeInsets.all(8.0),
-//             child: Text(
-//               'Contents',
-//               style: TextStyle(
-//                 fontSize: 24.0,
-//                 fontWeight: FontWeight.bold,
-//                 color: Colors.white,
-//               ),
-//             ),
-//           );
-//         }),
-//         Expanded(
-//           child: _networks.isEmpty
-//               ? Center(child: Text('No Networks Available',
-//                   style: TextStyle(color: Colors.white, fontSize: 18)))
-//               : ListView.builder(
-//                   scrollDirection: Axis.horizontal,
-//                   itemCount: _networks.length,
-//                   itemBuilder: (context, index) {
-//                     final network = _networks[index];
-//                     final focusNode = index == 0 ? firstSubVodFocusNode : FocusNode()
-//                       ..onKey = (node, event) {
-//                         if (event is RawKeyDownEvent) {
-//                           if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
-//                             context.read<FocusProvider>().requestMusicItemFocus(context);
-//                             return KeyEventResult.handled;
-//                           } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
-//                             context.read<FocusProvider>().requestFirstMoviesFocus();
-//                             return KeyEventResult.handled;
-//                           }
-//                         }
-//                         return KeyEventResult.ignored;
-//                       };
-
-//                     return FocussableSubvodWidget(
-//                       imageUrl: network.logo,
-//                       name: network.name,
-//                       focusNode: focusNode,
-//                       onTap: () async {
-//                         Navigator.push(
-//                           context,
-//                           MaterialPageRoute(
-//                             builder: (context) => ContentScreen(networkId: network.id),
-//                           ),
-//                         );
-//                       },
-//                       fetchPaletteColor: fetchPaletteColor,
-//                     );
-//                   },
-//                 ),
-//         ),
-//       ],
-//     );
-//   }
-
-//   @override
-//   void dispose() {
-//     super.dispose();
-//   }
-// }
 
 class _SubVodState extends State<SubVod> {
   List<NetworkApi> _networks = [];
@@ -1082,7 +736,7 @@ class _SubVodState extends State<SubVod> {
             ),
             SizedBox(height: 8),
             Text(
-              'Please check your connection and try again',
+              'Something went wrong',
               style: TextStyle(color: Colors.white70, fontSize: 14),
             ),
             SizedBox(height: 20),
@@ -1351,192 +1005,6 @@ class ContentScreen extends StatefulWidget {
   @override
   _ContentScreenState createState() => _ContentScreenState();
 }
-
-// class _ContentScreenState extends State<ContentScreen> {
-//   List<NewsItemModel> _content = [];
-//   bool _isLoading = true;
-//   bool _cacheLoaded = false;
-//   FocusNode firstItemFocusNode = FocusNode();
-
-//   @override
-//   void initState() {
-//     super.initState();
-
-//     _loadCachedContent();
-//     _fetchContentInBackground();
-
-//     Future.delayed(Duration(milliseconds: 50), () async {
-//       firstItemFocusNode.requestFocus();
-//     });
-//   }
-
-// Future<void> _loadCachedContent() async {
-//     final prefs = await SharedPreferences.getInstance();
-//     final cachedContent = prefs.getString('content_${widget.networkId}');
-
-//     if (cachedContent != null) {
-//       try {
-//         List<dynamic> cachedBody = json.decode(cachedContent);
-//         setState(() {
-//           _content = cachedBody.map((dynamic item) => NewsItemModel.fromJson(item)).toList();
-//           _isLoading = false;
-//           _cacheLoaded = true;
-//         });
-//       } catch (e) {
-//       }
-//     } else {
-//     }
-//   }
-
-//   Future<void> _fetchContentInBackground() async {
-//     try {
-//       final fetchedContent = await fetchContent(context, widget.networkId);
-
-//       if (!listEquals(_content, fetchedContent)) {
-//         setState(() {
-//           _content = fetchedContent;
-//         });
-//       }
-//     } catch (e) {
-//       AuthErrorHandler.handleAuthError(context, e);
-//     } finally {
-//       if (!_cacheLoaded) {
-//         setState(() {
-//           _isLoading = false;
-//         });
-//       }
-//     }
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Consumer<ColorProvider>(builder: (context, colorProvider, child) {
-//       Color backgroundColor = colorProvider.isItemFocused
-//           ? colorProvider.dominantColor.withOpacity(0.3)
-//           : Colors.black87;
-
-//       return Scaffold(
-//         backgroundColor: backgroundColor,
-//         body: _isLoading
-//             ? Center(child: CircularProgressIndicator())
-//             : _buildContentList(),
-//       );
-//     });
-//   }
-
-//   // Widget _buildContentList() {
-//   //   if (_content.isEmpty) {
-//   //     return Center(
-//   //       child: Text(
-//   //         'No Content Available',
-//   //         style: TextStyle(color: Colors.white, fontSize: 18),
-//   //       ),
-//   //     );
-//   //   }
-
-//   //   // Sort content by index (now handling int properly)
-//   //   _content.sort((a, b) => safeParseInt(a.index).compareTo(safeParseInt(b.index)));
-
-//   //   return Padding(
-//   //     padding: EdgeInsets.symmetric(
-//   //         horizontal: screenwdt * 0.03, vertical: screenhgt * 0.01),
-//   //     child: GridView.builder(
-//   //       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-//   //           crossAxisCount: 5, childAspectRatio: 0.8),
-//   //       itemCount: _content.length,
-//   //       itemBuilder: (context, index) {
-//   //         final contentItem = _content[index];
-
-//   //         return FocussableSubvodWidget(
-//   //           focusNode: index == 0 ? firstItemFocusNode : null,
-//   //           imageUrl: contentItem.banner,
-//   //           name: contentItem.name,
-//   //           onTap: () async {
-//   //             // Convert string ID to int properly
-//   //             int contentId = safeParseInt(contentItem.id);
-
-//   //             Navigator.push(
-//   //               context,
-//   //               MaterialPageRoute(
-//   //                 builder: (context) => DetailsPage(
-//   //                   id: contentId,
-//   //                   channelList: _content,
-//   //                   source: 'isContentScreenViaDetailsPageChannelList',
-//   //                   banner: contentItem.banner,
-//   //                   name: contentItem.name ?? '',
-//   //                 ),
-//   //               ),
-//   //             );
-//   //           },
-//   //           fetchPaletteColor: fetchPaletteColor,
-//   //         );
-//   //       },
-//   //     ),
-//   //   );
-//   // }
-
-//   Widget _buildContentList() {
-//     if (_content.isEmpty) {
-//       return Center(
-//         child: Text(
-//           'No Content Available',
-//           style: TextStyle(color: Colors.white, fontSize: 18),
-//         ),
-//       );
-//     }
-
-//     // Sort content by index (now handling int properly)
-//     _content.sort((a, b) => safeParseInt(a.index).compareTo(safeParseInt(b.index)));
-
-//     return Padding(
-//       padding: EdgeInsets.symmetric(
-//           horizontal: screenwdt * 0.03, vertical: screenhgt * 0.01),
-//       child: GridView.builder(
-//         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-//             crossAxisCount: 5, childAspectRatio: 0.8),
-//         itemCount: _content.length,
-//         itemBuilder: (context, index) {
-//           final contentItem = _content[index];
-
-//           // Debug print to check image URLs
-
-//           return FocussableSubvodWidget(
-//             focusNode: index == 0 ? firstItemFocusNode : null,
-//             // Use poster instead of banner for better image display
-//             imageUrl: contentItem.poster.isNotEmpty ? contentItem.poster : contentItem.banner,
-//             name: contentItem.name,
-//             onTap: () async {
-//               // Convert string ID to int properly
-//               int contentId = safeParseInt(contentItem.id);
-
-//               Navigator.push(
-//                 context,
-//                 MaterialPageRoute(
-//                   builder: (context) => DetailsPage(
-//                     id: contentId,
-//                     channelList: _content,
-//                     source: 'isContentScreenViaDetailsPageChannelList',
-//                     banner: contentItem.banner,
-//                     name: contentItem.name ?? '',
-//                   ),
-//                 ),
-//               );
-//             },
-//             fetchPaletteColor: fetchPaletteColor,
-//           );
-//         },
-//       ),
-//     );
-//   }
-
-//   @override
-//   void dispose() {
-//     firstItemFocusNode.dispose();
-//     super.dispose();
-//   }
-// }
-
-// Using existing NewsItemModel - no changes needed to the model
 
 // Updated ContentScreen with better debug logging
 class _ContentScreenState extends State<ContentScreen> {
@@ -2019,6 +1487,52 @@ class _DetailsPageState extends State<DetailsPage> {
     );
   }
 
+
+    bool isYoutubeUrl(String? url) {
+    if (url == null || url.isEmpty) {
+      return false;
+    }
+
+    url = url.toLowerCase().trim();
+
+    // First check if it's a YouTube ID (exactly 11 characters)
+    bool isYoutubeId = RegExp(r'^[a-zA-Z0-9_-]{11}$').hasMatch(url);
+    if (isYoutubeId) {
+      return true;
+    }
+
+    // Then check for regular YouTube URLs
+    bool isYoutubeUrl = url.contains('youtube.com') ||
+        url.contains('youtu.be') ||
+        url.contains('youtube.com/shorts/');
+    if (isYoutubeUrl) {
+      return true;
+    }
+
+    return false;
+  }
+
+  String formatUrl(String url, {Map<String, String>? params}) {
+    if (url.isEmpty) {
+      throw Exception("Empty URL provided");
+    }
+
+    // // Handle YouTube ID by converting to full URL if needed
+    // if (RegExp(r'^[a-zA-Z0-9_-]{11}$').hasMatch(url)) {
+    //   url = "https://www.youtube.com/watch?v=$url";
+    // }
+
+    // Remove any existing query parameters
+    // url = url.split('?')[0];
+
+    // Add new query parameters
+    // if (params != null && params.isNotEmpty) {
+    //   url += '?' + params.entries.map((e) => '${e.key}=${e.value}').join('&');
+    // }
+
+    return url;
+  }
+
   void _showInactiveContentMessage() {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -2027,80 +1541,6 @@ class _DetailsPageState extends State<DetailsPage> {
       ),
     );
   }
-
-//   Future<void> _playVideo(MovieDetailsApi movieDetails) async {
-//     if (_isVideoPlaying) {
-//       return;
-//     }
-
-//     setState(() {
-//       _isLoading = true;
-//       _isVideoPlaying = true;
-//     });
-//     _shouldContinueLoading = true;
-
-//     try {
-//       Map<String, dynamic> playLinkData = await fetchMoviePlayLink(widget.id);
-//       // Map<String, dynamic> originalUrl = await fetchMoviePlayLink(widget.id);
-//       // String playType = safeParseString(playLinkData['type']);
-// String originalUrl = playLinkData['url'] ?? '';
-// String updatedUrl = playLinkData['url'] ?? '';
-//       if (playLinkData.isNotEmpty) {
-//         print('playLinkData: $updatedUrl');
-//         // Create mutable copy for URL updates
-//         // Update the URL field in playLinkData using getUpdatedUrl
-//          updatedUrl = await _socketService.getUpdatedUrl(playLinkData['url']);
-//         playLinkData['url'] = updatedUrl;
-//         print('afterplayLinkData: $playLinkData');
-
-//         bool liveStatus = false;
-
-//         if (_shouldContinueLoading) {
-//           await Navigator.push(
-//             context,
-//             MaterialPageRoute(
-//               builder: (context) => VideoScreen(
-//                 videoUrl: updatedUrl,
-//                 videoId: widget.id,
-//                 channelList: widget.channelList,
-//                 videoType: '',
-//                 bannerImageUrl: widget.banner,
-//                 startAtPosition: Duration.zero,
-//                 isLive: false,
-//                 isVOD: true,
-//                 isBannerSlider: false,
-//                 source: widget.source,
-//                 isSearch: false,
-//                 unUpdatedUrl: originalUrl,
-//                 name: widget.name,
-//                 liveStatus: liveStatus,
-//               ),
-//             ),
-//           );
-//         }
-
-//         setState(() {
-//           _isLoading = false;
-//           _isReturningFromVideo = true;
-//         });
-
-//         setState(() {
-//           _isReturningFromVideo = false;
-//         });
-//       } else {
-//         throw Exception('Empty play URL received');
-//       }
-//     } catch (e) {
-//       _handleVideoError(context);
-//       AuthErrorHandler.handleAuthError(context, e);
-//     } finally {
-//       setState(() {
-//         _isLoading = false;
-//         _isVideoPlaying = false;
-//       });
-//     }
-//   }
-// }
 
   Future<void> _playVideo(MovieDetailsApi movieDetails) async {
     print('🎬 === STARTING _playVideo ===');
@@ -2128,11 +1568,8 @@ class _DetailsPageState extends State<DetailsPage> {
       Map<String, dynamic> playLinkData = await fetchMoviePlayLink(widget.id);
       String originalUrl = playLinkData['source_url'] ?? '';
 
-      print('📡 Play link data received:');
-      print('   - URL: $originalUrl');
-
       // Step 2: Get original URL
-      String updatedUrl;
+      String updatedUrl = playLinkData['source_url'] ?? '';
       print('🔗 Original URL: $originalUrl');
       print('🔗 Original URL Length: ${originalUrl.length}');
 
@@ -2145,21 +1582,13 @@ class _DetailsPageState extends State<DetailsPage> {
       print('🔌 === STEP 2: Socket Service ===');
       print('🔌 Socket connected: ${_socketService.socket.connected}');
 
-      // try {
-      //   print('🔌 Calling _socketService.getUpdatedUrl...');
-      //   updatedUrl = await _socketService.getUpdatedUrl(originalUrl);
-      //   print('🔌 Socket response received');
-      //   print('🔗UpdatedURL: $updatedUrl');
-      //   print('🔗 Updated URL Length: ${updatedUrl.length}');
-      // } catch (e) {
-      //   print('❌ Socket service failed: $e');
-      //   print('🔄 Using original URL as fallback');
-      //   updatedUrl = originalUrl;
-      // }
+            if (isYoutubeUrl(updatedUrl)) {
+        print("🔄 Processing YouTube URL from last played videos");
+        updatedUrl = await _socketService.getUpdatedUrl(updatedUrl);
+      }
 
-        updatedUrl = await _socketService.getUpdatedUrl(originalUrl);
-        print('🔗UpdatedURL: $updatedUrl');
-
+      // updatedUrl = await _socketService.getUpdatedUrl(originalUrl);
+      // print('🔗UpdatedURL: $updatedUrl');
 
       if (updatedUrl.isEmpty) {
         print('❌ ERROR: Updated URL is empty');
@@ -2214,7 +1643,7 @@ class _DetailsPageState extends State<DetailsPage> {
                 videoUrl: updatedUrl,
                 videoId: widget.id,
                 channelList: widget.channelList,
-                videoType:  '',
+                videoType: '',
                 bannerImageUrl: widget.banner,
                 startAtPosition: Duration.zero,
                 isLive: false,
@@ -2224,6 +1653,8 @@ class _DetailsPageState extends State<DetailsPage> {
                 isSearch: false,
                 unUpdatedUrl: originalUrl,
                 name: widget.name,
+                seasonId: null,
+                isLastPlayedStored: false,
                 liveStatus: liveStatus,
               );
             },

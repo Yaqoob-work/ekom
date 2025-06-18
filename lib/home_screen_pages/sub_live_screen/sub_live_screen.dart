@@ -985,8 +985,6 @@
 //   }
 // }
 
-
-
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
@@ -1133,7 +1131,7 @@ class _SubLiveScreenState extends State<SubLiveScreen> {
         newsItemFocusNodes[itemId]!.hasFocus) {
       Scrollable.ensureVisible(
         newsItemFocusNodes[itemId]!.context!,
-        alignment: 0.05, // Adjust alignment for better UX
+        alignment: 0.25, // Adjust alignment for better UX
         duration: Duration(milliseconds: 800),
         curve: Curves.linear,
       );
@@ -1807,223 +1805,100 @@ class _SubLiveScreenState extends State<SubLiveScreen> {
 //     );
 //   }
 
-
-
 // Replace your existing _buildCategoryButtons() method with this updated version:
 
-Widget _buildCategoryButtons() {
-  return Container(
-    padding: EdgeInsets.symmetric(vertical: screenhgt * 0.01),
-    height: screenhgt * 0.1, // Parent container height
-    child: Row(
-      children: [
-        ...categories.asMap().entries.map((entry) {
-          int index = entry.key;
-          String category = entry.value;
-          final focusNode = categoryFocusNodes[category]!;
+  Widget _buildCategoryButtons() {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: screenhgt * 0.01),
+      height: screenhgt * 0.1, // Parent container height
+      child: Row(
+        children: [
+          ...categories.asMap().entries.map((entry) {
+            int index = entry.key;
+            String category = entry.value;
+            final focusNode = categoryFocusNodes[category]!;
 
-          return Focus(
-            focusNode: focusNode,
-            onFocusChange: (hasFocus) {
-              setState(() {
-                if (hasFocus) {
-                  // Update color in the provider when category button is focused
-                  final randomColor = _generateRandomColor();
-                  context
-                      .read<ColorProvider>()
-                      .updateColor(randomColor, true);
-                } else {
-                  // Reset color when focus is lost
-                  context.read<ColorProvider>().resetColor();
-                }
-              });
-            },
-            onKey: (FocusNode node, RawKeyEvent event) {
-              if (event is RawKeyDownEvent) {
-                if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
-                  final sharedDataProvider =
-                      context.read<SharedDataProvider>();
-                  final lastPlayedVideos =
-                      sharedDataProvider.lastPlayedVideos;
-
-                  if (lastPlayedVideos.isNotEmpty) {
+            return Focus(
+              focusNode: focusNode,
+              onFocusChange: (hasFocus) {
+                setState(() {
+                  if (hasFocus) {
+                    // Update color in the provider when category button is focused
+                    final randomColor = _generateRandomColor();
                     context
-                        .read<FocusProvider>()
-                        .requestFirstLastPlayedFocus();
-                    return KeyEventResult.handled;
-                  }
-                } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
-                  if (_musicList.isNotEmpty) {
-                    // Ensure first item is visible by scrolling to start
-                    _scrollToFirstItem();
-
-                    // Request focus after scrolling animation
-                    Future.delayed(Duration(milliseconds: 150), () {
-                      final firstId = _musicList[0].id;
-                      final nextNode = newsItemFocusNodes[firstId];
-                      if (nextNode != null && nextNode.context != null) {
-                        FocusScope.of(context).requestFocus(nextNode);
-
-                        // Double ensure visibility
-                        Future.delayed(Duration(milliseconds: 50), () {
-                          _scrollToFocusedItem(firstId);
-                        });
-                      }
-                    });
-                    return KeyEventResult.handled;
-                  }
-                } else if (event.logicalKey ==
-                    LogicalKeyboardKey.arrowRight) {
-                  if (index == categories.length - 1) {
-                    FocusScope.of(context).requestFocus(moreFocusNode);
+                        .read<ColorProvider>()
+                        .updateColor(randomColor, true);
                   } else {
-                    FocusScope.of(context).requestFocus(
-                        categoryFocusNodes[categories[index + 1]]);
+                    // Reset color when focus is lost
+                    context.read<ColorProvider>().resetColor();
                   }
-                  return KeyEventResult.handled;
-                } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
-                  if (index == 0) {
-                    FocusScope.of(context).requestFocus(moreFocusNode);
-                  } else {
-                    FocusScope.of(context).requestFocus(
-                        categoryFocusNodes[categories[index - 1]]);
-                  }
-                  return KeyEventResult.handled;
-                } else if (event.logicalKey == LogicalKeyboardKey.enter ||
-                    event.logicalKey == LogicalKeyboardKey.select) {
-                  _selectCategory(category);
-                  return KeyEventResult.handled;
-                }
-              }
-              return KeyEventResult.ignored;
-            },
-            child: Builder(
-              builder: (BuildContext context) {
-                final bool hasFocus = Focus.of(context).hasFocus;
-                final currentColor =
-                    context.watch<ColorProvider>().dominantColor;
-                return RandomLightColorWidget(
-                  hasFocus: hasFocus,
-                  childBuilder: (Color randomColor) {
-                    return Container(
-                      margin: EdgeInsets.all(
-                          screenwdt * 0.001), // Reduced padding
-                      decoration: BoxDecoration(
-                        color: Colors.transparent,
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                          color: hasFocus ? currentColor : Colors.transparent,
-                          width: 2,
-                        ),
-                      ),
-                      child: TextButton(
-                        onPressed: () => _selectCategory(category),
-                        style: ButtonStyle(
-                          padding: MaterialStateProperty.all(EdgeInsets.zero),
-                        ),
-                        child: Center(
-                          child: Text(
-                            category,
-                            style: TextStyle(
-                              fontSize: menutextsz,
-                              color: _selectedCategory == category
-                                  ? borderColor
-                                  : (hasFocus ? currentColor : hintColor),
-                              fontWeight:
-                                  _selectedCategory == category || hasFocus
-                                      ? FontWeight.bold
-                                      : FontWeight.normal,
-                            ),
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                );
+                });
               },
-            ),
-          );
-        }).toList(),
+              onKey: (FocusNode node, RawKeyEvent event) {
+                if (event is RawKeyDownEvent) {
+                  if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+                    final sharedDataProvider =
+                        context.read<SharedDataProvider>();
+                    final lastPlayedVideos =
+                        sharedDataProvider.lastPlayedVideos;
 
-        // More button remains the same
-        Expanded(
-          child: Focus(
-            focusNode: moreFocusNode,
-            onFocusChange: (hasFocus) {
-              setState(() {
-                if (hasFocus) {
-                  // Update color in the provider when "More" button is focused
-                  final randomColor = _generateRandomColor();
-                  context
-                      .read<ColorProvider>()
-                      .updateColor(randomColor, true);
-                } else {
-                  // Reset color when focus is lost
-                  context.read<ColorProvider>().resetColor();
-                }
-              });
-            },
-            onKey: (FocusNode node, RawKeyEvent event) {
-              if (event is RawKeyDownEvent) {
-                if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
-                  FocusScope.of(context)
-                      .requestFocus(categoryFocusNodes[categories.first]);
-                  return KeyEventResult.handled;
-                } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
-                  FocusScope.of(context)
-                      .requestFocus(categoryFocusNodes[categories.last]);
-                  return KeyEventResult.handled;
-                } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
-                  final sharedDataProvider =
-                      context.read<SharedDataProvider>();
-                  final lastPlayedVideos =
-                      sharedDataProvider.lastPlayedVideos;
+                    if (lastPlayedVideos.isNotEmpty) {
+                      context
+                          .read<FocusProvider>()
+                          .requestFirstLastPlayedFocus();
+                      return KeyEventResult.handled;
+                    }
+                  } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+                    if (_musicList.isNotEmpty) {
+                      // Ensure first item is visible by scrolling to start
+                      _scrollToFirstItem();
 
-                  if (lastPlayedVideos.isNotEmpty) {
-                    // Request focus for the first banner in lastPlayedVideos
-                    context
-                        .read<FocusProvider>()
-                        .requestFirstLastPlayedFocus();
+                      // Request focus after scrolling animation
+                      Future.delayed(Duration(milliseconds: 150), () {
+                        final firstId = _musicList[0].id;
+                        final nextNode = newsItemFocusNodes[firstId];
+                        if (nextNode != null && nextNode.context != null) {
+                          FocusScope.of(context).requestFocus(nextNode);
+
+                          // Double ensure visibility
+                          Future.delayed(Duration(milliseconds: 50), () {
+                            _scrollToFocusedItem(firstId);
+                          });
+                        }
+                      });
+                      return KeyEventResult.handled;
+                    }
+                  } else if (event.logicalKey ==
+                      LogicalKeyboardKey.arrowRight) {
+                    if (index == categories.length - 1) {
+                      FocusScope.of(context).requestFocus(moreFocusNode);
+                    } else {
+                      FocusScope.of(context).requestFocus(
+                          categoryFocusNodes[categories[index + 1]]);
+                    }
+                    return KeyEventResult.handled;
+                  } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+                    if (index == 0) {
+                      FocusScope.of(context).requestFocus(moreFocusNode);
+                    } else {
+                      FocusScope.of(context).requestFocus(
+                          categoryFocusNodes[categories[index - 1]]);
+                    }
+                    return KeyEventResult.handled;
+                  } else if (event.logicalKey == LogicalKeyboardKey.enter ||
+                      event.logicalKey == LogicalKeyboardKey.select) {
+                    _selectCategory(category);
                     return KeyEventResult.handled;
                   }
                 }
-                else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
-                  if (_musicList.isNotEmpty) {
-                    // Ensure first item is visible by scrolling to start
-                    _scrollToFirstItem();
-
-                    // Request focus after scrolling animation
-                    Future.delayed(Duration(milliseconds: 150), () {
-                      final firstId = _musicList[0].id;
-                      final nextNode = newsItemFocusNodes[firstId];
-                      if (nextNode != null && nextNode.context != null) {
-                        FocusScope.of(context).requestFocus(nextNode);
-
-                        // Double ensure visibility
-                        Future.delayed(Duration(milliseconds: 50), () {
-                          _scrollToFocusedItem(firstId);
-                        });
-                      }
-                    });
-                    return KeyEventResult.handled;
-                  }
-                }
-                else if (event.logicalKey == LogicalKeyboardKey.enter ||
-                    event.logicalKey == LogicalKeyboardKey.select) {
-                  _navigateToChannelsCategory();
-                  return KeyEventResult.handled;
-                }
-              }
-              return KeyEventResult.ignored;
-            },
-            child: Builder(
-              builder: (BuildContext context) {
-                final bool hasFocus = Focus.of(context).hasFocus;
-                final Color currentColor =
-                    context.watch<ColorProvider>().dominantColor;
-                return Align(
-                  alignment: Alignment.centerLeft,
-                  child: RandomLightColorWidget(
+                return KeyEventResult.ignored;
+              },
+              child: Builder(
+                builder: (BuildContext context) {
+                  final bool hasFocus = Focus.of(context).hasFocus;
+                  final currentColor =
+                      context.watch<ColorProvider>().dominantColor;
+                  return RandomLightColorWidget(
                     hasFocus: hasFocus,
                     childBuilder: (Color randomColor) {
                       return Container(
@@ -2033,40 +1908,159 @@ Widget _buildCategoryButtons() {
                           color: Colors.transparent,
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(
-                            color:
-                                hasFocus ? currentColor : Colors.transparent,
+                            color: hasFocus ? currentColor : Colors.transparent,
                             width: 2,
                           ),
                         ),
                         child: TextButton(
-                          onPressed: _navigateToChannelsCategory,
+                          onPressed: () => _selectCategory(category),
                           style: ButtonStyle(
-                            padding:
-                                MaterialStateProperty.all(EdgeInsets.zero),
+                            padding: MaterialStateProperty.all(EdgeInsets.zero),
                           ),
-                          child: Text(
-                            'More',
-                            style: TextStyle(
-                              fontSize: menutextsz,
-                              color: hasFocus ? currentColor : hintColor,
-                              fontWeight: hasFocus
-                                  ? FontWeight.bold
-                                  : FontWeight.normal,
+                          child: Center(
+                            child: Text(
+                              category,
+                              style: TextStyle(
+                                fontSize: menutextsz,
+                                color: _selectedCategory == category
+                                    ? borderColor
+                                    : (hasFocus ? currentColor : hintColor),
+                                fontWeight:
+                                    _selectedCategory == category || hasFocus
+                                        ? FontWeight.bold
+                                        : FontWeight.normal,
+                              ),
                             ),
                           ),
                         ),
                       );
                     },
-                  ),
-                );
+                  );
+                },
+              ),
+            );
+          }).toList(),
+
+          // More button remains the same
+          Expanded(
+            child: Focus(
+              focusNode: moreFocusNode,
+              onFocusChange: (hasFocus) {
+                setState(() {
+                  if (hasFocus) {
+                    // Update color in the provider when "More" button is focused
+                    final randomColor = _generateRandomColor();
+                    context
+                        .read<ColorProvider>()
+                        .updateColor(randomColor, true);
+                  } else {
+                    // Reset color when focus is lost
+                    context.read<ColorProvider>().resetColor();
+                  }
+                });
               },
+              onKey: (FocusNode node, RawKeyEvent event) {
+                if (event is RawKeyDownEvent) {
+                  if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
+                    FocusScope.of(context)
+                        .requestFocus(categoryFocusNodes[categories.first]);
+                    return KeyEventResult.handled;
+                  } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+                    FocusScope.of(context)
+                        .requestFocus(categoryFocusNodes[categories.last]);
+                    return KeyEventResult.handled;
+                  } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+                    final sharedDataProvider =
+                        context.read<SharedDataProvider>();
+                    final lastPlayedVideos =
+                        sharedDataProvider.lastPlayedVideos;
+
+                    if (lastPlayedVideos.isNotEmpty) {
+                      // Request focus for the first banner in lastPlayedVideos
+                      context
+                          .read<FocusProvider>()
+                          .requestFirstLastPlayedFocus();
+                      return KeyEventResult.handled;
+                    }
+                  } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+                    if (_musicList.isNotEmpty) {
+                      // Ensure first item is visible by scrolling to start
+                      _scrollToFirstItem();
+
+                      // Request focus after scrolling animation
+                      Future.delayed(Duration(milliseconds: 150), () {
+                        final firstId = _musicList[0].id;
+                        final nextNode = newsItemFocusNodes[firstId];
+                        if (nextNode != null && nextNode.context != null) {
+                          FocusScope.of(context).requestFocus(nextNode);
+
+                          // Double ensure visibility
+                          Future.delayed(Duration(milliseconds: 50), () {
+                            _scrollToFocusedItem(firstId);
+                          });
+                        }
+                      });
+                      return KeyEventResult.handled;
+                    }
+                  } else if (event.logicalKey == LogicalKeyboardKey.enter ||
+                      event.logicalKey == LogicalKeyboardKey.select) {
+                    _navigateToChannelsCategory();
+                    return KeyEventResult.handled;
+                  }
+                }
+                return KeyEventResult.ignored;
+              },
+              child: Builder(
+                builder: (BuildContext context) {
+                  final bool hasFocus = Focus.of(context).hasFocus;
+                  final Color currentColor =
+                      context.watch<ColorProvider>().dominantColor;
+                  return Align(
+                    alignment: Alignment.centerLeft,
+                    child: RandomLightColorWidget(
+                      hasFocus: hasFocus,
+                      childBuilder: (Color randomColor) {
+                        return Container(
+                          margin: EdgeInsets.all(
+                              screenwdt * 0.001), // Reduced padding
+                          decoration: BoxDecoration(
+                            color: Colors.transparent,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color:
+                                  hasFocus ? currentColor : Colors.transparent,
+                              width: 2,
+                            ),
+                          ),
+                          child: TextButton(
+                            onPressed: _navigateToChannelsCategory,
+                            style: ButtonStyle(
+                              padding:
+                                  MaterialStateProperty.all(EdgeInsets.zero),
+                            ),
+                            child: Text(
+                              'More',
+                              style: TextStyle(
+                                fontSize: menutextsz,
+                                color: hasFocus ? currentColor : hintColor,
+                                fontWeight: hasFocus
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  );
+                },
+              ),
             ),
           ),
-        ),
-      ],
-    ),
-  );
-}
+        ],
+      ),
+    );
+  }
 
   void _navigateToChannelsCategory() {
     Navigator.push(
@@ -2143,7 +2137,7 @@ Widget _buildCategoryButtons() {
           if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
             // Prevent moving focus beyond "View All"
             FocusScope.of(context)
-            .requestFocus(categoryFocusNodes[_selectedCategory]);
+                .requestFocus(categoryFocusNodes[_selectedCategory]);
             return KeyEventResult.handled;
           }
           if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
@@ -2171,6 +2165,7 @@ Widget _buildCategoryButtons() {
           videoId: '',
           index: '',
           image: '',
+          unUpdatedUrl: '',
         ),
         onTap: _navigateToViewAllScreen,
         onEnterPress: _handleEnterPress,
@@ -2270,6 +2265,7 @@ Widget _buildCategoryButtons() {
               status: newsItem.status,
               index: newsItem.index,
               image: '',
+              unUpdatedUrl: '',
             );
             break; // Exit loop when URL is successfully updated
           } catch (e) {
@@ -2304,6 +2300,8 @@ Widget _buildCategoryButtons() {
               videoId: int.tryParse(newsItem.id),
               unUpdatedUrl: originalUrl,
               name: newsItem.name,
+              seasonId: null,
+              isLastPlayedStored: false,
               liveStatus: liveStatus,
             ),
           ),

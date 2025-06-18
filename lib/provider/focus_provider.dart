@@ -493,7 +493,7 @@ void scrollToElement(String identifier) {
     print('Scrolling to $identifier');
     Scrollable.ensureVisible(
       context,
-      alignment: 0.15, // Align the element at the top
+      alignment: 0.25, // Align the element at the top
       duration: const Duration(milliseconds: 600), // Animation duration
       curve: Curves.linear, // Smooth scrolling
     );

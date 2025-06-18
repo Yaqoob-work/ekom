@@ -164,7 +164,7 @@ class _FocussableSubvodWidgetState extends State<FocussableSubvodWidget> {
                       decoration: BoxDecoration(
                         border: Border.all(
                           color: isFocused ? paletteColor : Colors.transparent,
-                          width: 4.0,
+                          width: 5.0,
                         ),
                         boxShadow: isFocused
                             ? [

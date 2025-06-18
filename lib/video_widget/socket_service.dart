@@ -174,7 +174,7 @@ class SocketService {
     });
 
     socket.on('error', (error) {
-      // print('Socket error: $error');
+      print('Socket error: $error');
     });
 
     socket.on('disconnect', (_) {

@@ -1793,8 +1793,8 @@ class _SplashScreenState extends State<SplashScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              width: 150,
-              height: 150,
+              width: screenwdt * 0.5 ,
+              height: screenhgt * 0.5,
               child: localImage,
             ),
             // SizedBox(height: 30),

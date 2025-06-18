@@ -30,8 +30,7 @@ Future<Map<String, String>> getAuthHeaders() async {
     if (AuthManager.hasValidAuthKey) {
       authKey = AuthManager.authKey;
     }
-  } catch (e) {
-  }
+  } catch (e) {}
 
   // Fallback to global variable
   if (authKey.isEmpty && globalAuthKey.isNotEmpty) {
@@ -47,8 +46,7 @@ Future<Map<String, String>> getAuthHeaders() async {
         // Update global variable for next time
         globalAuthKey = authKey;
       }
-    } catch (e) {
-    }
+    } catch (e) {}
   }
 
   if (authKey.isEmpty) {
@@ -98,7 +96,6 @@ Future<Map<String, String>> fetchVideoDataByIdFromBanners(
     if (cachedData != null) {
       responseData = json.decode(cachedData);
     } else {
-
       // Try multiple API endpoints with auth key
       Map<String, String> headers = await getAuthHeaders();
       bool success = false;
@@ -108,7 +105,6 @@ Future<Map<String, String>> fetchVideoDataByIdFromBanners(
         String endpoint = ApiConfig.FEATURED_TV_ENDPOINTS[i];
 
         try {
-
           Map<String, String> currentHeaders = Map.from(headers);
 
           // For fallback endpoint, use old header format
@@ -125,7 +121,6 @@ Future<Map<String, String>> fetchVideoDataByIdFromBanners(
                 headers: currentHeaders,
               )
               .timeout(Duration(seconds: 15));
-
 
           if (response.statusCode == 200) {
             String body = response.body.trim();
@@ -168,7 +163,6 @@ Future<Map<String, String>> fetchVideoDataByIdFromBanners(
       throw Exception('Content with ID $contentId not found');
     }
 
-
     return {
       'url': matchedItem['url'] ?? '',
       'type': matchedItem['type'] ?? '',
@@ -183,7 +177,6 @@ Future<Map<String, String>> fetchVideoDataByIdFromBanners(
 
 // Enhanced fetch banners function
 Future<List<dynamic>> fetchBannersData() async {
-
   Map<String, String> headers = await getAuthHeaders();
   bool success = false;
   String responseBody = '';
@@ -192,7 +185,6 @@ Future<List<dynamic>> fetchBannersData() async {
     String endpoint = ApiConfig.BANNER_ENDPOINTS[i];
 
     try {
-
       Map<String, String> currentHeaders = Map.from(headers);
 
       // For fallback endpoint, use old header format
@@ -209,7 +201,6 @@ Future<List<dynamic>> fetchBannersData() async {
             headers: currentHeaders,
           )
           .timeout(Duration(seconds: 15));
-
 
       if (response.statusCode == 200) {
         String body = response.body.trim();
@@ -258,13 +249,11 @@ Future<List<dynamic>> fetchBannersData() async {
 //   }
 // }
 
-
-
 class GlobalEventBus {
   static final GlobalEventBus _instance = GlobalEventBus._internal();
   factory GlobalEventBus() => _instance;
-  
-  final StreamController<RefreshPageEvent> _controller = 
+
+  final StreamController<RefreshPageEvent> _controller =
       StreamController<RefreshPageEvent>.broadcast();
 
   GlobalEventBus._internal();
@@ -273,7 +262,6 @@ class GlobalEventBus {
   void fire(RefreshPageEvent event) => _controller.add(event);
   void dispose() => _controller.close();
 }
-
 
 class RefreshPageEvent {
   final String pageId;
@@ -316,10 +304,6 @@ class _BannerSliderState extends State<BannerSlider> {
   Map<String, Uint8List> _bannerCache = {};
   late FocusProvider _refreshProvider;
 
-
-
-  
-
   @override
   void initState() {
     super.initState();
@@ -327,7 +311,6 @@ class _BannerSliderState extends State<BannerSlider> {
   }
 
   Future<void> _initializeSlider() async {
-
     _lastPlayedScrollController = ScrollController();
     sharedDataProvider = context.read<SharedDataProvider>();
 
@@ -342,8 +325,6 @@ class _BannerSliderState extends State<BannerSlider> {
       }
     });
 
-
-
     // Post frame callback setup
     WidgetsBinding.instance.addPostFrameCallback((_) {
       sharedDataProvider.updateLastPlayedVideos(lastPlayedVideos);
@@ -356,13 +337,7 @@ class _BannerSliderState extends State<BannerSlider> {
             .read<FocusProvider>()
             .setFirstLastPlayedFocusNode(firstBannerFocusNode);
       }
-
-
-      
-      
     });
-
-    
 
     _buttonFocusNode.addListener(_onButtonFocusNode);
 
@@ -373,20 +348,18 @@ class _BannerSliderState extends State<BannerSlider> {
     if (bannerList.isNotEmpty) {
       _startAutoSlide();
     }
-
   }
 
-
-
-    @override
+  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    
+
     // Provider ko listen karo
     _refreshProvider = context.watch<FocusProvider>();
-    
+
     // Check if refresh is needed
-    if (_refreshProvider.shouldRefreshBanners || _refreshProvider.shouldRefreshLastPlayed) {
+    if (_refreshProvider.shouldRefreshBanners ||
+        _refreshProvider.shouldRefreshLastPlayed) {
       _handleProviderRefresh();
     }
   }
@@ -403,7 +376,7 @@ class _BannerSliderState extends State<BannerSlider> {
       if (_refreshProvider.shouldRefreshLastPlayed) {
         await _loadLastPlayedVideos();
         _refreshProvider.markLastPlayedRefreshed();
-        
+
         // UI refresh ke liye
         if (mounted) {
           setState(() {
@@ -411,13 +384,11 @@ class _BannerSliderState extends State<BannerSlider> {
           });
         }
       }
-    } catch (e) {
-    }
+    } catch (e) {}
   }
 
   @override
   void dispose() {
-
     // Unregister focus elements
     for (int i = 0; i < lastPlayedVideos.length; i++) {
       context.read<FocusProvider>().unregisterElementKey('lastPlayed_$i');
@@ -439,10 +410,9 @@ class _BannerSliderState extends State<BannerSlider> {
 
   // Fetch banner colors for UI enhancement
   Future<void> _fetchBannerColors() async {
-
     for (var banner in bannerList) {
       try {
-        final imageUrl = banner.banner ?? localImage ;
+        final imageUrl = banner.banner;
         final secondaryColor =
             await _paletteColorService.getSecondaryColor(imageUrl);
 
@@ -451,16 +421,13 @@ class _BannerSliderState extends State<BannerSlider> {
             bannerColors[banner.contentId] = secondaryColor;
           });
         }
-      } catch (e) {
-      }
+      } catch (e) {}
     }
-
   }
 
   // Auto slide functionality
   void _startAutoSlide() {
     if (bannerList.isNotEmpty) {
-
       _timer = Timer.periodic(const Duration(seconds: 4), (Timer timer) {
         if (!mounted) {
           timer.cancel();
@@ -478,8 +445,7 @@ class _BannerSliderState extends State<BannerSlider> {
               );
             }
           }
-        } catch (e) {
-        }
+        } catch (e) {}
       });
     }
   }
@@ -512,18 +478,18 @@ class _BannerSliderState extends State<BannerSlider> {
       throw Exception("Empty URL provided");
     }
 
-    // Handle YouTube ID by converting to full URL if needed
-    if (RegExp(r'^[a-zA-Z0-9_-]{11}$').hasMatch(url)) {
-      url = "https://www.youtube.com/watch?v=$url";
-    }
+    // // Handle YouTube ID by converting to full URL if needed
+    // if (RegExp(r'^[a-zA-Z0-9_-]{11}$').hasMatch(url)) {
+    //   url = "https://www.youtube.com/watch?v=$url";
+    // }
 
     // Remove any existing query parameters
-    url = url.split('?')[0];
+    // url = url.split('?')[0];
 
     // Add new query parameters
-    if (params != null && params.isNotEmpty) {
-      url += '?' + params.entries.map((e) => '${e.key}=${e.value}').join('&');
-    }
+    // if (params != null && params.isNotEmpty) {
+    //   url += '?' + params.entries.map((e) => '${e.key}=${e.value}').join('&');
+    // }
 
     return url;
   }
@@ -550,7 +516,6 @@ class _BannerSliderState extends State<BannerSlider> {
 
   // Update this method in your banner_slider.dart
   Future<void> fetchBanners({bool isBackgroundFetch = false}) async {
-
     if (!isBackgroundFetch) {
       setState(() {
         isLoading = true;
@@ -577,8 +542,7 @@ class _BannerSliderState extends State<BannerSlider> {
           if (json.encode(cachedData) == json.encode(responseData)) {
             return;
           }
-        } catch (e) {
-        }
+        } catch (e) {}
       }
 
       // Process and update banner data with better filtering
@@ -607,19 +571,14 @@ class _BannerSliderState extends State<BannerSlider> {
             isActive = true;
           }
 
-
           if (isActive) {
             try {
               final newsItem = NewsItemModel.fromJson(banner);
               filteredBanners.add(newsItem);
-            } catch (e) {
-            }
-          } else {
-          }
-        } catch (e) {
-        }
+            } catch (e) {}
+          } else {}
+        } catch (e) {}
       }
-
 
       setState(() {
         bannerList = filteredBanners;
@@ -642,11 +601,8 @@ class _BannerSliderState extends State<BannerSlider> {
         if (!_timer.isActive) {
           _startAutoSlide();
         }
-      } else {
-      }
-
+      } else {}
     } catch (e) {
-
       if (!isBackgroundFetch) {
         setState(() {
           errorMessage = 'Failed to load banners: $e';
@@ -658,7 +614,6 @@ class _BannerSliderState extends State<BannerSlider> {
 
   // Also update _loadCachedData method for consistency
   Future<void> _loadCachedData() async {
-
     final prefs = await SharedPreferences.getInstance();
     final cachedBanners = prefs.getString('banners');
 
@@ -693,11 +648,9 @@ class _BannerSliderState extends State<BannerSlider> {
               try {
                 final newsItem = NewsItemModel.fromJson(banner);
                 filteredBanners.add(newsItem);
-              } catch (e) {
-              }
+              } catch (e) {}
             }
-          } catch (e) {
-          }
+          } catch (e) {}
         }
 
         setState(() {
@@ -709,7 +662,6 @@ class _BannerSliderState extends State<BannerSlider> {
         if (bannerList.isNotEmpty) {
           await _fetchBannerColors();
         }
-
       } catch (e) {
         setState(() => isLoading = false);
       }
@@ -761,7 +713,7 @@ class _BannerSliderState extends State<BannerSlider> {
                     ),
                     SizedBox(height: 15),
                     Text(
-                      'Loading video...',
+                      '',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: nametextsz,
@@ -787,14 +739,12 @@ class _BannerSliderState extends State<BannerSlider> {
       String videoType = responseData['type'] ?? '';
       String streamType = responseData['stream_type'] ?? '';
 
-
       // Handle YouTube videos with retries
       bool isYoutube = videoType.toLowerCase() == 'youtube' ||
           streamType.toLowerCase() == 'youtubelive' ||
           isYoutubeUrl(originalUrl);
 
       if (isYoutube) {
-
         for (int i = 0; i < _maxRetries; i++) {
           try {
             videoUrl = await _socketService.getUpdatedUrl(videoUrl);
@@ -805,7 +755,6 @@ class _BannerSliderState extends State<BannerSlider> {
 
             break;
           } catch (e) {
-
             if (i == _maxRetries - 1) {
               throw Exception(
                   'Failed to get updated YouTube URL after $_maxRetries attempts');
@@ -819,7 +768,6 @@ class _BannerSliderState extends State<BannerSlider> {
       // Determine live status
       bool liveStatus = isYoutube || streamType.toLowerCase() == 'youtubelive';
 
-
       // Close loading dialog
       if (shouldPop && context.mounted) {
         Navigator.of(context, rootNavigator: true).pop();
@@ -827,7 +775,6 @@ class _BannerSliderState extends State<BannerSlider> {
 
       // Navigate to video screen
       if (shouldPlayVideo && context.mounted) {
-
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -846,13 +793,13 @@ class _BannerSliderState extends State<BannerSlider> {
               unUpdatedUrl: originalUrl,
               name: responseData['name'] ?? 'Unknown',
               liveStatus: liveStatus,
+              seasonId: null,
+              isLastPlayedStored: false,
             ),
           ),
         );
-
       }
     } catch (e) {
-
       // Close loading dialog if still open
       if (shouldPop && context.mounted) {
         Navigator.of(context, rootNavigator: true).pop();
@@ -862,7 +809,7 @@ class _BannerSliderState extends State<BannerSlider> {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Unable to play video: ${e.toString()}'),
+            content: Text('Something went wrong'),
             duration: Duration(seconds: 3),
             backgroundColor: Colors.red.shade700,
           ),
@@ -1041,8 +988,7 @@ class _BannerSliderState extends State<BannerSlider> {
           prefs.getStringList('last_played_videos') ?? [];
 
       String newVideoEntry =
-          '${newVideo['videoUrl']}|${newVideo['position'].inMilliseconds}|${newVideo['duration'].inMilliseconds}|${newVideo['liveStatus']}|${newVideo['bannerImageUrl']}|${newVideo['videoId']}|${newVideo['name']}';
-
+          '${newVideo['videoUrl']}|${newVideo['position'].inMilliseconds}|${newVideo['duration'].inMilliseconds}|${newVideo['liveStatus']}|${newVideo['bannerImageUrl']}|${newVideo['videoId']}|${newVideo['name']}|${newVideo['seasonId']}';
 
       // Remove if already exists to avoid duplicates
       storedVideos
@@ -1052,7 +998,7 @@ class _BannerSliderState extends State<BannerSlider> {
       storedVideos.insert(0, newVideoEntry);
 
       // Keep only last 10 videos
-      if (storedVideos.length > 10) {
+      if (storedVideos.length > 8) {
         storedVideos = storedVideos.take(10).toList();
       }
 
@@ -1060,97 +1006,90 @@ class _BannerSliderState extends State<BannerSlider> {
 
       // Refresh the UI
       await _loadLastPlayedVideos();
-    } catch (e) {
-    }
+    } catch (e) {}
   }
 
-  // Load last played videos from storage
-  Future<void> _loadLastPlayedVideos() async {
-    try {
+  // // Load last played videos from storage
+  // Future<void> _loadLastPlayedVideos() async {
+  //   try {
+  //     final prefs = await SharedPreferences.getInstance();
+  //     final storedVideos = prefs.getStringList('last_played_videos');
 
-      final prefs = await SharedPreferences.getInstance();
-      final storedVideos = prefs.getStringList('last_played_videos');
+  //     if (storedVideos != null && storedVideos.isNotEmpty) {
+  //       List<Map<String, dynamic>> loadedVideos = [];
 
-      if (storedVideos != null && storedVideos.isNotEmpty) {
-        List<Map<String, dynamic>> loadedVideos = [];
+  //       for (String videoEntry in storedVideos) {
+  //         try {
+  //           List<String> details = videoEntry.split('|');
+  //           if (details.length >= 8) {
+  //             Duration duration =
+  //                 Duration(milliseconds: int.tryParse(details[2]) ?? 0);
+  //             Duration position =
+  //                 Duration(milliseconds: int.tryParse(details[1]) ?? 0);
+  //             bool liveStatus = details[3].toLowerCase() == 'true';
 
-        for (String videoEntry in storedVideos) {
-          try {
-            List<String> details = videoEntry.split('|');
-            if (details.length >= 7) {
-              Duration duration =
-                  Duration(milliseconds: int.tryParse(details[2]) ?? 0);
-              Duration position =
-                  Duration(milliseconds: int.tryParse(details[1]) ?? 0);
-              bool liveStatus = details[3].toLowerCase() == 'true';
+  //             loadedVideos.add({
+  //               'videoUrl': details[0],
+  //               'position': position,
+  //               'duration': duration,
+  //               'liveStatus': liveStatus,
+  //               'bannerImageUrl': details[4],
+  //               'videoId': details[5],
+  //               'name': details[6],
+  //               'focusNode':
+  //                   FocusNode(), // Create new focus node for each video
+  //               'seasonId': details[7]
+  //             });
+  //           }
+  //         } catch (e) {}
+  //       }
 
-              loadedVideos.add({
-                'videoUrl': details[0],
-                'position': position,
-                'duration': duration,
-                'liveStatus': liveStatus,
-                'bannerImageUrl': details[4],
-                'videoId': details[5],
-                'name': details[6],
-                'focusNode':
-                    FocusNode(), // Create new focus node for each video
-              });
-            }
-          } catch (e) {
-          }
-        }
+  //       if (mounted) {
+  //         setState(() {
+  //           lastPlayedVideos = loadedVideos;
+  //         });
+  //       }
 
-        if (mounted) {
-          setState(() {
-            lastPlayedVideos = loadedVideos;
-          });
-        }
+  //       // printLastPlayedPositions();
 
-        printLastPlayedPositions();
+  //       // Update shared data provider
+  //       WidgetsBinding.instance.addPostFrameCallback((_) {
+  //         if (mounted) {
+  //           sharedDataProvider.updateLastPlayedVideos(lastPlayedVideos);
+  //         }
+  //       });
+  //     } else {
+  //       if (mounted) {
+  //         setState(() {
+  //           lastPlayedVideos = [];
+  //         });
+  //       }
+  //     }
+  //   } catch (e) {
+  //     if (mounted) {
+  //       setState(() {
+  //         lastPlayedVideos = [];
+  //       });
+  //     }
+  //   }
+  // }
 
-        // Update shared data provider
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted) {
-            sharedDataProvider.updateLastPlayedVideos(lastPlayedVideos);
-          }
-        });
-      } else {
-        if (mounted) {
-          setState(() {
-            lastPlayedVideos = [];
-          });
-        }
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          lastPlayedVideos = [];
-        });
-      }
-    }
+
+// Updated _playVideo method to work with your new NewsItemModel structure
+
+void _playVideo(Map<String, dynamic> videoData, Duration position) async {
+  print('🎬 _playVideo called with: ${videoData['name']}');
+  
+  if (_isNavigating) {
+    print('❌ Already navigating, returning');
+    return;
   }
 
-  // Print debug info for last played positions
-  void printLastPlayedPositions() {
-    for (int i = 0; i < lastPlayedVideos.length; i++) {
-      final video = lastPlayedVideos[i];
-      final position = video['position'] ?? Duration.zero;
-      final name = video['name'] ?? 'Unknown';
-    }
-  }
+  _isNavigating = true;
+  bool shouldPlayVideo = true;
+  bool shouldPop = true;
 
-  // Play a video from last played list
-  void _playVideo(Map<String, dynamic> videoData, Duration position) async {
-
-    if (_isNavigating) {
-      return;
-    }
-
-    _isNavigating = true;
-
-    bool shouldPlayVideo = true;
-    bool shouldPop = true;
-
+  try {
     // Show loading dialog
     showDialog(
       context: context,
@@ -1174,7 +1113,7 @@ class _BannerSliderState extends State<BannerSlider> {
                 LoadingIndicator(),
                 SizedBox(height: 15),
                 Text(
-                  'Loading ${videoData['name']}...',
+                  'Loading ${videoData['name'] ?? 'Video'}...',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: nametextsz,
@@ -1188,110 +1127,468 @@ class _BannerSliderState extends State<BannerSlider> {
       ),
     );
 
-    // Set timeout for navigation
-    Timer(Duration(seconds: 15), () {
-      if (_isNavigating) {
-        _isNavigating = false;
+    // Create channel list from last played videos using proper NewsItemModel structure
+    List<NewsItemModel> channelList = lastPlayedVideos.asMap().entries.map((entry) {
+      final video = entry.value;
+      int index = entry.key;
+      
+      // Safe string conversion helper
+      String safeToString(dynamic value, {String defaultValue = ''}) {
+        if (value == null) return defaultValue;
+        return value.toString();
       }
-    });
 
-    try {
-      // Create channel list from last played videos
-      List<NewsItemModel> channelList =
-          lastPlayedVideos.asMap().entries.map((entry) {
-        final video = entry.value;
-        String videoUrl = video['videoUrl'] ?? '';
-        String videoIdString = video['videoId'] ?? '0';
-        String streamType = isYoutubeUrl(videoUrl) ? 'YoutubeLive' : 'M3u8';
+      String videoUrl = safeToString(video['videoUrl']);
+      String videoIdString = safeToString(video['videoId'], defaultValue: '0');
+      String videoName = safeToString(video['name'], defaultValue: 'Unknown Video');
+      String bannerUrl = safeToString(video['bannerImageUrl']);
+      String seasonIdString = safeToString(video['seasonId'], defaultValue: '0');
+      
+      print('📺 Creating NewsItemModel for: $videoName');
+      print('   Original URL: $videoUrl');
+      print('   Video ID: $videoIdString');
+      
+      // // Handle YouTube ID conversion
+      // if (videoUrl.isNotEmpty && !videoUrl.startsWith('http') && videoUrl.length == 11) {
+      //   videoUrl = 'https://www.youtube.com/watch?v=$videoUrl';
+      //   print('   Converted URL: $videoUrl');
+      // }
+      
+      bool isYoutube = isYoutubeUrl(videoUrl);
+      bool isLive = video['liveStatus'] == true;
+      String streamType = isYoutube ? 'YoutubeLive' : 'M3u8';
+      String contentType = isLive ? '0' : '1'; // 0 for live, 1 for VOD
 
-        return NewsItemModel(
-          videoId: '',
-          id: videoIdString,
-          url: videoUrl,
-          banner: video['bannerImageUrl'] ?? '',
-          name: video['name'] ?? '',
-          poster: video['poster'] ?? '',
-          category: video['category'] ?? '',
-          contentId: videoIdString,
-          status: '1',
-          streamType: streamType,
-          type: streamType,
-          contentType: '1',
-          genres: '',
-          position: video['position'],
-          liveStatus: video['liveStatus'],
-          index: '',
-          image: '',
-        );
-      }).toList();
+      print('   Stream Type: $streamType');
+      print('   Content Type: $contentType');
+      print('   Is Live: $isLive');
 
-      String source = videoData['source'] ?? 'isLastPlayedVideos';
-      int videoId = int.tryParse(videoData['videoId']?.toString() ?? '0') ?? 0;
-      String originalUrl = videoData['videoUrl'];
-      String updatedUrl = videoData['videoUrl'];
+      return NewsItemModel(
+        id: videoIdString,
+        index: index.toString(),
+        name: videoName,
+        unUpdatedUrl: safeToString(video['videoUrl']), // Keep original URL
+        description: '',
+        thumbnail_high: '',
+        banner: bannerUrl,
+        image: bannerUrl,
+        poster: bannerUrl,
+        url: videoUrl, // Use converted URL
+        videoId: videoIdString,
+        streamType: streamType,
+        type: streamType,
+        genres: '',
+        status: '1', // Always active for last played
+        category: 'Last Played',
+        contentId: videoIdString,
+        contentType: contentType,
+        isYoutubeVideo: isYoutube,
+        isFocused: false,
+        position: video['position'] ?? Duration.zero,
+        liveStatus: isLive,
+        // Episode-specific fields with defaults
+        order: '0',
+        seasonId: seasonIdString,
+        downloadable: '0',
+        source: 'isLastPlayedVideos',
+        skipAvailable: '0',
+        introStart: '0',
+        introEnd: '0',
+        endCreditsMarker: '0',
+        drmUuid: '',
+        drmLicenseUri: '',
+        // Season-specific fields with defaults
+        seasonName: '',
+        webSeriesId: '',
+      );
+    }).toList();
 
-      // Handle YouTube URL updates
-      if (isYoutubeUrl(updatedUrl)) {
+    print('📋 Created channel list with ${channelList.length} items');
+
+    String originalUrl = safeToString(videoData['videoUrl']);
+    String updatedUrl = originalUrl;
+    
+    // Validate URL
+    if (originalUrl.isEmpty) {
+      throw Exception('Empty video URL');
+    }
+
+    print('🔗 Original URL: $originalUrl');
+
+    // Convert YouTube ID to full URL if needed
+    // if (!originalUrl.startsWith('http') && originalUrl.length == 11) {
+    //   originalUrl = 'https://www.youtube.com/watch?v=$originalUrl';
+    //   updatedUrl = originalUrl;
+    //   print('🔄 Converted YouTube ID to full URL: $originalUrl');
+    // }
+
+    // Handle YouTube URL updates
+    if (isYoutubeUrl(updatedUrl)) {
+      print('📹 Detected YouTube URL, getting updated URL...');
+      try {
+        updatedUrl = await _socketService.getUpdatedUrl(updatedUrl);
+        print('✅ Updated YouTube URL: $updatedUrl');
+        
+        if (updatedUrl.isEmpty) {
+          throw Exception('Failed to get updated YouTube URL');
+        }
+      } catch (e) {
+        print('❌ YouTube URL update failed: $e');
+        throw Exception('Failed to process YouTube URL: $e');
+      }
+    }
+
+    // Close loading dialog
+    if (shouldPop && context.mounted) {
+      Navigator.of(context, rootNavigator: true).pop();
+    }
+
+    Duration startAtPosition = videoData['position'] as Duration? ?? Duration.zero;
+    Duration totalDuration = videoData['duration'] as Duration? ?? Duration.zero;
+    bool isLive = videoData['liveStatus'] == true;
+    
+    print('⏰ Start position: ${startAtPosition.inSeconds} seconds');
+    print('⏰ Total duration: ${totalDuration.inSeconds} seconds');
+    print('🔴 Is Live: $isLive');
+    print('🚀 Navigating to VideoScreen...');
+
+    // Navigate to video screen
+    if (shouldPlayVideo && context.mounted) {
+      final result = await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => VideoScreen(
+            videoUrl: updatedUrl,
+            unUpdatedUrl: originalUrl,
+            channelList: channelList,
+            bannerImageUrl: safeToString(videoData['bannerImageUrl']),
+            startAtPosition: startAtPosition,
+            totalDuration: totalDuration,
+            videoType: isYoutubeUrl(updatedUrl) ? 'youtube' : 'M3u8',
+            isLive: isLive,
+            isVOD: !isLive,
+            isSearch: false,
+            isHomeCategory: false,
+            isBannerSlider: false,
+            videoId: int.tryParse(safeToString(videoData['videoId'], defaultValue: '0')) ?? 0,
+            source: 'isLastPlayedVideos',
+            name: safeToString(videoData['name'], defaultValue: 'Unknown Video'),
+            liveStatus: isLive,
+            seasonId: int.tryParse(safeToString(videoData['seasonId'], defaultValue: '0')),
+            isLastPlayedStored: true,
+          ),
+        ),
+      );
+      
+      print('✅ Navigation completed with result: $result');
+      
+      // Refresh last played videos when returning
+      if (result == true) {
+        await _loadLastPlayedVideos();
+        if (mounted) {
+          setState(() {
+            refreshKey = UniqueKey();
+          });
+        }
+      }
+    }
+  } catch (e) {
+    print('❌ Error in _playVideo: $e');
+    print('📍 Stack trace: ${StackTrace.current}');
+    
+    // Close loading dialog if still open
+    if (shouldPop && context.mounted) {
+      Navigator.of(context, rootNavigator: true).pop();
+    }
+
+    // Show error message
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to play video: ${e.toString()}'),
+          backgroundColor: Colors.red.shade700,
+          duration: Duration(seconds: 5),
+        ),
+      );
+    }
+  } finally {
+    _isNavigating = false;
+    print('🏁 _playVideo method finished');
+  }
+}
+
+// Helper method for safe string conversion (add this to your class)
+String safeToString(dynamic value, {String defaultValue = ''}) {
+  if (value == null) return defaultValue;
+  return value.toString();
+}
+
+// Updated _loadLastPlayedVideos method with better error handling
+Future<void> _loadLastPlayedVideos() async {
+  print('🔄 Loading last played videos...');
+  
+  try {
+    final prefs = await SharedPreferences.getInstance();
+    final storedVideos = prefs.getStringList('last_played_videos');
+
+    if (storedVideos != null && storedVideos.isNotEmpty) {
+      List<Map<String, dynamic>> loadedVideos = [];
+
+      for (int i = 0; i < storedVideos.length; i++) {
+        String videoEntry = storedVideos[i];
+        print('🔍 Processing entry $i: $videoEntry');
+        
         try {
-          updatedUrl = await _socketService.getUpdatedUrl(updatedUrl);
+          List<String> details = videoEntry.split('|');
+          if (details.length >= 8) {
+            Duration duration = Duration(milliseconds: int.tryParse(details[2]) ?? 0);
+            Duration position = Duration(milliseconds: int.tryParse(details[1]) ?? 0);
+            bool liveStatus = details[3].toLowerCase() == 'true';
+
+            // Create video data with all required fields
+            Map<String, dynamic> videoData = {
+              'videoUrl': details[0],
+              'position': position,
+              'duration': duration,
+              'liveStatus': liveStatus,
+              'bannerImageUrl': details[4],
+              'videoId': details[5],
+              'name': details[6],
+              'focusNode': FocusNode(),
+              'seasonId': details[7],
+              'source': 'isLastPlayedVideos',
+              'category': 'Last Played',
+              'genres': '',
+              'poster': details[4], // Use banner as poster
+              'contentType': liveStatus ? '0' : '1',
+              'streamType': isYoutubeUrl(details[0]) ? 'YoutubeLive' : 'M3u8',
+              'status': '1',
+              'isYoutubeVideo': isYoutubeUrl(details[0]),
+            };
+
+            loadedVideos.add(videoData);
+            print('✅ Successfully loaded: ${details[6]}');
+            
+            // Debug the video data structure
+            print('📊 Video data keys: ${videoData.keys.toList()}');
+          } else {
+            print('❌ Invalid entry format: ${details.length} parts, expected at least 8');
+          }
         } catch (e) {
+          print('❌ Error processing entry $i: $e');
         }
       }
 
-      // Close loading dialog
-      if (shouldPop && context.mounted) {
-        Navigator.of(context, rootNavigator: true).pop();
+      if (mounted) {
+        setState(() {
+          lastPlayedVideos = loadedVideos;
+        });
+        print('✅ Updated state with ${loadedVideos.length} videos');
       }
 
-      Duration startAtPosition =
-          videoData['position'] as Duration? ?? Duration.zero;
-
-      // Navigate to video screen
-      if (shouldPlayVideo && context.mounted) {
-
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => VideoScreen(
-              videoUrl: updatedUrl,
-              unUpdatedUrl: originalUrl,
-              channelList: channelList,
-              bannerImageUrl: videoData['bannerImageUrl'] ?? '',
-              startAtPosition: startAtPosition,
-              totalDuration: videoData['duration'],
-              videoType: '',
-              isLive: source == 'isLiveScreen',
-              isVOD: source == 'isVOD',
-              isSearch: source == 'isSearchScreen',
-              isHomeCategory: source == 'isHomeCategory',
-              isBannerSlider: source == 'isBannerSlider',
-              videoId: videoId,
-              source: 'isLastPlayedVideos',
-              name: videoData['name'] ?? '',
-              liveStatus: videoData['liveStatus'],
-            ),
-          ),
-        );
-
+      // Update shared data provider
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          sharedDataProvider.updateLastPlayedVideos(lastPlayedVideos);
+          print('✅ Updated shared data provider');
+        }
+      });
+    } else {
+      print('📭 No stored videos found');
+      if (mounted) {
+        setState(() {
+          lastPlayedVideos = [];
+        });
       }
-    } catch (e) {
-
-      if (shouldPop && context.mounted) {
-        Navigator.of(context, rootNavigator: true).pop();
-      }
-
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Unable to play this content: ${e.toString()}'),
-            backgroundColor: Colors.red.shade700,
-          ),
-        );
-      }
-    } finally {
-      _isNavigating = false;
+    }
+  } catch (e) {
+    print('❌ Error loading last played videos: $e');
+    if (mounted) {
+      setState(() {
+        lastPlayedVideos = [];
+      });
     }
   }
+  
+  print('🏁 Finished loading last played videos');
+}
+
+// Add this debug method to check data structure
+void debugVideoDataStructure() {
+  print('🔍 DEBUG: Last Played Videos Data Structure');
+  print('📊 Total videos: ${lastPlayedVideos.length}');
+  
+  for (int i = 0; i < lastPlayedVideos.length && i < 3; i++) { // Debug first 3 videos
+    final video = lastPlayedVideos[i];
+    print('📺 Video $i structure:');
+    video.forEach((key, value) {
+      print('   $key: ${value?.toString() ?? 'NULL'} (${value.runtimeType})');
+    });
+    print('   ---');
+  }
+}
+
+  // // Print debug info for last played positions
+  // void printLastPlayedPositions() {
+  //   for (int i = 0; i < lastPlayedVideos.length; i++) {
+  //     final video = lastPlayedVideos[i];
+  //     final position = video['position'] ?? Duration.zero;
+  //     final name = video['name'] ?? 'Unknown';
+  //   }
+  // }
+
+  // // Play a video from last played list
+  // void _playVideo(Map<String, dynamic> videoData, Duration position) async {
+  //   if (_isNavigating) {
+  //     return;
+  //   }
+
+  //   _isNavigating = true;
+
+  //   bool shouldPlayVideo = true;
+  //   bool shouldPop = true;
+
+  //   // Show loading dialog
+  //   showDialog(
+  //     context: context,
+  //     barrierDismissible: false,
+  //     builder: (BuildContext context) => WillPopScope(
+  //       onWillPop: () async {
+  //         shouldPlayVideo = false;
+  //         shouldPop = false;
+  //         return true;
+  //       },
+  //       child: Center(
+  //         child: Container(
+  //           padding: EdgeInsets.all(20),
+  //           decoration: BoxDecoration(
+  //             color: Colors.black87,
+  //             borderRadius: BorderRadius.circular(10),
+  //           ),
+  //           child: Column(
+  //             mainAxisSize: MainAxisSize.min,
+  //             children: [
+  //               LoadingIndicator(),
+  //               SizedBox(height: 15),
+  //               Text(
+  //                 'Loading ${videoData['name']}...',
+  //                 style: TextStyle(
+  //                   color: Colors.white,
+  //                   fontSize: nametextsz,
+  //                 ),
+  //                 textAlign: TextAlign.center,
+  //               ),
+  //             ],
+  //           ),
+  //         ),
+  //       ),
+  //     ),
+  //   );
+
+  //   // Set timeout for navigation
+  //   Timer(Duration(seconds: 15), () {
+  //     if (_isNavigating) {
+  //       _isNavigating = false;
+  //     }
+  //   });
+
+  //   try {
+  //     // Create channel list from last played videos
+  //     List<NewsItemModel> channelList =
+  //         lastPlayedVideos.asMap().entries.map((entry) {
+  //       final video = entry.value;
+  //       String videoUrl = video['videoUrl'] ?? '';
+  //       String videoIdString = video['videoId'] ?? '0';
+  //       String streamType = isYoutubeUrl(videoUrl) ? 'YoutubeLive' : 'M3u8';
+
+  //       return NewsItemModel(
+  //         videoId: video['videoId'],
+  //         id: videoIdString,
+  //         url: videoUrl,
+  //         banner: video['bannerImageUrl'] ?? '',
+  //         name: video['name'] ?? '',
+  //         poster: video['poster'] ?? '',
+  //         category: video['category'] ?? '',
+  //         contentId: videoIdString,
+  //         status: '1',
+  //         streamType: streamType,
+  //         type: streamType,
+  //         contentType: '1',
+  //         genres: '',
+  //         position: video['position'],
+  //         liveStatus: video['liveStatus'],
+  //         index: '',
+  //         image: '',
+  //         source: video['source'],
+  //         unUpdatedUrl: '',
+  //       );
+  //     }).toList();
+
+  //     String source = videoData['source'] ?? 'isLastPlayedVideos';
+  //     // int videoId = int.tryParse(videoData['videoId']?.toString() ?? '0') ?? 0;
+  //     String originalUrl = videoData['videoUrl'];
+  //     String updatedUrl = videoData['videoUrl'];
+
+  //     // Handle YouTube URL updates
+  //     if (isYoutubeUrl(updatedUrl)) {
+  //       try {
+  //         updatedUrl = await _socketService.getUpdatedUrl(updatedUrl);
+  //       } catch (e) {}
+  //     }
+
+  //     // Close loading dialog
+  //     if (shouldPop && context.mounted) {
+  //       Navigator.of(context, rootNavigator: true).pop();
+  //     }
+
+  //     Duration startAtPosition =
+  //         videoData['position'] as Duration? ?? Duration.zero;
+
+  //     // Navigate to video screen
+  //     if (shouldPlayVideo && context.mounted) {
+  //       Navigator.push(
+  //         context,
+  //         MaterialPageRoute(
+  //           builder: (context) => VideoScreen(
+  //             videoUrl: updatedUrl,
+  //             unUpdatedUrl: originalUrl,
+  //             channelList: channelList,
+  //             bannerImageUrl: videoData['bannerImageUrl'] ?? '',
+  //             startAtPosition: startAtPosition,
+  //             totalDuration: videoData['duration'],
+  //             videoType: '',
+  //             isLive: source == 'isLiveScreen',
+  //             isVOD: source == 'isVOD',
+  //             isSearch: source == 'isSearchScreen',
+  //             isHomeCategory: source == 'isHomeCategory',
+  //             isBannerSlider: source == 'isBannerSlider',
+  //             videoId: videoData['videoId'],
+  //             source: 'isLastPlayedVideos',
+  //             name: videoData['name'] ?? '',
+  //             liveStatus: videoData['liveStatus'],
+  //             seasonId: videoData['seasonId'],
+  //             isLastPlayedStored: true,
+  //           ),
+  //         ),
+  //       );
+  //     }
+  //   } catch (e) {
+  //     if (shouldPop && context.mounted) {
+  //       Navigator.of(context, rootNavigator: true).pop();
+  //     }
+
+  //     if (context.mounted) {
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(
+  //           content: Text('Something went wrong'),
+  //           backgroundColor: Colors.red.shade700,
+  //         ),
+  //       );
+  //     }
+  //   } finally {
+  //     _isNavigating = false;
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -1307,7 +1604,7 @@ class _BannerSliderState extends State<BannerSlider> {
                       SpinKitFadingCircle(color: borderColor, size: 50.0),
                       SizedBox(height: 20),
                       Text(
-                        'Loading banners...',
+                        '...',
                         style: TextStyle(
                           color: hintColor,
                           fontSize: nametextsz,
@@ -1400,10 +1697,12 @@ class _BannerSliderState extends State<BannerSlider> {
                                       width: screenwdt,
                                       height: screenhgt,
                                       child: CachedNetworkImage(
-                                        imageUrl: banner.banner ?? localImage,
+                                        imageUrl: banner.banner,
                                         fit: BoxFit.fill,
-                                        placeholder: (context, url) => localImage,
-                                        errorWidget: (context, url, error) =>localImage,
+                                        placeholder: (context, url) =>
+                                            localImage,
+                                        errorWidget: (context, url, error) =>
+                                            localImage,
                                         cacheKey: banner.contentId,
                                         fadeInDuration:
                                             Duration(milliseconds: 500),
@@ -1748,44 +2047,80 @@ class _BannerSliderState extends State<BannerSlider> {
                           });
                         }
                       },
+                      // onKey: (node, event) {
+                      //   if (event is RawKeyDownEvent) {
+                      //     if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+                      //       Future.delayed(Duration(milliseconds: 100), () {
+                      //         context
+                      //             .read<FocusProvider>()
+                      //             .requestWatchNowFocus();
+                      //       });
+                      //       return KeyEventResult.handled;
+                      //     } else if (event.logicalKey ==
+                      //         LogicalKeyboardKey.arrowDown) {
+                      //       context
+                      //           .read<FocusProvider>()
+                      //           .requestMusicItemFocus(context);
+                      //       return KeyEventResult.handled;
+                      //     } else if (event.logicalKey ==
+                      //         LogicalKeyboardKey.arrowRight) {
+                      //       if (index < lastPlayedVideos.length - 1) {
+                      //         FocusScope.of(context).requestFocus(
+                      //             lastPlayedVideos[index + 1]['focusNode']);
+                      //         return KeyEventResult.handled;
+                      //       }
+                      //     } else if (event.logicalKey ==
+                      //         LogicalKeyboardKey.arrowLeft) {
+                      //       if (index > 0) {
+                      //         FocusScope.of(context).requestFocus(
+                      //             lastPlayedVideos[index - 1]['focusNode']);
+                      //         return KeyEventResult.handled;
+                      //       }
+                      //     } else if (event.logicalKey ==
+                      //             LogicalKeyboardKey.select ||
+                      //         event.logicalKey == LogicalKeyboardKey.enter) {
+                      //       _playVideo(videoData, videoData['position']);
+                      //       return KeyEventResult.handled;
+                      //     }
+                      //   }
+                      //   return KeyEventResult.ignored;
+                      // },
+
                       onKey: (node, event) {
-                        if (event is RawKeyDownEvent) {
-                          if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
-                            Future.delayed(Duration(milliseconds: 100), () {
-                              context
-                                  .read<FocusProvider>()
-                                  .requestWatchNowFocus();
-                            });
-                            return KeyEventResult.handled;
-                          } else if (event.logicalKey ==
-                              LogicalKeyboardKey.arrowDown) {
-                            context
-                                .read<FocusProvider>()
-                                .requestMusicItemFocus(context);
-                            return KeyEventResult.handled;
-                          } else if (event.logicalKey ==
-                              LogicalKeyboardKey.arrowRight) {
-                            if (index < lastPlayedVideos.length - 1) {
-                              FocusScope.of(context).requestFocus(
-                                  lastPlayedVideos[index + 1]['focusNode']);
-                              return KeyEventResult.handled;
-                            }
-                          } else if (event.logicalKey ==
-                              LogicalKeyboardKey.arrowLeft) {
-                            if (index > 0) {
-                              FocusScope.of(context).requestFocus(
-                                  lastPlayedVideos[index - 1]['focusNode']);
-                              return KeyEventResult.handled;
-                            }
-                          } else if (event.logicalKey ==
-                                  LogicalKeyboardKey.select ||
-                              event.logicalKey == LogicalKeyboardKey.enter) {
-                            _playVideo(videoData, videoData['position']);
-                            return KeyEventResult.handled;
-                          }
-                        }
-                        return KeyEventResult.ignored;
-                      },
+  if (event is RawKeyDownEvent) {
+    print('🎹 Key pressed: ${event.logicalKey}');
+    
+    if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+      Future.delayed(Duration(milliseconds: 100), () {
+        context.read<FocusProvider>().requestWatchNowFocus();
+      });
+      return KeyEventResult.handled;
+    } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+      context.read<FocusProvider>().requestMusicItemFocus(context);
+      return KeyEventResult.handled;
+    } else if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
+      if (index < lastPlayedVideos.length - 1) {
+        FocusScope.of(context).requestFocus(
+          lastPlayedVideos[index + 1]['focusNode']
+        );
+        return KeyEventResult.handled;
+      }
+    } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+      if (index > 0) {
+        FocusScope.of(context).requestFocus(
+          lastPlayedVideos[index - 1]['focusNode']
+        );
+        return KeyEventResult.handled;
+      }
+    } else if (event.logicalKey == LogicalKeyboardKey.select ||
+               event.logicalKey == LogicalKeyboardKey.enter) {
+      print('✅ Enter/Select pressed - playing video: ${videoData['name']}');
+      _playVideo(videoData, videoData['position']);
+      return KeyEventResult.handled;
+    }
+  }
+  return KeyEventResult.ignored;
+},
                       child: GestureDetector(
                         onTap: () {
                           _playVideo(videoData, videoData['position']);
@@ -1871,7 +2206,8 @@ class _BannerSliderState extends State<BannerSlider> {
                                               )
                                             : CachedNetworkImage(
                                                 imageUrl: videoData[
-                                                        'bannerImageUrl'] ?? localImage ,
+                                                        'bannerImageUrl'] ??
+                                                    localImage,
                                                 fit: BoxFit.cover,
                                                 width: double.infinity,
                                                 height: double.infinity,
@@ -1969,37 +2305,19 @@ class _BannerSliderState extends State<BannerSlider> {
   Widget _buildErrorImage() {
     return Container(
       color: Colors.grey.shade800,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.broken_image,
-            color: Colors.grey.shade600,
-            size: 30,
-          ),
-          SizedBox(height: 5),
-          Text(
-            'No Image',
-            style: TextStyle(
-              color: Colors.grey.shade600,
-              fontSize: minitextsz * 0.8,
-            ),
-          ),
-        ],
-      ),
+      child: localImage,
     );
   }
 
-  // Cleanup and additional utility methods
-  void debugPrintBannerInfo() {
-  }
+  // // Cleanup and additional utility methods
+  // void debugPrintBannerInfo() {}
 
-  // Print current banner list for debugging
-  void printBannerList() {
-    for (int i = 0; i < bannerList.length; i++) {
-      final banner = bannerList[i];
-    }
-  }
+  // // Print current banner list for debugging
+  // void printBannerList() {
+  //   for (int i = 0; i < bannerList.length; i++) {
+  //     final banner = bannerList[i];
+  //   }
+  // }
 
   // Check if slider is ready
   bool get isSliderReady =>
@@ -2068,8 +2386,7 @@ String formatAuthKey(String? key) {
   key = key.trim();
 
   // Basic validation - check if it looks like a valid key
-  if (key.length < 10) {
-  }
+  if (key.length < 10) {}
 
   return key;
 }
@@ -2097,19 +2414,17 @@ Future<String> getBestApiEndpoint(List<String> endpoints) async {
   return endpoints.first;
 }
 
-// Debug helper to print all available SharedPreferences keys
-Future<void> debugPrintSharedPreferences() async {
-  try {
-    final prefs = await SharedPreferences.getInstance();
-    final keys = prefs.getKeys();
+// // Debug helper to print all available SharedPreferences keys
+// Future<void> debugPrintSharedPreferences() async {
+//   try {
+//     final prefs = await SharedPreferences.getInstance();
+//     final keys = prefs.getKeys();
 
-
-    for (String key in keys) {
-      final value = prefs.get(key);
-    }
-  } catch (e) {
-  }
-}
+//     for (String key in keys) {
+//       final value = prefs.get(key);
+//     }
+//   } catch (e) {}
+// }
 
 // Network helper function to retry API calls
 Future<T> retryApiCall<T>(
@@ -2121,7 +2436,6 @@ Future<T> retryApiCall<T>(
     try {
       return await apiCall();
     } catch (e) {
-
       if (attempt == maxRetries) {
         rethrow;
       }
@@ -2144,16 +2458,14 @@ class CacheManager {
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove(BANNER_CACHE_KEY);
       await prefs.remove(FEATURED_TV_CACHE_KEY);
-    } catch (e) {
-    }
+    } catch (e) {}
   }
 
   static Future<void> clearBannerCache() async {
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove(BANNER_CACHE_KEY);
-    } catch (e) {
-    }
+    } catch (e) {}
   }
 
   static Future<Map<String, int>> getCacheInfo() async {

@@ -291,17 +291,17 @@ class _ChannelsCategoryState extends State<ChannelsCategory> {
     });
 
     try {
-            String originalUrl = newsItem.url;
+      String originalUrl = newsItem.url;
 
       if (newsItem.streamType == 'YoutubeLive') {
         // Retry fetching the updated URL if stream type is YouTube Live
         for (int i = 0; i < _maxRetries; i++) {
           try {
-
             String updatedUrl =
                 await _socketService.getUpdatedUrl(newsItem.url);
             newsItem = NewsItemModel(
-              id: newsItem.id,videoId: '',
+              id: newsItem.id,
+              videoId: '',
               name: newsItem.name,
               description: newsItem.description,
               banner: newsItem.banner,
@@ -311,8 +311,10 @@ class _ChannelsCategoryState extends State<ChannelsCategory> {
               streamType: 'M3u8',
               type: 'M3u8',
               genres: newsItem.genres,
-              status: newsItem.status, index: newsItem.index,
+              status: newsItem.status,
+              index: newsItem.index,
               image: '',
+              unUpdatedUrl: '',
             );
             break; // Exit loop when URL is successfully updated
           } catch (e) {
@@ -339,10 +341,7 @@ class _ChannelsCategoryState extends State<ChannelsCategory> {
               item.genres.split(',').map((genre) => genre.trim()).toList();
           return selectedGenres.any((genre) => itemGenres.contains(genre));
         }).toList();
-          bool liveStatus = true;
-
-
-          
+        bool liveStatus = true;
 
         await Navigator.push(
           context,
@@ -359,8 +358,11 @@ class _ChannelsCategoryState extends State<ChannelsCategory> {
               source: 'isLiveScreen',
               isSearch: false,
               videoId: int.tryParse(newsItem.id),
-              unUpdatedUrl: originalUrl,name: newsItem.name, liveStatus:liveStatus ,
-              
+              unUpdatedUrl: originalUrl,
+              name: newsItem.name,
+              liveStatus: liveStatus,
+              seasonId: null,
+              isLastPlayedStored: false,
             ),
           ),
         );

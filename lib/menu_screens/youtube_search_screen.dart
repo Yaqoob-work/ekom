@@ -39,7 +39,6 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
   final int _retryDelay = 5;
   bool _shouldContinueLoading = true;
 
-
   @override
   void initState() {
     super.initState();
@@ -117,8 +116,6 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
 //     }
 //   }
 
-
-
   bool isYoutubeUrl(String? url) {
     if (url == null || url.isEmpty) {
       return false;
@@ -170,9 +167,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
     return url;
   }
 
-
-
- Future<void> _onItemTap(int index) async {
+  Future<void> _onItemTap(int index) async {
     if (_isNavigating) return;
     _isNavigating = true;
     _showLoadingIndicator();
@@ -185,11 +180,9 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
 
       if (isYoutubeUrl(updatedUrl)) {
         updatedUrl = await _socketService.getUpdatedUrl(updatedUrl);
-print( 'FinalURL after conversion: $updatedUrl'); // Debugging line
-
+        print('FinalURL after conversion: $updatedUrl'); // Debugging line
       }
-print( 'FinalURL after conversion: $updatedUrl'); // Debugging line
-      
+      print('FinalURL after conversion: $updatedUrl'); // Debugging line
 
       if (_shouldContinueLoading && mounted) {
         await Navigator.push(
@@ -202,8 +195,8 @@ print( 'FinalURL after conversion: $updatedUrl'); // Debugging line
               videoType: 'm3u8', // Use updated type
               channelList: searchResults,
               // FIX 3: Correct live/VOD flags
-              isLive: false,   // YouTube videos are VOD, not live
-              isVOD: true,    // Mark as video-on-demand
+              isLive: false, // YouTube videos are VOD, not live
+              isVOD: true, // Mark as video-on-demand
               isBannerSlider: false,
               source: 'isYoutubeSearchScreen',
               isSearch: true,
@@ -211,6 +204,7 @@ print( 'FinalURL after conversion: $updatedUrl'); // Debugging line
               unUpdatedUrl: originalUrl,
               name: result.name,
               liveStatus: false, // Not live content
+              seasonId: null, isLastPlayedStored: false,
             ),
           ),
         );
@@ -232,7 +226,6 @@ print( 'FinalURL after conversion: $updatedUrl'); // Debugging line
     }
   }
 
-
   Future<List<NewsItemModel>> fetchYoutubeResults(String searchTerm) async {
     try {
       final response = await https.get(
@@ -246,13 +239,14 @@ print( 'FinalURL after conversion: $updatedUrl'); // Debugging line
           return NewsItemModel(
             id: video['id'] ?? '',
             name: video['title'] ?? '',
-            url: 'https://www.youtube.com/watch?v=${video['videoId']}',
+            url: video['videoId'],
             streamType: 'Youtube',
             genres: '',
             status: '1',
             banner: video['thumbnail_high'] ?? '',
             isFocused: false,
             image: '',
+            unUpdatedUrl: '',
           );
         }).toList();
       }
@@ -298,7 +292,6 @@ print( 'FinalURL after conversion: $updatedUrl'); // Debugging line
     });
   }
 
-
   void _showLoadingIndicator() {
     showDialog(
       context: context,
@@ -315,16 +308,11 @@ print( 'FinalURL after conversion: $updatedUrl'); // Debugging line
     }
   }
 
-
-
-
-
   Widget _buildGridItem(int index) {
     final result = searchResults[index];
     final isFocused = selectedIndex == index;
 
-    return
-     FocusableActionDetector(
+    return FocusableActionDetector(
       focusNode: _itemFocusNodes[index],
       onShowFocusHighlight: (value) => setState(() {}),
       onFocusChange: (hasFocus) async {
@@ -363,96 +351,93 @@ print( 'FinalURL after conversion: $updatedUrl'); // Debugging line
     );
   }
 
+  Widget _buildFocusedOverlayItem(int index) {
+    if (index < 0 || index >= searchResults.length) return SizedBox.shrink();
+    final result = searchResults[index];
+    final nodeContext = _itemFocusNodes[index].context;
+    if (nodeContext == null) return SizedBox.shrink();
 
+    final box = nodeContext.findRenderObject() as RenderBox?;
+    if (box == null || !box.hasSize) return SizedBox.shrink();
 
+    final position = box.localToGlobal(Offset.zero);
+    final double imageWidth = screenwdt * 0.22;
+    final double imageHeight = screenhgt * 0.28;
 
-Widget _buildFocusedOverlayItem(int index) {
-  if (index < 0 || index >= searchResults.length) return SizedBox.shrink();
-  final result = searchResults[index];
-  final nodeContext = _itemFocusNodes[index].context;
-  if (nodeContext == null) return SizedBox.shrink();
+    final double zoomFactor = 1.5;
+    final double newWidth = imageWidth * zoomFactor;
+    final double newHeight = imageHeight * zoomFactor;
 
-  final box = nodeContext.findRenderObject() as RenderBox?;
-  if (box == null || !box.hasSize) return SizedBox.shrink();
+    // Calculate the center point of the original image
+    final double centerX = position.dx + imageWidth / 2;
+    final double centerY = position.dy + imageHeight / 8;
 
-  final position = box.localToGlobal(Offset.zero);
-  final double imageWidth = screenwdt * 0.22;
-  final double imageHeight = screenhgt * 0.28;
+    // Calculate initial position to center the zoomed image
+    double left = centerX - newWidth / 2;
+    double top = centerY - newHeight / 2;
 
-  final double zoomFactor = 1.5;
-  final double newWidth = imageWidth * zoomFactor;
-  final double newHeight = imageHeight * zoomFactor;
+    // Get screen dimensions and safe area
+    final MediaQueryData mediaQuery = MediaQuery.of(context);
+    final double screenWidth = mediaQuery.size.width;
+    final double screenHeight = mediaQuery.size.height;
+    final EdgeInsets padding = mediaQuery.padding;
 
-  // Calculate the center point of the original image
-  final double centerX = position.dx + imageWidth / 2;
-  final double centerY = position.dy + imageHeight / 8;
+    // Define safe margins from screen edges
+    final double margin = 20.0;
 
-  // Calculate initial position to center the zoomed image
-  double left = centerX - newWidth / 2;
-  double top = centerY - newHeight / 2;
+    // Adjust horizontal position to stay within screen bounds
+    if (left < margin) {
+      left = margin;
+    } else if (left + newWidth > screenWidth - margin) {
+      left = screenWidth - newWidth - margin;
+    }
 
-  // Get screen dimensions and safe area
-  final MediaQueryData mediaQuery = MediaQuery.of(context);
-  final double screenWidth = mediaQuery.size.width;
-  final double screenHeight = mediaQuery.size.height;
-  final EdgeInsets padding = mediaQuery.padding;
-  
-  // Define safe margins from screen edges
-  final double margin = 20.0;
-  
-  // Adjust horizontal position to stay within screen bounds
-  if (left < margin) {
-    left = margin;
-  } else if (left + newWidth > screenWidth - margin) {
-    left = screenWidth - newWidth - margin;
-  }
-  
-  // Adjust vertical position to stay within screen bounds
-  if (top < padding.top + margin) {
-    top = padding.top + margin;
-  } else if (top + newHeight > screenHeight - padding.bottom - margin) {
-    top = screenHeight - newHeight - padding.bottom - margin;
-  }
+    // Adjust vertical position to stay within screen bounds
+    if (top < padding.top + margin) {
+      top = padding.top + margin;
+    } else if (top + newHeight > screenHeight - padding.bottom - margin) {
+      top = screenHeight - newHeight - padding.bottom - margin;
+    }
 
-  // Additional check to ensure the image doesn't exceed screen bounds
-  // If the zoomed image is larger than available space, adjust the size
-  double finalWidth = newWidth;
-  double finalHeight = newHeight;
-  
-  if (newWidth > screenWidth - (2 * margin)) {
-    finalWidth = screenWidth - (2 * margin);
-    left = margin;
-  }
-  
-  if (newHeight > screenHeight - padding.top - padding.bottom - (2 * margin)) {
-    finalHeight = screenHeight - padding.top - padding.bottom - (2 * margin);
-    top = padding.top + margin;
-  }
+    // Additional check to ensure the image doesn't exceed screen bounds
+    // If the zoomed image is larger than available space, adjust the size
+    double finalWidth = newWidth;
+    double finalHeight = newHeight;
 
-  return Positioned(
-    left: left,
-    top: top,
-    child: Container(
-      width: finalWidth,
-      height: finalHeight,
-      decoration: BoxDecoration(
-        border: Border.all(color: paletteColor, width: 3),
-        boxShadow: [
-          BoxShadow(
-            color: paletteColor.withOpacity(0.6),
-            blurRadius: 15,
-            spreadRadius: 6,
-          ),
-        ],
+    if (newWidth > screenWidth - (2 * margin)) {
+      finalWidth = screenWidth - (2 * margin);
+      left = margin;
+    }
+
+    if (newHeight >
+        screenHeight - padding.top - padding.bottom - (2 * margin)) {
+      finalHeight = screenHeight - padding.top - padding.bottom - (2 * margin);
+      top = padding.top + margin;
+    }
+
+    return Positioned(
+      left: left,
+      top: top,
+      child: Container(
+        width: finalWidth,
+        height: finalHeight,
+        decoration: BoxDecoration(
+          border: Border.all(color: paletteColor, width: 3),
+          boxShadow: [
+            BoxShadow(
+              color: paletteColor.withOpacity(0.6),
+              blurRadius: 15,
+              spreadRadius: 6,
+            ),
+          ],
+        ),
+        child: CachedNetworkImage(
+          imageUrl: result.banner,
+          fit: BoxFit.cover,
+        ),
       ),
-      child: CachedNetworkImage(
-        imageUrl: result.banner,
-        fit: BoxFit.cover,
-      ),
-    ),
-  );
-}
-
+    );
+  }
 
   Future<void> _updatePaletteColor(String imageUrl, bool isFocused) async {
     try {
@@ -470,68 +455,67 @@ Widget _buildFocusedOverlayItem(int index) {
   }
 
   @override
-  Widget 
-  
-  build(BuildContext context) {
-    return 
-    PopScope(
-    canPop: false, // Back button se page pop nahi hoga
-    onPopInvoked: (didPop) {
-      if (!didPop) {
-        // Back button dabane par ye function call hoga
-        context.read<FocusProvider>().requestWatchNowFocus();
-      }
-    },
-    child:
-    Consumer<ColorProvider>(builder: (context, colorProvider, child) {
-      Color backgroundColor = colorProvider.isItemFocused
-          ? colorProvider.dominantColor
-          : Colors.black;
-      return Container(
-        // color: Colors.black54 ,
-        child: Scaffold(
-          backgroundColor: backgroundColor,
-          body: Container(
-        color: Colors.black54 ,
-
-            child: Stack(
-              children: [
-                Column(
+  Widget build(BuildContext context) {
+    return PopScope(
+        canPop: false, // Back button se page pop nahi hoga
+        onPopInvoked: (didPop) {
+          if (!didPop) {
+            // Back button dabane par ye function call hoga
+            context.read<FocusProvider>().requestWatchNowFocus();
+          }
+        },
+        child:
+            Consumer<ColorProvider>(builder: (context, colorProvider, child) {
+          Color backgroundColor = colorProvider.isItemFocused
+              ? colorProvider.dominantColor
+              : Colors.black;
+          return Container(
+            // color: Colors.black54 ,
+            child: Scaffold(
+              backgroundColor: backgroundColor,
+              body: Container(
+                color: Colors.black54,
+                child: Stack(
                   children: [
-                    _buildSearchBar(),
-                    Expanded(
-                      child: isLoading
-                          ? Center(child: SpinKitFadingCircle(color: paletteColor))
-                          : searchResults.isEmpty
+                    Column(
+                      children: [
+                        _buildSearchBar(),
+                        Expanded(
+                          child: isLoading
                               ? Center(
-                                  child: Text('No results found',
-                                      style: TextStyle(color: Colors.white)))
-                              : Padding(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: screenwdt * 0.03),
-                                  child: GridView.builder(
-                                    gridDelegate:
-                                        SliverGridDelegateWithFixedCrossAxisCount(
-                                      crossAxisCount: 5,
-                                      mainAxisSpacing: 20,
-                                      crossAxisSpacing: 10,
+                                  child:
+                                      SpinKitFadingCircle(color: paletteColor))
+                              : searchResults.isEmpty
+                                  ? Center(
+                                      child: Text('No results found',
+                                          style:
+                                              TextStyle(color: Colors.white)))
+                                  : Padding(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: screenwdt * 0.03),
+                                      child: GridView.builder(
+                                        gridDelegate:
+                                            SliverGridDelegateWithFixedCrossAxisCount(
+                                          crossAxisCount: 5,
+                                          mainAxisSpacing: 20,
+                                          crossAxisSpacing: 10,
+                                        ),
+                                        itemCount: searchResults.length,
+                                        itemBuilder: (context, index) =>
+                                            _buildGridItem(index),
+                                      ),
                                     ),
-                                    itemCount: searchResults.length,
-                                    itemBuilder: (context, index) =>
-                                        _buildGridItem(index),
-                                  ),
-                                ),
+                        ),
+                      ],
                     ),
+                    if (selectedIndex != -1)
+                      _buildFocusedOverlayItem(selectedIndex),
                   ],
                 ),
-                if (selectedIndex != -1) _buildFocusedOverlayItem(selectedIndex),
-              ],
+              ),
             ),
-          ),
-        ),
-      );
-    })
-    );
+          );
+        }));
   }
 
   Widget _buildSearchBar() {

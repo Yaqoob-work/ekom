@@ -1,6 +1,3 @@
-
-
-
 // import 'dart:async';
 // import 'dart:convert';
 // import 'package:flutter/material.dart';
@@ -58,26 +55,26 @@
 //   _WebSeriesDetailsPageState createState() => _WebSeriesDetailsPageState();
 // }
 
-// class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage> 
+// class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
 //     with WidgetsBindingObserver {
 //   final SocketService _socketService = SocketService();
 //   final ScrollController _scrollController = ScrollController();
 //   final ScrollController _seasonsScrollController = ScrollController();
 //   final FocusNode _mainFocusNode = FocusNode();
-  
+
 //   bool _isLoading = true;
 //   bool _isProcessing = false;
 //   bool _isLoadingEpisodes = false;
-  
+
 //   List<SeasonModel> _seasons = [];
 //   Map<int, List<NewsItemModel>> _episodesMap = {};
-  
+
 //   int _selectedSeasonIndex = 0;
 //   int _selectedEpisodeIndex = 0;
-  
+
 //   final Map<int, FocusNode> _seasonsFocusNodes = {};
 //   final Map<String, FocusNode> _episodeFocusNodes = {};
-  
+
 //   String _errorMessage = "";
 //   String _authKey = '';
 
@@ -109,9 +106,9 @@
 //         _authKey = globalAuthKey;
 //       }
 //     });
-    
+
 //     print('🔑 WebSeriesDetailsPage - Auth key loaded: $_authKey');
-    
+
 //     if (_authKey.isEmpty) {
 //       setState(() {
 //         _errorMessage = "Authentication required. Please login again.";
@@ -119,7 +116,7 @@
 //       });
 //       return;
 //     }
-    
+
 //     _initializePage();
 //   }
 
@@ -163,10 +160,10 @@
 //         String responseBody = response.body.trim();
 //         if (responseBody.startsWith('[') || responseBody.startsWith('{')) {
 //           final List<dynamic> data = jsonDecode(responseBody);
-          
+
 //           // Initialize focus nodes for seasons
 //           _seasonsFocusNodes.clear();
-          
+
 //           setState(() {
 //             _seasons = data.map((season) => SeasonModel.fromJson(season)).toList();
 //             _isLoading = false;
@@ -252,12 +249,12 @@
 //         String responseBody = response.body.trim();
 //         if (responseBody.startsWith('[') || responseBody.startsWith('{')) {
 //           final List<dynamic> data = jsonDecode(responseBody);
-          
+
 //           // Clear old episode focus nodes for this season
 //           _episodeFocusNodes.clear();
 
 //           final episodes = data.map((e) => NewsItemModel.fromJson(e)).toList();
-          
+
 //           // Create focus nodes for episodes
 //           for (var episode in episodes) {
 //             _episodeFocusNodes[episode.id] = FocusNode();
@@ -270,7 +267,7 @@
 //             _isLoadingEpisodes = false;
 //             _errorMessage = "";
 //           });
-          
+
 //           _setInitialEpisodeFocus();
 //         } else {
 //           setState(() {
@@ -349,7 +346,7 @@
 
 //   Future<void> _playEpisode(NewsItemModel episode) async {
 //     if (_isProcessing) return;
-    
+
 //     setState(() => _isProcessing = true);
 
 //     try {
@@ -495,7 +492,7 @@
 //                 errorBuilder: (_, __, ___) => Container(color: Colors.black),
 //               ),
 //             ),
-            
+
 //             // Gradient Overlay
 //             Positioned.fill(
 //               child: Container(
@@ -512,7 +509,7 @@
 //                 ),
 //               ),
 //             ),
-            
+
 //             // Main Content
 //             if (_isLoading && _seasons.isEmpty)
 //               Center(child: LoadingIndicator())
@@ -538,7 +535,7 @@
 //               )
 //             else
 //               _buildContent(),
-            
+
 //             // Processing Overlay
 //             if (_isProcessing)
 //               Container(
@@ -593,7 +590,7 @@
 //             ],
 //           ),
 //         ),
-        
+
 //         // Right side - Episodes List
 //         Expanded(
 //           child: Column(
@@ -653,7 +650,7 @@
 //           margin: EdgeInsets.symmetric(vertical: 8),
 //           padding: EdgeInsets.all(16),
 //           decoration: BoxDecoration(
-//             color: isSelected 
+//             color: isSelected
 //                 ? highlightColor.withOpacity(0.3)
 //                 : Colors.grey[900]?.withOpacity(0.6),
 //             borderRadius: BorderRadius.circular(8),
@@ -722,7 +719,7 @@
 
 //   Widget _buildEpisodesList() {
 //     final episodes = _currentEpisodes;
-    
+
 //     if (episodes.isEmpty) {
 //       return Center(
 //         child: Column(
@@ -836,7 +833,7 @@
 //                   ],
 //                 ),
 //               ),
-              
+
 //               // Episode Info
 //               Expanded(
 //                 child: Padding(
@@ -870,7 +867,7 @@
 //                   ),
 //                 ),
 //               ),
-              
+
 //               // Play Icon
 //               Padding(
 //                 padding: const EdgeInsets.all(12.0),
@@ -917,11 +914,6 @@
 //   }
 // }
 
-
-
-
-
-
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
@@ -941,6 +933,7 @@ enum NavigationMode {
 class SeasonModel {
   final int id;
   final String sessionName;
+  final String banner;
   final int seasonOrder;
   final int webSeriesId;
   final int status;
@@ -948,6 +941,7 @@ class SeasonModel {
   SeasonModel({
     required this.id,
     required this.sessionName,
+    required this.banner,
     required this.seasonOrder,
     required this.webSeriesId,
     required this.status,
@@ -957,6 +951,7 @@ class SeasonModel {
     return SeasonModel(
       id: json['id'] ?? 0,
       sessionName: json['Session_Name'] ?? '',
+      banner: json['banner'] ?? '',
       seasonOrder: json['season_order'] ?? 1,
       webSeriesId: json['web_series_id'] ?? 0,
       status: json['status'] ?? 1,
@@ -984,40 +979,40 @@ class WebSeriesDetailsPage extends StatefulWidget {
   _WebSeriesDetailsPageState createState() => _WebSeriesDetailsPageState();
 }
 
-class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage> 
+class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
     with WidgetsBindingObserver, TickerProviderStateMixin {
   final SocketService _socketService = SocketService();
   final ScrollController _scrollController = ScrollController();
   final ScrollController _seasonsScrollController = ScrollController();
   final FocusNode _mainFocusNode = FocusNode();
-  
+
   // Animation Controllers
   late AnimationController _navigationModeController;
   late AnimationController _instructionController;
   late AnimationController _pageTransitionController;
-  
+
   // Animations
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
-  
+
   bool _isLoading = true;
   bool _isProcessing = false;
   bool _isLoadingEpisodes = false;
-  
+
   List<SeasonModel> _seasons = [];
   Map<int, List<NewsItemModel>> _episodesMap = {};
-  
+
   int _selectedSeasonIndex = 0;
   int _selectedEpisodeIndex = 0;
-  
+
   NavigationMode _currentMode = NavigationMode.seasons;
-  
+
   final Map<int, FocusNode> _seasonsFocusNodes = {};
   final Map<String, FocusNode> _episodeFocusNodes = {};
-  
+
   String _errorMessage = "";
   String _authKey = '';
-  
+
   bool _showInstructions = true;
   Timer? _instructionTimer;
 
@@ -1026,7 +1021,7 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _socketService.initSocket();
-    
+
     _initializeAnimations();
     _loadAuthKey();
     _startInstructionTimer();
@@ -1037,17 +1032,17 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
       duration: Duration(milliseconds: 400),
       vsync: this,
     );
-    
+
     _instructionController = AnimationController(
       duration: Duration(milliseconds: 600),
       vsync: this,
     );
-    
+
     _pageTransitionController = AnimationController(
       duration: Duration(milliseconds: 800),
       vsync: this,
     );
-    
+
     _fadeAnimation = Tween<double>(
       begin: 0.0,
       end: 1.0,
@@ -1055,7 +1050,7 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
       parent: _pageTransitionController,
       curve: Curves.easeInOut,
     ));
-    
+
     _slideAnimation = Tween<Offset>(
       begin: Offset(0.0, 0.1),
       end: Offset.zero,
@@ -1109,7 +1104,7 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
         _authKey = globalAuthKey;
       }
     });
-    
+
     if (_authKey.isEmpty) {
       setState(() {
         _errorMessage = "Authentication required. Please login again.";
@@ -1117,7 +1112,7 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
       });
       return;
     }
-    
+
     _initializePage();
   }
 
@@ -1136,7 +1131,7 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
     setState(() {
       _currentMode = mode;
     });
-    
+
     if (mode == NavigationMode.seasons) {
       _navigationModeController.reverse();
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -1146,7 +1141,8 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
       _navigationModeController.forward();
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (_currentEpisodes.isNotEmpty) {
-          _episodeFocusNodes[_currentEpisodes[_selectedEpisodeIndex].id]?.requestFocus();
+          _episodeFocusNodes[_currentEpisodes[_selectedEpisodeIndex].id]
+              ?.requestFocus();
         }
       });
     }
@@ -1168,7 +1164,8 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
 
     try {
       final response = await https.get(
-        Uri.parse('https://acomtv.coretechinfo.com/public/api/getSeasons/${widget.id}'),
+        Uri.parse(
+            'https://acomtv.coretechinfo.com/public/api/getSeasons/${widget.id}'),
         headers: {
           'auth-key': _authKey,
           'Accept': 'application/json',
@@ -1180,11 +1177,12 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
         String responseBody = response.body.trim();
         if (responseBody.startsWith('[') || responseBody.startsWith('{')) {
           final List<dynamic> data = jsonDecode(responseBody);
-          
+
           _seasonsFocusNodes.clear();
-          
+
           setState(() {
-            _seasons = data.map((season) => SeasonModel.fromJson(season)).toList();
+            _seasons =
+                data.map((season) => SeasonModel.fromJson(season)).toList();
             _isLoading = false;
             _errorMessage = "";
           });
@@ -1223,7 +1221,8 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
   Future<void> _fetchEpisodes(int seasonId) async {
     if (_episodesMap.containsKey(seasonId)) {
       setState(() {
-        _selectedSeasonIndex = _seasons.indexWhere((season) => season.id == seasonId);
+        _selectedSeasonIndex =
+            _seasons.indexWhere((season) => season.id == seasonId);
         _selectedEpisodeIndex = 0;
       });
       _setNavigationMode(NavigationMode.episodes);
@@ -1236,7 +1235,8 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
 
     try {
       final response = await https.get(
-        Uri.parse('https://acomtv.coretechinfo.com/public/api/getEpisodes/$seasonId/0'),
+        Uri.parse(
+            'https://acomtv.coretechinfo.com/public/api/getEpisodes/$seasonId/0'),
         headers: {
           'auth-key': _authKey,
           'Accept': 'application/json',
@@ -1248,11 +1248,11 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
         String responseBody = response.body.trim();
         if (responseBody.startsWith('[') || responseBody.startsWith('{')) {
           final List<dynamic> data = jsonDecode(responseBody);
-          
+
           _episodeFocusNodes.clear();
 
           final episodes = data.map((e) => NewsItemModel.fromJson(e)).toList();
-          
+
           for (var episode in episodes) {
             _episodeFocusNodes[episode.id] = FocusNode();
           }
@@ -1263,7 +1263,7 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
             _selectedEpisodeIndex = 0;
             _isLoadingEpisodes = false;
           });
-          
+
           _setNavigationMode(NavigationMode.episodes);
         }
       }
@@ -1286,7 +1286,7 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
 
   Future<void> _playEpisode(NewsItemModel episode) async {
     if (_isProcessing) return;
-    
+
     setState(() => _isProcessing = true);
 
     try {
@@ -1294,8 +1294,9 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
 
       if (isYoutubeUrl(url)) {
         try {
-          url = await _socketService.getUpdatedUrl(url)
-            .timeout(const Duration(seconds: 10), onTimeout: () => url);
+          url = await _socketService
+              .getUpdatedUrl(url)
+              .timeout(const Duration(seconds: 10), onTimeout: () => url);
         } catch (e) {
           print("Error updating URL: $e");
         }
@@ -1320,6 +1321,9 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
               source: 'webseries_details_page',
               name: episode.name,
               liveStatus: false,
+              seasonId:_seasons[_selectedSeasonIndex].id,
+              isLastPlayedStored:false,
+
             ),
           ),
         );
@@ -1344,9 +1348,9 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
     if (url == null || url.isEmpty) return false;
     url = url.toLowerCase().trim();
     return RegExp(r'^[a-zA-Z0-9_-]{11}$').hasMatch(url) ||
-           url.contains('youtube.com') ||
-           url.contains('youtu.be') ||
-           url.contains('youtube.com/shorts/');
+        url.contains('youtube.com') ||
+        url.contains('youtu.be') ||
+        url.contains('youtube.com/shorts/');
   }
 
   void _handleKeyEvent(RawKeyEvent event) {
@@ -1401,7 +1405,7 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
 
   void _handleEpisodesNavigation(RawKeyEvent event) {
     final episodes = _currentEpisodes;
-    
+
     switch (event.logicalKey) {
       case LogicalKeyboardKey.arrowDown:
         if (_selectedEpisodeIndex < episodes.length - 1) {
@@ -1472,19 +1476,19 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
           children: [
             // 🎨 Beautiful Background
             _buildBackgroundLayer(),
-            
+
             // 📱 Main Content with proper spacing
             _buildMainContentWithLayout(),
-            
+
             // 🎯 Top Navigation Bar (Fixed Position)
             _buildTopNavigationBar(),
-            
+
             // ❓ Help Button (Fixed Position)
             _buildHelpButton(),
-            
+
             // 📋 Instructions Overlay (Bottom)
             if (_showInstructions) _buildInstructionsOverlay(),
-            
+
             // ⏳ Processing Overlay
             if (_isProcessing) _buildProcessingOverlay(),
           ],
@@ -1516,7 +1520,7 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
             ),
           ),
         ),
-        
+
         // Gradient Overlays for better readability
         Positioned.fill(
           child: Container(
@@ -1533,7 +1537,7 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
             ),
           ),
         ),
-        
+
         // Side gradients for better separation
         Positioned.fill(
           child: Container(
@@ -1582,21 +1586,23 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
                   animation: _navigationModeController,
                   builder: (context, child) {
                     return Container(
-                      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                       decoration: BoxDecoration(
                         color: Colors.black.withOpacity(0.8),
                         borderRadius: BorderRadius.circular(25),
                         border: Border.all(
-                          color: _currentMode == NavigationMode.seasons 
-                              ? Colors.blue 
+                          color: _currentMode == NavigationMode.seasons
+                              ? Colors.blue
                               : Colors.green,
-                          width: 2,
+                          width: 5,
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: (_currentMode == NavigationMode.seasons 
-                                ? Colors.blue 
-                                : Colors.green).withOpacity(0.3),
+                            color: (_currentMode == NavigationMode.seasons
+                                    ? Colors.blue
+                                    : Colors.green)
+                                .withOpacity(0.3),
                             blurRadius: 8,
                             spreadRadius: 2,
                           ),
@@ -1606,18 +1612,18 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(
-                            _currentMode == NavigationMode.seasons 
-                                ? Icons.list_alt 
+                            _currentMode == NavigationMode.seasons
+                                ? Icons.list_alt
                                 : Icons.play_circle_outline,
-                            color: _currentMode == NavigationMode.seasons 
-                                ? Colors.blue 
+                            color: _currentMode == NavigationMode.seasons
+                                ? Colors.blue
                                 : Colors.green,
                             size: 20,
                           ),
                           SizedBox(width: 8),
                           Text(
-                            _currentMode == NavigationMode.seasons 
-                                ? 'BROWSING SEASONS' 
+                            _currentMode == NavigationMode.seasons
+                                ? 'BROWSING SEASONS'
                                 : 'BROWSING EPISODES',
                             style: TextStyle(
                               color: Colors.white,
@@ -1630,9 +1636,9 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
                     );
                   },
                 ),
-                
+
                 Spacer(),
-                
+
                 // Series Title
                 Expanded(
                   flex: 2,
@@ -1651,7 +1657,7 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
                     ),
                   ),
                 ),
-                
+
                 Spacer(),
               ],
             ),
@@ -1673,7 +1679,8 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
             decoration: BoxDecoration(
               color: Colors.black.withOpacity(0.8),
               borderRadius: BorderRadius.circular(25),
-              border: Border.all(color: Colors.white.withOpacity(0.5), width: 1),
+              border:
+                  Border.all(color: Colors.white.withOpacity(0.5), width: 1),
               boxShadow: [
                 BoxShadow(
                   color: Colors.white.withOpacity(0.1),
@@ -1723,7 +1730,7 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
     if (_isLoading && _seasons.isEmpty) {
       return _buildLoadingWidget();
     }
-    
+
     if (_errorMessage.isNotEmpty && _seasons.isEmpty) {
       return _buildErrorWidget();
     }
@@ -1738,10 +1745,10 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
             flex: 2,
             child: _buildSeasonsPanel(),
           ),
-          
+
           SizedBox(width: 20),
-          
-          // Right Panel - Episodes  
+
+          // Right Panel - Episodes
           Expanded(
             flex: 3,
             child: _buildEpisodesPanel(),
@@ -1757,7 +1764,7 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
         color: Colors.black.withOpacity(0.3),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: _currentMode == NavigationMode.seasons 
+          color: _currentMode == NavigationMode.seasons
               ? Colors.blue.withOpacity(0.5)
               : Colors.white.withOpacity(0.1),
           width: 2,
@@ -1826,7 +1833,7 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
               ],
             ),
           ),
-          
+
           // Seasons List
           Expanded(
             child: _buildSeasonsList(),
@@ -1842,7 +1849,7 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
         color: Colors.black.withOpacity(0.3),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: _currentMode == NavigationMode.episodes 
+          color: _currentMode == NavigationMode.episodes
               ? Colors.green.withOpacity(0.5)
               : Colors.white.withOpacity(0.1),
           width: 2,
@@ -1895,7 +1902,8 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
                         letterSpacing: 1.0,
                       ),
                     ),
-                    if (_seasons.isNotEmpty && _selectedSeasonIndex < _seasons.length)
+                    if (_seasons.isNotEmpty &&
+                        _selectedSeasonIndex < _seasons.length)
                       Text(
                         _seasons[_selectedSeasonIndex].sessionName,
                         style: TextStyle(
@@ -1926,7 +1934,7 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
               ],
             ),
           ),
-          
+
           // Episodes List
           Expanded(
             child: _isLoadingEpisodes
@@ -1979,8 +1987,8 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
                       end: Alignment.centerRight,
                     )
                   : null,
-          color: !isFocused && !isSelected 
-              ? Colors.grey[900]?.withOpacity(0.4) 
+          color: !isFocused && !isSelected
+              ? Colors.grey[900]?.withOpacity(0.4)
               : null,
           borderRadius: BorderRadius.circular(12),
           border: isFocused
@@ -1988,13 +1996,15 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
               : isSelected
                   ? Border.all(color: Colors.white.withOpacity(0.3), width: 1)
                   : null,
-          boxShadow: isFocused ? [
-            BoxShadow(
-              color: Colors.blue.withOpacity(0.3),
-              blurRadius: 12,
-              spreadRadius: 2,
-            )
-          ] : null,
+          boxShadow: isFocused
+              ? [
+                  BoxShadow(
+                    color: Colors.blue.withOpacity(0.3),
+                    blurRadius: 12,
+                    spreadRadius: 2,
+                  )
+                ]
+              : null,
         ),
         child: Row(
           children: [
@@ -2021,19 +2031,37 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
                 ],
               ),
               child: Center(
-                child: Text(
-                  '${season.seasonOrder}',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
+                child: Image.network(
+                  season.banner,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) => Container(
+                    decoration: BoxDecoration(
+                        // gradient: LinearGradient(
+                        //   colors: [
+                        //     Color(0xFF1a1a2e),
+                        //     Color(0xFF16213e),
+                        //     Color(0xFF0f0f23),
+                        //   ],
+                        //   begin: Alignment.topLeft,
+                        //   end: Alignment.bottomRight,
+                        ),
                   ),
                 ),
               ),
+
+              // Text(
+              //   '${season.banner}',
+              //   style: TextStyle(
+              //     color: Colors.white,
+              //     fontWeight: FontWeight.bold,
+              //     fontSize: 18,
+              //   ),
+              // ),
+              // ),
             ),
-            
+
             SizedBox(width: 16),
-            
+
             // Season Info
             Expanded(
               child: Column(
@@ -2053,9 +2081,10 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
                   Row(
                     children: [
                       Container(
-                        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
-                          color: isFocused 
+                          color: isFocused
                               ? Colors.blue.withOpacity(0.2)
                               : Colors.grey[700]?.withOpacity(0.5),
                           borderRadius: BorderRadius.circular(12),
@@ -2072,7 +2101,8 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
                       if (episodeCount > 0) ...[
                         SizedBox(width: 8),
                         Container(
-                          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
                             color: Colors.green.withOpacity(0.2),
                             borderRadius: BorderRadius.circular(12),
@@ -2092,7 +2122,7 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
                 ],
               ),
             ),
-            
+
             // Arrow indicator with animation
             AnimatedRotation(
               turns: isFocused ? 0.0 : -0.25,
@@ -2111,7 +2141,7 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
 
   Widget _buildEpisodesList() {
     final episodes = _currentEpisodes;
-    
+
     if (episodes.isEmpty) {
       return _buildEmptyEpisodesState();
     }
@@ -2213,8 +2243,8 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
                       end: Alignment.centerRight,
                     )
                   : null,
-          color: !isFocused && !isSelected 
-              ? Colors.grey[900]?.withOpacity(0.4) 
+          color: !isFocused && !isSelected
+              ? Colors.grey[900]?.withOpacity(0.4)
               : null,
           borderRadius: BorderRadius.circular(16),
           border: isFocused
@@ -2222,13 +2252,15 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
               : isSelected
                   ? Border.all(color: Colors.white.withOpacity(0.3), width: 1)
                   : null,
-          boxShadow: isFocused ? [
-            BoxShadow(
-              color: Colors.green.withOpacity(0.3),
-              blurRadius: 12,
-              spreadRadius: 2,
-            )
-          ] : null,
+          boxShadow: isFocused
+              ? [
+                  BoxShadow(
+                    color: Colors.green.withOpacity(0.3),
+                    blurRadius: 12,
+                    spreadRadius: 2,
+                  )
+                ]
+              : null,
         ),
         child: Row(
           children: [
@@ -2253,7 +2285,7 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
                   ClipRRect(
                     borderRadius: BorderRadius.circular(12),
                     child: Image.network(
-                      widget.banner,
+                      episode.banner,
                       fit: BoxFit.cover,
                       width: 140,
                       height: 90,
@@ -2297,7 +2329,7 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
                       },
                     ),
                   ),
-                  
+
                   // Play/Loading overlay with beautiful animations
                   if (isProcessing)
                     Container(
@@ -2355,11 +2387,12 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
                 ],
               ),
             ),
-            
+
             // Episode Information
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -2374,9 +2407,9 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    
+
                     SizedBox(height: 8),
-                    
+
                     // Episode Description
                     if (episode.description.isNotEmpty)
                       Text(
@@ -2389,29 +2422,39 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
                         maxLines: 3,
                         overflow: TextOverflow.ellipsis,
                       ),
-                    
+
                     SizedBox(height: 12),
-                    
+
                     // Episode Metadata
                     Row(
                       children: [
                         Container(
-                          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
                               colors: isFocused
-                                  ? [Colors.green.withOpacity(0.3), Colors.green.withOpacity(0.1)]
-                                  : [Colors.grey[700]!.withOpacity(0.5), Colors.grey[800]!.withOpacity(0.3)],
+                                  ? [
+                                      Colors.green.withOpacity(0.3),
+                                      Colors.green.withOpacity(0.1)
+                                    ]
+                                  : [
+                                      Colors.grey[700]!.withOpacity(0.5),
+                                      Colors.grey[800]!.withOpacity(0.3)
+                                    ],
                             ),
                             borderRadius: BorderRadius.circular(15),
                             border: Border.all(
-                              color: isFocused ? Colors.green.withOpacity(0.5) : Colors.grey[600]!.withOpacity(0.3),
+                              color: isFocused
+                                  ? Colors.green.withOpacity(0.5)
+                                  : Colors.grey[600]!.withOpacity(0.3),
                             ),
                           ),
                           child: Text(
                             'Episode ${index + 1}',
                             style: TextStyle(
-                              color: isFocused ? Colors.green : Colors.grey[300],
+                              color:
+                                  isFocused ? Colors.green : Colors.grey[300],
                               fontSize: 11,
                               fontWeight: FontWeight.w600,
                             ),
@@ -2420,7 +2463,8 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
                         SizedBox(width: 8),
                         if (isFocused)
                           Container(
-                            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 4),
                             decoration: BoxDecoration(
                               color: Colors.green.withOpacity(0.2),
                               borderRadius: BorderRadius.circular(12),
@@ -2440,7 +2484,7 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
                 ),
               ),
             ),
-            
+
             // Action Button Area
             Padding(
               padding: const EdgeInsets.all(16),
@@ -2458,19 +2502,24 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
                           colors: isFocused
                               ? [Colors.green, Colors.green.shade400]
                               : isSelected
-                                  ? [Colors.white.withOpacity(0.3), Colors.white.withOpacity(0.1)]
+                                  ? [
+                                      Colors.white.withOpacity(0.3),
+                                      Colors.white.withOpacity(0.1)
+                                    ]
                                   : [Colors.grey[700]!, Colors.grey[600]!],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                         ),
                         borderRadius: BorderRadius.circular(28),
-                        boxShadow: isFocused ? [
-                          BoxShadow(
-                            color: Colors.green.withOpacity(0.5),
-                            blurRadius: 12,
-                            spreadRadius: 3,
-                          )
-                        ] : null,
+                        boxShadow: isFocused
+                            ? [
+                                BoxShadow(
+                                  color: Colors.green.withOpacity(0.5),
+                                  blurRadius: 12,
+                                  spreadRadius: 3,
+                                )
+                              ]
+                            : null,
                       ),
                       child: isProcessing
                           ? SpinKitRing(
@@ -2485,7 +2534,6 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
                             ),
                     ),
                   ),
-                  
                   if (isFocused) ...[
                     SizedBox(height: 8),
                     Container(
@@ -2533,7 +2581,8 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
               end: Alignment.bottomCenter,
             ),
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: highlightColor.withOpacity(0.3), width: 1),
+            border:
+                Border.all(color: highlightColor.withOpacity(0.3), width: 1),
             boxShadow: [
               BoxShadow(
                 color: highlightColor.withOpacity(0.2),
@@ -2566,13 +2615,18 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   if (_currentMode == NavigationMode.seasons) ...[
-                    _buildInstructionItem('↑ ↓', 'Navigate Seasons', Icons.list_alt),
-                    _buildInstructionItem('→ ENTER', 'Select Season', Icons.chevron_right),
+                    _buildInstructionItem(
+                        '↑ ↓', 'Navigate Seasons', Icons.list_alt),
+                    _buildInstructionItem(
+                        '→ ENTER', 'Select Season', Icons.chevron_right),
                     _buildInstructionItem('← BACK', 'Exit', Icons.exit_to_app),
                   ] else ...[
-                    _buildInstructionItem('↑ ↓', 'Navigate Episodes', Icons.video_library),
-                    _buildInstructionItem('ENTER', 'Play Episode', Icons.play_arrow),
-                    _buildInstructionItem('← BACK', 'Back to Seasons', Icons.arrow_back),
+                    _buildInstructionItem(
+                        '↑ ↓', 'Navigate Episodes', Icons.video_library),
+                    _buildInstructionItem(
+                        'ENTER', 'Play Episode', Icons.play_arrow),
+                    _buildInstructionItem(
+                        '← BACK', 'Back to Seasons', Icons.arrow_back),
                   ],
                 ],
               ),

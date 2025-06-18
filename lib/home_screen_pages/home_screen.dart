@@ -175,7 +175,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                   SizedBox(
-                    height: screenhgt * 0.5,
+                    height: screenhgt * 0.4,
                     key: subVodKey,
                     child: SubVod(
                       focusNode: firstSubVodFocusNode,
@@ -183,7 +183,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   SizedBox(
                     // Use the dynamically calculated height based on category count
-                    height: manageMoviesHeight,
+                    height: screenhgt * 0.4,
                     key: manageMoviesKey,
                     child: Movies(
                       focusNode: manageMoviesFocusNode,

@@ -69,7 +69,7 @@ class PaletteColorService {
 
       return _getSecondMostPopulatedColor(paletteGenerator) ?? fallbackColor;
     } catch (e) {
-      debugPrint('Failed to get secondary color: $e');
+      // debugPrint('Failed to get secondary color: $e');
       return fallbackColor;
     }
   }
