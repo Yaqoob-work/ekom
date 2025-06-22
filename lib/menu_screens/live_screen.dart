@@ -232,9 +232,10 @@ class _LiveScreenState extends State<LiveScreen> {
               clipBehavior: Clip.none, // Allow items to overflow their bounds
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: _crossAxisCount,
-                mainAxisSpacing: 20.0, // Increased spacing between rows
-                crossAxisSpacing: 10.0,
+                // mainAxisSpacing: 20.0, // Increased spacing between rows
+                // crossAxisSpacing: 10.0,
                 // childAspectRatio: 16/9,
+                // childAspectRatio: 1.2,
               ),
               itemCount: _musicList.length,
               itemBuilder: (context, index) {
@@ -452,7 +453,7 @@ class _LiveScreenState extends State<LiveScreen> {
   void checkServerStatus() {
     Timer.periodic(Duration(seconds: 10), (timer) {
       // Check if the socket is connected, otherwise attempt to reconnect
-      if (!_socketService.socket.connected) {
+      if (!_socketService.socket!.connected) {
         // print('YouTube server down, retrying...');
         _socketService.initSocket(); // Re-establish the socket connection
       }

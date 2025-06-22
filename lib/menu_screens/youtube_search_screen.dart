@@ -73,13 +73,10 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
 
 //     try {
 //       String url = searchResults[index].videoId;
-//       print('Initial URL: $url'); // Print initial URL
 // if (Youtube.isYoutubeUrl(url)) {
 //       url = await _socketService.getUpdatedUrl(url);
 
-//         print('ValidYouTube URL detected: $url');
 //       } else {
-//         print('Invalid YouTube URL: $url');
 //       }
 
 //       if (_shouldContinueLoading && mounted) {
@@ -106,7 +103,6 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
 //         );
 //       }
 //     } catch (e) {
-//       print('Error navigating: $e');
 //     } finally {
 //       if (mounted) {
 //         _isNavigating = false;
@@ -126,7 +122,6 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
     // First check if it's a YouTube ID (exactly 11 characters)
     bool isYoutubeId = RegExp(r'^[a-zA-Z0-9_-]{11}$').hasMatch(url);
     if (isYoutubeId) {
-      print("Matched YouTube ID pattern: $url");
       return true;
     }
 
@@ -135,23 +130,19 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
         url.contains('youtu.be') ||
         url.contains('youtube.com/shorts/');
     if (isYoutubeUrl) {
-      print("Matched YouTube URL pattern: $url");
       return true;
     }
 
-    print("Not a YouTube URL/ID: $url");
     return false;
   }
 
   String formatUrl(String url, {Map<String, String>? params}) {
     if (url.isEmpty) {
-      print("Warning: Empty URL provided");
       throw Exception("Empty URL provided");
     }
 
     // Handle YouTube ID by converting to full URL if needed
     if (RegExp(r'^[a-zA-Z0-9_-]{11}$').hasMatch(url)) {
-      print("Converting YouTube ID to full URL");
       url = "https://www.youtube.com/watch?v=$url";
     }
 
@@ -163,7 +154,6 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
       url += '?' + params.entries.map((e) => '${e.key}=${e.value}').join('&');
     }
 
-    print("Formatted URL: $url");
     return url;
   }
 
@@ -180,9 +170,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
 
       if (isYoutubeUrl(updatedUrl)) {
         updatedUrl = await _socketService.getUpdatedUrl(updatedUrl);
-        print('FinalURL after conversion: $updatedUrl'); // Debugging line
       }
-      print('FinalURL after conversion: $updatedUrl'); // Debugging line
 
       if (_shouldContinueLoading && mounted) {
         await Navigator.push(
@@ -210,7 +198,6 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
         );
       }
     } catch (e) {
-      print('Error navigating: $e');
       // FIX 4: Add proper error handling
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -244,6 +231,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
             genres: '',
             status: '1',
             banner: video['thumbnail_high'] ?? '',
+            poster: video['thumbnail_high'] ?? '',
             isFocused: false,
             image: '',
             unUpdatedUrl: '',
@@ -251,7 +239,6 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
         }).toList();
       }
     } catch (e) {
-      print('Error: $e');
     }
     return [];
   }

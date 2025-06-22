@@ -53,7 +53,7 @@ class _ChannelsCategoryState extends State<ChannelsCategory> {
   void checkServerStatus() {
     Timer.periodic(Duration(seconds: 10), (timer) {
       // Check if the socket is connected, otherwise attempt to reconnect
-      if (!_socketService.socket.connected && !_isAttemptingReconnect) {
+      if (!_socketService.socket!.connected && !_isAttemptingReconnect) {
         _isAttemptingReconnect = true;
         // print('YouTube server down, retrying...');
         _socketService.initSocket(); // Re-establish the socket connection

@@ -47,7 +47,7 @@ class _NewsGridScreenState extends State<NewsGridScreen> {
   void checkServerStatus() {
     Timer.periodic(Duration(seconds: 10), (timer) {
       // Check if the socket is connected, otherwise attempt to reconnect
-      if (!_socketService.socket.connected) {
+      if (!_socketService.socket!.connected) {
         print('YouTube server down, retrying...');
         _socketService.initSocket(); // Re-establish the socket connection
       }

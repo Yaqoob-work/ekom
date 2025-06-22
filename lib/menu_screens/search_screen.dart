@@ -396,7 +396,7 @@ class _SearchScreenState extends State<SearchScreen> {
   void checkServerStatus() {
     int retryCount = 0;
     Timer.periodic(Duration(seconds: 10), (timer) {
-      if (!_socketService.socket.connected && retryCount < _maxRetries) {
+      if (!_socketService.socket!.connected && retryCount < _maxRetries) {
         retryCount++;
         _socketService.initSocket();
       } else {
@@ -829,7 +829,7 @@ class _SearchScreenState extends State<SearchScreen> {
                         );
                       },
                       errorWidget: (context, url, error) {
-                        return localImage;
+                        return Image.asset(localImage);
                         // Container(
                         //   width: screenwdt * 0.19,
                         //   height: screenhgt * 0.2,

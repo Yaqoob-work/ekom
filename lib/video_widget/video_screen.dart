@@ -213,382 +213,581 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
 //     _startPositionUpdater();
 //   }
 
-
-
 // Update the VideoScreen initState method to work with new NewsItemModel structure
 
-@override
-void initState() {
-  super.initState();
-  WidgetsBinding.instance.addObserver(this);
-  _scrollController = ScrollController();
-  _scrollController.addListener(_scrollListener);
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _scrollController = ScrollController();
+    _scrollController.addListener(_scrollListener);
 
-  _previewPosition = _controller?.value.position ?? Duration.zero;
-  
-  // Print debug info for last played videos
-  if (widget.source == 'isLastPlayedVideos') {
-    print('🔄 Resuming last played video:');
-    print('   Name: ${widget.name}');
-    print('   URL: ${widget.videoUrl}');
-    print('   Start Position: ${widget.startAtPosition.inSeconds} seconds');
-    print('   Total Duration: ${widget.totalDuration?.inSeconds ?? 0} seconds');
-    print('   Live Status: ${widget.liveStatus}');
-    print('   Channel List Length: ${widget.channelList.length}');
-  }
+    _previewPosition = _controller?.value.position ?? Duration.zero;
 
-  Timer.periodic(Duration(minutes: 5), (timer) {
-    if (mounted) {
-      _controller?.setPlaybackSpeed(1.0);
-    } else {
-      timer.cancel();
-    }
-  });
-  
-  KeepScreenOn.turnOn();
-  _initializeVolume();
-  _listenToVolumeChanges();
-
-  // Initialize banner cache
-  _loadStoredBanners().then((_) {
-    _storeBannersLocally();
-  });
-
-  // Updated focus index detection for new NewsItemModel structure
-  if (widget.source == 'isLastPlayedVideos') {
-    // For last played videos, find by URL since that's most reliable
-    _focusedIndex = widget.channelList.indexWhere(
-      (channel) => channel.url == widget.videoUrl || channel.unUpdatedUrl == widget.unUpdatedUrl,
-    );
-    print('🎯 Last played focus index by URL: $_focusedIndex');
-    
-    // If not found by URL, try by video ID
-    if (_focusedIndex == -1) {
-      _focusedIndex = widget.channelList.indexWhere(
-        (channel) => channel.videoId == widget.videoId.toString(),
-      );
-      print('🎯 Last played focus index by videoId: $_focusedIndex');
-    }
-  } else if (widget.isBannerSlider) {
-    _focusedIndex = widget.channelList.indexWhere(
-      (channel) =>
-          channel.contentId.toString() ==
-          (isOnItemTapUsed ? GlobalVariables.slectedId : widget.videoId)
-              .toString(),
-    );
-    print('🎯 Banner slider focus index: $_focusedIndex');
-  } else if (widget.isVOD ||
-      widget.source == 'isLiveScreen' ||
-      widget.source == 'isYoutubeSearchScreen' ||
-      widget.source == 'isSearchScreenViaDetailsPageChannelList' ||
-      widget.source == 'isContentScreenViaDetailsPageChannelList' ||
-      widget.source == 'webseries_details_page' ||
-      widget.source == 'isMovieScreen') {
-    _focusedIndex = widget.channelList.indexWhere(
-      (channel) =>
-          channel.id.toString() ==
-          (isOnItemTapUsed ? GlobalVariables.slectedId : widget.videoId)
-              .toString(),
-    );
-    print('🎯 VOD/Other focus index: $_focusedIndex');
-  } else {
-    _focusedIndex = widget.channelList.indexWhere(
-      (channel) => channel.url == widget.videoUrl,
-    );
-    print('🎯 Default focus index by URL: $_focusedIndex');
-  }
-
-  // Default to 0 if no match is found
-  _focusedIndex = (_focusedIndex >= 0) ? _focusedIndex : 0;
-  
-  print('🎯 Final focused index: $_focusedIndex');
-
-  // Initialize focus nodes
-  focusNodes = List.generate(
-    widget.channelList.length,
-    (index) => FocusNode(),
-  );
-  
-  // Set initial focus
-  WidgetsBinding.instance.addPostFrameCallback((_) {
-    _setInitialFocus();
-  });
-  
-  _initializeVideoController(_focusedIndex);
-  _startHideControlsTimer();
-  _startNetworkMonitor();
-  _startPositionUpdater();
-}
-
-// Update the _onItemTap method to work with new NewsItemModel structure
-Future<void> _onItemTap(int index) async {
-  if (index < 0 || index >= widget.channelList.length) return;
-
-  // Cancel any existing timeout timer
-  _webseriesTimeoutTimer?.cancel();
-
-  if (_controller != null) {
-    await _controller!.dispose();
-    _controller = null;
-  }
-
-  setState(() {
-    isOnItemTapUsed = true;
-    _loadingVisible = true;
-    _isVideoInitialized = false;
-    _showErrorMessage = false;
-    _hasVideoStartedPlaying = false;
-  });
-
-  final selectedChannel = widget.channelList[index];
-  String updatedUrl = selectedChannel.url ?? '';
-  String originalUrl = selectedChannel.unUpdatedUrl ?? selectedChannel.url ?? '';
-
-  print('🎬 _onItemTap for index $index');
-  print('   Channel Name: ${selectedChannel.name}');
-  print('   Original URL: $originalUrl');
-  print('   Current URL: $updatedUrl');
-  print('   Content Type: ${selectedChannel.contentType}');
-  print('   Stream Type: ${selectedChannel.streamType}');
-  print('   Source: ${widget.source}');
-
-  try {
-    // URL fetching based on contentType/source - updated for new structure
+    // Print debug info for last played videos
     if (widget.source == 'isLastPlayedVideos') {
-      _startWebseriesTimeoutTimer();
-
-      // For last played videos, use the URL from the channel directly
-      updatedUrl = selectedChannel.url ?? '';
-      originalUrl = selectedChannel.unUpdatedUrl ?? updatedUrl;
-      print('📺 Last played video URL: $updatedUrl');
-
-      // Check if it's a YouTube URL
-      if (isYoutubeUrl(updatedUrl)) {
-        print("🔄 Processing YouTube URL from last played videos");
-        updatedUrl = await _socketService.getUpdatedUrl(updatedUrl);
-      }
-    } else {
-      // Your existing logic for other sources
-      if (widget.source == 'webseries_details_page') {
-        final playLink = await fetchEpisodeUrlById1(selectedChannel.contentId.toString());
-        if (playLink != null && playLink.isNotEmpty) updatedUrl = playLink;
-      } else if (widget.source == 'isBannerSlider') {
-        final playLink = await fetchVideoDataByIdFromBanners(selectedChannel.id);
-        if (playLink['url'] != null && playLink['url']!.isNotEmpty)
-          updatedUrl = playLink['url']!;
-      }
-
-      if (selectedChannel.contentType == '1' ||
-          widget.isVOD ||
-          widget.source == 'isMovieScreen') {
-        print('🎬 Processing movie/VOD content');
-        final playLink = await fetchMoviePlayLinkById(int.parse(selectedChannel.id));
-        if (playLink['source_url'] != null && playLink['source_url']!.isNotEmpty)
-          updatedUrl = playLink['source_url']!;
-      }
-
-      if (isYoutubeUrl(updatedUrl)) {
-        updatedUrl = await _socketService.getUpdatedUrl(updatedUrl);
-      }
     }
 
-    _controller = VideoPlayerController.network(updatedUrl);
-
-    await _controller!.initialize().timeout(Duration(seconds: 10));
-
-    if (_controller!.value.size.width <= 0 ||
-        _controller!.value.size.height <= 0) {
-      throw Exception("Invalid video dimensions.");
-    }
-
-    await _controller!.play();
-
-    // Immediately setup listeners after successful play
-    _setupVideoPlayerListeners();
-
-    // Start timeout timer for certain sources
-    if (widget.source == 'webseries_details_page' ||
-        widget.source == 'isMovieScreen') {
-      _startWebseriesTimeoutTimer();
-    }
-
-    setState(() {
-      _focusedIndex = index;
-      _isVideoInitialized = true;
-      _loadingVisible = false;
-      _currentModifiedUrl = updatedUrl;
+    Timer.periodic(Duration(minutes: 5), (timer) {
+      if (mounted) {
+        _controller?.setPlaybackSpeed(1.0);
+      } else {
+        timer.cancel();
+      }
     });
 
-    // Update global variables - updated for new structure
-    GlobalVariables.unUpdatedUrl = originalUrl;
-    GlobalVariables.position = Duration.zero;
-    GlobalVariables.duration = _controller!.value.duration;
-    GlobalVariables.banner = selectedChannel.banner ?? '';
-    GlobalVariables.name = selectedChannel.name ?? '';
-    GlobalVariables.slectedId = selectedChannel.id ?? '';
-    GlobalVariables.liveStatus = selectedChannel.liveStatus;
+    KeepScreenOn.turnOn();
+    _initializeVolume();
+    _listenToVolumeChanges();
 
-    _scrollToFocusedItem();
-    _resetHideControlsTimer();
-  } catch (error) {
-    print('❌ Error in _onItemTap: $error');
-    
+    // Initialize banner cache
+    _loadStoredBanners().then((_) {
+      _storeBannersLocally();
+    });
+
+    // Updated focus index detection for new NewsItemModel structure
+    if (widget.source == 'isLastPlayedVideos') {
+      // For last played videos, find by URL since that's most reliable
+      _focusedIndex = widget.channelList.indexWhere(
+        (channel) =>
+            channel.url == widget.videoUrl ||
+            channel.unUpdatedUrl == widget.unUpdatedUrl,
+      );
+
+      // If not found by URL, try by video ID
+      if (_focusedIndex == -1) {
+        _focusedIndex = widget.channelList.indexWhere(
+          (channel) => channel.videoId == widget.videoId.toString(),
+        );
+      }
+    } else if (widget.isBannerSlider) {
+      _focusedIndex = widget.channelList.indexWhere(
+        (channel) =>
+            channel.contentId.toString() ==
+            (isOnItemTapUsed ? GlobalVariables.slectedId : widget.videoId)
+                .toString(),
+      );
+    } else if (widget.isVOD ||
+        widget.source == 'isLiveScreen' ||
+        widget.source == 'isYoutubeSearchScreen' ||
+        widget.source == 'isSearchScreenViaDetailsPageChannelList' ||
+        widget.source == 'isContentScreenViaDetailsPageChannelList' ||
+        widget.source == 'webseries_details_page' ||
+        widget.source == 'isMovieScreen') {
+      _focusedIndex = widget.channelList.indexWhere(
+        (channel) =>
+            channel.id.toString() ==
+            (isOnItemTapUsed ? GlobalVariables.slectedId : widget.videoId)
+                .toString(),
+      );
+    } else {
+      _focusedIndex = widget.channelList.indexWhere(
+        (channel) => channel.url == widget.videoUrl,
+      );
+    }
+
+    // Default to 0 if no match is found
+    _focusedIndex = (_focusedIndex >= 0) ? _focusedIndex : 0;
+
+
+    // Initialize focus nodes
+    focusNodes = List.generate(
+      widget.channelList.length,
+      (index) => FocusNode(),
+    );
+
+    // Set initial focus
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _setInitialFocus();
+    });
+
+    _initializeVideoController(_focusedIndex);
+    _startHideControlsTimer();
+    _startNetworkMonitor();
+    _startPositionUpdater();
+  }
+
+  bool isYoutubeUrl(String? url) {
+    if (url == null || url.isEmpty) {
+      return false;
+    }
+
+    url = url.toLowerCase().trim();
+
+    // First check if it's a YouTube ID (exactly 11 characters)
+    bool isYoutubeId = RegExp(r'^[a-zA-Z0-9_-]{11}$').hasMatch(url);
+    if (isYoutubeId) {
+      return true;
+    }
+
+    // Then check for regular YouTube URLs
+    bool isYoutubeUrl = url.contains('youtube.com') ||
+        url.contains('youtu.be') ||
+        url.contains('youtube.com/shorts/');
+    if (isYoutubeUrl) {
+      return true;
+    }
+
+    return false;
+  }
+
+// Update the _onItemTap method to work with new NewsItemModel structure
+  Future<void> _onItemTap(int index) async {
+    if (index < 0 || index >= widget.channelList.length) return;
+
+    // Cancel any existing timeout timer
+    _webseriesTimeoutTimer?.cancel();
+
     if (_controller != null) {
       await _controller!.dispose();
       _controller = null;
     }
 
     setState(() {
+      isOnItemTapUsed = true;
+      _loadingVisible = true;
       _isVideoInitialized = false;
-      _loadingVisible = false;
+      _showErrorMessage = false;
+      _hasVideoStartedPlaying = false;
     });
 
-    // Error handling based on source
-    if (widget.source == 'isLastPlayedVideos') {
-      // For last played videos, show immediate error
-      String errorMessage = "This video is no longer available.\nIt may have been moved or deleted.";
-      _showVideoErrorMessage(errorMessage);
-    } else if (widget.source == 'webseries_details_page' ||
-        widget.source == 'isMovieScreen' ||
-        widget.isVOD ||
-        widget.source == 'isLastPlayedVideos'
-        ) {
-      // For webseries, wait before showing error
-      _startWebseriesTimeoutTimer();
-    } else {
-      // For all other sources, show immediate error
-      String errorMessage = "This video is temporarily unable to play.\nPlease choose another video.";
-      _showVideoErrorMessage(errorMessage);
+    final selectedChannel = widget.channelList[index];
+    String updatedUrl = selectedChannel.url ?? '';
+    String originalUrl =
+        selectedChannel.unUpdatedUrl ?? selectedChannel.url ?? '';
+
+
+    try {
+      // URL fetching based on contentType/source - updated for new structure
+      if (widget.source == 'isLastPlayedVideos') {
+        _startWebseriesTimeoutTimer();
+
+        // For last played videos, use the URL from the channel directly
+        updatedUrl = selectedChannel.url ?? '';
+        originalUrl = selectedChannel.unUpdatedUrl ?? updatedUrl;
+
+        // Check if it's a YouTube URL
+        if (isYoutubeUrl(updatedUrl)) {
+          updatedUrl = await _socketService.getUpdatedUrl(updatedUrl);
+        }
+      } else {
+        // Your existing logic for other sources
+           // Handle different sources
+    if (widget.source == 'isMovieScreen') {
+      
+      // Fetch movie URL from getAllMovies API
+      final movieData = await fetchMovieUrlById(int.parse(selectedChannel.id));
+      
+      if (movieData['movie_url'] != null && movieData['movie_url']!.isNotEmpty) {
+        updatedUrl = movieData['movie_url']!;
+        originalUrl = updatedUrl; // For movies, both URLs are same
+        
+        
+        // If it's a YouTube movie, process accordingly
+        if (movieData['source_type'] == 'YoutubeLive' || isYoutubeUrl(updatedUrl)) {
+          updatedUrl = await _socketService.getUpdatedUrl(updatedUrl);
+        }
+      } else {
+        throw Exception('Movie URL not found for ID: ${selectedChannel.id}');
+      }
+    } else
+            // Handle different sources
+    if (widget.isLive) {
+      
+      // Fetch live TV channel URL from getFeaturedLiveTV API
+      final channelData = await fetchLiveTVChannelById(int.parse(selectedChannel.id));
+      
+      if (channelData['url'] != null && channelData['url']!.isNotEmpty) {
+        updatedUrl = channelData['url']!;
+        originalUrl = updatedUrl; // For live TV, both URLs are same
+        
+        
+        // Process YouTube live streams if needed
+        if (isYoutubeUrl(updatedUrl)) {
+          updatedUrl = await _socketService.getUpdatedUrl(updatedUrl);
+        }
+      } else {
+        throw Exception('Live TV channel URL not found for ID: ${selectedChannel.id}');
+      }
+    }else if (widget.source == 'isBannerSlider') {
+          final playLink =
+              await fetchVideoDataByIdFromBanners(selectedChannel.id);
+          if (playLink['url'] != null && playLink['url']!.isNotEmpty)
+            updatedUrl = playLink['url']!;
+        }
+
+        // if (selectedChannel.contentType == '1' ||
+        //     widget.isVOD ||
+        //     widget.source == 'isMovieScreen') {
+        //   final playLink =
+        //       await fetchMoviePlayLinkById(int.parse(selectedChannel.id));
+        //   if (playLink['source_url'] != null &&
+        //       playLink['source_url']!.isNotEmpty)
+        //     updatedUrl = playLink['source_url']!;
+        // }
+
+        if (isYoutubeUrl(updatedUrl)) {
+          updatedUrl = await _socketService.getUpdatedUrl(updatedUrl);
+        }
+      }
+
+      if (isYoutubeUrl(updatedUrl)) {
+        updatedUrl = await _socketService.getUpdatedUrl(updatedUrl);
+      }
+
+
+      _controller = VideoPlayerController.network(updatedUrl);
+
+      await _controller!.initialize();
+      // .timeout(Duration(seconds: 10));
+
+      if (_controller!.value.size.width <= 0 ||
+          _controller!.value.size.height <= 0) {
+        throw Exception("Invalid video dimensions.");
+      }
+
+      await _controller!.play();
+
+      // Immediately setup listeners after successful play
+      _setupVideoPlayerListeners();
+
+      // Start timeout timer for certain sources
+      if (widget.source == 'webseries_details_page' ||
+          widget.source == 'isMovieScreen') {
+        _startWebseriesTimeoutTimer();
+      }
+
+      setState(() {
+        _focusedIndex = index;
+        _isVideoInitialized = true;
+        _loadingVisible = false;
+        _currentModifiedUrl = updatedUrl;
+      });
+
+      // Update global variables - updated for new structure
+      GlobalVariables.unUpdatedUrl = originalUrl;
+      GlobalVariables.position = Duration.zero;
+      GlobalVariables.duration = _controller!.value.duration;
+      GlobalVariables.banner = selectedChannel.banner ?? '';
+      GlobalVariables.name = selectedChannel.name ?? '';
+      GlobalVariables.slectedId = selectedChannel.id ?? '';
+      GlobalVariables.liveStatus = selectedChannel.liveStatus;
+
+      _scrollToFocusedItem();
+      _resetHideControlsTimer();
+    } catch (error) {
+
+      if (_controller != null) {
+        await _controller!.dispose();
+        _controller = null;
+      }
+
+      setState(() {
+        _isVideoInitialized = false;
+        _loadingVisible = false;
+      });
+
+      // Error handling based on source
+      if (widget.source == 'isLastPlayedVideos') {
+        // For last played videos, show immediate error
+        String errorMessage =
+            "This video is no longer available.\nIt may have been moved or deleted.";
+        _showVideoErrorMessage(errorMessage);
+      } else if (widget.source == 'webseries_details_page' ||
+          widget.source == 'isMovieScreen' ||
+          widget.isVOD ||
+          widget.source == 'isLastPlayedVideos') {
+        // For webseries, wait before showing error
+        _startWebseriesTimeoutTimer();
+      } else {
+        // For all other sources, show immediate error
+        String errorMessage =
+            "This video is temporarily unable to play.\nPlease choose another video.";
+        _showVideoErrorMessage(errorMessage);
+      }
     }
+  }
+
+
+
+  
+// Add this method to fetch live TV channel URL by ID
+Future<Map<String, dynamic>> fetchLiveTVChannelById(int channelId) async {
+
+  final prefs = await SharedPreferences.getInstance();
+  final cacheKey = 'live_tv_data_$channelId';
+  final cachedChannelData = prefs.getString(cacheKey);
+
+  // Check cache first (cache for 1 hour for live TV)
+  if (cachedChannelData != null) {
+    try {
+      final Map<String, dynamic> cachedData = json.decode(cachedChannelData);
+      final int cacheTime = prefs.getInt('${cacheKey}_timestamp') ?? 0;
+      final int currentTime = DateTime.now().millisecondsSinceEpoch;
+      
+      // Cache expires after 1 hour for live TV
+      if (currentTime - cacheTime < 3600000) {
+        return cachedData;
+      } else {
+        // Remove expired cache
+        prefs.remove(cacheKey);
+        prefs.remove('${cacheKey}_timestamp');
+      }
+    } catch (e) {
+      prefs.remove(cacheKey);
+    }
+  }
+
+  try {
+    final headers = await ApiService.getHeaders();
+    final apiUrl = 'https://acomtv.coretechinfo.com/public/api/getFeaturedLiveTV';
+
+    final response = await https.get(
+      Uri.parse(apiUrl),
+      headers: headers,
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> body = json.decode(response.body);
+      
+      // Search through all categories (News, Entertainment, Sports, etc.)
+      for (String category in body.keys) {
+        final List<dynamic> channels = body[category] ?? [];
+        
+        for (var channel in channels) {
+          final Map<String, dynamic> channelMap = channel as Map<String, dynamic>;
+          final int channelIdFromApi = safeParseInt(channelMap['id']);
+
+          if (channelIdFromApi == channelId) {
+            String channelUrl = safeParseString(channelMap['url']);
+            String streamType = safeParseString(channelMap['stream_type']);
+            
+            final channelData = {
+              'url': channelUrl,
+              'stream_type': streamType,
+              'id': channelIdFromApi,
+              'name': safeParseString(channelMap['name']),
+              'description': safeParseString(channelMap['description']),
+              'banner': safeParseString(channelMap['banner']),
+              'channel_number': safeParseInt(channelMap['channel_number']),
+              'genres': safeParseString(channelMap['genres']),
+              'category': category,
+            };
+
+            // Cache the channel data
+            prefs.setString(cacheKey, json.encode(channelData));
+            prefs.setInt('${cacheKey}_timestamp', DateTime.now().millisecondsSinceEpoch);
+            
+            return channelData;
+          }
+        }
+      }
+
+      // If no match found
+      throw Exception('Live TV channel with ID $channelId not found');
+    } else {
+      throw Exception('API request failed with status: ${response.statusCode}');
+    }
+  } catch (e) {
+    rethrow;
+  }
+}
+
+
+
+  Future<Map<String, dynamic>> fetchMovieUrlById(int movieId) async {
+
+  final prefs = await SharedPreferences.getInstance();
+  final cacheKey = 'movie_url_data_$movieId';
+  final cachedMovieData = prefs.getString(cacheKey);
+
+  // Check cache first
+  if (cachedMovieData != null) {
+    try {
+      final Map<String, dynamic> cachedData = json.decode(cachedMovieData);
+      return cachedData;
+    } catch (e) {
+      prefs.remove(cacheKey);
+    }
+  }
+
+  try {
+    final headers = await ApiService.getHeaders();
+    final apiUrl = '${ApiService.baseUrl}getAllMovies';
+
+    final response = await https.get(
+      Uri.parse(apiUrl),
+      headers: headers,
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> body = json.decode(response.body);
+
+      if (body.isNotEmpty) {
+        // Search for matching ID
+        for (var item in body) {
+          final Map<String, dynamic> itemMap = item as Map<String, dynamic>;
+          final int itemId = safeParseInt(itemMap['id']);
+
+          if (itemId == movieId) {
+            String movieUrl = safeParseString(itemMap['movie_url']);
+            String sourceType = safeParseString(itemMap['source_type']);
+            
+            final movieData = {
+              'movie_url': movieUrl,
+              'source_type': sourceType,
+              'id': itemId,
+              'name': safeParseString(itemMap['name']),
+              'description': safeParseString(itemMap['description']),
+              'poster': safeParseString(itemMap['poster']),
+              'banner': safeParseString(itemMap['banner']),
+            };
+
+            // Cache the movie data
+            prefs.setString(cacheKey, json.encode(movieData));
+            return movieData;
+          }
+        }
+
+        // If no exact match found
+        throw Exception('Movie with ID $movieId not found');
+      } else {
+        throw Exception('No movies found in API response');
+      }
+    } else {
+      throw Exception('API request failed with status: ${response.statusCode}');
+    }
+  } catch (e) {
+    rethrow;
   }
 }
 
 // Update the _buildChannelList method to work with new structure
-Widget _buildChannelList() {
-  return Positioned(
-    top: MediaQuery.of(context).size.height * 0.02,
-    bottom: MediaQuery.of(context).size.height * 0.1,
-    left: MediaQuery.of(context).size.width * 0.0,
-    right: MediaQuery.of(context).size.width * 0.78,
-    child: Container(
-      child: ListView.builder(
-        controller: _scrollController,
-        itemCount: widget.channelList.length,
-        itemBuilder: (context, index) {
-          final channel = widget.channelList[index];
-          
-          // Updated to use new NewsItemModel structure
-          final String channelId = channel.contentId.isNotEmpty 
-              ? channel.contentId 
-              : channel.id;
+  Widget _buildChannelList() {
+    return Positioned(
+      top: MediaQuery.of(context).size.height * 0.02,
+      bottom: MediaQuery.of(context).size.height * 0.1,
+      left: MediaQuery.of(context).size.width * 0.0,
+      right: MediaQuery.of(context).size.width * 0.78,
+      child: Container(
+        child: ListView.builder(
+          controller: _scrollController,
+          itemCount: widget.channelList.length,
+          itemBuilder: (context, index) {
+            final channel = widget.channelList[index];
 
-          final String? banner = channel.banner.isNotEmpty 
-              ? channel.banner 
-              : channel.image;
-              
-          final bool isBase64 = banner?.startsWith('data:image') ?? false;
+            // Updated to use new NewsItemModel structure
+            final String channelId =
+                channel.contentId.isNotEmpty ? channel.contentId : channel.id;
 
-          return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-            child: Focus(
-              focusNode: focusNodes[index],
-              onFocusChange: (hasFocus) {
-                if (hasFocus) {
-                  setState(() {
-                    _focusedIndex = index;
-                  });
-                }
-              },
-              child: GestureDetector(
-                onTap: () {
-                  _onItemTap(index);
-                  _resetHideControlsTimer();
+            final String? banner =
+                channel.banner.isNotEmpty ? channel.banner : channel.image;
+
+            final bool isBase64 = banner?.startsWith('data:image') ?? false;
+
+            return Padding(
+              padding:
+                  const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+              child: Focus(
+                focusNode: focusNodes[index],
+                onFocusChange: (hasFocus) {
+                  if (hasFocus) {
+                    setState(() {
+                      _focusedIndex = index;
+                    });
+                  }
                 },
-                child: Container(
-                  width: screenwdt * 0.3,
-                  height: screenhgt * 0.18,
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: playPauseButtonFocusNode.hasFocus ||
-                              backwardButtonFocusNode.hasFocus ||
-                              forwardButtonFocusNode.hasFocus ||
-                              prevButtonFocusNode.hasFocus ||
-                              nextButtonFocusNode.hasFocus ||
-                              progressIndicatorFocusNode.hasFocus
-                          ? Colors.transparent
-                          : _focusedIndex == index
-                              ? const Color.fromARGB(211, 155, 40, 248)
-                              : Colors.transparent,
-                      width: 5.0,
+                child: GestureDetector(
+                  onTap: () {
+                    _onItemTap(index);
+                    _resetHideControlsTimer();
+                  },
+                  child: Container(
+                    width: screenwdt * 0.3,
+                    height: screenhgt * 0.18,
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: playPauseButtonFocusNode.hasFocus ||
+                                backwardButtonFocusNode.hasFocus ||
+                                forwardButtonFocusNode.hasFocus ||
+                                prevButtonFocusNode.hasFocus ||
+                                nextButtonFocusNode.hasFocus ||
+                                progressIndicatorFocusNode.hasFocus
+                            ? Colors.transparent
+                            : _focusedIndex == index
+                                ? const Color.fromARGB(211, 155, 40, 248)
+                                : Colors.transparent,
+                        width: 5.0,
+                      ),
+                      borderRadius: BorderRadius.circular(10),
+                      color: _focusedIndex == index
+                          ? Colors.black26
+                          : Colors.transparent,
                     ),
-                    borderRadius: BorderRadius.circular(10),
-                    color: _focusedIndex == index
-                        ? Colors.black26
-                        : Colors.transparent,
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(6),
-                    child: Stack(
-                      children: [
-                        Positioned.fill(
-                          child: Opacity(
-                            opacity: 0.6,
-                            child: isBase64
-                                ? Image.memory(
-                                    _bannerCache[channelId] ??
-                                        _getCachedImage(banner ?? ''),
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (context, error, stackTrace) =>
-                                        Image.asset('assets/placeholder.png'),
-                                  )
-                                : CachedNetworkImage(
-                                    imageUrl: banner ?? '',
-                                    fit: BoxFit.cover,
-                                    errorWidget: (context, url, error) =>
-                                        Image.asset('assets/placeholder.png'),
-                                  ),
-                          ),
-                        ),
-                        if (_focusedIndex == index)
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(6),
+                      child: Stack(
+                        children: [
                           Positioned.fill(
-                            child: Container(
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  begin: Alignment.topCenter,
-                                  end: Alignment.bottomCenter,
-                                  colors: [
-                                    Colors.transparent,
-                                    Colors.black.withOpacity(0.9),
-                                  ],
+                            child: Opacity(
+                              opacity: 0.6,
+                              child: isBase64
+                                  ? Image.memory(
+                                      _bannerCache[channelId] ??
+                                          _getCachedImage(banner ?? ''),
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (context, error,
+                                              stackTrace) =>
+                                          Image.asset('assets/placeholder.png'),
+                                    )
+                                  : CachedNetworkImage(
+                                      imageUrl: banner ?? '',
+                                      fit: BoxFit.cover,
+                                      errorWidget: (context, url, error) =>
+                                          Image.asset('assets/placeholder.png'),
+                                    ),
+                            ),
+                          ),
+                          if (_focusedIndex == index)
+                            Positioned.fill(
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    begin: Alignment.topCenter,
+                                    end: Alignment.bottomCenter,
+                                    colors: [
+                                      Colors.transparent,
+                                      Colors.black.withOpacity(0.9),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        if (_focusedIndex == index)
-                          Positioned(
-                            left: 8,
-                            bottom: 8,
-                            child: Text(
-                              channel.name,
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
+                          if (_focusedIndex == index)
+                            Positioned(
+                              left: 8,
+                              bottom: 8,
+                              child: Text(
+                                channel.name,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
-                          ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
 
   @override
   void dispose() {
@@ -731,12 +930,8 @@ Widget _buildChannelList() {
 
 // Replace your existing _initializeVideoController method
   Future<void> _initializeVideoController(int index) async {
-    final String videoUrl = widget.videoUrl;
+    String videoUrl = widget.videoUrl;
 
-    print('🎬 Initializing video controller for: ${widget.name}');
-    print('🔗 Video URL: $videoUrl');
-    print('📍 Source: ${widget.source}');
-    print('⏰ Start position: ${widget.startAtPosition.inSeconds} seconds');
 
     if (_controller != null) {
       await _controller!.dispose();
@@ -750,10 +945,16 @@ Widget _buildChannelList() {
       _hasVideoStartedPlaying = false; // Reset playing status
     });
 
-    _controller = VideoPlayerController.network(videoUrl);
+
+           if (isYoutubeUrl(videoUrl)) {
+          videoUrl = await _socketService.getUpdatedUrl(videoUrl);
+        }
+
+    _controller =  VideoPlayerController.networkUrl(Uri.parse(videoUrl));
 
     try {
-      await _controller!.initialize().timeout(Duration(seconds: 10));
+      await _controller!.initialize();
+      // .timeout(Duration(seconds: 10));
 
       if (_controller!.value.size.width <= 0 ||
           _controller!.value.size.height <= 0) {
@@ -768,10 +969,10 @@ Widget _buildChannelList() {
       // Start 30-second timeout timer specifically for webseries_details_page
       if (widget.source == 'webseries_details_page' ||
           widget.source == 'isMovieScreen' ||
-          widget.source == 'isLastPlayedVideos'
-          
-          ) {
-        _startWebseriesTimeoutTimer();
+          widget.source == 'isLastPlayedVideos' ||
+          widget.source == 'isContentScreen' ||
+          widget.isVOD) {
+        // _startWebseriesTimeoutTimer();
       }
 
       setState(() {
@@ -793,16 +994,14 @@ Widget _buildChannelList() {
       // Different error handling for webseries vs others
       if (widget.source == 'webseries_details_page' ||
           widget.source == 'isMovieScreen' ||
-          widget.source == 'isLastPlayedVideos'
-          
-          ) {
+          widget.source == 'isLastPlayedVideos') {
         // For webseries, wait 30 seconds before showing error
-        _startWebseriesTimeoutTimer();
+        // _startWebseriesTimeoutTimer();
       } else {
         // For all other sources, show immediate error
         String errorMessage =
             "Unable to play this video temporarily.\nPlease try selecting another video.";
-        _showVideoErrorMessage(errorMessage);
+        // _showVideoErrorMessage(errorMessage);
       }
     }
   }
@@ -854,7 +1053,6 @@ Widget _buildChannelList() {
 //       //   );
 //       //   if (playLink != null && playLink.isNotEmpty) {
 //       //     updatedUrl = playLink;
-//       //     print('✅ Final Episode URL: $updatedUrl for selectedChannel.id: ${selectedChannel.id}');
 //       //   } else {
 //       //     throw Exception('Could not fetch episode URL for seasonId: 7, selectedChannel.id: ${selectedChannel.id}');
 //       //   }
@@ -863,11 +1061,9 @@ Widget _buildChannelList() {
 //       if (widget.source == 'isLastPlayedVideos') {
 //         // For last played videos, just use the URL from the channel list directly
 //         updatedUrl = widget.channelList[index].url;
-//         print('isLastPlayedVideos : $updatedUrl ');
 
 //         // Check if it's a YouTube URL
 //         if (isYoutubeUrl(updatedUrl)) {
-//           print("Processing YouTube URL from last played videos");
 //           updatedUrl = await _socketService.getUpdatedUrl(updatedUrl);
 //         }
 //       } else {
@@ -885,14 +1081,12 @@ Widget _buildChannelList() {
 //         if (selectedChannel.contentType == '1' ||
 //             widget.isVOD ||
 //             widget.source == 'isMovieScreen') {
-//           print('matchedurlmovie : $updatedUrl ');
 
 //           final playLink =
 //               await fetchMoviePlayLinkById(int.parse(selectedChannel.id));
 //           if (playLink['source_url'] != null &&
 //               playLink['source_url']!.isNotEmpty)
 //             updatedUrl = playLink['source_url']!;
-//           print('matchedurlmovie2 : $updatedUrl ');
 //         }
 //       }
 
@@ -1077,8 +1271,6 @@ Widget _buildChannelList() {
         'https://acomtv.coretechinfo.com/public/api/getEpisodes/$seasonId/0';
 
     try {
-      print(
-          '🔍 API Call: seasonId = $seasonId, looking for selectedChannelId = $selectedChannelId');
       // final response = await https.get(Uri.parse(apiUrl));
       final headers = await ApiService.getHeaders();
 
@@ -1089,8 +1281,6 @@ Widget _buildChannelList() {
 
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
-        print(
-            '📡 API Response: Found ${data.length} episodes for seasonId: $seasonId');
 
         // selectedChannelId se match karne ke liye
         final matchedEpisode = data.firstWhere(
@@ -1100,20 +1290,13 @@ Widget _buildChannelList() {
 
         if (matchedEpisode != null && matchedEpisode['url'] != null) {
           String episodeUrl = matchedEpisode['url'];
-          print(
-              '✅ Match Found! selectedChannelId: $selectedChannelId → URL: $episodeUrl');
           return episodeUrl;
         } else {
-          print(
-              '❌ No match found for selectedChannelId: $selectedChannelId in fetched data');
           // Debug: Print all available IDs
-          print('Available episode IDs: ${data.map((e) => e['id']).toList()}');
         }
       } else {
-        print('❌ API request failed with status: ${response.statusCode}');
       }
     } catch (e) {
-      print('❌ Error fetching episode URL: $e');
     }
 
     return null;
@@ -1121,7 +1304,6 @@ Widget _buildChannelList() {
 
 // Alternative simpler version if you want source_url and type
   Future<Map<String, dynamic>> fetchMoviePlayLinkById(int movieId) async {
-    print('🔍 === Fetching Source URL and Type for Movie ID: $movieId ===');
 
     final prefs = await SharedPreferences.getInstance();
     final cacheKey = 'movie_source_data_$movieId';
@@ -1131,10 +1313,8 @@ Widget _buildChannelList() {
     if (cachedSourceData != null) {
       try {
         final Map<String, dynamic> cachedData = json.decode(cachedSourceData);
-        print('💾 Found cached source data: $cachedData');
         return cachedData;
       } catch (e) {
-        print('❌ Cache decode failed: $e');
         prefs.remove(cacheKey);
       }
     }
@@ -1175,7 +1355,6 @@ Widget _buildChannelList() {
 
               // Cache the source data
               prefs.setString(cacheKey, json.encode(sourceData));
-              print('✅ Found and cached source data: $sourceData');
               return sourceData;
             }
           }
@@ -1201,14 +1380,100 @@ Widget _buildChannelList() {
           };
 
           prefs.setString(cacheKey, json.encode(sourceData));
-          print('⚠️ No exact match, using first item source data: $sourceData');
           return sourceData;
         }
       }
 
       throw Exception('No valid source URL found');
     } catch (e) {
-      print('❌ Error fetching source URL and type: $e');
+      rethrow;
+    }
+  }
+
+// Alternative simpler version if you want source_url and type
+  Future<Map<String, dynamic>> fetchMovieById(int movieId) async {
+
+    final prefs = await SharedPreferences.getInstance();
+    final cacheKey = 'movie_data_$movieId';
+    final cachedSourceData = prefs.getString(cacheKey);
+
+    // Check cache first
+    if (cachedSourceData != null) {
+      try {
+        final Map<String, dynamic> cachedData = json.decode(cachedSourceData);
+        return cachedData;
+      } catch (e) {
+        prefs.remove(cacheKey);
+      }
+    }
+
+    try {
+      final headers = await ApiService.getHeaders();
+      final apiUrl = '${ApiService.baseUrl}getAllMovies';
+
+      final response = await https.get(
+        Uri.parse(apiUrl),
+        headers: headers,
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> body = json.decode(response.body);
+
+        if (body.isNotEmpty) {
+          // Search for matching ID
+          for (var item in body) {
+            final Map<String, dynamic> itemMap = item as Map<String, dynamic>;
+            final int itemId = safeParseInt(itemMap['id']);
+
+            if (itemId == movieId) {
+              String sourceUrl = safeParseString(itemMap['movie_url']);
+              int type = safeParseInt(itemMap['type']);
+              int linkType = safeParseInt(itemMap['link_type']);
+
+              // Handle YouTube IDs
+
+              final sourceData = {
+                'movie_url': sourceUrl,
+                'type': type,
+                'link_type': linkType,
+                'id': itemId,
+                'name': safeParseString(itemMap['name']),
+                'quality': safeParseString(itemMap['quality']),
+              };
+
+              // Cache the source data
+              prefs.setString(cacheKey, json.encode(sourceData));
+              return sourceData;
+            }
+          }
+
+          // If no exact match, use first item
+          final Map<String, dynamic> firstItem =
+              body.first as Map<String, dynamic>;
+          String sourceUrl = safeParseString(firstItem['source_url']);
+          int type = safeParseInt(firstItem['type']);
+          int linkType = safeParseInt(firstItem['link_type']);
+
+          // if (sourceUrl.length == 11 && !sourceUrl.contains('http')) {
+          //   sourceUrl = 'https://www.youtube.com/watch?v=$sourceUrl';
+          // }
+
+          final sourceData = {
+            'movie_url': sourceUrl,
+            'type': type,
+            'link_type': linkType,
+            'id': safeParseInt(firstItem['id']),
+            'name': safeParseString(firstItem['name']),
+            'quality': safeParseString(firstItem['quality']),
+          };
+
+          prefs.setString(cacheKey, json.encode(sourceData));
+          return sourceData;
+        }
+      }
+
+      throw Exception('No valid source URL found');
+    } catch (e) {
       rethrow;
     }
   }
@@ -1925,32 +2190,6 @@ Widget _buildChannelList() {
 //     }
 //   }
 // }
-
-
-
-  bool isYoutubeUrl(String? url) {
-    if (url == null || url.isEmpty) {
-      return false;
-    }
-
-    url = url.toLowerCase().trim();
-
-    // First check if it's a YouTube ID (exactly 11 characters)
-    bool isYoutubeId = RegExp(r'^[a-zA-Z0-9_-]{11}$').hasMatch(url);
-    if (isYoutubeId) {
-      return true;
-    }
-
-    // Then check for regular YouTube URLs
-    bool isYoutubeUrl = url.contains('youtube.com') ||
-        url.contains('youtu.be') ||
-        url.contains('youtube.com/shorts/');
-    if (isYoutubeUrl) {
-      return true;
-    }
-
-    return false;
-  }
 
   String formatUrl(String url, {Map<String, String>? params}) {
     if (url.isEmpty) {
@@ -2912,17 +3151,17 @@ Widget _buildChannelList() {
   //                                 ? Image.memory(
   //                                     _bannerCache[channelId] ??
   //                                         _getCachedImage(
-  //                                             channel.banner ?? localImage),
+  //                                             channel.banner ??    localImage),
   //                                     fit: BoxFit.cover,
   //                                     errorBuilder: (context, error,
   //                                             stackTrace) =>
   //                                         Image.asset('assets/placeholder.png'),
   //                                   )
   //                                 : CachedNetworkImage(
-  //                                     imageUrl: channel.banner ?? localImage,
+  //                                     imageUrl: channel.banner ??    localImage,
   //                                     fit: BoxFit.cover,
   //                                     errorWidget: (context, url, error) =>
-  //                                         localImage,
+  //                                            localImage,
   //                                   ),
   //                           ),
   //                         ),

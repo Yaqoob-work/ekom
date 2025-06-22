@@ -21,6 +21,8 @@ import 'package:mobi_tv_entertainment/widgets/utils/random_light_color_widget.da
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../widgets/small_widgets/app_assets.dart';
+
 // Enhanced function to get auth headers with dynamic auth key
 Future<Map<String, String>> getAuthHeaders() async {
   String authKey = '';
@@ -1074,359 +1076,332 @@ class _BannerSliderState extends State<BannerSlider> {
   //   }
   // }
 
-
 // Updated _playVideo method to work with your new NewsItemModel structure
 
-void _playVideo(Map<String, dynamic> videoData, Duration position) async {
-  print('🎬 _playVideo called with: ${videoData['name']}');
-  
-  if (_isNavigating) {
-    print('❌ Already navigating, returning');
-    return;
+  void _playVideo(Map<String, dynamic> videoData, Duration position) async {
+
+    if (_isNavigating) {
+      return;
+    }
+
+    _isNavigating = true;
+    bool shouldPlayVideo = true;
+    bool shouldPop = true;
+
+    try {
+      // Show loading dialog
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) => WillPopScope(
+          onWillPop: () async {
+            shouldPlayVideo = false;
+            shouldPop = false;
+            return true;
+          },
+          child: Center(
+            child: Container(
+              padding: EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.black87,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  LoadingIndicator(),
+                  SizedBox(height: 15),
+                  Text(
+                    'Loading ${videoData['name'] ?? 'Video'}...',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: nametextsz,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+
+      // Create channel list from last played videos using proper NewsItemModel structure
+      List<NewsItemModel> channelList =
+          lastPlayedVideos.asMap().entries.map((entry) {
+        final video = entry.value;
+        int index = entry.key;
+
+        // Safe string conversion helper
+        String safeToString(dynamic value, {String defaultValue = ''}) {
+          if (value == null) return defaultValue;
+          return value.toString();
+        }
+
+        String videoUrl = safeToString(video['videoUrl']);
+        String videoIdString =
+            safeToString(video['videoId'], defaultValue: '0');
+        String videoName =
+            safeToString(video['name'], defaultValue: 'Unknown Video');
+        String bannerUrl = safeToString(video['bannerImageUrl']);
+        String seasonIdString =
+            safeToString(video['seasonId'], defaultValue: '0');
+
+
+        // // Handle YouTube ID conversion
+        // if (videoUrl.isNotEmpty && !videoUrl.startsWith('http') && videoUrl.length == 11) {
+        //   videoUrl = 'https://www.youtube.com/watch?v=$videoUrl';
+        // }
+
+        bool isYoutube = isYoutubeUrl(videoUrl);
+        bool isLive = video['liveStatus'] == true;
+        String streamType = isYoutube ? 'YoutubeLive' : 'M3u8';
+        String contentType = isLive ? '0' : '1'; // 0 for live, 1 for VOD
+
+
+        return NewsItemModel(
+          id: videoIdString,
+          index: index.toString(),
+          name: videoName,
+          unUpdatedUrl: safeToString(video['videoUrl']), // Keep original URL
+          description: '',
+          thumbnail_high: '',
+          banner: bannerUrl,
+          image: bannerUrl,
+          poster: bannerUrl,
+          url: videoUrl, // Use converted URL
+          videoId: videoIdString,
+          streamType: streamType,
+          type: streamType,
+          genres: '',
+          status: '1', // Always active for last played
+          category: 'Last Played',
+          contentId: videoIdString,
+          contentType: contentType,
+          isYoutubeVideo: isYoutube,
+          isFocused: false,
+          position: video['position'] ?? Duration.zero,
+          liveStatus: isLive,
+          // Episode-specific fields with defaults
+          order: '0',
+          seasonId: seasonIdString,
+          downloadable: '0',
+          source: 'isLastPlayedVideos',
+          skipAvailable: '0',
+          introStart: '0',
+          introEnd: '0',
+          endCreditsMarker: '0',
+          drmUuid: '',
+          drmLicenseUri: '',
+          // Season-specific fields with defaults
+          seasonName: '',
+          webSeriesId: '',
+        );
+      }).toList();
+
+
+      String originalUrl = safeToString(videoData['videoUrl']);
+      String updatedUrl = originalUrl;
+
+      // Validate URL
+      if (originalUrl.isEmpty) {
+        throw Exception('Empty video URL');
+      }
+
+
+      // Convert YouTube ID to full URL if needed
+      // if (!originalUrl.startsWith('http') && originalUrl.length == 11) {
+      //   originalUrl = 'https://www.youtube.com/watch?v=$originalUrl';
+      //   updatedUrl = originalUrl;
+      // }
+
+      // Handle YouTube URL updates
+      if (isYoutubeUrl(updatedUrl)) {
+        try {
+          updatedUrl = await _socketService.getUpdatedUrl(updatedUrl);
+
+          if (updatedUrl.isEmpty) {
+            throw Exception('Failed to get updated YouTube URL');
+          }
+        } catch (e) {
+          throw Exception('Failed to process YouTube URL: $e');
+        }
+      }
+
+      // Close loading dialog
+      if (shouldPop && context.mounted) {
+        Navigator.of(context, rootNavigator: true).pop();
+      }
+
+      Duration startAtPosition =
+          videoData['position'] as Duration? ?? Duration.zero;
+      Duration totalDuration =
+          videoData['duration'] as Duration? ?? Duration.zero;
+      bool isLive = videoData['liveStatus'] == true;
+
+
+      // Navigate to video screen
+      if (shouldPlayVideo && context.mounted) {
+        final result = await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => VideoScreen(
+              videoUrl: updatedUrl,
+              unUpdatedUrl: originalUrl,
+              channelList: channelList,
+              bannerImageUrl: safeToString(videoData['bannerImageUrl']),
+              startAtPosition: startAtPosition,
+              totalDuration: totalDuration,
+              videoType: isYoutubeUrl(updatedUrl) ? 'youtube' : 'M3u8',
+              isLive: isLive,
+              isVOD: !isLive,
+              isSearch: false,
+              isHomeCategory: false,
+              isBannerSlider: false,
+              videoId: int.tryParse(
+                      safeToString(videoData['videoId'], defaultValue: '0')) ??
+                  0,
+              source: 'isLastPlayedVideos',
+              name: safeToString(videoData['name'],
+                  defaultValue: 'Unknown Video'),
+              liveStatus: isLive,
+              seasonId: int.tryParse(
+                  safeToString(videoData['seasonId'], defaultValue: '0')),
+              isLastPlayedStored: true,
+            ),
+          ),
+        );
+
+
+        // Refresh last played videos when returning
+        if (result == true) {
+          await _loadLastPlayedVideos();
+          if (mounted) {
+            setState(() {
+              refreshKey = UniqueKey();
+            });
+          }
+        }
+      }
+    } catch (e) {
+
+      // Close loading dialog if still open
+      if (shouldPop && context.mounted) {
+        Navigator.of(context, rootNavigator: true).pop();
+      }
+
+      // Show error message
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to play video: ${e.toString()}'),
+            backgroundColor: Colors.red.shade700,
+            duration: Duration(seconds: 5),
+          ),
+        );
+      }
+    } finally {
+      _isNavigating = false;
+    }
   }
 
-  _isNavigating = true;
-  bool shouldPlayVideo = true;
-  bool shouldPop = true;
+// Helper method for safe string conversion (add this to your class)
+  String safeToString(dynamic value, {String defaultValue = ''}) {
+    if (value == null) return defaultValue;
+    return value.toString();
+  }
 
-  try {
-    // Show loading dialog
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) => WillPopScope(
-        onWillPop: () async {
-          shouldPlayVideo = false;
-          shouldPop = false;
-          return true;
-        },
-        child: Center(
-          child: Container(
-            padding: EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: Colors.black87,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                LoadingIndicator(),
-                SizedBox(height: 15),
-                Text(
-                  'Loading ${videoData['name'] ?? 'Video'}...',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: nametextsz,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
+// Updated _loadLastPlayedVideos method with better error handling
+  Future<void> _loadLastPlayedVideos() async {
 
-    // Create channel list from last played videos using proper NewsItemModel structure
-    List<NewsItemModel> channelList = lastPlayedVideos.asMap().entries.map((entry) {
-      final video = entry.value;
-      int index = entry.key;
-      
-      // Safe string conversion helper
-      String safeToString(dynamic value, {String defaultValue = ''}) {
-        if (value == null) return defaultValue;
-        return value.toString();
-      }
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final storedVideos = prefs.getStringList('last_played_videos');
 
-      String videoUrl = safeToString(video['videoUrl']);
-      String videoIdString = safeToString(video['videoId'], defaultValue: '0');
-      String videoName = safeToString(video['name'], defaultValue: 'Unknown Video');
-      String bannerUrl = safeToString(video['bannerImageUrl']);
-      String seasonIdString = safeToString(video['seasonId'], defaultValue: '0');
-      
-      print('📺 Creating NewsItemModel for: $videoName');
-      print('   Original URL: $videoUrl');
-      print('   Video ID: $videoIdString');
-      
-      // // Handle YouTube ID conversion
-      // if (videoUrl.isNotEmpty && !videoUrl.startsWith('http') && videoUrl.length == 11) {
-      //   videoUrl = 'https://www.youtube.com/watch?v=$videoUrl';
-      //   print('   Converted URL: $videoUrl');
-      // }
-      
-      bool isYoutube = isYoutubeUrl(videoUrl);
-      bool isLive = video['liveStatus'] == true;
-      String streamType = isYoutube ? 'YoutubeLive' : 'M3u8';
-      String contentType = isLive ? '0' : '1'; // 0 for live, 1 for VOD
+      if (storedVideos != null && storedVideos.isNotEmpty) {
+        List<Map<String, dynamic>> loadedVideos = [];
 
-      print('   Stream Type: $streamType');
-      print('   Content Type: $contentType');
-      print('   Is Live: $isLive');
+        for (int i = 0; i < storedVideos.length; i++) {
+          String videoEntry = storedVideos[i];
 
-      return NewsItemModel(
-        id: videoIdString,
-        index: index.toString(),
-        name: videoName,
-        unUpdatedUrl: safeToString(video['videoUrl']), // Keep original URL
-        description: '',
-        thumbnail_high: '',
-        banner: bannerUrl,
-        image: bannerUrl,
-        poster: bannerUrl,
-        url: videoUrl, // Use converted URL
-        videoId: videoIdString,
-        streamType: streamType,
-        type: streamType,
-        genres: '',
-        status: '1', // Always active for last played
-        category: 'Last Played',
-        contentId: videoIdString,
-        contentType: contentType,
-        isYoutubeVideo: isYoutube,
-        isFocused: false,
-        position: video['position'] ?? Duration.zero,
-        liveStatus: isLive,
-        // Episode-specific fields with defaults
-        order: '0',
-        seasonId: seasonIdString,
-        downloadable: '0',
-        source: 'isLastPlayedVideos',
-        skipAvailable: '0',
-        introStart: '0',
-        introEnd: '0',
-        endCreditsMarker: '0',
-        drmUuid: '',
-        drmLicenseUri: '',
-        // Season-specific fields with defaults
-        seasonName: '',
-        webSeriesId: '',
-      );
-    }).toList();
+          try {
+            List<String> details = videoEntry.split('|');
+            if (details.length >= 8) {
+              Duration duration =
+                  Duration(milliseconds: int.tryParse(details[2]) ?? 0);
+              Duration position =
+                  Duration(milliseconds: int.tryParse(details[1]) ?? 0);
+              bool liveStatus = details[3].toLowerCase() == 'true';
 
-    print('📋 Created channel list with ${channelList.length} items');
+              // Create video data with all required fields
+              Map<String, dynamic> videoData = {
+                'videoUrl': details[0],
+                'position': position,
+                'duration': duration,
+                'liveStatus': liveStatus,
+                'bannerImageUrl': details[4],
+                'videoId': details[5],
+                'name': details[6],
+                'focusNode': FocusNode(),
+                'seasonId': details[7],
+                'source': 'isLastPlayedVideos',
+                'category': 'Last Played',
+                'genres': '',
+                'poster': details[4], // Use banner as poster
+                'contentType': liveStatus ? '0' : '1',
+                'streamType': isYoutubeUrl(details[0]) ? 'YoutubeLive' : 'M3u8',
+                'status': '1',
+                'isYoutubeVideo': isYoutubeUrl(details[0]),
+              };
 
-    String originalUrl = safeToString(videoData['videoUrl']);
-    String updatedUrl = originalUrl;
-    
-    // Validate URL
-    if (originalUrl.isEmpty) {
-      throw Exception('Empty video URL');
-    }
+              loadedVideos.add(videoData);
 
-    print('🔗 Original URL: $originalUrl');
-
-    // Convert YouTube ID to full URL if needed
-    // if (!originalUrl.startsWith('http') && originalUrl.length == 11) {
-    //   originalUrl = 'https://www.youtube.com/watch?v=$originalUrl';
-    //   updatedUrl = originalUrl;
-    //   print('🔄 Converted YouTube ID to full URL: $originalUrl');
-    // }
-
-    // Handle YouTube URL updates
-    if (isYoutubeUrl(updatedUrl)) {
-      print('📹 Detected YouTube URL, getting updated URL...');
-      try {
-        updatedUrl = await _socketService.getUpdatedUrl(updatedUrl);
-        print('✅ Updated YouTube URL: $updatedUrl');
-        
-        if (updatedUrl.isEmpty) {
-          throw Exception('Failed to get updated YouTube URL');
+              // Debug the video data structure
+            } else {
+            }
+          } catch (e) {
+          }
         }
-      } catch (e) {
-        print('❌ YouTube URL update failed: $e');
-        throw Exception('Failed to process YouTube URL: $e');
-      }
-    }
 
-    // Close loading dialog
-    if (shouldPop && context.mounted) {
-      Navigator.of(context, rootNavigator: true).pop();
-    }
-
-    Duration startAtPosition = videoData['position'] as Duration? ?? Duration.zero;
-    Duration totalDuration = videoData['duration'] as Duration? ?? Duration.zero;
-    bool isLive = videoData['liveStatus'] == true;
-    
-    print('⏰ Start position: ${startAtPosition.inSeconds} seconds');
-    print('⏰ Total duration: ${totalDuration.inSeconds} seconds');
-    print('🔴 Is Live: $isLive');
-    print('🚀 Navigating to VideoScreen...');
-
-    // Navigate to video screen
-    if (shouldPlayVideo && context.mounted) {
-      final result = await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => VideoScreen(
-            videoUrl: updatedUrl,
-            unUpdatedUrl: originalUrl,
-            channelList: channelList,
-            bannerImageUrl: safeToString(videoData['bannerImageUrl']),
-            startAtPosition: startAtPosition,
-            totalDuration: totalDuration,
-            videoType: isYoutubeUrl(updatedUrl) ? 'youtube' : 'M3u8',
-            isLive: isLive,
-            isVOD: !isLive,
-            isSearch: false,
-            isHomeCategory: false,
-            isBannerSlider: false,
-            videoId: int.tryParse(safeToString(videoData['videoId'], defaultValue: '0')) ?? 0,
-            source: 'isLastPlayedVideos',
-            name: safeToString(videoData['name'], defaultValue: 'Unknown Video'),
-            liveStatus: isLive,
-            seasonId: int.tryParse(safeToString(videoData['seasonId'], defaultValue: '0')),
-            isLastPlayedStored: true,
-          ),
-        ),
-      );
-      
-      print('✅ Navigation completed with result: $result');
-      
-      // Refresh last played videos when returning
-      if (result == true) {
-        await _loadLastPlayedVideos();
         if (mounted) {
           setState(() {
-            refreshKey = UniqueKey();
+            lastPlayedVideos = loadedVideos;
+          });
+        }
+
+        // Update shared data provider
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            sharedDataProvider.updateLastPlayedVideos(lastPlayedVideos);
+          }
+        });
+      } else {
+        if (mounted) {
+          setState(() {
+            lastPlayedVideos = [];
           });
         }
       }
-    }
-  } catch (e) {
-    print('❌ Error in _playVideo: $e');
-    print('📍 Stack trace: ${StackTrace.current}');
-    
-    // Close loading dialog if still open
-    if (shouldPop && context.mounted) {
-      Navigator.of(context, rootNavigator: true).pop();
-    }
-
-    // Show error message
-    if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to play video: ${e.toString()}'),
-          backgroundColor: Colors.red.shade700,
-          duration: Duration(seconds: 5),
-        ),
-      );
-    }
-  } finally {
-    _isNavigating = false;
-    print('🏁 _playVideo method finished');
-  }
-}
-
-// Helper method for safe string conversion (add this to your class)
-String safeToString(dynamic value, {String defaultValue = ''}) {
-  if (value == null) return defaultValue;
-  return value.toString();
-}
-
-// Updated _loadLastPlayedVideos method with better error handling
-Future<void> _loadLastPlayedVideos() async {
-  print('🔄 Loading last played videos...');
-  
-  try {
-    final prefs = await SharedPreferences.getInstance();
-    final storedVideos = prefs.getStringList('last_played_videos');
-
-    if (storedVideos != null && storedVideos.isNotEmpty) {
-      List<Map<String, dynamic>> loadedVideos = [];
-
-      for (int i = 0; i < storedVideos.length; i++) {
-        String videoEntry = storedVideos[i];
-        print('🔍 Processing entry $i: $videoEntry');
-        
-        try {
-          List<String> details = videoEntry.split('|');
-          if (details.length >= 8) {
-            Duration duration = Duration(milliseconds: int.tryParse(details[2]) ?? 0);
-            Duration position = Duration(milliseconds: int.tryParse(details[1]) ?? 0);
-            bool liveStatus = details[3].toLowerCase() == 'true';
-
-            // Create video data with all required fields
-            Map<String, dynamic> videoData = {
-              'videoUrl': details[0],
-              'position': position,
-              'duration': duration,
-              'liveStatus': liveStatus,
-              'bannerImageUrl': details[4],
-              'videoId': details[5],
-              'name': details[6],
-              'focusNode': FocusNode(),
-              'seasonId': details[7],
-              'source': 'isLastPlayedVideos',
-              'category': 'Last Played',
-              'genres': '',
-              'poster': details[4], // Use banner as poster
-              'contentType': liveStatus ? '0' : '1',
-              'streamType': isYoutubeUrl(details[0]) ? 'YoutubeLive' : 'M3u8',
-              'status': '1',
-              'isYoutubeVideo': isYoutubeUrl(details[0]),
-            };
-
-            loadedVideos.add(videoData);
-            print('✅ Successfully loaded: ${details[6]}');
-            
-            // Debug the video data structure
-            print('📊 Video data keys: ${videoData.keys.toList()}');
-          } else {
-            print('❌ Invalid entry format: ${details.length} parts, expected at least 8');
-          }
-        } catch (e) {
-          print('❌ Error processing entry $i: $e');
-        }
-      }
-
-      if (mounted) {
-        setState(() {
-          lastPlayedVideos = loadedVideos;
-        });
-        print('✅ Updated state with ${loadedVideos.length} videos');
-      }
-
-      // Update shared data provider
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) {
-          sharedDataProvider.updateLastPlayedVideos(lastPlayedVideos);
-          print('✅ Updated shared data provider');
-        }
-      });
-    } else {
-      print('📭 No stored videos found');
+    } catch (e) {
       if (mounted) {
         setState(() {
           lastPlayedVideos = [];
         });
       }
     }
-  } catch (e) {
-    print('❌ Error loading last played videos: $e');
-    if (mounted) {
-      setState(() {
-        lastPlayedVideos = [];
+
+  }
+
+// Add this debug method to check data structure
+  void debugVideoDataStructure() {
+
+    for (int i = 0; i < lastPlayedVideos.length && i < 3; i++) {
+      // Debug first 3 videos
+      final video = lastPlayedVideos[i];
+      video.forEach((key, value) {
       });
     }
   }
-  
-  print('🏁 Finished loading last played videos');
-}
-
-// Add this debug method to check data structure
-void debugVideoDataStructure() {
-  print('🔍 DEBUG: Last Played Videos Data Structure');
-  print('📊 Total videos: ${lastPlayedVideos.length}');
-  
-  for (int i = 0; i < lastPlayedVideos.length && i < 3; i++) { // Debug first 3 videos
-    final video = lastPlayedVideos[i];
-    print('📺 Video $i structure:');
-    video.forEach((key, value) {
-      print('   $key: ${value?.toString() ?? 'NULL'} (${value.runtimeType})');
-    });
-    print('   ---');
-  }
-}
 
   // // Print debug info for last played positions
   // void printLastPlayedPositions() {
@@ -1700,9 +1675,11 @@ void debugVideoDataStructure() {
                                         imageUrl: banner.banner,
                                         fit: BoxFit.fill,
                                         placeholder: (context, url) =>
-                                            localImage,
+                                            AppAssets.localImage(
+                                                animated: true),
                                         errorWidget: (context, url, error) =>
-                                            localImage,
+                                            AppAssets.localImage(
+                                                animated: true),
                                         cacheKey: banner.contentId,
                                         fadeInDuration:
                                             Duration(milliseconds: 500),
@@ -2087,40 +2064,44 @@ void debugVideoDataStructure() {
                       // },
 
                       onKey: (node, event) {
-  if (event is RawKeyDownEvent) {
-    print('🎹 Key pressed: ${event.logicalKey}');
-    
-    if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
-      Future.delayed(Duration(milliseconds: 100), () {
-        context.read<FocusProvider>().requestWatchNowFocus();
-      });
-      return KeyEventResult.handled;
-    } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
-      context.read<FocusProvider>().requestMusicItemFocus(context);
-      return KeyEventResult.handled;
-    } else if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
-      if (index < lastPlayedVideos.length - 1) {
-        FocusScope.of(context).requestFocus(
-          lastPlayedVideos[index + 1]['focusNode']
-        );
-        return KeyEventResult.handled;
-      }
-    } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
-      if (index > 0) {
-        FocusScope.of(context).requestFocus(
-          lastPlayedVideos[index - 1]['focusNode']
-        );
-        return KeyEventResult.handled;
-      }
-    } else if (event.logicalKey == LogicalKeyboardKey.select ||
-               event.logicalKey == LogicalKeyboardKey.enter) {
-      print('✅ Enter/Select pressed - playing video: ${videoData['name']}');
-      _playVideo(videoData, videoData['position']);
-      return KeyEventResult.handled;
-    }
-  }
-  return KeyEventResult.ignored;
-},
+                        if (event is RawKeyDownEvent) {
+
+                          if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+                            Future.delayed(Duration(milliseconds: 100), () {
+                              context
+                                  .read<FocusProvider>()
+                                  .requestWatchNowFocus();
+                            });
+                            return KeyEventResult.handled;
+                          } else if (event.logicalKey ==
+                              LogicalKeyboardKey.arrowDown) {
+                            context
+                                .read<FocusProvider>()
+                                .requestMusicItemFocus(context);
+                            return KeyEventResult.handled;
+                          } else if (event.logicalKey ==
+                              LogicalKeyboardKey.arrowRight) {
+                            if (index < lastPlayedVideos.length - 1) {
+                              FocusScope.of(context).requestFocus(
+                                  lastPlayedVideos[index + 1]['focusNode']);
+                              return KeyEventResult.handled;
+                            }
+                          } else if (event.logicalKey ==
+                              LogicalKeyboardKey.arrowLeft) {
+                            if (index > 0) {
+                              FocusScope.of(context).requestFocus(
+                                  lastPlayedVideos[index - 1]['focusNode']);
+                              return KeyEventResult.handled;
+                            }
+                          } else if (event.logicalKey ==
+                                  LogicalKeyboardKey.select ||
+                              event.logicalKey == LogicalKeyboardKey.enter) {
+                            _playVideo(videoData, videoData['position']);
+                            return KeyEventResult.handled;
+                          }
+                        }
+                        return KeyEventResult.ignored;
+                      },
                       child: GestureDetector(
                         onTap: () {
                           _playVideo(videoData, videoData['position']);
@@ -2207,7 +2188,8 @@ void debugVideoDataStructure() {
                                             : CachedNetworkImage(
                                                 imageUrl: videoData[
                                                         'bannerImageUrl'] ??
-                                                    localImage,
+                                                    AppAssets.localImage(
+                                                        animated: true),
                                                 fit: BoxFit.cover,
                                                 width: double.infinity,
                                                 height: double.infinity,
@@ -2305,7 +2287,7 @@ void debugVideoDataStructure() {
   Widget _buildErrorImage() {
     return Container(
       color: Colors.grey.shade800,
-      child: localImage,
+      child: Image.asset(localImage),
     );
   }
 

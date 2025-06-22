@@ -183,7 +183,7 @@ class _HomeCategoryState extends State<HomeCategory> {
   void checkServerStatus() {
     Timer.periodic(Duration(seconds: 10), (timer) {
       // Check if the socket is connected, otherwise attempt to reconnect
-      if (!SocketService().socket.connected) {
+      if (!SocketService().socket!.connected) {
         // print('YouTube server down, retrying...');
         SocketService().initSocket(); // Re-establish the socket connection
       }

@@ -1516,12 +1516,6 @@
 //   }
 // }
 
-
-
-
-
-
-
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -1534,6 +1528,7 @@ import 'package:http/http.dart' as https;
 import 'package:mobi_tv_entertainment/provider/color_provider.dart';
 import 'package:mobi_tv_entertainment/provider/focus_provider.dart';
 import 'package:mobi_tv_entertainment/provider/shared_data_provider.dart';
+import 'package:mobi_tv_entertainment/widgets/small_widgets/logo_widget.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -1541,6 +1536,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'menu/top_navigation_bar.dart';
 import 'home_screen_pages/sub_vod_screen/sub_vod.dart';
+import 'widgets/small_widgets/app_assets.dart';
 import 'widgets/small_widgets/loading_indicator.dart';
 
 // Global variable for authentication key
@@ -1565,19 +1561,14 @@ class AuthManager {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? authKey = prefs.getString('auth_key');
 
-      print('🔑 Loading auth key from SharedPreferences...');
-      print('🔑 Found auth key: $authKey');
 
       if (authKey != null && authKey.isNotEmpty) {
         _authKey = authKey;
         globalAuthKey =
             authKey; // Also set global variable for backward compatibility
-        print('✅ Auth key loaded successfully: $_authKey');
       } else {
-        print('❌ No auth key found in SharedPreferences');
       }
     } catch (e) {
-      print('❌ Error loading auth key: $e');
     }
   }
 
@@ -1589,7 +1580,6 @@ class AuthManager {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('auth_key', authKey);
 
-    print('✅ Auth key set and saved: $authKey');
   }
 
   static Future<void> clearAuthKey() async {
@@ -1599,7 +1589,6 @@ class AuthManager {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.remove('auth_key');
 
-    print('🗑️ Auth key cleared');
   }
 
   static bool get hasValidAuthKey => _authKey.isNotEmpty;
@@ -1642,7 +1631,7 @@ var menutextsz;
 var minitextsz;
 var Headingtextsz;
 
-var localImage;
+String localImage = '';
 
 class MyApp extends StatefulWidget {
   @override
@@ -1670,57 +1659,97 @@ class _MyAppState extends State<MyApp> {
     cardColor = const Color.fromARGB(200, 0, 0, 0).withOpacity(0.7);
     hintColor = Colors.white;
     borderColor = Color.fromARGB(255, 247, 6, 118);
-localImage = Container(
-  decoration: BoxDecoration(
-    borderRadius: BorderRadius.circular(screenwdt * 0.01),
-    boxShadow: [
-      // Much darker and stronger shadows
-      BoxShadow(
-        color: Colors.black.withOpacity(0.95), // Increased opacity
-        blurRadius: 25,
-        spreadRadius: 3,
-        offset: Offset(0, 10),
-      ),
-      BoxShadow(
-        color: Colors.black.withOpacity(0.8),
-        blurRadius: 50,
-        spreadRadius: 8,
-        offset: Offset(0, 20),
-      ),
-      // Additional deep shadow for more darkness
-      BoxShadow(
-        color: Colors.black.withOpacity(0.6),
-        blurRadius: 80,
-        spreadRadius: 15,
-        offset: Offset(0, 30),
-      ),
-    ],
-  ),
-  child: ClipRRect(
-    borderRadius: BorderRadius.circular(screenwdt * 0.0),
-    child: Container(
-      foregroundDecoration: BoxDecoration(
-        // Much darker gradient overlay
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            Colors.black.withOpacity(0.3),  // Much darker start
-            Colors.black.withOpacity(0.4),  // Darker middle
-            Colors.black.withOpacity(0.5),  // Very dark end
-          ],
-          stops: [0.0, 0.5, 1.0],
-        ),
-        borderRadius: BorderRadius.circular(screenwdt * 0.0),
-      ),
-      child: Image.asset(
-        'assets/logo.png',
-        fit: BoxFit.cover,
-      ),
-    ),
-  ),
-);
 
+
+
+// ✅ SOLUTION: localImage ko global getter banayiye
+// Widget get localImage => AppAssets.localImage();
+
+// ✅ ALTERNATIVE: Function approach
+// Widget  localImage({double? width, double? height, bool animated = false}) {
+//   return AppAssets.localImage(
+//     width: width,
+//     height: height,
+//     animated: animated,
+//   );
+// }
+
+    
+    // localImage = '/assets/app_assets.dart';
+
+
+
+    // ✅ SOLUTION: localImage ko global getter banayiye
+// Widget get localImage => AppAssets.localImage();
+
+// ✅ ALTERNATIVE: Function approach
+Widget localImage({double? width, double? height, bool animated = false}) {
+  return AppAssets.localImage(
+    width: width,
+    height: height,
+    animated: animated,
+  );
+}
+// localImage = Container(
+//   decoration: BoxDecoration(
+//     borderRadius: BorderRadius.circular(screenwdt * 0.01),
+//     boxShadow: [
+//       // Much darker and stronger shadows
+//       BoxShadow(
+//         color: Colors.black.withOpacity(0.95), // Increased opacity
+//         blurRadius: 25,
+//         spreadRadius: 3,
+//         offset: Offset(0, 10),
+//       ),
+//       BoxShadow(
+//         color: Colors.black.withOpacity(0.8),
+//         blurRadius: 50,
+//         spreadRadius: 8,
+//         offset: Offset(0, 20),
+//       ),
+//       // Additional deep shadow for more darkness
+//       BoxShadow(
+//         color: Colors.black.withOpacity(0.6),
+//         blurRadius: 80,
+//         spreadRadius: 15,
+//         offset: Offset(0, 30),
+//       ),
+//     ],
+//   ),
+//   child: ClipRRect(
+//     borderRadius: BorderRadius.circular(screenwdt * 0.0),
+//     child: Container(
+//       foregroundDecoration: BoxDecoration(
+//         // Much darker gradient overlay
+//         gradient: LinearGradient(
+//           begin: Alignment.topCenter,
+//           end: Alignment.bottomCenter,
+//           colors: [
+//             Colors.black.withOpacity(0.3),  // Much darker start
+//             Colors.black.withOpacity(0.4),  // Darker middle
+//             Colors.black.withOpacity(0.5),  // Very dark end
+//           ],
+//           stops: [0.0, 0.5, 1.0],
+//         ),
+//         borderRadius: BorderRadius.circular(screenwdt * 0.0),
+//       ),
+//       child: Image.asset(
+//         'assets/logo.png',
+//         fit: BoxFit.cover,
+//       ),
+//     ),
+//   ),
+// );
+
+    // localImage = Container(
+    //   width: double.infinity,
+    //   padding: const EdgeInsets.all(20),
+    //   child:
+    //   EkomLogoWidget(
+    //     width: AppLogos.getResponsiveWidth(MediaQuery.of(context).size.width),
+    //     animated: true,
+    //   ),
+    // );
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -1761,22 +1790,16 @@ class _SplashScreenState extends State<SplashScreen> {
     String? authKey = prefs.getString('auth_key');
     String? userData = prefs.getString('user_data');
 
-    print('🔍 Checking login status...');
-    print('🔍 Is logged in: $isLoggedIn');
-    print('🔍 Auth key exists: ${authKey != null}');
-    print('🔍 Auth key value: $authKey');
 
     if (isLoggedIn && authKey != null && userData != null) {
       // Set auth key in AuthManager
       await AuthManager.setAuthKey(authKey);
-      print('✅ User is already logged in, navigating to main app');
 
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => MyHome()),
       );
     } else {
-      print('❌ User not logged in, navigating to login screen');
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => LoginScreen()),
@@ -1793,9 +1816,9 @@ class _SplashScreenState extends State<SplashScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              width: screenwdt * 0.5 ,
+              width: screenwdt * 0.5,
               height: screenhgt * 0.5,
-              child: localImage,
+              child: AppAssets.localImage(animated: true),
             ),
             // SizedBox(height: 30),
             // CircularProgressIndicator(
@@ -1809,8 +1832,6 @@ class _SplashScreenState extends State<SplashScreen> {
     );
   }
 }
-
-
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -1901,7 +1922,6 @@ class _LoginScreenState extends State<LoginScreen>
             'iOS-${DateTime.now().millisecondsSinceEpoch}';
       }
     } catch (e) {
-      print('Device info error: $e');
     }
 
     return 'DEVICE-${DateTime.now().millisecondsSinceEpoch}';
@@ -1928,8 +1948,6 @@ class _LoginScreenState extends State<LoginScreen>
           ? _deviceSerial
           : await _getDeviceSerialNumber();
 
-      print(
-          '🔐 Login attempt - PIN: ${_pinController.text}, Device: $serialNumber');
 
       bool loginSuccess = false;
       String authKey = '';
@@ -1965,7 +1983,6 @@ class _LoginScreenState extends State<LoginScreen>
       for (int i = 0; i < loginEndpoints.length && !loginSuccess; i++) {
         try {
           final endpoint = loginEndpoints[i];
-          print('🌐 Trying endpoint ${i + 1}: ${endpoint['url']}');
 
           final response = await https
               .post(
@@ -1979,7 +1996,6 @@ class _LoginScreenState extends State<LoginScreen>
               )
               .timeout(Duration(seconds: 15));
 
-          print('🌐 Response ${i + 1}: Status ${response.statusCode}');
 
           if (response.statusCode == 200) {
             String responseBody = response.body.trim();
@@ -1987,7 +2003,6 @@ class _LoginScreenState extends State<LoginScreen>
             if (responseBody.startsWith('{') || responseBody.startsWith('[')) {
               try {
                 final data = jsonDecode(responseBody);
-                print('🌐 Response data: $data');
 
                 if (data['status'] == true || data['success'] == true) {
                   authKey = data['result_auth_key'] ??
@@ -1998,24 +2013,19 @@ class _LoginScreenState extends State<LoginScreen>
 
                   if (authKey.isNotEmpty) {
                     loginSuccess = true;
-                    print('✅ Login successful with endpoint ${i + 1}');
                     break;
                   }
                 }
               } catch (e) {
-                print('❌ JSON parse error for endpoint ${i + 1}: $e');
               }
             } else {
-              print('❌ Non-JSON response from endpoint ${i + 1}');
             }
           }
         } catch (e) {
-          print('❌ Endpoint ${i + 1} failed: $e');
         }
       }
 
       if (loginSuccess && authKey.isNotEmpty) {
-        print('✅ Login successful, auth key: $authKey');
 
         // Save data efficiently
         SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -2048,7 +2058,6 @@ class _LoginScreenState extends State<LoginScreen>
         _showError('Invalid PIN. Please check and try again.');
       }
     } catch (e) {
-      print('❌ Login error: $e');
 
       String errorMessage = 'Login failed. ';
       if (e.toString().contains('TimeoutException') ||
@@ -2105,7 +2114,7 @@ class _LoginScreenState extends State<LoginScreen>
                   children: [
                     // Background image
                     Image.asset(
-                      'assets/logo.png',
+                      localImage,
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) {
                         return Container(
@@ -2179,7 +2188,7 @@ class _LoginScreenState extends State<LoginScreen>
                               child: Container(
                                 padding: EdgeInsets.all(20),
                                 child: Image.asset(
-                                  'assets/logo.png',
+                                  localImage,
                                   fit: BoxFit.contain,
                                   errorBuilder: (context, error, stackTrace) {
                                     return Icon(
@@ -2566,8 +2575,6 @@ class _MyHomeState extends State<MyHome> {
 
   Future<void> _ensureAuthKeyLoaded() async {
     await AuthManager.initialize();
-    print('🏠 MyHome - Auth key loaded: ${AuthManager.authKey}');
-    print('🏠 MyHome - Global auth key: $globalAuthKey');
   }
 
   @override
@@ -2599,10 +2606,8 @@ class _MyHomeState extends State<MyHome> {
           _tvenableAll = data['tvenableAll'] == 1;
         });
       } else {
-        print('Failed to load settings');
       }
     } catch (e) {
-      print('Error: $e');
     }
   }
 

@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mobi_tv_entertainment/main.dart';
@@ -17,7 +15,7 @@ class FocussableSubvodWidget extends StatefulWidget {
   final double? width;
   final double? height;
   final double? focusedHeight;
-  final VoidCallback? onUpPress; 
+  final VoidCallback? onUpPress;
 
   const FocussableSubvodWidget({
     required this.imageUrl,
@@ -96,10 +94,10 @@ class _FocussableSubvodWidgetState extends State<FocussableSubvodWidget> {
     final double containerWidth = widget.width ?? screenwdt * 0.19;
     final double normalHeight = widget.height ?? screenhgt * 0.21;
     final double focusedHeight = widget.focusedHeight ?? screenhgt * 0.25;
-    
+
     // Calculate the growth in height when focused (difference between focused and normal height)
     final double heightGrowth = focusedHeight - normalHeight;
-    
+
     // Calculate the vertical position shift when focused (to center the expanded item)
     final double verticalOffset = isFocused ? -(heightGrowth / 2) : 0;
 
@@ -110,7 +108,6 @@ class _FocussableSubvodWidgetState extends State<FocussableSubvodWidget> {
           context.read<ColorProvider>().updateColor(paletteColor, true);
         }
       },
-      
       actions: {
         // ActivateIntent: CallbackAction<ActivateIntent>(
         //   onInvoke: (ActivateIntent intent) {
@@ -130,15 +127,11 @@ class _FocussableSubvodWidgetState extends State<FocussableSubvodWidget> {
           },
         ),
       },
-
-      
-      
       shortcuts: {
         // Add this to handle both Enter and Select keys
         LogicalKeySet(LogicalKeyboardKey.select): ActivateIntent(),
         LogicalKeySet(LogicalKeyboardKey.enter): ActivateIntent(),
       },
-      
       child: GestureDetector(
         onTap: widget.onTap,
         child: Column(
@@ -148,7 +141,8 @@ class _FocussableSubvodWidgetState extends State<FocussableSubvodWidget> {
             // Using Stack for true bidirectional expansion
             Container(
               width: containerWidth,
-              height: normalHeight, // Fixed container height is the normal height
+              height:
+                  normalHeight, // Fixed container height is the normal height
               child: Stack(
                 clipBehavior: Clip.none, // Allow items to overflow the stack
                 alignment: Alignment.center,
@@ -156,7 +150,9 @@ class _FocussableSubvodWidgetState extends State<FocussableSubvodWidget> {
                   // Animated container for the image
                   AnimatedPositioned(
                     duration: const Duration(milliseconds: 800),
-                    top: isFocused ? -(heightGrowth / 2) : 0, // Move up when focused
+                    top: isFocused
+                        ? -(heightGrowth / 2)
+                        : 0, // Move up when focused
                     left: 0,
                     width: containerWidth,
                     height: isFocused ? focusedHeight : normalHeight,
@@ -179,7 +175,7 @@ class _FocussableSubvodWidgetState extends State<FocussableSubvodWidget> {
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(4.0),
                         child: displayImage(
-                          widget.imageUrl?? localImage,
+                          widget.imageUrl ?? localImage,
                           width: containerWidth,
                           height: isFocused ? focusedHeight : normalHeight,
                         ),

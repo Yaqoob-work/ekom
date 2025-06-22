@@ -183,7 +183,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   SizedBox(
                     // Use the dynamically calculated height based on category count
-                    height: screenhgt * 0.4,
+                    height: screenhgt * 0.45,
                     key: manageMoviesKey,
                     child: Movies(
                       focusNode: manageMoviesFocusNode,
@@ -196,7 +196,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     height: screenhgt * 0.5,
 
                     key: manageWebseriesKey,
-                    child: ManageWebseries(
+                    child: ProfessionalManageWebseries (
                       focusNode: manageWebseriesFocusNode,
                     ),
                   ),

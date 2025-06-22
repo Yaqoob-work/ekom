@@ -276,6 +276,7 @@ import 'package:mobi_tv_entertainment/provider/color_provider.dart';
 import 'package:mobi_tv_entertainment/provider/focus_provider.dart';
 import 'package:provider/provider.dart';
 import '../main.dart';
+import '../widgets/small_widgets/app_assets.dart';
 import '../widgets/utils/random_light_color_widget.dart';
 
 class TopNavigationBar extends StatefulWidget {
@@ -508,10 +509,21 @@ class _TopNavigationBarState extends State<TopNavigationBar> {
                     horizontal: screenwdt * 0.01,
                   ),
                   child: index == 0
-                      ? Image.asset(
+                      ? 
+                      Image.asset(
                           'assets/logo3.png',
                           height: screenhgt * 0.05,
                         )
+                      // ✅ SOLUTION 2: WITH FOCUS-BASED COLOR CHANGE (CORRECT PARAMETERS)
+                      // AppAssets.localImage(
+                      //   height: screenhgt * 0.05,
+                      //   width: (screenhgt * 0.05) * (640 / 360),
+                      //   // Correct parameter names:
+                      //   textColor: focusNode.hasFocus ? randomColor : Colors.white,
+                      //   backgroundColor: focusNode.hasFocus ? Colors.black87 : Color(0xFF0f0f23),
+                      //   glowColor: focusNode.hasFocus ? randomColor : Colors.cyan,  // This is correct
+                      //   opacity: focusNode.hasFocus ? 1.0 : 0.8,                   // This is correct
+                      // )
                       : index == 4 // Youtube icon
                           ? Image.asset(
                               'assets/youtube.png',
