@@ -7,6 +7,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:mobi_tv_entertainment/home_screen_pages/movies_screen/movies.dart';
 import 'package:mobi_tv_entertainment/main.dart';
 import 'package:mobi_tv_entertainment/video_widget/video_screen.dart';
+import 'package:mobi_tv_entertainment/video_widget/youtube_player.dart';
 import 'package:mobi_tv_entertainment/widgets/models/news_item_model.dart';
 import '../../video_widget/socket_service.dart';
 
@@ -489,14 +490,14 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
     try {
       String url = episode.url;
 
-      if (isYoutubeUrl(url)) {
-        try {
-          url = await _socketService.getUpdatedUrl(url);
-          // .timeout(const Duration(seconds: 10), onTimeout: () => url);
-        } catch (e) {
-          print("Error updating URL: $e");
-        }
-      }
+      // if (isYoutubeUrl(url)) {
+      //   try {
+      //     url = await _socketService.getUpdatedUrl(url);
+      //     // .timeout(const Duration(seconds: 10), onTimeout: () => url);
+      //   } catch (e) {
+      //     print("Error updating URL: $e");
+      //   }
+      // }
 
       if (mounted) {
         await Navigator.push(
@@ -521,10 +522,24 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
             //   isLastPlayedStored: false,
             // ),
 
-
-                      builder: (context) => FullscreenYouTubePlayer(
-                youtubeId: episode.url, // pass the video ID here
+            builder: (context) => YouTubePlayerScreen(
+              videoData: VideoData(
+                id: episode.id,
+                title: episode.name,
+                youtubeUrl: episode.url,
+                thumbnail: widget.banner ?? widget.poster,
+                // description: '',
               ),
+              playlist: _currentEpisodes
+                  .map((m) => VideoData(
+                        id: m.id,
+                        title: m.name,
+                        youtubeUrl: m.url,
+                        thumbnail: m.banner,
+                        // description: m.description,
+                      ))
+                  .toList(),
+            ),
           ),
         );
       }
@@ -1155,188 +1170,216 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
     );
   }
 
+  // OnTap handler for season selection
+  void _onSeasonTap(int index) {
+    setState(() {
+      _selectedSeasonIndex = index;
+      _currentMode = NavigationMode.seasons;
+    });
+    _seasonsFocusNodes[index]?.requestFocus();
+    _selectSeason(index);
+  }
+
+// OnTap handler for episode selection and playback
+  void _onEpisodeTap(int index) {
+    if (_currentEpisodes.isNotEmpty && index < _currentEpisodes.length) {
+      setState(() {
+        _selectedEpisodeIndex = index;
+        _currentMode = NavigationMode.episodes;
+      });
+      _episodeFocusNodes[_currentEpisodes[index].id]?.requestFocus();
+      _playEpisode(_currentEpisodes[index]);
+    }
+  }
+
   Widget _buildSeasonItem(int index) {
     final season = _seasons[index];
     final isSelected = index == _selectedSeasonIndex;
     final isFocused = _currentMode == NavigationMode.seasons && isSelected;
     final episodeCount = _episodesMap[season.id]?.length ?? 0;
 
-    return Focus(
-      focusNode: _seasonsFocusNodes[index],
-      child: AnimatedContainer(
-        duration: Duration(milliseconds: 300),
-        margin: EdgeInsets.symmetric(vertical: 6),
-        padding: EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          gradient: isFocused
-              ? LinearGradient(
-                  colors: [
-                    Colors.blue.withOpacity(0.3),
-                    Colors.blue.withOpacity(0.1),
-                  ],
-                  begin: Alignment.centerLeft,
-                  end: Alignment.centerRight,
-                )
-              : isSelected
+    return GestureDetector(
+        // ← YE ADD KARNA HAI
+        onTap: () => _onSeasonTap(index), // ← YE ADD KARNA HAI
+        child: Focus(
+          focusNode: _seasonsFocusNodes[index],
+          child: AnimatedContainer(
+            duration: Duration(milliseconds: 300),
+            margin: EdgeInsets.symmetric(vertical: 6),
+            padding: EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              gradient: isFocused
                   ? LinearGradient(
                       colors: [
-                        Colors.white.withOpacity(0.1),
-                        Colors.white.withOpacity(0.05),
+                        Colors.blue.withOpacity(0.3),
+                        Colors.blue.withOpacity(0.1),
                       ],
                       begin: Alignment.centerLeft,
                       end: Alignment.centerRight,
                     )
+                  : isSelected
+                      ? LinearGradient(
+                          colors: [
+                            Colors.white.withOpacity(0.1),
+                            Colors.white.withOpacity(0.05),
+                          ],
+                          begin: Alignment.centerLeft,
+                          end: Alignment.centerRight,
+                        )
+                      : null,
+              color: !isFocused && !isSelected
+                  ? Colors.grey[900]?.withOpacity(0.4)
                   : null,
-          color: !isFocused && !isSelected
-              ? Colors.grey[900]?.withOpacity(0.4)
-              : null,
-          borderRadius: BorderRadius.circular(12),
-          border: isFocused
-              ? Border.all(color: Colors.blue, width: 2)
-              : isSelected
-                  ? Border.all(color: Colors.white.withOpacity(0.3), width: 1)
+              borderRadius: BorderRadius.circular(12),
+              border: isFocused
+                  ? Border.all(color: Colors.blue, width: 2)
+                  : isSelected
+                      ? Border.all(
+                          color: Colors.white.withOpacity(0.3), width: 1)
+                      : null,
+              boxShadow: isFocused
+                  ? [
+                      BoxShadow(
+                        color: Colors.blue.withOpacity(0.3),
+                        blurRadius: 12,
+                        spreadRadius: 2,
+                      )
+                    ]
                   : null,
-          boxShadow: isFocused
-              ? [
-                  BoxShadow(
-                    color: Colors.blue.withOpacity(0.3),
-                    blurRadius: 12,
-                    spreadRadius: 2,
-                  )
-                ]
-              : null,
-        ),
-        child: Row(
-          children: [
-            // Season Number with beautiful styling
-            Container(
-              width: 50,
-              height: 50,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: isFocused
-                      ? [Colors.blue, Colors.blue.shade300]
-                      : [Colors.grey[700]!, Colors.grey[600]!],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: BorderRadius.circular(25),
-                boxShadow: [
-                  BoxShadow(
-                    color: (isFocused ? Colors.blue : Colors.grey[700]!)
-                        .withOpacity(0.4),
-                    blurRadius: 6,
-                    spreadRadius: 1,
-                  )
-                ],
-              ),
-              child: Center(
-                child: Image.network(
-                  season.banner,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Container(
-                    decoration: BoxDecoration(
-                        // gradient: LinearGradient(
-                        //   colors: [
-                        //     Color(0xFF1a1a2e),
-                        //     Color(0xFF16213e),
-                        //     Color(0xFF0f0f23),
-                        //   ],
-                        //   begin: Alignment.topLeft,
-                        //   end: Alignment.bottomRight,
-                        ),
-                  ),
-                ),
-              ),
-
-              // Text(
-              //   '${season.banner}',
-              //   style: TextStyle(
-              //     color: Colors.white,
-              //     fontWeight: FontWeight.bold,
-              //     fontSize: 18,
-              //   ),
-              // ),
-              // ),
             ),
-
-            SizedBox(width: 16),
-
-            // Season Info
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    season.sessionName,
-                    style: TextStyle(
-                      color: isFocused ? Colors.blue : Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
+            child: Row(
+              children: [
+                // Season Number with beautiful styling
+                Container(
+                  width: 50,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: isFocused
+                          ? [Colors.blue, Colors.blue.shade300]
+                          : [Colors.grey[700]!, Colors.grey[600]!],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
                     ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  SizedBox(height: 6),
-                  Row(
-                    children: [
-                      Container(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: isFocused
-                              ? Colors.blue.withOpacity(0.2)
-                              : Colors.grey[700]?.withOpacity(0.5),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          'Season ${season.seasonOrder}',
-                          style: TextStyle(
-                            color: isFocused ? Colors.blue : Colors.grey[300],
-                            fontSize: 11,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                      if (episodeCount > 0) ...[
-                        SizedBox(width: 8),
-                        Container(
-                          padding:
-                              EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: Colors.green.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Text(
-                            '$episodeCount episodes',
-                            style: TextStyle(
-                              color: Colors.green,
-                              fontSize: 11,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ],
+                    borderRadius: BorderRadius.circular(25),
+                    boxShadow: [
+                      BoxShadow(
+                        color: (isFocused ? Colors.blue : Colors.grey[700]!)
+                            .withOpacity(0.4),
+                        blurRadius: 6,
+                        spreadRadius: 1,
+                      )
                     ],
                   ),
-                ],
-              ),
+                  child: Center(
+                    child: Image.network(
+                      season.banner,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => Container(
+                        decoration: BoxDecoration(
+                            // gradient: LinearGradient(
+                            //   colors: [
+                            //     Color(0xFF1a1a2e),
+                            //     Color(0xFF16213e),
+                            //     Color(0xFF0f0f23),
+                            //   ],
+                            //   begin: Alignment.topLeft,
+                            //   end: Alignment.bottomRight,
+                            ),
+                      ),
+                    ),
+                  ),
+    
+                  // Text(
+                  //   '${season.banner}',
+                  //   style: TextStyle(
+                  //     color: Colors.white,
+                  //     fontWeight: FontWeight.bold,
+                  //     fontSize: 18,
+                  //   ),
+                  // ),
+                  // ),
+                ),
+    
+                SizedBox(width: 16),
+    
+                // Season Info
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        season.sessionName,
+                        style: TextStyle(
+                          color: isFocused ? Colors.blue : Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      SizedBox(height: 6),
+                      Row(
+                        children: [
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: isFocused
+                                  ? Colors.blue.withOpacity(0.2)
+                                  : Colors.grey[700]?.withOpacity(0.5),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              'Season ${season.seasonOrder}',
+                              style: TextStyle(
+                                color: isFocused
+                                    ? Colors.blue
+                                    : Colors.grey[300],
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                          if (episodeCount > 0) ...[
+                            SizedBox(width: 8),
+                            Container(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: Colors.green.withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Text(
+                                '$episodeCount episodes',
+                                style: TextStyle(
+                                  color: Colors.green,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+    
+                // Arrow indicator with animation
+                AnimatedRotation(
+                  turns: isFocused ? 0.0 : -0.25,
+                  duration: Duration(milliseconds: 300),
+                  child: Icon(
+                    Icons.chevron_right,
+                    color: isFocused ? Colors.blue : Colors.grey[600],
+                    size: 24,
+                  ),
+                ),
+              ],
             ),
-
-            // Arrow indicator with animation
-            AnimatedRotation(
-              turns: isFocused ? 0.0 : -0.25,
-              duration: Duration(milliseconds: 300),
-              child: Icon(
-                Icons.chevron_right,
-                color: isFocused ? Colors.blue : Colors.grey[600],
-                size: 24,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+          ),
+        ));
   }
 
   Widget _buildEpisodesList() {
@@ -1418,347 +1461,353 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
     final isFocused = _currentMode == NavigationMode.episodes && isSelected;
     final isProcessing = _isProcessing && isSelected;
 
-    return Focus(
-      focusNode: _episodeFocusNodes[episode.id],
-      child: AnimatedContainer(
-        duration: Duration(milliseconds: 300),
-        margin: EdgeInsets.symmetric(vertical: 8),
-        decoration: BoxDecoration(
-          gradient: isFocused
-              ? LinearGradient(
-                  colors: [
-                    Colors.green.withOpacity(0.3),
-                    Colors.green.withOpacity(0.1),
-                  ],
-                  begin: Alignment.centerLeft,
-                  end: Alignment.centerRight,
-                )
-              : isSelected
+    return GestureDetector(
+        // ← YE ADD KARNA HAI
+        onTap: () => _onEpisodeTap(index), // ← YE ADD KARNA HAI
+        child: Focus(
+          focusNode: _episodeFocusNodes[episode.id],
+          child: AnimatedContainer(
+            duration: Duration(milliseconds: 300),
+            margin: EdgeInsets.symmetric(vertical: 8),
+            decoration: BoxDecoration(
+              gradient: isFocused
                   ? LinearGradient(
                       colors: [
-                        Colors.white.withOpacity(0.1),
-                        Colors.white.withOpacity(0.05),
+                        Colors.green.withOpacity(0.3),
+                        Colors.green.withOpacity(0.1),
                       ],
                       begin: Alignment.centerLeft,
                       end: Alignment.centerRight,
                     )
+                  : isSelected
+                      ? LinearGradient(
+                          colors: [
+                            Colors.white.withOpacity(0.1),
+                            Colors.white.withOpacity(0.05),
+                          ],
+                          begin: Alignment.centerLeft,
+                          end: Alignment.centerRight,
+                        )
+                      : null,
+              color: !isFocused && !isSelected
+                  ? Colors.grey[900]?.withOpacity(0.4)
                   : null,
-          color: !isFocused && !isSelected
-              ? Colors.grey[900]?.withOpacity(0.4)
-              : null,
-          borderRadius: BorderRadius.circular(16),
-          border: isFocused
-              ? Border.all(color: Colors.green, width: 2)
-              : isSelected
-                  ? Border.all(color: Colors.white.withOpacity(0.3), width: 1)
+              borderRadius: BorderRadius.circular(16),
+              border: isFocused
+                  ? Border.all(color: Colors.green, width: 2)
+                  : isSelected
+                      ? Border.all(
+                          color: Colors.white.withOpacity(0.3), width: 1)
+                      : null,
+              boxShadow: isFocused
+                  ? [
+                      BoxShadow(
+                        color: Colors.green.withOpacity(0.3),
+                        blurRadius: 12,
+                        spreadRadius: 2,
+                      )
+                    ]
                   : null,
-          boxShadow: isFocused
-              ? [
-                  BoxShadow(
-                    color: Colors.green.withOpacity(0.3),
-                    blurRadius: 12,
-                    spreadRadius: 2,
-                  )
-                ]
-              : null,
-        ),
-        child: Row(
-          children: [
-            // Enhanced Thumbnail
-            Container(
-              margin: EdgeInsets.all(12),
-              width: 140,
-              height: 90,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.4),
-                    blurRadius: 8,
-                    spreadRadius: 2,
-                  )
-                ],
-              ),
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  ClipRRect(
+            ),
+            child: Row(
+              children: [
+                // Enhanced Thumbnail
+                Container(
+                  margin: EdgeInsets.all(12),
+                  width: 140,
+                  height: 90,
+                  decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12),
-                    child: Image.network(
-                      episode.banner,
-                      fit: BoxFit.cover,
-                      width: 140,
-                      height: 90,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.4),
+                        blurRadius: 8,
+                        spreadRadius: 2,
+                      )
+                    ],
+                  ),
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Image.network(
+                          episode.banner,
+                          fit: BoxFit.cover,
                           width: 140,
                           height: 90,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Container(
+                              width: 140,
+                              height: 90,
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    Colors.grey[800]!,
+                                    Colors.grey[700]!,
+                                  ],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                ),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.video_library,
+                                      color: Colors.grey[400],
+                                      size: 28,
+                                    ),
+                                    SizedBox(height: 4),
+                                    Text(
+                                      "EP ${index + 1}",
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+
+                      // Play/Loading overlay with beautiful animations
+                      if (isProcessing)
+                        Container(
+                          width: 50,
+                          height: 50,
+                          decoration: BoxDecoration(
+                            color: Colors.black.withOpacity(0.8),
+                            borderRadius: BorderRadius.circular(25),
+                          ),
+                          child: SpinKitRing(
+                            color: Colors.green,
+                            size: 30,
+                            lineWidth: 3,
+                          ),
+                        )
+                      else if (isFocused)
+                        Container(
+                          width: 50,
+                          height: 50,
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
-                              colors: [
-                                Colors.grey[800]!,
-                                Colors.grey[700]!,
-                              ],
+                              colors: [Colors.green, Colors.green.shade400],
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
                             ),
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(25),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.green.withOpacity(0.5),
+                                blurRadius: 10,
+                                spreadRadius: 2,
+                              )
+                            ],
                           ),
-                          child: Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.video_library,
-                                  color: Colors.grey[400],
-                                  size: 28,
+                          child: Icon(
+                            Icons.play_arrow,
+                            color: Colors.white,
+                            size: 28,
+                          ),
+                        )
+                      else if (isSelected)
+                        Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Icon(
+                            Icons.play_arrow,
+                            color: Colors.white,
+                            size: 24,
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+
+                // Episode Information
+                Expanded(
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Episode Title
+                        Text(
+                          episode.name,
+                          style: TextStyle(
+                            color: isFocused ? Colors.green : Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+
+                        SizedBox(height: 8),
+
+                        // Episode Description
+                        if (episode.description.isNotEmpty)
+                          Text(
+                            episode.description,
+                            style: TextStyle(
+                              color: Colors.grey[400],
+                              fontSize: 13,
+                              height: 1.3,
+                            ),
+                            maxLines: 3,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+
+                        SizedBox(height: 12),
+
+                        // Episode Metadata
+                        Row(
+                          children: [
+                            Container(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 5),
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: isFocused
+                                      ? [
+                                          Colors.green.withOpacity(0.3),
+                                          Colors.green.withOpacity(0.1)
+                                        ]
+                                      : [
+                                          Colors.grey[700]!.withOpacity(0.5),
+                                          Colors.grey[800]!.withOpacity(0.3)
+                                        ],
                                 ),
-                                SizedBox(height: 4),
-                                Text(
-                                  "EP ${index + 1}",
+                                borderRadius: BorderRadius.circular(15),
+                                border: Border.all(
+                                  color: isFocused
+                                      ? Colors.green.withOpacity(0.5)
+                                      : Colors.grey[600]!.withOpacity(0.3),
+                                ),
+                              ),
+                              child: Text(
+                                'Episode ${index + 1}',
+                                style: TextStyle(
+                                  color: isFocused
+                                      ? Colors.green
+                                      : Colors.grey[300],
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                            SizedBox(width: 8),
+                            if (isFocused)
+                              Container(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: Colors.green.withOpacity(0.2),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Text(
+                                  'READY TO PLAY',
                                   style: TextStyle(
-                                    color: Colors.white,
+                                    color: Colors.green,
+                                    fontSize: 10,
                                     fontWeight: FontWeight.bold,
-                                    fontSize: 14,
                                   ),
                                 ),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
+                              ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
+                ),
 
-                  // Play/Loading overlay with beautiful animations
-                  if (isProcessing)
-                    Container(
-                      width: 50,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.8),
-                        borderRadius: BorderRadius.circular(25),
-                      ),
-                      child: SpinKitRing(
-                        color: Colors.green,
-                        size: 30,
-                        lineWidth: 3,
-                      ),
-                    )
-                  else if (isFocused)
-                    Container(
-                      width: 50,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [Colors.green, Colors.green.shade400],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        borderRadius: BorderRadius.circular(25),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.green.withOpacity(0.5),
-                            blurRadius: 10,
-                            spreadRadius: 2,
-                          )
-                        ],
-                      ),
-                      child: Icon(
-                        Icons.play_arrow,
-                        color: Colors.white,
-                        size: 28,
-                      ),
-                    )
-                  else if (isSelected)
-                    Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Icon(
-                        Icons.play_arrow,
-                        color: Colors.white,
-                        size: 24,
-                      ),
-                    ),
-                ],
-              ),
-            ),
-
-            // Episode Information
-            Expanded(
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Episode Title
-                    Text(
-                      episode.name,
-                      style: TextStyle(
-                        color: isFocused ? Colors.green : Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-
-                    SizedBox(height: 8),
-
-                    // Episode Description
-                    if (episode.description.isNotEmpty)
-                      Text(
-                        episode.description,
-                        style: TextStyle(
-                          color: Colors.grey[400],
-                          fontSize: 13,
-                          height: 1.3,
-                        ),
-                        maxLines: 3,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-
-                    SizedBox(height: 12),
-
-                    // Episode Metadata
-                    Row(
-                      children: [
-                        Container(
-                          padding:
-                              EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                // Action Button Area
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      AnimatedScale(
+                        scale: isFocused ? 1.2 : 1.0,
+                        duration: Duration(milliseconds: 300),
+                        child: Container(
+                          width: 56,
+                          height: 56,
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
                               colors: isFocused
-                                  ? [
-                                      Colors.green.withOpacity(0.3),
-                                      Colors.green.withOpacity(0.1)
-                                    ]
-                                  : [
-                                      Colors.grey[700]!.withOpacity(0.5),
-                                      Colors.grey[800]!.withOpacity(0.3)
-                                    ],
+                                  ? [Colors.green, Colors.green.shade400]
+                                  : isSelected
+                                      ? [
+                                          Colors.white.withOpacity(0.3),
+                                          Colors.white.withOpacity(0.1)
+                                        ]
+                                      : [Colors.grey[700]!, Colors.grey[600]!],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
                             ),
-                            borderRadius: BorderRadius.circular(15),
-                            border: Border.all(
-                              color: isFocused
-                                  ? Colors.green.withOpacity(0.5)
-                                  : Colors.grey[600]!.withOpacity(0.3),
-                            ),
+                            borderRadius: BorderRadius.circular(28),
+                            boxShadow: isFocused
+                                ? [
+                                    BoxShadow(
+                                      color: Colors.green.withOpacity(0.5),
+                                      blurRadius: 12,
+                                      spreadRadius: 3,
+                                    )
+                                  ]
+                                : null,
+                          ),
+                          child: isProcessing
+                              ? SpinKitRing(
+                                  color: Colors.white,
+                                  size: 24,
+                                  lineWidth: 2,
+                                )
+                              : Icon(
+                                  Icons.play_arrow,
+                                  color: Colors.white,
+                                  size: 32,
+                                ),
+                        ),
+                      ),
+                      if (isFocused) ...[
+                        SizedBox(height: 8),
+                        Container(
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: Colors.green.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
-                            'Episode ${index + 1}',
+                            'PRESS ENTER',
                             style: TextStyle(
-                              color:
-                                  isFocused ? Colors.green : Colors.grey[300],
-                              fontSize: 11,
-                              fontWeight: FontWeight.w600,
+                              color: Colors.green,
+                              fontSize: 9,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),
-                        SizedBox(width: 8),
-                        if (isFocused)
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: Colors.green.withOpacity(0.2),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Text(
-                              'READY TO PLAY',
-                              style: TextStyle(
-                                color: Colors.green,
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
                       ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-            // Action Button Area
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  AnimatedScale(
-                    scale: isFocused ? 1.2 : 1.0,
-                    duration: Duration(milliseconds: 300),
-                    child: Container(
-                      width: 56,
-                      height: 56,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: isFocused
-                              ? [Colors.green, Colors.green.shade400]
-                              : isSelected
-                                  ? [
-                                      Colors.white.withOpacity(0.3),
-                                      Colors.white.withOpacity(0.1)
-                                    ]
-                                  : [Colors.grey[700]!, Colors.grey[600]!],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        borderRadius: BorderRadius.circular(28),
-                        boxShadow: isFocused
-                            ? [
-                                BoxShadow(
-                                  color: Colors.green.withOpacity(0.5),
-                                  blurRadius: 12,
-                                  spreadRadius: 3,
-                                )
-                              ]
-                            : null,
-                      ),
-                      child: isProcessing
-                          ? SpinKitRing(
-                              color: Colors.white,
-                              size: 24,
-                              lineWidth: 2,
-                            )
-                          : Icon(
-                              Icons.play_arrow,
-                              color: Colors.white,
-                              size: 32,
-                            ),
-                    ),
+                    ],
                   ),
-                  if (isFocused) ...[
-                    SizedBox(height: 8),
-                    Container(
-                      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: Colors.green.withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        'PRESS ENTER',
-                        style: TextStyle(
-                          color: Colors.green,
-                          fontSize: 9,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ],
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
-    );
+          ),
+        ));
   }
 
   Widget _buildInstructionsOverlay() {

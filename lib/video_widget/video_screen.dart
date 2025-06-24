@@ -367,9 +367,9 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
         originalUrl = selectedChannel.unUpdatedUrl ?? updatedUrl;
 
         // Check if it's a YouTube URL
-        if (isYoutubeUrl(updatedUrl)) {
-          updatedUrl = await _socketService.getUpdatedUrl(updatedUrl);
-        }
+        // if (isYoutubeUrl(updatedUrl)) {
+        //   updatedUrl = await _socketService.getUpdatedUrl(updatedUrl);
+        // }
       } else {
         // Your existing logic for other sources
            // Handle different sources
@@ -384,9 +384,9 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
         
         
         // If it's a YouTube movie, process accordingly
-        if (movieData['source_type'] == 'YoutubeLive' || isYoutubeUrl(updatedUrl)) {
-          updatedUrl = await _socketService.getUpdatedUrl(updatedUrl);
-        }
+        // if (movieData['source_type'] == 'YoutubeLive' || isYoutubeUrl(updatedUrl)) {
+        //   updatedUrl = await _socketService.getUpdatedUrl(updatedUrl);
+        // }
       } else {
         throw Exception('Movie URL not found for ID: ${selectedChannel.id}');
       }
@@ -403,9 +403,9 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
         
         
         // Process YouTube live streams if needed
-        if (isYoutubeUrl(updatedUrl)) {
-          updatedUrl = await _socketService.getUpdatedUrl(updatedUrl);
-        }
+        // if (isYoutubeUrl(updatedUrl)) {
+        //   updatedUrl = await _socketService.getUpdatedUrl(updatedUrl);
+        // }
       } else {
         throw Exception('Live TV channel URL not found for ID: ${selectedChannel.id}');
       }
@@ -426,14 +426,14 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
         //     updatedUrl = playLink['source_url']!;
         // }
 
-        if (isYoutubeUrl(updatedUrl)) {
-          updatedUrl = await _socketService.getUpdatedUrl(updatedUrl);
-        }
+        // if (isYoutubeUrl(updatedUrl)) {
+        //   updatedUrl = await _socketService.getUpdatedUrl(updatedUrl);
+        // }
       }
 
-      if (isYoutubeUrl(updatedUrl)) {
-        updatedUrl = await _socketService.getUpdatedUrl(updatedUrl);
-      }
+      // if (isYoutubeUrl(updatedUrl)) {
+      //   updatedUrl = await _socketService.getUpdatedUrl(updatedUrl);
+      // }
 
 
       _controller = VideoPlayerController.network(updatedUrl);
@@ -453,7 +453,8 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
 
       // Start timeout timer for certain sources
       if (widget.source == 'webseries_details_page' ||
-          widget.source == 'isMovieScreen') {
+          widget.source == 'isMovieScreen' ||
+          widget.isLive ) {
         _startWebseriesTimeoutTimer();
       }
 

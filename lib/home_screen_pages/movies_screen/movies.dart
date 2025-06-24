@@ -1972,6 +1972,7 @@ import 'package:mobi_tv_entertainment/main.dart';
 import 'package:mobi_tv_entertainment/provider/color_provider.dart';
 import 'package:mobi_tv_entertainment/provider/focus_provider.dart';
 import 'package:mobi_tv_entertainment/video_widget/video_screen.dart';
+import 'package:mobi_tv_entertainment/video_widget/youtube_player.dart';
 import 'package:mobi_tv_entertainment/widgets/models/news_item_model.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -3260,12 +3261,12 @@ class _MoviesState extends State<Movies>
         }
 
         if (updatedUrl.isEmpty) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Video URL is not available'),
-              backgroundColor: ProfessionalColors.accentRed,
-            ),
-          );
+          // ScaffoldMessenger.of(context).showSnackBar(
+          //   SnackBar(
+          //     content: Text('Video URL is not available'),
+          //     backgroundColor: ProfessionalColors.accentRed,
+          //   ),
+          // );
           return;
         }
 
@@ -3292,8 +3293,21 @@ class _MoviesState extends State<Movies>
               //   seasonId: 0,
               //   liveStatus: false,
               // ),
-              builder: (context) => FullscreenYouTubePlayer(
-                youtubeId: originalUrl, // pass the video ID here
+                builder: (context) => YouTubePlayerScreen(
+                 videoData: VideoData(
+                   id: movieId,
+                   title: movieMap.safeString('name'),
+                   youtubeUrl: updatedUrl,
+                   thumbnail: movieMap.safeString('banner'),
+                  //  description: movieMap.safeString('description'),
+                 ),
+                 playlist: freshMovies.map((m) => VideoData(
+                   id: m.id,
+                   title: m.name,
+                   youtubeUrl: m.url,
+                   thumbnail: m.banner,
+                  //  description: m.description,
+                 )).toList(),
               ),
             ),
           );
@@ -4610,14 +4624,14 @@ class _ProfessionalMoviesGridViewState extends State<ProfessionalMoviesGridView>
           //   _socketService.getUpdatedUrl(updatedUrl),
           //   Future.delayed(Duration(seconds: 15), () => ''),
           // ]);
-          final playUrl = await _socketService.getUpdatedUrl(updatedUrl);
-          if (playUrl.isNotEmpty) {
-            updatedUrl = playUrl;
-          } else {
-            throw Exception('Failed to fetch updated URL');
-          }
+          // final playUrl = await _socketService.getUpdatedUrl(updatedUrl);
+          // if (playUrl.isNotEmpty) {
+          //   // updatedUrl = playUrl;
+          // } else {
+          //   throw Exception('Failed to fetch updated URL');
+          // }
         } catch (e) {
-          updatedUrl = originalUrl;
+          // updatedUrl = originalUrl;
         }
       }
 
@@ -4712,8 +4726,21 @@ class _ProfessionalMoviesGridViewState extends State<ProfessionalMoviesGridView>
             // videoUrl: updatedUrl,
             // videoTitle: movieMap.safeString('name'),
             // ),
-                      builder: (context) => FullscreenYouTubePlayer(
-                youtubeId: originalUrl, // pass the video ID here
+                      builder: (context) => YouTubePlayerScreen(
+                 videoData: VideoData(
+                   id: movieId,
+                   title: movieMap.safeString('name'),
+                   youtubeUrl: updatedUrl,
+                   thumbnail: movieMap.safeString('banner'),
+                  //  description: movieMap.safeString('description'),
+                 ),
+                 playlist: freshMovies.map((m) => VideoData(
+                   id: m.id,
+                   title: m.name,
+                   youtubeUrl: m.url,
+                   thumbnail: m.banner,
+                  //  description: m.description,
+                 )).toList(),
               ),
           ),
         );
@@ -5430,62 +5457,212 @@ extension SafeTypeConversion on Map<String, dynamic> {
   }
 }
 
-class FullscreenYouTubePlayer extends StatefulWidget {
-  final String youtubeId;
 
-  const FullscreenYouTubePlayer({required this.youtubeId});
 
-  @override
-  _FullscreenYouTubePlayerState createState() =>
-      _FullscreenYouTubePlayerState();
-}
 
-class _FullscreenYouTubePlayerState extends State<FullscreenYouTubePlayer> {
-  late YoutubePlayerController _controller;
 
-  @override
-  void initState() {
-    super.initState();
-    _controller = YoutubePlayerController(
-      initialVideoId: widget.youtubeId,
-      flags: const YoutubePlayerFlags(
-        autoPlay: true,
-        mute: false,
-        hideControls: true, // Hide all controls
-        disableDragSeek: true, // Disable seeking by dragging
-        loop: false,
-        enableCaption: false,
-        isLive: false,
-      ),
-    );
-  }
+// import 'package:flutter/material.dart';
+// import 'package:flutter/services.dart';
+// import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: Center(
-        child: YoutubePlayer(
-          controller: _controller,
-          showVideoProgressIndicator: false, // Hide progress indicator
-          progressColors: const ProgressBarColors(
-            playedColor: Colors.transparent,
-            handleColor: Colors.transparent,
-            bufferedColor: Colors.transparent,
-            backgroundColor: Colors.transparent,
-          ),
-          onReady: () {
-            // Enter fullscreen immediately when player is ready
-            _controller.toggleFullScreenMode();
-          },
-        ),
-      ),
-    );
-  }
+// void main() {
+//   runApp(MyApp());
+// }
 
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-}
+// class MyApp extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       title: 'YouTube Player',
+//       theme: ThemeData(
+//         primarySwatch: Colors.red,
+//       ),
+//       home: HomePage(),
+//       debugShowCheckedModeBanner: false,
+//     );
+//   }
+// }
+
+// // Video Model
+// class VideoData {
+//   final String id;
+//   final String title;
+//   final String youtubeUrl;
+//   final String thumbnail;
+//   final String description;
+
+//   VideoData({
+//     required this.id,
+//     required this.title,
+//     required this.youtubeUrl,
+//     this.thumbnail = '',
+//     this.description = '',
+//   });
+// }
+
+// // Home Page - Yahan se URLs pass hongi
+// class HomePage extends StatelessWidget {
+//   // Sample video data - Yeh aapke actual page se aayegi
+//   final List<VideoData> sampleVideos = [
+//     VideoData(
+//       id: '1',
+//       title: 'Flutter Tutorial',
+//       youtubeUrl: 'https://www.youtube.com/watch?v=1gDhl4leEzA',
+//       description: 'Complete Flutter tutorial for beginners',
+//     ),
+//     VideoData(
+//       id: '2',
+//       title: 'Dart Programming',
+//       youtubeUrl: 'https://www.youtube.com/watch?v=5xlVP04905w',
+//       description: 'Learn Dart programming language',
+//     ),
+//     VideoData(
+//       id: '3',
+//       title: 'Mobile App Development',
+//       youtubeUrl: 'https://www.youtube.com/watch?v=C5lpPjoivaw',
+//       description: 'Mobile app development basics',
+//     ),
+//   ];
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: const Text(
+//           'Video List',
+//           style: TextStyle(color: Colors.white),
+//         ),
+//         backgroundColor: Colors.red,
+//       ),
+//       body: ListView.builder(
+//         padding: const EdgeInsets.all(16),
+//         itemCount: sampleVideos.length,
+//         itemBuilder: (context, index) {
+//           final video = sampleVideos[index];
+//           return Card(
+//             margin: const EdgeInsets.only(bottom: 16),
+//             child: ListTile(
+//               contentPadding: const EdgeInsets.all(16),
+//               leading: CircleAvatar(
+//                 radius: 30,
+//                 backgroundColor: Colors.red,
+//                 child: Text(
+//                   video.id,
+//                   style: const TextStyle(
+//                     color: Colors.white,
+//                     fontWeight: FontWeight.bold,
+//                   ),
+//                 ),
+//               ),
+//               title: Text(
+//                 video.title,
+//                 style: const TextStyle(
+//                   fontWeight: FontWeight.bold,
+//                   fontSize: 16,
+//                 ),
+//               ),
+//               subtitle: Text(
+//                 video.description,
+//                 maxLines: 2,
+//                 overflow: TextOverflow.ellipsis,
+//               ),
+//               trailing: const Icon(
+//                 Icons.play_circle_outline,
+//                 color: Colors.red,
+//                 size: 32,
+//               ),
+//               onTap: () {
+//                 // Video player page par navigate karo aur URL pass karo
+//                 Navigator.push(
+//                   context,
+//                   MaterialPageRoute(
+//                     builder: (context) => YouTubePlayerScreen(
+//                       videoData: video,
+//                       playlist: sampleVideos,
+//                     ),
+//                   ),
+//                 );
+//               },
+//             ),
+//           );
+//         },
+//       ),
+//       floatingActionButton: FloatingActionButton(
+//         onPressed: () {
+//           // Custom URL input dialog
+//           _showUrlInputDialog(context);
+//         },
+//         backgroundColor: Colors.red,
+//         child: const Icon(Icons.add, color: Colors.white),
+//       ),
+//     );
+//   }
+
+//   void _showUrlInputDialog(BuildContext context) {
+//     final TextEditingController urlController = TextEditingController();
+//     final TextEditingController titleController = TextEditingController();
+
+//     showDialog(
+//       context: context,
+//       builder: (context) => AlertDialog(
+//         title: const Text('Add YouTube Video'),
+//         content: Column(
+//           mainAxisSize: MainAxisSize.min,
+//           children: [
+//             TextField(
+//               controller: titleController,
+//               decoration: const InputDecoration(
+//                 labelText: 'Video Title',
+//                 border: OutlineInputBorder(),
+//               ),
+//             ),
+//             const SizedBox(height: 16),
+//             TextField(
+//               controller: urlController,
+//               decoration: const InputDecoration(
+//                 labelText: 'YouTube URL',
+//                 border: OutlineInputBorder(),
+//                 hintText: 'https://www.youtube.com/watch?v=...',
+//               ),
+//             ),
+//           ],
+//         ),
+//         actions: [
+//           TextButton(
+//             onPressed: () => Navigator.pop(context),
+//             child: const Text('Cancel'),
+//           ),
+//           ElevatedButton(
+//             onPressed: () {
+//               if (urlController.text.isNotEmpty && titleController.text.isNotEmpty) {
+//                 final customVideo = VideoData(
+//                   id: DateTime.now().millisecondsSinceEpoch.toString(),
+//                   title: titleController.text,
+//                   youtubeUrl: urlController.text,
+//                   description: 'Custom video',
+//                 );
+                
+//                 Navigator.pop(context);
+//                 Navigator.push(
+//                   context,
+//                   MaterialPageRoute(
+//                     builder: (context) => YouTubePlayerScreen(
+//                       videoData: customVideo,
+//                       playlist: [customVideo],
+//                     ),
+//                   ),
+//                 );
+//               }
+//             },
+//             child: const Text('Play'),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }
+
+
+
+
+

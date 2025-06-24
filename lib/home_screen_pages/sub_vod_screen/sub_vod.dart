@@ -4069,6 +4069,7 @@ import 'package:http/http.dart' as https;
 import 'dart:math' as math;
 import 'package:mobi_tv_entertainment/provider/color_provider.dart';
 import 'package:mobi_tv_entertainment/provider/focus_provider.dart';
+import 'package:mobi_tv_entertainment/video_widget/youtube_player.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../video_widget/socket_service.dart';
@@ -7035,36 +7036,53 @@ class _ContentScreenState extends State<ContentScreen>
       String urlSource =
           _contentToMovieUrlMap.containsKey(contentId) ? 'movie' : 'content';
 
-      if (_isYouTubeUrl(updatedUrl ?? '')) {
-        final playUrl = await _socketService.getUpdatedUrl(updatedUrl ?? '');
-        if (playUrl.isNotEmpty) {
-          updatedUrl = playUrl;
-        } else {
-        }
-      }
+      // if (_isYouTubeUrl(updatedUrl ?? '')) {
+      //   final playUrl = await _socketService.getUpdatedUrl(updatedUrl ?? '');
+      //   if (playUrl.isNotEmpty) {
+      //     updatedUrl = playUrl;
+      //   } else {
+      //   }
+      // }
 
 
       await Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => VideoScreen(
-            channelList: _content,
-            source: 'isContentScreen',
-            name: contentItem.name,
-            videoUrl: updatedUrl ?? '',
-            unUpdatedUrl: originalUrl ?? contentItem.url,
-            bannerImageUrl: contentItem.banner,
-            startAtPosition: Duration.zero,
-            videoType: '',
-            isLive: false,
-            isVOD: true,
-            isLastPlayedStored: false,
-            isSearch: false,
-            isBannerSlider: false,
-            videoId: contentId,
-            seasonId: 0,
-            liveStatus: false,
-          ),
+          // builder: (context) => VideoScreen(
+          //   channelList: _content,
+          //   source: 'isContentScreen',
+          //   name: contentItem.name,
+          //   videoUrl: updatedUrl ?? '',
+          //   unUpdatedUrl: originalUrl ?? contentItem.url,
+          //   bannerImageUrl: contentItem.banner,
+          //   startAtPosition: Duration.zero,
+          //   videoType: '',
+          //   isLive: false,
+          //   isVOD: true,
+          //   isLastPlayedStored: false,
+          //   isSearch: false,
+          //   isBannerSlider: false,
+          //   videoId: contentId,
+          //   seasonId: 0,
+          //   liveStatus: false,
+          // ),
+
+                builder: (context) => YouTubePlayerScreen(
+                 videoData: VideoData(
+                   id: contentItem.id,
+                   title: contentItem.name,
+                   youtubeUrl: originalUrl??'',
+                   thumbnail: contentItem.banner,
+                  //  description:'',
+                 ),
+                 playlist: _content.map((m) => VideoData(
+                   id: m.id,
+                   title: m.name,
+                   youtubeUrl: m.url,
+                   thumbnail: m.banner,
+                  //  description: m.description,
+                 )).toList(),
+              ),
         ),
       );
     } catch (e) {
@@ -8007,721 +8025,724 @@ class _ProfessionalContentCardState extends State<ProfessionalContentCard>
   }
 }
 
-// ================================
-// 8. PROFESSIONAL DETAILS PAGE
-// ================================
-
-class DetailsPage extends StatefulWidget {
-  final int id;
-  final List<NewsItemModel> channelList;
-  final String source;
-  final String banner;
-  final String name;
-
-  DetailsPage({
-    required this.id,
-    required this.channelList,
-    required this.source,
-    required this.banner,
-    required this.name,
-  });
-
-  @override
-  _DetailsPageState createState() => _DetailsPageState();
-}
-
-class _DetailsPageState extends State<DetailsPage>
-    with TickerProviderStateMixin {
-  final SocketService _socketService = SocketService();
-  MovieDetailsApi? _movieDetails;
-  bool _isLoading = false;
-  bool _isVideoPlaying = false;
-  Timer? _timer;
-  bool _isReturningFromVideo = false;
-  FocusNode firstItemFocusNode = FocusNode();
-  Color headingColor = ProfessionalVODColors.accentBlue;
-
-  // Animation Controllers
-  late AnimationController _backgroundAnimationController;
-  late AnimationController _contentAnimationController;
-  late Animation<double> _backgroundFadeAnimation;
-  late Animation<Offset> _contentSlideAnimation;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _initializeAnimations();
-    _socketService.initSocket();
-    checkServerStatus();
-
-    Future.delayed(Duration(milliseconds: 100), () async {
-      await _loadCachedAndFetchMovieDetails(widget.id);
-      if (_movieDetails != null) {
-        _fetchAndSetHeadingColor(_movieDetails!.banner);
-      }
-      firstItemFocusNode.requestFocus();
-    });
-  }
-
-  void _initializeAnimations() {
-    _backgroundAnimationController = AnimationController(
-      duration: VODAnimationTiming.slow,
-      vsync: this,
-    );
-
-    _contentAnimationController = AnimationController(
-      duration: VODAnimationTiming.slow,
-      vsync: this,
-    );
-
-    _backgroundFadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _backgroundAnimationController,
-      curve: Curves.easeInOut,
-    ));
-
-    _contentSlideAnimation = Tween<Offset>(
-      begin: Offset(0, 1),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _contentAnimationController,
-      curve: Curves.easeOutCubic,
-    ));
-  }
-
-  @override
-  void dispose() {
-    _backgroundAnimationController.dispose();
-    _contentAnimationController.dispose();
-    _socketService.dispose();
-    _timer?.cancel();
-    firstItemFocusNode.dispose();
-    super.dispose();
-  }
-
-  Future<void> _fetchAndSetHeadingColor(String bannerUrl) async {
-    try {
-      Color paletteColor = await fetchPaletteColor(bannerUrl);
-      setState(() {
-        headingColor = paletteColor;
-      });
-    } catch (e) {
-      setState(() {
-        headingColor = ProfessionalVODColors.accentBlue;
-      });
-    }
-  }
-
-  Future<void> _loadCachedAndFetchMovieDetails(int contentId) async {
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      final movieDetails = await fetchMovieDetails(context, contentId);
-
-      if (!mounted) return;
-
-      setState(() {
-        _movieDetails = movieDetails;
-        _isLoading = false;
-      });
-
-      // Start animations
-      _backgroundAnimationController.forward();
-      _contentAnimationController.forward();
-
-      if (movieDetails.banner.isNotEmpty) {
-        _fetchAndSetHeadingColor(movieDetails.banner);
-      }
-    } catch (e) {
-      AuthErrorHandler.handleAuthError(context, e);
-
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-          _movieDetails = null;
-        });
-      }
-    }
-  }
-
-  void checkServerStatus() {
-    Timer.periodic(Duration(seconds: 10), (timer) {
-      if (!_socketService.socket!.connected) {
-        _socketService.initSocket();
-      }
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: ProfessionalVODColors.primaryDark,
-      body: _isLoading
-          ? _buildProfessionalLoadingIndicator()
-          : _isReturningFromVideo
-              ? _buildReturningIndicator()
-              : _movieDetails != null
-                  ? _buildMovieDetailsUI(context, _movieDetails!)
-                  : _buildErrorIndicator(),
-    );
-  }
-
-  Widget _buildProfessionalLoadingIndicator() {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            ProfessionalVODColors.primaryDark,
-            ProfessionalVODColors.surfaceDark,
-          ],
-        ),
-      ),
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: 80,
-              height: 80,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: SweepGradient(
-                  colors: [
-                    ProfessionalVODColors.accentBlue,
-                    ProfessionalVODColors.accentPurple,
-                    ProfessionalVODColors.accentGreen,
-                    ProfessionalVODColors.accentBlue,
-                  ],
-                ),
-              ),
-              child: Container(
-                margin: EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: ProfessionalVODColors.primaryDark,
-                ),
-                child: Icon(
-                  Icons.movie_rounded,
-                  color: Colors.white,
-                  size: 32,
-                ),
-              ),
-            ),
-            SizedBox(height: 24),
-            Text(
-              'Loading Movie Details...',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildReturningIndicator() {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            ProfessionalVODColors.primaryDark,
-            ProfessionalVODColors.surfaceDark,
-          ],
-        ),
-      ),
-      child: Center(
-        child: Text(
-          '',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildErrorIndicator() {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            ProfessionalVODColors.primaryDark,
-            ProfessionalVODColors.surfaceDark,
-          ],
-        ),
-      ),
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: 80,
-              height: 80,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: LinearGradient(
-                  colors: [
-                    ProfessionalVODColors.accentRed.withOpacity(0.2),
-                    ProfessionalVODColors.accentRed.withOpacity(0.1),
-                  ],
-                ),
-              ),
-              child: Icon(
-                Icons.error_outline,
-                size: 40,
-                color: ProfessionalVODColors.accentRed,
-              ),
-            ),
-            SizedBox(height: 24),
-            Text(
-              'Failed to Load Details',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildMovieDetailsUI(
-      BuildContext context, MovieDetailsApi movieDetails) {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            ProfessionalVODColors.primaryDark,
-            ProfessionalVODColors.surfaceDark.withOpacity(0.8),
-            ProfessionalVODColors.primaryDark,
-          ],
-        ),
-      ),
-      child: Stack(
-        children: [
-          // Background Image with Fade Animation
-          if (movieDetails.isActive)
-            FadeTransition(
-              opacity: _backgroundFadeAnimation,
-              child: Container(
-                width: double.infinity,
-                height: double.infinity,
-                child: displayImage(
-                  movieDetails.banner ?? localImage,
-                  width: screenwdt,
-                  height: screenhgt,
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-
-          // Gradient Overlay
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Colors.transparent,
-                  Colors.black.withOpacity(0.3),
-                  Colors.black.withOpacity(0.7),
-                  Colors.black.withOpacity(0.9),
-                ],
-              ),
-            ),
-          ),
-
-          // Content with Slide Animation
-          SlideTransition(
-            position: _contentSlideAnimation,
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: screenwdt * 0.03),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  SizedBox(height: screenhgt * 0.05),
-
-                  // Enhanced Title Section
-                  Container(
-                    padding: EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          headingColor.withOpacity(0.1),
-                          Colors.transparent,
-                        ],
-                      ),
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                        color: headingColor.withOpacity(0.3),
-                        width: 1,
-                      ),
-                    ),
-                    child: Column(
-                      children: [
-                        ShaderMask(
-                          shaderCallback: (bounds) => LinearGradient(
-                            colors: [
-                              headingColor,
-                              headingColor.withOpacity(0.8),
-                            ],
-                          ).createShader(bounds),
-                          child: Text(
-                            movieDetails.name,
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: Headingtextsz * 1.5,
-                              fontWeight: FontWeight.w800,
-                              letterSpacing: 1.0,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                        SizedBox(height: 10),
-                        Container(
-                          padding:
-                              EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                headingColor.withOpacity(0.3),
-                                headingColor.withOpacity(0.1),
-                              ],
-                            ),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Text(
-                            movieDetails.genres,
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                              letterSpacing: 0.5,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  Spacer(),
-
-                  // Status Info
-                  if (!movieDetails.isActive)
-                    Container(
-                      padding: EdgeInsets.all(15),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            ProfessionalVODColors.accentRed.withOpacity(0.8),
-                            ProfessionalVODColors.accentRed.withOpacity(0.6),
-                          ],
-                        ),
-                        borderRadius: BorderRadius.circular(15),
-                        border: Border.all(
-                          color: ProfessionalVODColors.accentRed,
-                          width: 1,
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.block_rounded,
-                            color: Colors.white,
-                            size: 20,
-                          ),
-                          SizedBox(width: 10),
-                          Text(
-                            'Content Not Available (Status: ${movieDetails.status})',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                  // Play Button Section
-                  Expanded(
-                    child: Center(
-                      child: Container(
-                        width: screenwdt * 0.2,
-                        child: ProfessionalContentCard(
-                          contentItem: NewsItemModel(
-                            id: widget.id.toString(),
-                            name: movieDetails.name,
-                            poster: movieDetails.poster ?? '',
-                            banner: movieDetails.banner ?? '',
-                            description: '',
-                            category: '',
-                            index: '',
-                            url: '',
-                            videoId: '',
-                            streamType: '',
-                            type: '',
-                            genres: movieDetails.genres,
-                            status: '',
-                            image: '',
-                            unUpdatedUrl: '',
-                          ),
-                          focusNode: firstItemFocusNode,
-                          onTap: () => movieDetails.isActive
-                              ? _playVideo(movieDetails)
-                              : _showInactiveContentMessage(),
-                          hasMovieUrl: true,
-                          index: 0,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  bool isYoutubeUrl(String? url) {
-    if (url == null || url.isEmpty) {
-      return false;
-    }
-
-    url = url.toLowerCase().trim();
-
-    bool isYoutubeId = RegExp(r'^[a-zA-Z0-9_-]{11}$').hasMatch(url);
-    if (isYoutubeId) {
-      return true;
-    }
-
-    bool isYoutubeUrl = url.contains('youtube.com') ||
-        url.contains('youtu.be') ||
-        url.contains('youtube.com/shorts/');
-    if (isYoutubeUrl) {
-      return true;
-    }
-
-    return false;
-  }
-
-  void _showInactiveContentMessage() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Row(
-          children: [
-            Icon(Icons.block_rounded, color: Colors.white),
-            SizedBox(width: 10),
-            Text('This content is currently not available'),
-          ],
-        ),
-        backgroundColor: ProfessionalVODColors.accentRed,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-      ),
-    );
-  }
-
-  Future<void> _playVideo(MovieDetailsApi movieDetails) async {
-
-    if (_isVideoPlaying) {
-      return;
-    }
-
-    setState(() {
-      _isLoading = true;
-      _isVideoPlaying = true;
-    });
-
-
-    try {
-      Map<String, dynamic> playLinkData = await fetchMoviePlayLink(widget.id);
-      String originalUrl = playLinkData['source_url'] ?? '';
-
-      String updatedUrl = playLinkData['source_url'] ?? '';
-
-      if (originalUrl.isEmpty) {
-        throw Exception('Original URL is empty');
-      }
-
-
-      if (isYoutubeUrl(updatedUrl)) {
-        updatedUrl = await _socketService.getUpdatedUrl(updatedUrl);
-      }
-
-      if (updatedUrl.isEmpty) {
-        throw Exception('Updated URL is empty');
-      }
-
-      bool isValidUrl = Uri.tryParse(updatedUrl) != null;
-
-      if (updatedUrl.startsWith('http://') ||
-          updatedUrl.startsWith('https://')) {
-      } else {
-      }
-
-
-      if (!mounted) {
-        return;
-      }
-
-
-      bool liveStatus = false;
-
-      await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) {
-            return VideoScreen(
-              videoUrl: updatedUrl,
-              videoId: widget.id,
-              channelList: widget.channelList,
-              videoType: '',
-              bannerImageUrl: widget.banner,
-              startAtPosition: Duration.zero,
-              isLive: false,
-              isVOD: true,
-              isBannerSlider: false,
-              source: widget.source,
-              isSearch: false,
-              unUpdatedUrl: originalUrl,
-              name: widget.name,
-              seasonId: null,
-              isLastPlayedStored: false,
-              liveStatus: liveStatus,
-            );
-          },
-        ),
-      );
-
-      setState(() {
-        _isLoading = false;
-        _isReturningFromVideo = true;
-      });
-
-      setState(() {
-        _isReturningFromVideo = false;
-      });
-    } catch (e, stackTrace) {
-
-      _handleVideoError(context);
-      AuthErrorHandler.handleAuthError(context, e);
-    } finally {
-      setState(() {
-        _isLoading = false;
-        _isVideoPlaying = false;
-      });
-    }
-  }
-
-  void _handleVideoError(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Row(
-          children: [
-            Icon(Icons.error_outline, color: Colors.white),
-            SizedBox(width: 10),
-            Text('Something Went Wrong', style: TextStyle(fontSize: 16)),
-          ],
-        ),
-        backgroundColor: ProfessionalVODColors.accentRed,
-        duration: Duration(seconds: 3),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-      ),
-    );
-  }
-}
-
-// ================================
-// 9. USAGE INSTRUCTIONS
-// ================================
-
-/*
-🎯 COMPLETE IMPLEMENTATION GUIDE:
-
-1. ✅ REPLACE SubVod Widget:
-   - Copy the new SubVod class
-   - Professional header with animations
-   - Enhanced network cards with shimmer effects
-
-2. ✅ REPLACE VOD Widget:
-   - Copy the new VOD class  
-   - Grid layout with professional styling
-   - Animated loading and error states
-
-3. ✅ REPLACE ContentScreen Widget:
-   - Copy the new ContentScreen class
-   - Professional content grid
-   - Enhanced video loading overlay
-   - Movie/Content source indicators
-
-4. ✅ REPLACE DetailsPage Widget:
-   - Copy the new DetailsPage class
-   - Professional movie details UI
-   - Enhanced background animations
-   - Better error handling
-
-5. ✅ ADD Professional Colors & Animations:
-   - Copy ProfessionalVODColors class
-   - Copy VODAnimationTiming class
-
-🎨 KEY FEATURES ADDED:
-
-✅ Professional color scheme matching WebSeries
-✅ Smooth animations (700ms duration)
-✅ Enhanced shadows and glow effects  
-✅ Professional loading indicators
-✅ Shimmer effects on focus
-✅ Enhanced headers with stats
-✅ Better error handling
-✅ Improved focus management
-✅ Source indicators (M for Movie, C for Content)
-✅ Blue/Purple gradient theme for VOD
-
-📱 RESULT:
-Your SubVod, VOD, ContentScreen, and DetailsPage will now have:
-- Same professional design as WebSeries
-- Consistent animations and effects
-- Enhanced user experience
-- Better visual feedback
-- Modern UI elements
-
-🚀 All features from WebSeries are now available for VOD pages:
-- Same animation timing (700ms)
-- Same scale effects (1.04x-1.05x)
-- Same shadow patterns
-- Same shimmer effects
-- Same professional loading
-- Same focus management
-- Enhanced content browsing experience
-
-Copy all the code parts and replace your existing widgets!
-*/
+
+
+
+// // ================================
+// // 8. PROFESSIONAL DETAILS PAGE
+// // ================================
+
+// class DetailsPage extends StatefulWidget {
+//   final int id;
+//   final List<NewsItemModel> channelList;
+//   final String source;
+//   final String banner;
+//   final String name;
+
+//   DetailsPage({
+//     required this.id,
+//     required this.channelList,
+//     required this.source,
+//     required this.banner,
+//     required this.name,
+//   });
+
+//   @override
+//   _DetailsPageState createState() => _DetailsPageState();
+// }
+
+// class _DetailsPageState extends State<DetailsPage>
+//     with TickerProviderStateMixin {
+//   final SocketService _socketService = SocketService();
+//   MovieDetailsApi? _movieDetails;
+//   bool _isLoading = false;
+//   bool _isVideoPlaying = false;
+//   Timer? _timer;
+//   bool _isReturningFromVideo = false;
+//   FocusNode firstItemFocusNode = FocusNode();
+//   Color headingColor = ProfessionalVODColors.accentBlue;
+
+//   // Animation Controllers
+//   late AnimationController _backgroundAnimationController;
+//   late AnimationController _contentAnimationController;
+//   late Animation<double> _backgroundFadeAnimation;
+//   late Animation<Offset> _contentSlideAnimation;
+
+//   @override
+//   void initState() {
+//     super.initState();
+
+//     _initializeAnimations();
+//     _socketService.initSocket();
+//     checkServerStatus();
+
+//     Future.delayed(Duration(milliseconds: 100), () async {
+//       await _loadCachedAndFetchMovieDetails(widget.id);
+//       if (_movieDetails != null) {
+//         _fetchAndSetHeadingColor(_movieDetails!.banner);
+//       }
+//       firstItemFocusNode.requestFocus();
+//     });
+//   }
+
+//   void _initializeAnimations() {
+//     _backgroundAnimationController = AnimationController(
+//       duration: VODAnimationTiming.slow,
+//       vsync: this,
+//     );
+
+//     _contentAnimationController = AnimationController(
+//       duration: VODAnimationTiming.slow,
+//       vsync: this,
+//     );
+
+//     _backgroundFadeAnimation = Tween<double>(
+//       begin: 0.0,
+//       end: 1.0,
+//     ).animate(CurvedAnimation(
+//       parent: _backgroundAnimationController,
+//       curve: Curves.easeInOut,
+//     ));
+
+//     _contentSlideAnimation = Tween<Offset>(
+//       begin: Offset(0, 1),
+//       end: Offset.zero,
+//     ).animate(CurvedAnimation(
+//       parent: _contentAnimationController,
+//       curve: Curves.easeOutCubic,
+//     ));
+//   }
+
+//   @override
+//   void dispose() {
+//     _backgroundAnimationController.dispose();
+//     _contentAnimationController.dispose();
+//     _socketService.dispose();
+//     _timer?.cancel();
+//     firstItemFocusNode.dispose();
+//     super.dispose();
+//   }
+
+//   Future<void> _fetchAndSetHeadingColor(String bannerUrl) async {
+//     try {
+//       Color paletteColor = await fetchPaletteColor(bannerUrl);
+//       setState(() {
+//         headingColor = paletteColor;
+//       });
+//     } catch (e) {
+//       setState(() {
+//         headingColor = ProfessionalVODColors.accentBlue;
+//       });
+//     }
+//   }
+
+//   Future<void> _loadCachedAndFetchMovieDetails(int contentId) async {
+//     setState(() {
+//       _isLoading = true;
+//     });
+
+//     try {
+//       final movieDetails = await fetchMovieDetails(context, contentId);
+
+//       if (!mounted) return;
+
+//       setState(() {
+//         _movieDetails = movieDetails;
+//         _isLoading = false;
+//       });
+
+//       // Start animations
+//       _backgroundAnimationController.forward();
+//       _contentAnimationController.forward();
+
+//       if (movieDetails.banner.isNotEmpty) {
+//         _fetchAndSetHeadingColor(movieDetails.banner);
+//       }
+//     } catch (e) {
+//       AuthErrorHandler.handleAuthError(context, e);
+
+//       if (mounted) {
+//         setState(() {
+//           _isLoading = false;
+//           _movieDetails = null;
+//         });
+//       }
+//     }
+//   }
+
+//   void checkServerStatus() {
+//     Timer.periodic(Duration(seconds: 10), (timer) {
+//       if (!_socketService.socket!.connected) {
+//         _socketService.initSocket();
+//       }
+//     });
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       backgroundColor: ProfessionalVODColors.primaryDark,
+//       body: _isLoading
+//           ? _buildProfessionalLoadingIndicator()
+//           : _isReturningFromVideo
+//               ? _buildReturningIndicator()
+//               : _movieDetails != null
+//                   ? _buildMovieDetailsUI(context, _movieDetails!)
+//                   : _buildErrorIndicator(),
+//     );
+//   }
+
+//   Widget _buildProfessionalLoadingIndicator() {
+//     return Container(
+//       decoration: BoxDecoration(
+//         gradient: LinearGradient(
+//           begin: Alignment.topCenter,
+//           end: Alignment.bottomCenter,
+//           colors: [
+//             ProfessionalVODColors.primaryDark,
+//             ProfessionalVODColors.surfaceDark,
+//           ],
+//         ),
+//       ),
+//       child: Center(
+//         child: Column(
+//           mainAxisAlignment: MainAxisAlignment.center,
+//           children: [
+//             Container(
+//               width: 80,
+//               height: 80,
+//               decoration: BoxDecoration(
+//                 shape: BoxShape.circle,
+//                 gradient: SweepGradient(
+//                   colors: [
+//                     ProfessionalVODColors.accentBlue,
+//                     ProfessionalVODColors.accentPurple,
+//                     ProfessionalVODColors.accentGreen,
+//                     ProfessionalVODColors.accentBlue,
+//                   ],
+//                 ),
+//               ),
+//               child: Container(
+//                 margin: EdgeInsets.all(8),
+//                 decoration: BoxDecoration(
+//                   shape: BoxShape.circle,
+//                   color: ProfessionalVODColors.primaryDark,
+//                 ),
+//                 child: Icon(
+//                   Icons.movie_rounded,
+//                   color: Colors.white,
+//                   size: 32,
+//                 ),
+//               ),
+//             ),
+//             SizedBox(height: 24),
+//             Text(
+//               'Loading Movie Details...',
+//               style: TextStyle(
+//                 color: Colors.white,
+//                 fontSize: 18,
+//                 fontWeight: FontWeight.w600,
+//               ),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildReturningIndicator() {
+//     return Container(
+//       decoration: BoxDecoration(
+//         gradient: LinearGradient(
+//           begin: Alignment.topCenter,
+//           end: Alignment.bottomCenter,
+//           colors: [
+//             ProfessionalVODColors.primaryDark,
+//             ProfessionalVODColors.surfaceDark,
+//           ],
+//         ),
+//       ),
+//       child: Center(
+//         child: Text(
+//           '',
+//           style: TextStyle(
+//             color: Colors.white,
+//             fontSize: 20,
+//             fontWeight: FontWeight.bold,
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildErrorIndicator() {
+//     return Container(
+//       decoration: BoxDecoration(
+//         gradient: LinearGradient(
+//           begin: Alignment.topCenter,
+//           end: Alignment.bottomCenter,
+//           colors: [
+//             ProfessionalVODColors.primaryDark,
+//             ProfessionalVODColors.surfaceDark,
+//           ],
+//         ),
+//       ),
+//       child: Center(
+//         child: Column(
+//           mainAxisAlignment: MainAxisAlignment.center,
+//           children: [
+//             Container(
+//               width: 80,
+//               height: 80,
+//               decoration: BoxDecoration(
+//                 shape: BoxShape.circle,
+//                 gradient: LinearGradient(
+//                   colors: [
+//                     ProfessionalVODColors.accentRed.withOpacity(0.2),
+//                     ProfessionalVODColors.accentRed.withOpacity(0.1),
+//                   ],
+//                 ),
+//               ),
+//               child: Icon(
+//                 Icons.error_outline,
+//                 size: 40,
+//                 color: ProfessionalVODColors.accentRed,
+//               ),
+//             ),
+//             SizedBox(height: 24),
+//             Text(
+//               'Failed to Load Details',
+//               style: TextStyle(
+//                 color: Colors.white,
+//                 fontSize: 18,
+//                 fontWeight: FontWeight.w600,
+//               ),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildMovieDetailsUI(
+//       BuildContext context, MovieDetailsApi movieDetails) {
+//     return Container(
+//       decoration: BoxDecoration(
+//         gradient: LinearGradient(
+//           begin: Alignment.topCenter,
+//           end: Alignment.bottomCenter,
+//           colors: [
+//             ProfessionalVODColors.primaryDark,
+//             ProfessionalVODColors.surfaceDark.withOpacity(0.8),
+//             ProfessionalVODColors.primaryDark,
+//           ],
+//         ),
+//       ),
+//       child: Stack(
+//         children: [
+//           // Background Image with Fade Animation
+//           if (movieDetails.isActive)
+//             FadeTransition(
+//               opacity: _backgroundFadeAnimation,
+//               child: Container(
+//                 width: double.infinity,
+//                 height: double.infinity,
+//                 child: displayImage(
+//                   movieDetails.banner ?? localImage,
+//                   width: screenwdt,
+//                   height: screenhgt,
+//                   fit: BoxFit.cover,
+//                 ),
+//               ),
+//             ),
+
+//           // Gradient Overlay
+//           Container(
+//             decoration: BoxDecoration(
+//               gradient: LinearGradient(
+//                 begin: Alignment.topCenter,
+//                 end: Alignment.bottomCenter,
+//                 colors: [
+//                   Colors.transparent,
+//                   Colors.black.withOpacity(0.3),
+//                   Colors.black.withOpacity(0.7),
+//                   Colors.black.withOpacity(0.9),
+//                 ],
+//               ),
+//             ),
+//           ),
+
+//           // Content with Slide Animation
+//           SlideTransition(
+//             position: _contentSlideAnimation,
+//             child: Padding(
+//               padding: EdgeInsets.symmetric(horizontal: screenwdt * 0.03),
+//               child: Column(
+//                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                 children: [
+//                   SizedBox(height: screenhgt * 0.05),
+
+//                   // Enhanced Title Section
+//                   Container(
+//                     padding: EdgeInsets.all(20),
+//                     decoration: BoxDecoration(
+//                       gradient: LinearGradient(
+//                         colors: [
+//                           headingColor.withOpacity(0.1),
+//                           Colors.transparent,
+//                         ],
+//                       ),
+//                       borderRadius: BorderRadius.circular(20),
+//                       border: Border.all(
+//                         color: headingColor.withOpacity(0.3),
+//                         width: 1,
+//                       ),
+//                     ),
+//                     child: Column(
+//                       children: [
+//                         ShaderMask(
+//                           shaderCallback: (bounds) => LinearGradient(
+//                             colors: [
+//                               headingColor,
+//                               headingColor.withOpacity(0.8),
+//                             ],
+//                           ).createShader(bounds),
+//                           child: Text(
+//                             movieDetails.name,
+//                             style: TextStyle(
+//                               color: Colors.white,
+//                               fontSize: Headingtextsz * 1.5,
+//                               fontWeight: FontWeight.w800,
+//                               letterSpacing: 1.0,
+//                             ),
+//                             textAlign: TextAlign.center,
+//                           ),
+//                         ),
+//                         SizedBox(height: 10),
+//                         Container(
+//                           padding:
+//                               EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+//                           decoration: BoxDecoration(
+//                             gradient: LinearGradient(
+//                               colors: [
+//                                 headingColor.withOpacity(0.3),
+//                                 headingColor.withOpacity(0.1),
+//                               ],
+//                             ),
+//                             borderRadius: BorderRadius.circular(20),
+//                           ),
+//                           child: Text(
+//                             movieDetails.genres,
+//                             style: TextStyle(
+//                               color: Colors.white,
+//                               fontSize: 14,
+//                               fontWeight: FontWeight.w500,
+//                               letterSpacing: 0.5,
+//                             ),
+//                           ),
+//                         ),
+//                       ],
+//                     ),
+//                   ),
+
+//                   Spacer(),
+
+//                   // Status Info
+//                   if (!movieDetails.isActive)
+//                     Container(
+//                       padding: EdgeInsets.all(15),
+//                       decoration: BoxDecoration(
+//                         gradient: LinearGradient(
+//                           colors: [
+//                             ProfessionalVODColors.accentRed.withOpacity(0.8),
+//                             ProfessionalVODColors.accentRed.withOpacity(0.6),
+//                           ],
+//                         ),
+//                         borderRadius: BorderRadius.circular(15),
+//                         border: Border.all(
+//                           color: ProfessionalVODColors.accentRed,
+//                           width: 1,
+//                         ),
+//                       ),
+//                       child: Row(
+//                         mainAxisAlignment: MainAxisAlignment.center,
+//                         children: [
+//                           Icon(
+//                             Icons.block_rounded,
+//                             color: Colors.white,
+//                             size: 20,
+//                           ),
+//                           SizedBox(width: 10),
+//                           Text(
+//                             'Content Not Available (Status: ${movieDetails.status})',
+//                             style: TextStyle(
+//                               color: Colors.white,
+//                               fontSize: 16,
+//                               fontWeight: FontWeight.w600,
+//                             ),
+//                           ),
+//                         ],
+//                       ),
+//                     ),
+
+//                   // Play Button Section
+//                   Expanded(
+//                     child: Center(
+//                       child: Container(
+//                         width: screenwdt * 0.2,
+//                         child: ProfessionalContentCard(
+//                           contentItem: NewsItemModel(
+//                             id: widget.id.toString(),
+//                             name: movieDetails.name,
+//                             poster: movieDetails.poster ?? '',
+//                             banner: movieDetails.banner ?? '',
+//                             description: '',
+//                             category: '',
+//                             index: '',
+//                             url: '',
+//                             videoId: '',
+//                             streamType: '',
+//                             type: '',
+//                             genres: movieDetails.genres,
+//                             status: '',
+//                             image: '',
+//                             unUpdatedUrl: '',
+//                           ),
+//                           focusNode: firstItemFocusNode,
+//                           onTap: () => movieDetails.isActive
+//                               ? _playVideo(movieDetails)
+//                               : _showInactiveContentMessage(),
+//                           hasMovieUrl: true,
+//                           index: 0,
+//                         ),
+//                       ),
+//                     ),
+//                   ),
+//                 ],
+//               ),
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+
+//   bool isYoutubeUrl(String? url) {
+//     if (url == null || url.isEmpty) {
+//       return false;
+//     }
+
+//     url = url.toLowerCase().trim();
+
+//     bool isYoutubeId = RegExp(r'^[a-zA-Z0-9_-]{11}$').hasMatch(url);
+//     if (isYoutubeId) {
+//       return true;
+//     }
+
+//     bool isYoutubeUrl = url.contains('youtube.com') ||
+//         url.contains('youtu.be') ||
+//         url.contains('youtube.com/shorts/');
+//     if (isYoutubeUrl) {
+//       return true;
+//     }
+
+//     return false;
+//   }
+
+//   void _showInactiveContentMessage() {
+//     ScaffoldMessenger.of(context).showSnackBar(
+//       SnackBar(
+//         content: Row(
+//           children: [
+//             Icon(Icons.block_rounded, color: Colors.white),
+//             SizedBox(width: 10),
+//             Text('This content is currently not available'),
+//           ],
+//         ),
+//         backgroundColor: ProfessionalVODColors.accentRed,
+//         behavior: SnackBarBehavior.floating,
+//         shape: RoundedRectangleBorder(
+//           borderRadius: BorderRadius.circular(10),
+//         ),
+//       ),
+//     );
+//   }
+
+//   Future<void> _playVideo(MovieDetailsApi movieDetails) async {
+
+//     if (_isVideoPlaying) {
+//       return;
+//     }
+
+//     setState(() {
+//       _isLoading = true;
+//       _isVideoPlaying = true;
+//     });
+
+
+//     try {
+//       Map<String, dynamic> playLinkData = await fetchMoviePlayLink(widget.id);
+//       String originalUrl = playLinkData['source_url'] ?? '';
+
+//       String updatedUrl = playLinkData['source_url'] ?? '';
+
+//       if (originalUrl.isEmpty) {
+//         throw Exception('Original URL is empty');
+//       }
+
+
+//       if (isYoutubeUrl(updatedUrl)) {
+//         updatedUrl = await _socketService.getUpdatedUrl(updatedUrl);
+//       }
+
+//       if (updatedUrl.isEmpty) {
+//         throw Exception('Updated URL is empty');
+//       }
+
+//       bool isValidUrl = Uri.tryParse(updatedUrl) != null;
+
+//       if (updatedUrl.startsWith('http://') ||
+//           updatedUrl.startsWith('https://')) {
+//       } else {
+//       }
+
+
+//       if (!mounted) {
+//         return;
+//       }
+
+
+//       bool liveStatus = false;
+
+//       await Navigator.push(
+//         context,
+//         MaterialPageRoute(
+//           builder: (context) {
+//             return VideoScreen(
+//               videoUrl: updatedUrl,
+//               videoId: widget.id,
+//               channelList: widget.channelList,
+//               videoType: '',
+//               bannerImageUrl: widget.banner,
+//               startAtPosition: Duration.zero,
+//               isLive: false,
+//               isVOD: true,
+//               isBannerSlider: false,
+//               source: widget.source,
+//               isSearch: false,
+//               unUpdatedUrl: originalUrl,
+//               name: widget.name,
+//               seasonId: null,
+//               isLastPlayedStored: false,
+//               liveStatus: liveStatus,
+//             );
+//           },
+//         ),
+//       );
+
+//       setState(() {
+//         _isLoading = false;
+//         _isReturningFromVideo = true;
+//       });
+
+//       setState(() {
+//         _isReturningFromVideo = false;
+//       });
+//     } catch (e, stackTrace) {
+
+//       _handleVideoError(context);
+//       AuthErrorHandler.handleAuthError(context, e);
+//     } finally {
+//       setState(() {
+//         _isLoading = false;
+//         _isVideoPlaying = false;
+//       });
+//     }
+//   }
+
+//   void _handleVideoError(BuildContext context) {
+//     ScaffoldMessenger.of(context).showSnackBar(
+//       SnackBar(
+//         content: Row(
+//           children: [
+//             Icon(Icons.error_outline, color: Colors.white),
+//             SizedBox(width: 10),
+//             Text('Something Went Wrong', style: TextStyle(fontSize: 16)),
+//           ],
+//         ),
+//         backgroundColor: ProfessionalVODColors.accentRed,
+//         duration: Duration(seconds: 3),
+//         behavior: SnackBarBehavior.floating,
+//         shape: RoundedRectangleBorder(
+//           borderRadius: BorderRadius.circular(10),
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+// // ================================
+// // 9. USAGE INSTRUCTIONS
+// // ================================
+
+// /*
+// 🎯 COMPLETE IMPLEMENTATION GUIDE:
+
+// 1. ✅ REPLACE SubVod Widget:
+//    - Copy the new SubVod class
+//    - Professional header with animations
+//    - Enhanced network cards with shimmer effects
+
+// 2. ✅ REPLACE VOD Widget:
+//    - Copy the new VOD class  
+//    - Grid layout with professional styling
+//    - Animated loading and error states
+
+// 3. ✅ REPLACE ContentScreen Widget:
+//    - Copy the new ContentScreen class
+//    - Professional content grid
+//    - Enhanced video loading overlay
+//    - Movie/Content source indicators
+
+// 4. ✅ REPLACE DetailsPage Widget:
+//    - Copy the new DetailsPage class
+//    - Professional movie details UI
+//    - Enhanced background animations
+//    - Better error handling
+
+// 5. ✅ ADD Professional Colors & Animations:
+//    - Copy ProfessionalVODColors class
+//    - Copy VODAnimationTiming class
+
+// 🎨 KEY FEATURES ADDED:
+
+// ✅ Professional color scheme matching WebSeries
+// ✅ Smooth animations (700ms duration)
+// ✅ Enhanced shadows and glow effects  
+// ✅ Professional loading indicators
+// ✅ Shimmer effects on focus
+// ✅ Enhanced headers with stats
+// ✅ Better error handling
+// ✅ Improved focus management
+// ✅ Source indicators (M for Movie, C for Content)
+// ✅ Blue/Purple gradient theme for VOD
+
+// 📱 RESULT:
+// Your SubVod, VOD, ContentScreen, and DetailsPage will now have:
+// - Same professional design as WebSeries
+// - Consistent animations and effects
+// - Enhanced user experience
+// - Better visual feedback
+// - Modern UI elements
+
+// 🚀 All features from WebSeries are now available for VOD pages:
+// - Same animation timing (700ms)
+// - Same scale effects (1.04x-1.05x)
+// - Same shadow patterns
+// - Same shimmer effects
+// - Same professional loading
+// - Same focus management
+// - Enhanced content browsing experience
+
+// Copy all the code parts and replace your existing widgets!
+// */

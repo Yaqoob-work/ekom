@@ -330,18 +330,18 @@ class _SearchScreenState extends State<SearchScreen> {
     final int? parsedContentType = int.tryParse(channel.contentType);
     if (parsedContentType == 1) {
       try {
-        await Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => DetailsPage(
-              channelList: searchResults,
-              id: int.tryParse(channel.id) ?? 0,
-              source: 'isSearchScreenViaDetailsPageChannelList',
-              banner: channel.banner,
-              name: channel.name,
-            ),
-          ),
-        );
+        // await Navigator.push(
+        //   context,
+        //   MaterialPageRoute(
+        //     builder: (context) => DetailsPage(
+        //       channelList: searchResults,
+        //       id: int.tryParse(channel.id) ?? 0,
+        //       source: 'isSearchScreenViaDetailsPageChannelList',
+        //       banner: channel.banner,
+        //       name: channel.name,
+        //     ),
+        //   ),
+        // );
       } catch (e) {}
     }
 

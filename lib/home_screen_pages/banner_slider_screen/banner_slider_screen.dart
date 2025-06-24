@@ -14,6 +14,7 @@ import 'package:mobi_tv_entertainment/provider/focus_provider.dart';
 import 'package:mobi_tv_entertainment/provider/shared_data_provider.dart';
 import 'package:mobi_tv_entertainment/video_widget/socket_service.dart';
 import 'package:mobi_tv_entertainment/video_widget/video_screen.dart';
+import 'package:mobi_tv_entertainment/video_widget/youtube_player.dart';
 import 'package:mobi_tv_entertainment/widgets/models/news_item_model.dart';
 import 'package:mobi_tv_entertainment/widgets/small_widgets/loading_indicator.dart';
 import 'package:mobi_tv_entertainment/widgets/utils/color_service.dart';
@@ -732,43 +733,44 @@ class _BannerSliderState extends State<BannerSlider> {
       // Fetch video data with enhanced error handling
       final responseData = await fetchVideoDataByIdFromBanners(contentId);
 
-      if (responseData['url'] == null || responseData['url']?.isEmpty == true) {
-        throw Exception('Invalid video URL received');
-      }
+      // if (responseData['url'] == null || responseData['url']?.isEmpty == true) {
+      //   throw Exception('Invalid video URL received');
+      // }
 
-      String originalUrl = responseData['url']!;
-      String videoUrl = responseData['url']!;
-      String videoType = responseData['type'] ?? '';
-      String streamType = responseData['stream_type'] ?? '';
+      // String originalUrl = responseData['url']!;
+      // String videoUrl = responseData['url']!;
+      // String videoType = responseData['type'] ?? '';
+      // String streamType = responseData['stream_type'] ?? '';
 
       // Handle YouTube videos with retries
-      bool isYoutube = videoType.toLowerCase() == 'youtube' ||
-          streamType.toLowerCase() == 'youtubelive' ||
-          isYoutubeUrl(originalUrl);
+      // bool isYoutube = videoType.toLowerCase() == 'youtube' ||
+      //     streamType.toLowerCase() == 'youtubelive' ||
+      //     isYoutubeUrl(originalUrl);
 
-      if (isYoutube) {
-        for (int i = 0; i < _maxRetries; i++) {
-          try {
-            videoUrl = await _socketService.getUpdatedUrl(videoUrl);
+      // if (isYoutube) {
+      //   for (int i = 0; i < _maxRetries; i++) {
+      //     try {
+      //       videoUrl = await _socketService.getUpdatedUrl(videoUrl);
 
-            if (videoUrl.isEmpty) {
-              throw Exception('Empty URL returned from socket service');
-            }
+      //       if (videoUrl.isEmpty) {
+      //         throw Exception('Empty URL returned from socket service');
+      //       }
 
-            break;
-          } catch (e) {
-            if (i == _maxRetries - 1) {
-              throw Exception(
-                  'Failed to get updated YouTube URL after $_maxRetries attempts');
-            }
+      //       break;
+      //     } catch (e) {
+      //       if (i == _maxRetries - 1) {
+      //         throw Exception(
+      //             'Failed to get updated YouTube URL after $_maxRetries attempts');
+      //       }
 
-            await Future.delayed(Duration(seconds: _retryDelay));
-          }
-        }
-      }
+      //       await Future.delayed(Duration(seconds: _retryDelay));
+      //     }
+      // }
+      // }
 
       // Determine live status
-      bool liveStatus = isYoutube || streamType.toLowerCase() == 'youtubelive';
+      // bool liveStatus = isYoutube || streamType.toLowerCase() == 'youtubelive';
+  
 
       // Close loading dialog
       if (shouldPop && context.mounted) {
@@ -778,28 +780,47 @@ class _BannerSliderState extends State<BannerSlider> {
       // Navigate to video screen
       if (shouldPlayVideo && context.mounted) {
         Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => VideoScreen(
-              videoUrl: videoUrl,
-              channelList: channelList,
-              videoId: int.tryParse(contentId) ?? 0,
-              videoType: videoType,
-              isLive: liveStatus,
-              isVOD: false,
-              bannerImageUrl: responseData['banner'] ?? '',
-              startAtPosition: Duration.zero,
-              isBannerSlider: true,
-              source: 'isBannerSlider',
-              isSearch: false,
-              unUpdatedUrl: originalUrl,
-              name: responseData['name'] ?? 'Unknown',
-              liveStatus: liveStatus,
-              seasonId: null,
-              isLastPlayedStored: false,
-            ),
-          ),
-        );
+            context,
+            MaterialPageRoute(
+              //   builder: (context) => VideoScreen(
+              //     videoUrl: videoUrl,
+              //     channelList: channelList,
+              //     videoId: int.tryParse(contentId) ?? 0,
+              //     videoType: videoType,
+              //     isLive: liveStatus,
+              //     isVOD: false,
+              //     bannerImageUrl: responseData['banner'] ?? '',
+              //     startAtPosition: Duration.zero,
+              //     isBannerSlider: true,
+              //     source: 'isBannerSlider',
+              //     isSearch: false,
+              //     unUpdatedUrl: originalUrl,
+              //     name: responseData['name'] ?? 'Unknown',
+              //     liveStatus: liveStatus,
+              //     seasonId: null,
+              //     isLastPlayedStored: false,
+              //   ),
+              // ),
+
+              builder: (context) => YouTubePlayerScreen(
+                videoData: VideoData(
+                  id: contentId,
+                  title: responseData['name'] ?? '',
+                  youtubeUrl: responseData['url'] ?? '',
+                  thumbnail: responseData['banner'] ?? '',
+                  //  description:'',
+                ),
+                playlist: channelList
+                    .map((m) => VideoData(
+                          id: m.id,
+                          title: m.name,
+                          youtubeUrl: m.url,
+                          thumbnail: m.banner,
+                          //  description: m.description,
+                        ))
+                    .toList(),
+              ),
+            ));
       }
     } catch (e) {
       // Close loading dialog if still open
@@ -989,15 +1010,15 @@ class _BannerSliderState extends State<BannerSlider> {
       List<String> storedVideos =
           prefs.getStringList('last_played_videos') ?? [];
 
-      String newVideoEntry =
-          '${newVideo['videoUrl']}|${newVideo['position'].inMilliseconds}|${newVideo['duration'].inMilliseconds}|${newVideo['liveStatus']}|${newVideo['bannerImageUrl']}|${newVideo['videoId']}|${newVideo['name']}|${newVideo['seasonId']}';
+      // String newVideoEntry =
+      // '${newVideo['videoUrl']}|${newVideo['position'].inMilliseconds}|${newVideo['duration'].inMilliseconds}|${newVideo['liveStatus']}|${newVideo['bannerImageUrl']}|${newVideo['videoId']}|${newVideo['name']}|${newVideo['seasonId']}';
 
       // Remove if already exists to avoid duplicates
       storedVideos
           .removeWhere((entry) => entry.startsWith('${newVideo['videoUrl']}|'));
 
       // Add to beginning of list
-      storedVideos.insert(0, newVideoEntry);
+      // storedVideos.insert(0, newVideoEntry);
 
       // Keep only last 10 videos
       if (storedVideos.length > 8) {
@@ -1079,7 +1100,6 @@ class _BannerSliderState extends State<BannerSlider> {
 // Updated _playVideo method to work with your new NewsItemModel structure
 
   void _playVideo(Map<String, dynamic> videoData, Duration position) async {
-
     if (_isNavigating) {
       return;
     }
@@ -1147,7 +1167,6 @@ class _BannerSliderState extends State<BannerSlider> {
         String seasonIdString =
             safeToString(video['seasonId'], defaultValue: '0');
 
-
         // // Handle YouTube ID conversion
         // if (videoUrl.isNotEmpty && !videoUrl.startsWith('http') && videoUrl.length == 11) {
         //   videoUrl = 'https://www.youtube.com/watch?v=$videoUrl';
@@ -1157,7 +1176,6 @@ class _BannerSliderState extends State<BannerSlider> {
         bool isLive = video['liveStatus'] == true;
         String streamType = isYoutube ? 'YoutubeLive' : 'M3u8';
         String contentType = isLive ? '0' : '1'; // 0 for live, 1 for VOD
-
 
         return NewsItemModel(
           id: videoIdString,
@@ -1199,7 +1217,6 @@ class _BannerSliderState extends State<BannerSlider> {
         );
       }).toList();
 
-
       String originalUrl = safeToString(videoData['videoUrl']);
       String updatedUrl = originalUrl;
 
@@ -1207,7 +1224,6 @@ class _BannerSliderState extends State<BannerSlider> {
       if (originalUrl.isEmpty) {
         throw Exception('Empty video URL');
       }
-
 
       // Convert YouTube ID to full URL if needed
       // if (!originalUrl.startsWith('http') && originalUrl.length == 11) {
@@ -1239,39 +1255,56 @@ class _BannerSliderState extends State<BannerSlider> {
           videoData['duration'] as Duration? ?? Duration.zero;
       bool isLive = videoData['liveStatus'] == true;
 
-
       // Navigate to video screen
       if (shouldPlayVideo && context.mounted) {
         final result = await Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => VideoScreen(
-              videoUrl: updatedUrl,
-              unUpdatedUrl: originalUrl,
-              channelList: channelList,
-              bannerImageUrl: safeToString(videoData['bannerImageUrl']),
-              startAtPosition: startAtPosition,
-              totalDuration: totalDuration,
-              videoType: isYoutubeUrl(updatedUrl) ? 'youtube' : 'M3u8',
-              isLive: isLive,
-              isVOD: !isLive,
-              isSearch: false,
-              isHomeCategory: false,
-              isBannerSlider: false,
-              videoId: int.tryParse(
-                      safeToString(videoData['videoId'], defaultValue: '0')) ??
-                  0,
-              source: 'isLastPlayedVideos',
-              name: safeToString(videoData['name'],
-                  defaultValue: 'Unknown Video'),
-              liveStatus: isLive,
-              seasonId: int.tryParse(
-                  safeToString(videoData['seasonId'], defaultValue: '0')),
-              isLastPlayedStored: true,
+            // builder: (context) => VideoScreen(
+            //   videoUrl: updatedUrl,
+            //   unUpdatedUrl: originalUrl,
+            //   channelList: channelList,
+            //   bannerImageUrl: safeToString(videoData['bannerImageUrl']),
+            //   startAtPosition: startAtPosition,
+            //   totalDuration: totalDuration,
+            //   videoType: isYoutubeUrl(updatedUrl) ? 'youtube' : 'M3u8',
+            //   isLive: isLive,
+            //   isVOD: !isLive,
+            //   isSearch: false,
+            //   isHomeCategory: false,
+            //   isBannerSlider: false,
+            //   videoId: int.tryParse(
+            //           safeToString(videoData['videoId'], defaultValue: '0')) ??
+            //       0,
+            //   source: 'isLastPlayedVideos',
+            //   name: safeToString(videoData['name'],
+            //       defaultValue: 'Unknown Video'),
+            //   liveStatus: isLive,
+            //   seasonId: int.tryParse(
+            //       safeToString(videoData['seasonId'], defaultValue: '0')),
+            //   isLastPlayedStored: true,
+            // ),
+
+            builder: (context) => YouTubePlayerScreen(
+              videoData: VideoData(
+                id: safeToString(videoData['id']),
+                title: safeToString(videoData['name']),
+                youtubeUrl: safeToString(videoData['url']),
+                thumbnail: safeToString(videoData['banner']),
+                //  description:'',
+              ),
+              playlist: channelList
+                  .map((m) => VideoData(
+                        id: m.id,
+                        title: m.name,
+                        youtubeUrl: m.url,
+                        thumbnail: m.banner,
+                        //  description: m.description,
+                      ))
+                  .toList(),
             ),
           ),
         );
-
 
         // Refresh last played videos when returning
         if (result == true) {
@@ -1284,7 +1317,6 @@ class _BannerSliderState extends State<BannerSlider> {
         }
       }
     } catch (e) {
-
       // Close loading dialog if still open
       if (shouldPop && context.mounted) {
         Navigator.of(context, rootNavigator: true).pop();
@@ -1313,7 +1345,6 @@ class _BannerSliderState extends State<BannerSlider> {
 
 // Updated _loadLastPlayedVideos method with better error handling
   Future<void> _loadLastPlayedVideos() async {
-
     try {
       final prefs = await SharedPreferences.getInstance();
       final storedVideos = prefs.getStringList('last_played_videos');
@@ -1357,10 +1388,8 @@ class _BannerSliderState extends State<BannerSlider> {
               loadedVideos.add(videoData);
 
               // Debug the video data structure
-            } else {
-            }
-          } catch (e) {
-          }
+            } else {}
+          } catch (e) {}
         }
 
         if (mounted) {
@@ -1389,17 +1418,14 @@ class _BannerSliderState extends State<BannerSlider> {
         });
       }
     }
-
   }
 
 // Add this debug method to check data structure
   void debugVideoDataStructure() {
-
     for (int i = 0; i < lastPlayedVideos.length && i < 3; i++) {
       // Debug first 3 videos
       final video = lastPlayedVideos[i];
-      video.forEach((key, value) {
-      });
+      video.forEach((key, value) {});
     }
   }
 
@@ -1904,8 +1930,8 @@ class _BannerSliderState extends State<BannerSlider> {
                               ),
 
                             // Continue Watching Section
-                            if (lastPlayedVideos.isNotEmpty)
-                              buildContinueWatchingSection(),
+                            // if (lastPlayedVideos.isNotEmpty)
+                              // buildContinueWatchingSection(),
                           ],
                         ),
         );
@@ -1913,375 +1939,374 @@ class _BannerSliderState extends State<BannerSlider> {
     );
   }
 
-  // Build Continue Watching Section
-  Widget buildContinueWatchingSection() {
-    return Positioned(
-      bottom: screenhgt * 0.01,
-      left: 0,
-      right: 0,
-      child: Container(
-        child: Column(
-          key: refreshKey,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Section Header
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: screenwdt * 0.025),
-              child: Container(
-                padding: EdgeInsets.all(screenwdt * 0.005),
-                decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.7),
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(
-                    color: Colors.white.withOpacity(0.2),
-                    width: 1.0,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.5),
-                      blurRadius: 10.0,
-                      spreadRadius: 2.0,
-                    ),
-                  ],
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.history,
-                      color: hintColor,
-                      size: menutextsz,
-                    ),
-                    SizedBox(width: 8),
-                    Text(
-                      'Continue Watching',
-                      style: TextStyle(
-                        fontSize: menutextsz,
-                        color: hintColor,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(width: 8),
-                    Icon(
-                      Icons.keyboard_arrow_down,
-                      color: hintColor,
-                      size: menutextsz,
-                    ),
-                  ],
-                ),
-              ),
-            ),
+  // // Build Continue Watching Section
+  // Widget buildContinueWatchingSection() {
+  //   return Positioned(
+  //     bottom: screenhgt * 0.01,
+  //     left: 0,
+  //     right: 0,
+  //     child: Container(
+  //       child: Column(
+  //         key: refreshKey,
+  //         crossAxisAlignment: CrossAxisAlignment.start,
+  //         children: [
+  //           // Section Header
+  //           Padding(
+  //             padding: EdgeInsets.symmetric(horizontal: screenwdt * 0.025),
+  //             child: Container(
+  //               padding: EdgeInsets.all(screenwdt * 0.005),
+  //               decoration: BoxDecoration(
+  //                 color: Colors.black.withOpacity(0.7),
+  //                 borderRadius: BorderRadius.circular(10),
+  //                 border: Border.all(
+  //                   color: Colors.white.withOpacity(0.2),
+  //                   width: 1.0,
+  //                 ),
+  //                 boxShadow: [
+  //                   BoxShadow(
+  //                     color: Colors.black.withOpacity(0.5),
+  //                     blurRadius: 10.0,
+  //                     spreadRadius: 2.0,
+  //                   ),
+  //                 ],
+  //               ),
+  //               child: Row(
+  //                 mainAxisSize: MainAxisSize.min,
+  //                 children: [
+  //                   Icon(
+  //                     Icons.history,
+  //                     color: hintColor,
+  //                     size: menutextsz,
+  //                   ),
+  //                   SizedBox(width: 8),
+  //                   Text(
+  //                     'Continue Watching',
+  //                     style: TextStyle(
+  //                       fontSize: menutextsz,
+  //                       color: hintColor,
+  //                       fontWeight: FontWeight.bold,
+  //                     ),
+  //                   ),
+  //                   SizedBox(width: 8),
+  //                   Icon(
+  //                     Icons.keyboard_arrow_down,
+  //                     color: hintColor,
+  //                     size: menutextsz,
+  //                   ),
+  //                 ],
+  //               ),
+  //             ),
+  //           ),
 
-            SizedBox(height: screenhgt * 0.01),
+  //           SizedBox(height: screenhgt * 0.01),
 
-            // Videos List
+  //           // Videos List
 
-            // Videos List (continued from previous part)
-            SizedBox(
-              height: screenhgt * 0.27,
-              child: ListView.builder(
-                controller: _lastPlayedScrollController,
-                scrollDirection: Axis.horizontal,
-                padding: EdgeInsets.symmetric(horizontal: 10),
-                itemCount:
-                    lastPlayedVideos.length > 10 ? 10 : lastPlayedVideos.length,
-                itemBuilder: (context, index) {
-                  Map<String, dynamic> videoData = lastPlayedVideos[index];
-                  FocusNode focusNode = videoData['focusNode'] ?? FocusNode();
-                  lastPlayedVideos[index]['focusNode'] = focusNode;
+  //           // Videos List (continued from previous part)
+  //           SizedBox(
+  //             height: screenhgt * 0.27,
+  //             child: ListView.builder(
+  //               controller: _lastPlayedScrollController,
+  //               scrollDirection: Axis.horizontal,
+  //               padding: EdgeInsets.symmetric(horizontal: 10),
+  //               itemCount:
+  //                   lastPlayedVideos.length > 10 ? 10 : lastPlayedVideos.length,
+  //               itemBuilder: (context, index) {
+  //                 Map<String, dynamic> videoData = lastPlayedVideos[index];
+  //                 FocusNode focusNode = videoData['focusNode'] ?? FocusNode();
+  //                 lastPlayedVideos[index]['focusNode'] = focusNode;
 
-                  // Register focus element
-                  final GlobalKey itemKey = GlobalKey();
-                  context
-                      .read<FocusProvider>()
-                      .registerElementKey('lastPlayed_$index', itemKey);
+  //                 // Register focus element
+  //                 final GlobalKey itemKey = GlobalKey();
+  //                 context
+  //                     .read<FocusProvider>()
+  //                     .registerElementKey('lastPlayed_$index', itemKey);
 
-                  // Set first item focus node
-                  if (index == 0) {
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      context
-                          .read<FocusProvider>()
-                          .setFirstLastPlayedFocusNode(focusNode);
-                    });
-                  }
+  //                 // Set first item focus node
+  //                 if (index == 0) {
+  //                   WidgetsBinding.instance.addPostFrameCallback((_) {
+  //                     context
+  //                         .read<FocusProvider>()
+  //                         .setFirstLastPlayedFocusNode(focusNode);
+  //                   });
+  //                 }
 
-                  return Container(
-                    key: itemKey,
-                    child: Focus(
-                      focusNode: focusNode,
-                      onFocusChange: (hasFocus) {
-                        if (hasFocus) {
-                          WidgetsBinding.instance.addPostFrameCallback((_) {
-                            setState(() {
-                              _scrollToFocusedItem(index);
-                            });
-                            context
-                                .read<FocusProvider>()
-                                .scrollToElement('lastPlayed_$index');
-                            context
-                                .read<FocusProvider>()
-                                .setLastPlayedFocus(index);
-                          });
-                        }
-                      },
-                      // onKey: (node, event) {
-                      //   if (event is RawKeyDownEvent) {
-                      //     if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
-                      //       Future.delayed(Duration(milliseconds: 100), () {
-                      //         context
-                      //             .read<FocusProvider>()
-                      //             .requestWatchNowFocus();
-                      //       });
-                      //       return KeyEventResult.handled;
-                      //     } else if (event.logicalKey ==
-                      //         LogicalKeyboardKey.arrowDown) {
-                      //       context
-                      //           .read<FocusProvider>()
-                      //           .requestMusicItemFocus(context);
-                      //       return KeyEventResult.handled;
-                      //     } else if (event.logicalKey ==
-                      //         LogicalKeyboardKey.arrowRight) {
-                      //       if (index < lastPlayedVideos.length - 1) {
-                      //         FocusScope.of(context).requestFocus(
-                      //             lastPlayedVideos[index + 1]['focusNode']);
-                      //         return KeyEventResult.handled;
-                      //       }
-                      //     } else if (event.logicalKey ==
-                      //         LogicalKeyboardKey.arrowLeft) {
-                      //       if (index > 0) {
-                      //         FocusScope.of(context).requestFocus(
-                      //             lastPlayedVideos[index - 1]['focusNode']);
-                      //         return KeyEventResult.handled;
-                      //       }
-                      //     } else if (event.logicalKey ==
-                      //             LogicalKeyboardKey.select ||
-                      //         event.logicalKey == LogicalKeyboardKey.enter) {
-                      //       _playVideo(videoData, videoData['position']);
-                      //       return KeyEventResult.handled;
-                      //     }
-                      //   }
-                      //   return KeyEventResult.ignored;
-                      // },
+  //                 return Container(
+  //                   key: itemKey,
+  //                   child: Focus(
+  //                     focusNode: focusNode,
+  //                     onFocusChange: (hasFocus) {
+  //                       if (hasFocus) {
+  //                         WidgetsBinding.instance.addPostFrameCallback((_) {
+  //                           setState(() {
+  //                             _scrollToFocusedItem(index);
+  //                           });
+  //                           context
+  //                               .read<FocusProvider>()
+  //                               .scrollToElement('lastPlayed_$index');
+  //                           context
+  //                               .read<FocusProvider>()
+  //                               .setLastPlayedFocus(index);
+  //                         });
+  //                       }
+  //                     },
+  //                     // onKey: (node, event) {
+  //                     //   if (event is RawKeyDownEvent) {
+  //                     //     if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+  //                     //       Future.delayed(Duration(milliseconds: 100), () {
+  //                     //         context
+  //                     //             .read<FocusProvider>()
+  //                     //             .requestWatchNowFocus();
+  //                     //       });
+  //                     //       return KeyEventResult.handled;
+  //                     //     } else if (event.logicalKey ==
+  //                     //         LogicalKeyboardKey.arrowDown) {
+  //                     //       context
+  //                     //           .read<FocusProvider>()
+  //                     //           .requestMusicItemFocus(context);
+  //                     //       return KeyEventResult.handled;
+  //                     //     } else if (event.logicalKey ==
+  //                     //         LogicalKeyboardKey.arrowRight) {
+  //                     //       if (index < lastPlayedVideos.length - 1) {
+  //                     //         FocusScope.of(context).requestFocus(
+  //                     //             lastPlayedVideos[index + 1]['focusNode']);
+  //                     //         return KeyEventResult.handled;
+  //                     //       }
+  //                     //     } else if (event.logicalKey ==
+  //                     //         LogicalKeyboardKey.arrowLeft) {
+  //                     //       if (index > 0) {
+  //                     //         FocusScope.of(context).requestFocus(
+  //                     //             lastPlayedVideos[index - 1]['focusNode']);
+  //                     //         return KeyEventResult.handled;
+  //                     //       }
+  //                     //     } else if (event.logicalKey ==
+  //                     //             LogicalKeyboardKey.select ||
+  //                     //         event.logicalKey == LogicalKeyboardKey.enter) {
+  //                     //       _playVideo(videoData, videoData['position']);
+  //                     //       return KeyEventResult.handled;
+  //                     //     }
+  //                     //   }
+  //                     //   return KeyEventResult.ignored;
+  //                     // },
 
-                      onKey: (node, event) {
-                        if (event is RawKeyDownEvent) {
+  //                     onKey: (node, event) {
+  //                       if (event is RawKeyDownEvent) {
+  //                         if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+  //                           Future.delayed(Duration(milliseconds: 100), () {
+  //                             context
+  //                                 .read<FocusProvider>()
+  //                                 .requestWatchNowFocus();
+  //                           });
+  //                           return KeyEventResult.handled;
+  //                         } else if (event.logicalKey ==
+  //                             LogicalKeyboardKey.arrowDown) {
+  //                           context
+  //                               .read<FocusProvider>()
+  //                               .requestMusicItemFocus(context);
+  //                           return KeyEventResult.handled;
+  //                         } else if (event.logicalKey ==
+  //                             LogicalKeyboardKey.arrowRight) {
+  //                           if (index < lastPlayedVideos.length - 1) {
+  //                             FocusScope.of(context).requestFocus(
+  //                                 lastPlayedVideos[index + 1]['focusNode']);
+  //                             return KeyEventResult.handled;
+  //                           }
+  //                         } else if (event.logicalKey ==
+  //                             LogicalKeyboardKey.arrowLeft) {
+  //                           if (index > 0) {
+  //                             FocusScope.of(context).requestFocus(
+  //                                 lastPlayedVideos[index - 1]['focusNode']);
+  //                             return KeyEventResult.handled;
+  //                           }
+  //                         } else if (event.logicalKey ==
+  //                                 LogicalKeyboardKey.select ||
+  //                             event.logicalKey == LogicalKeyboardKey.enter) {
+  //                           _playVideo(videoData, videoData['position']);
+  //                           return KeyEventResult.handled;
+  //                         }
+  //                       }
+  //                       return KeyEventResult.ignored;
+  //                     },
+  //                     child: GestureDetector(
+  //                       onTap: () {
+  //                         _playVideo(videoData, videoData['position']);
+  //                       },
+  //                       child: AnimatedContainer(
+  //                         duration: Duration(milliseconds: 200),
+  //                         width: screenwdt * 0.15,
+  //                         height: screenhgt * 0.25,
+  //                         margin: EdgeInsets.symmetric(horizontal: 5),
+  //                         decoration: BoxDecoration(
+  //                           borderRadius: BorderRadius.circular(15),
+  //                           color: focusNode.hasFocus
+  //                               ? Colors.black.withOpacity(0.9)
+  //                               : Colors.transparent,
+  //                           border: Border.all(
+  //                             color: focusNode.hasFocus
+  //                                 ? Colors.blue
+  //                                 : Colors.transparent,
+  //                             width: focusNode.hasFocus ? 3 : 0,
+  //                           ),
+  //                           boxShadow: focusNode.hasFocus
+  //                               ? [
+  //                                   BoxShadow(
+  //                                     color: Colors.blue.withOpacity(0.5),
+  //                                     blurRadius: 15,
+  //                                     spreadRadius: 3,
+  //                                   )
+  //                                 ]
+  //                               : [
+  //                                   BoxShadow(
+  //                                     color: Colors.black.withOpacity(0.3),
+  //                                     blurRadius: 8,
+  //                                     spreadRadius: 1,
+  //                                   )
+  //                                 ],
+  //                         ),
+  //                         child: ClipRRect(
+  //                           borderRadius: BorderRadius.circular(15),
+  //                           child: Column(
+  //                             crossAxisAlignment: CrossAxisAlignment.start,
+  //                             children: [
+  //                               // Video Title
+  //                               if (focusNode.hasFocus)
+  //                                 Container(
+  //                                   width: double.infinity,
+  //                                   padding: EdgeInsets.all(8),
+  //                                   decoration: BoxDecoration(
+  //                                     color: Colors.blue.withOpacity(0.9),
+  //                                   ),
+  //                                   child: Text(
+  //                                     videoData['name'] ?? 'Unknown Video',
+  //                                     style: TextStyle(
+  //                                       fontWeight: FontWeight.bold,
+  //                                       fontSize: nametextsz,
+  //                                       color: Colors.white,
+  //                                     ),
+  //                                     maxLines: 2,
+  //                                     overflow: TextOverflow.ellipsis,
+  //                                   ),
+  //                                 ),
 
-                          if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
-                            Future.delayed(Duration(milliseconds: 100), () {
-                              context
-                                  .read<FocusProvider>()
-                                  .requestWatchNowFocus();
-                            });
-                            return KeyEventResult.handled;
-                          } else if (event.logicalKey ==
-                              LogicalKeyboardKey.arrowDown) {
-                            context
-                                .read<FocusProvider>()
-                                .requestMusicItemFocus(context);
-                            return KeyEventResult.handled;
-                          } else if (event.logicalKey ==
-                              LogicalKeyboardKey.arrowRight) {
-                            if (index < lastPlayedVideos.length - 1) {
-                              FocusScope.of(context).requestFocus(
-                                  lastPlayedVideos[index + 1]['focusNode']);
-                              return KeyEventResult.handled;
-                            }
-                          } else if (event.logicalKey ==
-                              LogicalKeyboardKey.arrowLeft) {
-                            if (index > 0) {
-                              FocusScope.of(context).requestFocus(
-                                  lastPlayedVideos[index - 1]['focusNode']);
-                              return KeyEventResult.handled;
-                            }
-                          } else if (event.logicalKey ==
-                                  LogicalKeyboardKey.select ||
-                              event.logicalKey == LogicalKeyboardKey.enter) {
-                            _playVideo(videoData, videoData['position']);
-                            return KeyEventResult.handled;
-                          }
-                        }
-                        return KeyEventResult.ignored;
-                      },
-                      child: GestureDetector(
-                        onTap: () {
-                          _playVideo(videoData, videoData['position']);
-                        },
-                        child: AnimatedContainer(
-                          duration: Duration(milliseconds: 200),
-                          width: screenwdt * 0.15,
-                          height: screenhgt * 0.25,
-                          margin: EdgeInsets.symmetric(horizontal: 5),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(15),
-                            color: focusNode.hasFocus
-                                ? Colors.black.withOpacity(0.9)
-                                : Colors.transparent,
-                            border: Border.all(
-                              color: focusNode.hasFocus
-                                  ? Colors.blue
-                                  : Colors.transparent,
-                              width: focusNode.hasFocus ? 3 : 0,
-                            ),
-                            boxShadow: focusNode.hasFocus
-                                ? [
-                                    BoxShadow(
-                                      color: Colors.blue.withOpacity(0.5),
-                                      blurRadius: 15,
-                                      spreadRadius: 3,
-                                    )
-                                  ]
-                                : [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.3),
-                                      blurRadius: 8,
-                                      spreadRadius: 1,
-                                    )
-                                  ],
-                          ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(15),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                // Video Title
-                                if (focusNode.hasFocus)
-                                  Container(
-                                    width: double.infinity,
-                                    padding: EdgeInsets.all(8),
-                                    decoration: BoxDecoration(
-                                      color: Colors.blue.withOpacity(0.9),
-                                    ),
-                                    child: Text(
-                                      videoData['name'] ?? 'Unknown Video',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: nametextsz,
-                                        color: Colors.white,
-                                      ),
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
+  //                               // Video Thumbnail
+  //                               Expanded(
+  //                                 flex: 3,
+  //                                 child: Stack(
+  //                                   children: [
+  //                                     Container(
+  //                                       width: double.infinity,
+  //                                       height: double.infinity,
+  //                                       child: videoData['bannerImageUrl']
+  //                                                   ?.startsWith(
+  //                                                       'data:image') ==
+  //                                               true
+  //                                           ? Image.memory(
+  //                                               _getCachedImage(videoData[
+  //                                                   'bannerImageUrl']),
+  //                                               fit: BoxFit.cover,
+  //                                               width: double.infinity,
+  //                                               height: double.infinity,
+  //                                               errorBuilder: (context, error,
+  //                                                       stackTrace) =>
+  //                                                   _buildErrorImage(),
+  //                                             )
+  //                                           : CachedNetworkImage(
+  //                                               imageUrl: videoData[
+  //                                                       'bannerImageUrl'] ??
+  //                                                   AppAssets.localImage(
+  //                                                       animated: true),
+  //                                               fit: BoxFit.cover,
+  //                                               width: double.infinity,
+  //                                               height: double.infinity,
+  //                                               placeholder: (context, url) =>
+  //                                                   Container(
+  //                                                 color: Colors.grey.shade800,
+  //                                                 child: Center(
+  //                                                   child: SpinKitFadingCircle(
+  //                                                     color: Colors.blue,
+  //                                                     size: 20.0,
+  //                                                   ),
+  //                                                 ),
+  //                                               ),
+  //                                               errorWidget:
+  //                                                   (context, url, error) =>
+  //                                                       _buildErrorImage(),
+  //                                             ),
+  //                                     ),
 
-                                // Video Thumbnail
-                                Expanded(
-                                  flex: 3,
-                                  child: Stack(
-                                    children: [
-                                      Container(
-                                        width: double.infinity,
-                                        height: double.infinity,
-                                        child: videoData['bannerImageUrl']
-                                                    ?.startsWith(
-                                                        'data:image') ==
-                                                true
-                                            ? Image.memory(
-                                                _getCachedImage(videoData[
-                                                    'bannerImageUrl']),
-                                                fit: BoxFit.cover,
-                                                width: double.infinity,
-                                                height: double.infinity,
-                                                errorBuilder: (context, error,
-                                                        stackTrace) =>
-                                                    _buildErrorImage(),
-                                              )
-                                            : CachedNetworkImage(
-                                                imageUrl: videoData[
-                                                        'bannerImageUrl'] ??
-                                                    AppAssets.localImage(
-                                                        animated: true),
-                                                fit: BoxFit.cover,
-                                                width: double.infinity,
-                                                height: double.infinity,
-                                                placeholder: (context, url) =>
-                                                    Container(
-                                                  color: Colors.grey.shade800,
-                                                  child: Center(
-                                                    child: SpinKitFadingCircle(
-                                                      color: Colors.blue,
-                                                      size: 20.0,
-                                                    ),
-                                                  ),
-                                                ),
-                                                errorWidget:
-                                                    (context, url, error) =>
-                                                        _buildErrorImage(),
-                                              ),
-                                      ),
+  //                                     // Play overlay
+  //                                     if (focusNode.hasFocus)
+  //                                       Container(
+  //                                         width: double.infinity,
+  //                                         height: double.infinity,
+  //                                         color: Colors.black.withOpacity(0.3),
+  //                                         child: Center(
+  //                                           child: Container(
+  //                                             padding: EdgeInsets.all(8),
+  //                                             decoration: BoxDecoration(
+  //                                               color: Colors.blue
+  //                                                   .withOpacity(0.9),
+  //                                               shape: BoxShape.circle,
+  //                                             ),
+  //                                             child: Icon(
+  //                                               Icons.play_arrow,
+  //                                               color: Colors.white,
+  //                                               size: 20,
+  //                                             ),
+  //                                           ),
+  //                                         ),
+  //                                       ),
 
-                                      // Play overlay
-                                      if (focusNode.hasFocus)
-                                        Container(
-                                          width: double.infinity,
-                                          height: double.infinity,
-                                          color: Colors.black.withOpacity(0.3),
-                                          child: Center(
-                                            child: Container(
-                                              padding: EdgeInsets.all(8),
-                                              decoration: BoxDecoration(
-                                                color: Colors.blue
-                                                    .withOpacity(0.9),
-                                                shape: BoxShape.circle,
-                                              ),
-                                              child: Icon(
-                                                Icons.play_arrow,
-                                                color: Colors.white,
-                                                size: 20,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
+  //                                     // Live indicator
+  //                                     if (videoData['liveStatus'] == true)
+  //                                       Positioned(
+  //                                         top: 5,
+  //                                         right: 5,
+  //                                         child: Container(
+  //                                           padding: EdgeInsets.symmetric(
+  //                                             horizontal: 6,
+  //                                             vertical: 2,
+  //                                           ),
+  //                                           decoration: BoxDecoration(
+  //                                             color: Colors.red,
+  //                                             borderRadius:
+  //                                                 BorderRadius.circular(4),
+  //                                           ),
+  //                                           child: Text(
+  //                                             'LIVE',
+  //                                             style: TextStyle(
+  //                                               color: Colors.white,
+  //                                               fontSize: minitextsz * 0.8,
+  //                                               fontWeight: FontWeight.bold,
+  //                                             ),
+  //                                           ),
+  //                                         ),
+  //                                       ),
+  //                                   ],
+  //                                 ),
+  //                               ),
 
-                                      // Live indicator
-                                      if (videoData['liveStatus'] == true)
-                                        Positioned(
-                                          top: 5,
-                                          right: 5,
-                                          child: Container(
-                                            padding: EdgeInsets.symmetric(
-                                              horizontal: 6,
-                                              vertical: 2,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              color: Colors.red,
-                                              borderRadius:
-                                                  BorderRadius.circular(4),
-                                            ),
-                                            child: Text(
-                                              'LIVE',
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: minitextsz * 0.8,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                    ],
-                                  ),
-                                ),
-
-                                // Progress and Duration
-                                Container(
-                                  padding: EdgeInsets.all(8),
-                                  child: _buildProgressDisplay(
-                                      videoData, focusNode.hasFocus),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  //                               // Progress and Duration
+  //                               Container(
+  //                                 padding: EdgeInsets.all(8),
+  //                                 child: _buildProgressDisplay(
+  //                                     videoData, focusNode.hasFocus),
+  //                               ),
+  //                             ],
+  //                           ),
+  //                         ),
+  //                       ),
+  //                     ),
+  //                   ),
+  //                 );
+  //               },
+  //             ),
+  //           ),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
 
   // Build error image widget
   Widget _buildErrorImage() {

@@ -173,13 +173,15 @@ void requestFirstMoviesFocus() {
   if (_firstManageMoviesFocusNode != null) {
     // Pehle scroll करें first item को visible करने के लिए
     _scrollToFirstMovieItem();
-    
     // Scroll के बाद focus request करें
     Future.delayed(const Duration(milliseconds: 50), () {
       _firstManageMoviesFocusNode!.requestFocus();
+    scrollToElement('manageMovies');
       
       // Double ensure visibility
       Future.delayed(const Duration(milliseconds: 50), () {
+    scrollToElement('manageMovies');
+
         // _scrollToFirstMovieItem();
       });
     });

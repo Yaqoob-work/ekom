@@ -2531,6 +2531,7 @@ import 'package:mobi_tv_entertainment/provider/focus_provider.dart';
 import 'package:mobi_tv_entertainment/provider/shared_data_provider.dart';
 import 'package:mobi_tv_entertainment/video_widget/socket_service.dart';
 import 'package:mobi_tv_entertainment/video_widget/video_screen.dart';
+import 'package:mobi_tv_entertainment/video_widget/youtube_player.dart';
 import 'package:mobi_tv_entertainment/widgets/models/news_item_model.dart';
 import 'package:mobi_tv_entertainment/widgets/services/api_service.dart';
 import 'package:mobi_tv_entertainment/widgets/small_widgets/empty_state.dart';
@@ -4144,11 +4145,11 @@ class _SubLiveScreenState extends State<SubLiveScreen>
 
     try {
       String originalUrl = newsItem.url;
-      if (newsItem.streamType == 'YoutubeLive') {
-        for (int i = 0; i < _maxRetries; i++) {
-          try {
-            String updatedUrl =
-                await _socketService.getUpdatedUrl(newsItem.url);
+      // if (newsItem.streamType == 'YoutubeLive') {
+        // for (int i = 0; i < _maxRetries; i++) {
+          // try {
+            // String updatedUrl =
+                // await _socketService.getUpdatedUrl(newsItem.url);
 
             newsItem = NewsItemModel(
               id: newsItem.id,
@@ -4158,7 +4159,7 @@ class _SubLiveScreenState extends State<SubLiveScreen>
               banner: newsItem.banner,
               poster: newsItem.poster,
               category: newsItem.category,
-              url: updatedUrl,
+              url: originalUrl,
               streamType: 'M3u8',
               type: 'M3u8',
               genres: newsItem.genres,
@@ -4167,13 +4168,13 @@ class _SubLiveScreenState extends State<SubLiveScreen>
               image: '',
               unUpdatedUrl: '',
             );
-            break;
+            // break;
           } catch (e) {
-            if (i == _maxRetries - 1) rethrow;
-            await Future.delayed(Duration(seconds: _retryDelay));
+            // if (i == _maxRetries - 1) rethrow;
+            // await Future.delayed(Duration(seconds: _retryDelay));
           }
-        }
-      }
+        // }
+      // }
 
       if (shouldPop) {
         Navigator.of(context, rootNavigator: true).pop();
@@ -4197,25 +4198,41 @@ class _SubLiveScreenState extends State<SubLiveScreen>
               source: 'isLiveScreen',
               isSearch: false,
               videoId: int.tryParse(newsItem.id),
-              unUpdatedUrl: originalUrl,
+              unUpdatedUrl: newsItem.url,
               name: newsItem.name,
               seasonId: null,
               isLastPlayedStored: false,
               liveStatus: liveStatus,
             ),
+              //              builder: (context) => YouTubePlayerScreen(
+              //    videoData: VideoData(
+              //      id: newsItem.id,
+              //      title: newsItem.name,
+              //      youtubeUrl: newsItem.url,
+              //      thumbnail: newsItem.banner,
+              //      description:'',
+              //    ),
+              //    playlist: _musicList.map((m) => VideoData(
+              //      id: m.id,
+              //      title: m.name,
+              //      youtubeUrl: m.url,
+              //      thumbnail: m.banner,
+              //      description: m.description,
+              //    )).toList(),
+              // ),
           ),
         );
       }
-    } catch (e) {
-      if (shouldPop) {
-        Navigator.of(context, rootNavigator: true).pop();
-      }
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Something Went Wrong')),
-      );
-    } finally {
-      _isNavigating = false;
-    }
+    // } catch (e) {
+    //   if (shouldPop) {
+    //     Navigator.of(context, rootNavigator: true).pop();
+    //   }
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     SnackBar(content: Text('Something Went Wrong')),
+    //   );
+    // } finally {
+    //   _isNavigating = false;
+    // }
   }
 
   void _navigateToViewAllScreen() {

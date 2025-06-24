@@ -4,6 +4,7 @@ import 'package:mobi_tv_entertainment/video_widget/socket_service.dart';
 // import 'package:mobi_tv_entertainment/video_widget/socket_service.dart';
 import 'package:mobi_tv_entertainment/video_widget/video_screen.dart';
 import 'package:mobi_tv_entertainment/home_screen_pages/sub_live_screen/items/view_all_live_grid_item.dart';
+import 'package:mobi_tv_entertainment/video_widget/youtube_player.dart';
 // import 'package:mobi_tv_entertainment/widgets/items/news_item.dart';
 import 'package:mobi_tv_entertainment/widgets/models/news_item_model.dart';
 import 'package:mobi_tv_entertainment/widgets/small_widgets/empty_state.dart';
@@ -141,9 +142,9 @@ class _NewsGridScreenState extends State<NewsGridScreen> {
       if (newsItem.streamType == 'YoutubeLive') {
         // Retry fetching the updated URL if stream type is YouTube Live
         for (int i = 0; i < _maxRetries; i++) {
-          try {
-            String updatedUrl =
-                await _socketService.getUpdatedUrl(newsItem.url);
+          // try {
+          //   String updatedUrl =
+          //       await _socketService.getUpdatedUrl(newsItem.url);
             newsItem = NewsItemModel(
               id: newsItem.id,
               videoId: '',
@@ -152,7 +153,7 @@ class _NewsGridScreenState extends State<NewsGridScreen> {
               banner: newsItem.banner,
               poster: newsItem.poster,
               category: newsItem.category,
-              url: updatedUrl,
+              url: newsItem.url, // Use the original 
               streamType: 'M3u8',
               type: 'M3u8',
               genres: newsItem.genres,
@@ -161,12 +162,12 @@ class _NewsGridScreenState extends State<NewsGridScreen> {
               image: '',
               unUpdatedUrl: '',
             );
-            break; // Exit loop when URL is successfully updated
-          } catch (e) {
-            if (i == _maxRetries - 1) rethrow; // Rethrow error on last retry
-            await Future.delayed(
-                Duration(seconds: _retryDelay)); // Delay before next retry
-          }
+            // break; // Exit loop when URL is successfully updated
+          // } catch (e) {
+          //   if (i == _maxRetries - 1) rethrow; // Rethrow error on last retry
+          //   await Future.delayed(
+          //       Duration(seconds: _retryDelay)); // Delay before next retry
+          // }
         }
       }
 
@@ -190,12 +191,30 @@ class _NewsGridScreenState extends State<NewsGridScreen> {
               source: 'isLiveScreen',
               isSearch: false,
               videoId: int.tryParse(newsItem.id),
-              unUpdatedUrl: originalUrl,
+              // unUpdatedUrl: originalUrl,
+              unUpdatedUrl: newsItem.url,
               name: newsItem.name,
               liveStatus: liveStatus,
               seasonId: null,
               isLastPlayedStored: false,
             ),
+
+              //                         builder: (context) => YouTubePlayerScreen(
+              //    videoData: VideoData(
+              //      id: newsItem.id,
+              //      title: newsItem.name,
+              //      youtubeUrl: newsItem.url,
+              //      thumbnail: newsItem.banner,
+              //      description:'',
+              //    ),
+              //    playlist: _entertainmentList.map((m) => VideoData(
+              //      id: m.id,
+              //      title: m.name,
+              //      youtubeUrl: m.url,
+              //      thumbnail: m.banner,
+              //      description: m.description,
+              //    )).toList(),
+              // ),
           ),
         );
         // }
