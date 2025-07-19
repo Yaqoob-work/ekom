@@ -4623,7 +4623,6 @@
 
 
 
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mobi_tv_entertainment/main.dart';
@@ -4671,6 +4670,10 @@ class _YouTubePlayerScreenState extends State<YouTubePlayerScreen> {
   bool _isLoading = true;
   bool _isDisposed = false; // Track disposal state
 
+  // Navigation control - FIXED
+  bool _isNavigating = false; // Prevent double navigation
+  bool _videoCompleted = false; // Track video completion
+
   // Splash screen control with fade animation
   bool _showSplashScreen = true;
   Timer? _splashTimer;
@@ -4706,9 +4709,7 @@ class _YouTubePlayerScreenState extends State<YouTubePlayerScreen> {
   final FocusNode _mainFocusNode = FocusNode(); // Main invisible focus node
   bool _isProgressFocused = false;
 
-  // PAUSE CONTAINER STATES
-  Timer? _pauseContainerTimer;
-  bool _showPauseBlackBars = false; // Changed from _showPauseContainer to _showPauseBlackBars
+  // REMOVED: All pause container/black bar states and timers
 
   @override
   void initState() {
@@ -4863,8 +4864,9 @@ class _YouTubePlayerScreenState extends State<YouTubePlayerScreen> {
     }
   }
 
+  // FIXED: Single navigation trigger
   void _listener() {
-    if (_controller != null && mounted && !_isDisposed) {
+    if (_controller != null && mounted && !_isDisposed && !_isNavigating) {
       if (_controller!.value.isReady && !_isPlayerReady) {
         print('📡 Controller ready detected - starting from beginning');
         
@@ -4885,54 +4887,54 @@ class _YouTubePlayerScreenState extends State<YouTubePlayerScreen> {
           _currentPosition = _controller!.value.position;
           _totalDuration = _controller!.value.metaData.duration;
           
-          // PAUSE CONTAINER LOGIC
+          // REMOVED: All pause container logic
           bool newIsPlaying = _controller!.value.isPlaying;
-          
-          // Agar pause se play hua hai
-          if (!_isPlaying && newIsPlaying) {
-            print('▶️ Video resumed - starting 5 second pause black bars timer');
-            _showPauseBlackBars = true; // Immediately show black bars
-            
-            // 5 second timer to hide pause black bars
-            _pauseContainerTimer?.cancel();
-            _pauseContainerTimer = Timer(const Duration(seconds: 5), () {
-              if (mounted && !_isDisposed) {
-                setState(() {
-                  _showPauseBlackBars = false;
-                });
-                print('⏰ 5 seconds completed - hiding pause black bars');
-              }
-            });
-          }
-          // Agar play se pause hua hai
-          else if (_isPlaying && !newIsPlaying) {
-            print('⏸️ Video paused - showing pause black bars');
-            _showPauseBlackBars = true;
-            _pauseContainerTimer?.cancel(); // Cancel any existing timer
-          }
-          
           _isPlaying = newIsPlaying;
         });
       }
 
-      // Check if video reached end minus 12 seconds - STOP 12 SECONDS BEFORE ACTUAL END
-      if (_totalDuration.inSeconds > 24 && _currentPosition.inSeconds > 0) { // Only if video is longer than 24 seconds
-        final adjustedEndTime = _totalDuration.inSeconds - 12; // End 12 seconds before actual end
+      // FIXED: Single navigation trigger with proper checks
+      if (_totalDuration.inSeconds > 24 && _currentPosition.inSeconds > 0 && !_videoCompleted) {
+        final adjustedEndTime = _totalDuration.inSeconds - 12;
         
-        // Stop video when reaching adjusted end time (12 seconds before actual end)
         if (_currentPosition.inSeconds >= adjustedEndTime) {
-          print('🛑 Video reached cut point - stopping 12 seconds before actual end');
-          _controller!.pause();
-          
-          // Navigate back after brief pause
-          Future.delayed(const Duration(milliseconds: 1000), () {
-            if (mounted && !_isDisposed) {
-              Navigator.of(context).pop();
-            }
-          });
+          print('🛑 Video reached cut point - completing video');
+          _completeVideo(); // Single method for video completion
         }
       }
     }
+  }
+
+  // NEW: Single method to handle video completion
+  void _completeVideo() {
+    if (_isNavigating || _videoCompleted || _isDisposed) return;
+    
+    print('🎬 Video completing - single navigation trigger');
+    
+    // Mark as completed to prevent multiple triggers
+    _videoCompleted = true;
+    _isNavigating = true;
+    
+    // Pause the video
+    if (_controller != null) {
+      _controller!.pause();
+    }
+    
+    // Single navigation with cleanup
+    Future.delayed(const Duration(milliseconds: 800), () {
+      if (mounted && !_isDisposed) {
+        print('🔙 Navigating back to source page');
+        Navigator.of(context).pop();
+      }
+    });
+  }
+
+  // NEW: Reset states for new video
+  void _resetVideoStates() {
+    _isNavigating = false;
+    _videoCompleted = false;
+    _isPlayerReady = false;
+    _isPlaying = false;
   }
 
   void _startHideControlsTimer() {
@@ -4971,11 +4973,11 @@ class _YouTubePlayerScreenState extends State<YouTubePlayerScreen> {
       if (_isPlaying) {
         _controller!.pause();
         print('⏸️ Video paused');
-        // Pause container will show via listener
+        // REMOVED: Pause container logic
       } else {
         _controller!.play();
-        print('▶️ Video playing - 5 second timer will start via listener');
-        // Timer will start via listener when play state changes
+        print('▶️ Video playing');
+        // REMOVED: Pause container timer logic
       }
     }
     _showControlsTemporarily();
@@ -5164,6 +5166,7 @@ class _YouTubePlayerScreenState extends State<YouTubePlayerScreen> {
     }
   }
 
+  // UPDATED: Reset states when changing videos
   void _playNextVideo() {
     if (_isDisposed) return;
 
@@ -5175,24 +5178,20 @@ class _YouTubePlayerScreenState extends State<YouTubePlayerScreen> {
           _isLoading = true;
           _error = null;
           _showSplashScreen = true; // Show splash for next video
-          _showPauseBlackBars = false; // Reset pause black bars
           _splashOpacity = 1.0; // Reset opacity
         });
       }
       _controller?.dispose();
-      _pauseContainerTimer?.cancel(); // Cancel pause timer
+      _resetVideoStates(); // Reset navigation states
       _initializePlayer();
       _startSplashTimer(); // Start splash timer for next video
     } else {
       _showError('Playlist complete, returning to home');
-      Future.delayed(const Duration(seconds: 1), () {
-        if (mounted && !_isDisposed) {
-          Navigator.of(context).pop();
-        }
-      });
+      _completeVideo(); // Use single completion method
     }
   }
 
+  // UPDATED: Reset states when changing videos
   void _playPreviousVideo() {
     if (_isDisposed) return;
 
@@ -5204,12 +5203,11 @@ class _YouTubePlayerScreenState extends State<YouTubePlayerScreen> {
           _isLoading = true;
           _error = null;
           _showSplashScreen = true; // Show splash for previous video
-          _showPauseBlackBars = false; // Reset pause black bars
           _splashOpacity = 1.0; // Reset opacity
         });
       }
       _controller?.dispose();
-      _pauseContainerTimer?.cancel(); // Cancel pause timer
+      _resetVideoStates(); // Reset navigation states
       _initializePlayer();
       _startSplashTimer(); // Start splash timer for previous video
     } else {
@@ -5217,14 +5215,15 @@ class _YouTubePlayerScreenState extends State<YouTubePlayerScreen> {
     }
   }
 
-  // Handle back button press - TV Remote ke liye
+  // FIXED: Handle back button press - TV Remote ke liye
   Future<bool> _onWillPop() async {
-    if (_isDisposed) return true;
+    if (_isDisposed || _isNavigating) return true;
 
     try {
       print('🔙 Back button pressed - cleaning up...');
 
-      // Mark as disposed first
+      // Mark as navigating to prevent other triggers
+      _isNavigating = true;
       _isDisposed = true;
 
       // Cancel all timers
@@ -5232,7 +5231,7 @@ class _YouTubePlayerScreenState extends State<YouTubePlayerScreen> {
       _splashTimer?.cancel();
       _splashUpdateTimer?.cancel();
       _seekTimer?.cancel();
-      _pauseContainerTimer?.cancel(); // Cancel pause timer
+      // REMOVED: _pauseContainerTimer?.cancel();
 
       // Pause and dispose controller
       if (_controller != null) {
@@ -5279,7 +5278,7 @@ class _YouTubePlayerScreenState extends State<YouTubePlayerScreen> {
     _isDisposed = true;
     _controller?.pause();
     _splashTimer?.cancel();
-    _pauseContainerTimer?.cancel(); // Cancel pause timer
+    // REMOVED: _pauseContainerTimer?.cancel();
     super.deactivate();
   }
 
@@ -5296,7 +5295,7 @@ class _YouTubePlayerScreenState extends State<YouTubePlayerScreen> {
       _seekTimer?.cancel();
       _splashTimer?.cancel();
       _splashUpdateTimer?.cancel();
-      _pauseContainerTimer?.cancel(); // Cancel pause timer
+      // REMOVED: _pauseContainerTimer?.cancel();
 
       // Dispose focus nodes
       if (_mainFocusNode.hasListeners) {
@@ -5381,9 +5380,7 @@ class _YouTubePlayerScreenState extends State<YouTubePlayerScreen> {
                 if (_showSplashScreen)
                   _buildTopBottomBlackBars(),
 
-                // Pause Black Bars - Show when paused and 5 seconds after resume
-                if (_showPauseBlackBars && _isPlayerReady)
-                  _buildPauseBlackBars(),
+                // REMOVED: Pause Black Bars functionality completely
 
                 // Custom Controls Overlay - Show after 8 seconds even during splash
                 if (!_shouldBlockControls())
@@ -5416,33 +5413,8 @@ class _YouTubePlayerScreenState extends State<YouTubePlayerScreen> {
     );
   }
 
-  // Pause Black Bars - Same as start splash bars but for pause state
-  Widget _buildPauseBlackBars() {
-    return Stack(
-      children: [
-        // Top Black Bar - screenhgt/6 height (plain black, no text)
-        Positioned(
-          top: 0,
-          left: 0,
-          right: 0,
-          height: screenhgt / 6,
-          child: Container(
-            color: Colors.black,
-          ),
-        ),
-        // Bottom Black Bar - screenhgt/6 height
-        Positioned(
-          bottom: 0,
-          left: 0,
-          right: 0,
-          height: screenhgt / 6,
-          child: Container(
-            color: Colors.black,
-          ),
-        ),
-      ],
-    );
-  }
+  // REMOVED: _buildPauseBlackBars() method completely
+
   // Top and Bottom Black Bars - Video plays in center (Start Splash)
   Widget _buildTopBottomBlackBars() {
     return Stack(
@@ -5492,7 +5464,7 @@ class _YouTubePlayerScreenState extends State<YouTubePlayerScreen> {
     return Positioned.fill(
       child: Stack(
         children: [
-          // PAUSE BLACK BARS replaced with main pause black bars functionality moved above
+          // REMOVED: All pause container/black bar logic
 
           // Visible controls overlay
           if (_showControls)
@@ -5505,7 +5477,7 @@ class _YouTubePlayerScreenState extends State<YouTubePlayerScreen> {
                     SafeArea(
                       child: Container(
                         padding: EdgeInsets.only(
-                          top: (_showPauseBlackBars || _showSplashScreen) ? (screenhgt / 6) + 16 : 16, // Space for both pause and splash bars
+                          top: _showSplashScreen ? (screenhgt / 6) + 16 : 16, // Space only for splash bars
                           left: 16,
                           right: 16,
                           bottom: 16,
@@ -5801,16 +5773,10 @@ class _YouTubePlayerScreenState extends State<YouTubePlayerScreen> {
           }
         },
         onEnded: (_) {
-          if (_isDisposed) return;
-
-          print('🎬 Video ended - navigating back to source page');
+          if (_isDisposed || _isNavigating || _videoCompleted) return;
           
-          // Navigate back to source page immediately
-          Future.delayed(const Duration(milliseconds: 500), () {
-            if (mounted && !_isDisposed) {
-              Navigator.of(context).pop(); // Always go back to source page
-            }
-          });
+          print('🎬 Video ended naturally - using completion handler');
+          _completeVideo(); // Use same completion method
         },
       ),
     );

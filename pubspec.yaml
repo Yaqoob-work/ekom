@@ -60,6 +60,12 @@ dependencies:
   device_info_plus: ^11.3.0
   flutter_svg: ^2.1.0
   youtube_player_flutter: ^9.1.1
+  # youtube_player_flutter: ^8.1.2
+  cast: ^2.1.0
+  flutter_inappwebview: ^6.1.5
+  webview_flutter: ^4.10.0
+  youtube_player_iframe: ^5.2.1
+  connectivity_plus: ^6.1.4
   # youtube_player_flutter: ^9.1.1
   # go_router: ^14.8.1
   # better_player: ^0.0.84

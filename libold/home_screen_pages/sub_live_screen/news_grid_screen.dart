@@ -4,7 +4,7 @@ import 'package:mobi_tv_entertainment/video_widget/socket_service.dart';
 // import 'package:mobi_tv_entertainment/video_widget/socket_service.dart';
 import 'package:mobi_tv_entertainment/video_widget/video_screen.dart';
 import 'package:mobi_tv_entertainment/home_screen_pages/sub_live_screen/items/view_all_live_grid_item.dart';
-import 'package:mobi_tv_entertainment/video_widget/youtube_player.dart';
+import 'package:mobi_tv_entertainment/video_widget/custom_youtube_player_4k.dart';
 // import 'package:mobi_tv_entertainment/widgets/items/news_item.dart';
 import 'package:mobi_tv_entertainment/widgets/models/news_item_model.dart';
 import 'package:mobi_tv_entertainment/widgets/small_widgets/empty_state.dart';

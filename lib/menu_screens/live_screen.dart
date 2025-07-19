@@ -5,7 +5,6 @@ import 'package:mobi_tv_entertainment/provider/focus_provider.dart';
 import 'package:mobi_tv_entertainment/video_widget/socket_service.dart';
 import 'package:mobi_tv_entertainment/video_widget/video_screen.dart';
 import 'package:mobi_tv_entertainment/home_screen_pages/sub_live_screen/items/live_grid_item.dart';
-import 'package:mobi_tv_entertainment/home_screen_pages/sub_live_screen/items/sub_live_item.dart';
 import 'package:mobi_tv_entertainment/widgets/models/news_item_model.dart';
 import 'package:mobi_tv_entertainment/widgets/services/api_service.dart';
 import 'package:mobi_tv_entertainment/widgets/small_widgets/empty_state.dart';
@@ -14,6 +13,8 @@ import 'package:mobi_tv_entertainment/widgets/small_widgets/loading_indicator.da
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../home_screen_pages/sub_live_screen/sub_live_screen.dart';
 
 class LiveScreen extends StatefulWidget {
   @override
@@ -592,25 +593,25 @@ class _LiveScreenState extends State<LiveScreen> {
   //   );
   // }
 
-  Widget _buildNewsItem(NewsItemModel item, int row, int col) {
-    final identifier = 'item_${row}_${col}';
-    return NewsItem(
-      key: _itemKeys[row * _crossAxisCount + col],
-      item: item,
-      hideDescription: true,
-      onTap: () => _navigateToVideoScreen(item),
-      onEnterPress: _handleEnterPress,
-      focusNode: _focusNodes[row][col],
-      onUpPress: () => _handleUpPress(row, col),
-      onDownPress: () => _handleDownPress(row, col),
-      onFocusChange: (hasFocus) {
-        if (hasFocus) {
-          print('Focus gained for $identifier');
-          context.read<FocusProvider>().scrollToElement(identifier);
-        }
-      },
-    );
-  }
+  // Widget _buildNewsItem(NewsItemModel item, int row, int col) {
+  //   final identifier = 'item_${row}_${col}';
+  //   return NewsItem(
+  //     key: _itemKeys[row * _crossAxisCount + col],
+  //     item: item,
+  //     hideDescription: true,
+  //     onTap: () => _navigateToVideoScreen(item),
+  //     onEnterPress: _handleEnterPress,
+  //     focusNode: _focusNodes[row][col],
+  //     onUpPress: () => _handleUpPress(row, col),
+  //     onDownPress: () => _handleDownPress(row, col),
+  //     onFocusChange: (hasFocus) {
+  //       if (hasFocus) {
+  //         print('Focus gained for $identifier');
+  //         context.read<FocusProvider>().scrollToElement(identifier);
+  //       }
+  //     },
+  //   );
+  // }
 
   void _handleEnterPress(String itemId) {
     final selectedItem = _musicList.firstWhere((item) => item.id == itemId);

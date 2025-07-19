@@ -1,4 +1,4810 @@
-// banner_slider1
+// // // import 'dart:async';
+// // // import 'dart:convert';
+// // // import 'dart:math';
+// // // import 'dart:typed_data';
+// // // import 'package:cached_network_image/cached_network_image.dart';
+// // // import 'package:flutter/material.dart';
+// // // import 'package:flutter/services.dart';
+// // // import 'package:flutter_spinkit/flutter_spinkit.dart';
+// // // import 'package:http/http.dart' as https;
+// // // import 'package:mobi_tv_entertainment/main.dart';
+// // // import 'package:mobi_tv_entertainment/provider/color_provider.dart';
+// // // import 'package:mobi_tv_entertainment/provider/focus_provider.dart';
+// // // import 'package:mobi_tv_entertainment/video_widget/socket_service.dart';
+// // // import 'package:mobi_tv_entertainment/video_widget/video_screen.dart';
+// // // import 'package:mobi_tv_entertainment/video_widget/custom_youtube_player_4k.dart';
+// // // import 'package:mobi_tv_entertainment/widgets/models/news_item_model.dart';
+// // // import 'package:mobi_tv_entertainment/widgets/small_widgets/loading_indicator.dart';
+// // // import 'package:mobi_tv_entertainment/widgets/utils/color_service.dart';
+// // // import 'package:mobi_tv_entertainment/widgets/utils/random_light_color_widget.dart';
+// // // import 'package:provider/provider.dart';
+// // // import 'package:shared_preferences/shared_preferences.dart';
+
+// // // import '../../widgets/small_widgets/app_assets.dart';
+
+// // // // Simple implementation of ImageCacheService for demonstration
+// // // class ImageCacheStats {
+// // //   final int totalFiles;
+// // //   final double totalSizeMB;
+// // //   ImageCacheStats({required this.totalFiles, required this.totalSizeMB});
+// // // }
+
+// // // class ImageCacheService {
+// // //   Future<void> init() async {
+// // //     // Initialize cache if needed
+// // //   }
+
+// // //   Future<bool> isCached(String url) async {
+// // //     // Always return false for demonstration
+// // //     return false;
+// // //   }
+
+// // //   Future<void> downloadAndCacheImage(String url) async {
+// // //     // Simulate download and cache
+// // //     await Future.delayed(Duration(milliseconds: 100));
+// // //   }
+
+// // //   Future<void> clearCache() async {
+// // //     // Simulate clearing cache
+// // //     await Future.delayed(Duration(milliseconds: 100));
+// // //   }
+
+// // //   Future<ImageCacheStats> getCacheStats() async {
+// // //     // Return dummy stats
+// // //     return ImageCacheStats(totalFiles: 0, totalSizeMB: 0.0);
+// // //   }
+// // // }
+
+// // // Future<Map<String, String>> getAuthHeaders() async {
+// // //   String authKey = '';
+
+// // //   // try {
+// // //   //   if (AuthManager.hasValidAuthKey) {
+// // //   //     authKey = AuthManager.authKey;
+// // //   //   }
+// // //   // } catch (e) {}
+
+// // //   // if (authKey.isEmpty && globalAuthKey.isNotEmpty) {
+// // //   //   authKey = globalAuthKey;
+// // //   // }
+
+// // //   if (authKey.isEmpty) {
+// // //     try {
+// // //       final prefs = await SharedPreferences.getInstance();
+// // //       authKey = prefs.getString('auth_key') ?? '';
+// // //       if (authKey.isNotEmpty) {
+// // //         globalAuthKey = authKey;
+// // //       }
+// // //     } catch (e) {}
+// // //   }
+
+// // //   if (authKey.isEmpty) {
+// // //     authKey = 'vLQTuPZUxktl5mVW';
+// // //   }
+
+// // //   return {
+// // //     'auth-key': authKey,
+// // //     // 'x-api-key': authKey,
+// // //     'Accept': 'application/json',
+// // //     'Content-Type': 'application/json',
+// // //     // 'User-Agent': 'MobiTV/1.0',
+// // //   };
+// // // }
+
+// // // class ApiConfig {
+// // //   static const String PRIMARY_BASE_URL =
+// // //       'https://acomtv.coretechinfo.com/public/api';
+
+// // //   static const List<String> FEATURED_TV_ENDPOINTS = [
+// // //     '$PRIMARY_BASE_URL/getCustomImageSlider',
+// // //   ];
+
+// // //   static const List<String> BANNER_ENDPOINTS = [
+// // //     '$PRIMARY_BASE_URL/getCustomImageSlider',
+// // //   ];
+// // // }
+
+// // // Future<Map<String, String>> fetchVideoDataByIdFromBanners(
+// // //     String contentId) async {
+// // //   final prefs = await SharedPreferences.getInstance();
+// // //   final cachedData = prefs.getString('live_featured_tv');
+
+// // //   List<dynamic> responseData;
+
+// // //   try {
+// // //     if (cachedData != null) {
+// // //       responseData = json.decode(cachedData);
+// // //     } else {
+// // //       Map<String, String> headers = await getAuthHeaders();
+// // //       bool success = false;
+// // //       String responseBody = '';
+
+// // //       for (int i = 0; i < ApiConfig.FEATURED_TV_ENDPOINTS.length; i++) {
+// // //         String endpoint = ApiConfig.FEATURED_TV_ENDPOINTS[i];
+
+// // //         try {
+// // //           Map<String, String> currentHeaders = Map.from(headers);
+
+// // //           if (endpoint.contains('api.ekomflix.com')) {
+// // //             currentHeaders = {
+// // //               'x-api-key': 'vLQTuPZUxktl5mVW',
+// // //               'Accept': 'application/json',
+// // //             };
+// // //           }
+
+// // //           final response = await https
+// // //               .get(
+// // //                 Uri.parse(endpoint),
+// // //                 headers: currentHeaders,
+// // //               )
+// // //               .timeout(Duration(seconds: 15));
+
+// // //           if (response.statusCode == 200) {
+// // //             String body = response.body.trim();
+// // //             if (body.startsWith('[') || body.startsWith('{')) {
+// // //               try {
+// // //                 json.decode(body);
+// // //                 responseBody = body;
+// // //                 success = true;
+// // //                 break;
+// // //               } catch (e) {
+// // //                 continue;
+// // //               }
+// // //             } else {
+// // //               continue;
+// // //             }
+// // //           } else {
+// // //             continue;
+// // //           }
+// // //         } catch (e) {
+// // //           continue;
+// // //         }
+// // //       }
+
+// // //       if (!success) {
+// // //         throw Exception('Failed to load featured live TV from all endpoints');
+// // //       }
+
+// // //       responseData = json.decode(responseBody);
+// // //       await prefs.setString('live_featured_tv', responseBody);
+// // //     }
+
+// // //     final matchedItem = responseData.firstWhere(
+// // //       (channel) => channel['id'].toString() == contentId,
+// // //       orElse: () => null,
+// // //     );
+
+// // //     if (matchedItem == null) {
+// // //       throw Exception('Content with ID $contentId not found');
+// // //     }
+
+// // //     return {
+// // //       'url': matchedItem['url'] ?? '',
+// // //       'type': matchedItem['type'] ?? '',
+// // //       'banner': matchedItem['banner'] ?? '',
+// // //       'name': matchedItem['name'] ?? '',
+// // //       'stream_type': matchedItem['stream_type'] ?? '',
+// // //     };
+// // //   } catch (e) {
+// // //     throw Exception('Something went wrong: $e');
+// // //   }
+// // // }
+
+// // // Future<List<dynamic>> fetchBannersData() async {
+// // //   Map<String, String> headers = await getAuthHeaders();
+// // //   bool success = false;
+// // //   String responseBody = '';
+
+// // //   for (int i = 0; i < ApiConfig.BANNER_ENDPOINTS.length; i++) {
+// // //     String endpoint = ApiConfig.BANNER_ENDPOINTS[i];
+
+// // //     try {
+// // //       Map<String, String> currentHeaders = Map.from(headers);
+
+// // //       if (endpoint.contains('api.ekomflix.com')) {
+// // //         currentHeaders = {
+// // //           'x-api-key': 'vLQTuPZUxktl5mVW',
+// // //           'Accept': 'application/json',
+// // //         };
+// // //       }
+
+// // //       final response = await https
+// // //           .get(
+// // //             Uri.parse(endpoint),
+// // //             headers: currentHeaders,
+// // //           )
+// // //           .timeout(Duration(seconds: 15));
+
+// // //       if (response.statusCode == 200) {
+// // //         String body = response.body.trim();
+// // //         if (body.startsWith('[') || body.startsWith('{')) {
+// // //           try {
+// // //             json.decode(body);
+// // //             responseBody = body;
+// // //             success = true;
+// // //             break;
+// // //           } catch (e) {
+// // //             continue;
+// // //           }
+// // //         } else {
+// // //           continue;
+// // //         }
+// // //       } else {
+// // //         continue;
+// // //       }
+// // //     } catch (e) {
+// // //       continue;
+// // //     }
+// // //   }
+
+// // //   if (!success) {
+// // //     throw Exception('Failed to load banners from all endpoints');
+// // //   }
+
+// // //   final List<dynamic> responseData = json.decode(responseBody);
+
+// // //   return responseData;
+// // // }
+
+// // // class GlobalEventBus {
+// // //   static final GlobalEventBus _instance = GlobalEventBus._internal();
+// // //   factory GlobalEventBus() => _instance;
+
+// // //   final StreamController<RefreshPageEvent> _controller =
+// // //       StreamController<RefreshPageEvent>.broadcast();
+
+// // //   GlobalEventBus._internal();
+
+// // //   Stream<RefreshPageEvent> get events => _controller.stream;
+// // //   void fire(RefreshPageEvent event) => _controller.add(event);
+// // //   void dispose() => _controller.close();
+// // // }
+
+// // // class RefreshPageEvent {
+// // //   final String pageId;
+
+// // //   RefreshPageEvent(this.pageId);
+// // // }
+
+// // // class BannerSlider extends StatefulWidget {
+// // //   final Function(bool)? onFocusChange;
+// // //   const BannerSlider(
+// // //       {Key? key, this.onFocusChange, required FocusNode focusNode})
+// // //       : super(key: key);
+// // //   @override
+// // //   _BannerSliderState createState() => _BannerSliderState();
+// // // }
+
+// // // class _BannerSliderState extends State<BannerSlider>
+// // //     with SingleTickerProviderStateMixin {
+// // //   // late SharedDataProvider sharedDataProvider;
+// // //   final SocketService _socketService = SocketService();
+// // //   List<NewsItemModel> bannerList = [];
+// // //   Map<String, Color> bannerColors = {};
+// // //   bool isLoading = true;
+// // //   String errorMessage = '';
+// // //   late PageController _pageController;
+// // //   late Timer _timer;
+// // //   String? selectedContentId;
+// // //   final FocusNode _buttonFocusNode = FocusNode();
+// // //   bool _isNavigating = false;
+// // //   final int _maxRetries = 3;
+// // //   final int _retryDelay = 5;
+// // //   final PaletteColorService _paletteColorService = PaletteColorService();
+
+// // //   Map<String, Uint8List> _bannerCache = {};
+// // //   late FocusProvider _refreshProvider;
+// // //   final ImageCacheService _imageCacheService = ImageCacheService();
+
+// // //   // 🌟 NEW: Animation controllers for shimmer effect
+// // //   late AnimationController _shimmerController;
+// // //   late Animation<double> _shimmerAnimation;
+
+// // //   @override
+// // //   void initState() {
+// // //     super.initState();
+
+// // //     // 🌟 Initialize shimmer animation
+// // //     _shimmerController = AnimationController(
+// // //       duration: const Duration(milliseconds: 1500),
+// // //       vsync: this,
+// // //     )..repeat();
+
+// // //     _shimmerAnimation = Tween<double>(
+// // //       begin: -1.0,
+// // //       end: 2.0,
+// // //     ).animate(CurvedAnimation(
+// // //       parent: _shimmerController,
+// // //       curve: Curves.easeInOut,
+// // //     ));
+
+// // //     _initializeSlider();
+// // //   }
+
+// // //   @override
+// // //   void dispose() {
+// // //     _pageController.dispose();
+// // //     _socketService.dispose();
+
+// // //     // 🌟 Dispose shimmer controller
+// // //     _shimmerController.dispose();
+
+// // //     if (_timer.isActive) {
+// // //       _timer.cancel();
+// // //     }
+
+// // //     _buttonFocusNode.dispose();
+// // //     super.dispose();
+// // //   }
+
+// // //   @override
+// // //   Widget build(BuildContext context) {
+// // //     return Consumer<FocusProvider>(
+// // //       builder: (context, focusProvider, child) {
+// // //         return Scaffold(
+// // //           backgroundColor: cardColor,
+// // //           body: isLoading
+// // //               ? Center(
+// // //                   child: Column(
+// // //                     mainAxisAlignment: MainAxisAlignment.center,
+// // //                     children: [
+// // //                       SpinKitFadingCircle(color: borderColor, size: 50.0),
+// // //                       SizedBox(height: 20),
+// // //                       Text(
+// // //                         '...',
+// // //                         style: TextStyle(
+// // //                           color: hintColor,
+// // //                           fontSize: nametextsz,
+// // //                         ),
+// // //                       ),
+// // //                     ],
+// // //                   ),
+// // //                 )
+// // //               : errorMessage.isNotEmpty
+// // //                   ? Center(
+// // //                       child: Column(
+// // //                         mainAxisAlignment: MainAxisAlignment.center,
+// // //                         children: [
+// // //                           Icon(
+// // //                             Icons.error_outline,
+// // //                             color: Colors.red,
+// // //                             size: 50,
+// // //                           ),
+// // //                           SizedBox(height: 20),
+// // //                           Text(
+// // //                             'Something Went Wrong',
+// // //                             style: TextStyle(
+// // //                               fontSize: menutextsz,
+// // //                               color: Colors.red,
+// // //                               fontWeight: FontWeight.bold,
+// // //                             ),
+// // //                           ),
+// // //                           SizedBox(height: 10),
+// // //                           Padding(
+// // //                             padding: EdgeInsets.symmetric(horizontal: 20),
+// // //                             child: Text(
+// // //                               errorMessage,
+// // //                               style: TextStyle(
+// // //                                 fontSize: minitextsz,
+// // //                                 color: hintColor,
+// // //                               ),
+// // //                               textAlign: TextAlign.center,
+// // //                             ),
+// // //                           ),
+// // //                           SizedBox(height: 20),
+// // //                           ElevatedButton(
+// // //                             onPressed: () => fetchBanners(),
+// // //                             child: Text('Retry'),
+// // //                           ),
+// // //                         ],
+// // //                       ),
+// // //                     )
+// // //                   : bannerList.isEmpty
+// // //                       ? Center(
+// // //                           child: Column(
+// // //                             mainAxisAlignment: MainAxisAlignment.center,
+// // //                             children: [
+// // //                               Icon(
+// // //                                 Icons.image_not_supported,
+// // //                                 color: hintColor.withOpacity(0.5),
+// // //                                 size: 50,
+// // //                               ),
+// // //                               SizedBox(height: 20),
+// // //                               Text(
+// // //                                 '',
+// // //                                 style: TextStyle(
+// // //                                   color: hintColor,
+// // //                                   fontSize: nametextsz,
+// // //                                 ),
+// // //                               ),
+// // //                             ],
+// // //                           ),
+// // //                         )
+// // //                       : Stack(
+// // //                           children: [
+// // //                             PageView.builder(
+// // //                               controller: _pageController,
+// // //                               itemCount: bannerList.length,
+// // //                               onPageChanged: (index) {
+// // //                                 if (mounted) {
+// // //                                   setState(() {
+// // //                                     selectedContentId =
+// // //                                         bannerList[index].contentId.toString();
+// // //                                   });
+// // //                                 }
+// // //                               },
+// // //                               itemBuilder: (context, index) {
+// // //                                 final banner = bannerList[index];
+// // //                                 return Stack(
+// // //                                   alignment: AlignmentDirectional.topCenter,
+// // //                                   children: [
+// // //                                     // 🌟 Main banner image with shimmer
+// // //                                     _buildBannerWithShimmer(
+// // //                                         banner, focusProvider),
+
+// // //                                     // Gradient overlay
+// // //                                     Container(
+// // //                                       margin: const EdgeInsets.only(top: 1),
+// // //                                       width: screenwdt,
+// // //                                       height: screenhgt,
+// // //                                       decoration: BoxDecoration(
+// // //                                         gradient: LinearGradient(
+// // //                                           begin: Alignment.topCenter,
+// // //                                           end: Alignment.bottomCenter,
+// // //                                           colors: [
+// // //                                             Colors.black.withOpacity(0.3),
+// // //                                             Colors.transparent,
+// // //                                             Colors.black.withOpacity(0.7),
+// // //                                           ],
+// // //                                           stops: [0.0, 0.5, 1.0],
+// // //                                         ),
+// // //                                       ),
+// // //                                     ),
+// // //                                   ],
+// // //                                 );
+// // //                               },
+// // //                             ),
+
+// // //                             // Watch Now Button with enhanced styling
+// // //                             Positioned(
+// // //                               top: screenhgt * 0.03,
+// // //                               left: screenwdt * 0.02,
+// // //                               child: Focus(
+// // //                                 focusNode: _buttonFocusNode,
+// // //                                 onKeyEvent: (node, event) {
+// // //                                   if (event.logicalKey ==
+// // //                                       LogicalKeyboardKey.arrowRight) {
+// // //                                     if (_pageController.hasClients &&
+// // //                                         _pageController.page != null &&
+// // //                                         _pageController.page! <
+// // //                                             bannerList.length - 1) {
+// // //                                       _pageController.nextPage(
+// // //                                         duration: Duration(milliseconds: 300),
+// // //                                         curve: Curves.easeInOut,
+// // //                                       );
+// // //                                       return KeyEventResult.handled;
+// // //                                     }
+// // //                                   } else if (event.logicalKey ==
+// // //                                       LogicalKeyboardKey.arrowLeft) {
+// // //                                     if (_pageController.hasClients &&
+// // //                                         _pageController.page != null &&
+// // //                                         _pageController.page! > 0) {
+// // //                                       _pageController.previousPage(
+// // //                                         duration: Duration(milliseconds: 300),
+// // //                                         curve: Curves.easeInOut,
+// // //                                       );
+// // //                                       return KeyEventResult.handled;
+// // //                                     }
+// // //                                   } else if (event is KeyDownEvent) {
+// // //                                     if (event.logicalKey ==
+// // //                                             LogicalKeyboardKey.select ||
+// // //                                         event.logicalKey ==
+// // //                                             LogicalKeyboardKey.enter) {
+// // //                                       if (selectedContentId != null) {
+// // //                                         final banner = bannerList.firstWhere(
+// // //                                             (b) =>
+// // //                                                 b.contentId ==
+// // //                                                 selectedContentId);
+// // //                                         fetchAndPlayVideo(
+// // //                                             banner.id, bannerList);
+// // //                                       }
+// // //                                       return KeyEventResult.handled;
+// // //                                     }
+// // //                                   }
+// // //                                   return KeyEventResult.ignored;
+// // //                                 },
+// // //                                 child: GestureDetector(
+// // //                                   onTap: () {
+// // //                                     if (selectedContentId != null) {
+// // //                                       final banner = bannerList.firstWhere(
+// // //                                           (b) =>
+// // //                                               b.contentId == selectedContentId);
+// // //                                       fetchAndPlayVideo(banner.id, bannerList);
+// // //                                     }
+// // //                                   },
+// // //                                   child: RandomLightColorWidget(
+// // //                                     hasFocus: focusProvider.isButtonFocused,
+// // //                                     childBuilder: (Color randomColor) {
+// // //                                       return AnimatedContainer(
+// // //                                         duration: Duration(milliseconds: 200),
+// // //                                         margin:
+// // //                                             EdgeInsets.all(screenwdt * 0.001),
+// // //                                         padding: EdgeInsets.symmetric(
+// // //                                           vertical: screenhgt * 0.02,
+// // //                                           horizontal: screenwdt * 0.02,
+// // //                                         ),
+// // //                                         decoration: BoxDecoration(
+// // //                                           color: focusProvider.isButtonFocused
+// // //                                               ? Colors.black87
+// // //                                               : Colors.black.withOpacity(0.6),
+// // //                                           borderRadius:
+// // //                                               BorderRadius.circular(12),
+// // //                                           border: Border.all(
+// // //                                             color: focusProvider.isButtonFocused
+// // //                                                 ? focusProvider
+// // //                                                         .currentFocusColor ??
+// // //                                                     randomColor
+// // //                                                 : Colors.white.withOpacity(0.3),
+// // //                                             width: focusProvider.isButtonFocused
+// // //                                                 ? 3.0
+// // //                                                 : 1.0,
+// // //                                           ),
+// // //                                           boxShadow:
+// // //                                               focusProvider.isButtonFocused
+// // //                                                   ? [
+// // //                                                       BoxShadow(
+// // //                                                         color: (focusProvider
+// // //                                                                     .currentFocusColor ??
+// // //                                                                 randomColor)
+// // //                                                             .withOpacity(0.5),
+// // //                                                         blurRadius: 20.0,
+// // //                                                         spreadRadius: 5.0,
+// // //                                                       ),
+// // //                                                     ]
+// // //                                                   : [
+// // //                                                       BoxShadow(
+// // //                                                         color: Colors.black
+// // //                                                             .withOpacity(0.3),
+// // //                                                         blurRadius: 10.0,
+// // //                                                         spreadRadius: 2.0,
+// // //                                                       ),
+// // //                                                     ],
+// // //                                         ),
+// // //                                         child: Row(
+// // //                                           mainAxisSize: MainAxisSize.min,
+// // //                                           children: [
+// // //                                             Icon(
+// // //                                               Icons.play_arrow,
+// // //                                               color: focusProvider
+// // //                                                       .isButtonFocused
+// // //                                                   ? focusProvider
+// // //                                                           .currentFocusColor ??
+// // //                                                       randomColor
+// // //                                                   : hintColor,
+// // //                                               size: menutextsz * 1.2,
+// // //                                             ),
+// // //                                             SizedBox(width: 8),
+// // //                                             Text(
+// // //                                               'Watch Now',
+// // //                                               style: TextStyle(
+// // //                                                 fontSize: menutextsz,
+// // //                                                 color: focusProvider
+// // //                                                         .isButtonFocused
+// // //                                                     ? focusProvider
+// // //                                                             .currentFocusColor ??
+// // //                                                         randomColor
+// // //                                                     : hintColor,
+// // //                                                 fontWeight: FontWeight.bold,
+// // //                                               ),
+// // //                                             ),
+// // //                                           ],
+// // //                                         ),
+// // //                                       );
+// // //                                     },
+// // //                                   ),
+// // //                                 ),
+// // //                               ),
+// // //                             ),
+
+// // //                             // Page indicators
+// // //                             if (bannerList.length > 1)
+// // //                               Positioned(
+// // //                                 top: screenhgt * 0.05,
+// // //                                 right: screenwdt * 0.05,
+// // //                                 child: Row(
+// // //                                   mainAxisAlignment: MainAxisAlignment.center,
+// // //                                   children:
+// // //                                       bannerList.asMap().entries.map((entry) {
+// // //                                     int index = entry.key;
+// // //                                     bool isSelected = selectedContentId ==
+// // //                                         bannerList[index].contentId;
+
+// // //                                     return AnimatedContainer(
+// // //                                       duration: Duration(milliseconds: 300),
+// // //                                       margin:
+// // //                                           EdgeInsets.symmetric(horizontal: 4),
+// // //                                       width: isSelected ? 12 : 8,
+// // //                                       height: isSelected ? 12 : 8,
+// // //                                       decoration: BoxDecoration(
+// // //                                         color: isSelected
+// // //                                             ? Colors.white
+// // //                                             : Colors.white.withOpacity(0.5),
+// // //                                         shape: BoxShape.circle,
+// // //                                         boxShadow: [
+// // //                                           BoxShadow(
+// // //                                             color:
+// // //                                                 Colors.black.withOpacity(0.3),
+// // //                                             blurRadius: 4,
+// // //                                             spreadRadius: 1,
+// // //                                           ),
+// // //                                         ],
+// // //                                       ),
+// // //                                     );
+// // //                                   }).toList(),
+// // //                                 ),
+// // //                               ),
+// // //                           ],
+// // //                         ),
+// // //         );
+// // //       },
+// // //     );
+// // //   }
+
+// // //   // 🌟 NEW: Build banner with shimmer effect
+// // //   Widget _buildBannerWithShimmer(
+// // //       NewsItemModel banner, FocusProvider focusProvider) {
+// // //     return Container(
+// // //       margin: const EdgeInsets.only(top: 1),
+// // //       width: screenwdt,
+// // //       height: screenhgt,
+// // //       child: Stack(
+// // //         children: [
+// // //           // Main banner image
+// // //           CachedNetworkImage(
+// // //             imageUrl: banner.banner,
+// // //             fit: BoxFit.fill,
+// // //             placeholder: (context, url) => Image.asset('assets/streamstarting.gif'),
+// // //             errorWidget: (context, url, error) =>
+// // //                 Image.asset('assets/streamstarting.gif'),
+// // //             cacheKey: banner.contentId,
+// // //             fadeInDuration: Duration(milliseconds: 500),
+// // //             memCacheHeight: 800,
+// // //             memCacheWidth: 1200,
+// // //             width: screenwdt,
+// // //             height: screenhgt,
+// // //           ),
+
+// // //           // 🌟 Shimmer effect overlay
+// // //           if (focusProvider.isButtonFocused)
+// // //             AnimatedBuilder(
+// // //               animation: _shimmerAnimation,
+// // //               builder: (context, child) {
+// // //                 return Positioned.fill(
+// // //                   child: Container(
+// // //                     decoration: BoxDecoration(
+// // //                       gradient: LinearGradient(
+// // //                         begin: Alignment(-1.0 + _shimmerAnimation.value, -1.0),
+// // //                         end: Alignment(1.0 + _shimmerAnimation.value, 1.0),
+// // //                         colors: [
+// // //                           Colors.transparent,
+// // //                           Colors.white.withOpacity(0.1),
+// // //                           Colors.white.withOpacity(0.2),
+// // //                           Colors.white.withOpacity(0.1),
+// // //                           Colors.transparent,
+// // //                         ],
+// // //                         stops: [0.0, 0.3, 0.5, 0.7, 1.0],
+// // //                       ),
+// // //                     ),
+// // //                   ),
+// // //                 );
+// // //               },
+// // //             ),
+
+// // //           // 🌟 Enhanced glow effect when focused
+// // //           if (focusProvider.isButtonFocused)
+// // //             Positioned.fill(
+// // //               child: Container(
+// // //                 decoration: BoxDecoration(
+// // //                   gradient: RadialGradient(
+// // //                     center: Alignment.center,
+// // //                     radius: 0.8,
+// // //                     colors: [
+// // //                       (focusProvider.currentFocusColor ?? Colors.blue)
+// // //                           .withOpacity(0.1),
+// // //                       Colors.transparent,
+// // //                     ],
+// // //                   ),
+// // //                 ),
+// // //               ),
+// // //             ),
+
+// // //           // 🌟 Border glow effect
+// // //           if (focusProvider.isButtonFocused)
+// // //             Positioned.fill(
+// // //               child: Container(
+// // //                 decoration: BoxDecoration(
+// // //                   border: Border.all(
+// // //                     color: (focusProvider.currentFocusColor ?? Colors.blue)
+// // //                         .withOpacity(0.3),
+// // //                     width: 2.0,
+// // //                   ),
+// // //                   borderRadius: BorderRadius.circular(8),
+// // //                 ),
+// // //               ),
+// // //             ),
+// // //         ],
+// // //       ),
+// // //     );
+// // //   }
+
+// // //   // 🌟 Alternative shimmer effect method (more subtle)
+// // //   Widget _buildSubtleShimmer(
+// // //       NewsItemModel banner, FocusProvider focusProvider) {
+// // //     return Container(
+// // //       margin: const EdgeInsets.only(top: 1),
+// // //       width: screenwdt,
+// // //       height: screenhgt,
+// // //       child: Stack(
+// // //         children: [
+// // //           // Main image
+// // //           CachedNetworkImage(
+// // //             imageUrl: banner.banner,
+// // //             fit: BoxFit.fill,
+// // //             placeholder: (context, url) => Image.asset('assets/streamstarting.gif'),
+// // //             errorWidget: (context, url, error) =>
+// // //                 Image.asset('assets/streamstarting.gif'),
+// // //             cacheKey: banner.contentId,
+// // //             fadeInDuration: Duration(milliseconds: 500),
+// // //             memCacheHeight: 800,
+// // //             memCacheWidth: 1200,
+// // //           ),
+
+// // //           // Subtle shimmer when focused
+// // //           if (focusProvider.isButtonFocused)
+// // //             AnimatedBuilder(
+// // //               animation: _shimmerAnimation,
+// // //               builder: (context, child) {
+// // //                 return Positioned.fill(
+// // //                   child: Container(
+// // //                     decoration: BoxDecoration(
+// // //                       gradient: LinearGradient(
+// // //                         begin: Alignment.topLeft,
+// // //                         end: Alignment.bottomRight,
+// // //                         colors: [
+// // //                           Colors.transparent,
+// // //                           Colors.white.withOpacity(0.05),
+// // //                           Colors.transparent,
+// // //                         ],
+// // //                         stops: [
+// // //                           (_shimmerAnimation.value - 0.3).clamp(0.0, 1.0),
+// // //                           _shimmerAnimation.value.clamp(0.0, 1.0),
+// // //                           (_shimmerAnimation.value + 0.3).clamp(0.0, 1.0),
+// // //                         ],
+// // //                       ),
+// // //                     ),
+// // //                   ),
+// // //                 );
+// // //               },
+// // //             ),
+// // //         ],
+// // //       ),
+// // //     );
+// // //   }
+
+// // //   // 🌟 Professional shimmer effect (SubVod style)
+// // //   Widget _buildProfessionalShimmer(
+// // //       NewsItemModel banner, FocusProvider focusProvider) {
+// // //     return Container(
+// // //       margin: const EdgeInsets.only(top: 1),
+// // //       width: screenwdt,
+// // //       height: screenhgt,
+// // //       child: Stack(
+// // //         children: [
+// // //           // Main banner image
+// // //           CachedNetworkImage(
+// // //             imageUrl: banner.banner,
+// // //             fit: BoxFit.fill,
+// // //             placeholder: (context, url) => Image.asset('assets/streamstarting.gif'),
+// // //             errorWidget: (context, url, error) =>
+// // //                 Image.asset('assets/streamstarting.gif'),
+// // //             cacheKey: banner.contentId,
+// // //             fadeInDuration: Duration(milliseconds: 500),
+// // //             memCacheHeight: 800,
+// // //             memCacheWidth: 1200,
+// // //           ),
+
+// // //           // Professional shimmer effect (same as SubVod)
+// // //           if (focusProvider.isButtonFocused)
+// // //             AnimatedBuilder(
+// // //               animation: _shimmerAnimation,
+// // //               builder: (context, child) {
+// // //                 return Positioned.fill(
+// // //                   child: Container(
+// // //                     decoration: BoxDecoration(
+// // //                       borderRadius: BorderRadius.circular(8),
+// // //                       gradient: LinearGradient(
+// // //                         begin: Alignment(-1.0 + _shimmerAnimation.value, -1.0),
+// // //                         end: Alignment(1.0 + _shimmerAnimation.value, 1.0),
+// // //                         colors: [
+// // //                           Colors.transparent,
+// // //                           (focusProvider.currentFocusColor ?? Colors.blue)
+// // //                               .withOpacity(0.15),
+// // //                           Colors.transparent,
+// // //                         ],
+// // //                         stops: [0.0, 0.5, 1.0],
+// // //                       ),
+// // //                     ),
+// // //                   ),
+// // //                 );
+// // //               },
+// // //             ),
+// // //         ],
+// // //       ),
+// // //     );
+// // //   }
+
+// // //   // @override
+// // //   // void initState() {
+// // //   //   super.initState();
+// // //   //   _initializeSlider();
+// // //   // }
+
+// // //   Future<void> _initializeSlider() async {
+// // //     // Initialize image cache service first
+// // //     await _imageCacheService.init();
+
+// // //     // sharedDataProvider = context.read<SharedDataProvider>();
+
+// // //     _socketService.initSocket();
+// // //     _pageController = PageController();
+
+// // //     _buttonFocusNode.addListener(() {
+// // //       if (_buttonFocusNode.hasFocus) {
+// // //         widget.onFocusChange?.call(true);
+// // //       }
+// // //     });
+
+// // //     WidgetsBinding.instance.addPostFrameCallback((_) {
+// // //       context.read<FocusProvider>().setWatchNowFocusNode(_buttonFocusNode);
+// // //     });
+
+// // //     _buttonFocusNode.addListener(_onButtonFocusNode);
+
+// // //     await _loadCachedData();
+
+// // //     if (bannerList.isNotEmpty) {
+// // //       _startAutoSlide();
+// // //       // Preload images for better performance
+// // //       _preloadImages();
+// // //     }
+// // //   }
+
+// // //   // Preload images in background for smooth experience
+// // //   Future<void> _preloadImages() async {
+// // //     for (final banner in bannerList) {
+// // //       try {
+// // //         // Check if already cached
+// // //         final isCached = await _imageCacheService.isCached(banner.banner);
+
+// // //         if (!isCached) {
+// // //           // Download in background without blocking UI
+// // //           _imageCacheService
+// // //               .downloadAndCacheImage(banner.banner)
+// // //               .catchError((e) {
+// // //             print('Failed to preload image: ${banner.banner}');
+// // //           });
+// // //         }
+// // //       } catch (e) {
+// // //         print('Error preloading image: $e');
+// // //       }
+// // //     }
+// // //   }
+
+// // //   // Enhanced fetchBanners with image preloading
+// // //   Future<void> fetchBanners({bool isBackgroundFetch = false}) async {
+// // //     if (!isBackgroundFetch) {
+// // //       setState(() {
+// // //         isLoading = true;
+// // //         errorMessage = '';
+// // //       });
+// // //     }
+
+// // //     try {
+// // //       final prefs = await SharedPreferences.getInstance();
+// // //       final cachedBanners = prefs.getString('banners');
+
+// // //       final List<dynamic> responseData = await fetchBannersData();
+
+// // //       if (cachedBanners != null) {
+// // //         try {
+// // //           final cachedData = json.decode(cachedBanners);
+// // //           if (json.encode(cachedData) == json.encode(responseData)) {
+// // //             // Data hasn't changed, but still preload any missing images
+// // //             if (!isBackgroundFetch) {
+// // //               setState(() => isLoading = false);
+// // //             }
+// // //             _preloadImages();
+// // //             return;
+// // //           }
+// // //         } catch (e) {}
+// // //       }
+
+// // //       List<NewsItemModel> filteredBanners = [];
+
+// // //       for (var banner in responseData) {
+// // //         try {
+// // //           bool isActive = false;
+
+// // //           if (banner['status'] != null) {
+// // //             var status = banner['status'];
+
+// // //             if (status is String) {
+// // //               isActive = status == "1" ||
+// // //                   status.toLowerCase() == "active" ||
+// // //                   status.toLowerCase() == "true";
+// // //             } else if (status is int) {
+// // //               isActive = status == 1;
+// // //             } else if (status is bool) {
+// // //               isActive = status;
+// // //             }
+// // //           } else {
+// // //             isActive = true;
+// // //           }
+
+// // //           if (isActive) {
+// // //             try {
+// // //               final newsItem = NewsItemModel.fromJson(banner);
+// // //               filteredBanners.add(newsItem);
+// // //             } catch (e) {}
+// // //           }
+// // //         } catch (e) {}
+// // //       }
+
+// // //       setState(() {
+// // //         bannerList = filteredBanners;
+// // //         selectedContentId = bannerList.isNotEmpty ? bannerList[0].id : null;
+// // //         isLoading = false;
+// // //         errorMessage = '';
+// // //       });
+
+// // //       await prefs.setString('banners', json.encode(responseData));
+
+// // //       if (bannerList.isNotEmpty) {
+// // //         await _fetchBannerColors();
+// // //         if (!_timer.isActive) {
+// // //           _startAutoSlide();
+// // //         }
+// // //         // Preload images after successful fetch
+// // //         _preloadImages();
+// // //       }
+// // //     } catch (e) {
+// // //       if (!isBackgroundFetch) {
+// // //         setState(() {
+// // //           errorMessage = 'Failed to load banners: $e';
+// // //           isLoading = false;
+// // //         });
+// // //       }
+// // //     }
+// // //   }
+
+// // //   // Add cache management methods
+// // //   Future<void> clearImageCache() async {
+// // //     try {
+// // //       await _imageCacheService.clearCache();
+// // //       ScaffoldMessenger.of(context).showSnackBar(
+// // //         SnackBar(
+// // //           content: Text('Image cache cleared successfully'),
+// // //           backgroundColor: Colors.green,
+// // //         ),
+// // //       );
+// // //     } catch (e) {
+// // //       ScaffoldMessenger.of(context).showSnackBar(
+// // //         SnackBar(
+// // //           content: Text('Failed to clear cache: $e'),
+// // //           backgroundColor: Colors.red,
+// // //         ),
+// // //       );
+// // //     }
+// // //   }
+
+// // //   Future<void> showCacheInfo() async {
+// // //     try {
+// // //       final stats = await _imageCacheService.getCacheStats();
+
+// // //       showDialog(
+// // //         context: context,
+// // //         builder: (BuildContext context) {
+// // //           return AlertDialog(
+// // //             title: Text('Cache Information'),
+// // //             content: Column(
+// // //               mainAxisSize: MainAxisSize.min,
+// // //               crossAxisAlignment: CrossAxisAlignment.start,
+// // //               children: [
+// // //                 Text('Total cached files: ${stats.totalFiles}'),
+// // //                 Text('Cache size: ${stats.totalSizeMB.toStringAsFixed(2)} MB'),
+// // //                 SizedBox(height: 10),
+// // //                 Text(
+// // //                   'Cache helps load images faster and reduces data usage.',
+// // //                   style: TextStyle(fontSize: 12, color: Colors.grey),
+// // //                 ),
+// // //               ],
+// // //             ),
+// // //             actions: [
+// // //               TextButton(
+// // //                 onPressed: () => Navigator.of(context).pop(),
+// // //                 child: Text('OK'),
+// // //               ),
+// // //               TextButton(
+// // //                 onPressed: () {
+// // //                   Navigator.of(context).pop();
+// // //                   clearImageCache();
+// // //                 },
+// // //                 child: Text('Clear Cache'),
+// // //               ),
+// // //             ],
+// // //           );
+// // //         },
+// // //       );
+// // //     } catch (e) {
+// // //       ScaffoldMessenger.of(context).showSnackBar(
+// // //         SnackBar(
+// // //           content: Text('Failed to get cache info: $e'),
+// // //           backgroundColor: Colors.red,
+// // //         ),
+// // //       );
+// // //     }
+// // //   }
+
+// // //   // @override
+// // //   // void dispose() {
+// // //   //   _pageController.dispose();
+// // //   //   _socketService.dispose();
+
+// // //   //   if (_timer.isActive) {
+// // //   //     _timer.cancel();
+// // //   //   }
+
+// // //   //   _buttonFocusNode.dispose();
+
+// // //   //   super.dispose();
+// // //   // }
+
+// // //   // Enhanced _loadCachedData with image cache check
+// // //   Future<void> _loadCachedData() async {
+// // //     final prefs = await SharedPreferences.getInstance();
+// // //     final cachedBanners = prefs.getString('banners');
+
+// // //     if (cachedBanners != null) {
+// // //       try {
+// // //         final List<dynamic> responseData = json.decode(cachedBanners);
+
+// // //         List<NewsItemModel> filteredBanners = [];
+
+// // //         for (var banner in responseData) {
+// // //           try {
+// // //             bool isActive = false;
+
+// // //             if (banner['status'] != null) {
+// // //               var status = banner['status'];
+
+// // //               if (status is String) {
+// // //                 isActive = status == "1" ||
+// // //                     status.toLowerCase() == "active" ||
+// // //                     status.toLowerCase() == "true";
+// // //               } else if (status is int) {
+// // //                 isActive = status == 1;
+// // //               } else if (status is bool) {
+// // //                 isActive = status;
+// // //               }
+// // //             } else {
+// // //               isActive = true;
+// // //             }
+
+// // //             if (isActive) {
+// // //               try {
+// // //                 final newsItem = NewsItemModel.fromJson(banner);
+// // //                 filteredBanners.add(newsItem);
+// // //               } catch (e) {}
+// // //             }
+// // //           } catch (e) {}
+// // //         }
+
+// // //         setState(() {
+// // //           bannerList = filteredBanners;
+// // //           selectedContentId = bannerList.isNotEmpty ? bannerList[0].id : null;
+// // //           isLoading = false;
+// // //         });
+
+// // //         if (bannerList.isNotEmpty) {
+// // //           await _fetchBannerColors();
+// // //           // Check which images are cached and preload missing ones
+// // //           _preloadImages();
+// // //         }
+// // //       } catch (e) {
+// // //         setState(() => isLoading = false);
+// // //       }
+// // //     } else {
+// // //       setState(() => isLoading = false);
+// // //     }
+
+// // //     // Fetch fresh data in background
+// // //     fetchBanners(isBackgroundFetch: true);
+// // //   }
+
+// // //   // Future<void> _initializeSlider() async {
+// // //   //   sharedDataProvider = context.read<SharedDataProvider>();
+
+// // //   //   _socketService.initSocket();
+// // //   //   _pageController = PageController();
+
+// // //   //   _buttonFocusNode.addListener(() {
+// // //   //     if (_buttonFocusNode.hasFocus) {
+// // //   //       widget.onFocusChange?.call(true);
+// // //   //     }
+// // //   //   });
+
+// // //   //   WidgetsBinding.instance.addPostFrameCallback((_) {
+// // //   //     context.read<FocusProvider>().setWatchNowFocusNode(_buttonFocusNode);
+// // //   //   });
+
+// // //   //   _buttonFocusNode.addListener(_onButtonFocusNode);
+
+// // //   //   await _loadCachedData();
+
+// // //   //   if (bannerList.isNotEmpty) {
+// // //   //     _startAutoSlide();
+// // //   //   }
+// // //   // }
+
+// // //   @override
+// // //   void didChangeDependencies() {
+// // //     super.didChangeDependencies();
+
+// // //     _refreshProvider = context.watch<FocusProvider>();
+
+// // //     if (_refreshProvider.shouldRefreshBanners ||
+// // //         _refreshProvider.shouldRefreshLastPlayed) {
+// // //       _handleProviderRefresh();
+// // //     }
+// // //   }
+
+// // //   Future<void> _handleProviderRefresh() async {
+// // //     if (!mounted) return;
+
+// // //     try {
+// // //       if (_refreshProvider.shouldRefreshBanners) {
+// // //         await fetchBanners(isBackgroundFetch: true);
+// // //         _refreshProvider.markBannersRefreshed();
+// // //       }
+// // //     } catch (e) {}
+// // //   }
+
+// // //   // @override
+// // //   // void dispose() {
+// // //   //   _pageController.dispose();
+// // //   //   _socketService.dispose();
+
+// // //   //   if (_timer.isActive) {
+// // //   //     _timer.cancel();
+// // //   //   }
+
+// // //   //   _buttonFocusNode.dispose();
+
+// // //   //   super.dispose();
+// // //   // }
+
+// // //   Future<void> _fetchBannerColors() async {
+// // //     for (var banner in bannerList) {
+// // //       try {
+// // //         final imageUrl = banner.banner;
+// // //         final secondaryColor =
+// // //             await _paletteColorService.getSecondaryColor(imageUrl);
+
+// // //         if (mounted) {
+// // //           setState(() {
+// // //             bannerColors[banner.contentId] = secondaryColor;
+// // //           });
+// // //         }
+// // //       } catch (e) {}
+// // //     }
+// // //   }
+
+// // //   void _startAutoSlide() {
+// // //     if (bannerList.isNotEmpty) {
+// // //       _timer = Timer.periodic(const Duration(seconds: 4), (Timer timer) {
+// // //         if (!mounted) {
+// // //           timer.cancel();
+// // //           return;
+// // //         }
+
+// // //         try {
+// // //           if (_pageController.hasClients) {
+// // //             if (_pageController.page == bannerList.length - 1) {
+// // //               _pageController.jumpToPage(0);
+// // //             } else {
+// // //               _pageController.nextPage(
+// // //                 duration: const Duration(milliseconds: 300),
+// // //                 curve: Curves.easeIn,
+// // //               );
+// // //             }
+// // //           }
+// // //         } catch (e) {}
+// // //       });
+// // //     }
+// // //   }
+
+// // //   bool isYoutubeUrl(String? url) {
+// // //     if (url == null || url.isEmpty) {
+// // //       return false;
+// // //     }
+
+// // //     url = url.toLowerCase().trim();
+
+// // //     bool isYoutubeId = RegExp(r'^[a-zA-Z0-9_-]{11}$').hasMatch(url);
+// // //     if (isYoutubeId) {
+// // //       return true;
+// // //     }
+
+// // //     bool isYoutubeUrl = url.contains('youtube.com') ||
+// // //         url.contains('youtu.be') ||
+// // //         url.contains('youtube.com/shorts/');
+
+// // //     return isYoutubeUrl;
+// // //   }
+
+// // //   String formatUrl(String url, {Map<String, String>? params}) {
+// // //     if (url.isEmpty) {
+// // //       throw Exception("Empty URL provided");
+// // //     }
+
+// // //     return url;
+// // //   }
+
+// // //   void _onButtonFocusNode() {
+// // //     if (_buttonFocusNode.hasFocus) {
+// // //       final random = Random();
+// // //       final color = Color.fromRGBO(
+// // //         random.nextInt(256),
+// // //         random.nextInt(256),
+// // //         random.nextInt(256),
+// // //         1,
+// // //       );
+// // //       context.read<FocusProvider>().setButtonFocus(true, color: color);
+// // //       context.read<ColorProvider>().updateColor(color, true);
+// // //     } else {
+// // //       context.read<FocusProvider>().resetFocus();
+// // //       context.read<ColorProvider>().resetColor();
+// // //     }
+// // //   }
+
+// // //   // Future<void> fetchBanners({bool isBackgroundFetch = false}) async {
+// // //   //   if (!isBackgroundFetch) {
+// // //   //     setState(() {
+// // //   //       isLoading = true;
+// // //   //       errorMessage = '';
+// // //   //     });
+// // //   //   }
+
+// // //   //   try {
+// // //   //     final prefs = await SharedPreferences.getInstance();
+// // //   //     final cachedBanners = prefs.getString('banners');
+
+// // //   //     final List<dynamic> responseData = await fetchBannersData();
+
+// // //   //     for (int i = 0; i < responseData.length; i++) {
+// // //   //       final item = responseData[i];
+// // //   //     }
+
+// // //   //     if (cachedBanners != null) {
+// // //   //       try {
+// // //   //         final cachedData = json.decode(cachedBanners);
+// // //   //         if (json.encode(cachedData) == json.encode(responseData)) {
+// // //   //           return;
+// // //   //         }
+// // //   //       } catch (e) {}
+// // //   //     }
+
+// // //   //     List<NewsItemModel> filteredBanners = [];
+
+// // //   //     for (var banner in responseData) {
+// // //   //       try {
+// // //   //         bool isActive = false;
+
+// // //   //         if (banner['status'] != null) {
+// // //   //           var status = banner['status'];
+
+// // //   //           if (status is String) {
+// // //   //             isActive = status == "1" ||
+// // //   //                 status.toLowerCase() == "active" ||
+// // //   //                 status.toLowerCase() == "true";
+// // //   //           } else if (status is int) {
+// // //   //             isActive = status == 1;
+// // //   //           } else if (status is bool) {
+// // //   //             isActive = status;
+// // //   //           }
+// // //   //         } else {
+// // //   //           isActive = true;
+// // //   //         }
+
+// // //   //         if (isActive) {
+// // //   //           try {
+// // //   //             final newsItem = NewsItemModel.fromJson(banner);
+// // //   //             filteredBanners.add(newsItem);
+// // //   //           } catch (e) {}
+// // //   //         } else {}
+// // //   //       } catch (e) {}
+// // //   //     }
+
+// // //   //     setState(() {
+// // //   //       bannerList = filteredBanners;
+// // //   //       selectedContentId = bannerList.isNotEmpty ? bannerList[0].id : null;
+// // //   //       isLoading = false;
+// // //   //       errorMessage = '';
+// // //   //     });
+
+// // //   //     await prefs.setString('banners', json.encode(responseData));
+
+// // //   //     for (int i = 0; i < bannerList.length; i++) {
+// // //   //       final banner = bannerList[i];
+// // //   //     }
+
+// // //   //     if (bannerList.isNotEmpty) {
+// // //   //       await _fetchBannerColors();
+// // //   //       if (!_timer.isActive) {
+// // //   //         _startAutoSlide();
+// // //   //       }
+// // //   //     } else {}
+// // //   //   } catch (e) {
+// // //   //     if (!isBackgroundFetch) {
+// // //   //       setState(() {
+// // //   //         errorMessage = 'Failed to load banners: $e';
+// // //   //         isLoading = false;
+// // //   //       });
+// // //   //     }
+// // //   //   }
+// // //   // }
+
+// // //   // Future<void> _loadCachedData() async {
+// // //   //   final prefs = await SharedPreferences.getInstance();
+// // //   //   final cachedBanners = prefs.getString('banners');
+
+// // //   //   if (cachedBanners != null) {
+// // //   //     try {
+// // //   //       final List<dynamic> responseData = json.decode(cachedBanners);
+
+// // //   //       List<NewsItemModel> filteredBanners = [];
+
+// // //   //       for (var banner in responseData) {
+// // //   //         try {
+// // //   //           bool isActive = false;
+
+// // //   //           if (banner['status'] != null) {
+// // //   //             var status = banner['status'];
+
+// // //   //             if (status is String) {
+// // //   //               isActive = status == "1" ||
+// // //   //                   status.toLowerCase() == "active" ||
+// // //   //                   status.toLowerCase() == "true";
+// // //   //             } else if (status is int) {
+// // //   //               isActive = status == 1;
+// // //   //             } else if (status is bool) {
+// // //   //               isActive = status;
+// // //   //             }
+// // //   //           } else {
+// // //   //             isActive = true;
+// // //   //           }
+
+// // //   //           if (isActive) {
+// // //   //             try {
+// // //   //               final newsItem = NewsItemModel.fromJson(banner);
+// // //   //               filteredBanners.add(newsItem);
+// // //   //             } catch (e) {}
+// // //   //           }
+// // //   //         } catch (e) {}
+// // //   //       }
+
+// // //   //       setState(() {
+// // //   //         bannerList = filteredBanners;
+// // //   //         selectedContentId = bannerList.isNotEmpty ? bannerList[0].id : null;
+// // //   //         isLoading = false;
+// // //   //       });
+
+// // //   //       if (bannerList.isNotEmpty) {
+// // //   //         await _fetchBannerColors();
+// // //   //       }
+// // //   //     } catch (e) {
+// // //   //       setState(() => isLoading = false);
+// // //   //     }
+// // //   //   } else {
+// // //   //     setState(() => isLoading = false);
+// // //   //   }
+
+// // //   //   fetchBanners(isBackgroundFetch: true);
+// // //   // }
+
+// // //   Future<void> fetchAndPlayVideo(
+// // //       String contentId, List<NewsItemModel> channelList) async {
+// // //     if (_isNavigating) {
+// // //       return;
+// // //     }
+
+// // //     _isNavigating = true;
+
+// // //     bool shouldPlayVideo = true;
+// // //     bool shouldPop = true;
+
+// // //     try {
+// // //       showDialog(
+// // //         context: context,
+// // //         barrierDismissible: false,
+// // //         builder: (BuildContext context) {
+// // //           return WillPopScope(
+// // //             onWillPop: () async {
+// // //               shouldPlayVideo = false;
+// // //               shouldPop = false;
+// // //               return true;
+// // //             },
+// // //             child: Center(
+// // //               child: Container(
+// // //                 padding: EdgeInsets.all(20),
+// // //                 decoration: BoxDecoration(
+// // //                   color: Colors.black87,
+// // //                   borderRadius: BorderRadius.circular(10),
+// // //                 ),
+// // //                 child: Column(
+// // //                   mainAxisSize: MainAxisSize.min,
+// // //                   children: [
+// // //                     SpinKitFadingCircle(
+// // //                       color: borderColor,
+// // //                       size: 50.0,
+// // //                     ),
+// // //                     SizedBox(height: 15),
+// // //                     Text(
+// // //                       '',
+// // //                       style: TextStyle(
+// // //                         color: Colors.white,
+// // //                         fontSize: nametextsz,
+// // //                       ),
+// // //                     ),
+// // //                   ],
+// // //                 ),
+// // //               ),
+// // //             ),
+// // //           );
+// // //         },
+// // //       );
+
+// // //       final responseData = await fetchVideoDataByIdFromBanners(contentId);
+
+// // //       if (shouldPop && context.mounted) {
+// // //         Navigator.of(context, rootNavigator: true).pop();
+// // //       }
+
+// // //       if (shouldPlayVideo && context.mounted) {
+// // //         Navigator.push(
+// // //           context,
+// // //           MaterialPageRoute(
+// // //             builder: (context) => VideoScreen(
+// // //               videoUrl: responseData['url'] ?? '',
+// // //               channelList: channelList,
+// // //               videoId: int.tryParse(contentId) ?? 0,
+// // //               videoType: responseData['type'] ?? '',
+// // //               isLive: true,
+// // //               isVOD: false,
+// // //               bannerImageUrl: responseData['banner'] ?? '',
+// // //               startAtPosition: Duration.zero,
+// // //               isBannerSlider: true,
+// // //               source: 'isBannerSlider',
+// // //               isSearch: false,
+// // //               unUpdatedUrl: responseData['url'] ?? '',
+// // //               name: responseData['name'] ?? '',
+// // //               liveStatus: true,
+// // //               seasonId: null,
+// // //               isLastPlayedStored: false,
+// // //             ),
+// // //           ),
+
+// // //           // builder: (context) => YouTubePlayerScreen(
+// // //           //   videoData: VideoData(
+// // //           //     id: contentId,
+// // //           //     title: responseData['name'] ?? '',
+// // //           //     youtubeUrl: responseData['url'] ?? '',
+// // //           //     thumbnail: responseData['banner'] ?? '',
+// // //           //   ),
+// // //           //   playlist: channelList
+// // //           //       .map((m) => VideoData(
+// // //           //             id: m.id,
+// // //           //             title: m.name,
+// // //           //             youtubeUrl: m.url,
+// // //           //             thumbnail: m.banner,
+// // //           //           ))
+// // //           //       .toList(),
+// // //           // ),
+// // //         );
+// // //       }
+// // //     } catch (e) {
+// // //       if (shouldPop && context.mounted) {
+// // //         Navigator.of(context, rootNavigator: true).pop();
+// // //       }
+
+// // //       if (context.mounted) {
+// // //         ScaffoldMessenger.of(context).showSnackBar(
+// // //           SnackBar(
+// // //             content: Text('Something went wrong'),
+// // //             duration: Duration(seconds: 3),
+// // //             backgroundColor: Colors.red.shade700,
+// // //           ),
+// // //         );
+// // //       }
+// // //     } finally {
+// // //       _isNavigating = false;
+// // //     }
+// // //   }
+
+// // //   void _scrollToFocusedItem(int index) {
+// // //     // Remove this method as it's not needed anymore
+// // //   }
+
+// // //   Uint8List _getCachedImage(String base64String) {
+// // //     try {
+// // //       if (!_bannerCache.containsKey(base64String)) {
+// // //         final base64Content = base64String.split(',').last;
+// // //         _bannerCache[base64String] = base64Decode(base64Content);
+// // //       }
+// // //       return _bannerCache[base64String]!;
+// // //     } catch (e) {
+// // //       return Uint8List.fromList([
+// // //         0x89,
+// // //         0x50,
+// // //         0x4E,
+// // //         0x47,
+// // //         0x0D,
+// // //         0x0A,
+// // //         0x1A,
+// // //         0x0A,
+// // //         0x00,
+// // //         0x00,
+// // //         0x00,
+// // //         0x0D,
+// // //         0x49,
+// // //         0x48,
+// // //         0x44,
+// // //         0x52,
+// // //         0x00,
+// // //         0x00,
+// // //         0x00,
+// // //         0x01,
+// // //         0x00,
+// // //         0x00,
+// // //         0x00,
+// // //         0x01,
+// // //         0x08,
+// // //         0x02,
+// // //         0x00,
+// // //         0x00,
+// // //         0x00,
+// // //         0x90,
+// // //         0x77,
+// // //         0x53,
+// // //         0xDE,
+// // //         0x00,
+// // //         0x00,
+// // //         0x00,
+// // //         0x0C,
+// // //         0x49,
+// // //         0x44,
+// // //         0x41,
+// // //         0x54,
+// // //         0x78,
+// // //         0x01,
+// // //         0x63,
+// // //         0x00,
+// // //         0x01,
+// // //         0x00,
+// // //         0x05,
+// // //         0x00,
+// // //         0x01,
+// // //         0xE2,
+// // //         0x26,
+// // //         0x05,
+// // //         0x9B,
+// // //         0x00,
+// // //         0x00,
+// // //         0x00,
+// // //         0x00,
+// // //         0x49,
+// // //         0x45,
+// // //         0x4E,
+// // //         0x44,
+// // //         0xAE,
+// // //         0x42,
+// // //         0x60,
+// // //         0x82
+// // //       ]);
+// // //     }
+// // //   }
+
+// // //   bool isLiveVideoUrl(String url) {
+// // //     String lowerUrl = url.toLowerCase().trim();
+
+// // //     if (RegExp(r'^[a-zA-Z0-9_-]{10,15}$').hasMatch(lowerUrl)) {
+// // //       return false;
+// // //     }
+
+// // //     if (!lowerUrl.startsWith('http://') && !lowerUrl.startsWith('https://')) {
+// // //       return false;
+// // //     }
+
+// // //     if (lowerUrl.contains(".m3u8") ||
+// // //         lowerUrl.contains("live") ||
+// // //         lowerUrl.contains("stream") ||
+// // //         lowerUrl.contains("broadcast") ||
+// // //         lowerUrl.contains("playlist")) {
+// // //       return true;
+// // //     }
+
+// // //     List<String> videoExtensions = [".mp4", ".mov", ".avi", ".flv", ".mkv"];
+// // //     for (String ext in videoExtensions) {
+// // //       if (lowerUrl.endsWith(ext)) {
+// // //         return false;
+// // //       }
+// // //     }
+
+// // //     return false;
+// // //   }
+
+// // //   List<bool> checkLiveVideoList(List<String> urls) {
+// // //     return urls.map(isYoutubeUrl).toList();
+// // //   }
+
+// // //   String safeToString(dynamic value, {String defaultValue = ''}) {
+// // //     if (value == null) return defaultValue;
+// // //     return value.toString();
+// // //   }
+
+// // //   Widget _buildErrorImage() {
+// // //     return Container(
+// // //       color: Colors.grey.shade800,
+// // //       child: Image.asset(localImage),
+// // //     );
+// // //   }
+
+// // //   bool get isSliderReady =>
+// // //       !isLoading && errorMessage.isEmpty && bannerList.isNotEmpty;
+
+// // //   Map<String, dynamic>? get currentBannerInfo {
+// // //     if (selectedContentId == null || bannerList.isEmpty) return null;
+
+// // //     try {
+// // //       final banner = bannerList.firstWhere(
+// // //         (b) => b.contentId == selectedContentId,
+// // //         orElse: () => bannerList.first,
+// // //       );
+
+// // //       return {
+// // //         'id': banner.contentId,
+// // //         'name': banner.name,
+// // //         'banner': banner.banner,
+// // //         'url': banner.url,
+// // //         'type': banner.type,
+// // //       };
+// // //     } catch (e) {
+// // //       return null;
+// // //     }
+// // //   }
+// // // }
+
+// // // extension DurationExtension on Duration {
+// // //   String toHHMMSS() {
+// // //     String twoDigits(int n) => n.toString().padLeft(2, '0');
+// // //     String hours = inHours > 0 ? '${twoDigits(inHours)}:' : '';
+// // //     String minutes = twoDigits(inMinutes.remainder(60));
+// // //     String seconds = twoDigits(inSeconds.remainder(60));
+// // //     return '$hours$minutes:$seconds';
+// // //   }
+// // // }
+
+// // // class BannerSliderManager {
+// // //   static BannerSlider? _instance;
+
+// // //   static void setInstance(BannerSlider instance) {
+// // //     _instance = instance;
+// // //   }
+
+// // //   static BannerSlider? get instance => _instance;
+
+// // //   static void refreshBanners() {
+// // //     GlobalEventBus().fire(RefreshPageEvent('uniquePageId'));
+// // //   }
+
+// // //   static void clearInstance() {
+// // //     _instance = null;
+// // //   }
+// // // }
+
+// // // String formatAuthKey(String? key) {
+// // //   if (key == null || key.isEmpty) return '';
+
+// // //   key = key.trim();
+
+// // //   if (key.length < 10) {}
+
+// // //   return key;
+// // // }
+
+// // // Future<bool> checkEndpointHealth(String endpoint) async {
+// // //   try {
+// // //     final response =
+// // //         await https.head(Uri.parse(endpoint)).timeout(Duration(seconds: 5));
+// // //     return response.statusCode == 200 || response.statusCode == 405;
+// // //   } catch (e) {
+// // //     return false;
+// // //   }
+// // // }
+
+// // // Future<String> getBestApiEndpoint(List<String> endpoints) async {
+// // //   for (String endpoint in endpoints) {
+// // //     if (await checkEndpointHealth(endpoint)) {
+// // //       return endpoint;
+// // //     }
+// // //   }
+
+// // //   return endpoints.first;
+// // // }
+
+// // // Future<T> retryApiCall<T>(
+// // //   Future<T> Function() apiCall, {
+// // //   int maxRetries = 3,
+// // //   Duration delay = const Duration(seconds: 2),
+// // // }) async {
+// // //   for (int attempt = 1; attempt <= maxRetries; attempt++) {
+// // //     try {
+// // //       return await apiCall();
+// // //     } catch (e) {
+// // //       if (attempt == maxRetries) {
+// // //         rethrow;
+// // //       }
+
+// // //       await Future.delayed(delay);
+// // //     }
+// // //   }
+
+// // //   throw Exception('All retry attempts failed');
+// // // }
+
+// // // class CacheManager {
+// // //   static const String BANNER_CACHE_KEY = 'banners';
+// // //   static const String FEATURED_TV_CACHE_KEY = 'live_featured_tv';
+// // //   static const String LAST_PLAYED_CACHE_KEY = 'last_played_videos';
+
+// // //   static Future<void> clearAllCache() async {
+// // //     try {
+// // //       final prefs = await SharedPreferences.getInstance();
+// // //       await prefs.remove(BANNER_CACHE_KEY);
+// // //       await prefs.remove(FEATURED_TV_CACHE_KEY);
+// // //     } catch (e) {}
+// // //   }
+
+// // //   static Future<void> clearBannerCache() async {
+// // //     try {
+// // //       final prefs = await SharedPreferences.getInstance();
+// // //       await prefs.remove(BANNER_CACHE_KEY);
+// // //     } catch (e) {}
+// // //   }
+
+// // //   static Future<Map<String, int>> getCacheInfo() async {
+// // //     try {
+// // //       final prefs = await SharedPreferences.getInstance();
+
+// // //       final bannerSize = prefs.getString(BANNER_CACHE_KEY)?.length ?? 0;
+// // //       final featuredTVSize =
+// // //           prefs.getString(FEATURED_TV_CACHE_KEY)?.length ?? 0;
+// // //       final lastPlayedCount =
+// // //           prefs.getStringList(LAST_PLAYED_CACHE_KEY)?.length ?? 0;
+
+// // //       return {
+// // //         'bannerCacheSize': bannerSize,
+// // //         'featuredTVCacheSize': featuredTVSize,
+// // //         'lastPlayedCount': lastPlayedCount,
+// // //       };
+// // //     } catch (e) {
+// // //       return {};
+// // //     }
+// // //   }
+// // // }
+
+
+
+
+
+
+
+
+// // import 'dart:async';
+// // import 'dart:convert';
+// // import 'dart:math';
+// // import 'dart:typed_data';
+// // import 'package:cached_network_image/cached_network_image.dart';
+// // import 'package:flutter/material.dart';
+// // import 'package:flutter/services.dart';
+// // import 'package:flutter_spinkit/flutter_spinkit.dart';
+// // import 'package:http/http.dart' as https;
+// // import 'package:mobi_tv_entertainment/main.dart';
+// // import 'package:mobi_tv_entertainment/provider/color_provider.dart';
+// // import 'package:mobi_tv_entertainment/provider/focus_provider.dart';
+// // import 'package:mobi_tv_entertainment/video_widget/socket_service.dart';
+// // import 'package:mobi_tv_entertainment/video_widget/video_screen.dart';
+// // import 'package:mobi_tv_entertainment/widgets/models/news_item_model.dart';
+// // import 'package:mobi_tv_entertainment/widgets/small_widgets/loading_indicator.dart';
+// // import 'package:mobi_tv_entertainment/widgets/utils/color_service.dart';
+// // import 'package:mobi_tv_entertainment/widgets/utils/random_light_color_widget.dart';
+// // import 'package:provider/provider.dart';
+// // import 'package:shared_preferences/shared_preferences.dart';
+
+// // import '../../widgets/small_widgets/app_assets.dart';
+
+// // // Cache Data Model
+// // class CacheDataModel {
+// //   final List<dynamic> data;
+// //   final DateTime timestamp;
+// //   final String version;
+
+// //   CacheDataModel({
+// //     required this.data,
+// //     required this.timestamp,
+// //     required this.version,
+// //   });
+
+// //   Map<String, dynamic> toJson() => {
+// //     'data': data,
+// //     'timestamp': timestamp.millisecondsSinceEpoch,
+// //     'version': version,
+// //   };
+
+// //   factory CacheDataModel.fromJson(Map<String, dynamic> json) => CacheDataModel(
+// //     data: json['data'] ?? [],
+// //     timestamp: DateTime.fromMillisecondsSinceEpoch(json['timestamp'] ?? 0),
+// //     version: json['version'] ?? '1.0',
+// //   );
+
+// //   bool isExpired({Duration expiration = const Duration(hours: 1)}) {
+// //     return DateTime.now().difference(timestamp) > expiration;
+// //   }
+// // }
+
+// // // Smart Cache Manager
+// // class SmartCacheManager {
+// //   static const String BANNER_CACHE_KEY = 'smart_banners_cache';
+// //   static const String FEATURED_TV_CACHE_KEY = 'smart_featured_tv_cache';
+// //   static const String CACHE_VERSION = '2.0';
+
+// //   static Future<CacheDataModel?> getCachedData(String key) async {
+// //     try {
+// //       final prefs = await SharedPreferences.getInstance();
+// //       final cachedString = prefs.getString(key);
+      
+// //       if (cachedString != null && cachedString.isNotEmpty) {
+// //         final jsonData = json.decode(cachedString);
+// //         return CacheDataModel.fromJson(jsonData);
+// //       }
+// //     } catch (e) {
+// //       print('Error reading cache: $e');
+// //     }
+// //     return null;
+// //   }
+
+// //   static Future<void> setCachedData(String key, List<dynamic> data) async {
+// //     try {
+// //       final prefs = await SharedPreferences.getInstance();
+// //       final cacheModel = CacheDataModel(
+// //         data: data,
+// //         timestamp: DateTime.now(),
+// //         version: CACHE_VERSION,
+// //       );
+// //       await prefs.setString(key, json.encode(cacheModel.toJson()));
+// //     } catch (e) {
+// //       print('Error saving cache: $e');
+// //     }
+// //   }
+
+// //   static Future<void> clearCache(String key) async {
+// //     try {
+// //       final prefs = await SharedPreferences.getInstance();
+// //       await prefs.remove(key);
+// //     } catch (e) {
+// //       print('Error clearing cache: $e');
+// //     }
+// //   }
+
+// //   static Future<void> clearAllCache() async {
+// //     await Future.wait([
+// //       clearCache(BANNER_CACHE_KEY),
+// //       clearCache(FEATURED_TV_CACHE_KEY),
+// //     ]);
+// //   }
+// // }
+
+// // // Image Cache Service
+// // class ImageCacheStats {
+// //   final int totalFiles;
+// //   final double totalSizeMB;
+// //   ImageCacheStats({required this.totalFiles, required this.totalSizeMB});
+// // }
+
+// // class ImageCacheService {
+// //   Future<void> init() async {
+// //     // Initialize cache if needed
+// //   }
+
+// //   Future<bool> isCached(String url) async {
+// //     return false;
+// //   }
+
+// //   Future<void> downloadAndCacheImage(String url) async {
+// //     await Future.delayed(Duration(milliseconds: 100));
+// //   }
+
+// //   Future<void> clearCache() async {
+// //     await Future.delayed(Duration(milliseconds: 100));
+// //   }
+
+// //   Future<ImageCacheStats> getCacheStats() async {
+// //     return ImageCacheStats(totalFiles: 0, totalSizeMB: 0.0);
+// //   }
+// // }
+
+// // // Auth Headers
+// // Future<Map<String, String>> getAuthHeaders() async {
+// //   String authKey = '';
+
+// //   if (authKey.isEmpty) {
+// //     try {
+// //       final prefs = await SharedPreferences.getInstance();
+// //       authKey = prefs.getString('auth_key') ?? '';
+// //       if (authKey.isNotEmpty) {
+// //         globalAuthKey = authKey;
+// //       }
+// //     } catch (e) {
+// //       print('Error getting auth key: $e');
+// //     }
+// //   }
+
+// //   if (authKey.isEmpty) {
+// //     authKey = 'vLQTuPZUxktl5mVW';
+// //   }
+
+// //   return {
+// //     'auth-key': authKey,
+// //     'Accept': 'application/json',
+// //     'Content-Type': 'application/json',
+// //   };
+// // }
+
+// // // API Configuration
+// // class ApiConfig {
+// //   static const String PRIMARY_BASE_URL = 'https://acomtv.coretechinfo.com/public/api';
+// //   static const List<String> FEATURED_TV_ENDPOINTS = [
+// //     '$PRIMARY_BASE_URL/getCustomImageSlider',
+// //   ];
+// //   static const List<String> BANNER_ENDPOINTS = [
+// //     '$PRIMARY_BASE_URL/getCustomImageSlider',
+// //   ];
+// // }
+
+// // // API Functions
+// // Future<Map<String, String>> fetchVideoDataByIdFromBanners(String contentId) async {
+// //   final cachedData = await SmartCacheManager.getCachedData(SmartCacheManager.FEATURED_TV_CACHE_KEY);
+  
+// //   List<dynamic> responseData = [];
+
+// //   try {
+// //     if (cachedData != null && !cachedData.isExpired()) {
+// //       responseData = cachedData.data;
+// //     } else {
+// //       Map<String, String> headers = await getAuthHeaders();
+// //       bool success = false;
+// //       String responseBody = '';
+
+// //       for (int i = 0; i < ApiConfig.FEATURED_TV_ENDPOINTS.length; i++) {
+// //         String endpoint = ApiConfig.FEATURED_TV_ENDPOINTS[i];
+
+// //         try {
+// //           Map<String, String> currentHeaders = Map.from(headers);
+
+// //           if (endpoint.contains('api.ekomflix.com')) {
+// //             currentHeaders = {
+// //               'x-api-key': 'vLQTuPZUxktl5mVW',
+// //               'Accept': 'application/json',
+// //             };
+// //           }
+
+// //           final response = await https
+// //               .get(Uri.parse(endpoint), headers: currentHeaders)
+// //               .timeout(Duration(seconds: 15));
+
+// //           if (response.statusCode == 200) {
+// //             String body = response.body.trim();
+// //             if (body.startsWith('[') || body.startsWith('{')) {
+// //               try {
+// //                 json.decode(body);
+// //                 responseBody = body;
+// //                 success = true;
+// //                 break;
+// //               } catch (e) {
+// //                 continue;
+// //               }
+// //             }
+// //           }
+// //         } catch (e) {
+// //           continue;
+// //         }
+// //       }
+
+// //       if (!success) {
+// //         throw Exception('Failed to load featured live TV from all endpoints');
+// //       }
+
+// //       responseData = json.decode(responseBody);
+// //       await SmartCacheManager.setCachedData(SmartCacheManager.FEATURED_TV_CACHE_KEY, responseData);
+// //     }
+
+// //     final matchedItem = responseData.firstWhere(
+// //       (channel) => channel['id'].toString() == contentId,
+// //       orElse: () => null,
+// //     );
+
+// //     if (matchedItem == null) {
+// //       throw Exception('Content with ID $contentId not found');
+// //     }
+
+// //     return {
+// //       'url': matchedItem['url']?.toString() ?? '',
+// //       'type': matchedItem['type']?.toString() ?? '',
+// //       'banner': matchedItem['banner']?.toString() ?? '',
+// //       'name': matchedItem['name']?.toString() ?? '',
+// //       'stream_type': matchedItem['stream_type']?.toString() ?? '',
+// //     };
+// //   } catch (e) {
+// //     throw Exception('Something went wrong: $e');
+// //   }
+// // }
+
+// // Future<List<dynamic>> fetchBannersData() async {
+// //   Map<String, String> headers = await getAuthHeaders();
+// //   bool success = false;
+// //   String responseBody = '';
+
+// //   for (int i = 0; i < ApiConfig.BANNER_ENDPOINTS.length; i++) {
+// //     String endpoint = ApiConfig.BANNER_ENDPOINTS[i];
+
+// //     try {
+// //       Map<String, String> currentHeaders = Map.from(headers);
+
+// //       if (endpoint.contains('api.ekomflix.com')) {
+// //         currentHeaders = {
+// //           'x-api-key': 'vLQTuPZUxktl5mVW',
+// //           'Accept': 'application/json',
+// //         };
+// //       }
+
+// //       final response = await https
+// //           .get(Uri.parse(endpoint), headers: currentHeaders)
+// //           .timeout(Duration(seconds: 15));
+
+// //       if (response.statusCode == 200) {
+// //         String body = response.body.trim();
+// //         if (body.startsWith('[') || body.startsWith('{')) {
+// //           try {
+// //             json.decode(body);
+// //             responseBody = body;
+// //             success = true;
+// //             break;
+// //           } catch (e) {
+// //             continue;
+// //           }
+// //         }
+// //       }
+// //     } catch (e) {
+// //       continue;
+// //     }
+// //   }
+
+// //   if (!success) {
+// //     throw Exception('Failed to load banners from all endpoints');
+// //   }
+
+// //   return json.decode(responseBody);
+// // }
+
+// // // Event Bus
+// // class GlobalEventBus {
+// //   static final GlobalEventBus _instance = GlobalEventBus._internal();
+// //   factory GlobalEventBus() => _instance;
+
+// //   final StreamController<RefreshPageEvent> _controller =
+// //       StreamController<RefreshPageEvent>.broadcast();
+
+// //   GlobalEventBus._internal();
+
+// //   Stream<RefreshPageEvent> get events => _controller.stream;
+// //   void fire(RefreshPageEvent event) => _controller.add(event);
+// //   void dispose() => _controller.close();
+// // }
+
+// // class RefreshPageEvent {
+// //   final String pageId;
+// //   RefreshPageEvent(this.pageId);
+// // }
+
+// // // Main Banner Slider Widget
+// // class BannerSlider extends StatefulWidget {
+// //   final Function(bool)? onFocusChange;
+// //   final FocusNode focusNode;
+  
+// //   const BannerSlider({
+// //     Key? key, 
+// //     this.onFocusChange, 
+// //     required this.focusNode
+// //   }) : super(key: key);
+  
+// //   @override
+// //   _BannerSliderState createState() => _BannerSliderState();
+// // }
+
+// // class _BannerSliderState extends State<BannerSlider>
+// //     with SingleTickerProviderStateMixin {
+  
+// //   final SocketService _socketService = SocketService();
+// //   List<NewsItemModel> bannerList = [];
+// //   Map<String, Color> bannerColors = {};
+// //   bool isLoading = true;
+// //   bool isLoadingFromCache = false;
+// //   String errorMessage = '';
+// //   late PageController _pageController;
+// //   Timer? _timer;
+// //   String? selectedContentId;
+// //   final FocusNode _buttonFocusNode = FocusNode();
+// //   bool _isNavigating = false;
+// //   final PaletteColorService _paletteColorService = PaletteColorService();
+// //   Map<String, Uint8List> _bannerCache = {};
+// //   late FocusProvider _refreshProvider;
+// //   final ImageCacheService _imageCacheService = ImageCacheService();
+
+// //   // Animation controllers for shimmer effect
+// //   late AnimationController _shimmerController;
+// //   late Animation<double> _shimmerAnimation;
+
+// //   @override
+// //   void initState() {
+// //     super.initState();
+// //     _initializeShimmerAnimation();
+// //     _initializeSlider();
+// //   }
+
+// //   void _initializeShimmerAnimation() {
+// //     _shimmerController = AnimationController(
+// //       duration: const Duration(milliseconds: 1500),
+// //       vsync: this,
+// //     )..repeat();
+
+// //     _shimmerAnimation = Tween<double>(
+// //       begin: -1.0,
+// //       end: 2.0,
+// //     ).animate(CurvedAnimation(
+// //       parent: _shimmerController,
+// //       curve: Curves.easeInOut,
+// //     ));
+// //   }
+
+// //   @override
+// //   void dispose() {
+// //     if (_pageController.hasClients) {
+// //       _pageController.dispose();
+// //     }
+// //     _socketService.dispose();
+// //     _shimmerController.dispose();
+// //     if (_timer != null && _timer!.isActive) {
+// //       _timer!.cancel();
+// //     }
+// //     _buttonFocusNode.dispose();
+// //     super.dispose();
+// //   }
+
+// //   @override
+// //   Widget build(BuildContext context) {
+// //     return Consumer<FocusProvider>(
+// //       builder: (context, focusProvider, child) {
+// //         return Scaffold(
+// //           backgroundColor: cardColor,
+// //           body: _buildBody(focusProvider),
+// //         );
+// //       },
+// //     );
+// //   }
+
+// //   Widget _buildBody(FocusProvider focusProvider) {
+// //     if (isLoading && bannerList.isEmpty) {
+// //       return _buildLoadingWidget();
+// //     }
+
+// //     if (errorMessage.isNotEmpty && bannerList.isEmpty) {
+// //       return _buildErrorWidget();
+// //     }
+
+// //     if (bannerList.isEmpty && !isLoading) {
+// //       return _buildEmptyWidget();
+// //     }
+
+// //     return _buildBannerSlider(focusProvider);
+// //   }
+
+// //   Widget _buildLoadingWidget() {
+// //     return Center(
+// //       child: Column(
+// //         mainAxisAlignment: MainAxisAlignment.center,
+// //         children: [
+// //           SpinKitFadingCircle(color: borderColor, size: 50.0),
+// //           SizedBox(height: 20),
+// //           Text(
+// //             isLoadingFromCache ? 'Loading from cache...' : 'Loading...',
+// //             style: TextStyle(
+// //               color: hintColor,
+// //               fontSize: nametextsz,
+// //             ),
+// //           ),
+// //         ],
+// //       ),
+// //     );
+// //   }
+
+// //   Widget _buildErrorWidget() {
+// //     return Center(
+// //       child: Column(
+// //         mainAxisAlignment: MainAxisAlignment.center,
+// //         children: [
+// //           Icon(Icons.error_outline, color: Colors.red, size: 50),
+// //           SizedBox(height: 20),
+// //           Text(
+// //             'Something Went Wrong',
+// //             style: TextStyle(
+// //               fontSize: menutextsz,
+// //               color: Colors.red,
+// //               fontWeight: FontWeight.bold,
+// //             ),
+// //           ),
+// //           SizedBox(height: 10),
+// //           Padding(
+// //             padding: EdgeInsets.symmetric(horizontal: 20),
+// //             child: Text(
+// //               errorMessage,
+// //               style: TextStyle(fontSize: minitextsz, color: hintColor),
+// //               textAlign: TextAlign.center,
+// //             ),
+// //           ),
+// //           SizedBox(height: 20),
+// //           ElevatedButton(
+// //             onPressed: () => _loadData(forceRefresh: true),
+// //             child: Text('Retry'),
+// //           ),
+// //         ],
+// //       ),
+// //     );
+// //   }
+
+// //   Widget _buildEmptyWidget() {
+// //     return Center(
+// //       child: Column(
+// //         mainAxisAlignment: MainAxisAlignment.center,
+// //         children: [
+// //           Icon(
+// //             Icons.image_not_supported,
+// //             color: hintColor.withOpacity(0.5),
+// //             size: 50,
+// //           ),
+// //           SizedBox(height: 20),
+// //           Text(
+// //             'No content available',
+// //             style: TextStyle(color: hintColor, fontSize: nametextsz),
+// //           ),
+// //         ],
+// //       ),
+// //     );
+// //   }
+
+// //   Widget _buildBannerSlider(FocusProvider focusProvider) {
+// //     return Stack(
+// //       children: [
+// //         // Page View
+// //         PageView.builder(
+// //           controller: _pageController,
+// //           itemCount: bannerList.length,
+// //           onPageChanged: (index) {
+// //             if (mounted) {
+// //               setState(() {
+// //                 selectedContentId = bannerList[index].contentId.toString();
+// //               });
+// //             }
+// //           },
+// //           itemBuilder: (context, index) {
+// //             final banner = bannerList[index];
+// //             return Stack(
+// //               alignment: AlignmentDirectional.topCenter,
+// //               children: [
+// //                 _buildBannerWithShimmer(banner, focusProvider),
+// //                 _buildGradientOverlay(),
+// //               ],
+// //             );
+// //           },
+// //         ),
+
+// //         // Watch Now Button
+// //         _buildWatchNowButton(focusProvider),
+
+// //         // Page indicators
+// //         if (bannerList.length > 1) _buildPageIndicators(),
+
+// //         // Cache status indicator
+// //         if (isLoadingFromCache) _buildCacheStatusIndicator(),
+// //       ],
+// //     );
+// //   }
+
+// //   Widget _buildGradientOverlay() {
+// //     return Container(
+// //       margin: const EdgeInsets.only(top: 1),
+// //       width: screenwdt,
+// //       height: screenhgt,
+// //       decoration: BoxDecoration(
+// //         gradient: LinearGradient(
+// //           begin: Alignment.topCenter,
+// //           end: Alignment.bottomCenter,
+// //           colors: [
+// //             Colors.black.withOpacity(0.3),
+// //             Colors.transparent,
+// //             Colors.black.withOpacity(0.7),
+// //           ],
+// //           stops: [0.0, 0.5, 1.0],
+// //         ),
+// //       ),
+// //     );
+// //   }
+
+// //   Widget _buildWatchNowButton(FocusProvider focusProvider) {
+// //     return Positioned(
+// //       top: screenhgt * 0.03,
+// //       left: screenwdt * 0.02,
+// //       child: Focus(
+// //         focusNode: _buttonFocusNode,
+// //         onKeyEvent: _handleKeyEvent,
+// //         child: GestureDetector(
+// //           onTap: _handleWatchNowTap,
+// //           child: RandomLightColorWidget(
+// //             hasFocus: focusProvider.isButtonFocused,
+// //             childBuilder: (Color randomColor) {
+// //               return AnimatedContainer(
+// //                 duration: Duration(milliseconds: 200),
+// //                 margin: EdgeInsets.all(screenwdt * 0.001),
+// //                 padding: EdgeInsets.symmetric(
+// //                   vertical: screenhgt * 0.02,
+// //                   horizontal: screenwdt * 0.02,
+// //                 ),
+// //                 decoration: BoxDecoration(
+// //                   color: focusProvider.isButtonFocused
+// //                       ? Colors.black87
+// //                       : Colors.black.withOpacity(0.6),
+// //                   borderRadius: BorderRadius.circular(12),
+// //                   border: Border.all(
+// //                     color: focusProvider.isButtonFocused
+// //                         ? focusProvider.currentFocusColor ?? randomColor
+// //                         : Colors.white.withOpacity(0.3),
+// //                     width: focusProvider.isButtonFocused ? 3.0 : 1.0,
+// //                   ),
+// //                   boxShadow: focusProvider.isButtonFocused
+// //                       ? [
+// //                           BoxShadow(
+// //                             color: (focusProvider.currentFocusColor ?? randomColor)
+// //                                 .withOpacity(0.5),
+// //                             blurRadius: 20.0,
+// //                             spreadRadius: 5.0,
+// //                           ),
+// //                         ]
+// //                       : [
+// //                           BoxShadow(
+// //                             color: Colors.black.withOpacity(0.3),
+// //                             blurRadius: 10.0,
+// //                             spreadRadius: 2.0,
+// //                           ),
+// //                         ],
+// //                 ),
+// //                 child: Row(
+// //                   mainAxisSize: MainAxisSize.min,
+// //                   children: [
+// //                     Icon(
+// //                       Icons.play_arrow,
+// //                       color: focusProvider.isButtonFocused
+// //                           ? focusProvider.currentFocusColor ?? randomColor
+// //                           : hintColor,
+// //                       size: menutextsz * 1.2,
+// //                     ),
+// //                     SizedBox(width: 8),
+// //                     Text(
+// //                       'Watch Now',
+// //                       style: TextStyle(
+// //                         fontSize: menutextsz,
+// //                         color: focusProvider.isButtonFocused
+// //                             ? focusProvider.currentFocusColor ?? randomColor
+// //                             : hintColor,
+// //                         fontWeight: FontWeight.bold,
+// //                       ),
+// //                     ),
+// //                   ],
+// //                 ),
+// //               );
+// //             },
+// //           ),
+// //         ),
+// //       ),
+// //     );
+// //   }
+
+// //   Widget _buildPageIndicators() {
+// //     return Positioned(
+// //       top: screenhgt * 0.05,
+// //       right: screenwdt * 0.05,
+// //       child: Row(
+// //         mainAxisAlignment: MainAxisAlignment.center,
+// //         children: bannerList.asMap().entries.map((entry) {
+// //           int index = entry.key;
+// //           bool isSelected = selectedContentId == bannerList[index].contentId;
+
+// //           return AnimatedContainer(
+// //             duration: Duration(milliseconds: 300),
+// //             margin: EdgeInsets.symmetric(horizontal: 4),
+// //             width: isSelected ? 12 : 8,
+// //             height: isSelected ? 12 : 8,
+// //             decoration: BoxDecoration(
+// //               color: isSelected
+// //                   ? Colors.white
+// //                   : Colors.white.withOpacity(0.5),
+// //               shape: BoxShape.circle,
+// //               boxShadow: [
+// //                 BoxShadow(
+// //                   color: Colors.black.withOpacity(0.3),
+// //                   blurRadius: 4,
+// //                   spreadRadius: 1,
+// //                 ),
+// //               ],
+// //             ),
+// //           );
+// //         }).toList(),
+// //       ),
+// //     );
+// //   }
+
+// //   Widget _buildCacheStatusIndicator() {
+// //     return Positioned(
+// //       top: screenhgt * 0.01,
+// //       right: screenwdt * 0.01,
+// //       child: Container(
+// //         padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+// //         decoration: BoxDecoration(
+// //           color: Colors.blue.withOpacity(0.8),
+// //           borderRadius: BorderRadius.circular(12),
+// //         ),
+// //         child: Row(
+// //           mainAxisSize: MainAxisSize.min,
+// //           children: [
+// //             Icon(Icons.cached, color: Colors.white, size: 12),
+// //             SizedBox(width: 4),
+// //             Text(
+// //               'Updating...',
+// //               style: TextStyle(color: Colors.white, fontSize: 10),
+// //             ),
+// //           ],
+// //         ),
+// //       ),
+// //     );
+// //   }
+
+// //   Widget _buildBannerWithShimmer(NewsItemModel banner, FocusProvider focusProvider) {
+// //     return Container(
+// //       margin: const EdgeInsets.only(top: 1),
+// //       width: screenwdt,
+// //       height: screenhgt,
+// //       child: Stack(
+// //         children: [
+// //           // Main banner image
+// //           CachedNetworkImage(
+// //             imageUrl: banner.banner,
+// //             fit: BoxFit.fill,
+// //             placeholder: (context, url) => Image.asset('assets/streamstarting.gif'),
+// //             errorWidget: (context, url, error) => Image.asset('assets/streamstarting.gif'),
+// //             cacheKey: banner.contentId,
+// //             fadeInDuration: Duration(milliseconds: 500),
+// //             memCacheHeight: 800,
+// //             memCacheWidth: 1200,
+// //             width: screenwdt,
+// //             height: screenhgt,
+// //           ),
+
+// //           // Shimmer effect overlay when focused
+// //           if (focusProvider.isButtonFocused)
+// //             AnimatedBuilder(
+// //               animation: _shimmerAnimation,
+// //               builder: (context, child) {
+// //                 return Positioned.fill(
+// //                   child: Container(
+// //                     decoration: BoxDecoration(
+// //                       gradient: LinearGradient(
+// //                         begin: Alignment(-1.0 + _shimmerAnimation.value, -1.0),
+// //                         end: Alignment(1.0 + _shimmerAnimation.value, 1.0),
+// //                         colors: [
+// //                           Colors.transparent,
+// //                           Colors.white.withOpacity(0.1),
+// //                           Colors.white.withOpacity(0.2),
+// //                           Colors.white.withOpacity(0.1),
+// //                           Colors.transparent,
+// //                         ],
+// //                         stops: [0.0, 0.3, 0.5, 0.7, 1.0],
+// //                       ),
+// //                     ),
+// //                   ),
+// //                 );
+// //               },
+// //             ),
+
+// //           // Enhanced glow effect when focused
+// //           if (focusProvider.isButtonFocused)
+// //             Positioned.fill(
+// //               child: Container(
+// //                 decoration: BoxDecoration(
+// //                   gradient: RadialGradient(
+// //                     center: Alignment.center,
+// //                     radius: 0.8,
+// //                     colors: [
+// //                       (focusProvider.currentFocusColor ?? Colors.blue).withOpacity(0.1),
+// //                       Colors.transparent,
+// //                     ],
+// //                   ),
+// //                 ),
+// //               ),
+// //             ),
+
+// //           // Border glow effect
+// //           if (focusProvider.isButtonFocused)
+// //             Positioned.fill(
+// //               child: Container(
+// //                 decoration: BoxDecoration(
+// //                   border: Border.all(
+// //                     color: (focusProvider.currentFocusColor ?? Colors.blue).withOpacity(0.3),
+// //                     width: 2.0,
+// //                   ),
+// //                   borderRadius: BorderRadius.circular(8),
+// //                 ),
+// //               ),
+// //             ),
+// //         ],
+// //       ),
+// //     );
+// //   }
+
+// //   // Event Handlers
+// //   KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
+// //     if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
+// //       if (_pageController.hasClients &&
+// //           _pageController.page != null &&
+// //           _pageController.page! < bannerList.length - 1) {
+// //         _pageController.nextPage(
+// //           duration: Duration(milliseconds: 300),
+// //           curve: Curves.easeInOut,
+// //         );
+// //         return KeyEventResult.handled;
+// //       }
+// //     } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+// //       if (_pageController.hasClients &&
+// //           _pageController.page != null &&
+// //           _pageController.page! > 0) {
+// //         _pageController.previousPage(
+// //           duration: Duration(milliseconds: 300),
+// //           curve: Curves.easeInOut,
+// //         );
+// //         return KeyEventResult.handled;
+// //       }
+// //     } else if (event is KeyDownEvent) {
+// //       if (event.logicalKey == LogicalKeyboardKey.select ||
+// //           event.logicalKey == LogicalKeyboardKey.enter) {
+// //         _handleWatchNowTap();
+// //         return KeyEventResult.handled;
+// //       }
+// //     }
+// //     return KeyEventResult.ignored;
+// //   }
+
+// //   void _handleWatchNowTap() {
+// //     if (selectedContentId != null && bannerList.isNotEmpty) {
+// //       try {
+// //         final banner = bannerList.firstWhere(
+// //           (b) => b.contentId == selectedContentId,
+// //           orElse: () => bannerList.first,
+// //         );
+// //         fetchAndPlayVideo(banner.id, bannerList);
+// //       } catch (e) {
+// //         print('Error in watch now tap: $e');
+// //       }
+// //     }
+// //   }
+
+// //   // Initialization Methods
+// //   Future<void> _initializeSlider() async {
+// //     try {
+// //       await _imageCacheService.init();
+
+// //       _socketService.initSocket();
+// //       _pageController = PageController();
+
+// //       _buttonFocusNode.addListener(() {
+// //         if (_buttonFocusNode.hasFocus) {
+// //           widget.onFocusChange?.call(true);
+// //         }
+// //       });
+
+// //       WidgetsBinding.instance.addPostFrameCallback((_) {
+// //         if (mounted) {
+// //           context.read<FocusProvider>().setWatchNowFocusNode(_buttonFocusNode);
+// //         }
+// //       });
+
+// //       _buttonFocusNode.addListener(_onButtonFocusNode);
+
+// //       // Smart data loading strategy
+// //       await _loadData();
+// //     } catch (e) {
+// //       print('Error initializing slider: $e');
+// //       if (mounted) {
+// //         setState(() {
+// //           errorMessage = 'Failed to initialize: $e';
+// //           isLoading = false;
+// //         });
+// //       }
+// //     }
+// //   }
+
+// //   // Enhanced Data Loading Strategy
+// //   Future<void> _loadData({bool forceRefresh = false}) async {
+// //     print('🚀 Starting data load - forceRefresh: $forceRefresh');
+    
+// //     if (!forceRefresh) {
+// //       // Step 1: Try to load from cache first
+// //       await _loadFromCache();
+// //     }
+
+// //     // Step 2: Always fetch fresh data from API (in background if cache loaded)
+// //     await _fetchFreshDataFromAPI();
+// //   }
+
+// //   Future<void> _loadFromCache() async {
+// //     try {
+// //       print('📦 Attempting to load from cache...');
+      
+// //       final cachedData = await SmartCacheManager.getCachedData(
+// //         SmartCacheManager.BANNER_CACHE_KEY
+// //       );
+
+// //       if (cachedData != null && cachedData.data.isNotEmpty) {
+// //         print('✅ Cache found with ${cachedData.data.length} items');
+        
+// //         if (mounted) {
+// //           setState(() {
+// //             isLoadingFromCache = true;
+// //           });
+// //         }
+
+// //         final processedBanners = await _processRawBannerData(cachedData.data);
+        
+// //         if (processedBanners.isNotEmpty && mounted) {
+// //           setState(() {
+// //             bannerList = processedBanners;
+// //             selectedContentId = bannerList.isNotEmpty ? bannerList[0].id : null;
+// //             isLoading = false;
+// //             isLoadingFromCache = false;
+// //             errorMessage = '';
+// //           });
+
+// //           print('✅ Loaded ${bannerList.length} banners from cache');
+          
+// //           // Start auto slide and fetch colors
+// //           if (bannerList.isNotEmpty) {
+// //             _startAutoSlide();
+// //             _fetchBannerColors();
+// //             _preloadImages();
+// //           }
+// //         } else {
+// //           print('⚠️ Cache data processed but no valid banners found');
+// //           if (mounted) {
+// //             setState(() {
+// //               isLoadingFromCache = false;
+// //             });
+// //           }
+// //         }
+// //       } else {
+// //         print('❌ No cache found');
+// //       }
+// //     } catch (e) {
+// //       print('❌ Error loading from cache: $e');
+// //       if (mounted) {
+// //         setState(() {
+// //           isLoadingFromCache = false;
+// //         });
+// //       }
+// //     }
+// //   }
+
+// //   Future<void> _fetchFreshDataFromAPI() async {
+// //     try {
+// //       print('🌐 Fetching fresh data from API...');
+
+// //       // Show loading indicator only if no cache data is displayed
+// //       if (bannerList.isEmpty && mounted) {
+// //         setState(() {
+// //           isLoading = true;
+// //           errorMessage = '';
+// //         });
+// //       } else {
+// //         // Show cache update indicator
+// //         if (mounted) {
+// //           setState(() {
+// //             isLoadingFromCache = true;
+// //           });
+// //         }
+// //       }
+
+// //       final List<dynamic> responseData = await fetchBannersData();
+// //       print('✅ API returned ${responseData.length} items');
+
+// //       // Check if data has changed compared to what we have
+// //       if (_hasDataChanged(responseData)) {
+// //         print('🔄 Data has changed, updating...');
+        
+// //         // Save to cache
+// //         await SmartCacheManager.setCachedData(
+// //           SmartCacheManager.BANNER_CACHE_KEY, 
+// //           responseData
+// //         );
+
+// //         // Process and update UI
+// //         final processedBanners = await _processRawBannerData(responseData);
+        
+// //         if (mounted) {
+// //           setState(() {
+// //             bannerList = processedBanners;
+// //             selectedContentId = bannerList.isNotEmpty ? bannerList[0].id : null;
+// //             isLoading = false;
+// //             isLoadingFromCache = false;
+// //             errorMessage = '';
+// //           });
+// //         }
+
+// //         print('✅ Updated with ${bannerList.length} banners from API');
+
+// //         // Start auto slide and fetch colors if this is the first load
+// //         if (bannerList.isNotEmpty) {
+// //           if (_timer == null || !_timer!.isActive) {
+// //             _startAutoSlide();
+// //           }
+// //           _fetchBannerColors();
+// //           _preloadImages();
+// //         }
+// //       } else {
+// //         print('✅ Data unchanged, keeping current display');
+// //         if (mounted) {
+// //           setState(() {
+// //             isLoading = false;
+// //             isLoadingFromCache = false;
+// //           });
+// //         }
+// //       }
+// //     } catch (e) {
+// //       print('❌ Error fetching from API: $e');
+      
+// //       // Only show error if we have no data to display
+// //       if (bannerList.isEmpty && mounted) {
+// //         setState(() {
+// //           errorMessage = 'Failed to load banners: $e';
+// //           isLoading = false;
+// //           isLoadingFromCache = false;
+// //         });
+// //       } else {
+// //         // Just hide the loading indicator but keep current data
+// //         if (mounted) {
+// //           setState(() {
+// //             isLoading = false;
+// //             isLoadingFromCache = false;
+// //           });
+// //         }
+        
+// //         // Show a subtle notification that update failed
+// //         if (mounted && context.mounted) {
+// //           ScaffoldMessenger.of(context).showSnackBar(
+// //             SnackBar(
+// //               content: Text('Failed to update content'),
+// //               duration: Duration(seconds: 2),
+// //               backgroundColor: Colors.orange.shade600,
+// //             ),
+// //           );
+// //         }
+// //       }
+// //     }
+// //   }
+
+// //   bool _hasDataChanged(List<dynamic> newData) {
+// //     if (bannerList.length != newData.length) {
+// //       return true;
+// //     }
+    
+// //     // Compare key fields to detect changes
+// //     try {
+// //       for (int i = 0; i < bannerList.length && i < newData.length; i++) {
+// //         final current = bannerList[i];
+// //         final newItem = newData[i];
+        
+// //         if (current.id != newItem['id']?.toString() ||
+// //             current.name != newItem['name']?.toString() ||
+// //             current.banner != newItem['banner']?.toString() ||
+// //             current.url != newItem['url']?.toString()) {
+// //           return true;
+// //         }
+// //       }
+// //       return false;
+// //     } catch (e) {
+// //       // If comparison fails, assume data changed
+// //       return true;
+// //     }
+// //   }
+
+// //   Future<List<NewsItemModel>> _processRawBannerData(List<dynamic> rawData) async {
+// //     List<NewsItemModel> filteredBanners = [];
+
+// //     for (var banner in rawData) {
+// //       try {
+// //         bool isActive = false;
+
+// //         if (banner['status'] != null) {
+// //           var status = banner['status'];
+
+// //           if (status is String) {
+// //             isActive = status == "1" ||
+// //                 status.toLowerCase() == "active" ||
+// //                 status.toLowerCase() == "true";
+// //           } else if (status is int) {
+// //             isActive = status == 1;
+// //           } else if (status is bool) {
+// //             isActive = status;
+// //           }
+// //         } else {
+// //           isActive = true;
+// //         }
+
+// //         if (isActive) {
+// //           try {
+// //             final newsItem = NewsItemModel.fromJson(banner);
+// //             filteredBanners.add(newsItem);
+// //           } catch (e) {
+// //             print('Error creating NewsItemModel: $e');
+// //           }
+// //         }
+// //       } catch (e) {
+// //         print('Error processing banner: $e');
+// //       }
+// //     }
+
+// //     return filteredBanners;
+// //   }
+
+// //   // Preload images in background for smooth experience
+// //   Future<void> _preloadImages() async {
+// //     for (final banner in bannerList) {
+// //       try {
+// //         final isCached = await _imageCacheService.isCached(banner.banner);
+
+// //         if (!isCached) {
+// //           _imageCacheService
+// //               .downloadAndCacheImage(banner.banner)
+// //               .catchError((e) {
+// //             print('Failed to preload image: ${banner.banner}');
+// //           });
+// //         }
+// //       } catch (e) {
+// //         print('Error preloading image: $e');
+// //       }
+// //     }
+// //   }
+
+// //   @override
+// //   void didChangeDependencies() {
+// //     super.didChangeDependencies();
+
+// //     try {
+// //       _refreshProvider = context.watch<FocusProvider>();
+
+// //       if (_refreshProvider.shouldRefreshBanners ||
+// //           _refreshProvider.shouldRefreshLastPlayed) {
+// //         _handleProviderRefresh();
+// //       }
+// //     } catch (e) {
+// //       print('Error in didChangeDependencies: $e');
+// //     }
+// //   }
+
+// //   Future<void> _handleProviderRefresh() async {
+// //     if (!mounted) return;
+
+// //     try {
+// //       if (_refreshProvider.shouldRefreshBanners) {
+// //         await _fetchFreshDataFromAPI();
+// //         _refreshProvider.markBannersRefreshed();
+// //       }
+// //     } catch (e) {
+// //       print('Error in provider refresh: $e');
+// //     }
+// //   }
+
+// //   Future<void> _fetchBannerColors() async {
+// //     for (var banner in bannerList) {
+// //       try {
+// //         final imageUrl = banner.banner;
+// //         final secondaryColor =
+// //             await _paletteColorService.getSecondaryColor(imageUrl);
+
+// //         if (mounted) {
+// //           setState(() {
+// //             bannerColors[banner.contentId] = secondaryColor;
+// //           });
+// //         }
+// //       } catch (e) {
+// //         print('Error fetching banner color: $e');
+// //       }
+// //     }
+// //   }
+
+// //   void _startAutoSlide() {
+// //     if (bannerList.isNotEmpty && (_timer == null || !_timer!.isActive)) {
+// //       _timer = Timer.periodic(const Duration(seconds: 4), (Timer timer) {
+// //         if (!mounted) {
+// //           timer.cancel();
+// //           return;
+// //         }
+
+// //         try {
+// //           if (_pageController.hasClients) {
+// //             if (_pageController.page == bannerList.length - 1) {
+// //               _pageController.jumpToPage(0);
+// //             } else {
+// //               _pageController.nextPage(
+// //                 duration: const Duration(milliseconds: 300),
+// //                 curve: Curves.easeIn,
+// //               );
+// //             }
+// //           }
+// //         } catch (e) {
+// //           print('Error in auto slide: $e');
+// //         }
+// //       });
+// //     }
+// //   }
+
+// //   void _onButtonFocusNode() {
+// //     try {
+// //       if (_buttonFocusNode.hasFocus) {
+// //         final random = Random();
+// //         final color = Color.fromRGBO(
+// //           random.nextInt(256),
+// //           random.nextInt(256),
+// //           random.nextInt(256),
+// //           1,
+// //         );
+// //         if (mounted) {
+// //           context.read<FocusProvider>().setButtonFocus(true, color: color);
+// //           context.read<ColorProvider>().updateColor(color, true);
+// //         }
+// //       } else {
+// //         if (mounted) {
+// //           context.read<FocusProvider>().resetFocus();
+// //           context.read<ColorProvider>().resetColor();
+// //         }
+// //       }
+// //     } catch (e) {
+// //       print('Error in button focus handler: $e');
+// //     }
+// //   }
+
+
+// //   Future<void> fetchAndPlayVideo(
+// //       String contentId, List<NewsItemModel> channelList) async {
+// //     if (_isNavigating) {
+// //       return;
+// //     }
+
+// //     _isNavigating = true;
+
+// //     bool shouldPlayVideo = true;
+// //     bool shouldPop = true;
+
+// //     try {
+// //       if (mounted) {
+// //         showDialog(
+// //           context: context,
+// //           barrierDismissible: false,
+// //           builder: (BuildContext context) {
+// //             return WillPopScope(
+// //               onWillPop: () async {
+// //                 shouldPlayVideo = false;
+// //                 shouldPop = false;
+// //                 return true;
+// //               },
+// //               child: Center(
+// //                 child: Container(
+// //                   padding: EdgeInsets.all(20),
+// //                   decoration: BoxDecoration(
+// //                     color: Colors.black87,
+// //                     borderRadius: BorderRadius.circular(10),
+// //                   ),
+// //                   child: Column(
+// //                     mainAxisSize: MainAxisSize.min,
+// //                     children: [
+// //                       SpinKitFadingCircle(
+// //                         color: borderColor,
+// //                         size: 50.0,
+// //                       ),
+// //                       SizedBox(height: 15),
+// //                       Text(
+// //                         'Loading video...',
+// //                         style: TextStyle(
+// //                           color: Colors.white,
+// //                           fontSize: nametextsz,
+// //                         ),
+// //                       ),
+// //                     ],
+// //                   ),
+// //                 ),
+// //               ),
+// //             );
+// //           },
+// //         );
+// //       }
+
+// //       final responseData = await fetchVideoDataByIdFromBanners(contentId);
+
+// //       if (shouldPop && mounted && context.mounted) {
+// //         Navigator.of(context, rootNavigator: true).pop();
+// //       }
+
+// //       if (shouldPlayVideo && mounted && context.mounted) {
+// //         Navigator.push(
+// //           context,
+// //           MaterialPageRoute(
+// //             builder: (context) => VideoScreen(
+// //               videoUrl: responseData['url'] ?? '',
+// //               channelList: channelList,
+// //               videoId: int.tryParse(contentId) ?? 0,
+// //               videoType: responseData['type'] ?? '',
+// //               isLive: true,
+// //               isVOD: false,
+// //               bannerImageUrl: responseData['banner'] ?? '',
+// //               startAtPosition: Duration.zero,
+// //               isBannerSlider: true,
+// //               source: 'isBannerSlider',
+// //               isSearch: false,
+// //               unUpdatedUrl: responseData['url'] ?? '',
+// //               name: responseData['name'] ?? '',
+// //               liveStatus: true,
+// //               seasonId: null,
+// //               isLastPlayedStored: false,
+// //             ),
+// //           ),
+// //         );
+// //       }
+// //     } catch (e) {
+// //       if (shouldPop && mounted && context.mounted) {
+// //         Navigator.of(context, rootNavigator: true).pop();
+// //       }
+
+// //       if (mounted && context.mounted) {
+// //         ScaffoldMessenger.of(context).showSnackBar(
+// //           SnackBar(
+// //             content: Text('Something went wrong'),
+// //             duration: Duration(seconds: 3),
+// //             backgroundColor: Colors.red.shade700,
+// //           ),
+// //         );
+// //       }
+// //     } finally {
+// //       _isNavigating = false;
+// //     }
+// //   }
+
+// //   Uint8List _getCachedImage(String base64String) {
+// //     try {
+// //       if (!_bannerCache.containsKey(base64String)) {
+// //         final base64Content = base64String.split(',').last;
+// //         _bannerCache[base64String] = base64Decode(base64Content);
+// //       }
+// //       return _bannerCache[base64String]!;
+// //     } catch (e) {
+// //       return Uint8List.fromList([
+// //         0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, 0x00, 0x00, 0x00, 0x0D,
+// //         0x49, 0x48, 0x44, 0x52, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01,
+// //         0x08, 0x02, 0x00, 0x00, 0x00, 0x90, 0x77, 0x53, 0xDE, 0x00, 0x00, 0x00,
+// //         0x0C, 0x49, 0x44, 0x41, 0x54, 0x78, 0x01, 0x63, 0x00, 0x01, 0x00, 0x05,
+// //         0x00, 0x01, 0xE2, 0x26, 0x05, 0x9B, 0x00, 0x00, 0x00, 0x00, 0x49, 0x45,
+// //         0x4E, 0x44, 0xAE, 0x42, 0x60, 0x82
+// //       ]);
+// //     }
+// //   }
+// //   }
+
+
+
+
+
+
+
+
+
+// import 'dart:async';
+// import 'dart:convert';
+// import 'dart:math';
+// import 'dart:typed_data';
+// import 'package:cached_network_image/cached_network_image.dart';
+// import 'package:flutter/material.dart';
+// import 'package:flutter/services.dart';
+// import 'package:flutter_spinkit/flutter_spinkit.dart';
+// import 'package:http/http.dart' as https;
+// import 'package:mobi_tv_entertainment/main.dart';
+// import 'package:mobi_tv_entertainment/provider/color_provider.dart';
+// import 'package:mobi_tv_entertainment/provider/focus_provider.dart';
+// import 'package:mobi_tv_entertainment/video_widget/socket_service.dart';
+// import 'package:mobi_tv_entertainment/video_widget/video_screen.dart';
+// import 'package:mobi_tv_entertainment/widgets/models/news_item_model.dart';
+// import 'package:mobi_tv_entertainment/widgets/small_widgets/loading_indicator.dart';
+// import 'package:mobi_tv_entertainment/widgets/utils/color_service.dart';
+// import 'package:mobi_tv_entertainment/widgets/utils/random_light_color_widget.dart';
+// import 'package:provider/provider.dart';
+// import 'package:shared_preferences/shared_preferences.dart';
+
+// import '../../widgets/small_widgets/app_assets.dart';
+
+// // Enhanced Cache Data Model
+// class EnhancedCacheDataModel {
+//   final List<dynamic> data;
+//   final DateTime timestamp;
+//   final String version;
+//   final int dataHash;
+//   final Map<String, dynamic> metadata;
+
+//   EnhancedCacheDataModel({
+//     required this.data,
+//     required this.timestamp,
+//     required this.version,
+//     required this.dataHash,
+//     this.metadata = const {},
+//   });
+
+//   Map<String, dynamic> toJson() => {
+//         'data': data,
+//         'timestamp': timestamp.millisecondsSinceEpoch,
+//         'version': version,
+//         'dataHash': dataHash,
+//         'metadata': metadata,
+//       };
+
+//   factory EnhancedCacheDataModel.fromJson(Map<String, dynamic> json) =>
+//       EnhancedCacheDataModel(
+//         data: json['data'] ?? [],
+//         timestamp:
+//             DateTime.fromMillisecondsSinceEpoch(json['timestamp'] ?? 0),
+//         version: json['version'] ?? '1.0',
+//         dataHash: json['dataHash'] ?? 0,
+//         metadata: Map<String, dynamic>.from(json['metadata'] ?? {}),
+//       );
+
+//   bool isExpired({Duration expiration = const Duration(hours: 1)}) {
+//     return DateTime.now().difference(timestamp) > expiration;
+//   }
+
+//   bool isStale({Duration staleTime = const Duration(minutes: 30)}) {
+//     return DateTime.now().difference(timestamp) > staleTime;
+//   }
+
+//   int getAgeInMinutes() {
+//     return DateTime.now().difference(timestamp).inMinutes;
+//   }
+
+//   static int generateDataHash(List<dynamic> data) {
+//     try {
+//       final dataString = data
+//           .map((item) =>
+//               '${item['id']}_${item['name']}_${item['banner']}_${item['url']}')
+//           .join('|');
+//       return dataString.hashCode;
+//     } catch (e) {
+//       return data.length.hashCode;
+//     }
+//   }
+// }
+
+// // Enhanced Smart Cache Manager
+// class EnhancedSmartCacheManager {
+//   static const String BANNER_CACHE_KEY = 'enhanced_banners_cache';
+//   static const String FEATURED_TV_CACHE_KEY = 'enhanced_featured_tv_cache';
+//   static const String CACHE_VERSION = '3.0';
+
+//   static const Duration DEFAULT_CACHE_DURATION = Duration(hours: 2);
+//   static const Duration STALE_CACHE_THRESHOLD = Duration(minutes: 30);
+//   static const Duration MAX_CACHE_AGE = Duration(days: 7);
+
+//   static Future<EnhancedCacheDataModel?> getCachedData(String key) async {
+//     try {
+//       final prefs = await SharedPreferences.getInstance();
+//       final cachedString = prefs.getString(key);
+
+//       if (cachedString != null && cachedString.isNotEmpty) {
+//         final jsonData = json.decode(cachedString);
+//         final cacheModel = EnhancedCacheDataModel.fromJson(jsonData);
+
+//         if (cacheModel.getAgeInMinutes() > MAX_CACHE_AGE.inMinutes) {
+//           print(
+//               '🗑️ Cache too old (${cacheModel.getAgeInMinutes()} minutes), ignoring');
+//           await clearCache(key);
+//           return null;
+//         }
+
+//         return cacheModel;
+//       }
+//     } catch (e) {
+//       print('❌ Error reading cache: $e');
+//       await clearCache(key);
+//     }
+//     return null;
+//   }
+
+//   static Future<void> setCachedData(
+//     String key,
+//     List<dynamic> data, {
+//     Map<String, dynamic>? metadata,
+//   }) async {
+//     try {
+//       final prefs = await SharedPreferences.getInstance();
+//       final dataHash = EnhancedCacheDataModel.generateDataHash(data);
+
+//       final cacheModel = EnhancedCacheDataModel(
+//         data: data,
+//         timestamp: DateTime.now(),
+//         version: CACHE_VERSION,
+//         dataHash: dataHash,
+//         metadata: metadata ?? {},
+//       );
+
+//       await prefs.setString(key, json.encode(cacheModel.toJson()));
+//       print('💾 Cache saved: ${data.length} items, hash: $dataHash');
+//     } catch (e) {
+//       print('❌ Error saving cache: $e');
+//     }
+//   }
+
+//   static bool hasDataChanged(EnhancedCacheDataModel? cachedData, List<dynamic> newData) {
+//     if (cachedData == null) return true;
+
+//     final newDataHash = EnhancedCacheDataModel.generateDataHash(newData);
+//     final hasChanged = cachedData.dataHash != newDataHash;
+
+//     print('📊 Data comparison: cached hash: ${cachedData.dataHash}, new hash: $newDataHash, changed: $hasChanged');
+//     return hasChanged;
+//   }
+
+//   static Future<Map<String, dynamic>> getCacheStats(String key) async {
+//     try {
+//       final cachedData = await getCachedData(key);
+//       if (cachedData != null) {
+//         return {
+//           'exists': true,
+//           'itemCount': cachedData.data.length,
+//           'ageMinutes': cachedData.getAgeInMinutes(),
+//           'isExpired': cachedData.isExpired(),
+//           'isStale': cachedData.isStale(),
+//           'version': cachedData.version,
+//           'timestamp': cachedData.timestamp.toIso8601String(),
+//         };
+//       }
+//     } catch (e) {
+//       print('Error getting cache stats: $e');
+//     }
+
+//     return {
+//       'exists': false,
+//       'itemCount': 0,
+//       'ageMinutes': 0,
+//       'isExpired': true,
+//       'isStale': true,
+//     };
+//   }
+
+//   static Future<void> clearCache(String key) async {
+//     try {
+//       final prefs = await SharedPreferences.getInstance();
+//       await prefs.remove(key);
+//       print('🗑️ Cache cleared: $key');
+//     } catch (e) {
+//       print('❌ Error clearing cache: $e');
+//     }
+//   }
+
+//   static Future<void> clearAllCache() async {
+//     await Future.wait([
+//       clearCache(BANNER_CACHE_KEY),
+//       clearCache(FEATURED_TV_CACHE_KEY),
+//     ]);
+//     print('🗑️ All caches cleared');
+//   }
+
+//   static Future<bool> validateCacheIntegrity(String key) async {
+//     try {
+//       final cachedData = await getCachedData(key);
+//       if (cachedData == null) return false;
+
+//       if (cachedData.version != CACHE_VERSION) {
+//         print('⚠️ Cache version mismatch, clearing cache');
+//         await clearCache(key);
+//         return false;
+//       }
+
+//       if (cachedData.data.isEmpty) {
+//         print('⚠️ Empty cache data, clearing cache');
+//         await clearCache(key);
+//         return false;
+//       }
+
+//       return true;
+//     } catch (e) {
+//       print('❌ Cache validation failed: $e');
+//       await clearCache(key);
+//       return false;
+//     }
+//   }
+// }
+
+// // Image Cache Service
+// class ImageCacheStats {
+//   final int totalFiles;
+//   final double totalSizeMB;
+//   ImageCacheStats({required this.totalFiles, required this.totalSizeMB});
+// }
+
+// class ImageCacheService {
+//   Future<void> init() async {
+//     // Initialize cache if needed
+//   }
+
+//   Future<bool> isCached(String url) async {
+//     return false;
+//   }
+
+//   Future<void> downloadAndCacheImage(String url) async {
+//     await Future.delayed(Duration(milliseconds: 100));
+//   }
+
+//   Future<void> clearCache() async {
+//     await Future.delayed(Duration(milliseconds: 100));
+//   }
+
+//   Future<ImageCacheStats> getCacheStats() async {
+//     return ImageCacheStats(totalFiles: 0, totalSizeMB: 0.0);
+//   }
+// }
+
+// // Auth Headers
+// Future<Map<String, String>> getAuthHeaders() async {
+//   String authKey = '';
+
+//   if (authKey.isEmpty) {
+//     try {
+//       final prefs = await SharedPreferences.getInstance();
+//       authKey = prefs.getString('auth_key') ?? '';
+//       if (authKey.isNotEmpty) {
+//         globalAuthKey = authKey;
+//       }
+//     } catch (e) {
+//       print('Error getting auth key: $e');
+//     }
+//   }
+
+//   if (authKey.isEmpty) {
+//     authKey = 'vLQTuPZUxktl5mVW';
+//   }
+
+//   return {
+//     'auth-key': authKey,
+//     'Accept': 'application/json',
+//     'Content-Type': 'application/json',
+//   };
+// }
+
+// // API Configuration
+// class ApiConfig {
+//   static const String PRIMARY_BASE_URL = 'https://acomtv.coretechinfo.com/public/api';
+//   static const List<String> FEATURED_TV_ENDPOINTS = [
+//     '$PRIMARY_BASE_URL/getCustomImageSlider',
+//   ];
+//   static const List<String> BANNER_ENDPOINTS = [
+//     '$PRIMARY_BASE_URL/getCustomImageSlider',
+//   ];
+// }
+
+// // API Functions
+// Future<Map<String, String>> fetchVideoDataByIdFromBanners(String contentId) async {
+//   final cachedData = await EnhancedSmartCacheManager.getCachedData(
+//       EnhancedSmartCacheManager.FEATURED_TV_CACHE_KEY);
+
+//   List<dynamic> responseData = [];
+
+//   try {
+//     if (cachedData != null && !cachedData.isExpired()) {
+//       responseData = cachedData.data;
+//     } else {
+//       Map<String, String> headers = await getAuthHeaders();
+//       bool success = false;
+//       String responseBody = '';
+
+//       for (int i = 0; i < ApiConfig.FEATURED_TV_ENDPOINTS.length; i++) {
+//         String endpoint = ApiConfig.FEATURED_TV_ENDPOINTS[i];
+
+//         try {
+//           Map<String, String> currentHeaders = Map.from(headers);
+
+//           if (endpoint.contains('api.ekomflix.com')) {
+//             currentHeaders = {
+//               'x-api-key': 'vLQTuPZUxktl5mVW',
+//               'Accept': 'application/json',
+//             };
+//           }
+
+//           final response = await https
+//               .get(Uri.parse(endpoint), headers: currentHeaders)
+//               .timeout(Duration(seconds: 15));
+
+//           if (response.statusCode == 200) {
+//             String body = response.body.trim();
+//             if (body.startsWith('[') || body.startsWith('{')) {
+//               try {
+//                 json.decode(body);
+//                 responseBody = body;
+//                 success = true;
+//                 break;
+//               } catch (e) {
+//                 continue;
+//               }
+//             }
+//           }
+//         } catch (e) {
+//           continue;
+//         }
+//       }
+
+//       if (!success) {
+//         throw Exception('Failed to load featured live TV from all endpoints');
+//       }
+
+//       responseData = json.decode(responseBody);
+//       await EnhancedSmartCacheManager.setCachedData(
+//           EnhancedSmartCacheManager.FEATURED_TV_CACHE_KEY, responseData);
+//     }
+
+//     final matchedItem = responseData.firstWhere(
+//       (channel) => channel['id'].toString() == contentId,
+//       orElse: () => null,
+//     );
+
+//     if (matchedItem == null) {
+//       throw Exception('Content with ID $contentId not found');
+//     }
+
+//     return {
+//       'url': matchedItem['url']?.toString() ?? '',
+//       'type': matchedItem['type']?.toString() ?? '',
+//       'banner': matchedItem['banner']?.toString() ?? '',
+//       'name': matchedItem['name']?.toString() ?? '',
+//       'stream_type': matchedItem['stream_type']?.toString() ?? '',
+//     };
+//   } catch (e) {
+//     throw Exception('Something went wrong: $e');
+//   }
+// }
+
+// Future<List<dynamic>> fetchBannersData() async {
+//   Map<String, String> headers = await getAuthHeaders();
+//   bool success = false;
+//   String responseBody = '';
+
+//   for (int i = 0; i < ApiConfig.BANNER_ENDPOINTS.length; i++) {
+//     String endpoint = ApiConfig.BANNER_ENDPOINTS[i];
+
+//     try {
+//       Map<String, String> currentHeaders = Map.from(headers);
+
+//       if (endpoint.contains('api.ekomflix.com')) {
+//         currentHeaders = {
+//           'x-api-key': 'vLQTuPZUxktl5mVW',
+//           'Accept': 'application/json',
+//         };
+//       }
+
+//       final response = await https
+//           .get(Uri.parse(endpoint), headers: currentHeaders)
+//           .timeout(Duration(seconds: 15));
+
+//       if (response.statusCode == 200) {
+//         String body = response.body.trim();
+//         if (body.startsWith('[') || body.startsWith('{')) {
+//           try {
+//             json.decode(body);
+//             responseBody = body;
+//             success = true;
+//             break;
+//           } catch (e) {
+//             continue;
+//           }
+//         }
+//       }
+//     } catch (e) {
+//       continue;
+//     }
+//   }
+
+//   if (!success) {
+//     throw Exception('Failed to load banners from all endpoints');
+//   }
+
+//   return json.decode(responseBody);
+// }
+
+// // // Event Bus
+// // class GlobalEventBus {
+// //   static final GlobalEventBus _instance = GlobalEventBus._internal();
+// //   factory GlobalEventBus() => _instance;
+
+// //   final StreamController<RefreshPageEvent> _controller =
+// //       StreamController<RefreshPageEvent>.broadcast();
+
+// //   GlobalEventBus._internal();
+
+// //   Stream<RefreshPageEvent> get events => _controller.stream;
+// //   void fire(RefreshPageEvent event) => _controller.add(event);
+// //   void dispose() => _controller.close();
+// // }
+
+// // class RefreshPageEvent {
+// //   final String pageId;
+// //   RefreshPageEvent(this.pageId);
+// // }
+
+// // Main Banner Slider Widget
+// class BannerSlider extends StatefulWidget {
+//   final Function(bool)? onFocusChange;
+//   final FocusNode focusNode;
+
+//   const BannerSlider({
+//     Key? key,
+//     this.onFocusChange,
+//     required this.focusNode,
+//   }) : super(key: key);
+
+//   @override
+//   _BannerSliderState createState() => _BannerSliderState();
+// }
+
+// class _BannerSliderState extends State<BannerSlider> with SingleTickerProviderStateMixin {
+//   final SocketService _socketService = SocketService();
+//   List<NewsItemModel> bannerList = [];
+//   Map<String, Color> bannerColors = {};
+//   bool isLoading = true;
+//   bool isLoadingFromCache = false;
+//   String errorMessage = '';
+//   late PageController _pageController;
+//   Timer? _timer;
+//   String? selectedContentId;
+//   final FocusNode _buttonFocusNode = FocusNode();
+//   bool _isNavigating = false;
+//   final PaletteColorService _paletteColorService = PaletteColorService();
+//   Map<String, Uint8List> _bannerCache = {};
+//   late FocusProvider _refreshProvider;
+//   final ImageCacheService _imageCacheService = ImageCacheService();
+
+//   // New variables for enhanced caching
+//   bool _isBackgroundRefreshing = false;
+
+//   // Animation controllers for shimmer effect
+//   late AnimationController _shimmerController;
+//   late Animation<double> _shimmerAnimation;
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     _initializeShimmerAnimation();
+//     _initializeSliderWithEnhancedCaching();
+//   }
+
+//   void _initializeShimmerAnimation() {
+//     _shimmerController = AnimationController(
+//       duration: const Duration(milliseconds: 1500),
+//       vsync: this,
+//     )..repeat();
+
+//     _shimmerAnimation = Tween<double>(
+//       begin: -1.0,
+//       end: 2.0,
+//     ).animate(CurvedAnimation(
+//       parent: _shimmerController,
+//       curve: Curves.easeInOut,
+//     ));
+//   }
+
+//   @override
+//   void dispose() {
+//     if (_pageController.hasClients) {
+//       _pageController.dispose();
+//     }
+//     _socketService.dispose();
+//     _shimmerController.dispose();
+//     if (_timer != null && _timer!.isActive) {
+//       _timer!.cancel();
+//     }
+//     _buttonFocusNode.dispose();
+//     super.dispose();
+//   }
+
+//   // Enhanced initialization with smart caching
+//   Future<void> _initializeSliderWithEnhancedCaching() async {
+//     try {
+//       await _imageCacheService.init();
+//       _socketService.initSocket();
+//       _pageController = PageController();
+
+//       // Validate cache integrity on startup
+//       final isValidCache = await EnhancedSmartCacheManager.validateCacheIntegrity(
+//           EnhancedSmartCacheManager.BANNER_CACHE_KEY);
+
+//       if (!isValidCache) {
+//         print('⚠️ Invalid cache detected, will fetch fresh data');
+//       }
+
+//       _buttonFocusNode.addListener(() {
+//         if (_buttonFocusNode.hasFocus) {
+//           widget.onFocusChange?.call(true);
+//         }
+//       });
+
+//       WidgetsBinding.instance.addPostFrameCallback((_) {
+//         if (mounted) {
+//           context.read<FocusProvider>().setWatchNowFocusNode(_buttonFocusNode);
+//         }
+//       });
+
+//       _buttonFocusNode.addListener(_onButtonFocusNode);
+
+//       // Use smart loading strategy
+//       await _smartDataLoadWithStrategy();
+//     } catch (e) {
+//       print('Error initializing slider: $e');
+//       if (mounted) {
+//         setState(() {
+//           errorMessage = 'Failed to initialize: $e';
+//           isLoading = false;
+//         });
+//       }
+//     }
+//   }
+
+//   // Smart data loading with enhanced caching strategy
+//   Future<void> _smartDataLoadWithStrategy() async {
+//     print('🚀 Starting smart data load with caching strategy...');
+
+//     try {
+//       // Step 1: Try to load from cache first (for immediate display)
+//       final cacheLoaded = await _loadFromCacheFirst();
+
+//       // Step 2: Always fetch fresh data from API (update cache)
+//       await _fetchAndUpdateCache(hasInitialData: cacheLoaded);
+//     } catch (e) {
+//       print('❌ Error in smart data load: $e');
+
+//       if (mounted) {
+//         setState(() {
+//           if (bannerList.isEmpty) {
+//             errorMessage = 'Failed to load content: $e';
+//             isLoading = false;
+//           }
+//           isLoadingFromCache = false;
+//         });
+//       }
+//     }
+//   }
+
+//   // Load from cache first for immediate display
+//   Future<bool> _loadFromCacheFirst() async {
+//     try {
+//       print('📦 Loading from cache for immediate display...');
+
+//       final cachedData = await EnhancedSmartCacheManager.getCachedData(
+//           EnhancedSmartCacheManager.BANNER_CACHE_KEY);
+
+//       if (cachedData != null && cachedData.data.isNotEmpty) {
+//         print(
+//             '✅ Cache found with ${cachedData.data.length} items (Age: ${cachedData.getAgeInMinutes()} minutes)');
+
+//         final processedBanners = await _processRawBannerData(cachedData.data);
+
+//         if (processedBanners.isNotEmpty && mounted) {
+//           setState(() {
+//             bannerList = processedBanners;
+//             selectedContentId = bannerList.isNotEmpty ? bannerList[0].id : null;
+//             isLoading = false;
+//             errorMessage = '';
+//           });
+
+//           print('✅ Displayed ${bannerList.length} banners from cache');
+
+//           // Start UI components
+//           if (bannerList.isNotEmpty) {
+//             _startAutoSlide();
+//             _fetchBannerColors();
+//             _preloadImages();
+//           }
+
+//           return true; // Cache data loaded successfully
+//         }
+//       } else {
+//         print('❌ No cache found or cache is empty');
+//       }
+
+//       return false; // No cache data available
+//     } catch (e) {
+//       print('❌ Error loading from cache: $e');
+//       return false;
+//     }
+//   }
+
+//   // Fetch fresh data and update cache
+//   Future<void> _fetchAndUpdateCache({bool hasInitialData = false}) async {
+//     try {
+//       print('🌐 Fetching fresh data from API...');
+
+//       // Show appropriate loading indicators
+//       if (mounted) {
+//         setState(() {
+//           if (hasInitialData) {
+//             _isBackgroundRefreshing = true;
+//             isLoadingFromCache = true;
+//           } else {
+//             isLoading = true;
+//             errorMessage = '';
+//           }
+//         });
+//       }
+
+//       // Fetch fresh data from API
+//       final List<dynamic> responseData = await fetchBannersData();
+//       print('✅ API returned ${responseData.length} items');
+
+//       // Check if data has actually changed
+//       final cachedData = await EnhancedSmartCacheManager.getCachedData(
+//           EnhancedSmartCacheManager.BANNER_CACHE_KEY);
+//       final hasChanges = EnhancedSmartCacheManager.hasDataChanged(cachedData, responseData);
+
+//       // Always update cache with fresh data
+//       await EnhancedSmartCacheManager.setCachedData(
+//           EnhancedSmartCacheManager.BANNER_CACHE_KEY, responseData);
+//       print('💾 Cache updated with fresh data');
+
+//       // Process fresh data
+//       final processedBanners = await _processRawBannerData(responseData);
+
+//       if (mounted) {
+//         setState(() {
+//           bannerList = processedBanners;
+//           selectedContentId = bannerList.isNotEmpty ? bannerList[0].id : null;
+//           isLoading = false;
+//           isLoadingFromCache = false;
+//           _isBackgroundRefreshing = false;
+//           errorMessage = '';
+//         });
+
+//         // Show update notification if data changed and user was seeing cached data
+//         if (hasInitialData && hasChanges && context.mounted) {
+//           _showUpdateNotification('Content updated');
+//         }
+//       }
+
+//       print('✅ UI updated with ${bannerList.length} fresh banners');
+
+//       // Initialize UI components if this is the first successful load
+//       if (bannerList.isNotEmpty) {
+//         if (_timer == null || !_timer!.isActive) {
+//           _startAutoSlide();
+//         }
+//         _fetchBannerColors();
+//         _preloadImages();
+//       }
+//     } catch (e) {
+//       print('❌ Error fetching from API: $e');
+
+//       if (mounted) {
+//         setState(() {
+//           isLoadingFromCache = false;
+//           _isBackgroundRefreshing = false;
+
+//           // Only show error if we have no data to display
+//           if (!hasInitialData) {
+//             errorMessage = 'Failed to load banners: $e';
+//             isLoading = false;
+//           } else {
+//             isLoading = false;
+//           }
+//         });
+//       }
+
+//       // Show error notification if user was seeing cached data
+//       if (hasInitialData && mounted && context.mounted) {
+//         _showUpdateNotification('Failed to update content', isError: true);
+//       }
+//     }
+//   }
+
+//   // Force refresh method
+//   Future<void> _forceRefresh() async {
+//     print('🔄 Force refresh triggered');
+
+//     try {
+//       if (mounted) {
+//         setState(() {
+//           isLoading = true;
+//           errorMessage = '';
+//         });
+//       }
+
+//       // Fetch fresh data from API
+//       final List<dynamic> responseData = await fetchBannersData();
+
+//       // Update cache
+//       await EnhancedSmartCacheManager.setCachedData(
+//           EnhancedSmartCacheManager.BANNER_CACHE_KEY, responseData);
+
+//       // Process and update UI
+//       final processedBanners = await _processRawBannerData(responseData);
+
+//       if (mounted) {
+//         setState(() {
+//           bannerList = processedBanners;
+//           selectedContentId = bannerList.isNotEmpty ? bannerList[0].id : null;
+//           isLoading = false;
+//           errorMessage = '';
+//         });
+//       }
+
+//       _showUpdateNotification('Content refreshed!');
+//     } catch (e) {
+//       print('❌ Force refresh failed: $e');
+
+//       if (mounted) {
+//         setState(() {
+//           if (bannerList.isEmpty) {
+//             errorMessage = 'Failed to refresh: $e';
+//           }
+//           isLoading = false;
+//         });
+//       }
+
+//       _showUpdateNotification('Refresh failed', isError: true);
+//     }
+//   }
+
+//   // Clear cache and reload
+//   Future<void> _clearCacheAndReload() async {
+//     try {
+//       await EnhancedSmartCacheManager.clearCache(
+//           EnhancedSmartCacheManager.BANNER_CACHE_KEY);
+
+//       if (mounted) {
+//         setState(() {
+//           bannerList.clear();
+//           isLoading = true;
+//           errorMessage = '';
+//         });
+//       }
+
+//       await _smartDataLoadWithStrategy();
+//       _showUpdateNotification('Cache cleared and reloaded');
+//     } catch (e) {
+//       print('Error clearing cache: $e');
+//       _showUpdateNotification('Failed to clear cache', isError: true);
+//     }
+//   }
+
+//   // Get cache information
+//   Future<Map<String, dynamic>> _getCacheInfo() async {
+//     return await EnhancedSmartCacheManager.getCacheStats(
+//         EnhancedSmartCacheManager.BANNER_CACHE_KEY);
+//   }
+
+//   // Show update notification
+//   void _showUpdateNotification(String message, {bool isError = false}) {
+//     if (!mounted || !context.mounted) return;
+
+//     ScaffoldMessenger.of(context).showSnackBar(
+//       SnackBar(
+//         content: Row(
+//           children: [
+//             Icon(
+//               isError ? Icons.error_outline : Icons.refresh,
+//               color: Colors.white,
+//               size: 16,
+//             ),
+//             SizedBox(width: 8),
+//             Text(message),
+//           ],
+//         ),
+//         duration: Duration(seconds: 2),
+//         backgroundColor: isError ? Colors.red.shade600 : Colors.green.shade600,
+//         behavior: SnackBarBehavior.floating,
+//         margin: EdgeInsets.only(
+//           bottom: MediaQuery.of(context).size.height - 100,
+//           left: 20,
+//           right: 20,
+//         ),
+//       ),
+//     );
+//   }
+
+//   // Process raw banner data
+//   Future<List<NewsItemModel>> _processRawBannerData(List<dynamic> rawData) async {
+//     List<NewsItemModel> filteredBanners = [];
+//     int processedCount = 0;
+//     int errorCount = 0;
+
+//     for (var banner in rawData) {
+//       try {
+//         bool isActive = _checkBannerStatus(banner);
+
+//         if (isActive) {
+//           try {
+//             final newsItem = NewsItemModel.fromJson(banner);
+//             filteredBanners.add(newsItem);
+//             processedCount++;
+//           } catch (e) {
+//             errorCount++;
+//             print('❌ Error creating NewsItemModel for banner ${banner['id']}: $e');
+//           }
+//         }
+//       } catch (e) {
+//         errorCount++;
+//         print('❌ Error processing banner: $e');
+//       }
+//     }
+
+//     print('📊 Processed: $processedCount active banners, $errorCount errors');
+//     return filteredBanners;
+//   }
+
+//   // Helper method to check banner status
+//   bool _checkBannerStatus(dynamic banner) {
+//     try {
+//       if (banner['status'] != null) {
+//         var status = banner['status'];
+
+//         if (status is String) {
+//           return status == "1" ||
+//               status.toLowerCase() == "active" ||
+//               status.toLowerCase() == "true";
+//         } else if (status is int) {
+//           return status == 1;
+//         } else if (status is bool) {
+//           return status;
+//         }
+//       }
+//       return true; // Default to active if no status field
+//     } catch (e) {
+//       print('Error checking banner status: $e');
+//       return false;
+//     }
+//   }
+
+//   // Force refresh method for external calls
+//   Future<void> _loadData({bool forceRefresh = false}) async {
+//     print('🔄 Manual refresh triggered - forceRefresh: $forceRefresh');
+
+//     if (forceRefresh) {
+//       await _forceRefresh();
+//     } else {
+//       await _smartDataLoadWithStrategy();
+//     }
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Consumer<FocusProvider>(
+//       builder: (context, focusProvider, child) {
+//         return Scaffold(
+//           backgroundColor: cardColor,
+//           body: _buildBody(focusProvider),
+//         );
+//       },
+//     );
+//   }
+
+//   Widget _buildBody(FocusProvider focusProvider) {
+//     // Show loading only if no data and initial load
+//     if (isLoading && bannerList.isEmpty) {
+//       return _buildLoadingWidget();
+//     }
+
+//     // Show error only if no data and not loading
+//     if (errorMessage.isNotEmpty && bannerList.isEmpty && !isLoading) {
+//       return _buildEnhancedErrorWidget();
+//     }
+
+//     // Show empty state only if no data, not loading, and no error
+//     if (bannerList.isEmpty && !isLoading && errorMessage.isEmpty) {
+//       return _buildEmptyWidget();
+//     }
+
+//     // Show banner slider if we have data
+//     return _buildBannerSlider(focusProvider);
+//   }
+
+//   Widget _buildLoadingWidget() {
+//     return Center(
+//       child: Column(
+//         mainAxisAlignment: MainAxisAlignment.center,
+//         children: [
+//           SpinKitFadingCircle(color: borderColor, size: 50.0),
+//           SizedBox(height: 20),
+//           Text(
+//             isLoadingFromCache ? 'Loading from cache...' : 'Loading...',
+//             style: TextStyle(
+//               color: hintColor,
+//               fontSize: nametextsz,
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+
+//   // Enhanced error widget with cache options
+//   Widget _buildEnhancedErrorWidget() {
+//     return Center(
+//       child: Column(
+//         mainAxisAlignment: MainAxisAlignment.center,
+//         children: [
+//           Icon(Icons.error_outline, color: Colors.red, size: 50),
+//           SizedBox(height: 20),
+//           Text(
+//             'Something Went Wrong',
+//             style: TextStyle(
+//               fontSize: menutextsz,
+//               color: Colors.red,
+//               fontWeight: FontWeight.bold,
+//             ),
+//           ),
+//           SizedBox(height: 10),
+//           Padding(
+//             padding: EdgeInsets.symmetric(horizontal: 20),
+//             child: Text(
+//               errorMessage,
+//               style: TextStyle(fontSize: minitextsz, color: hintColor),
+//               textAlign: TextAlign.center,
+//             ),
+//           ),
+//           SizedBox(height: 30),
+
+//           // Action buttons
+//           Wrap(
+//             spacing: 10,
+//             children: [
+//               ElevatedButton.icon(
+//                 onPressed: _forceRefresh,
+//                 icon: Icon(Icons.refresh),
+//                 label: Text('Retry'),
+//                 style: ElevatedButton.styleFrom(
+//                   backgroundColor: Colors.blue,
+//                   foregroundColor: Colors.white,
+//                 ),
+//               ),
+//               ElevatedButton.icon(
+//                 onPressed: _clearCacheAndReload,
+//                 icon: Icon(Icons.clear_all),
+//                 label: Text('Clear Cache'),
+//                 style: ElevatedButton.styleFrom(
+//                   backgroundColor: Colors.orange,
+//                   foregroundColor: Colors.white,
+//                 ),
+//               ),
+//             ],
+//           ),
+
+//           // Cache info (for debugging)
+//           SizedBox(height: 20),
+//           FutureBuilder<Map<String, dynamic>>(
+//             future: _getCacheInfo(),
+//             builder: (context, snapshot) {
+//               if (snapshot.hasData) {
+//                 final cacheInfo = snapshot.data!;
+//                 return Container(
+//                   padding: EdgeInsets.all(10),
+//                   margin: EdgeInsets.symmetric(horizontal: 20),
+//                   decoration: BoxDecoration(
+//                     color: Colors.grey.shade800,
+//                     borderRadius: BorderRadius.circular(8),
+//                   ),
+//                   child: Column(
+//                     children: [
+//                       Text(
+//                         'Cache Info',
+//                         style: TextStyle(
+//                           color: Colors.white,
+//                           fontWeight: FontWeight.bold,
+//                         ),
+//                       ),
+//                       SizedBox(height: 5),
+//                       Text(
+//                         'Exists: ${cacheInfo['exists']}\n'
+//                         'Items: ${cacheInfo['itemCount']}\n'
+//                         'Age: ${cacheInfo['ageMinutes']} min\n'
+//                         'Expired: ${cacheInfo['isExpired']}',
+//                         style: TextStyle(
+//                           color: Colors.white70,
+//                           fontSize: 12,
+//                         ),
+//                         textAlign: TextAlign.center,
+//                       ),
+//                     ],
+//                   ),
+//                 );
+//               }
+//               return SizedBox.shrink();
+//             },
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+
+//   Widget _buildEmptyWidget() {
+//     return Center(
+//       child: Column(
+//         mainAxisAlignment: MainAxisAlignment.center,
+//         children: [
+//           Icon(
+//             Icons.image_not_supported,
+//             color: hintColor.withOpacity(0.5),
+//             size: 50,
+//           ),
+//           SizedBox(height: 20),
+//           Text(
+//             'No content available',
+//             style: TextStyle(color: hintColor, fontSize: nametextsz),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+
+//   Widget _buildBannerSlider(FocusProvider focusProvider) {
+//     return Stack(
+//       children: [
+//         // Page View
+//         PageView.builder(
+//           controller: _pageController,
+//           itemCount: bannerList.length,
+//           onPageChanged: (index) {
+//             if (mounted) {
+//               setState(() {
+//                 selectedContentId = bannerList[index].contentId.toString();
+//               });
+//             }
+//           },
+//           itemBuilder: (context, index) {
+//             final banner = bannerList[index];
+//             return Stack(
+//               alignment: AlignmentDirectional.topCenter,
+//               children: [
+//                 _buildBannerWithShimmer(banner, focusProvider),
+//                 _buildGradientOverlay(),
+//               ],
+//             );
+//           },
+//         ),
+
+//         // Watch Now Button
+//         _buildWatchNowButton(focusProvider),
+
+//         // Page indicators
+//         if (bannerList.length > 1) _buildPageIndicators(),
+
+//         // Enhanced cache status indicator
+//         if (_isBackgroundRefreshing || isLoadingFromCache)
+//           _buildEnhancedCacheStatusIndicator(),
+//       ],
+//     );
+//   }
+
+//   Widget _buildGradientOverlay() {
+//     return Container(
+//       margin: const EdgeInsets.only(top: 1),
+//       width: screenwdt,
+//       height: screenhgt,
+//       decoration: BoxDecoration(
+//         gradient: LinearGradient(
+//           begin: Alignment.topCenter,
+//           end: Alignment.bottomCenter,
+//           colors: [
+//             Colors.black.withOpacity(0.3),
+//             Colors.transparent,
+//             Colors.black.withOpacity(0.7),
+//           ],
+//           stops: [0.0, 0.5, 1.0],
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildWatchNowButton(FocusProvider focusProvider) {
+//     return Positioned(
+//       top: screenhgt * 0.03,
+//       left: screenwdt * 0.02,
+//       child: Focus(
+//         focusNode: _buttonFocusNode,
+//         onKeyEvent: _handleKeyEvent,
+//         child: GestureDetector(
+//           onTap: _handleWatchNowTap,
+//           child: RandomLightColorWidget(
+//             hasFocus: focusProvider.isButtonFocused,
+//             childBuilder: (Color randomColor) {
+//               return AnimatedContainer(
+//                 duration: Duration(milliseconds: 200),
+//                 margin: EdgeInsets.all(screenwdt * 0.001),
+//                 padding: EdgeInsets.symmetric(
+//                   vertical: screenhgt * 0.02,
+//                   horizontal: screenwdt * 0.02,
+//                 ),
+//                 decoration: BoxDecoration(
+//                   color: focusProvider.isButtonFocused
+//                       ? Colors.black87
+//                       : Colors.black.withOpacity(0.6),
+//                   borderRadius: BorderRadius.circular(12),
+//                   border: Border.all(
+//                     color: focusProvider.isButtonFocused
+//                         ? focusProvider.currentFocusColor ?? randomColor
+//                         : Colors.white.withOpacity(0.3),
+//                     width: focusProvider.isButtonFocused ? 3.0 : 1.0,
+//                   ),
+//                   boxShadow: focusProvider.isButtonFocused
+//                       ? [
+//                           BoxShadow(
+//                             color: (focusProvider.currentFocusColor ?? randomColor)
+//                                 .withOpacity(0.5),
+//                             blurRadius: 20.0,
+//                             spreadRadius: 5.0,
+//                           ),
+//                         ]
+//                       : [
+//                           BoxShadow(
+//                             color: Colors.black.withOpacity(0.3),
+//                             blurRadius: 10.0,
+//                             spreadRadius: 2.0,
+//                           ),
+//                         ],
+//                 ),
+//                 child: Row(
+//                   mainAxisSize: MainAxisSize.min,
+//                   children: [
+//                     Icon(
+//                       Icons.play_arrow,
+//                       color: focusProvider.isButtonFocused
+//                           ? focusProvider.currentFocusColor ?? randomColor
+//                           : hintColor,
+//                       size: menutextsz * 1.2,
+//                     ),
+//                     SizedBox(width: 8),
+//                     Text(
+//                       'Watch Now',
+//                       style: TextStyle(
+//                         fontSize: menutextsz,
+//                         color: focusProvider.isButtonFocused
+//                             ? focusProvider.currentFocusColor ?? randomColor
+//                             : hintColor,
+//                         fontWeight: FontWeight.bold,
+//                       ),
+//                     ),
+//                   ],
+//                 ),
+//               );
+//             },
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildPageIndicators() {
+//     return Positioned(
+//       top: screenhgt * 0.05,
+//       right: screenwdt * 0.05,
+//       child: Row(
+//         mainAxisAlignment: MainAxisAlignment.center,
+//         children: bannerList.asMap().entries.map((entry) {
+//           int index = entry.key;
+//           bool isSelected = selectedContentId == bannerList[index].contentId;
+
+//           return AnimatedContainer(
+//             duration: Duration(milliseconds: 300),
+//             margin: EdgeInsets.symmetric(horizontal: 4),
+//             width: isSelected ? 12 : 8,
+//             height: isSelected ? 12 : 8,
+//             decoration: BoxDecoration(
+//               color: isSelected
+//                   ? Colors.white
+//                   : Colors.white.withOpacity(0.5),
+//               shape: BoxShape.circle,
+//               boxShadow: [
+//                 BoxShadow(
+//                   color: Colors.black.withOpacity(0.3),
+//                   blurRadius: 4,
+//                   spreadRadius: 1,
+//                 ),
+//               ],
+//             ),
+//           );
+//         }).toList(),
+//       ),
+//     );
+//   }
+
+//   // Enhanced cache status indicator with more details
+//   Widget _buildEnhancedCacheStatusIndicator() {
+//     return Positioned(
+//       top: screenhgt * 0.01,
+//       right: screenwdt * 0.01,
+//       child: FutureBuilder<Map<String, dynamic>>(
+//         future: _getCacheInfo(),
+//         builder: (context, snapshot) {
+//           final cacheInfo = snapshot.data ?? {};
+
+//           return AnimatedContainer(
+//             duration: Duration(milliseconds: 300),
+//             padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+//             decoration: BoxDecoration(
+//               color: _isBackgroundRefreshing
+//                   ? Colors.blue.withOpacity(0.9)
+//                   : Colors.orange.withOpacity(0.9),
+//               borderRadius: BorderRadius.circular(12),
+//               boxShadow: [
+//                 BoxShadow(
+//                   color: Colors.black.withOpacity(0.3),
+//                   blurRadius: 4,
+//                   spreadRadius: 1,
+//                 ),
+//               ],
+//             ),
+//             child: Row(
+//               mainAxisSize: MainAxisSize.min,
+//               children: [
+//                 SizedBox(
+//                   width: 12,
+//                   height: 12,
+//                   child: CircularProgressIndicator(
+//                     strokeWidth: 2,
+//                     valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+//                   ),
+//                 ),
+//                 SizedBox(width: 6),
+//                 Column(
+//                   crossAxisAlignment: CrossAxisAlignment.start,
+//                   mainAxisSize: MainAxisSize.min,
+//                   children: [
+//                     Text(
+//                       _isBackgroundRefreshing ? 'Updating...' : 'Loading...',
+//                       style: TextStyle(
+//                         color: Colors.white,
+//                         fontSize: 10,
+//                         fontWeight: FontWeight.w600,
+//                       ),
+//                     ),
+//                     if (cacheInfo['ageMinutes'] != null)
+//                       Text(
+//                         'Cache: ${cacheInfo['ageMinutes']}m old',
+//                         style: TextStyle(
+//                           color: Colors.white70,
+//                           fontSize: 8,
+//                         ),
+//                       ),
+//                   ],
+//                 ),
+//               ],
+//             ),
+//           );
+//         },
+//       ),
+//     );
+//   }
+
+//   Widget _buildBannerWithShimmer(NewsItemModel banner, FocusProvider focusProvider) {
+//     return Container(
+//       margin: const EdgeInsets.only(top: 1),
+//       width: screenwdt,
+//       height: screenhgt,
+//       child: Stack(
+//         children: [
+//           // Main banner image
+//           CachedNetworkImage(
+//             imageUrl: banner.banner,
+//             fit: BoxFit.fill,
+//             placeholder: (context, url) => Image.asset('assets/streamstarting.gif'),
+//             errorWidget: (context, url, error) => Image.asset('assets/streamstarting.gif'),
+//             cacheKey: banner.contentId,
+//             fadeInDuration: Duration(milliseconds: 500),
+//             memCacheHeight: 800,
+//             memCacheWidth: 1200,
+//             width: screenwdt,
+//             height: screenhgt,
+//           ),
+
+//           // Shimmer effect overlay when focused
+//           if (focusProvider.isButtonFocused)
+//             AnimatedBuilder(
+//               animation: _shimmerAnimation,
+//               builder: (context, child) {
+//                 return Positioned.fill(
+//                   child: Container(
+//                     decoration: BoxDecoration(
+//                       gradient: LinearGradient(
+//                         begin: Alignment(-1.0 + _shimmerAnimation.value, -1.0),
+//                         end: Alignment(1.0 + _shimmerAnimation.value, 1.0),
+//                         colors: [
+//                           Colors.transparent,
+//                           Colors.white.withOpacity(0.1),
+//                           Colors.white.withOpacity(0.2),
+//                           Colors.white.withOpacity(0.1),
+//                           Colors.transparent,
+//                         ],
+//                         stops: [0.0, 0.3, 0.5, 0.7, 1.0],
+//                       ),
+//                     ),
+//                   ),
+//                 );
+//               },
+//             ),
+
+//           // Enhanced glow effect when focused
+//           if (focusProvider.isButtonFocused)
+//             Positioned.fill(
+//               child: Container(
+//                 decoration: BoxDecoration(
+//                   gradient: RadialGradient(
+//                     center: Alignment.center,
+//                     radius: 0.8,
+//                     colors: [
+//                       (focusProvider.currentFocusColor ?? Colors.blue).withOpacity(0.1),
+//                       Colors.transparent,
+//                     ],
+//                   ),
+//                 ),
+//               ),
+//             ),
+
+//           // Border glow effect
+//           if (focusProvider.isButtonFocused)
+//             Positioned.fill(
+//               child: Container(
+//                 decoration: BoxDecoration(
+//                   border: Border.all(
+//                     color: (focusProvider.currentFocusColor ?? Colors.blue).withOpacity(0.3),
+//                     width: 2.0,
+//                   ),
+//                   borderRadius: BorderRadius.circular(8),
+//                 ),
+//               ),
+//             ),
+//         ],
+//       ),
+//     );
+//   }
+
+//   // Event Handlers
+//   KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
+//     if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
+//       if (_pageController.hasClients &&
+//           _pageController.page != null &&
+//           _pageController.page! < bannerList.length - 1) {
+//         _pageController.nextPage(
+//           duration: Duration(milliseconds: 300),
+//           curve: Curves.easeInOut,
+//         );
+//         return KeyEventResult.handled;
+//       }
+//     } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+//       if (_pageController.hasClients &&
+//           _pageController.page != null &&
+//           _pageController.page! > 0) {
+//         _pageController.previousPage(
+//           duration: Duration(milliseconds: 300),
+//           curve: Curves.easeInOut,
+//         );
+//         return KeyEventResult.handled;
+//       }
+//     } else if (event is KeyDownEvent) {
+//       if (event.logicalKey == LogicalKeyboardKey.select ||
+//           event.logicalKey == LogicalKeyboardKey.enter) {
+//         _handleWatchNowTap();
+//         return KeyEventResult.handled;
+//       }
+//     }
+//     return KeyEventResult.ignored;
+//   }
+
+//   void _handleWatchNowTap() {
+//     if (selectedContentId != null && bannerList.isNotEmpty) {
+//       try {
+//         final banner = bannerList.firstWhere(
+//           (b) => b.contentId == selectedContentId,
+//           orElse: () => bannerList.first,
+//         );
+//         fetchAndPlayVideo(banner.id, bannerList);
+//       } catch (e) {
+//         print('Error in watch now tap: $e');
+//       }
+//     }
+//   }
+
+//   // Preload images in background for smooth experience
+//   Future<void> _preloadImages() async {
+//     for (final banner in bannerList) {
+//       try {
+//         final isCached = await _imageCacheService.isCached(banner.banner);
+
+//         if (!isCached) {
+//           _imageCacheService.downloadAndCacheImage(banner.banner).catchError((e) {
+//             print('Failed to preload image: ${banner.banner}');
+//           });
+//         }
+//       } catch (e) {
+//         print('Error preloading image: $e');
+//       }
+//     }
+//   }
+
+//   @override
+//   void didChangeDependencies() {
+//     super.didChangeDependencies();
+
+//     try {
+//       _refreshProvider = context.watch<FocusProvider>();
+
+//       if (_refreshProvider.shouldRefreshBanners ||
+//           _refreshProvider.shouldRefreshLastPlayed) {
+//         _handleProviderRefresh();
+//       }
+//     } catch (e) {
+//       print('Error in didChangeDependencies: $e');
+//     }
+//   }
+
+//   Future<void> _handleProviderRefresh() async {
+//     if (!mounted) return;
+
+//     try {
+//       if (_refreshProvider.shouldRefreshBanners) {
+//         await _fetchAndUpdateCache(hasInitialData: bannerList.isNotEmpty);
+//         _refreshProvider.markBannersRefreshed();
+//       }
+//     } catch (e) {
+//       print('Error in provider refresh: $e');
+//     }
+//   }
+
+//   Future<void> _fetchBannerColors() async {
+//     for (var banner in bannerList) {
+//       try {
+//         final imageUrl = banner.banner;
+//         final secondaryColor = await _paletteColorService.getSecondaryColor(imageUrl);
+
+//         if (mounted) {
+//           setState(() {
+//             bannerColors[banner.contentId] = secondaryColor;
+//           });
+//         }
+//       } catch (e) {
+//         print('Error fetching banner color: $e');
+//       }
+//     }
+//   }
+
+//   void _startAutoSlide() {
+//     if (bannerList.isNotEmpty && (_timer == null || !_timer!.isActive)) {
+//       _timer = Timer.periodic(const Duration(seconds: 4), (Timer timer) {
+//         if (!mounted) {
+//           timer.cancel();
+//           return;
+//         }
+
+//         try {
+//           if (_pageController.hasClients) {
+//             if (_pageController.page == bannerList.length - 1) {
+//               _pageController.jumpToPage(0);
+//             } else {
+//               _pageController.nextPage(
+//                 duration: const Duration(milliseconds: 300),
+//                 curve: Curves.easeIn,
+//               );
+//             }
+//           }
+//         } catch (e) {
+//           print('Error in auto slide: $e');
+//         }
+//       });
+//     }
+//   }
+
+//   void _onButtonFocusNode() {
+//     try {
+//       if (_buttonFocusNode.hasFocus) {
+//         final random = Random();
+//         final color = Color.fromRGBO(
+//           random.nextInt(256),
+//           random.nextInt(256),
+//           random.nextInt(256),
+//           1,
+//         );
+//         if (mounted) {
+//           context.read<FocusProvider>().setButtonFocus(true, color: color);
+//           context.read<ColorProvider>().updateColor(color, true);
+//         }
+//       } else {
+//         if (mounted) {
+//           context.read<FocusProvider>().resetFocus();
+//           context.read<ColorProvider>().resetColor();
+//         }
+//       }
+//     } catch (e) {
+//       print('Error in button focus handler: $e');
+//     }
+//   }
+
+//   Future<void> fetchAndPlayVideo(String contentId, List<NewsItemModel> channelList) async {
+//     if (_isNavigating) {
+//       return;
+//     }
+
+//     _isNavigating = true;
+
+//     bool shouldPlayVideo = true;
+//     bool shouldPop = true;
+
+//     try {
+//       if (mounted) {
+//         showDialog(
+//           context: context,
+//           barrierDismissible: false,
+//           builder: (BuildContext context) {
+//             return WillPopScope(
+//               onWillPop: () async {
+//                 shouldPlayVideo = false;
+//                 shouldPop = false;
+//                 return true;
+//               },
+//               child: Center(
+//                 child: Container(
+//                   padding: EdgeInsets.all(20),
+//                   decoration: BoxDecoration(
+//                     color: Colors.black87,
+//                     borderRadius: BorderRadius.circular(10),
+//                   ),
+//                   child: Column(
+//                     mainAxisSize: MainAxisSize.min,
+//                     children: [
+//                       SpinKitFadingCircle(
+//                         color: borderColor,
+//                         size: 50.0,
+//                       ),
+//                       SizedBox(height: 15),
+//                       Text(
+//                         'Loading video...',
+//                         style: TextStyle(
+//                           color: Colors.white,
+//                           fontSize: nametextsz,
+//                         ),
+//                       ),
+//                     ],
+//                   ),
+//                 ),
+//               ),
+//             );
+//           },
+//         );
+//       }
+
+//       final responseData = await fetchVideoDataByIdFromBanners(contentId);
+
+//       if (shouldPop && mounted && context.mounted) {
+//         Navigator.of(context, rootNavigator: true).pop();
+//       }
+
+//       if (shouldPlayVideo && mounted && context.mounted) {
+//         Navigator.push(
+//           context,
+//           MaterialPageRoute(
+//             builder: (context) => VideoScreen(
+//               videoUrl: responseData['url'] ?? '',
+//               channelList: channelList,
+//               videoId: int.tryParse(contentId) ?? 0,
+//               videoType: responseData['type'] ?? '',
+//               isLive: true,
+//               isVOD: false,
+//               bannerImageUrl: responseData['banner'] ?? '',
+//               startAtPosition: Duration.zero,
+//               isBannerSlider: true,
+//               source: 'isBannerSlider',
+//               isSearch: false,
+//               unUpdatedUrl: responseData['url'] ?? '',
+//               name: responseData['name'] ?? '',
+//               liveStatus: true,
+//               seasonId: null,
+//               isLastPlayedStored: false,
+//             ),
+//           ),
+//         );
+//       }
+//     } catch (e) {
+//       if (shouldPop && mounted && context.mounted) {
+//         Navigator.of(context, rootNavigator: true).pop();
+//       }
+
+//       if (mounted && context.mounted) {
+//         ScaffoldMessenger.of(context).showSnackBar(
+//           SnackBar(
+//             content: Text('Something went wrong'),
+//             duration: Duration(seconds: 3),
+//             backgroundColor: Colors.red.shade700,
+//           ),
+//         );
+//       }
+//     } finally {
+//       _isNavigating = false;
+//     }
+//   }
+
+//   Uint8List _getCachedImage(String base64String) {
+//     try {
+//       if (!_bannerCache.containsKey(base64String)) {
+//         final base64Content = base64String.split(',').last;
+//         _bannerCache[base64String] = base64Decode(base64Content);
+//       }
+//       return _bannerCache[base64String]!;
+//     } catch (e) {
+//       return Uint8List.fromList([
+//         0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, 0x00, 0x00, 0x00, 0x0D,
+//         0x49, 0x48, 0x44, 0x52, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01,
+//         0x08, 0x02, 0x00, 0x00, 0x00, 0x90, 0x77, 0x53, 0xDE, 0x00, 0x00, 0x00,
+//         0x0C, 0x49, 0x44, 0x41, 0x54, 0x78, 0x01, 0x63, 0x00, 0x01, 0x00, 0x05,
+//         0x00, 0x01, 0xE2, 0x26, 0x05, 0x9B, 0x00, 0x00, 0x00, 0x00, 0x49, 0x45,
+//         0x4E, 0x44, 0xAE, 0x42, 0x60, 0x82
+//       ]);
+//     }
+//   }
+// }
+
+
+
+
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
@@ -11,10 +4817,8 @@ import 'package:http/http.dart' as https;
 import 'package:mobi_tv_entertainment/main.dart';
 import 'package:mobi_tv_entertainment/provider/color_provider.dart';
 import 'package:mobi_tv_entertainment/provider/focus_provider.dart';
-import 'package:mobi_tv_entertainment/provider/shared_data_provider.dart';
 import 'package:mobi_tv_entertainment/video_widget/socket_service.dart';
 import 'package:mobi_tv_entertainment/video_widget/video_screen.dart';
-import 'package:mobi_tv_entertainment/video_widget/youtube_player.dart';
 import 'package:mobi_tv_entertainment/widgets/models/news_item_model.dart';
 import 'package:mobi_tv_entertainment/widgets/small_widgets/loading_indicator.dart';
 import 'package:mobi_tv_entertainment/widgets/utils/color_service.dart';
@@ -24,141 +4828,163 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../widgets/small_widgets/app_assets.dart';
 
-// Enhanced function to get auth headers with dynamic auth key
+// Banner Data Model
+class BannerDataModel {
+  final int id;
+  final String title;
+  final String banner;
+  final int contentType;
+  final int? contentId;
+  final String? sourceType;
+  final String? url;
+  final int status;
+  final String createdAt;
+  final String updatedAt;
+  final String? deletedAt;
+
+  BannerDataModel({
+    required this.id,
+    required this.title,
+    required this.banner,
+    required this.contentType,
+    this.contentId,
+    this.sourceType,
+    this.url,
+    required this.status,
+    required this.createdAt,
+    required this.updatedAt,
+    this.deletedAt,
+  });
+
+  factory BannerDataModel.fromJson(Map<String, dynamic> json) {
+    return BannerDataModel(
+      id: json['id'] ?? 0,
+      title: json['title'] ?? '',
+      banner: json['banner'] ?? '',
+      contentType: json['content_type'] ?? 1,
+      contentId: json['content_id'],
+      sourceType: json['source_type'],
+      url: json['url'],
+      status: json['status'] ?? 0,
+      createdAt: json['created_at'] ?? '',
+      updatedAt: json['updated_at'] ?? '',
+      deletedAt: json['deleted_at'],
+    );
+  }
+
+  bool get isActive => status == 1 && deletedAt == null;
+
+  NewsItemModel toNewsItemModel() {
+    return NewsItemModel(
+      id: id.toString(),
+      name: title,
+      banner: banner,
+      contentId: id.toString(),
+      type: contentType.toString(),
+      url: url ?? '',
+      status: status.toString(), 
+      unUpdatedUrl: '', 
+      poster: '', 
+      image: '',
+    );
+  }
+}
+
+// Simplified Cache Manager
+class SimpleCacheManager {
+  static const String BANNER_CACHE_KEY = 'simple_banners_cache';
+
+  // Get cached data
+  static Future<List<dynamic>?> getCachedData() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final cachedString = prefs.getString(BANNER_CACHE_KEY);
+      
+      if (cachedString != null && cachedString.isNotEmpty) {
+        final List<dynamic> cachedData = json.decode(cachedString);
+        print('📦 Cache found: ${cachedData.length} items');
+        return cachedData;
+      }
+    } catch (e) {
+      print('❌ Error reading cache: $e');
+    }
+    return null;
+  }
+
+  // Save data to cache
+  static Future<void> setCachedData(List<dynamic> data) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(BANNER_CACHE_KEY, json.encode(data));
+      print('💾 Cache updated: ${data.length} items saved');
+    } catch (e) {
+      print('❌ Error saving cache: $e');
+    }
+  }
+
+  // Clear cache
+  static Future<void> clearCache() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove(BANNER_CACHE_KEY);
+      print('🗑️ Cache cleared');
+    } catch (e) {
+      print('❌ Error clearing cache: $e');
+    }
+  }
+}
+
+// Auth Headers
 Future<Map<String, String>> getAuthHeaders() async {
   String authKey = '';
 
-  // Try to get from AuthManager first (if available)
-  try {
-    if (AuthManager.hasValidAuthKey) {
-      authKey = AuthManager.authKey;
-    }
-  } catch (e) {}
-
-  // Fallback to global variable
-  if (authKey.isEmpty && globalAuthKey.isNotEmpty) {
-    authKey = globalAuthKey;
-  }
-
-  // Last resort: get from SharedPreferences
   if (authKey.isEmpty) {
     try {
       final prefs = await SharedPreferences.getInstance();
       authKey = prefs.getString('auth_key') ?? '';
       if (authKey.isNotEmpty) {
-        // Update global variable for next time
         globalAuthKey = authKey;
       }
-    } catch (e) {}
+    } catch (e) {
+      print('Error getting auth key: $e');
+    }
   }
 
   if (authKey.isEmpty) {
-    authKey = 'vLQTuPZUxktl5mVW'; // Fallback key
+    authKey = 'vLQTuPZUxktl5mVW';
   }
 
   return {
-    'auth-key': authKey, // Primary auth header
-    'x-api-key': authKey, // Fallback for compatibility
+    'auth-key': authKey,
     'Accept': 'application/json',
     'Content-Type': 'application/json',
-    'User-Agent': 'MobiTV/1.0',
   };
 }
 
-// API configuration with multiple endpoints
+// API Configuration
 class ApiConfig {
-  static const String PRIMARY_BASE_URL =
-      'https://acomtv.coretechinfo.com/public/api';
-  static const String SECONDARY_BASE_URL =
-      'https://acomtv.coretechinfo.com/api';
-  static const String FALLBACK_BASE_URL = 'https://api.ekomflix.com/android';
-
-  static const List<String> FEATURED_TV_ENDPOINTS = [
-    '$PRIMARY_BASE_URL/getCustomImageSlider',
-    '$SECONDARY_BASE_URL/getCustomImageSlider',
-    '$FALLBACK_BASE_URL/getCustomImageSlider',
-  ];
-
+  static const String PRIMARY_BASE_URL = 'https://acomtv.coretechinfo.com/public/api';
   static const List<String> BANNER_ENDPOINTS = [
     '$PRIMARY_BASE_URL/getCustomImageSlider',
-    '$SECONDARY_BASE_URL/getCustomImageSlider',
-    '$FALLBACK_BASE_URL/getCustomImageSlider',
   ];
 }
 
-// Enhanced fetchLiveFeaturedTVById with multiple endpoint support
-Future<Map<String, String>> fetchVideoDataByIdFromBanners(
-    String contentId) async {
-  final prefs = await SharedPreferences.getInstance();
-  final cachedData = prefs.getString('live_featured_tv');
-
-  List<dynamic> responseData;
+// API Functions
+Future<Map<String, String>> fetchVideoDataByIdFromBanners(String contentId) async {
+  // First try cache
+  final cachedData = await SimpleCacheManager.getCachedData();
+  List<dynamic> responseData = [];
 
   try {
-    // Use cached data if available
-    if (cachedData != null) {
-      responseData = json.decode(cachedData);
+    if (cachedData != null && cachedData.isNotEmpty) {
+      responseData = cachedData;
     } else {
-      // Try multiple API endpoints with auth key
-      Map<String, String> headers = await getAuthHeaders();
-      bool success = false;
-      String responseBody = '';
-
-      for (int i = 0; i < ApiConfig.FEATURED_TV_ENDPOINTS.length; i++) {
-        String endpoint = ApiConfig.FEATURED_TV_ENDPOINTS[i];
-
-        try {
-          Map<String, String> currentHeaders = Map.from(headers);
-
-          // For fallback endpoint, use old header format
-          if (endpoint.contains('api.ekomflix.com')) {
-            currentHeaders = {
-              'x-api-key': 'vLQTuPZUxktl5mVW',
-              'Accept': 'application/json',
-            };
-          }
-
-          final response = await https
-              .get(
-                Uri.parse(endpoint),
-                headers: currentHeaders,
-              )
-              .timeout(Duration(seconds: 15));
-
-          if (response.statusCode == 200) {
-            String body = response.body.trim();
-            if (body.startsWith('[') || body.startsWith('{')) {
-              try {
-                json.decode(body); // Validate JSON
-                responseBody = body;
-                success = true;
-                break;
-              } catch (e) {
-                continue;
-              }
-            } else {
-              continue;
-            }
-          } else {
-            continue;
-          }
-        } catch (e) {
-          continue;
-        }
-      }
-
-      if (!success) {
-        throw Exception('Failed to load featured live TV from all endpoints');
-      }
-
-      responseData = json.decode(responseBody);
-      // Cache the successful response
-      await prefs.setString('live_featured_tv', responseBody);
+      // Fetch from API if no cache
+      responseData = await fetchBannersData();
     }
 
-    // Find the matched item by id
     final matchedItem = responseData.firstWhere(
-      (channel) => channel['id'].toString() == contentId,
+      (item) => item['id'].toString() == contentId,
       orElse: () => null,
     );
 
@@ -167,18 +4993,17 @@ Future<Map<String, String>> fetchVideoDataByIdFromBanners(
     }
 
     return {
-      'url': matchedItem['url'] ?? '',
-      'type': matchedItem['type'] ?? '',
-      'banner': matchedItem['banner'] ?? '',
-      'name': matchedItem['name'] ?? '',
-      'stream_type': matchedItem['stream_type'] ?? '',
+      'url': matchedItem['url']?.toString() ?? '',
+      'type': matchedItem['content_type']?.toString() ?? '',
+      'banner': matchedItem['banner']?.toString() ?? '',
+      'name': matchedItem['title']?.toString() ?? '',
+      'stream_type': matchedItem['source_type']?.toString() ?? '',
     };
   } catch (e) {
     throw Exception('Something went wrong: $e');
   }
 }
 
-// Enhanced fetch banners function
 Future<List<dynamic>> fetchBannersData() async {
   Map<String, String> headers = await getAuthHeaders();
   bool success = false;
@@ -188,39 +5013,22 @@ Future<List<dynamic>> fetchBannersData() async {
     String endpoint = ApiConfig.BANNER_ENDPOINTS[i];
 
     try {
-      Map<String, String> currentHeaders = Map.from(headers);
-
-      // For fallback endpoint, use old header format
-      if (endpoint.contains('api.ekomflix.com')) {
-        currentHeaders = {
-          'x-api-key': 'vLQTuPZUxktl5mVW',
-          'Accept': 'application/json',
-        };
-      }
-
       final response = await https
-          .get(
-            Uri.parse(endpoint),
-            headers: currentHeaders,
-          )
+          .get(Uri.parse(endpoint), headers: headers)
           .timeout(Duration(seconds: 15));
 
       if (response.statusCode == 200) {
         String body = response.body.trim();
         if (body.startsWith('[') || body.startsWith('{')) {
           try {
-            json.decode(body); // Validate JSON
+            json.decode(body);
             responseBody = body;
             success = true;
             break;
           } catch (e) {
             continue;
           }
-        } else {
-          continue;
         }
-      } else {
-        continue;
       }
     } catch (e) {
       continue;
@@ -231,125 +5039,611 @@ Future<List<dynamic>> fetchBannersData() async {
     throw Exception('Failed to load banners from all endpoints');
   }
 
-  final List<dynamic> responseData = json.decode(responseBody);
-
-  return responseData;
+  return json.decode(responseBody);
 }
 
-// // Global Event Bus for refresh events
-// class GlobalEventBus {
-//   static final StreamController<RefreshPageEvent> _eventBus =
-//       StreamController<RefreshPageEvent>.broadcast();
-
-//   static Stream<RefreshPageEvent> get eventBus => _eventBus.stream;
-
-//   static void fire(RefreshPageEvent event) {
-//     _eventBus.add(event);
-//   }
-
-//   static void dispose() {
-//     _eventBus.close();
-//   }
-// }
-
-class GlobalEventBus {
-  static final GlobalEventBus _instance = GlobalEventBus._internal();
-  factory GlobalEventBus() => _instance;
-
-  final StreamController<RefreshPageEvent> _controller =
-      StreamController<RefreshPageEvent>.broadcast();
-
-  GlobalEventBus._internal();
-
-  Stream<RefreshPageEvent> get events => _controller.stream;
-  void fire(RefreshPageEvent event) => _controller.add(event);
-  void dispose() => _controller.close();
-}
-
-class RefreshPageEvent {
-  final String pageId;
-
-  RefreshPageEvent(this.pageId);
-}
-
+// Main Banner Slider Widget
 class BannerSlider extends StatefulWidget {
   final Function(bool)? onFocusChange;
-  const BannerSlider(
-      {Key? key, this.onFocusChange, required FocusNode focusNode})
-      : super(key: key);
+  final FocusNode focusNode;
+
+  const BannerSlider({
+    Key? key,
+    this.onFocusChange,
+    required this.focusNode,
+  }) : super(key: key);
+
   @override
   _BannerSliderState createState() => _BannerSliderState();
 }
 
-class _BannerSliderState extends State<BannerSlider> {
-  // State variables
-  List<Map<String, dynamic>> lastPlayedVideos = [];
-  late SharedDataProvider sharedDataProvider;
+class _BannerSliderState extends State<BannerSlider> with SingleTickerProviderStateMixin {
   final SocketService _socketService = SocketService();
-  List<NewsItemModel> bannerList = [];
+  List<BannerDataModel> bannerList = [];
+  List<NewsItemModel> newsItemList = [];
   Map<String, Color> bannerColors = {};
   bool isLoading = true;
   String errorMessage = '';
   late PageController _pageController;
-  late Timer _timer;
+  Timer? _timer;
   String? selectedContentId;
   final FocusNode _buttonFocusNode = FocusNode();
   bool _isNavigating = false;
-  final int _maxRetries = 3;
-  final int _retryDelay = 5;
   final PaletteColorService _paletteColorService = PaletteColorService();
-  // late StreamSubscription refreshSubscription;
-  Key refreshKey = UniqueKey();
-  late ScrollController _lastPlayedScrollController;
-  double _itemWidth = 0;
-
-  // Image caching
   Map<String, Uint8List> _bannerCache = {};
   late FocusProvider _refreshProvider;
+
+  // Animation controllers for shimmer effect
+  late AnimationController _shimmerController;
+  late Animation<double> _shimmerAnimation;
 
   @override
   void initState() {
     super.initState();
+    _initializeShimmerAnimation();
     _initializeSlider();
   }
 
+  void _initializeShimmerAnimation() {
+    _shimmerController = AnimationController(
+      duration: const Duration(milliseconds: 1500),
+      vsync: this,
+    )..repeat();
+
+    _shimmerAnimation = Tween<double>(
+      begin: -1.0,
+      end: 2.0,
+    ).animate(CurvedAnimation(
+      parent: _shimmerController,
+      curve: Curves.easeInOut,
+    ));
+  }
+
+  @override
+  void dispose() {
+    if (_pageController.hasClients) {
+      _pageController.dispose();
+    }
+    _socketService.dispose();
+    _shimmerController.dispose();
+    if (_timer != null && _timer!.isActive) {
+      _timer!.cancel();
+    }
+    _buttonFocusNode.dispose();
+    super.dispose();
+  }
+
+  // Simplified initialization
   Future<void> _initializeSlider() async {
-    _lastPlayedScrollController = ScrollController();
-    sharedDataProvider = context.read<SharedDataProvider>();
+    try {
+      _socketService.initSocket();
+      _pageController = PageController();
 
-    // Initialize socket service
-    _socketService.initSocket();
-    _pageController = PageController();
+      _buttonFocusNode.addListener(() {
+        if (_buttonFocusNode.hasFocus) {
+          widget.onFocusChange?.call(true);
+        }
+      });
 
-    // Set up focus listeners
-    _buttonFocusNode.addListener(() {
-      if (_buttonFocusNode.hasFocus) {
-        widget.onFocusChange?.call(true);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          context.read<FocusProvider>().setWatchNowFocusNode(_buttonFocusNode);
+        }
+      });
+
+      _buttonFocusNode.addListener(_onButtonFocusNode);
+
+      // Start the simplified loading process
+      await _loadBannerData();
+    } catch (e) {
+      print('Error initializing slider: $e');
+      if (mounted) {
+        setState(() {
+          errorMessage = 'Failed to initialize: $e';
+          isLoading = false;
+        });
       }
-    });
+    }
+  }
 
-    // Post frame callback setup
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      sharedDataProvider.updateLastPlayedVideos(lastPlayedVideos);
-      context.read<FocusProvider>().setWatchNowFocusNode(_buttonFocusNode);
+  // Simplified data loading - shows cache immediately, then updates with fresh data
+  Future<void> _loadBannerData() async {
+    try {
+      print('🚀 Starting simplified data loading...');
 
-      if (lastPlayedVideos.isNotEmpty) {
-        final firstBannerFocusNode =
-            lastPlayedVideos[0]['focusNode'] as FocusNode;
-        context
-            .read<FocusProvider>()
-            .setFirstLastPlayedFocusNode(firstBannerFocusNode);
+      // Step 1: Try to show cached data immediately
+      await _showCachedDataIfAvailable();
+
+      // Step 2: Always fetch fresh data and update cache
+      await _fetchAndUpdateCache();
+
+    } catch (e) {
+      print('❌ Error in data loading: $e');
+      if (mounted) {
+        setState(() {
+          if (bannerList.isEmpty) {
+            errorMessage = 'Failed to load content: $e';
+          }
+          isLoading = false;
+        });
       }
-    });
+    }
+  }
 
-    _buttonFocusNode.addListener(_onButtonFocusNode);
+  // Show cached data immediately if available
+  Future<void> _showCachedDataIfAvailable() async {
+    try {
+      final cachedData = await SimpleCacheManager.getCachedData();
+      
+      if (cachedData != null && cachedData.isNotEmpty) {
+        print('✅ Showing cached data: ${cachedData.length} items');
+        
+        final processedBanners = _processRawBannerData(cachedData);
+        
+        if (processedBanners.isNotEmpty && mounted) {
+          setState(() {
+            bannerList = processedBanners;
+            newsItemList = bannerList.map((banner) => banner.toNewsItemModel()).toList();
+            selectedContentId = bannerList.isNotEmpty ? bannerList[0].id.toString() : null;
+            isLoading = false;
+            errorMessage = '';
+          });
 
-    // Load data
-    await _loadLastPlayedVideos();
-    await _loadCachedData();
+          // Start UI components
+          _startAutoSlide();
+          _fetchBannerColors();
+        }
+      } else {
+        print('📭 No cached data found');
+      }
+    } catch (e) {
+      print('❌ Error showing cached data: $e');
+    }
+  }
 
-    if (bannerList.isNotEmpty) {
-      _startAutoSlide();
+  // Fetch fresh data and update cache
+  Future<void> _fetchAndUpdateCache() async {
+    try {
+      print('🌐 Fetching fresh data from API...');
+      
+      // Fetch fresh data
+      final List<dynamic> freshData = await fetchBannersData();
+      print('✅ API returned ${freshData.length} items');
+
+      // Update cache with fresh data
+      await SimpleCacheManager.setCachedData(freshData);
+
+      // Process fresh data
+      final processedBanners = _processRawBannerData(freshData);
+
+      if (mounted) {
+        setState(() {
+          bannerList = processedBanners;
+          newsItemList = bannerList.map((banner) => banner.toNewsItemModel()).toList();
+          selectedContentId = bannerList.isNotEmpty ? bannerList[0].id.toString() : null;
+          isLoading = false;
+          errorMessage = '';
+        });
+
+        print('✅ UI updated with ${bannerList.length} fresh banners');
+      }
+
+      // Initialize UI components if needed
+      if (bannerList.isNotEmpty) {
+        if (_timer == null || !_timer!.isActive) {
+          _startAutoSlide();
+        }
+        _fetchBannerColors();
+      }
+
+    } catch (e) {
+      print('❌ Error fetching fresh data: $e');
+      
+      // Only show error if we have no cached data
+      if (mounted && bannerList.isEmpty) {
+        setState(() {
+          errorMessage = 'Failed to load banners: $e';
+          isLoading = false;
+        });
+      }
+    }
+  }
+
+  // Process raw banner data
+  List<BannerDataModel> _processRawBannerData(List<dynamic> rawData) {
+    List<BannerDataModel> activeBanners = [];
+    int processedCount = 0;
+    int inactiveCount = 0;
+
+    for (var bannerJson in rawData) {
+      try {
+        final banner = BannerDataModel.fromJson(bannerJson);
+        
+        if (banner.isActive) {
+          activeBanners.add(banner);
+          processedCount++;
+        } else {
+          inactiveCount++;
+        }
+      } catch (e) {
+        print('❌ Error processing banner: $e');
+      }
+    }
+
+    print('📊 Processing complete: $processedCount active, $inactiveCount inactive');
+    return activeBanners;
+  }
+
+  // Public method for refreshing data
+  Future<void> refreshData() async {
+    print('🔄 Refresh requested');
+    await _loadBannerData();
+  }
+
+  // Clear cache and reload
+  Future<void> clearCacheAndReload() async {
+    try {
+      await SimpleCacheManager.clearCache();
+      
+      if (mounted) {
+        setState(() {
+          bannerList.clear();
+          newsItemList.clear();
+          isLoading = true;
+          errorMessage = '';
+        });
+      }
+
+      await _loadBannerData();
+    } catch (e) {
+      print('Error clearing cache: $e');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<FocusProvider>(
+      builder: (context, focusProvider, child) {
+        return Scaffold(
+          backgroundColor: cardColor,
+          body: _buildBody(focusProvider),
+        );
+      },
+    );
+  }
+
+  Widget _buildBody(FocusProvider focusProvider) {
+    if (isLoading && bannerList.isEmpty) {
+      return _buildLoadingWidget();
+    }
+
+    if (bannerList.isEmpty && !isLoading) {
+      return _buildEmptyWidget();
+    }
+
+    return _buildBannerSlider(focusProvider);
+  }
+
+  Widget _buildLoadingWidget() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SpinKitFadingCircle(color: borderColor, size: 50.0),
+          SizedBox(height: 20),
+          Text(
+            'Loading banners...',
+            style: TextStyle(
+              color: hintColor,
+              fontSize: nametextsz,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmptyWidget() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.image_not_supported,
+            color: hintColor.withOpacity(0.5),
+            size: 50,
+          ),
+          SizedBox(height: 20),
+          Text(
+            'No banners available',
+            style: TextStyle(color: hintColor, fontSize: nametextsz),
+          ),
+          SizedBox(height: 20),
+          ElevatedButton.icon(
+            onPressed: refreshData,
+            icon: Icon(Icons.refresh),
+            label: Text('Refresh'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blue,
+              foregroundColor: Colors.white,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBannerSlider(FocusProvider focusProvider) {
+    return Stack(
+      children: [
+        // Page View
+        PageView.builder(
+          controller: _pageController,
+          itemCount: bannerList.length,
+          onPageChanged: (index) {
+            if (mounted) {
+              setState(() {
+                selectedContentId = bannerList[index].id.toString();
+              });
+            }
+          },
+          itemBuilder: (context, index) {
+            final banner = bannerList[index];
+            return Stack(
+              alignment: AlignmentDirectional.topCenter,
+              children: [
+                _buildBannerWithShimmer(banner, focusProvider),
+              ],
+            );
+          },
+        ),
+
+        // Watch Now Button
+        _buildWatchNowButton(focusProvider),
+
+        // Page indicators
+        if (bannerList.length > 1) _buildPageIndicators(),
+      ],
+    );
+  }
+
+  Widget _buildWatchNowButton(FocusProvider focusProvider) {
+    return Positioned(
+      top: screenhgt * 0.03,
+      left: screenwdt * 0.02,
+      child: Focus(
+        focusNode: _buttonFocusNode,
+        onKeyEvent: _handleKeyEvent,
+        child: GestureDetector(
+          onTap: _handleWatchNowTap,
+          child: RandomLightColorWidget(
+            hasFocus: focusProvider.isButtonFocused,
+            childBuilder: (Color randomColor) {
+              return AnimatedContainer(
+                duration: Duration(milliseconds: 200),
+                margin: EdgeInsets.all(screenwdt * 0.001),
+                padding: EdgeInsets.symmetric(
+                  vertical: screenhgt * 0.02,
+                  horizontal: screenwdt * 0.02,
+                ),
+                decoration: BoxDecoration(
+                  color: focusProvider.isButtonFocused
+                      ? Colors.black87
+                      : Colors.black.withOpacity(0.6),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: focusProvider.isButtonFocused
+                        ? focusProvider.currentFocusColor ?? randomColor
+                        : Colors.white.withOpacity(0.3),
+                    width: focusProvider.isButtonFocused ? 3.0 : 1.0,
+                  ),
+                  boxShadow: focusProvider.isButtonFocused
+                      ? [
+                          BoxShadow(
+                            color: (focusProvider.currentFocusColor ?? randomColor)
+                                .withOpacity(0.5),
+                            blurRadius: 20.0,
+                            spreadRadius: 5.0,
+                          ),
+                        ]
+                      : [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.3),
+                            blurRadius: 10.0,
+                            spreadRadius: 2.0,
+                          ),
+                        ],
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.play_arrow,
+                      color: focusProvider.isButtonFocused
+                          ? focusProvider.currentFocusColor ?? randomColor
+                          : hintColor,
+                      size: menutextsz * 1.2,
+                    ),
+                    SizedBox(width: 8),
+                    Text(
+                      'Watch Now',
+                      style: TextStyle(
+                        fontSize: menutextsz,
+                        color: focusProvider.isButtonFocused
+                            ? focusProvider.currentFocusColor ?? randomColor
+                            : hintColor,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPageIndicators() {
+    return Positioned(
+      top: screenhgt * 0.05,
+      right: screenwdt * 0.05,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: bannerList.asMap().entries.map((entry) {
+          int index = entry.key;
+          bool isSelected = selectedContentId == bannerList[index].id.toString();
+
+          return AnimatedContainer(
+            duration: Duration(milliseconds: 300),
+            margin: EdgeInsets.symmetric(horizontal: 4),
+            width: isSelected ? 12 : 8,
+            height: isSelected ? 12 : 8,
+            decoration: BoxDecoration(
+              color: isSelected
+                  ? Colors.white
+                  : Colors.white.withOpacity(0.5),
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.3),
+                  blurRadius: 4,
+                  spreadRadius: 1,
+                ),
+              ],
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  Widget _buildBannerWithShimmer(BannerDataModel banner, FocusProvider focusProvider) {
+    return Container(
+      margin: const EdgeInsets.only(top: 1),
+      width: screenwdt,
+      height: screenhgt,
+      child: Stack(
+        children: [
+          // Main banner image
+          CachedNetworkImage(
+            imageUrl: banner.banner,
+            fit: BoxFit.fill,
+            placeholder: (context, url) => Image.asset('assets/streamstarting.gif'),
+            errorWidget: (context, url, error) => Image.asset('assets/streamstarting.gif'),
+            cacheKey: banner.id.toString(),
+            fadeInDuration: Duration(milliseconds: 500),
+            memCacheHeight: 800,
+            memCacheWidth: 1200,
+            width: screenwdt,
+            height: screenhgt,
+          ),
+
+          // Shimmer effect overlay when focused
+          if (focusProvider.isButtonFocused)
+            AnimatedBuilder(
+              animation: _shimmerAnimation,
+              builder: (context, child) {
+                return Positioned.fill(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment(-1.0 + _shimmerAnimation.value, -1.0),
+                        end: Alignment(1.0 + _shimmerAnimation.value, 1.0),
+                        colors: [
+                          Colors.transparent,
+                          Colors.white.withOpacity(0.1),
+                          Colors.white.withOpacity(0.2),
+                          Colors.white.withOpacity(0.1),
+                          Colors.transparent,
+                        ],
+                        stops: [0.0, 0.3, 0.5, 0.7, 1.0],
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+
+          // Enhanced glow effect when focused
+          if (focusProvider.isButtonFocused)
+            Positioned.fill(
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: RadialGradient(
+                    center: Alignment.center,
+                    radius: 0.8,
+                    colors: [
+                      (focusProvider.currentFocusColor ?? Colors.blue).withOpacity(0.1),
+                      Colors.transparent,
+                    ],
+                  ),
+                ),
+              ),
+            ),
+
+          // Border glow effect
+          if (focusProvider.isButtonFocused)
+            Positioned.fill(
+              child: Container(
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: (focusProvider.currentFocusColor ?? Colors.blue).withOpacity(0.3),
+                    width: 2.0,
+                  ),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  // Event Handlers
+  KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
+    if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
+      if (_pageController.hasClients &&
+          _pageController.page != null &&
+          _pageController.page! < bannerList.length - 1) {
+        _pageController.nextPage(
+          duration: Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+        return KeyEventResult.handled;
+      }
+    } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+      if (_pageController.hasClients &&
+          _pageController.page != null &&
+          _pageController.page! > 0) {
+        _pageController.previousPage(
+          duration: Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+        return KeyEventResult.handled;
+      }
+    } else if (event is KeyDownEvent) {
+      if (event.logicalKey == LogicalKeyboardKey.select ||
+          event.logicalKey == LogicalKeyboardKey.enter) {
+        _handleWatchNowTap();
+        return KeyEventResult.handled;
+      }
+    }
+    return KeyEventResult.ignored;
+  }
+
+  void _handleWatchNowTap() {
+    if (selectedContentId != null && bannerList.isNotEmpty) {
+      try {
+        final banner = bannerList.firstWhere(
+          (b) => b.id.toString() == selectedContentId,
+          orElse: () => bannerList.first,
+        );
+        fetchAndPlayVideo(banner.id.toString(), newsItemList);
+      } catch (e) {
+        print('Error in watch now tap: $e');
+      }
     }
   }
 
@@ -357,13 +5651,15 @@ class _BannerSliderState extends State<BannerSlider> {
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    // Provider ko listen karo
-    _refreshProvider = context.watch<FocusProvider>();
+    try {
+      _refreshProvider = context.watch<FocusProvider>();
 
-    // Check if refresh is needed
-    if (_refreshProvider.shouldRefreshBanners ||
-        _refreshProvider.shouldRefreshLastPlayed) {
-      _handleProviderRefresh();
+      if (_refreshProvider.shouldRefreshBanners ||
+          _refreshProvider.shouldRefreshLastPlayed) {
+        _handleProviderRefresh();
+      }
+    } catch (e) {
+      print('Error in didChangeDependencies: $e');
     }
   }
 
@@ -372,65 +5668,33 @@ class _BannerSliderState extends State<BannerSlider> {
 
     try {
       if (_refreshProvider.shouldRefreshBanners) {
-        await fetchBanners(isBackgroundFetch: true);
+        await _loadBannerData();
         _refreshProvider.markBannersRefreshed();
       }
-
-      if (_refreshProvider.shouldRefreshLastPlayed) {
-        await _loadLastPlayedVideos();
-        _refreshProvider.markLastPlayedRefreshed();
-
-        // UI refresh ke liye
-        if (mounted) {
-          setState(() {
-            refreshKey = UniqueKey();
-          });
-        }
-      }
-    } catch (e) {}
+    } catch (e) {
+      print('Error in provider refresh: $e');
+    }
   }
 
-  @override
-  void dispose() {
-    // Unregister focus elements
-    for (int i = 0; i < lastPlayedVideos.length; i++) {
-      context.read<FocusProvider>().unregisterElementKey('lastPlayed_$i');
-    }
-
-    // Dispose controllers and subscriptions
-    _lastPlayedScrollController.dispose();
-    _pageController.dispose();
-    _socketService.dispose();
-
-    if (_timer.isActive) {
-      _timer.cancel();
-    }
-
-    _buttonFocusNode.dispose();
-
-    super.dispose();
-  }
-
-  // Fetch banner colors for UI enhancement
   Future<void> _fetchBannerColors() async {
     for (var banner in bannerList) {
       try {
         final imageUrl = banner.banner;
-        final secondaryColor =
-            await _paletteColorService.getSecondaryColor(imageUrl);
+        final secondaryColor = await _paletteColorService.getSecondaryColor(imageUrl);
 
         if (mounted) {
           setState(() {
-            bannerColors[banner.contentId] = secondaryColor;
+            bannerColors[banner.id.toString()] = secondaryColor;
           });
         }
-      } catch (e) {}
+      } catch (e) {
+        print('Error fetching banner color: $e');
+      }
     }
   }
 
-  // Auto slide functionality
   void _startAutoSlide() {
-    if (bannerList.isNotEmpty) {
+    if (bannerList.isNotEmpty && (_timer == null || !_timer!.isActive)) {
       _timer = Timer.periodic(const Duration(seconds: 4), (Timer timer) {
         if (!mounted) {
           timer.cancel();
@@ -440,7 +5704,7 @@ class _BannerSliderState extends State<BannerSlider> {
         try {
           if (_pageController.hasClients) {
             if (_pageController.page == bannerList.length - 1) {
-              _pageController.jumpToPage(0); // Jump to first page
+              _pageController.jumpToPage(0);
             } else {
               _pageController.nextPage(
                 duration: const Duration(milliseconds: 300),
@@ -448,2050 +5712,158 @@ class _BannerSliderState extends State<BannerSlider> {
               );
             }
           }
-        } catch (e) {}
-      });
-    }
-  }
-
-  // YouTube URL detection
-  bool isYoutubeUrl(String? url) {
-    if (url == null || url.isEmpty) {
-      return false;
-    }
-
-    url = url.toLowerCase().trim();
-
-    // Check if it's a YouTube ID (exactly 11 characters)
-    bool isYoutubeId = RegExp(r'^[a-zA-Z0-9_-]{11}$').hasMatch(url);
-    if (isYoutubeId) {
-      return true;
-    }
-
-    // Check for regular YouTube URLs
-    bool isYoutubeUrl = url.contains('youtube.com') ||
-        url.contains('youtu.be') ||
-        url.contains('youtube.com/shorts/');
-
-    return isYoutubeUrl;
-  }
-
-  // Format URL utility
-  String formatUrl(String url, {Map<String, String>? params}) {
-    if (url.isEmpty) {
-      throw Exception("Empty URL provided");
-    }
-
-    // // Handle YouTube ID by converting to full URL if needed
-    // if (RegExp(r'^[a-zA-Z0-9_-]{11}$').hasMatch(url)) {
-    //   url = "https://www.youtube.com/watch?v=$url";
-    // }
-
-    // Remove any existing query parameters
-    // url = url.split('?')[0];
-
-    // Add new query parameters
-    // if (params != null && params.isNotEmpty) {
-    //   url += '?' + params.entries.map((e) => '${e.key}=${e.value}').join('&');
-    // }
-
-    return url;
-  }
-
-  // Button focus handling
-  void _onButtonFocusNode() {
-    if (_buttonFocusNode.hasFocus) {
-      final random = Random();
-      final color = Color.fromRGBO(
-        random.nextInt(256),
-        random.nextInt(256),
-        random.nextInt(256),
-        1,
-      );
-      context.read<FocusProvider>().setButtonFocus(true, color: color);
-      context.read<ColorProvider>().updateColor(color, true);
-    } else {
-      context.read<FocusProvider>().resetFocus();
-      context.read<ColorProvider>().resetColor();
-    }
-  }
-
-  // Banner Slider Debug Fix - fetchBanners method update
-
-  // Update this method in your banner_slider.dart
-  Future<void> fetchBanners({bool isBackgroundFetch = false}) async {
-    if (!isBackgroundFetch) {
-      setState(() {
-        isLoading = true;
-        errorMessage = '';
-      });
-    }
-
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final cachedBanners = prefs.getString('banners');
-
-      // Fetch data from API
-      final List<dynamic> responseData = await fetchBannersData();
-
-      // DEBUG: Print raw API response
-      for (int i = 0; i < responseData.length; i++) {
-        final item = responseData[i];
-      }
-
-      // Check if API response is different from cached data
-      if (cachedBanners != null) {
-        try {
-          final cachedData = json.decode(cachedBanners);
-          if (json.encode(cachedData) == json.encode(responseData)) {
-            return;
-          }
-        } catch (e) {}
-      }
-
-      // Process and update banner data with better filtering
-      List<NewsItemModel> filteredBanners = [];
-
-      for (var banner in responseData) {
-        try {
-          // Check multiple status formats
-          bool isActive = false;
-
-          if (banner['status'] != null) {
-            var status = banner['status'];
-
-            // Handle different status formats
-            if (status is String) {
-              isActive = status == "1" ||
-                  status.toLowerCase() == "active" ||
-                  status.toLowerCase() == "true";
-            } else if (status is int) {
-              isActive = status == 1;
-            } else if (status is bool) {
-              isActive = status;
-            }
-          } else {
-            // If no status field, consider it active
-            isActive = true;
-          }
-
-          if (isActive) {
-            try {
-              final newsItem = NewsItemModel.fromJson(banner);
-              filteredBanners.add(newsItem);
-            } catch (e) {}
-          } else {}
-        } catch (e) {}
-      }
-
-      setState(() {
-        bannerList = filteredBanners;
-        selectedContentId = bannerList.isNotEmpty ? bannerList[0].id : null;
-        isLoading = false;
-        errorMessage = '';
-      });
-
-      // Cache the data
-      await prefs.setString('banners', json.encode(responseData));
-
-      // Debug: Print final banner list
-      for (int i = 0; i < bannerList.length; i++) {
-        final banner = bannerList[i];
-      }
-
-      // Fetch colors and start auto slide
-      if (bannerList.isNotEmpty) {
-        await _fetchBannerColors();
-        if (!_timer.isActive) {
-          _startAutoSlide();
-        }
-      } else {}
-    } catch (e) {
-      if (!isBackgroundFetch) {
-        setState(() {
-          errorMessage = 'Failed to load banners: $e';
-          isLoading = false;
-        });
-      }
-    }
-  }
-
-  // Also update _loadCachedData method for consistency
-  Future<void> _loadCachedData() async {
-    final prefs = await SharedPreferences.getInstance();
-    final cachedBanners = prefs.getString('banners');
-
-    if (cachedBanners != null) {
-      try {
-        final List<dynamic> responseData = json.decode(cachedBanners);
-
-        // Use same filtering logic as fetchBanners
-        List<NewsItemModel> filteredBanners = [];
-
-        for (var banner in responseData) {
-          try {
-            bool isActive = false;
-
-            if (banner['status'] != null) {
-              var status = banner['status'];
-
-              if (status is String) {
-                isActive = status == "1" ||
-                    status.toLowerCase() == "active" ||
-                    status.toLowerCase() == "true";
-              } else if (status is int) {
-                isActive = status == 1;
-              } else if (status is bool) {
-                isActive = status;
-              }
-            } else {
-              isActive = true;
-            }
-
-            if (isActive) {
-              try {
-                final newsItem = NewsItemModel.fromJson(banner);
-                filteredBanners.add(newsItem);
-              } catch (e) {}
-            }
-          } catch (e) {}
-        }
-
-        setState(() {
-          bannerList = filteredBanners;
-          selectedContentId = bannerList.isNotEmpty ? bannerList[0].id : null;
-          isLoading = false;
-        });
-
-        if (bannerList.isNotEmpty) {
-          await _fetchBannerColors();
-        }
-      } catch (e) {
-        setState(() => isLoading = false);
-      }
-    } else {
-      setState(() => isLoading = false);
-    }
-
-    // Fetch fresh data in background
-    fetchBanners(isBackgroundFetch: true);
-  }
-
-  // Enhanced video fetching and playing
-  Future<void> fetchAndPlayVideo(
-      String contentId, List<NewsItemModel> channelList) async {
-    if (_isNavigating) {
-      return;
-    }
-
-    _isNavigating = true;
-
-    bool shouldPlayVideo = true;
-    bool shouldPop = true;
-
-    try {
-      // Show loading dialog
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext context) {
-          return WillPopScope(
-            onWillPop: () async {
-              shouldPlayVideo = false;
-              shouldPop = false;
-              return true;
-            },
-            child: Center(
-              child: Container(
-                padding: EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: Colors.black87,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    SpinKitFadingCircle(
-                      color: borderColor,
-                      size: 50.0,
-                    ),
-                    SizedBox(height: 15),
-                    Text(
-                      '',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: nametextsz,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          );
-        },
-      );
-
-      // Fetch video data with enhanced error handling
-      final responseData = await fetchVideoDataByIdFromBanners(contentId);
-
-      // if (responseData['url'] == null || responseData['url']?.isEmpty == true) {
-      //   throw Exception('Invalid video URL received');
-      // }
-
-      // String originalUrl = responseData['url']!;
-      // String videoUrl = responseData['url']!;
-      // String videoType = responseData['type'] ?? '';
-      // String streamType = responseData['stream_type'] ?? '';
-
-      // Handle YouTube videos with retries
-      // bool isYoutube = videoType.toLowerCase() == 'youtube' ||
-      //     streamType.toLowerCase() == 'youtubelive' ||
-      //     isYoutubeUrl(originalUrl);
-
-      // if (isYoutube) {
-      //   for (int i = 0; i < _maxRetries; i++) {
-      //     try {
-      //       videoUrl = await _socketService.getUpdatedUrl(videoUrl);
-
-      //       if (videoUrl.isEmpty) {
-      //         throw Exception('Empty URL returned from socket service');
-      //       }
-
-      //       break;
-      //     } catch (e) {
-      //       if (i == _maxRetries - 1) {
-      //         throw Exception(
-      //             'Failed to get updated YouTube URL after $_maxRetries attempts');
-      //       }
-
-      //       await Future.delayed(Duration(seconds: _retryDelay));
-      //     }
-      // }
-      // }
-
-      // Determine live status
-      // bool liveStatus = isYoutube || streamType.toLowerCase() == 'youtubelive';
-  
-
-      // Close loading dialog
-      if (shouldPop && context.mounted) {
-        Navigator.of(context, rootNavigator: true).pop();
-      }
-
-      // Navigate to video screen
-      if (shouldPlayVideo && context.mounted) {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-              //   builder: (context) => VideoScreen(
-              //     videoUrl: videoUrl,
-              //     channelList: channelList,
-              //     videoId: int.tryParse(contentId) ?? 0,
-              //     videoType: videoType,
-              //     isLive: liveStatus,
-              //     isVOD: false,
-              //     bannerImageUrl: responseData['banner'] ?? '',
-              //     startAtPosition: Duration.zero,
-              //     isBannerSlider: true,
-              //     source: 'isBannerSlider',
-              //     isSearch: false,
-              //     unUpdatedUrl: originalUrl,
-              //     name: responseData['name'] ?? 'Unknown',
-              //     liveStatus: liveStatus,
-              //     seasonId: null,
-              //     isLastPlayedStored: false,
-              //   ),
-              // ),
-
-              builder: (context) => YouTubePlayerScreen(
-                videoData: VideoData(
-                  id: contentId,
-                  title: responseData['name'] ?? '',
-                  youtubeUrl: responseData['url'] ?? '',
-                  thumbnail: responseData['banner'] ?? '',
-                  //  description:'',
-                ),
-                playlist: channelList
-                    .map((m) => VideoData(
-                          id: m.id,
-                          title: m.name,
-                          youtubeUrl: m.url,
-                          thumbnail: m.banner,
-                          //  description: m.description,
-                        ))
-                    .toList(),
-              ),
-            ));
-      }
-    } catch (e) {
-      // Close loading dialog if still open
-      if (shouldPop && context.mounted) {
-        Navigator.of(context, rootNavigator: true).pop();
-      }
-
-      // Show error message
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Something went wrong'),
-            duration: Duration(seconds: 3),
-            backgroundColor: Colors.red.shade700,
-          ),
-        );
-      }
-    } finally {
-      _isNavigating = false;
-    }
-  }
-
-  // Scroll to focused item in continue watching section
-  void _scrollToFocusedItem(int index) {
-    if (!_lastPlayedScrollController.hasClients) return;
-
-    _itemWidth = screenwdt * 0.15 + 10;
-    double targetOffset = index * _itemWidth;
-    double currentOffset = _lastPlayedScrollController.offset;
-    double viewportWidth =
-        _lastPlayedScrollController.position.viewportDimension;
-
-    if (targetOffset < currentOffset ||
-        targetOffset + _itemWidth > currentOffset + viewportWidth) {
-      _lastPlayedScrollController.animateTo(
-        targetOffset,
-        duration: Duration(milliseconds: 1000),
-        curve: Curves.linear,
-      );
-    }
-  }
-
-// Image caching for base64 images (continued)
-  Uint8List _getCachedImage(String base64String) {
-    try {
-      if (!_bannerCache.containsKey(base64String)) {
-        // Decode only the base64 content after "data:image/..." prefix
-        final base64Content = base64String.split(',').last;
-        _bannerCache[base64String] = base64Decode(base64Content);
-      }
-      return _bannerCache[base64String]!;
-    } catch (e) {
-      // Return a 1x1 transparent pixel as fallback
-      return Uint8List.fromList([
-        0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, // PNG header
-        0x00, 0x00, 0x00, 0x0D, 0x49, 0x48, 0x44, 0x52, // IHDR chunk
-        0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01, // 1x1 dimensions
-        0x08, 0x02, 0x00, 0x00, 0x00, 0x90, 0x77, 0x53, // 8-bit RGB
-        0xDE, 0x00, 0x00, 0x00, 0x0C, 0x49, 0x44, 0x41, // IDAT chunk
-        0x54, 0x78, 0x01, 0x63, 0x00, 0x01, 0x00, 0x05, // Compressed data
-        0x00, 0x01, 0xE2, 0x26, 0x05, 0x9B, 0x00, 0x00, // Checksum
-        0x00, 0x00, 0x49, 0x45, 0x4E, 0x44, 0xAE, 0x42, // IEND chunk
-        0x60, 0x82
-      ]);
-    }
-  }
-
-  // Check if URL is a live video
-  bool isLiveVideoUrl(String url) {
-    String lowerUrl = url.toLowerCase().trim();
-
-    if (RegExp(r'^[a-zA-Z0-9_-]{10,15}$').hasMatch(lowerUrl)) {
-      return false; // Custom IDs are typically not live
-    }
-
-    if (!lowerUrl.startsWith('http://') && !lowerUrl.startsWith('https://')) {
-      return false; // Invalid URL format
-    }
-
-    // Check for live stream indicators
-    if (lowerUrl.contains(".m3u8") ||
-        lowerUrl.contains("live") ||
-        lowerUrl.contains("stream") ||
-        lowerUrl.contains("broadcast") ||
-        lowerUrl.contains("playlist")) {
-      return true;
-    }
-
-    // Check for video file extensions (typically not live)
-    List<String> videoExtensions = [".mp4", ".mov", ".avi", ".flv", ".mkv"];
-    for (String ext in videoExtensions) {
-      if (lowerUrl.endsWith(ext)) {
-        return false;
-      }
-    }
-
-    return false;
-  }
-
-  // Check live status for multiple URLs
-  List<bool> checkLiveVideoList(List<String> urls) {
-    return urls.map(isYoutubeUrl).toList();
-  }
-
-  // Build progress display for videos
-  Widget _buildProgressDisplay(Map<String, dynamic> videoData, bool hasFocus) {
-    Duration totalDuration = videoData['duration'] ?? Duration.zero;
-    Duration currentPosition = videoData['position'] ?? Duration.zero;
-    String url = videoData['videoUrl'] ?? '';
-    bool liveStatus = videoData['liveStatus'] ?? false;
-
-    double playedProgress = (totalDuration.inMilliseconds > 0)
-        ? (currentPosition.inMilliseconds / totalDuration.inMilliseconds)
-            .clamp(0.0, 1.0)
-        : 0.0;
-
-    String formatDuration(Duration duration) {
-      String twoDigits(int n) => n.toString().padLeft(2, '0');
-      String hours =
-          duration.inHours > 0 ? '${twoDigits(duration.inHours)}:' : '';
-      String minutes = twoDigits(duration.inMinutes.remainder(60));
-      String seconds = twoDigits(duration.inSeconds.remainder(60));
-      return '$hours$minutes:$seconds';
-    }
-
-    return Column(
-      children: [
-        Container(
-          padding: EdgeInsets.all(2),
-          decoration: BoxDecoration(
-            color: hasFocus
-                ? const Color.fromARGB(200, 16, 62, 99)
-                : Colors.transparent,
-            borderRadius: hasFocus ? BorderRadius.circular(4.0) : null,
-          ),
-          child: Stack(
-            children: [
-              LinearProgressIndicator(
-                minHeight: 4,
-                value: playedProgress,
-                color: Colors.red.withOpacity(0.8),
-                backgroundColor: Colors.grey[800],
-              ),
-            ],
-          ),
-        ),
-        SizedBox(height: 4),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              formatDuration(currentPosition),
-              style: TextStyle(
-                color: hasFocus ? Colors.blue : Colors.green,
-                fontSize: minitextsz,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            if (!liveStatus)
-              Text(
-                formatDuration(totalDuration),
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: minitextsz,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            if (liveStatus)
-              Text(
-                'LIVE',
-                style: TextStyle(
-                  color: Colors.redAccent,
-                  fontSize: minitextsz,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  // Add new video to last played list
-  void addNewBannerOrVideo(Map<String, dynamic> newVideo) async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      List<String> storedVideos =
-          prefs.getStringList('last_played_videos') ?? [];
-
-      // String newVideoEntry =
-      // '${newVideo['videoUrl']}|${newVideo['position'].inMilliseconds}|${newVideo['duration'].inMilliseconds}|${newVideo['liveStatus']}|${newVideo['bannerImageUrl']}|${newVideo['videoId']}|${newVideo['name']}|${newVideo['seasonId']}';
-
-      // Remove if already exists to avoid duplicates
-      storedVideos
-          .removeWhere((entry) => entry.startsWith('${newVideo['videoUrl']}|'));
-
-      // Add to beginning of list
-      // storedVideos.insert(0, newVideoEntry);
-
-      // Keep only last 10 videos
-      if (storedVideos.length > 8) {
-        storedVideos = storedVideos.take(10).toList();
-      }
-
-      await prefs.setStringList('last_played_videos', storedVideos);
-
-      // Refresh the UI
-      await _loadLastPlayedVideos();
-    } catch (e) {}
-  }
-
-  // // Load last played videos from storage
-  // Future<void> _loadLastPlayedVideos() async {
-  //   try {
-  //     final prefs = await SharedPreferences.getInstance();
-  //     final storedVideos = prefs.getStringList('last_played_videos');
-
-  //     if (storedVideos != null && storedVideos.isNotEmpty) {
-  //       List<Map<String, dynamic>> loadedVideos = [];
-
-  //       for (String videoEntry in storedVideos) {
-  //         try {
-  //           List<String> details = videoEntry.split('|');
-  //           if (details.length >= 8) {
-  //             Duration duration =
-  //                 Duration(milliseconds: int.tryParse(details[2]) ?? 0);
-  //             Duration position =
-  //                 Duration(milliseconds: int.tryParse(details[1]) ?? 0);
-  //             bool liveStatus = details[3].toLowerCase() == 'true';
-
-  //             loadedVideos.add({
-  //               'videoUrl': details[0],
-  //               'position': position,
-  //               'duration': duration,
-  //               'liveStatus': liveStatus,
-  //               'bannerImageUrl': details[4],
-  //               'videoId': details[5],
-  //               'name': details[6],
-  //               'focusNode':
-  //                   FocusNode(), // Create new focus node for each video
-  //               'seasonId': details[7]
-  //             });
-  //           }
-  //         } catch (e) {}
-  //       }
-
-  //       if (mounted) {
-  //         setState(() {
-  //           lastPlayedVideos = loadedVideos;
-  //         });
-  //       }
-
-  //       // printLastPlayedPositions();
-
-  //       // Update shared data provider
-  //       WidgetsBinding.instance.addPostFrameCallback((_) {
-  //         if (mounted) {
-  //           sharedDataProvider.updateLastPlayedVideos(lastPlayedVideos);
-  //         }
-  //       });
-  //     } else {
-  //       if (mounted) {
-  //         setState(() {
-  //           lastPlayedVideos = [];
-  //         });
-  //       }
-  //     }
-  //   } catch (e) {
-  //     if (mounted) {
-  //       setState(() {
-  //         lastPlayedVideos = [];
-  //       });
-  //     }
-  //   }
-  // }
-
-// Updated _playVideo method to work with your new NewsItemModel structure
-
-  void _playVideo(Map<String, dynamic> videoData, Duration position) async {
-    if (_isNavigating) {
-      return;
-    }
-
-    _isNavigating = true;
-    bool shouldPlayVideo = true;
-    bool shouldPop = true;
-
-    try {
-      // Show loading dialog
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext context) => WillPopScope(
-          onWillPop: () async {
-            shouldPlayVideo = false;
-            shouldPop = false;
-            return true;
-          },
-          child: Center(
-            child: Container(
-              padding: EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.black87,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  LoadingIndicator(),
-                  SizedBox(height: 15),
-                  Text(
-                    'Loading ${videoData['name'] ?? 'Video'}...',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: nametextsz,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      );
-
-      // Create channel list from last played videos using proper NewsItemModel structure
-      List<NewsItemModel> channelList =
-          lastPlayedVideos.asMap().entries.map((entry) {
-        final video = entry.value;
-        int index = entry.key;
-
-        // Safe string conversion helper
-        String safeToString(dynamic value, {String defaultValue = ''}) {
-          if (value == null) return defaultValue;
-          return value.toString();
-        }
-
-        String videoUrl = safeToString(video['videoUrl']);
-        String videoIdString =
-            safeToString(video['videoId'], defaultValue: '0');
-        String videoName =
-            safeToString(video['name'], defaultValue: 'Unknown Video');
-        String bannerUrl = safeToString(video['bannerImageUrl']);
-        String seasonIdString =
-            safeToString(video['seasonId'], defaultValue: '0');
-
-        // // Handle YouTube ID conversion
-        // if (videoUrl.isNotEmpty && !videoUrl.startsWith('http') && videoUrl.length == 11) {
-        //   videoUrl = 'https://www.youtube.com/watch?v=$videoUrl';
-        // }
-
-        bool isYoutube = isYoutubeUrl(videoUrl);
-        bool isLive = video['liveStatus'] == true;
-        String streamType = isYoutube ? 'YoutubeLive' : 'M3u8';
-        String contentType = isLive ? '0' : '1'; // 0 for live, 1 for VOD
-
-        return NewsItemModel(
-          id: videoIdString,
-          index: index.toString(),
-          name: videoName,
-          unUpdatedUrl: safeToString(video['videoUrl']), // Keep original URL
-          description: '',
-          thumbnail_high: '',
-          banner: bannerUrl,
-          image: bannerUrl,
-          poster: bannerUrl,
-          url: videoUrl, // Use converted URL
-          videoId: videoIdString,
-          streamType: streamType,
-          type: streamType,
-          genres: '',
-          status: '1', // Always active for last played
-          category: 'Last Played',
-          contentId: videoIdString,
-          contentType: contentType,
-          isYoutubeVideo: isYoutube,
-          isFocused: false,
-          position: video['position'] ?? Duration.zero,
-          liveStatus: isLive,
-          // Episode-specific fields with defaults
-          order: '0',
-          seasonId: seasonIdString,
-          downloadable: '0',
-          source: 'isLastPlayedVideos',
-          skipAvailable: '0',
-          introStart: '0',
-          introEnd: '0',
-          endCreditsMarker: '0',
-          drmUuid: '',
-          drmLicenseUri: '',
-          // Season-specific fields with defaults
-          seasonName: '',
-          webSeriesId: '',
-        );
-      }).toList();
-
-      String originalUrl = safeToString(videoData['videoUrl']);
-      String updatedUrl = originalUrl;
-
-      // Validate URL
-      if (originalUrl.isEmpty) {
-        throw Exception('Empty video URL');
-      }
-
-      // Convert YouTube ID to full URL if needed
-      // if (!originalUrl.startsWith('http') && originalUrl.length == 11) {
-      //   originalUrl = 'https://www.youtube.com/watch?v=$originalUrl';
-      //   updatedUrl = originalUrl;
-      // }
-
-      // Handle YouTube URL updates
-      if (isYoutubeUrl(updatedUrl)) {
-        try {
-          updatedUrl = await _socketService.getUpdatedUrl(updatedUrl);
-
-          if (updatedUrl.isEmpty) {
-            throw Exception('Failed to get updated YouTube URL');
-          }
         } catch (e) {
-          throw Exception('Failed to process YouTube URL: $e');
+          print('Error in auto slide: $e');
         }
-      }
-
-      // Close loading dialog
-      if (shouldPop && context.mounted) {
-        Navigator.of(context, rootNavigator: true).pop();
-      }
-
-      Duration startAtPosition =
-          videoData['position'] as Duration? ?? Duration.zero;
-      Duration totalDuration =
-          videoData['duration'] as Duration? ?? Duration.zero;
-      bool isLive = videoData['liveStatus'] == true;
-
-      // Navigate to video screen
-      if (shouldPlayVideo && context.mounted) {
-        final result = await Navigator.push(
-          context,
-          MaterialPageRoute(
-            // builder: (context) => VideoScreen(
-            //   videoUrl: updatedUrl,
-            //   unUpdatedUrl: originalUrl,
-            //   channelList: channelList,
-            //   bannerImageUrl: safeToString(videoData['bannerImageUrl']),
-            //   startAtPosition: startAtPosition,
-            //   totalDuration: totalDuration,
-            //   videoType: isYoutubeUrl(updatedUrl) ? 'youtube' : 'M3u8',
-            //   isLive: isLive,
-            //   isVOD: !isLive,
-            //   isSearch: false,
-            //   isHomeCategory: false,
-            //   isBannerSlider: false,
-            //   videoId: int.tryParse(
-            //           safeToString(videoData['videoId'], defaultValue: '0')) ??
-            //       0,
-            //   source: 'isLastPlayedVideos',
-            //   name: safeToString(videoData['name'],
-            //       defaultValue: 'Unknown Video'),
-            //   liveStatus: isLive,
-            //   seasonId: int.tryParse(
-            //       safeToString(videoData['seasonId'], defaultValue: '0')),
-            //   isLastPlayedStored: true,
-            // ),
-
-            builder: (context) => YouTubePlayerScreen(
-              videoData: VideoData(
-                id: safeToString(videoData['id']),
-                title: safeToString(videoData['name']),
-                youtubeUrl: safeToString(videoData['url']),
-                thumbnail: safeToString(videoData['banner']),
-                //  description:'',
-              ),
-              playlist: channelList
-                  .map((m) => VideoData(
-                        id: m.id,
-                        title: m.name,
-                        youtubeUrl: m.url,
-                        thumbnail: m.banner,
-                        //  description: m.description,
-                      ))
-                  .toList(),
-            ),
-          ),
-        );
-
-        // Refresh last played videos when returning
-        if (result == true) {
-          await _loadLastPlayedVideos();
-          if (mounted) {
-            setState(() {
-              refreshKey = UniqueKey();
-            });
-          }
-        }
-      }
-    } catch (e) {
-      // Close loading dialog if still open
-      if (shouldPop && context.mounted) {
-        Navigator.of(context, rootNavigator: true).pop();
-      }
-
-      // Show error message
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to play video: ${e.toString()}'),
-            backgroundColor: Colors.red.shade700,
-            duration: Duration(seconds: 5),
-          ),
-        );
-      }
-    } finally {
-      _isNavigating = false;
+      });
     }
   }
 
-// Helper method for safe string conversion (add this to your class)
-  String safeToString(dynamic value, {String defaultValue = ''}) {
-    if (value == null) return defaultValue;
-    return value.toString();
-  }
-
-// Updated _loadLastPlayedVideos method with better error handling
-  Future<void> _loadLastPlayedVideos() async {
+  void _onButtonFocusNode() {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final storedVideos = prefs.getStringList('last_played_videos');
-
-      if (storedVideos != null && storedVideos.isNotEmpty) {
-        List<Map<String, dynamic>> loadedVideos = [];
-
-        for (int i = 0; i < storedVideos.length; i++) {
-          String videoEntry = storedVideos[i];
-
-          try {
-            List<String> details = videoEntry.split('|');
-            if (details.length >= 8) {
-              Duration duration =
-                  Duration(milliseconds: int.tryParse(details[2]) ?? 0);
-              Duration position =
-                  Duration(milliseconds: int.tryParse(details[1]) ?? 0);
-              bool liveStatus = details[3].toLowerCase() == 'true';
-
-              // Create video data with all required fields
-              Map<String, dynamic> videoData = {
-                'videoUrl': details[0],
-                'position': position,
-                'duration': duration,
-                'liveStatus': liveStatus,
-                'bannerImageUrl': details[4],
-                'videoId': details[5],
-                'name': details[6],
-                'focusNode': FocusNode(),
-                'seasonId': details[7],
-                'source': 'isLastPlayedVideos',
-                'category': 'Last Played',
-                'genres': '',
-                'poster': details[4], // Use banner as poster
-                'contentType': liveStatus ? '0' : '1',
-                'streamType': isYoutubeUrl(details[0]) ? 'YoutubeLive' : 'M3u8',
-                'status': '1',
-                'isYoutubeVideo': isYoutubeUrl(details[0]),
-              };
-
-              loadedVideos.add(videoData);
-
-              // Debug the video data structure
-            } else {}
-          } catch (e) {}
-        }
-
+      if (_buttonFocusNode.hasFocus) {
+        final random = Random();
+        final color = Color.fromRGBO(
+          random.nextInt(256),
+          random.nextInt(256),
+          random.nextInt(256),
+          1,
+        );
         if (mounted) {
-          setState(() {
-            lastPlayedVideos = loadedVideos;
-          });
+          context.read<FocusProvider>().setButtonFocus(true, color: color);
+          context.read<ColorProvider>().updateColor(color, true);
         }
-
-        // Update shared data provider
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted) {
-            sharedDataProvider.updateLastPlayedVideos(lastPlayedVideos);
-          }
-        });
       } else {
         if (mounted) {
-          setState(() {
-            lastPlayedVideos = [];
-          });
+          context.read<FocusProvider>().resetFocus();
+          context.read<ColorProvider>().resetColor();
         }
       }
     } catch (e) {
+      print('Error in button focus handler: $e');
+    }
+  }
+
+  Future<void> fetchAndPlayVideo(String contentId, List<NewsItemModel> channelList) async {
+    if (_isNavigating) {
+      return;
+    }
+
+    _isNavigating = true;
+
+    bool shouldPlayVideo = true;
+    bool shouldPop = true;
+
+    try {
       if (mounted) {
-        setState(() {
-          lastPlayedVideos = [];
-        });
-      }
-    }
-  }
-
-// Add this debug method to check data structure
-  void debugVideoDataStructure() {
-    for (int i = 0; i < lastPlayedVideos.length && i < 3; i++) {
-      // Debug first 3 videos
-      final video = lastPlayedVideos[i];
-      video.forEach((key, value) {});
-    }
-  }
-
-  // // Print debug info for last played positions
-  // void printLastPlayedPositions() {
-  //   for (int i = 0; i < lastPlayedVideos.length; i++) {
-  //     final video = lastPlayedVideos[i];
-  //     final position = video['position'] ?? Duration.zero;
-  //     final name = video['name'] ?? 'Unknown';
-  //   }
-  // }
-
-  // // Play a video from last played list
-  // void _playVideo(Map<String, dynamic> videoData, Duration position) async {
-  //   if (_isNavigating) {
-  //     return;
-  //   }
-
-  //   _isNavigating = true;
-
-  //   bool shouldPlayVideo = true;
-  //   bool shouldPop = true;
-
-  //   // Show loading dialog
-  //   showDialog(
-  //     context: context,
-  //     barrierDismissible: false,
-  //     builder: (BuildContext context) => WillPopScope(
-  //       onWillPop: () async {
-  //         shouldPlayVideo = false;
-  //         shouldPop = false;
-  //         return true;
-  //       },
-  //       child: Center(
-  //         child: Container(
-  //           padding: EdgeInsets.all(20),
-  //           decoration: BoxDecoration(
-  //             color: Colors.black87,
-  //             borderRadius: BorderRadius.circular(10),
-  //           ),
-  //           child: Column(
-  //             mainAxisSize: MainAxisSize.min,
-  //             children: [
-  //               LoadingIndicator(),
-  //               SizedBox(height: 15),
-  //               Text(
-  //                 'Loading ${videoData['name']}...',
-  //                 style: TextStyle(
-  //                   color: Colors.white,
-  //                   fontSize: nametextsz,
-  //                 ),
-  //                 textAlign: TextAlign.center,
-  //               ),
-  //             ],
-  //           ),
-  //         ),
-  //       ),
-  //     ),
-  //   );
-
-  //   // Set timeout for navigation
-  //   Timer(Duration(seconds: 15), () {
-  //     if (_isNavigating) {
-  //       _isNavigating = false;
-  //     }
-  //   });
-
-  //   try {
-  //     // Create channel list from last played videos
-  //     List<NewsItemModel> channelList =
-  //         lastPlayedVideos.asMap().entries.map((entry) {
-  //       final video = entry.value;
-  //       String videoUrl = video['videoUrl'] ?? '';
-  //       String videoIdString = video['videoId'] ?? '0';
-  //       String streamType = isYoutubeUrl(videoUrl) ? 'YoutubeLive' : 'M3u8';
-
-  //       return NewsItemModel(
-  //         videoId: video['videoId'],
-  //         id: videoIdString,
-  //         url: videoUrl,
-  //         banner: video['bannerImageUrl'] ?? '',
-  //         name: video['name'] ?? '',
-  //         poster: video['poster'] ?? '',
-  //         category: video['category'] ?? '',
-  //         contentId: videoIdString,
-  //         status: '1',
-  //         streamType: streamType,
-  //         type: streamType,
-  //         contentType: '1',
-  //         genres: '',
-  //         position: video['position'],
-  //         liveStatus: video['liveStatus'],
-  //         index: '',
-  //         image: '',
-  //         source: video['source'],
-  //         unUpdatedUrl: '',
-  //       );
-  //     }).toList();
-
-  //     String source = videoData['source'] ?? 'isLastPlayedVideos';
-  //     // int videoId = int.tryParse(videoData['videoId']?.toString() ?? '0') ?? 0;
-  //     String originalUrl = videoData['videoUrl'];
-  //     String updatedUrl = videoData['videoUrl'];
-
-  //     // Handle YouTube URL updates
-  //     if (isYoutubeUrl(updatedUrl)) {
-  //       try {
-  //         updatedUrl = await _socketService.getUpdatedUrl(updatedUrl);
-  //       } catch (e) {}
-  //     }
-
-  //     // Close loading dialog
-  //     if (shouldPop && context.mounted) {
-  //       Navigator.of(context, rootNavigator: true).pop();
-  //     }
-
-  //     Duration startAtPosition =
-  //         videoData['position'] as Duration? ?? Duration.zero;
-
-  //     // Navigate to video screen
-  //     if (shouldPlayVideo && context.mounted) {
-  //       Navigator.push(
-  //         context,
-  //         MaterialPageRoute(
-  //           builder: (context) => VideoScreen(
-  //             videoUrl: updatedUrl,
-  //             unUpdatedUrl: originalUrl,
-  //             channelList: channelList,
-  //             bannerImageUrl: videoData['bannerImageUrl'] ?? '',
-  //             startAtPosition: startAtPosition,
-  //             totalDuration: videoData['duration'],
-  //             videoType: '',
-  //             isLive: source == 'isLiveScreen',
-  //             isVOD: source == 'isVOD',
-  //             isSearch: source == 'isSearchScreen',
-  //             isHomeCategory: source == 'isHomeCategory',
-  //             isBannerSlider: source == 'isBannerSlider',
-  //             videoId: videoData['videoId'],
-  //             source: 'isLastPlayedVideos',
-  //             name: videoData['name'] ?? '',
-  //             liveStatus: videoData['liveStatus'],
-  //             seasonId: videoData['seasonId'],
-  //             isLastPlayedStored: true,
-  //           ),
-  //         ),
-  //       );
-  //     }
-  //   } catch (e) {
-  //     if (shouldPop && context.mounted) {
-  //       Navigator.of(context, rootNavigator: true).pop();
-  //     }
-
-  //     if (context.mounted) {
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         SnackBar(
-  //           content: Text('Something went wrong'),
-  //           backgroundColor: Colors.red.shade700,
-  //         ),
-  //       );
-  //     }
-  //   } finally {
-  //     _isNavigating = false;
-  //   }
-  // }
-
-  @override
-  Widget build(BuildContext context) {
-    return Consumer<FocusProvider>(
-      builder: (context, focusProvider, child) {
-        return Scaffold(
-          backgroundColor: cardColor,
-          body: isLoading
-              ? Center(
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return WillPopScope(
+              onWillPop: () async {
+                shouldPlayVideo = false;
+                shouldPop = false;
+                return true;
+              },
+              child: Center(
+                child: Container(
+                  padding: EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Colors.black87,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      SpinKitFadingCircle(color: borderColor, size: 50.0),
-                      SizedBox(height: 20),
+                      SpinKitFadingCircle(
+                        color: borderColor,
+                        size: 50.0,
+                      ),
+                      SizedBox(height: 15),
                       Text(
-                        '...',
+                        'Loading video...',
                         style: TextStyle(
-                          color: hintColor,
+                          color: Colors.white,
                           fontSize: nametextsz,
                         ),
                       ),
                     ],
                   ),
-                )
-              : errorMessage.isNotEmpty
-                  ? Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.error_outline,
-                            color: Colors.red,
-                            size: 50,
-                          ),
-                          SizedBox(height: 20),
-                          Text(
-                            'Something Went Wrong',
-                            style: TextStyle(
-                              fontSize: menutextsz,
-                              color: Colors.red,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(height: 10),
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 20),
-                            child: Text(
-                              errorMessage,
-                              style: TextStyle(
-                                fontSize: minitextsz,
-                                color: hintColor,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                          SizedBox(height: 20),
-                          ElevatedButton(
-                            onPressed: () => fetchBanners(),
-                            child: Text('Retry'),
-                          ),
-                        ],
-                      ),
-                    )
-                  : bannerList.isEmpty
-                      ? Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.image_not_supported,
-                                color: hintColor.withOpacity(0.5),
-                                size: 50,
-                              ),
-                              SizedBox(height: 20),
-                              Text(
-                                '',
-                                style: TextStyle(
-                                  color: hintColor,
-                                  fontSize: nametextsz,
-                                ),
-                              ),
-                            ],
-                          ),
-                        )
-                      : Stack(
-                          children: [
-                            // Main banner slider
-                            PageView.builder(
-                              controller: _pageController,
-                              itemCount: bannerList.length,
-                              onPageChanged: (index) {
-                                if (mounted) {
-                                  setState(() {
-                                    selectedContentId =
-                                        bannerList[index].contentId.toString();
-                                  });
-                                }
-                              },
-                              itemBuilder: (context, index) {
-                                final banner = bannerList[index];
-                                return Stack(
-                                  alignment: AlignmentDirectional.topCenter,
-                                  children: [
-                                    Container(
-                                      margin: const EdgeInsets.only(top: 1),
-                                      width: screenwdt,
-                                      height: screenhgt,
-                                      child: CachedNetworkImage(
-                                        imageUrl: banner.banner,
-                                        fit: BoxFit.fill,
-                                        placeholder: (context, url) =>
-                                            AppAssets.localImage(
-                                                animated: true),
-                                        errorWidget: (context, url, error) =>
-                                            AppAssets.localImage(
-                                                animated: true),
-                                        cacheKey: banner.contentId,
-                                        fadeInDuration:
-                                            Duration(milliseconds: 500),
-                                        memCacheHeight: 800,
-                                        memCacheWidth: 1200,
-                                      ),
-                                    ),
-
-                                    // Gradient overlay for better text visibility
-                                    Container(
-                                      margin: const EdgeInsets.only(top: 1),
-                                      width: screenwdt,
-                                      height: screenhgt,
-                                      decoration: BoxDecoration(
-                                        gradient: LinearGradient(
-                                          begin: Alignment.topCenter,
-                                          end: Alignment.bottomCenter,
-                                          colors: [
-                                            Colors.black.withOpacity(0.3),
-                                            Colors.transparent,
-                                            Colors.black.withOpacity(0.7),
-                                          ],
-                                          stops: [0.0, 0.5, 1.0],
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                );
-                              },
-                            ),
-
-                            // Watch Now button
-                            Positioned(
-                              top: screenhgt * 0.03,
-                              left: screenwdt * 0.02,
-                              child: Focus(
-                                focusNode: _buttonFocusNode,
-                                onKeyEvent: (node, event) {
-                                  if (event.logicalKey ==
-                                      LogicalKeyboardKey.arrowRight) {
-                                    if (_pageController.hasClients &&
-                                        _pageController.page != null &&
-                                        _pageController.page! <
-                                            bannerList.length - 1) {
-                                      _pageController.nextPage(
-                                        duration: Duration(milliseconds: 300),
-                                        curve: Curves.easeInOut,
-                                      );
-                                      return KeyEventResult.handled;
-                                    }
-                                  } else if (event.logicalKey ==
-                                      LogicalKeyboardKey.arrowLeft) {
-                                    if (_pageController.hasClients &&
-                                        _pageController.page != null &&
-                                        _pageController.page! > 0) {
-                                      _pageController.previousPage(
-                                        duration: Duration(milliseconds: 300),
-                                        curve: Curves.easeInOut,
-                                      );
-                                      return KeyEventResult.handled;
-                                    }
-                                  } else if (event is KeyDownEvent) {
-                                    if (event.logicalKey ==
-                                        LogicalKeyboardKey.arrowDown) {
-                                      if (lastPlayedVideos.isNotEmpty) {
-                                        context
-                                            .read<FocusProvider>()
-                                            .requestLastPlayedFocus();
-                                        FocusScope.of(context).requestFocus(
-                                            lastPlayedVideos[0]['focusNode']);
-                                        return KeyEventResult.handled;
-                                      }
-                                    } else if (event.logicalKey ==
-                                            LogicalKeyboardKey.select ||
-                                        event.logicalKey ==
-                                            LogicalKeyboardKey.enter) {
-                                      if (selectedContentId != null) {
-                                        // fetchAndPlayVideo(selectedContentId!, bannerList);
-                                        final banner = bannerList.firstWhere(
-                                            (b) =>
-                                                b.contentId ==
-                                                selectedContentId);
-                                        fetchAndPlayVideo(
-                                            banner.id, bannerList);
-                                      }
-                                      return KeyEventResult.handled;
-                                    }
-                                  }
-                                  return KeyEventResult.ignored;
-                                },
-                                child: GestureDetector(
-                                  onTap: () {
-                                    if (selectedContentId != null) {
-                                      // fetchAndPlayVideo(selectedContentId!, bannerList);
-                                      final banner = bannerList.firstWhere(
-                                          (b) =>
-                                              b.contentId == selectedContentId);
-                                      fetchAndPlayVideo(banner.id, bannerList);
-                                    }
-                                  },
-                                  child: RandomLightColorWidget(
-                                    hasFocus: focusProvider.isButtonFocused,
-                                    childBuilder: (Color randomColor) {
-                                      return AnimatedContainer(
-                                        duration: Duration(milliseconds: 200),
-                                        margin:
-                                            EdgeInsets.all(screenwdt * 0.001),
-                                        padding: EdgeInsets.symmetric(
-                                          vertical: screenhgt * 0.02,
-                                          horizontal: screenwdt * 0.02,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: focusProvider.isButtonFocused
-                                              ? Colors.black87
-                                              : Colors.black.withOpacity(0.6),
-                                          borderRadius:
-                                              BorderRadius.circular(12),
-                                          border: Border.all(
-                                            color: focusProvider.isButtonFocused
-                                                ? focusProvider
-                                                        .currentFocusColor ??
-                                                    randomColor
-                                                : Colors.white.withOpacity(0.3),
-                                            width: focusProvider.isButtonFocused
-                                                ? 3.0
-                                                : 1.0,
-                                          ),
-                                          boxShadow:
-                                              focusProvider.isButtonFocused
-                                                  ? [
-                                                      BoxShadow(
-                                                        color: (focusProvider
-                                                                    .currentFocusColor ??
-                                                                randomColor)
-                                                            .withOpacity(0.5),
-                                                        blurRadius: 20.0,
-                                                        spreadRadius: 5.0,
-                                                      ),
-                                                    ]
-                                                  : [
-                                                      BoxShadow(
-                                                        color: Colors.black
-                                                            .withOpacity(0.3),
-                                                        blurRadius: 10.0,
-                                                        spreadRadius: 2.0,
-                                                      ),
-                                                    ],
-                                        ),
-                                        child: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Icon(
-                                              Icons.play_arrow,
-                                              color: focusProvider
-                                                      .isButtonFocused
-                                                  ? focusProvider
-                                                          .currentFocusColor ??
-                                                      randomColor
-                                                  : hintColor,
-                                              size: menutextsz * 1.2,
-                                            ),
-                                            SizedBox(width: 8),
-                                            Text(
-                                              'Watch Now',
-                                              style: TextStyle(
-                                                fontSize: menutextsz,
-                                                color: focusProvider
-                                                        .isButtonFocused
-                                                    ? focusProvider
-                                                            .currentFocusColor ??
-                                                        randomColor
-                                                    : hintColor,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ),
-                              ),
-                            ),
-
-                            // Banner indicator dots
-                            if (bannerList.length > 1)
-                              Positioned(
-                                top: screenhgt * 0.05,
-                                // left: 0,
-                                right: screenwdt * 0.05,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children:
-                                      bannerList.asMap().entries.map((entry) {
-                                    int index = entry.key;
-                                    bool isSelected = selectedContentId ==
-                                        bannerList[index].contentId;
-
-                                    return AnimatedContainer(
-                                      duration: Duration(milliseconds: 300),
-                                      margin:
-                                          EdgeInsets.symmetric(horizontal: 4),
-                                      width: isSelected ? 12 : 8,
-                                      height: isSelected ? 12 : 8,
-                                      decoration: BoxDecoration(
-                                        color: isSelected
-                                            ? Colors.white
-                                            : Colors.white.withOpacity(0.5),
-                                        shape: BoxShape.circle,
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color:
-                                                Colors.black.withOpacity(0.3),
-                                            blurRadius: 4,
-                                            spreadRadius: 1,
-                                          ),
-                                        ],
-                                      ),
-                                    );
-                                  }).toList(),
-                                ),
-                              ),
-
-                            // Continue Watching Section
-                            // if (lastPlayedVideos.isNotEmpty)
-                              // buildContinueWatchingSection(),
-                          ],
-                        ),
+                ),
+              ),
+            );
+          },
         );
-      },
-    );
-  }
-
-  // // Build Continue Watching Section
-  // Widget buildContinueWatchingSection() {
-  //   return Positioned(
-  //     bottom: screenhgt * 0.01,
-  //     left: 0,
-  //     right: 0,
-  //     child: Container(
-  //       child: Column(
-  //         key: refreshKey,
-  //         crossAxisAlignment: CrossAxisAlignment.start,
-  //         children: [
-  //           // Section Header
-  //           Padding(
-  //             padding: EdgeInsets.symmetric(horizontal: screenwdt * 0.025),
-  //             child: Container(
-  //               padding: EdgeInsets.all(screenwdt * 0.005),
-  //               decoration: BoxDecoration(
-  //                 color: Colors.black.withOpacity(0.7),
-  //                 borderRadius: BorderRadius.circular(10),
-  //                 border: Border.all(
-  //                   color: Colors.white.withOpacity(0.2),
-  //                   width: 1.0,
-  //                 ),
-  //                 boxShadow: [
-  //                   BoxShadow(
-  //                     color: Colors.black.withOpacity(0.5),
-  //                     blurRadius: 10.0,
-  //                     spreadRadius: 2.0,
-  //                   ),
-  //                 ],
-  //               ),
-  //               child: Row(
-  //                 mainAxisSize: MainAxisSize.min,
-  //                 children: [
-  //                   Icon(
-  //                     Icons.history,
-  //                     color: hintColor,
-  //                     size: menutextsz,
-  //                   ),
-  //                   SizedBox(width: 8),
-  //                   Text(
-  //                     'Continue Watching',
-  //                     style: TextStyle(
-  //                       fontSize: menutextsz,
-  //                       color: hintColor,
-  //                       fontWeight: FontWeight.bold,
-  //                     ),
-  //                   ),
-  //                   SizedBox(width: 8),
-  //                   Icon(
-  //                     Icons.keyboard_arrow_down,
-  //                     color: hintColor,
-  //                     size: menutextsz,
-  //                   ),
-  //                 ],
-  //               ),
-  //             ),
-  //           ),
-
-  //           SizedBox(height: screenhgt * 0.01),
-
-  //           // Videos List
-
-  //           // Videos List (continued from previous part)
-  //           SizedBox(
-  //             height: screenhgt * 0.27,
-  //             child: ListView.builder(
-  //               controller: _lastPlayedScrollController,
-  //               scrollDirection: Axis.horizontal,
-  //               padding: EdgeInsets.symmetric(horizontal: 10),
-  //               itemCount:
-  //                   lastPlayedVideos.length > 10 ? 10 : lastPlayedVideos.length,
-  //               itemBuilder: (context, index) {
-  //                 Map<String, dynamic> videoData = lastPlayedVideos[index];
-  //                 FocusNode focusNode = videoData['focusNode'] ?? FocusNode();
-  //                 lastPlayedVideos[index]['focusNode'] = focusNode;
-
-  //                 // Register focus element
-  //                 final GlobalKey itemKey = GlobalKey();
-  //                 context
-  //                     .read<FocusProvider>()
-  //                     .registerElementKey('lastPlayed_$index', itemKey);
-
-  //                 // Set first item focus node
-  //                 if (index == 0) {
-  //                   WidgetsBinding.instance.addPostFrameCallback((_) {
-  //                     context
-  //                         .read<FocusProvider>()
-  //                         .setFirstLastPlayedFocusNode(focusNode);
-  //                   });
-  //                 }
-
-  //                 return Container(
-  //                   key: itemKey,
-  //                   child: Focus(
-  //                     focusNode: focusNode,
-  //                     onFocusChange: (hasFocus) {
-  //                       if (hasFocus) {
-  //                         WidgetsBinding.instance.addPostFrameCallback((_) {
-  //                           setState(() {
-  //                             _scrollToFocusedItem(index);
-  //                           });
-  //                           context
-  //                               .read<FocusProvider>()
-  //                               .scrollToElement('lastPlayed_$index');
-  //                           context
-  //                               .read<FocusProvider>()
-  //                               .setLastPlayedFocus(index);
-  //                         });
-  //                       }
-  //                     },
-  //                     // onKey: (node, event) {
-  //                     //   if (event is RawKeyDownEvent) {
-  //                     //     if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
-  //                     //       Future.delayed(Duration(milliseconds: 100), () {
-  //                     //         context
-  //                     //             .read<FocusProvider>()
-  //                     //             .requestWatchNowFocus();
-  //                     //       });
-  //                     //       return KeyEventResult.handled;
-  //                     //     } else if (event.logicalKey ==
-  //                     //         LogicalKeyboardKey.arrowDown) {
-  //                     //       context
-  //                     //           .read<FocusProvider>()
-  //                     //           .requestMusicItemFocus(context);
-  //                     //       return KeyEventResult.handled;
-  //                     //     } else if (event.logicalKey ==
-  //                     //         LogicalKeyboardKey.arrowRight) {
-  //                     //       if (index < lastPlayedVideos.length - 1) {
-  //                     //         FocusScope.of(context).requestFocus(
-  //                     //             lastPlayedVideos[index + 1]['focusNode']);
-  //                     //         return KeyEventResult.handled;
-  //                     //       }
-  //                     //     } else if (event.logicalKey ==
-  //                     //         LogicalKeyboardKey.arrowLeft) {
-  //                     //       if (index > 0) {
-  //                     //         FocusScope.of(context).requestFocus(
-  //                     //             lastPlayedVideos[index - 1]['focusNode']);
-  //                     //         return KeyEventResult.handled;
-  //                     //       }
-  //                     //     } else if (event.logicalKey ==
-  //                     //             LogicalKeyboardKey.select ||
-  //                     //         event.logicalKey == LogicalKeyboardKey.enter) {
-  //                     //       _playVideo(videoData, videoData['position']);
-  //                     //       return KeyEventResult.handled;
-  //                     //     }
-  //                     //   }
-  //                     //   return KeyEventResult.ignored;
-  //                     // },
-
-  //                     onKey: (node, event) {
-  //                       if (event is RawKeyDownEvent) {
-  //                         if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
-  //                           Future.delayed(Duration(milliseconds: 100), () {
-  //                             context
-  //                                 .read<FocusProvider>()
-  //                                 .requestWatchNowFocus();
-  //                           });
-  //                           return KeyEventResult.handled;
-  //                         } else if (event.logicalKey ==
-  //                             LogicalKeyboardKey.arrowDown) {
-  //                           context
-  //                               .read<FocusProvider>()
-  //                               .requestMusicItemFocus(context);
-  //                           return KeyEventResult.handled;
-  //                         } else if (event.logicalKey ==
-  //                             LogicalKeyboardKey.arrowRight) {
-  //                           if (index < lastPlayedVideos.length - 1) {
-  //                             FocusScope.of(context).requestFocus(
-  //                                 lastPlayedVideos[index + 1]['focusNode']);
-  //                             return KeyEventResult.handled;
-  //                           }
-  //                         } else if (event.logicalKey ==
-  //                             LogicalKeyboardKey.arrowLeft) {
-  //                           if (index > 0) {
-  //                             FocusScope.of(context).requestFocus(
-  //                                 lastPlayedVideos[index - 1]['focusNode']);
-  //                             return KeyEventResult.handled;
-  //                           }
-  //                         } else if (event.logicalKey ==
-  //                                 LogicalKeyboardKey.select ||
-  //                             event.logicalKey == LogicalKeyboardKey.enter) {
-  //                           _playVideo(videoData, videoData['position']);
-  //                           return KeyEventResult.handled;
-  //                         }
-  //                       }
-  //                       return KeyEventResult.ignored;
-  //                     },
-  //                     child: GestureDetector(
-  //                       onTap: () {
-  //                         _playVideo(videoData, videoData['position']);
-  //                       },
-  //                       child: AnimatedContainer(
-  //                         duration: Duration(milliseconds: 200),
-  //                         width: screenwdt * 0.15,
-  //                         height: screenhgt * 0.25,
-  //                         margin: EdgeInsets.symmetric(horizontal: 5),
-  //                         decoration: BoxDecoration(
-  //                           borderRadius: BorderRadius.circular(15),
-  //                           color: focusNode.hasFocus
-  //                               ? Colors.black.withOpacity(0.9)
-  //                               : Colors.transparent,
-  //                           border: Border.all(
-  //                             color: focusNode.hasFocus
-  //                                 ? Colors.blue
-  //                                 : Colors.transparent,
-  //                             width: focusNode.hasFocus ? 3 : 0,
-  //                           ),
-  //                           boxShadow: focusNode.hasFocus
-  //                               ? [
-  //                                   BoxShadow(
-  //                                     color: Colors.blue.withOpacity(0.5),
-  //                                     blurRadius: 15,
-  //                                     spreadRadius: 3,
-  //                                   )
-  //                                 ]
-  //                               : [
-  //                                   BoxShadow(
-  //                                     color: Colors.black.withOpacity(0.3),
-  //                                     blurRadius: 8,
-  //                                     spreadRadius: 1,
-  //                                   )
-  //                                 ],
-  //                         ),
-  //                         child: ClipRRect(
-  //                           borderRadius: BorderRadius.circular(15),
-  //                           child: Column(
-  //                             crossAxisAlignment: CrossAxisAlignment.start,
-  //                             children: [
-  //                               // Video Title
-  //                               if (focusNode.hasFocus)
-  //                                 Container(
-  //                                   width: double.infinity,
-  //                                   padding: EdgeInsets.all(8),
-  //                                   decoration: BoxDecoration(
-  //                                     color: Colors.blue.withOpacity(0.9),
-  //                                   ),
-  //                                   child: Text(
-  //                                     videoData['name'] ?? 'Unknown Video',
-  //                                     style: TextStyle(
-  //                                       fontWeight: FontWeight.bold,
-  //                                       fontSize: nametextsz,
-  //                                       color: Colors.white,
-  //                                     ),
-  //                                     maxLines: 2,
-  //                                     overflow: TextOverflow.ellipsis,
-  //                                   ),
-  //                                 ),
-
-  //                               // Video Thumbnail
-  //                               Expanded(
-  //                                 flex: 3,
-  //                                 child: Stack(
-  //                                   children: [
-  //                                     Container(
-  //                                       width: double.infinity,
-  //                                       height: double.infinity,
-  //                                       child: videoData['bannerImageUrl']
-  //                                                   ?.startsWith(
-  //                                                       'data:image') ==
-  //                                               true
-  //                                           ? Image.memory(
-  //                                               _getCachedImage(videoData[
-  //                                                   'bannerImageUrl']),
-  //                                               fit: BoxFit.cover,
-  //                                               width: double.infinity,
-  //                                               height: double.infinity,
-  //                                               errorBuilder: (context, error,
-  //                                                       stackTrace) =>
-  //                                                   _buildErrorImage(),
-  //                                             )
-  //                                           : CachedNetworkImage(
-  //                                               imageUrl: videoData[
-  //                                                       'bannerImageUrl'] ??
-  //                                                   AppAssets.localImage(
-  //                                                       animated: true),
-  //                                               fit: BoxFit.cover,
-  //                                               width: double.infinity,
-  //                                               height: double.infinity,
-  //                                               placeholder: (context, url) =>
-  //                                                   Container(
-  //                                                 color: Colors.grey.shade800,
-  //                                                 child: Center(
-  //                                                   child: SpinKitFadingCircle(
-  //                                                     color: Colors.blue,
-  //                                                     size: 20.0,
-  //                                                   ),
-  //                                                 ),
-  //                                               ),
-  //                                               errorWidget:
-  //                                                   (context, url, error) =>
-  //                                                       _buildErrorImage(),
-  //                                             ),
-  //                                     ),
-
-  //                                     // Play overlay
-  //                                     if (focusNode.hasFocus)
-  //                                       Container(
-  //                                         width: double.infinity,
-  //                                         height: double.infinity,
-  //                                         color: Colors.black.withOpacity(0.3),
-  //                                         child: Center(
-  //                                           child: Container(
-  //                                             padding: EdgeInsets.all(8),
-  //                                             decoration: BoxDecoration(
-  //                                               color: Colors.blue
-  //                                                   .withOpacity(0.9),
-  //                                               shape: BoxShape.circle,
-  //                                             ),
-  //                                             child: Icon(
-  //                                               Icons.play_arrow,
-  //                                               color: Colors.white,
-  //                                               size: 20,
-  //                                             ),
-  //                                           ),
-  //                                         ),
-  //                                       ),
-
-  //                                     // Live indicator
-  //                                     if (videoData['liveStatus'] == true)
-  //                                       Positioned(
-  //                                         top: 5,
-  //                                         right: 5,
-  //                                         child: Container(
-  //                                           padding: EdgeInsets.symmetric(
-  //                                             horizontal: 6,
-  //                                             vertical: 2,
-  //                                           ),
-  //                                           decoration: BoxDecoration(
-  //                                             color: Colors.red,
-  //                                             borderRadius:
-  //                                                 BorderRadius.circular(4),
-  //                                           ),
-  //                                           child: Text(
-  //                                             'LIVE',
-  //                                             style: TextStyle(
-  //                                               color: Colors.white,
-  //                                               fontSize: minitextsz * 0.8,
-  //                                               fontWeight: FontWeight.bold,
-  //                                             ),
-  //                                           ),
-  //                                         ),
-  //                                       ),
-  //                                   ],
-  //                                 ),
-  //                               ),
-
-  //                               // Progress and Duration
-  //                               Container(
-  //                                 padding: EdgeInsets.all(8),
-  //                                 child: _buildProgressDisplay(
-  //                                     videoData, focusNode.hasFocus),
-  //                               ),
-  //                             ],
-  //                           ),
-  //                         ),
-  //                       ),
-  //                     ),
-  //                   ),
-  //                 );
-  //               },
-  //             ),
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
-
-  // Build error image widget
-  Widget _buildErrorImage() {
-    return Container(
-      color: Colors.grey.shade800,
-      child: Image.asset(localImage),
-    );
-  }
-
-  // // Cleanup and additional utility methods
-  // void debugPrintBannerInfo() {}
-
-  // // Print current banner list for debugging
-  // void printBannerList() {
-  //   for (int i = 0; i < bannerList.length; i++) {
-  //     final banner = bannerList[i];
-  //   }
-  // }
-
-  // Check if slider is ready
-  bool get isSliderReady =>
-      !isLoading && errorMessage.isEmpty && bannerList.isNotEmpty;
-
-  // Get current banner info
-  Map<String, dynamic>? get currentBannerInfo {
-    if (selectedContentId == null || bannerList.isEmpty) return null;
-
-    try {
-      final banner = bannerList.firstWhere(
-        (b) => b.contentId == selectedContentId,
-        orElse: () => bannerList.first,
-      );
-
-      return {
-        'id': banner.contentId,
-        'name': banner.name,
-        'banner': banner.banner,
-        'url': banner.url,
-        'type': banner.type,
-      };
-    } catch (e) {
-      return null;
-    }
-  }
-} // End of _BannerSliderState class
-
-// Additional utility functions outside the class
-
-// Extension for better duration formatting
-extension DurationExtension on Duration {
-  String toHHMMSS() {
-    String twoDigits(int n) => n.toString().padLeft(2, '0');
-    String hours = inHours > 0 ? '${twoDigits(inHours)}:' : '';
-    String minutes = twoDigits(inMinutes.remainder(60));
-    String seconds = twoDigits(inSeconds.remainder(60));
-    return '$hours$minutes:$seconds';
-  }
-}
-
-// Global functions for banner slider management
-class BannerSliderManager {
-  static BannerSlider? _instance;
-
-  static void setInstance(BannerSlider instance) {
-    _instance = instance;
-  }
-
-  static BannerSlider? get instance => _instance;
-
-  static void refreshBanners() {
-    GlobalEventBus().fire(RefreshPageEvent('uniquePageId'));
-  }
-
-  static void clearInstance() {
-    _instance = null;
-  }
-}
-
-// Helper function to validate and format auth key
-String formatAuthKey(String? key) {
-  if (key == null || key.isEmpty) return '';
-
-  // Remove any whitespace
-  key = key.trim();
-
-  // Basic validation - check if it looks like a valid key
-  if (key.length < 10) {}
-
-  return key;
-}
-
-// Helper function to check API endpoint health
-Future<bool> checkEndpointHealth(String endpoint) async {
-  try {
-    final response =
-        await https.head(Uri.parse(endpoint)).timeout(Duration(seconds: 5));
-    return response.statusCode == 200 ||
-        response.statusCode == 405; // 405 is also acceptable for HEAD requests
-  } catch (e) {
-    return false;
-  }
-}
-
-// Helper function to get the best available API endpoint
-Future<String> getBestApiEndpoint(List<String> endpoints) async {
-  for (String endpoint in endpoints) {
-    if (await checkEndpointHealth(endpoint)) {
-      return endpoint;
-    }
-  }
-
-  return endpoints.first;
-}
-
-// // Debug helper to print all available SharedPreferences keys
-// Future<void> debugPrintSharedPreferences() async {
-//   try {
-//     final prefs = await SharedPreferences.getInstance();
-//     final keys = prefs.getKeys();
-
-//     for (String key in keys) {
-//       final value = prefs.get(key);
-//     }
-//   } catch (e) {}
-// }
-
-// Network helper function to retry API calls
-Future<T> retryApiCall<T>(
-  Future<T> Function() apiCall, {
-  int maxRetries = 3,
-  Duration delay = const Duration(seconds: 2),
-}) async {
-  for (int attempt = 1; attempt <= maxRetries; attempt++) {
-    try {
-      return await apiCall();
-    } catch (e) {
-      if (attempt == maxRetries) {
-        rethrow;
       }
 
-      await Future.delayed(delay);
+      final responseData = await fetchVideoDataByIdFromBanners(contentId);
+
+      if (shouldPop && mounted && context.mounted) {
+        Navigator.of(context, rootNavigator: true).pop();
+      }
+
+      if (shouldPlayVideo && mounted && context.mounted) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => VideoScreen(
+              videoUrl: responseData['url'] ?? '',
+              channelList: channelList,
+              videoId: int.tryParse(contentId) ?? 0,
+              videoType: responseData['type'] ?? '',
+              isLive: true,
+              isVOD: false,
+              bannerImageUrl: responseData['banner'] ?? '',
+              startAtPosition: Duration.zero,
+              isBannerSlider: true,
+              source: 'isBannerSlider',
+              isSearch: false,
+              unUpdatedUrl: responseData['url'] ?? '',
+              name: responseData['name'] ?? '',
+              liveStatus: true,
+              seasonId: null,
+              isLastPlayedStored: false,
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      if (shouldPop && mounted && context.mounted) {
+        Navigator.of(context, rootNavigator: true).pop();
+      }
+
+      if (mounted && context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to load video: Something went wrong'),
+            duration: Duration(seconds: 3),
+            backgroundColor: Colors.red.shade700,
+          ),
+        );
+      }
+      print('Error fetching and playing video: $e');
+    } finally {
+      _isNavigating = false;
     }
   }
 
-  throw Exception('All retry attempts failed');
-}
-
-// Cache management helper
-class CacheManager {
-  static const String BANNER_CACHE_KEY = 'banners';
-  static const String FEATURED_TV_CACHE_KEY = 'live_featured_tv';
-  static const String LAST_PLAYED_CACHE_KEY = 'last_played_videos';
-
-  static Future<void> clearAllCache() async {
+  Uint8List _getCachedImage(String base64String) {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.remove(BANNER_CACHE_KEY);
-      await prefs.remove(FEATURED_TV_CACHE_KEY);
-    } catch (e) {}
-  }
-
-  static Future<void> clearBannerCache() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.remove(BANNER_CACHE_KEY);
-    } catch (e) {}
-  }
-
-  static Future<Map<String, int>> getCacheInfo() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-
-      final bannerSize = prefs.getString(BANNER_CACHE_KEY)?.length ?? 0;
-      final featuredTVSize =
-          prefs.getString(FEATURED_TV_CACHE_KEY)?.length ?? 0;
-      final lastPlayedCount =
-          prefs.getStringList(LAST_PLAYED_CACHE_KEY)?.length ?? 0;
-
-      return {
-        'bannerCacheSize': bannerSize,
-        'featuredTVCacheSize': featuredTVSize,
-        'lastPlayedCount': lastPlayedCount,
-      };
+      if (!_bannerCache.containsKey(base64String)) {
+        final base64Content = base64String.split(',').last;
+        _bannerCache[base64String] = base64Decode(base64Content);
+      }
+      return _bannerCache[base64String]!;
     } catch (e) {
-      return {};
+      return Uint8List.fromList([
+        0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, 0x00, 0x00, 0x00, 0x0D,
+        0x49, 0x48, 0x44, 0x52, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01,
+        0x08, 0x02, 0x00, 0x00, 0x00, 0x90, 0x77, 0x53, 0xDE, 0x00, 0x00, 0x00,
+        0x0C, 0x49, 0x44, 0x41, 0x54, 0x78, 0x01, 0x63, 0x00, 0x01, 0x00, 0x05,
+        0x00, 0x01, 0xE2, 0x26, 0x05, 0x9B, 0x00, 0x00, 0x00, 0x00, 0x49, 0x45,
+        0x4E, 0x44, 0xAE, 0x42, 0x60, 0x82
+      ]);
     }
   }
 }

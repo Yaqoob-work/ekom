@@ -218,7 +218,7 @@ class _SearchScreenState extends State<SearchScreen> {
     fetchSettings();
 
     // Ensure auth key is available
-    _ensureAuthKey();
+    // _ensureAuthKey();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context
@@ -227,14 +227,14 @@ class _SearchScreenState extends State<SearchScreen> {
     });
   }
 
-  Future<void> _ensureAuthKey() async {
-    await AuthManager.initialize();
-    if (!AuthManager.hasValidAuthKey) {
-      setState(() {
-        _errorMessage = 'Authentication required. Please login again.';
-      });
-    } else {}
-  }
+  // Future<void> _ensureAuthKey() async {
+  //   await AuthManager.initialize();
+  //   if (!AuthManager.hasValidAuthKey) {
+  //     setState(() {
+  //       _errorMessage = 'Authentication required. Please login again.';
+  //     });
+  //   } else {}
+  // }
 
   @override
   void dispose() {
@@ -426,16 +426,16 @@ class _SearchScreenState extends State<SearchScreen> {
       return;
     }
 
-    // Check if auth key is available before searching
-    if (!AuthManager.hasValidAuthKey) {
-      setState(() {
-        _errorMessage = 'Authentication required. Please login again.';
-        isLoading = false;
-        searchResults.clear();
-        _itemFocusNodes.clear();
-      });
-      return;
-    }
+    // // Check if auth key is available before searching
+    // if (!AuthManager.hasValidAuthKey) {
+    //   setState(() {
+    //     _errorMessage = 'Authentication required. Please login again.';
+    //     isLoading = false;
+    //     searchResults.clear();
+    //     _itemFocusNodes.clear();
+    //   });
+    //   return;
+    // }
 
     _debounce = Timer(const Duration(milliseconds: 300), () async {
       if (!mounted) return;

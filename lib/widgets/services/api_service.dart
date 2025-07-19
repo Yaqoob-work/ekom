@@ -495,10 +495,6 @@
 //   }
 // }
 
-
-
-
-
 // import 'dart:async';
 // import 'dart:convert';
 // import 'package:http/http.dart' as https;
@@ -581,13 +577,11 @@
 //         throw Exception('No authentication key available');
 //       }
 
-
 //       // Try different API endpoints and header combinations
 //       final response = await _makeAuthenticatedRequest(
 //         'https://api.ekomflix.com/android/getFeaturedLiveTV',
 //         authKey,
 //       );
-
 
 //       if (response.statusCode == 200) {
 //         final List<dynamic> data = json.decode(response.body);
@@ -625,7 +619,6 @@
 //         headers: {'x-api-key': authKey},
 //       );
 
-
 //       if (response1.statusCode == 200) {
 //         return response1;
 //       } else if (response1.statusCode == 403) {
@@ -640,7 +633,6 @@
 //         Uri.parse(url),
 //         headers: {'auth-key': authKey},
 //       );
-
 
 //       if (response2.statusCode == 200) {
 //         return response2;
@@ -802,12 +794,10 @@
 //         throw Exception('No authentication key available');
 //       }
 
-
 //       final response = await _makeAuthenticatedRequest(
 //         'https://api.ekomflix.com/android/getFeaturedLiveTV',
 //         authKey,
 //       );
-
 
 //       if (response.statusCode == 200) {
 //         final List<dynamic> responseData = json.decode(response.body);
@@ -921,8 +911,6 @@
 //   }
 // }
 
-
-
 // import 'dart:async';
 // import 'dart:convert';
 // import 'package:http/http.dart' as https;
@@ -955,27 +943,27 @@
 //     try {
 //       // Ensure AuthManager is initialized
 //       await AuthManager.initialize();
-      
+
 //       // Try AuthManager first
 //       if (AuthManager.hasValidAuthKey) {
 //         return AuthManager.authKey;
 //       }
-      
+
 //       // Try global variable as fallback
 //       if (globalAuthKey.isNotEmpty) {
 //         return globalAuthKey;
 //       }
-      
+
 //       // Try to load from SharedPreferences
 //       SharedPreferences prefs = await SharedPreferences.getInstance();
 //       String? authKey = prefs.getString('auth_key');
-      
+
 //       if (authKey != null && authKey.isNotEmpty) {
 //         // Update AuthManager for future use
 //         await AuthManager.setAuthKey(authKey);
 //         return authKey;
 //       }
-      
+
 //       throw Exception('Authentication required - please login again');
 //     } catch (e) {
 //       throw Exception('Failed to get authentication key');
@@ -986,8 +974,7 @@
 //     try {
 //       // Get auth key for this API call
 //       String authKey = await _getAuthKeyForFeaturedLiveTV();
-      
-      
+
 //       final response = await https.get(
 //         Uri.parse('https://acomtv.coretechinfo.com/public/api/getFeaturedLiveTV'),
 //         headers: {
@@ -996,27 +983,26 @@
 //         },
 //       );
 
-
 //       if (response.statusCode == 200) {
-        
+
 //         final List<dynamic> data = json.decode(response.body);
-        
+
 //         // Debug: Print first item structure
 //         if (data.isNotEmpty) {
 //         }
 
 //         // Safe parsing with error handling for each item
 //         List<NewsItemModel> processedList = [];
-        
+
 //         for (int i = 0; i < data.length; i++) {
 //           try {
 //             var item = data[i];
-            
+
 //             // Ensure all required fields are strings
 //             var processedItem = _sanitizeItemData(item);
-            
+
 //             NewsItemModel newsItem = NewsItemModel.fromJson(processedItem);
-            
+
 //             // Only add if index is not null
 //             if (newsItem.index != null && newsItem.index.isNotEmpty) {
 //               processedList.add(newsItem);
@@ -1052,22 +1038,22 @@
 //     if (item is! Map<String, dynamic>) {
 //       throw Exception('Item is not a valid map structure');
 //     }
-    
+
 //     Map<String, dynamic> sanitized = Map<String, dynamic>.from(item);
-    
+
 //     // Convert common integer fields to strings
 //     List<String> fieldsToStringify = [
-//       'id', 'index', 'status', 'channel_id', 'category_id', 
+//       'id', 'index', 'status', 'channel_id', 'category_id',
 //       'subcategory_id', 'language_id', 'country_id', 'featured',
 //       'trending', 'is_kids_friendly', 'banner_ads', 'channel_number'
 //     ];
-    
+
 //     for (String field in fieldsToStringify) {
 //       if (sanitized.containsKey(field)) {
 //         sanitized[field] = sanitized[field].toString();
 //       }
 //     }
-    
+
 //     // Add missing required fields with default values
 //     Map<String, dynamic> defaultValues = {
 //       'poster': sanitized['banner'] ?? '', // Use banner as poster if poster missing
@@ -1078,14 +1064,14 @@
 //       'videoId': sanitized['id'].toString(), // Use id as videoId
 //       'index': sanitized['channel_number']?.toString() ?? sanitized['id']?.toString() ?? '1', // Use channel_number or id as index
 //     };
-    
+
 //     // Add missing fields
 //     for (String key in defaultValues.keys) {
 //       if (!sanitized.containsKey(key) || sanitized[key] == null || sanitized[key] == '') {
 //         sanitized[key] = defaultValues[key];
 //       }
 //     }
-    
+
 //     // Handle genres field specially
 //     if (sanitized.containsKey('genres')) {
 //       var genres = sanitized['genres'];
@@ -1097,12 +1083,12 @@
 //         sanitized['genres'] = genres.toString();
 //       }
 //     }
-    
+
 //     // Handle any other array fields that should be strings
 //     List<String> arrayFieldsToStringify = [
 //       'tags', 'actors', 'directors', 'writers'
 //     ];
-    
+
 //     for (String field in arrayFieldsToStringify) {
 //       if (sanitized.containsKey(field)) {
 //         var value = sanitized[field];
@@ -1113,14 +1099,14 @@
 //         }
 //       }
 //     }
-    
+
 //     // Ensure all required string fields exist
 //     List<String> requiredStringFields = [
-//       'id', 'name', 'description', 'banner', 'poster', 
-//       'category', 'url', 'streamType', 'type', 'genres', 
+//       'id', 'name', 'description', 'banner', 'poster',
+//       'category', 'url', 'streamType', 'type', 'genres',
 //       'status', 'videoId', 'index'
 //     ];
-    
+
 //     for (String field in requiredStringFields) {
 //       if (!sanitized.containsKey(field) || sanitized[field] == null) {
 //         sanitized[field] = '';
@@ -1128,7 +1114,7 @@
 //         sanitized[field] = sanitized[field].toString();
 //       }
 //     }
-    
+
 //     return sanitized;
 //   }
 
@@ -1203,8 +1189,7 @@
 //     try {
 //       // Get auth key for this API call
 //       String authKey = await _getAuthKeyForFeaturedLiveTV();
-      
-      
+
 //       final response = await https.get(
 //         Uri.parse('https://acomtv.coretechinfo.com/public/api/getFeaturedLiveTV'),
 //         headers: {
@@ -1213,18 +1198,17 @@
 //         },
 //       );
 
-
 //       if (response.statusCode == 200) {
-        
+
 //         final List<dynamic> responseData = json.decode(response.body);
-        
+
 //         // Debug: Print first item structure
 //         if (responseData.isNotEmpty) {
 //         }
-        
+
 //         // Sanitize data before processing
 //         List<dynamic> sanitizedData = [];
-        
+
 //         for (int i = 0; i < responseData.length; i++) {
 //           try {
 //             var sanitizedItem = _sanitizeItemData(responseData[i]);
@@ -1233,8 +1217,7 @@
 //             // Skip this item and continue
 //           }
 //         }
-        
-        
+
 //         _processEntertainmentData(sanitizedData);
 
 //         final prefs = await SharedPreferences.getInstance();
@@ -1251,17 +1234,17 @@
 
 //   void _processEntertainmentData(List<dynamic> responseData) {
 //     try {
-      
+
 //       List<NewsItemModel> allChannels = [];
-      
+
 //       for (int i = 0; i < responseData.length; i++) {
 //         try {
 //           var item = responseData[i];
-          
+
 //           // Check if channel is allowed before creating NewsItemModel
 //           if (_isChannelAllowed(item)) {
 //             NewsItemModel newsItem = NewsItemModel.fromJson(item);
-            
+
 //             // Only add if index is not null
 //             if (newsItem.index != null && newsItem.index.isNotEmpty) {
 //               allChannels.add(newsItem);
@@ -1307,7 +1290,7 @@
 //       sportsList = allChannels
 //           .where((channel) => channel.genres.contains('Sports'))
 //           .toList();
-          
+
 //     } catch (e) {
 //       throw Exception('Error processing entertainment data: $e');
 //     }
@@ -1352,9 +1335,6 @@
 //   }
 // }
 
-
-
-
 import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as https;
@@ -1388,23 +1368,23 @@ class ApiService {
   Future<String> _getAuthKeyForFeaturedLiveTV() async {
     try {
       await AuthManager.initialize();
-      
-      if (AuthManager.hasValidAuthKey) {
-        return AuthManager.authKey;
-      }
-      
+
+      // if (AuthManager.hasValidAuthKey) {
+      //   return AuthManager.authKey;
+      // }
+
       if (globalAuthKey.isNotEmpty) {
         return globalAuthKey;
       }
-      
+
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? authKey = prefs.getString('auth_key');
-      
+
       if (authKey != null && authKey.isNotEmpty) {
         await AuthManager.setAuthKey(authKey);
         return authKey;
       }
-      
+
       throw Exception('Authentication required - please login again');
     } catch (e) {
       throw Exception('Failed to get authentication key');
@@ -1414,22 +1394,20 @@ class ApiService {
   Future<List<NewsItemModel>> fetchMusicData() async {
     try {
       String authKey = await _getAuthKeyForFeaturedLiveTV();
-      
-      
+
       final response = await https.get(
-        Uri.parse('https://acomtv.coretechinfo.com/public/api/getFeaturedLiveTV'),
+        Uri.parse(
+            'https://acomtv.coretechinfo.com/public/api/getFeaturedLiveTV'),
         headers: {
           'auth-key': authKey,
           'Accept': 'application/json',
         },
       );
 
-
       if (response.statusCode == 200) {
-        
         final Map<String, dynamic> responseMap = json.decode(response.body);
         List<NewsItemModel> allItems = [];
-        
+
         // Process each category
         responseMap.forEach((category, items) {
           if (items is List) {
@@ -1437,12 +1415,11 @@ class ApiService {
               try {
                 var processedItem = _sanitizeItemData(item, category);
                 NewsItemModel newsItem = NewsItemModel.fromJson(processedItem);
-                
+
                 if (newsItem.index != null && newsItem.index.isNotEmpty) {
                   allItems.add(newsItem);
                 }
-              } catch (e) {
-              }
+              } catch (e) {}
             }
           }
         });
@@ -1460,7 +1437,8 @@ class ApiService {
       } else if (response.statusCode == 403) {
         throw Exception('Authentication failed - please login again');
       } else {
-        throw Exception('Error fetching music data - Status Code: ${response.statusCode}');
+        throw Exception(
+            'Error fetching music data - Status Code: ${response.statusCode}');
       }
     } catch (e, stacktrace) {
       throw Exception('Error fetching music data: $e');
@@ -1472,9 +1450,9 @@ class ApiService {
     if (item is! Map<String, dynamic>) {
       throw Exception('Item is not a valid map structure');
     }
-    
+
     Map<String, dynamic> sanitized = Map<String, dynamic>.from(item);
-    
+
     // Fix image URLs - convert relative paths to absolute URLs
     if (sanitized.containsKey('banner')) {
       String banner = sanitized['banner'].toString();
@@ -1483,40 +1461,42 @@ class ApiService {
         sanitized['banner'] = imageBaseUrl + banner;
       }
     }
-    
+
     // Convert numeric fields to strings
-    List<String> fieldsToStringify = [
-      'id', 'channel_number', 'status'
-    ];
-    
+    List<String> fieldsToStringify = ['id', 'channel_number', 'status'];
+
     for (String field in fieldsToStringify) {
       if (sanitized.containsKey(field)) {
         sanitized[field] = sanitized[field].toString();
       }
     }
-    
+
     // Add missing required fields with proper defaults
     Map<String, dynamic> defaultValues = {
       'poster': sanitized['banner'] ?? '', // Use banner as poster
       'category': category, // Use the category from API structure
-      'streamType': 'M3u8', 
+      'streamType': 'M3u8',
       'type': 'Live',
       'videoId': sanitized['id'].toString(),
-      'index': sanitized['channel_number']?.toString() ?? sanitized['id']?.toString() ?? '1',
+      'index': sanitized['channel_number']?.toString() ??
+          sanitized['id']?.toString() ??
+          '1',
     };
-    
+
     // Add missing fields
     for (String key in defaultValues.keys) {
-      if (!sanitized.containsKey(key) || sanitized[key] == null || sanitized[key] == '') {
+      if (!sanitized.containsKey(key) ||
+          sanitized[key] == null ||
+          sanitized[key] == '') {
         sanitized[key] = defaultValues[key];
       }
     }
-    
+
     // Ensure description is not null
     if (sanitized['description'] == null) {
       sanitized['description'] = sanitized['name'] ?? '';
     }
-    
+
     // Handle genres - map category to proper genre if genres field is missing
     if (!sanitized.containsKey('genres') || sanitized['genres'] == null) {
       // Map category names to proper genres
@@ -1543,14 +1523,24 @@ class ApiService {
           sanitized['genres'] = 'Entertainment';
       }
     }
-    
+
     // Ensure all required string fields exist
     List<String> requiredStringFields = [
-      'id', 'name', 'description', 'banner', 'poster', 
-      'category', 'url', 'streamType', 'type', 'genres', 
-      'status', 'videoId', 'index'
+      'id',
+      'name',
+      'description',
+      'banner',
+      'poster',
+      'category',
+      'url',
+      'streamType',
+      'type',
+      'genres',
+      'status',
+      'videoId',
+      'index'
     ];
-    
+
     for (String field in requiredStringFields) {
       if (!sanitized.containsKey(field) || sanitized[field] == null) {
         sanitized[field] = '';
@@ -1558,7 +1548,7 @@ class ApiService {
         sanitized[field] = sanitized[field].toString();
       }
     }
-    
+
     return sanitized;
   }
 
@@ -1617,7 +1607,8 @@ class ApiService {
       final cachedEntertainment = prefs.getString('entertainment');
 
       if (cachedEntertainment != null) {
-        final Map<String, dynamic> responseData = json.decode(cachedEntertainment);
+        final Map<String, dynamic> responseData =
+            json.decode(cachedEntertainment);
         _processEntertainmentData(responseData);
       } else {
         await _fetchAndCacheEntertainment();
@@ -1630,16 +1621,15 @@ class ApiService {
   Future<void> _fetchAndCacheEntertainment() async {
     try {
       String authKey = await _getAuthKeyForFeaturedLiveTV();
-      
-      
+
       final response = await https.get(
-        Uri.parse('https://acomtv.coretechinfo.com/public/api/getFeaturedLiveTV'),
+        Uri.parse(
+            'https://acomtv.coretechinfo.com/public/api/getFeaturedLiveTV'),
         headers: {
           'auth-key': authKey,
           'Accept': 'application/json',
         },
       );
-
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = json.decode(response.body);
@@ -1650,7 +1640,8 @@ class ApiService {
       } else if (response.statusCode == 403) {
         throw Exception('Authentication failed - please login again');
       } else {
-        throw Exception('Failed to load entertainment data - Status Code: ${response.statusCode}');
+        throw Exception(
+            'Failed to load entertainment data - Status Code: ${response.statusCode}');
       }
     } catch (e) {
       throw Exception('Failed to load entertainment data: $e');
@@ -1659,9 +1650,8 @@ class ApiService {
 
   void _processEntertainmentData(Map<String, dynamic> responseData) {
     try {
-      
       List<NewsItemModel> allChannels = [];
-      
+
       // Process each category in the response
       responseData.forEach((category, items) {
         if (items is List) {
@@ -1670,13 +1660,12 @@ class ApiService {
               if (_isChannelAllowed(item)) {
                 var sanitizedItem = _sanitizeItemData(item, category);
                 NewsItemModel newsItem = NewsItemModel.fromJson(sanitizedItem);
-                
+
                 if (newsItem.index != null && newsItem.index.isNotEmpty) {
                   allChannels.add(newsItem);
                 }
               }
-            } catch (e) {
-            }
+            } catch (e) {}
           }
         }
       });
@@ -1716,7 +1705,6 @@ class ApiService {
       sportsList = allChannels
           .where((channel) => channel.genres.contains('Sports'))
           .toList();
-          
     } catch (e) {
       throw Exception('Error processing entertainment data: $e');
     }
@@ -1750,8 +1738,7 @@ class ApiService {
       if (hasChanges) {
         _updateController.add(true);
       }
-    } catch (e) {
-    }
+    } catch (e) {}
   }
 
   void dispose() {
