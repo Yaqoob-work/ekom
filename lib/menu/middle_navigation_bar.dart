@@ -400,6 +400,15 @@ class _MiddleNavigationBarState extends State<MiddleNavigationBar> {
     print('🎯 Selected: ${widget.selectedPage} = ${widget.selectedPage < navItems.length ? navItems[widget.selectedPage] : "Invalid"}');
     print('🎯 Valid page range: 0-${widget.maxPageIndex ?? "unknown"}');
 
+        // ✅ ADD: Update current selected index in FocusProvider
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      try {
+        context.read<FocusProvider>().setCurrentSelectedNavIndex(widget.selectedPage);
+      } catch (e) {
+        print('❌ Error setting current nav index: $e');
+      }
+    });
+
     return PopScope(
         canPop: false,
         onPopInvoked: (didPop) {
@@ -470,6 +479,14 @@ class _MiddleNavigationBarState extends State<MiddleNavigationBar> {
                 //   print('Focus provider method error: $e');
                 // }
 
+
+                                // ✅ ADD: Update current selected index when navigation button gets focus
+                try {
+                  context.read<FocusProvider>().setCurrentSelectedNavIndex(index);
+                } catch (e) {
+                  print('❌ Error updating nav index: $e');
+                }
+
                 final newColor = _generateRandomColor();
                 context.read<ColorProvider>().updateColor(newColor, true);
               } else {
@@ -482,14 +499,28 @@ class _MiddleNavigationBarState extends State<MiddleNavigationBar> {
               if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
                 print('⬇️ Arrow down: $title (index: $index)');
                 if (index >= 0 && index < navItems.length) {
+
+                  try {
+                    context.read<FocusProvider>().setCurrentSelectedNavIndex(index);
+                  } catch (e) {
+                    print('❌ Error setting nav index: $e');
+                  }
+
                   widget.onPageSelected(index);
                 } else {
                   print('❌ Invalid index for navigation: $index');
                 }
+
+
                 return KeyEventResult.handled;
               } else if (event.logicalKey == LogicalKeyboardKey.enter ||
                   event.logicalKey == LogicalKeyboardKey.select) {
                 print('✅ Enter: $title (index: $index)');
+                                try {
+                  context.read<FocusProvider>().setCurrentSelectedNavIndex(index);
+                } catch (e) {
+                  print('❌ Error setting nav index: $e');
+                }
                 widget.onPageSelected(index);
                 return KeyEventResult.handled;
               } else if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
@@ -510,6 +541,11 @@ class _MiddleNavigationBarState extends State<MiddleNavigationBar> {
             onTap: () {
               print('🖱️ Tapped: $title (index: $index)');
               if (index >= 0 && index < navItems.length) {
+                                try {
+                  context.read<FocusProvider>().setCurrentSelectedNavIndex(index);
+                } catch (e) {
+                  print('❌ Error setting nav index: $e');
+                }
                 widget.onPageSelected(index);
                 focusNode.requestFocus();
               } else {

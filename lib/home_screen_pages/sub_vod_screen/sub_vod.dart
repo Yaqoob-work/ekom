@@ -2053,7 +2053,7 @@ class _VODState extends State<VOD> with TickerProviderStateMixin {
   // Focus management for grid
   List<FocusNode> gridFocusNodes = [];
   int currentFocusIndex = 0;
-  static const int itemsPerRow = 4;
+  static const int itemsPerRow = 6;
 
   // Animation Controllers
   late AnimationController _headerAnimationController;

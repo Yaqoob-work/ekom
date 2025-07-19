@@ -6092,25 +6092,25 @@ void _scrollToPosition(int index) {
                         return KeyEventResult.handled;
                       }
                     } 
-                    // else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
-                    //   setState(() {
-                    //     focusedIndex = -1;
-                    //     _hasReceivedFocusFromWebSeries = false;
-                    //   });
-                    //   FocusScope.of(context).unfocus();
-                    //   Future.delayed(const Duration(milliseconds: 100), () {
-                    //     if (mounted) {
-                    //       try {
-                    //         Provider.of<FocusProvider>(context, listen: false)
-                    //             .requestFirstWebseriesFocus();
-                    //         print('✅ Navigating back to webseries from Vod ViewAll');
-                    //       } catch (e) {
-                    //         print('❌ Failed to navigate to webseries: $e');
-                    //       }
-                    //     }
-                    //   });
-                    //   return KeyEventResult.handled;
-                    // } 
+                    else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+                    setState(() {
+                      focusedIndex = -1;
+                      _hasReceivedFocusFromWebSeries = false;
+                    });
+                    FocusScope.of(context).unfocus();
+                    Future.delayed(const Duration(milliseconds: 100), () {
+                      if (mounted) {
+                        try {
+                          // ✅ NEW: Go to current selected navigation's first channel
+                          context.read<FocusProvider>().requestCurrentNavFirstChannelFocus();
+                          print('✅ Navigating from HorizontalVod ViewAll to current selected nav first channel');
+                        } catch (e) {
+                          print('❌ Failed to navigate to current nav first channel from ViewAll: $e');
+                        }
+                      }
+                    });
+                    return KeyEventResult.handled;
+                  } 
                     else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
                       setState(() {
                         focusedIndex = -1;
@@ -6207,25 +6207,25 @@ void _scrollToPosition(int index) {
               return KeyEventResult.handled;
             }
           } 
-          // else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
-          //   setState(() {
-          //     focusedIndex = -1;
-          //     _hasReceivedFocusFromWebSeries = false;
-          //   });
-          //   FocusScope.of(context).unfocus();
-          //   Future.delayed(const Duration(milliseconds: 100), () {
-          //     if (mounted) {
-          //       try {
-          //         Provider.of<FocusProvider>(context, listen: false)
-          //             .requestFirstWebseriesFocus();
-          //         print('✅ Navigating back to webseries from Vod');
-          //       } catch (e) {
-          //         print('❌ Failed to navigate to webseries: $e');
-          //       }
-          //     }
-          //   });
-          //   return KeyEventResult.handled;
-          // } 
+        else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+          setState(() {
+            focusedIndex = -1;
+            _hasReceivedFocusFromWebSeries = false;
+          });
+          FocusScope.of(context).unfocus();
+          Future.delayed(const Duration(milliseconds: 100), () {
+            if (mounted) {
+              try {
+                // ✅ NEW: Go to current selected navigation's first channel instead of webseries
+                context.read<FocusProvider>().requestCurrentNavFirstChannelFocus();
+                print('✅ Navigating from HorizontalVod to current selected nav first channel');
+              } catch (e) {
+                print('❌ Failed to navigate to current nav first channel: $e');
+              }
+            }
+          });
+          return KeyEventResult.handled;
+        } 
           else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
             setState(() {
               focusedIndex = -1;

@@ -226,6 +226,14 @@ class _SubLiveScreenState extends State<SubLiveScreen> {
       _selectedPage = index;
     });
 
+
+        // ✅ NEW: Update FocusProvider with current selected index
+    try {
+      context.read<FocusProvider>().setCurrentSelectedNavIndex(index);
+    } catch (e) {
+      print('❌ Error setting nav index from SubLiveScreen: $e');
+    }
+
     _pageController.jumpToPage(index);
 
     // ✅ FIXED: Handle focus for ALL pages including Live (index 0)

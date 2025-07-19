@@ -102,6 +102,29 @@ class FocusProvider extends ChangeNotifier {
   FocusNode? topNavigationFocusNode;
   FocusNode? middleNavigationFocusNode;
 
+
+int _currentSelectedNavIndex = 0;
+
+    void setCurrentSelectedNavIndex(int index) {
+    _currentSelectedNavIndex = index;
+    notifyListeners();
+    print('✅ Current selected nav index set to: $index');
+  }
+
+  int get currentSelectedNavIndex => _currentSelectedNavIndex;
+
+  // ✅ NEW: Request focus to current selected navigation's first channel
+  void requestCurrentNavFirstChannelFocus() {
+    if (_channelFirstFocusNodes.containsKey(_currentSelectedNavIndex)) {
+      _channelFirstFocusNodes[_currentSelectedNavIndex]?.requestFocus();
+      scrollToElement('subLiveScreen');
+      notifyListeners();
+      print('✅ Focusing first channel for current nav index: $_currentSelectedNavIndex');
+    } else {
+      print('❌ No first channel focus found for current nav index: $_currentSelectedNavIndex');
+    }
+  }
+
   // News Channels Focus Nodes (NEW)
   FocusNode? _firstNewsChannelFocusNode;
   FocusNode? _newsChannelsViewAllFocusNode;
