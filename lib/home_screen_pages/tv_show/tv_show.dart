@@ -5259,6 +5259,8 @@ import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'dart:math' as math;
 import 'package:mobi_tv_entertainment/home_screen_pages/tv_show/tv_show_second_page.dart';
+import 'package:mobi_tv_entertainment/main.dart';
+import 'package:mobi_tv_entertainment/provider/color_provider.dart';
 import 'package:mobi_tv_entertainment/provider/focus_provider.dart';
 import 'package:provider/provider.dart';
 import 'dart:convert';
@@ -5925,36 +5927,321 @@ class _ProfessionalTVShowsHorizontalListState
     });
   }
 
-  @override
+
+
+
+   @override
   Widget build(BuildContext context) {
     super.build(context);
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              ProfessionalColors.primaryDark,
-              ProfessionalColors.surfaceDark.withOpacity(0.5),
-            ],
+    // ✅ ADD: Consumer to listen to color changes
+    return Consumer<ColorProvider>(
+      builder: (context, colorProvider, child) {
+        final bgColor = colorProvider.isItemFocused
+            ? colorProvider.dominantColor.withOpacity(0.1)
+            : ProfessionalColors.primaryDark;
+
+        return Scaffold(
+          backgroundColor: Colors.transparent,
+          body: Container(
+            // ✅ ENHANCED: Dynamic background gradient based on focused item
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  bgColor,
+                  // ProfessionalColors.primaryDark,
+                  // ProfessionalColors.surfaceDark.withOpacity(0.5),
+
+ bgColor.withOpacity(0.8),
+                ProfessionalColors.primaryDark,
+                  
+                ],
+              ),
+            ),
+            child: Column(
+              children: [
+                SizedBox(height: screenHeight * 0.02),
+                _buildProfessionalTitle(screenWidth),
+                SizedBox(height: screenHeight * 0.01),
+                Expanded(child: _buildBody(screenWidth, screenHeight)),
+              ],
+            ),
           ),
-        ),
-        child: Column(
-          children: [
-            SizedBox(height: screenHeight * 0.02),
-            _buildProfessionalTitle(screenWidth),
-            SizedBox(height: screenHeight * 0.01),
-            Expanded(child: _buildBody(screenWidth, screenHeight)),
-          ],
+        );
+      },
+    );
+  }
+
+  // ✅ ENHANCED: TV Show item with color provider integration
+  Widget _buildTVShowItem(TVShowModel tvShow, int index, double screenWidth, double screenHeight) {
+    String tvShowId = tvShow.id.toString();
+
+    tvshowsFocusNodes.putIfAbsent(
+      tvShowId,
+      () => FocusNode()
+        ..addListener(() {
+          if (mounted && tvshowsFocusNodes[tvShowId]!.hasFocus) {
+            _scrollToPosition(index);
+          }
+        }),
+    );
+
+    return Focus(
+      focusNode: tvshowsFocusNodes[tvShowId],
+      onFocusChange: (hasFocus) async {
+        if (hasFocus && mounted) {
+          try {
+            Color dominantColor = ProfessionalColors.gradientColors[
+                math.Random().nextInt(ProfessionalColors.gradientColors.length)];
+
+            setState(() {
+              _currentAccentColor = dominantColor;
+              focusedIndex = index;
+              _hasReceivedFocusFromWebSeries = true;
+            });
+
+            // ✅ ADD: Update color provider
+            context.read<ColorProvider>().updateColor(dominantColor, true);
+          } catch (e) {
+            print('Focus change handling failed: $e');
+          }
+        } else if (mounted) {
+          // ✅ ADD: Reset color when focus lost
+          context.read<ColorProvider>().resetColor();
+        }
+      },
+      onKey: (FocusNode node, RawKeyEvent event) {
+        if (event is RawKeyDownEvent) {
+          if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
+            if (index < tvShowsList.length - 1 && index != 6) {
+              String nextTVShowId = tvShowsList[index + 1].id.toString();
+              FocusScope.of(context).requestFocus(tvshowsFocusNodes[nextTVShowId]);
+              return KeyEventResult.handled;
+            } else if (index == 6 && tvShowsList.length > 7) {
+              FocusScope.of(context).requestFocus(_viewAllFocusNode);
+              return KeyEventResult.handled;
+            }
+          } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+            if (index > 0) {
+              String prevTVShowId = tvShowsList[index - 1].id.toString();
+              FocusScope.of(context).requestFocus(tvshowsFocusNodes[prevTVShowId]);
+              return KeyEventResult.handled;
+            }
+          } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+            setState(() {
+              focusedIndex = -1;
+              _hasReceivedFocusFromWebSeries = false;
+            });
+            // ✅ ADD: Reset color when navigating away
+            context.read<ColorProvider>().resetColor();
+            FocusScope.of(context).unfocus();
+            Future.delayed(const Duration(milliseconds: 100), () {
+              if (mounted) {
+                try {
+                  Provider.of<FocusProvider>(context, listen: false)
+                      .requestFirstWebseriesFocus();
+                  print('✅ Navigating back to webseries from TV shows');
+                } catch (e) {
+                  print('❌ Failed to navigate to webseries: $e');
+                }
+              }
+            });
+            return KeyEventResult.handled;
+          } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+            setState(() {
+              focusedIndex = -1;
+              _hasReceivedFocusFromWebSeries = false;
+            });
+            // ✅ ADD: Reset color when navigating away
+            context.read<ColorProvider>().resetColor();
+            FocusScope.of(context).unfocus();
+            Future.delayed(const Duration(milliseconds: 100), () {
+              if (mounted) {
+                try {
+                  // Navigate to next section
+                  print('✅ Navigating down from TV shows');
+                } catch (e) {
+                  print('❌ Failed to navigate down: $e');
+                }
+              }
+            });
+            return KeyEventResult.handled;
+          } else if (event.logicalKey == LogicalKeyboardKey.enter ||
+                     event.logicalKey == LogicalKeyboardKey.select) {
+            print('🎬 Enter pressed on ${tvShow.name} - Opening Details Page...');
+            _navigateToTVShowDetails(tvShow);
+            return KeyEventResult.handled;
+          }
+        }
+        return KeyEventResult.ignored;
+      },
+      child: GestureDetector(
+        onTap: () => _navigateToTVShowDetails(tvShow),
+        child: ProfessionalTVShowCard(
+          tvShow: tvShow,
+          focusNode: tvshowsFocusNodes[tvShowId]!,
+          onTap: () => _navigateToTVShowDetails(tvShow),
+          onColorChange: (color) {
+            setState(() {
+              _currentAccentColor = color;
+            });
+            // ✅ ADD: Update color provider when card changes color
+            context.read<ColorProvider>().updateColor(color, true);
+          },
+          index: index,
+          categoryTitle: 'TV SHOWS',
         ),
       ),
     );
   }
+
+  // ✅ Enhanced ViewAll focus handling with ColorProvider
+  Widget _buildTVShowsList(double screenWidth, double screenHeight) {
+    bool showViewAll = tvShowsList.length > 7;
+
+    return FadeTransition(
+      opacity: _listFadeAnimation,
+      child: Container(
+        height: screenHeight * 0.38,
+        child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          clipBehavior: Clip.none,
+          controller: _scrollController,
+          padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.025),
+          cacheExtent: 1200,
+          itemCount: showViewAll ? 8 : tvShowsList.length,
+          itemBuilder: (context, index) {
+            if (showViewAll && index == 7) {
+              return Focus(
+                focusNode: _viewAllFocusNode,
+                onFocusChange: (hasFocus) {
+                  if (hasFocus && mounted) {
+                    Color viewAllColor = ProfessionalColors.gradientColors[
+                        math.Random().nextInt(ProfessionalColors.gradientColors.length)];
+
+                    setState(() {
+                      _currentAccentColor = viewAllColor;
+                    });
+
+                    // ✅ ADD: Update color provider for ViewAll button
+                    context.read<ColorProvider>().updateColor(viewAllColor, true);
+                  } else if (mounted) {
+                    // ✅ ADD: Reset color when ViewAll loses focus
+                    context.read<ColorProvider>().resetColor();
+                  }
+                },
+                onKey: (FocusNode node, RawKeyEvent event) {
+                  if (event is RawKeyDownEvent) {
+                    if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
+                      return KeyEventResult.handled;
+                    } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+                      if (tvShowsList.isNotEmpty && tvShowsList.length > 6) {
+                        String tvShowId = tvShowsList[6].id.toString();
+                        FocusScope.of(context).requestFocus(tvshowsFocusNodes[tvShowId]);
+                        return KeyEventResult.handled;
+                      }
+                    } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+                      setState(() {
+                        focusedIndex = -1;
+                        _hasReceivedFocusFromWebSeries = false;
+                      });
+                      // ✅ ADD: Reset color when navigating away from ViewAll
+                      context.read<ColorProvider>().resetColor();
+                      FocusScope.of(context).unfocus();
+                      Future.delayed(const Duration(milliseconds: 100), () {
+                        if (mounted) {
+                          try {
+                            Provider.of<FocusProvider>(context, listen: false)
+                                .requestFirstWebseriesFocus();
+                            print('✅ Navigating back to webseries from TV shows ViewAll');
+                          } catch (e) {
+                            print('❌ Failed to navigate to webseries: $e');
+                          }
+                        }
+                      });
+                      return KeyEventResult.handled;
+                    } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+                      setState(() {
+                        focusedIndex = -1;
+                        _hasReceivedFocusFromWebSeries = false;
+                      });
+                      // ✅ ADD: Reset color when navigating away from ViewAll
+                      context.read<ColorProvider>().resetColor();
+                      FocusScope.of(context).unfocus();
+                      Future.delayed(const Duration(milliseconds: 100), () {
+                        if (mounted) {
+                          try {
+                            // Navigate to next section after TV Shows
+                            print('✅ Navigating down from TV Shows ViewAll');
+                          } catch (e) {
+                            print('❌ Failed to navigate down: $e');
+                          }
+                        }
+                      });
+                      return KeyEventResult.handled;
+                    } else if (event.logicalKey == LogicalKeyboardKey.enter ||
+                               event.logicalKey == LogicalKeyboardKey.select) {
+                      print('🎬 ViewAll button pressed - Opening Grid Page...');
+                      _navigateToGridPage();
+                      return KeyEventResult.handled;
+                    }
+                  }
+                  return KeyEventResult.ignored;
+                },
+                child: GestureDetector(
+                  onTap: _navigateToGridPage,
+                  child: ProfessionalTVShowViewAllButton(
+                    focusNode: _viewAllFocusNode!,
+                    onTap: _navigateToGridPage,
+                    totalItems: tvShowsList.length,
+                    itemType: 'TV SHOWS',
+                  ),
+                ),
+              );
+            }
+
+            var tvShow = tvShowsList[index];
+            return _buildTVShowItem(tvShow, index, screenWidth, screenHeight);
+          },
+        ),
+      ),
+    );
+  }
+
+  // @override
+  // Widget build(BuildContext context) {
+  //   super.build(context);
+  //   final screenWidth = MediaQuery.of(context).size.width;
+  //   final screenHeight = MediaQuery.of(context).size.height;
+
+  //   return Scaffold(
+  //     backgroundColor: Colors.transparent,
+  //     body: Container(
+  //       decoration: BoxDecoration(
+  //         gradient: LinearGradient(
+  //           begin: Alignment.topCenter,
+  //           end: Alignment.bottomCenter,
+  //           colors: [
+  //             ProfessionalColors.primaryDark,
+  //             ProfessionalColors.surfaceDark.withOpacity(0.5),
+  //           ],
+  //         ),
+  //       ),
+  //       child: Column(
+  //         children: [
+  //           SizedBox(height: screenHeight * 0.02),
+  //           _buildProfessionalTitle(screenWidth),
+  //           SizedBox(height: screenHeight * 0.01),
+  //           Expanded(child: _buildBody(screenWidth, screenHeight)),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
 
   // 🚀 Enhanced Title with Cache Status and Refresh Button
   Widget _buildProfessionalTitle(double screenWidth) {
@@ -5984,38 +6271,38 @@ class _ProfessionalTVShowsHorizontalListState
             ),
             Row(
               children: [
-                // 🆕 Refresh Button
-                GestureDetector(
-                  onTap: isLoading ? null : _forceRefreshTVShows,
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: ProfessionalColors.accentGreen.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                        color: ProfessionalColors.accentGreen.withOpacity(0.3),
-                        width: 1,
-                      ),
-                    ),
-                    child: isLoading
-                        ? SizedBox(
-                            width: 16,
-                            height: 16,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                ProfessionalColors.accentGreen,
-                              ),
-                            ),
-                          )
-                        : Icon(
-                            Icons.refresh,
-                            size: 16,
-                            color: ProfessionalColors.accentGreen,
-                          ),
-                  ),
-                ),
-                const SizedBox(width: 12),
+                // // 🆕 Refresh Button
+                // GestureDetector(
+                //   onTap: isLoading ? null : _forceRefreshTVShows,
+                //   child: Container(
+                //     padding: const EdgeInsets.all(8),
+                //     decoration: BoxDecoration(
+                //       color: ProfessionalColors.accentGreen.withOpacity(0.2),
+                //       borderRadius: BorderRadius.circular(8),
+                //       border: Border.all(
+                //         color: ProfessionalColors.accentGreen.withOpacity(0.3),
+                //         width: 1,
+                //       ),
+                //     ),
+                //     child: isLoading
+                //         ? SizedBox(
+                //             width: 16,
+                //             height: 16,
+                //             child: CircularProgressIndicator(
+                //               strokeWidth: 2,
+                //               valueColor: AlwaysStoppedAnimation<Color>(
+                //                 ProfessionalColors.accentGreen,
+                //               ),
+                //             ),
+                //           )
+                //         : Icon(
+                //             Icons.refresh,
+                //             size: 16,
+                //             color: ProfessionalColors.accentGreen,
+                //           ),
+                //   ),
+                // ),
+                // const SizedBox(width: 12),
                 // TV Shows Count
                 if (tvShowsList.length > 0)
                   Container(
@@ -6106,217 +6393,220 @@ class _ProfessionalTVShowsHorizontalListState
     );
   }
 
-  Widget _buildTVShowsList(double screenWidth, double screenHeight) {
-    bool showViewAll = tvShowsList.length > 7;
+  // Widget _buildTVShowsList(double screenWidth, double screenHeight) {
+  //   bool showViewAll = tvShowsList.length > 7;
 
-    return FadeTransition(
-      opacity: _listFadeAnimation,
-      child: Container(
-        height: screenHeight * 0.38,
-        child: ListView.builder(
-          scrollDirection: Axis.horizontal,
-          clipBehavior: Clip.none,
-          controller: _scrollController,
-          padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.025),
-          cacheExtent: 1200,
-          itemCount: showViewAll ? 8 : tvShowsList.length,
-          itemBuilder: (context, index) {
-            if (showViewAll && index == 7) {
-              return Focus(
-                focusNode: _viewAllFocusNode,
-                onFocusChange: (hasFocus) {
-                  if (hasFocus && mounted) {
-                    Color viewAllColor = ProfessionalColors.gradientColors[
-                        math.Random().nextInt(ProfessionalColors.gradientColors.length)];
+  //   return FadeTransition(
+  //     opacity: _listFadeAnimation,
+  //     child: Container(
+  //       height: screenHeight * 0.38,
+  //       child: ListView.builder(
+  //         scrollDirection: Axis.horizontal,
+  //         clipBehavior: Clip.none,
+  //         controller: _scrollController,
+  //         padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.025),
+  //         cacheExtent: 1200,
+  //         itemCount: showViewAll ? 8 : tvShowsList.length,
+  //         itemBuilder: (context, index) {
+  //           if (showViewAll && index == 7) {
+  //             return Focus(
+  //               focusNode: _viewAllFocusNode,
+  //               onFocusChange: (hasFocus) {
+  //                 if (hasFocus && mounted) {
+  //                   Color viewAllColor = ProfessionalColors.gradientColors[
+  //                       math.Random().nextInt(ProfessionalColors.gradientColors.length)];
 
-                    setState(() {
-                      _currentAccentColor = viewAllColor;
-                    });
-                  }
-                },
-                onKey: (FocusNode node, RawKeyEvent event) {
-                  if (event is RawKeyDownEvent) {
-                    if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
-                      return KeyEventResult.handled;
-                    } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
-                      if (tvShowsList.isNotEmpty && tvShowsList.length > 6) {
-                        String tvShowId = tvShowsList[6].id.toString();
-                        FocusScope.of(context).requestFocus(tvshowsFocusNodes[tvShowId]);
-                        return KeyEventResult.handled;
-                      }
-                    } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
-                      setState(() {
-                        focusedIndex = -1;
-                        _hasReceivedFocusFromWebSeries = false;
-                      });
-                      FocusScope.of(context).unfocus();
-                      Future.delayed(const Duration(milliseconds: 100), () {
-                        if (mounted) {
-                          try {
-                            Provider.of<FocusProvider>(context, listen: false)
-                                .requestFirstWebseriesFocus();
-                            print('✅ Navigating back to webseries from TV shows ViewAll');
-                          } catch (e) {
-                            print('❌ Failed to navigate to webseries: $e');
-                          }
-                        }
-                      });
-                      return KeyEventResult.handled;
-                    } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
-                      setState(() {
-                        focusedIndex = -1;
-                        _hasReceivedFocusFromWebSeries = false;
-                      });
-                      FocusScope.of(context).unfocus();
-                      Future.delayed(const Duration(milliseconds: 100), () {
-                        if (mounted) {
-                          try {
-                            // Navigate to next section after TV Shows
-                            print('✅ Navigating down from TV Shows ViewAll');
-                          } catch (e) {
-                            print('❌ Failed to navigate down: $e');
-                          }
-                        }
-                      });
-                      return KeyEventResult.handled;
-                    } else if (event.logicalKey == LogicalKeyboardKey.enter ||
-                               event.logicalKey == LogicalKeyboardKey.select) {
-                      print('🎬 ViewAll button pressed - Opening Grid Page...');
-                      _navigateToGridPage();
-                      return KeyEventResult.handled;
-                    }
-                  }
-                  return KeyEventResult.ignored;
-                },
-                child: GestureDetector(
-                  onTap: _navigateToGridPage,
-                  child: ProfessionalTVShowViewAllButton(
-                    focusNode: _viewAllFocusNode!,
-                    onTap: _navigateToGridPage,
-                    totalItems: tvShowsList.length,
-                    itemType: 'TV SHOWS',
-                  ),
-                ),
-              );
-            }
+  //                   setState(() {
+  //                     _currentAccentColor = viewAllColor;
+  //                   });
+  //                 }
+  //               },
+  //               onKey: (FocusNode node, RawKeyEvent event) {
+  //                 if (event is RawKeyDownEvent) {
+  //                   if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
+  //                     return KeyEventResult.handled;
+  //                   } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+  //                     if (tvShowsList.isNotEmpty && tvShowsList.length > 6) {
+  //                       String tvShowId = tvShowsList[6].id.toString();
+  //                       FocusScope.of(context).requestFocus(tvshowsFocusNodes[tvShowId]);
+  //                       return KeyEventResult.handled;
+  //                     }
+  //                   } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+  //                     setState(() {
+  //                       focusedIndex = -1;
+  //                       _hasReceivedFocusFromWebSeries = false;
+  //                     });
+  //                     FocusScope.of(context).unfocus();
+  //                     Future.delayed(const Duration(milliseconds: 100), () {
+  //                       if (mounted) {
+  //                         try {
+  //                           Provider.of<FocusProvider>(context, listen: false)
+  //                               .requestFirstWebseriesFocus();
+  //                           print('✅ Navigating back to webseries from TV shows ViewAll');
+  //                         } catch (e) {
+  //                           print('❌ Failed to navigate to webseries: $e');
+  //                         }
+  //                       }
+  //                     });
+  //                     return KeyEventResult.handled;
+  //                   } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+  //                     setState(() {
+  //                       focusedIndex = -1;
+  //                       _hasReceivedFocusFromWebSeries = false;
+  //                     });
+  //                     FocusScope.of(context).unfocus();
+  //                     Future.delayed(const Duration(milliseconds: 100), () {
+  //                       if (mounted) {
+  //                         try {
+  //                           // Navigate to next section after TV Shows
+  //                           print('✅ Navigating down from TV Shows ViewAll');
+  //                         } catch (e) {
+  //                           print('❌ Failed to navigate down: $e');
+  //                         }
+  //                       }
+  //                     });
+  //                     return KeyEventResult.handled;
+  //                   } else if (event.logicalKey == LogicalKeyboardKey.enter ||
+  //                              event.logicalKey == LogicalKeyboardKey.select) {
+  //                     print('🎬 ViewAll button pressed - Opening Grid Page...');
+  //                     _navigateToGridPage();
+  //                     return KeyEventResult.handled;
+  //                   }
+  //                 }
+  //                 return KeyEventResult.ignored;
+  //               },
+  //               child: GestureDetector(
+  //                 onTap: _navigateToGridPage,
+  //                 child: ProfessionalTVShowViewAllButton(
+  //                   focusNode: _viewAllFocusNode!,
+  //                   onTap: _navigateToGridPage,
+  //                   totalItems: tvShowsList.length,
+  //                   itemType: 'TV SHOWS',
+  //                 ),
+  //               ),
+  //             );
+  //           }
 
-            var tvShow = tvShowsList[index];
-            return _buildTVShowItem(tvShow, index, screenWidth, screenHeight);
-          },
-        ),
-      ),
-    );
-  }
+  //           var tvShow = tvShowsList[index];
+  //           return _buildTVShowItem(tvShow, index, screenWidth, screenHeight);
+  //         },
+  //       ),
+  //     ),
+  //   );
+  // }
 
-  Widget _buildTVShowItem(TVShowModel tvShow, int index, double screenWidth, double screenHeight) {
-    String tvShowId = tvShow.id.toString();
 
-    tvshowsFocusNodes.putIfAbsent(
-      tvShowId,
-      () => FocusNode()
-        ..addListener(() {
-          if (mounted && tvshowsFocusNodes[tvShowId]!.hasFocus) {
-            _scrollToPosition(index);
-          }
-        }),
-    );
 
-    return Focus(
-      focusNode: tvshowsFocusNodes[tvShowId],
-      onFocusChange: (hasFocus) async {
-        if (hasFocus && mounted) {
-          try {
-            Color dominantColor = ProfessionalColors.gradientColors[
-                math.Random().nextInt(ProfessionalColors.gradientColors.length)];
 
-            setState(() {
-              _currentAccentColor = dominantColor;
-              focusedIndex = index;
-              _hasReceivedFocusFromWebSeries = true;
-            });
-          } catch (e) {
-            print('Focus change handling failed: $e');
-          }
-        }
-      },
-      onKey: (FocusNode node, RawKeyEvent event) {
-        if (event is RawKeyDownEvent) {
-          if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
-            if (index < tvShowsList.length - 1 && index != 6) {
-              String nextTVShowId = tvShowsList[index + 1].id.toString();
-              FocusScope.of(context).requestFocus(tvshowsFocusNodes[nextTVShowId]);
-              return KeyEventResult.handled;
-            } else if (index == 6 && tvShowsList.length > 7) {
-              FocusScope.of(context).requestFocus(_viewAllFocusNode);
-              return KeyEventResult.handled;
-            }
-          } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
-            if (index > 0) {
-              String prevTVShowId = tvShowsList[index - 1].id.toString();
-              FocusScope.of(context).requestFocus(tvshowsFocusNodes[prevTVShowId]);
-              return KeyEventResult.handled;
-            }
-          } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
-            setState(() {
-              focusedIndex = -1;
-              _hasReceivedFocusFromWebSeries = false;
-            });
-            FocusScope.of(context).unfocus();
-            Future.delayed(const Duration(milliseconds: 100), () {
-              if (mounted) {
-                try {
-                  Provider.of<FocusProvider>(context, listen: false)
-                      .requestFirstWebseriesFocus();
-                  print('✅ Navigating back to webseries from TV shows');
-                } catch (e) {
-                  print('❌ Failed to navigate to webseries: $e');
-                }
-              }
-            });
-            return KeyEventResult.handled;
-          } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
-            setState(() {
-              focusedIndex = -1;
-              _hasReceivedFocusFromWebSeries = false;
-            });
-            FocusScope.of(context).unfocus();
-            Future.delayed(const Duration(milliseconds: 100), () {
-              if (mounted) {
-                try {
-                  // Navigate to next section
-                  print('✅ Navigating down from TV shows');
-                } catch (e) {
-                  print('❌ Failed to navigate down: $e');
-                }
-              }
-            });
-            return KeyEventResult.handled;
-          } else if (event.logicalKey == LogicalKeyboardKey.enter ||
-                     event.logicalKey == LogicalKeyboardKey.select) {
-            print('🎬 Enter pressed on ${tvShow.name} - Opening Details Page...');
-            _navigateToTVShowDetails(tvShow);
-            return KeyEventResult.handled;
-          }
-        }
-        return KeyEventResult.ignored;
-      },
-      child: GestureDetector(
-        onTap: () => _navigateToTVShowDetails(tvShow),
-        child: ProfessionalTVShowCard(
-          tvShow: tvShow,
-          focusNode: tvshowsFocusNodes[tvShowId]!,
-          onTap: () => _navigateToTVShowDetails(tvShow),
-          onColorChange: (color) {
-            setState(() {
-              _currentAccentColor = color;
-            });
-          },
-          index: index,
-          categoryTitle: 'TV SHOWS',
-        ),
-      ),
-    );
-  }
+  // Widget _buildTVShowItem(TVShowModel tvShow, int index, double screenWidth, double screenHeight) {
+  //   String tvShowId = tvShow.id.toString();
+
+  //   tvshowsFocusNodes.putIfAbsent(
+  //     tvShowId,
+  //     () => FocusNode()
+  //       ..addListener(() {
+  //         if (mounted && tvshowsFocusNodes[tvShowId]!.hasFocus) {
+  //           _scrollToPosition(index);
+  //         }
+  //       }),
+  //   );
+
+  //   return Focus(
+  //     focusNode: tvshowsFocusNodes[tvShowId],
+  //     onFocusChange: (hasFocus) async {
+  //       if (hasFocus && mounted) {
+  //         try {
+  //           Color dominantColor = ProfessionalColors.gradientColors[
+  //               math.Random().nextInt(ProfessionalColors.gradientColors.length)];
+
+  //           setState(() {
+  //             _currentAccentColor = dominantColor;
+  //             focusedIndex = index;
+  //             _hasReceivedFocusFromWebSeries = true;
+  //           });
+  //         } catch (e) {
+  //           print('Focus change handling failed: $e');
+  //         }
+  //       }
+  //     },
+  //     onKey: (FocusNode node, RawKeyEvent event) {
+  //       if (event is RawKeyDownEvent) {
+  //         if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
+  //           if (index < tvShowsList.length - 1 && index != 6) {
+  //             String nextTVShowId = tvShowsList[index + 1].id.toString();
+  //             FocusScope.of(context).requestFocus(tvshowsFocusNodes[nextTVShowId]);
+  //             return KeyEventResult.handled;
+  //           } else if (index == 6 && tvShowsList.length > 7) {
+  //             FocusScope.of(context).requestFocus(_viewAllFocusNode);
+  //             return KeyEventResult.handled;
+  //           }
+  //         } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+  //           if (index > 0) {
+  //             String prevTVShowId = tvShowsList[index - 1].id.toString();
+  //             FocusScope.of(context).requestFocus(tvshowsFocusNodes[prevTVShowId]);
+  //             return KeyEventResult.handled;
+  //           }
+  //         } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+  //           setState(() {
+  //             focusedIndex = -1;
+  //             _hasReceivedFocusFromWebSeries = false;
+  //           });
+  //           FocusScope.of(context).unfocus();
+  //           Future.delayed(const Duration(milliseconds: 100), () {
+  //             if (mounted) {
+  //               try {
+  //                 Provider.of<FocusProvider>(context, listen: false)
+  //                     .requestFirstWebseriesFocus();
+  //                 print('✅ Navigating back to webseries from TV shows');
+  //               } catch (e) {
+  //                 print('❌ Failed to navigate to webseries: $e');
+  //               }
+  //             }
+  //           });
+  //           return KeyEventResult.handled;
+  //         } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+  //           setState(() {
+  //             focusedIndex = -1;
+  //             _hasReceivedFocusFromWebSeries = false;
+  //           });
+  //           FocusScope.of(context).unfocus();
+  //           Future.delayed(const Duration(milliseconds: 100), () {
+  //             if (mounted) {
+  //               try {
+  //                 // Navigate to next section
+  //                 print('✅ Navigating down from TV shows');
+  //               } catch (e) {
+  //                 print('❌ Failed to navigate down: $e');
+  //               }
+  //             }
+  //           });
+  //           return KeyEventResult.handled;
+  //         } else if (event.logicalKey == LogicalKeyboardKey.enter ||
+  //                    event.logicalKey == LogicalKeyboardKey.select) {
+  //           print('🎬 Enter pressed on ${tvShow.name} - Opening Details Page...');
+  //           _navigateToTVShowDetails(tvShow);
+  //           return KeyEventResult.handled;
+  //         }
+  //       }
+  //       return KeyEventResult.ignored;
+  //     },
+  //     child: GestureDetector(
+  //       onTap: () => _navigateToTVShowDetails(tvShow),
+  //       child: ProfessionalTVShowCard(
+  //         tvShow: tvShow,
+  //         focusNode: tvshowsFocusNodes[tvShowId]!,
+  //         onTap: () => _navigateToTVShowDetails(tvShow),
+  //         onColorChange: (color) {
+  //           setState(() {
+  //             _currentAccentColor = color;
+  //           });
+  //         },
+  //         index: index,
+  //         categoryTitle: 'TV SHOWS',
+  //       ),
+  //     ),
+  //   );
+  // }
 
   @override
   void dispose() {
@@ -6538,7 +6828,7 @@ class _ProfessionalTVShowCardState extends State<ProfessionalTVShowCard>
         return Transform.scale(
           scale: _scaleAnimation.value,
           child: Container(
-            width: screenWidth * 0.19,
+            width: bannerwdt,
             margin: const EdgeInsets.symmetric(horizontal: 6),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -6554,7 +6844,7 @@ class _ProfessionalTVShowCardState extends State<ProfessionalTVShowCard>
   }
 
   Widget _buildProfessionalPoster(double screenWidth, double screenHeight) {
-    final posterHeight = _isFocused ? screenHeight * 0.28 : screenHeight * 0.22;
+    final posterHeight = _isFocused ? focussedBannerhgt : bannerhgt;
 
     return Container(
       height: posterHeight,
@@ -6785,7 +7075,7 @@ class _ProfessionalTVShowCardState extends State<ProfessionalTVShowCard>
     final tvShowName = widget.tvShow.name.toUpperCase();
 
     return Container(
-      width: screenWidth * 0.18,
+      width: bannerwdt,
       child: AnimatedDefaultTextStyle(
         duration: AnimationTiming.medium,
         style: TextStyle(
@@ -6902,7 +7192,7 @@ class _ProfessionalTVShowViewAllButtonState extends State<ProfessionalTVShowView
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Container(
-      width: screenWidth * 0.19,
+      width: bannerwdt,
       margin: const EdgeInsets.symmetric(horizontal: 6),
       child: Column(
         children: [
@@ -6914,7 +7204,7 @@ class _ProfessionalTVShowViewAllButtonState extends State<ProfessionalTVShowView
                 child: Transform.rotate(
                   angle: _isFocused ? 0 : _rotateAnimation.value * 2 * math.pi,
                   child: Container(
-                    height: _isFocused ? screenHeight * 0.28 : screenHeight * 0.22,
+                    height: _isFocused ? focussedBannerhgt : bannerhgt,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(12),
                       gradient: LinearGradient(

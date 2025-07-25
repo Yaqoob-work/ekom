@@ -21,6 +21,8 @@ import '../../widgets/models/news_item_model.dart';
 import '../../widgets/small_widgets/loading_indicator.dart';
 import '../../widgets/utils/color_service.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:mobi_tv_entertainment/main.dart';
+
 
 // API Service class for consistent header management
 class ApiService {

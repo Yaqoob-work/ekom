@@ -167,9 +167,9 @@ int _currentSelectedNavIndex = 0;
   ScrollController? _webseriesScrollController;
   Map<String, ScrollController> _webseriesScrollControllers = {};
 
-  void setMoviesScrollController(ScrollController controller) {
-    _moviesScrollController = controller;
-  }
+  // void setMoviesScrollController(ScrollController controller) {
+  //   _moviesScrollController = controller;
+  // }
 
   void setwebseriesScrollController(ScrollController controller) {
     _webseriesScrollController = controller;
@@ -192,16 +192,16 @@ int _currentSelectedNavIndex = 0;
     }
   }
 
-  void _scrollToFirstMovieItem() {
-    if (_moviesScrollController != null &&
-        _moviesScrollController!.hasClients) {
-      _moviesScrollController!.animateTo(
-        0.02,
-        duration: Duration(milliseconds: 800),
-        curve: Curves.linear,
-      );
-    }
-  }
+  // void _scrollToFirstMovieItem() {
+  //   if (_moviesScrollController != null &&
+  //       _moviesScrollController!.hasClients) {
+  //     _moviesScrollController!.animateTo(
+  //       0.02,
+  //       duration: Duration(milliseconds: 800),
+  //       curve: Curves.linear,
+  //     );
+  //   }
+  // }
 
   // =================================================================
   // MOVIES METHODS
@@ -213,10 +213,10 @@ int _currentSelectedNavIndex = 0;
 
   void requestFirstMoviesFocus() {
     if (_firstManageMoviesFocusNode != null) {
-      _scrollToFirstMovieItem();
+      // _scrollToFirstMovieItem();
       Future.delayed(const Duration(milliseconds: 50), () {
         _firstManageMoviesFocusNode!.requestFocus();
-        scrollToElement('manageMovies');
+        // scrollToElement('manageMovies');
         Future.delayed(const Duration(milliseconds: 50), () {
           scrollToElement('manageMovies');
         });
@@ -322,7 +322,7 @@ int _currentSelectedNavIndex = 0;
     if (context != null) {
       Scrollable.ensureVisible(
         context,
-        alignment: 0.01,
+        alignment: 0.05,
         duration: const Duration(milliseconds: 800),
         curve: Curves.linear,
       );
@@ -484,51 +484,51 @@ int _currentSelectedNavIndex = 0;
   // =================================================================
   // SUB VOD METHODS
   // =================================================================
-  BuildContext? _subVodContext;
+  // BuildContext? _subVodContext;
 
-  void setFirstSubVodFocusNode(FocusNode node) {
-    firstSubVodFocusNode = node;
-    node.addListener(() {
-      if (node.hasFocus) {
-        scrollToElement('subVod');
-      }
-    });
-  }
+  // void setFirstSubVodFocusNode(FocusNode node) {
+  //   firstSubVodFocusNode = node;
+  //   node.addListener(() {
+  //     if (node.hasFocus) {
+  //       scrollToElement('subVod');
+  //     }
+  //   });
+  // }
 
-  void setSubVodContext(BuildContext context) {
-    _subVodContext = context;
-  }
+  // void setSubVodContext(BuildContext context) {
+  //   _subVodContext = context;
+  // }
 
-  void requestSubVodFocus() {
-    if (firstSubVodFocusNode != null) {
-      firstSubVodFocusNode!.requestFocus();
-      setVodFirstBannerFocus(true);
-      Future.delayed(Duration(milliseconds: 50), () {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (firstSubVodFocusNode!.canRequestFocus) {
-            firstSubVodFocusNode!.requestFocus();
-          }
-        });
-      });
-      scrollToElement('subVod');
-    }
-  }
+  // void requestSubVodFocus() {
+  //   if (firstSubVodFocusNode != null) {
+  //     firstSubVodFocusNode!.requestFocus();
+  //     setVodFirstBannerFocus(true);
+  //     Future.delayed(Duration(milliseconds: 50), () {
+  //       WidgetsBinding.instance.addPostFrameCallback((_) {
+  //         if (firstSubVodFocusNode!.canRequestFocus) {
+  //           firstSubVodFocusNode!.requestFocus();
+  //         }
+  //       });
+  //     });
+  //     scrollToElement('subVod');
+  //   }
+  // }
 
-  void setVodFirstBannerFocus(bool focused) {
-    _isVodfirstbannerFocussed = focused;
-    notifyListeners();
-  }
+  // void setVodFirstBannerFocus(bool focused) {
+  //   _isVodfirstbannerFocussed = focused;
+  //   notifyListeners();
+  // }
 
-  void requestFirstSubVodFocus() {
-    if (firstSubVodFocusNode != null) {
-      firstSubVodFocusNode!.requestFocus();
-      setFirstSubVodFocusNode(firstSubVodFocusNode!);
-      Future.delayed(Duration(milliseconds: 100), () {
-        firstSubVodFocusNode!.requestFocus();
-      });
-      scrollToElement('subVod');
-    }
-  }
+  // void requestFirstSubVodFocus() {
+  //   if (firstSubVodFocusNode != null) {
+  //     firstSubVodFocusNode!.requestFocus();
+  //     setFirstSubVodFocusNode(firstSubVodFocusNode!);
+  //     Future.delayed(Duration(milliseconds: 100), () {
+  //       firstSubVodFocusNode!.requestFocus();
+  //     });
+  //     scrollToElement('subVod');
+  //   }
+  // }
 
   // =================================================================
   // NAVIGATION HELPERS (SIMPLIFIED)

@@ -4061,9 +4061,9 @@ String safeParseString(dynamic value, {String defaultValue = ''}) {
         // }
       }
 
-      // if (isYoutubeUrl(updatedUrl)) {
-      //   updatedUrl = await _socketService.getUpdatedUrl(updatedUrl);
-      // }
+      if (isYoutubeUrl(updatedUrl)) {
+        updatedUrl = await _socketService.getUpdatedUrl(updatedUrl);
+      }
 
       _controller = VideoPlayerController.network(updatedUrl);
 

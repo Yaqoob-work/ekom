@@ -303,7 +303,7 @@ class _HomeScreenState extends State<HomeScreen> {
       // Set focus nodes - UPDATED WITH YOUR EXACT METHOD NAMES
       focusProvider.setWatchNowFocusNode(watchNowFocusNode);
       // focusProvider.setFirstMusicItemFocusNode(subLiveFocusNode);
-      focusProvider.setFirstSubVodFocusNode(firstSubVodFocusNode);
+      focusProvider.setFirstHorizontalListNetworksFocusNode(firstSubVodFocusNode);
       focusProvider.setFirstManageMoviesFocusNode(manageMoviesFocusNode);
       focusProvider.setFirstManageWebseriesFocusNode(manageWebseriesFocusNode);
       focusProvider.setFirstTVShowsFocusNode(tvShowsFocusNode);
@@ -388,7 +388,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                     Container(
-                      height: screenhgt * 0.55,
+                      height: screenhgt * 0.52,
                       key: subLiveKey,
                       child: SubLiveScreen(
                           // Note: SubLiveScreen now contains news channels
@@ -396,28 +396,28 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                     ),
                     SizedBox(
-                      height: screenhgt * 0.45,
+                      height: screenhgt * 0.42,
                       key: subVodKey,
                       child: HorzontalVod (
                         // focusNode: firstSubVodFocusNode,
                       ),
                     ),
                     SizedBox(
-                      height: screenhgt * 0.45,
+                      height: screenhgt * 0.42,
                       key: manageMoviesKey,
                       child: MoviesScreen(
                           // focusNode: manageMoviesFocusNode,
                           ),
                     ),
                     SizedBox(
-                      height: screenhgt * 0.45,
+                      height: screenhgt * 0.42,
                       key: manageWebseriesKey,
                       child: ProfessionalWebSeriesHorizontalList(
                         // focusNode: manageWebseriesFocusNode,
                       ),
                     ),
                     SizedBox(
-                      height: screenhgt * 0.45,
+                      height: screenhgt * 0.42,
                       key: tvShowsKey,
                       child: 
                       // HorizontalChannelList(

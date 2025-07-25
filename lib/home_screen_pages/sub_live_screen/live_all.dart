@@ -988,7 +988,7 @@ void dispose() {
     
     if (focusedIndex != -1) {
       // Calculate horizontal offset for the focused item
-      final double itemWidth = MediaQuery.of(context).size.width * 0.19; // Same as your card width
+      final double itemWidth = bannerwdt; // Same as your card width
       final double itemMargin = 12.0; // Horizontal margin between items
       final double targetOffset = focusedIndex * (itemWidth + itemMargin);
       
@@ -1798,7 +1798,7 @@ class _ProfessionalChannelCardState extends State<ProfessionalChannelCard>
         return Transform.scale(
           scale: _scaleAnimation.value,
           child: Container(
-            width: screenWidth * 0.19,
+            width: bannerwdt,
             margin: const EdgeInsets.symmetric(horizontal: 6),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -1814,7 +1814,7 @@ class _ProfessionalChannelCardState extends State<ProfessionalChannelCard>
   }
 
   Widget _buildProfessionalPoster(double screenWidth, double screenHeight) {
-    final posterHeight = _isFocused ? screenHeight * 0.28 : screenHeight * 0.22;
+    final posterHeight = _isFocused ? focussedBannerhgt : bannerhgt;
 
     return Container(
       height: posterHeight,
@@ -2043,7 +2043,7 @@ class _ProfessionalChannelCardState extends State<ProfessionalChannelCard>
     final channelName = widget.channel.name.toUpperCase();
 
     return Container(
-      width: screenWidth * 0.18,
+      width: bannerwdt,
       child: AnimatedDefaultTextStyle(
         duration: AnimationTiming.medium,
         style: TextStyle(
@@ -2155,7 +2155,7 @@ class _ProfessionalViewAllButtonState extends State<ProfessionalViewAllButton>
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Container(
-      width: screenWidth * 0.19,
+      width: bannerwdt,
       margin: const EdgeInsets.symmetric(horizontal: 6),
       child: Column(
         children: [
@@ -2418,539 +2418,543 @@ class _ProfessionalLoadingIndicatorState
   }
 }
 
-// ✅ PROFESSIONAL CHANNELS GRID VIEW WITH STATUS FILTERING
-class ProfessionalChannelsGridView extends StatefulWidget {
-  final List<NewsChannel> channelsList;
-  final String categoryTitle;
-  final String categoryName;
 
-  const ProfessionalChannelsGridView({
-    Key? key,
-    required this.channelsList,
-    required this.categoryTitle,
-    required this.categoryName,
-  }) : super(key: key);
 
-  @override
-  _ProfessionalChannelsGridViewState createState() =>
-      _ProfessionalChannelsGridViewState();
-}
 
-class _ProfessionalChannelsGridViewState
-    extends State<ProfessionalChannelsGridView> with TickerProviderStateMixin {
-  late Map<String, FocusNode> _channelFocusNodes;
-  bool _isLoading = false;
 
-  // Animation Controllers
-  late AnimationController _fadeController;
-  late AnimationController _staggerController;
-  late Animation<double> _fadeAnimation;
+// // ✅ PROFESSIONAL CHANNELS GRID VIEW WITH STATUS FILTERING
+// class ProfessionalChannelsGridView extends StatefulWidget {
+//   final List<NewsChannel> channelsList;
+//   final String categoryTitle;
+//   final String categoryName;
 
-  @override
-  void initState() {
-    super.initState();
+//   const ProfessionalChannelsGridView({
+//     Key? key,
+//     required this.channelsList,
+//     required this.categoryTitle,
+//     required this.categoryName,
+//   }) : super(key: key);
 
-    // ✅ NEW: Filter active channels in grid view too
-    List<NewsChannel> activeChannels =
-        widget.channelsList.where((channel) => channel.status == 1).toList();
+//   @override
+//   _ProfessionalChannelsGridViewState createState() =>
+//       _ProfessionalChannelsGridViewState();
+// }
 
-    _channelFocusNodes = {
-      for (var channel in activeChannels) channel.id.toString(): FocusNode()
-    };
+// class _ProfessionalChannelsGridViewState
+//     extends State<ProfessionalChannelsGridView> with TickerProviderStateMixin {
+//   late Map<String, FocusNode> _channelFocusNodes;
+//   bool _isLoading = false;
 
-    // Set up focus for the first channel
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (activeChannels.isNotEmpty) {
-        final firstChannelId = activeChannels[0].id.toString();
-        if (_channelFocusNodes.containsKey(firstChannelId)) {
-          FocusScope.of(context)
-              .requestFocus(_channelFocusNodes[firstChannelId]);
-        }
-      }
-    });
+//   // Animation Controllers
+//   late AnimationController _fadeController;
+//   late AnimationController _staggerController;
+//   late Animation<double> _fadeAnimation;
 
-    _initializeAnimations();
-    _startStaggeredAnimation();
-  }
+//   @override
+//   void initState() {
+//     super.initState();
 
-  void _initializeAnimations() {
-    _fadeController = AnimationController(
-      duration: const Duration(milliseconds: 600),
-      vsync: this,
-    );
+//     // ✅ NEW: Filter active channels in grid view too
+//     List<NewsChannel> activeChannels =
+//         widget.channelsList.where((channel) => channel.status == 1).toList();
 
-    _staggerController = AnimationController(
-      duration: const Duration(milliseconds: 1200),
-      vsync: this,
-    );
+//     _channelFocusNodes = {
+//       for (var channel in activeChannels) channel.id.toString(): FocusNode()
+//     };
 
-    _fadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _fadeController,
-      curve: Curves.easeInOut,
-    ));
-  }
+//     // Set up focus for the first channel
+//     WidgetsBinding.instance.addPostFrameCallback((_) {
+//       if (activeChannels.isNotEmpty) {
+//         final firstChannelId = activeChannels[0].id.toString();
+//         if (_channelFocusNodes.containsKey(firstChannelId)) {
+//           FocusScope.of(context)
+//               .requestFocus(_channelFocusNodes[firstChannelId]);
+//         }
+//       }
+//     });
 
-  void _startStaggeredAnimation() {
-    _fadeController.forward();
-    _staggerController.forward();
-  }
+//     _initializeAnimations();
+//     _startStaggeredAnimation();
+//   }
 
-  // ✅ UPDATED: Grid view handle channel tap with status filtering
-  Future<void> _handleGridChannelTap(NewsChannel channel) async {
-    if (_isLoading || !mounted) return;
+//   void _initializeAnimations() {
+//     _fadeController = AnimationController(
+//       duration: const Duration(milliseconds: 600),
+//       vsync: this,
+//     );
 
-    setState(() {
-      _isLoading = true;
-    });
+//     _staggerController = AnimationController(
+//       duration: const Duration(milliseconds: 1200),
+//       vsync: this,
+//     );
 
-    bool dialogShown = false;
-    try {
-      if (mounted) {
-        dialogShown = true;
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (BuildContext context) {
-            return WillPopScope(
-              onWillPop: () async {
-                setState(() {
-                  _isLoading = false;
-                });
-                return true;
-              },
-              child: Center(
-                child: Container(
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.85),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                      color: ProfessionalColors.accentBlue.withOpacity(0.3),
-                      width: 1,
-                    ),
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        width: 60,
-                        height: 60,
-                        child: const CircularProgressIndicator(
-                          strokeWidth: 4,
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            ProfessionalColors.accentBlue,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      const Text(
-                        'Loading Channel...',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      const Text(
-                        'Please wait',
-                        style: TextStyle(
-                          color: ProfessionalColors.textSecondary,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            );
-          },
-        );
-      }
+//     _fadeAnimation = Tween<double>(
+//       begin: 0.0,
+//       end: 1.0,
+//     ).animate(CurvedAnimation(
+//       parent: _fadeController,
+//       curve: Curves.easeInOut,
+//     ));
+//   }
 
-      // ✅ NEW: Dynamic category assignment for grid view too
-      String categoryName = widget.categoryName == 'All'
-          ? (channel.genres.toLowerCase().isNotEmpty
-              ? channel.genres.toLowerCase()
-              : 'live')
-          : widget.categoryName.toLowerCase();
+//   void _startStaggeredAnimation() {
+//     _fadeController.forward();
+//     _staggerController.forward();
+//   }
 
-      // ✅ Filter active channels for navigation
-      List<NewsChannel> activeChannels =
-          widget.channelsList.where((ch) => ch.status == 1).toList();
+//   // ✅ UPDATED: Grid view handle channel tap with status filtering
+//   Future<void> _handleGridChannelTap(NewsChannel channel) async {
+//     if (_isLoading || !mounted) return;
 
-      // Current channel ko NewsItemModel में convert करें
-      NewsItemModel currentChannel = NewsItemModel(
-        id: channel.id.toString(),
-        videoId: '',
-        name: channel.name,
-        description: channel.description ?? '',
-        banner: channel.banner,
-        poster: channel.banner,
-        category: categoryName, // ✅ CHANGED: Dynamic category
-        url: channel.url,
-        streamType: channel.streamType,
-        type: channel.streamType,
-        genres: channel.genres,
-        status: channel.status.toString(),
-        index: activeChannels.indexOf(channel).toString(),
-        image: channel.banner,
-        unUpdatedUrl: channel.url,
-      );
+//     setState(() {
+//       _isLoading = true;
+//     });
 
-      // ✅ Sabhi ACTIVE channels को convert करें
-      List<NewsItemModel> allChannels = activeChannels.map((ch) {
-        String chCategoryName = widget.categoryName == 'All'
-            ? (ch.genres.toLowerCase().isNotEmpty
-                ? ch.genres.toLowerCase()
-                : 'live')
-            : widget.categoryName.toLowerCase();
+//     bool dialogShown = false;
+//     try {
+//       if (mounted) {
+//         dialogShown = true;
+//         showDialog(
+//           context: context,
+//           barrierDismissible: false,
+//           builder: (BuildContext context) {
+//             return WillPopScope(
+//               onWillPop: () async {
+//                 setState(() {
+//                   _isLoading = false;
+//                 });
+//                 return true;
+//               },
+//               child: Center(
+//                 child: Container(
+//                   padding: const EdgeInsets.all(24),
+//                   decoration: BoxDecoration(
+//                     color: Colors.black.withOpacity(0.85),
+//                     borderRadius: BorderRadius.circular(20),
+//                     border: Border.all(
+//                       color: ProfessionalColors.accentBlue.withOpacity(0.3),
+//                       width: 1,
+//                     ),
+//                   ),
+//                   child: Column(
+//                     mainAxisSize: MainAxisSize.min,
+//                     children: [
+//                       Container(
+//                         width: 60,
+//                         height: 60,
+//                         child: const CircularProgressIndicator(
+//                           strokeWidth: 4,
+//                           valueColor: AlwaysStoppedAnimation<Color>(
+//                             ProfessionalColors.accentBlue,
+//                           ),
+//                         ),
+//                       ),
+//                       const SizedBox(height: 20),
+//                       const Text(
+//                         'Loading Channel...',
+//                         style: TextStyle(
+//                           color: Colors.white,
+//                           fontSize: 18,
+//                           fontWeight: FontWeight.w600,
+//                         ),
+//                       ),
+//                       const SizedBox(height: 8),
+//                       const Text(
+//                         'Please wait',
+//                         style: TextStyle(
+//                           color: ProfessionalColors.textSecondary,
+//                           fontSize: 14,
+//                         ),
+//                       ),
+//                     ],
+//                   ),
+//                 ),
+//               ),
+//             );
+//           },
+//         );
+//       }
 
-        return NewsItemModel(
-          id: ch.id.toString(),
-          videoId: '',
-          name: ch.name,
-          description: ch.description ?? '',
-          banner: ch.banner,
-          poster: ch.banner,
-          category: chCategoryName, // ✅ CHANGED: Dynamic category
-          url: ch.url,
-          streamType: ch.streamType,
-          type: ch.streamType,
-          genres: ch.genres,
-          status: ch.status.toString(),
-          index: activeChannels.indexOf(ch).toString(),
-          image: ch.banner,
-          unUpdatedUrl: ch.url,
-        );
-      }).toList();
+//       // ✅ NEW: Dynamic category assignment for grid view too
+//       String categoryName = widget.categoryName == 'All'
+//           ? (channel.genres.toLowerCase().isNotEmpty
+//               ? channel.genres.toLowerCase()
+//               : 'live')
+//           : widget.categoryName.toLowerCase();
 
-      if (mounted) {
-        if (dialogShown) {
-          Navigator.of(context, rootNavigator: true).pop();
-        }
+//       // ✅ Filter active channels for navigation
+//       List<NewsChannel> activeChannels =
+//           widget.channelsList.where((ch) => ch.status == 1).toList();
 
-        // VideoScreen navigate करें with all ACTIVE channels
-        await Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => VideoScreen(
-              videoUrl: currentChannel.url,
-              bannerImageUrl: currentChannel.banner,
-              startAtPosition: Duration.zero,
-              videoType: currentChannel.streamType,
-              channelList: allChannels,
-              isLive: true,
-              isVOD: false,
-              isBannerSlider: false,
-              source: 'isLiveScreen',
-              isSearch: false,
-              videoId: int.tryParse(currentChannel.id),
-              unUpdatedUrl: currentChannel.url,
-              name: currentChannel.name,
-              seasonId: null,
-              isLastPlayedStored: false,
-              liveStatus: true,
-            ),
-          ),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        if (dialogShown) {
-          Navigator.of(context, rootNavigator: true).pop();
-        }
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Error loading channel'),
-            backgroundColor: ProfessionalColors.accentRed,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-          ),
-        );
-      }
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
-    }
-  }
+//       // Current channel ko NewsItemModel में convert करें
+//       NewsItemModel currentChannel = NewsItemModel(
+//         id: channel.id.toString(),
+//         videoId: '',
+//         name: channel.name,
+//         description: channel.description ?? '',
+//         banner: channel.banner,
+//         poster: channel.banner,
+//         category: categoryName, // ✅ CHANGED: Dynamic category
+//         url: channel.url,
+//         streamType: channel.streamType,
+//         type: channel.streamType,
+//         genres: channel.genres,
+//         status: channel.status.toString(),
+//         index: activeChannels.indexOf(channel).toString(),
+//         image: channel.banner,
+//         unUpdatedUrl: channel.url,
+//       );
 
-  @override
-  void dispose() {
-    _fadeController.dispose();
-    _staggerController.dispose();
-    for (var node in _channelFocusNodes.values) {
-      try {
-        node.dispose();
-      } catch (e) {}
-    }
-    super.dispose();
-  }
+//       // ✅ Sabhi ACTIVE channels को convert करें
+//       List<NewsItemModel> allChannels = activeChannels.map((ch) {
+//         String chCategoryName = widget.categoryName == 'All'
+//             ? (ch.genres.toLowerCase().isNotEmpty
+//                 ? ch.genres.toLowerCase()
+//                 : 'live')
+//             : widget.categoryName.toLowerCase();
 
-  @override
-  Widget build(BuildContext context) {
-    // ✅ Filter active channels for display
-    List<NewsChannel> activeChannels =
-        widget.channelsList.where((channel) => channel.status == 1).toList();
+//         return NewsItemModel(
+//           id: ch.id.toString(),
+//           videoId: '',
+//           name: ch.name,
+//           description: ch.description ?? '',
+//           banner: ch.banner,
+//           poster: ch.banner,
+//           category: chCategoryName, // ✅ CHANGED: Dynamic category
+//           url: ch.url,
+//           streamType: ch.streamType,
+//           type: ch.streamType,
+//           genres: ch.genres,
+//           status: ch.status.toString(),
+//           index: activeChannels.indexOf(ch).toString(),
+//           image: ch.banner,
+//           unUpdatedUrl: ch.url,
+//         );
+//       }).toList();
 
-    return Consumer<ColorProvider>(
-      builder: (context, colorProv, child) {
-        final bgColor = colorProv.isItemFocused
-            ? colorProv.dominantColor.withOpacity(0.1)
-            : ProfessionalColors.primaryDark;
+//       if (mounted) {
+//         if (dialogShown) {
+//           Navigator.of(context, rootNavigator: true).pop();
+//         }
 
-        return Scaffold(
-          backgroundColor: ProfessionalColors.primaryDark,
-          body: Stack(
-            children: [
-              // Background Gradient
-              Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      ProfessionalColors.primaryDark,
-                      ProfessionalColors.surfaceDark.withOpacity(0.8),
-                      ProfessionalColors.primaryDark,
-                    ],
-                  ),
-                ),
-              ),
+//         // VideoScreen navigate करें with all ACTIVE channels
+//         await Navigator.push(
+//           context,
+//           MaterialPageRoute(
+//             builder: (context) => VideoScreen(
+//               videoUrl: currentChannel.url,
+//               bannerImageUrl: currentChannel.banner,
+//               startAtPosition: Duration.zero,
+//               videoType: currentChannel.streamType,
+//               channelList: allChannels,
+//               isLive: true,
+//               isVOD: false,
+//               isBannerSlider: false,
+//               source: 'isLiveScreen',
+//               isSearch: false,
+//               videoId: int.tryParse(currentChannel.id),
+//               unUpdatedUrl: currentChannel.url,
+//               name: currentChannel.name,
+//               seasonId: null,
+//               isLastPlayedStored: false,
+//               liveStatus: true,
+//             ),
+//           ),
+//         );
+//       }
+//     } catch (e) {
+//       if (mounted) {
+//         if (dialogShown) {
+//           Navigator.of(context, rootNavigator: true).pop();
+//         }
+//         ScaffoldMessenger.of(context).showSnackBar(
+//           SnackBar(
+//             content: const Text('Error loading channel'),
+//             backgroundColor: ProfessionalColors.accentRed,
+//             behavior: SnackBarBehavior.floating,
+//             shape: RoundedRectangleBorder(
+//               borderRadius: BorderRadius.circular(10),
+//             ),
+//           ),
+//         );
+//       }
+//     } finally {
+//       if (mounted) {
+//         setState(() {
+//           _isLoading = false;
+//         });
+//       }
+//     }
+//   }
 
-              // Main Content
-              FadeTransition(
-                opacity: _fadeAnimation,
-                child: Column(
-                  children: [
-                    _buildProfessionalAppBar(activeChannels.length),
-                    Expanded(
-                      child: _buildChannelsGrid(activeChannels),
-                    ),
-                  ],
-                ),
-              ),
+//   @override
+//   void dispose() {
+//     _fadeController.dispose();
+//     _staggerController.dispose();
+//     for (var node in _channelFocusNodes.values) {
+//       try {
+//         node.dispose();
+//       } catch (e) {}
+//     }
+//     super.dispose();
+//   }
 
-              // Loading Overlay
-              if (_isLoading)
-                Container(
-                  color: Colors.black.withOpacity(0.7),
-                  child: const Center(
-                    child: ProfessionalLoadingIndicator(
-                        message: 'Loading Channel...'),
-                  ),
-                ),
-            ],
-          ),
-        );
-      },
-    );
-  }
+//   @override
+//   Widget build(BuildContext context) {
+//     // ✅ Filter active channels for display
+//     List<NewsChannel> activeChannels =
+//         widget.channelsList.where((channel) => channel.status == 1).toList();
 
-  Widget _buildProfessionalAppBar(int activeChannelsCount) {
-    return Container(
-      // padding: EdgeInsets.only(
-      //   top: MediaQuery.of(context).padding.top + 10,
-      //   left: 20,
-      //   right: 20,
-      //   bottom: 20,
-      // ),
-      padding: EdgeInsets.only(
-          left: screenwdt * 0.05,
-          right: screenwdt * 0.05,
-          top: screenhgt * 0.02,
-          bottom: screenhgt * 0.02),
+//     return Consumer<ColorProvider>(
+//       builder: (context, colorProv, child) {
+//         final bgColor = colorProv.isItemFocused
+//             ? colorProv.dominantColor.withOpacity(0.1)
+//             : ProfessionalColors.primaryDark;
 
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            ProfessionalColors.surfaceDark.withOpacity(0.9),
-            ProfessionalColors.surfaceDark.withOpacity(0.7),
-            Colors.transparent,
-          ],
-        ),
-      ),
-      child: Row(
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: LinearGradient(
-                colors: [
-                  ProfessionalColors.accentBlue.withOpacity(0.2),
-                  ProfessionalColors.accentPurple.withOpacity(0.2),
-                ],
-              ),
-            ),
-            child: IconButton(
-              icon: const Icon(
-                Icons.arrow_back_rounded,
-                color: Colors.white,
-                size: 24,
-              ),
-              onPressed: () => Navigator.pop(context),
-            ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ShaderMask(
-                  shaderCallback: (bounds) => const LinearGradient(
-                    colors: [
-                      ProfessionalColors.accentBlue,
-                      ProfessionalColors.accentPurple,
-                    ],
-                  ).createShader(bounds),
-                  child: Text(
-                    widget.categoryTitle,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 1.0,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  ProfessionalColors.accentGreen
-                      .withOpacity(0.2), // ✅ Green for LIVE
-                  ProfessionalColors.accentGreen.withOpacity(0.1),
-                ],
-              ),
-              borderRadius: BorderRadius.circular(15),
-              border: Border.all(
-                color: ProfessionalColors.accentGreen
-                    .withOpacity(0.3), // ✅ Green for LIVE
-                width: 1,
-              ),
-            ),
-            child: Text(
-              '${activeChannelsCount} Live Channels Available', // ✅ Show only ACTIVE channels
-              style: const TextStyle(
-                color: ProfessionalColors.accentGreen, // ✅ Green text for LIVE
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+//         return Scaffold(
+//           backgroundColor: ProfessionalColors.primaryDark,
+//           body: Stack(
+//             children: [
+//               // Background Gradient
+//               Container(
+//                 decoration: BoxDecoration(
+//                   gradient: LinearGradient(
+//                     begin: Alignment.topCenter,
+//                     end: Alignment.bottomCenter,
+//                     colors: [
+//                       ProfessionalColors.primaryDark,
+//                       ProfessionalColors.surfaceDark.withOpacity(0.8),
+//                       ProfessionalColors.primaryDark,
+//                     ],
+//                   ),
+//                 ),
+//               ),
 
-  Widget _buildChannelsGrid(List<NewsChannel> activeChannels) {
-    if (activeChannels.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: 80,
-              height: 80,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: LinearGradient(
-                  colors: [
-                    ProfessionalColors.accentBlue.withOpacity(0.2),
-                    ProfessionalColors.accentBlue.withOpacity(0.1),
-                  ],
-                ),
-              ),
-              child: const Icon(
-                Icons.tv_outlined,
-                size: 40,
-                color: ProfessionalColors.accentBlue,
-              ),
-            ),
-            const SizedBox(height: 24),
-            Text(
-              'No Live ${widget.categoryTitle} Channels',
-              style: TextStyle(
-                color: ProfessionalColors.textPrimary,
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              'Check back later for new content',
-              style: TextStyle(
-                color: ProfessionalColors.textSecondary,
-                fontSize: 14,
-              ),
-            ),
-          ],
-        ),
-      );
-    }
+//               // Main Content
+//               FadeTransition(
+//                 opacity: _fadeAnimation,
+//                 child: Column(
+//                   children: [
+//                     _buildProfessionalAppBar(activeChannels.length),
+//                     Expanded(
+//                       child: _buildChannelsGrid(activeChannels),
+//                     ),
+//                   ],
+//                 ),
+//               ),
 
-    return Padding(
-      padding: EdgeInsets.only(
-          left: screenwdt * 0.05,
-          right: screenwdt * 0.05,
-          top: screenhgt * 0.02),
-      child: GridView.builder(
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 6,
-          mainAxisSpacing: 16,
-          crossAxisSpacing: 25,
-          childAspectRatio: 1.5,
-        ),
-        itemCount: activeChannels.length, // ✅ Only ACTIVE channels
-        clipBehavior: Clip.none,
-        itemBuilder: (context, index) {
-          final channel = activeChannels[index];
-          String channelId = channel.id.toString();
+//               // Loading Overlay
+//               if (_isLoading)
+//                 Container(
+//                   color: Colors.black.withOpacity(0.7),
+//                   child: const Center(
+//                     child: ProfessionalLoadingIndicator(
+//                         message: 'Loading Channel...'),
+//                   ),
+//                 ),
+//             ],
+//           ),
+//         );
+//       },
+//     );
+//   }
 
-          return AnimatedBuilder(
-            animation: _staggerController,
-            builder: (context, child) {
-              final delay = (index / activeChannels.length) * 0.5;
-              final animationValue = Interval(
-                delay,
-                delay + 0.5,
-                curve: Curves.easeOutCubic,
-              ).transform(_staggerController.value);
+//   Widget _buildProfessionalAppBar(int activeChannelsCount) {
+//     return Container(
+//       // padding: EdgeInsets.only(
+//       //   top: MediaQuery.of(context).padding.top + 10,
+//       //   left: 20,
+//       //   right: 20,
+//       //   bottom: 20,
+//       // ),
+//       padding: EdgeInsets.only(
+//           left: screenwdt * 0.05,
+//           right: screenwdt * 0.05,
+//           top: screenhgt * 0.02,
+//           bottom: screenhgt * 0.02),
 
-              return Transform.translate(
-                offset: Offset(0, 50 * (1 - animationValue)),
-                child: Opacity(
-                  opacity: animationValue,
-                  child: ProfessionalGridChannelCard(
-                    channel: channel,
-                    focusNode: _channelFocusNodes[channelId]!,
-                    onTap: () => _handleGridChannelTap(channel),
-                    index: index,
-                    categoryTitle: widget.categoryTitle,
-                  ),
-                ),
-              );
-            },
-          );
-        },
-      ),
-    );
-  }
-}
+//       decoration: BoxDecoration(
+//         gradient: LinearGradient(
+//           begin: Alignment.topCenter,
+//           end: Alignment.bottomCenter,
+//           colors: [
+//             ProfessionalColors.surfaceDark.withOpacity(0.9),
+//             ProfessionalColors.surfaceDark.withOpacity(0.7),
+//             Colors.transparent,
+//           ],
+//         ),
+//       ),
+//       child: Row(
+//         children: [
+//           Container(
+//             decoration: BoxDecoration(
+//               shape: BoxShape.circle,
+//               gradient: LinearGradient(
+//                 colors: [
+//                   ProfessionalColors.accentBlue.withOpacity(0.2),
+//                   ProfessionalColors.accentPurple.withOpacity(0.2),
+//                 ],
+//               ),
+//             ),
+//             child: IconButton(
+//               icon: const Icon(
+//                 Icons.arrow_back_rounded,
+//                 color: Colors.white,
+//                 size: 24,
+//               ),
+//               onPressed: () => Navigator.pop(context),
+//             ),
+//           ),
+//           const SizedBox(width: 16),
+//           Expanded(
+//             child: Column(
+//               crossAxisAlignment: CrossAxisAlignment.start,
+//               children: [
+//                 ShaderMask(
+//                   shaderCallback: (bounds) => const LinearGradient(
+//                     colors: [
+//                       ProfessionalColors.accentBlue,
+//                       ProfessionalColors.accentPurple,
+//                     ],
+//                   ).createShader(bounds),
+//                   child: Text(
+//                     widget.categoryTitle,
+//                     style: TextStyle(
+//                       color: Colors.white,
+//                       fontSize: 24,
+//                       fontWeight: FontWeight.w700,
+//                       letterSpacing: 1.0,
+//                     ),
+//                   ),
+//                 ),
+//               ],
+//             ),
+//           ),
+//           Container(
+//             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+//             decoration: BoxDecoration(
+//               gradient: LinearGradient(
+//                 colors: [
+//                   ProfessionalColors.accentGreen
+//                       .withOpacity(0.2), // ✅ Green for LIVE
+//                   ProfessionalColors.accentGreen.withOpacity(0.1),
+//                 ],
+//               ),
+//               borderRadius: BorderRadius.circular(15),
+//               border: Border.all(
+//                 color: ProfessionalColors.accentGreen
+//                     .withOpacity(0.3), // ✅ Green for LIVE
+//                 width: 1,
+//               ),
+//             ),
+//             child: Text(
+//               '${activeChannelsCount} Live Channels Available', // ✅ Show only ACTIVE channels
+//               style: const TextStyle(
+//                 color: ProfessionalColors.accentGreen, // ✅ Green text for LIVE
+//                 fontSize: 12,
+//                 fontWeight: FontWeight.w500,
+//               ),
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+
+//   Widget _buildChannelsGrid(List<NewsChannel> activeChannels) {
+//     if (activeChannels.isEmpty) {
+//       return Center(
+//         child: Column(
+//           mainAxisAlignment: MainAxisAlignment.center,
+//           children: [
+//             Container(
+//               width: 80,
+//               height: 80,
+//               decoration: BoxDecoration(
+//                 shape: BoxShape.circle,
+//                 gradient: LinearGradient(
+//                   colors: [
+//                     ProfessionalColors.accentBlue.withOpacity(0.2),
+//                     ProfessionalColors.accentBlue.withOpacity(0.1),
+//                   ],
+//                 ),
+//               ),
+//               child: const Icon(
+//                 Icons.tv_outlined,
+//                 size: 40,
+//                 color: ProfessionalColors.accentBlue,
+//               ),
+//             ),
+//             const SizedBox(height: 24),
+//             Text(
+//               'No Live ${widget.categoryTitle} Channels',
+//               style: TextStyle(
+//                 color: ProfessionalColors.textPrimary,
+//                 fontSize: 18,
+//                 fontWeight: FontWeight.w600,
+//               ),
+//             ),
+//             const SizedBox(height: 8),
+//             const Text(
+//               'Check back later for new content',
+//               style: TextStyle(
+//                 color: ProfessionalColors.textSecondary,
+//                 fontSize: 14,
+//               ),
+//             ),
+//           ],
+//         ),
+//       );
+//     }
+
+//     return Padding(
+//       padding: EdgeInsets.only(
+//           left: screenwdt * 0.05,
+//           right: screenwdt * 0.05,
+//           top: screenhgt * 0.02),
+//       child: GridView.builder(
+//         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+//           crossAxisCount: 6,
+//           mainAxisSpacing: 16,
+//           crossAxisSpacing: 25,
+//           childAspectRatio: 1.5,
+//         ),
+//         itemCount: activeChannels.length, // ✅ Only ACTIVE channels
+//         clipBehavior: Clip.none,
+//         itemBuilder: (context, index) {
+//           final channel = activeChannels[index];
+//           String channelId = channel.id.toString();
+
+//           return AnimatedBuilder(
+//             animation: _staggerController,
+//             builder: (context, child) {
+//               final delay = (index / activeChannels.length) * 0.5;
+//               final animationValue = Interval(
+//                 delay,
+//                 delay + 0.5,
+//                 curve: Curves.easeOutCubic,
+//               ).transform(_staggerController.value);
+
+//               return Transform.translate(
+//                 offset: Offset(0, 50 * (1 - animationValue)),
+//                 child: Opacity(
+//                   opacity: animationValue,
+//                   child: ProfessionalGridChannelCard(
+//                     channel: channel,
+//                     focusNode: _channelFocusNodes[channelId]!,
+//                     onTap: () => _handleGridChannelTap(channel),
+//                     index: index,
+//                     categoryTitle: widget.categoryTitle,
+//                   ),
+//                 ),
+//               );
+//             },
+//           );
+//         },
+//       ),
+//     );
+//   }
+// }
 
 // ✅ PROFESSIONAL GRID CHANNEL CARD WITH STATUS FILTERING
 class ProfessionalGridChannelCard extends StatefulWidget {
@@ -3384,5 +3388,797 @@ class NewsChannel {
       'genres': genres,
       'status': status,
     };
+  }
+}
+
+
+
+
+// ✅ ENHANCED: Professional Channels Grid View with Movies-Style Management
+class ProfessionalChannelsGridView extends StatefulWidget {
+  final List<NewsChannel> channelsList;
+  final String categoryTitle;
+  final String categoryName;
+
+  const ProfessionalChannelsGridView({
+    Key? key,
+    required this.channelsList,
+    required this.categoryTitle,
+    required this.categoryName,
+  }) : super(key: key);
+
+  @override
+  _ProfessionalChannelsGridViewState createState() =>
+      _ProfessionalChannelsGridViewState();
+}
+
+class _ProfessionalChannelsGridViewState extends State<ProfessionalChannelsGridView>
+    with TickerProviderStateMixin {
+  
+  // ✅ Enhanced Focus Management with Scrolling (like Movies)
+  Map<String, FocusNode> _channelFocusNodes = {};
+  bool _isLoading = false;
+  int gridFocusedIndex = 0;
+  final int columnsCount = 6;
+  late ScrollController _scrollController;
+  late List<NewsChannel> activeChannels; // Filtered active channels
+
+  // Animation Controllers
+  late AnimationController _fadeController;
+  late AnimationController _staggerController;
+  late Animation<double> _fadeAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    
+    // ✅ Initialize ScrollController
+    _scrollController = ScrollController();
+
+    // ✅ Filter active channels (status = 1)
+    activeChannels = widget.channelsList.where((channel) => channel.status == 1).toList();
+
+    // ✅ Initialize focus nodes with scroll listeners
+    _initializeChannelFocusNodes();
+
+    // Set up focus for the first channel
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _focusFirstGridItem();
+    });
+
+    _initializeAnimations();
+    _startStaggeredAnimation();
+  }
+
+  // ✅ Initialize focus nodes with scroll functionality (same as Movies)
+  void _initializeChannelFocusNodes() {
+    // Safely dispose existing nodes first
+    for (var entry in _channelFocusNodes.entries) {
+      try {
+        entry.value.removeListener(() {});
+        entry.value.dispose();
+      } catch (e) {
+        print('⚠️ Error disposing channel focus node ${entry.key}: $e');
+      }
+    }
+
+    _channelFocusNodes.clear();
+
+    // Create focus nodes for all active channels with String keys
+    for (int i = 0; i < activeChannels.length; i++) {
+      String channelId = activeChannels[i].id.toString();
+      _channelFocusNodes[channelId] = FocusNode()
+        ..addListener(() {
+          if (mounted && _channelFocusNodes[channelId]!.hasFocus) {
+            setState(() {
+              gridFocusedIndex = i;
+            });
+            _scrollToFocusedItem(channelId);
+          }
+        });
+    }
+
+    print('✅ Created ${_channelFocusNodes.length} channel grid focus nodes');
+  }
+
+  // ✅ Focus first grid item (same as Movies)
+  void _focusFirstGridItem() {
+    if (activeChannels.isNotEmpty && _channelFocusNodes.isNotEmpty) {
+      final firstChannelId = activeChannels[0].id.toString();
+      if (_channelFocusNodes.containsKey(firstChannelId)) {
+        try {
+          setState(() {
+            gridFocusedIndex = 0;
+          });
+          FocusScope.of(context).requestFocus(_channelFocusNodes[firstChannelId]);
+          print('✅ Focus set to first channel grid item: $firstChannelId');
+        } catch (e) {
+          print('⚠️ Error setting initial channel grid focus: $e');
+        }
+      }
+    }
+  }
+
+  // ✅ Scroll to focused item (exactly like Movies)
+  void _scrollToFocusedItem(String itemId) {
+    if (!mounted) return;
+
+    try {
+      final focusNode = _channelFocusNodes[itemId];
+      if (focusNode != null &&
+          focusNode.hasFocus &&
+          focusNode.context != null) {
+        Scrollable.ensureVisible(
+          focusNode.context!,
+          alignment: 0.1, // Keep focused item visible
+          duration: AnimationTiming.scroll,
+          curve: Curves.easeInOutCubic,
+        );
+      }
+    } catch (e) {
+      print('⚠️ Error scrolling to focused channel item: $e');
+    }
+  }
+
+  void _initializeAnimations() {
+    _fadeController = AnimationController(
+      duration: const Duration(milliseconds: 600),
+      vsync: this,
+    );
+
+    _staggerController = AnimationController(
+      duration: const Duration(milliseconds: 1200),
+      vsync: this,
+    );
+
+    _fadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _fadeController,
+      curve: Curves.easeInOut,
+    ));
+  }
+
+  void _startStaggeredAnimation() {
+    _fadeController.forward();
+    _staggerController.forward();
+  }
+
+  // ✅ Enhanced Grid Navigation (same as Movies)
+  void _navigateGrid(LogicalKeyboardKey key) {
+    if (_isLoading) return;
+
+    int newIndex = gridFocusedIndex;
+    final int totalItems = activeChannels.length;
+    final int currentRow = gridFocusedIndex ~/ columnsCount;
+    final int currentCol = gridFocusedIndex % columnsCount;
+
+    switch (key) {
+      case LogicalKeyboardKey.arrowRight:
+        if (gridFocusedIndex < totalItems - 1) {
+          newIndex = gridFocusedIndex + 1;
+        }
+        break;
+
+      case LogicalKeyboardKey.arrowLeft:
+        if (gridFocusedIndex > 0) {
+          newIndex = gridFocusedIndex - 1;
+        }
+        break;
+
+      case LogicalKeyboardKey.arrowDown:
+        final int nextRowIndex = (currentRow + 1) * columnsCount + currentCol;
+        if (nextRowIndex < totalItems) {
+          newIndex = nextRowIndex;
+        } else {
+          final int lastRowStartIndex = ((totalItems - 1) ~/ columnsCount) * columnsCount;
+          final int targetIndex = lastRowStartIndex + currentCol;
+          if (targetIndex < totalItems) {
+            newIndex = targetIndex;
+          } else {
+            newIndex = totalItems - 1;
+          }
+        }
+        break;
+
+      case LogicalKeyboardKey.arrowUp:
+        if (currentRow > 0) {
+          final int prevRowIndex = (currentRow - 1) * columnsCount + currentCol;
+          newIndex = prevRowIndex;
+        }
+        break;
+    }
+
+    if (newIndex != gridFocusedIndex && newIndex >= 0 && newIndex < totalItems) {
+      final newChannelId = activeChannels[newIndex].id.toString();
+      if (_channelFocusNodes.containsKey(newChannelId)) {
+        setState(() {
+          gridFocusedIndex = newIndex;
+        });
+        FocusScope.of(context).requestFocus(_channelFocusNodes[newChannelId]);
+        HapticFeedback.lightImpact();
+        print('🎯 Navigated to channel grid item $newIndex');
+      }
+    }
+  }
+
+  // ✅ Enhanced Channel Tap Handler with better error handling
+  Future<void> _handleGridChannelTap(NewsChannel channel) async {
+    if (_isLoading || !mounted) return;
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    bool dialogShown = false;
+    try {
+      if (mounted) {
+        dialogShown = true;
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return WillPopScope(
+              onWillPop: () async {
+                setState(() {
+                  _isLoading = false;
+                });
+                return true;
+              },
+              child: Center(
+                child: Container(
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.85),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: ProfessionalColors.accentBlue.withOpacity(0.3),
+                      width: 1,
+                    ),
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        width: 60,
+                        height: 60,
+                        child: const CircularProgressIndicator(
+                          strokeWidth: 4,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            ProfessionalColors.accentBlue,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      const Text(
+                        'Loading Channel...',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      const Text(
+                        'Please wait',
+                        style: TextStyle(
+                          color: ProfessionalColors.textSecondary,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      }
+
+      // ✅ Dynamic category assignment for grid view
+      String categoryName = widget.categoryName == 'All'
+          ? (channel.genres.toLowerCase().isNotEmpty
+              ? channel.genres.toLowerCase()
+              : 'live')
+          : widget.categoryName.toLowerCase();
+
+      // Current channel ko NewsItemModel में convert करें
+      NewsItemModel currentChannel = NewsItemModel(
+        id: channel.id.toString(),
+        videoId: '',
+        name: channel.name,
+        description: channel.description ?? '',
+        banner: channel.banner,
+        poster: channel.banner,
+        category: categoryName,
+        url: channel.url,
+        streamType: channel.streamType,
+        type: channel.streamType,
+        genres: channel.genres,
+        status: channel.status.toString(),
+        index: activeChannels.indexOf(channel).toString(),
+        image: channel.banner,
+        unUpdatedUrl: channel.url,
+      );
+
+      // ✅ Convert all active channels
+      List<NewsItemModel> allChannels = activeChannels.map((ch) {
+        String chCategoryName = widget.categoryName == 'All'
+            ? (ch.genres.toLowerCase().isNotEmpty
+                ? ch.genres.toLowerCase()
+                : 'live')
+            : widget.categoryName.toLowerCase();
+
+        return NewsItemModel(
+          id: ch.id.toString(),
+          videoId: '',
+          name: ch.name,
+          description: ch.description ?? '',
+          banner: ch.banner,
+          poster: ch.banner,
+          category: chCategoryName,
+          url: ch.url,
+          streamType: ch.streamType,
+          type: ch.streamType,
+          genres: ch.genres,
+          status: ch.status.toString(),
+          index: activeChannels.indexOf(ch).toString(),
+          image: ch.banner,
+          unUpdatedUrl: ch.url,
+        );
+      }).toList();
+
+      if (mounted) {
+        if (dialogShown) {
+          Navigator.of(context, rootNavigator: true).pop();
+        }
+
+        // VideoScreen navigate करें with all ACTIVE channels
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => VideoScreen(
+              videoUrl: currentChannel.url,
+              bannerImageUrl: currentChannel.banner,
+              startAtPosition: Duration.zero,
+              videoType: currentChannel.streamType,
+              channelList: allChannels,
+              isLive: true,
+              isVOD: false,
+              isBannerSlider: false,
+              source: 'isLiveScreen',
+              isSearch: false,
+              videoId: int.tryParse(currentChannel.id),
+              unUpdatedUrl: currentChannel.url,
+              name: currentChannel.name,
+              seasonId: null,
+              isLastPlayedStored: false,
+              liveStatus: true,
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        if (dialogShown) {
+          Navigator.of(context, rootNavigator: true).pop();
+        }
+
+        // ✅ Enhanced error handling
+        String errorMessage = 'Error loading channel';
+        if (e.toString().contains('network') ||
+            e.toString().contains('connection')) {
+          errorMessage = 'Network error. Please check your connection';
+        } else if (e.toString().contains('format') ||
+            e.toString().contains('codec')) {
+          errorMessage = 'Stream format not supported';
+        } else if (e.toString().contains('not found') ||
+            e.toString().contains('404')) {
+          errorMessage = 'Channel not found or unavailable';
+        }
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(errorMessage),
+            backgroundColor: ProfessionalColors.accentRed,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            action: SnackBarAction(
+              label: 'Retry',
+              textColor: Colors.white,
+              onPressed: () => _handleGridChannelTap(channel),
+            ),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+        
+        // ✅ Restore focus to the same item after returning
+        Future.delayed(const Duration(milliseconds: 300), () {
+          if (mounted) {
+            final channelIndex = activeChannels.indexWhere((ch) => ch.id == channel.id);
+            if (channelIndex != -1) {
+              final channelId = channel.id.toString();
+              if (_channelFocusNodes.containsKey(channelId)) {
+                setState(() {
+                  gridFocusedIndex = channelIndex;
+                });
+                FocusScope.of(context).requestFocus(_channelFocusNodes[channelId]);
+                print('✅ Restored channel grid focus to ${channel.name}');
+              }
+            }
+          }
+        });
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _fadeController.dispose();
+    _staggerController.dispose();
+    _scrollController.dispose(); // ✅ Dispose ScrollController
+    
+    // ✅ Safely dispose all focus nodes
+    for (var entry in _channelFocusNodes.entries) {
+      try {
+        entry.value.removeListener(() {});
+        entry.value.dispose();
+        print('✅ Disposed channel grid focus node: ${entry.key}');
+      } catch (e) {
+        print('⚠️ Error disposing channel grid focus node ${entry.key}: $e');
+      }
+    }
+    _channelFocusNodes.clear();
+    
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<ColorProvider>(
+      builder: (context, colorProv, child) {
+        final bgColor = colorProv.isItemFocused
+            ? colorProv.dominantColor.withOpacity(0.1)
+            : ProfessionalColors.primaryDark;
+
+        return Scaffold(
+          backgroundColor: ProfessionalColors.primaryDark,
+          body: Container(
+            // ✅ Background Gradient like Movies/VOD
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  ProfessionalColors.primaryDark,
+                  ProfessionalColors.surfaceDark.withOpacity(0.8),
+                  ProfessionalColors.primaryDark,
+                ],
+              ),
+            ),
+            child: Stack(
+              children: [
+                // ✅ Main Content with proper padding for AppBar
+                FadeTransition(
+                  opacity: _fadeAnimation,
+                  child: Column(
+                    children: [
+                      // ✅ AppBar height placeholder to push content down
+                      SizedBox(
+                        height: MediaQuery.of(context).padding.top + 80, // AppBar total height
+                      ),
+                      Expanded(
+                        child: _buildChannelsGrid(),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // ✅ AppBar positioned on top with proper z-index (VOD Style)
+                Positioned(
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  child: _buildProfessionalAppBar(),
+                ),
+
+                // ✅ Loading Overlay - Always on top
+                if (_isLoading)
+                  Positioned.fill(
+                    child: Container(
+                      color: Colors.black.withOpacity(0.7),
+                      child: const Center(
+                        child: ProfessionalLoadingIndicator(message: 'Loading Channel...'),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  // ✅ Professional AppBar with VOD/Movies Style
+  Widget _buildProfessionalAppBar() {
+    return Container(
+      // ✅ Enhanced AppBar with proper z-index and blur effect
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            ProfessionalColors.primaryDark.withOpacity(0.95), // More opaque
+            ProfessionalColors.surfaceDark.withOpacity(0.9),
+            ProfessionalColors.surfaceDark.withOpacity(0.8),
+            Colors.transparent,
+          ],
+        ),
+        // ✅ Add bottom border for better separation (Live theme color)
+        border: Border(
+          bottom: BorderSide(
+            color: ProfessionalColors.accentGreen.withOpacity(0.2), // Live theme color
+            width: 1,
+          ),
+        ),
+        // ✅ Add subtle shadow
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.3),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        child: BackdropFilter(
+          // ✅ Add blur effect for modern look
+          filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
+          child: Container(
+            padding: EdgeInsets.only(
+              top: MediaQuery.of(context).padding.top + 20,
+              left: 40,
+              right: 40,
+              bottom: 5, // Add bottom padding
+            ),
+            child: Row(
+              children: [
+                // ✅ Back Button with Live theme colors
+                Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: LinearGradient(
+                      colors: [
+                        ProfessionalColors.accentGreen.withOpacity(0.3), // Live theme
+                        ProfessionalColors.accentBlue.withOpacity(0.3),
+                      ],
+                    ),
+                    // ✅ Add elevation to back button
+                    boxShadow: [
+                      BoxShadow(
+                        color: ProfessionalColors.accentGreen.withOpacity(0.3),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: IconButton(
+                    icon: const Icon(
+                      Icons.arrow_back_rounded,
+                      color: Colors.white,
+                      size: 24,
+                    ),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // ✅ Title with Live theme colors and better shadow
+                      ShaderMask(
+                        shaderCallback: (bounds) => const LinearGradient(
+                          colors: [
+                            ProfessionalColors.accentGreen, // Live theme
+                            ProfessionalColors.accentBlue,
+                          ],
+                        ).createShader(bounds),
+                        child: Text(
+                          widget.categoryTitle,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 24,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 1.0,
+                            shadows: [
+                              Shadow(
+                                color: Colors.black.withOpacity(0.5),
+                                blurRadius: 4,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      // ✅ Count badge with Live theme colors and elevation
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              ProfessionalColors.accentGreen.withOpacity(0.3), // Live theme
+                              ProfessionalColors.accentBlue.withOpacity(0.2),
+                            ],
+                          ),
+                          borderRadius: BorderRadius.circular(15),
+                          border: Border.all(
+                            color: ProfessionalColors.accentGreen.withOpacity(0.4),
+                            width: 1,
+                          ),
+                          // ✅ Add elevation to count badge
+                          boxShadow: [
+                            BoxShadow(
+                              color: ProfessionalColors.accentGreen.withOpacity(0.2),
+                              blurRadius: 6,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Text(
+                          '${activeChannels.length} Live Channels Available',
+                          style: const TextStyle(
+                            color: ProfessionalColors.accentGreen, // Live theme
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            shadows: [
+                              Shadow(
+                                color: Colors.black54,
+                                blurRadius: 2,
+                                offset: Offset(0, 1),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildChannelsGrid() {
+    if (activeChannels.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: LinearGradient(
+                  colors: [
+                    ProfessionalColors.accentGreen.withOpacity(0.2),
+                    ProfessionalColors.accentGreen.withOpacity(0.1),
+                  ],
+                ),
+              ),
+              child: const Icon(
+                Icons.tv_outlined,
+                size: 40,
+                color: ProfessionalColors.accentGreen,
+              ),
+            ),
+            const SizedBox(height: 24),
+            Text(
+              'No Live ${widget.categoryTitle} Channels',
+              style: TextStyle(
+                color: ProfessionalColors.textPrimary,
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'Check back later for new content',
+              style: TextStyle(
+                color: ProfessionalColors.textSecondary,
+                fontSize: 14,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return Focus(
+      autofocus: true,
+      onKey: (node, event) {
+        if (event is RawKeyDownEvent && !_isLoading) {
+          if ([
+            LogicalKeyboardKey.arrowUp,
+            LogicalKeyboardKey.arrowDown,
+            LogicalKeyboardKey.arrowLeft,
+            LogicalKeyboardKey.arrowRight,
+          ].contains(event.logicalKey)) {
+            _navigateGrid(event.logicalKey);
+            return KeyEventResult.handled;
+          } else if (event.logicalKey == LogicalKeyboardKey.enter ||
+                     event.logicalKey == LogicalKeyboardKey.select) {
+            if (gridFocusedIndex < activeChannels.length) {
+              _handleGridChannelTap(activeChannels[gridFocusedIndex]);
+            }
+            return KeyEventResult.handled;
+          }
+        }
+        return KeyEventResult.ignored;
+      },
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: GridView.builder(
+          controller: _scrollController, // ✅ Added ScrollController
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 6,
+            mainAxisSpacing: 16,
+            crossAxisSpacing: 25,
+            childAspectRatio: 1.5,
+          ),
+          itemCount: activeChannels.length,
+          clipBehavior: Clip.none, // ✅ Allow shadows to be visible
+          itemBuilder: (context, index) {
+            final channel = activeChannels[index];
+            String channelId = channel.id.toString();
+
+            // ✅ Safe check for focus node existence
+            if (!_channelFocusNodes.containsKey(channelId)) {
+              print('⚠️ Channel grid focus node not found for Channel: $channelId');
+              return const SizedBox.shrink();
+            }
+
+            return AnimatedBuilder(
+              animation: _staggerController,
+              builder: (context, child) {
+                final delay = (index / activeChannels.length) * 0.5;
+                final animationValue = Interval(
+                  delay,
+                  delay + 0.5,
+                  curve: Curves.easeOutCubic,
+                ).transform(_staggerController.value);
+
+                return Transform.translate(
+                  offset: Offset(0, 50 * (1 - animationValue)),
+                  child: Opacity(
+                    opacity: animationValue,
+                    child: ProfessionalGridChannelCard(
+                      channel: channel,
+                      focusNode: _channelFocusNodes[channelId]!,
+                      onTap: () => _handleGridChannelTap(channel),
+                      index: index,
+                      categoryTitle: widget.categoryTitle,
+                    ),
+                  ),
+                );
+              },
+            );
+          },
+        ),
+      ),
+    );
   }
 }

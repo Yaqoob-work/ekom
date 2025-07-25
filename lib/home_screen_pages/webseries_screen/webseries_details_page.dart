@@ -4487,20 +4487,20 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
                         overflow: TextOverflow.ellipsis,
                       ),
 
-                      const SizedBox(height: 8),
+                      // const SizedBox(height: 8),
 
-                      // Episode Description
-                      if (episode.description.isNotEmpty)
-                        Text(
-                          episode.description,
-                          style: TextStyle(
-                            color: Colors.grey[400],
-                            fontSize: 13,
-                            height: 1.3,
-                          ),
-                          maxLines: 3,
-                          overflow: TextOverflow.ellipsis,
-                        ),
+                      // // Episode Description
+                      // if (episode.description.isNotEmpty)
+                      //   Text(
+                      //     episode.description,
+                      //     style: TextStyle(
+                      //       color: Colors.grey[400],
+                      //       fontSize: 13,
+                      //       height: 1.3,
+                      //     ),
+                      //     maxLines: 3,
+                      //     overflow: TextOverflow.ellipsis,
+                      //   ),
 
                       const SizedBox(height: 12),
 

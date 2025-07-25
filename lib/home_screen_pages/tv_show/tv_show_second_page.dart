@@ -155,7 +155,7 @@ class _TVShowDetailsPageState extends State<TVShowDetailsPage>
   bool isBackgroundRefreshing = false; // ✅ Keep this variable
   String? errorMessage;
   int gridFocusedIndex = 0;
-  final int columnsCount = 4;
+  final int columnsCount = 6;
   Map<int, FocusNode> gridFocusNodes = {};
   late ScrollController _scrollController;
 
@@ -386,7 +386,7 @@ Widget _buildGridView() {
       child: GridView.builder(
         controller: _scrollController,
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 6,
+          crossAxisCount: columnsCount,
           crossAxisSpacing: 15,
           mainAxisSpacing: 15,
           childAspectRatio: 1.5,
@@ -1076,7 +1076,35 @@ Future<void> _refreshDataInBackground() async {
                     ),
                   ),
                   const SizedBox(height: 4),
-                  Container(
+                  // Container(
+                  //   padding:
+                  //       const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  //   decoration: BoxDecoration(
+                  //     gradient: LinearGradient(
+                  //       colors: [
+                  //         ProfessionalColors.accentGreen.withOpacity(0.2),
+                  //         ProfessionalColors.accentBlue.withOpacity(0.1),
+                  //       ],
+                  //     ),
+                  //     borderRadius: BorderRadius.circular(15),
+                  //     border: Border.all(
+                  //       color: ProfessionalColors.accentGreen.withOpacity(0.3),
+                  //       width: 1,
+                  //     ),
+                  //   ),
+                  //   child: Text(
+                  //     '${tvShowsList.length} Shows Available',
+                  //     style: const TextStyle(
+                  //       color: ProfessionalColors.accentGreen,
+                  //       fontSize: 12,
+                  //       fontWeight: FontWeight.w500,
+                  //     ),
+                  //   ),
+                  // ),
+                ],
+              ),
+            ),
+            Container(
                     padding:
                         const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                     decoration: BoxDecoration(
@@ -1101,9 +1129,6 @@ Future<void> _refreshDataInBackground() async {
                       ),
                     ),
                   ),
-                ],
-              ),
-            ),
             if (widget.channelLogo != null)
               Container(
                 width: 50,

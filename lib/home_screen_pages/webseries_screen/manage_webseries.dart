@@ -4185,6 +4185,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:mobi_tv_entertainment/home_screen_pages/webseries_screen/webseries_details_page.dart';
+import 'package:mobi_tv_entertainment/main.dart';
+import 'package:mobi_tv_entertainment/provider/color_provider.dart';
 import 'package:mobi_tv_entertainment/provider/focus_provider.dart';
 import 'package:provider/provider.dart';
 import 'dart:convert';
@@ -4845,36 +4847,97 @@ class _ProfessionalWebSeriesHorizontalListState
     });
   }
 
+  // @override
+  // Widget build(BuildContext context) {
+  //   super.build(context);
+  //   final screenWidth = MediaQuery.of(context).size.width;
+  //   final screenHeight = MediaQuery.of(context).size.height;
+
+  //   return
+    
+  //    Scaffold(
+  //     backgroundColor: Colors.transparent,
+  //     body: Container(
+  //       decoration: BoxDecoration(
+  //         gradient: LinearGradient(
+  //           begin: Alignment.topCenter,
+  //           end: Alignment.bottomCenter,
+  //           colors: [
+  //             ProfessionalColors.primaryDark,
+  //             ProfessionalColors.surfaceDark.withOpacity(0.5),
+  //           ],
+  //         ),
+  //       ),
+  //       child: Column(
+  //         children: [
+  //           SizedBox(height: screenHeight * 0.02),
+  //           _buildProfessionalTitle(screenWidth),
+  //           SizedBox(height: screenHeight * 0.01),
+  //           Expanded(child: _buildBody(screenWidth, screenHeight)),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
+
+
+  //   @override
+  // void initState() {
+  //   super.initState();
+  //   _scrollController = ScrollController();
+  //   _initializeAnimations();
+  //   _initializeFocusNodes();
+    
+  //   fetchWebSeriesWithCache();
+  // }
+
+  // ... [Keep all existing methods until build method]
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              ProfessionalColors.primaryDark,
-              ProfessionalColors.surfaceDark.withOpacity(0.5),
-            ],
+    // ✅ ADD: Consumer to listen to color changes
+    return Consumer<ColorProvider>(
+      builder: (context, colorProvider, child) {
+        final bgColor = colorProvider.isItemFocused
+            ? colorProvider.dominantColor.withOpacity(0.1)
+            : ProfessionalColors.primaryDark;
+
+        return Scaffold(
+          backgroundColor: Colors.transparent,
+          body: Container(
+            // ✅ ENHANCED: Dynamic background gradient based on focused item
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  bgColor,
+                  // ProfessionalColors.primaryDark,
+                  // ProfessionalColors.surfaceDark.withOpacity(0.5),
+
+                     bgColor.withOpacity(0.8),
+                ProfessionalColors.primaryDark,
+                ],
+              ),
+            ),
+            child: Column(
+              children: [
+                SizedBox(height: screenHeight * 0.02),
+                _buildProfessionalTitle(screenWidth),
+                SizedBox(height: screenHeight * 0.01),
+                Expanded(child: _buildBody(screenWidth, screenHeight)),
+              ],
+            ),
           ),
-        ),
-        child: Column(
-          children: [
-            SizedBox(height: screenHeight * 0.02),
-            _buildProfessionalTitle(screenWidth),
-            SizedBox(height: screenHeight * 0.01),
-            Expanded(child: _buildBody(screenWidth, screenHeight)),
-          ],
-        ),
-      ),
+        );
+      },
     );
   }
+
 
   // 🚀 Enhanced Title with Cache Status and Refresh Button
   Widget _buildProfessionalTitle(double screenWidth) {
@@ -4904,38 +4967,38 @@ class _ProfessionalWebSeriesHorizontalListState
             ),
             Row(
               children: [
-                // 🆕 Refresh Button
-                GestureDetector(
-                  onTap: isLoading ? null : _forceRefreshWebSeries,
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: ProfessionalColors.accentPurple.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                        color: ProfessionalColors.accentPurple.withOpacity(0.3),
-                        width: 1,
-                      ),
-                    ),
-                    child: isLoading
-                        ? SizedBox(
-                            width: 16,
-                            height: 16,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                ProfessionalColors.accentPurple,
-                              ),
-                            ),
-                          )
-                        : Icon(
-                            Icons.refresh,
-                            size: 16,
-                            color: ProfessionalColors.accentPurple,
-                          ),
-                  ),
-                ),
-                const SizedBox(width: 12),
+                // // 🆕 Refresh Button
+                // GestureDetector(
+                //   onTap: isLoading ? null : _forceRefreshWebSeries,
+                //   child: Container(
+                //     padding: const EdgeInsets.all(8),
+                //     decoration: BoxDecoration(
+                //       color: ProfessionalColors.accentPurple.withOpacity(0.2),
+                //       borderRadius: BorderRadius.circular(8),
+                //       border: Border.all(
+                //         color: ProfessionalColors.accentPurple.withOpacity(0.3),
+                //         width: 1,
+                //       ),
+                //     ),
+                //     child: isLoading
+                //         ? SizedBox(
+                //             width: 16,
+                //             height: 16,
+                //             child: CircularProgressIndicator(
+                //               strokeWidth: 2,
+                //               valueColor: AlwaysStoppedAnimation<Color>(
+                //                 ProfessionalColors.accentPurple,
+                //               ),
+                //             ),
+                //           )
+                //         : Icon(
+                //             Icons.refresh,
+                //             size: 16,
+                //             color: ProfessionalColors.accentPurple,
+                //           ),
+                //   ),
+                // ),
+                // const SizedBox(width: 12),
                 // Web Series Count
                 if (webSeriesList.length > 0)
                   Container(
@@ -5129,6 +5192,9 @@ class _ProfessionalWebSeriesHorizontalListState
     );
   }
 
+
+
+    // ✅ ENHANCED: WebSeries item with color provider integration
   Widget _buildWebSeriesItem(WebSeriesModel webSeries, int index, double screenWidth, double screenHeight) {
     String webSeriesId = webSeries.id.toString();
 
@@ -5155,9 +5221,15 @@ class _ProfessionalWebSeriesHorizontalListState
               focusedIndex = index;
               _hasReceivedFocusFromMovies = true;
             });
+
+            // ✅ ADD: Update color provider
+            context.read<ColorProvider>().updateColor(dominantColor, true);
           } catch (e) {
             print('Focus change handling failed: $e');
           }
+        } else if (mounted) {
+          // ✅ ADD: Reset color when focus lost
+          context.read<ColorProvider>().resetColor();
         }
       },
       onKey: (FocusNode node, RawKeyEvent event) {
@@ -5182,6 +5254,8 @@ class _ProfessionalWebSeriesHorizontalListState
               focusedIndex = -1;
               _hasReceivedFocusFromMovies = false;
             });
+            // ✅ ADD: Reset color when navigating away
+            context.read<ColorProvider>().resetColor();
             FocusScope.of(context).unfocus();
             Future.delayed(const Duration(milliseconds: 100), () {
               if (mounted) {
@@ -5200,6 +5274,8 @@ class _ProfessionalWebSeriesHorizontalListState
               focusedIndex = -1;
               _hasReceivedFocusFromMovies = false;
             });
+            // ✅ ADD: Reset color when navigating away
+            context.read<ColorProvider>().resetColor();
             FocusScope.of(context).unfocus();
             Future.delayed(const Duration(milliseconds: 100), () {
               if (mounted) {
@@ -5232,6 +5308,8 @@ class _ProfessionalWebSeriesHorizontalListState
             setState(() {
               _currentAccentColor = color;
             });
+            // ✅ ADD: Update color provider when card changes color
+            context.read<ColorProvider>().updateColor(color, true);
           },
           index: index,
           categoryTitle: 'WEB SERIES',
@@ -5239,6 +5317,118 @@ class _ProfessionalWebSeriesHorizontalListState
       ),
     );
   }
+
+
+  // Widget _buildWebSeriesItem(WebSeriesModel webSeries, int index, double screenWidth, double screenHeight) {
+  //   String webSeriesId = webSeries.id.toString();
+
+  //   webseriesFocusNodes.putIfAbsent(
+  //     webSeriesId,
+  //     () => FocusNode()
+  //       ..addListener(() {
+  //         if (mounted && webseriesFocusNodes[webSeriesId]!.hasFocus) {
+  //           _scrollToPosition(index);
+  //         }
+  //       }),
+  //   );
+
+  //   return Focus(
+  //     focusNode: webseriesFocusNodes[webSeriesId],
+  //     onFocusChange: (hasFocus) async {
+  //       if (hasFocus && mounted) {
+  //         try {
+  //           Color dominantColor = ProfessionalColors.gradientColors[
+  //               math.Random().nextInt(ProfessionalColors.gradientColors.length)];
+
+  //           setState(() {
+  //             _currentAccentColor = dominantColor;
+  //             focusedIndex = index;
+  //             _hasReceivedFocusFromMovies = true;
+  //           });
+  //         } catch (e) {
+  //           print('Focus change handling failed: $e');
+  //         }
+  //       }
+  //     },
+  //     onKey: (FocusNode node, RawKeyEvent event) {
+  //       if (event is RawKeyDownEvent) {
+  //         if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
+  //           if (index < webSeriesList.length - 1 && index != 6) {
+  //             String nextWebSeriesId = webSeriesList[index + 1].id.toString();
+  //             FocusScope.of(context).requestFocus(webseriesFocusNodes[nextWebSeriesId]);
+  //             return KeyEventResult.handled;
+  //           } else if (index == 6 && webSeriesList.length > 7) {
+  //             FocusScope.of(context).requestFocus(_viewAllFocusNode);
+  //             return KeyEventResult.handled;
+  //           }
+  //         } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+  //           if (index > 0) {
+  //             String prevWebSeriesId = webSeriesList[index - 1].id.toString();
+  //             FocusScope.of(context).requestFocus(webseriesFocusNodes[prevWebSeriesId]);
+  //             return KeyEventResult.handled;
+  //           }
+  //         } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+  //           setState(() {
+  //             focusedIndex = -1;
+  //             _hasReceivedFocusFromMovies = false;
+  //           });
+  //           FocusScope.of(context).unfocus();
+  //           Future.delayed(const Duration(milliseconds: 100), () {
+  //             if (mounted) {
+  //               try {
+  //                 Provider.of<FocusProvider>(context, listen: false)
+  //                     .requestFirstMoviesFocus();
+  //                 print('✅ Navigating back to movies from webseries');
+  //               } catch (e) {
+  //                 print('❌ Failed to navigate to movies: $e');
+  //               }
+  //             }
+  //           });
+  //           return KeyEventResult.handled;
+  //         } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+  //           setState(() {
+  //             focusedIndex = -1;
+  //             _hasReceivedFocusFromMovies = false;
+  //           });
+  //           FocusScope.of(context).unfocus();
+  //           Future.delayed(const Duration(milliseconds: 100), () {
+  //             if (mounted) {
+  //               try {
+  //                 Provider.of<FocusProvider>(context, listen: false)
+  //                     .requestFirstTVShowsFocus();
+  //                 print('✅ Navigating to TV Shows from webseries');
+  //               } catch (e) {
+  //                 print('❌ Failed to navigate to TV Shows: $e');
+  //               }
+  //             }
+  //           });
+  //           return KeyEventResult.handled;
+  //         } else if (event.logicalKey == LogicalKeyboardKey.enter ||
+  //                    event.logicalKey == LogicalKeyboardKey.select) {
+  //           print('🎬 Enter pressed on ${webSeries.name} - Opening Details Page...');
+  //           _navigateToWebSeriesDetails(webSeries);
+  //           return KeyEventResult.handled;
+  //         }
+  //       }
+  //       return KeyEventResult.ignored;
+  //     },
+  //     child: GestureDetector(
+  //       onTap: () => _navigateToWebSeriesDetails(webSeries),
+  //       child: ProfessionalWebSeriesCard(
+  //         webSeries: webSeries,
+  //         focusNode: webseriesFocusNodes[webSeriesId]!,
+  //         onTap: () => _navigateToWebSeriesDetails(webSeries),
+  //         onColorChange: (color) {
+  //           setState(() {
+  //             _currentAccentColor = color;
+  //           });
+  //         },
+  //         index: index,
+  //         categoryTitle: 'WEB SERIES',
+  //       ),
+  //     ),
+  //   );
+  // }
 
   @override
   void dispose() {
@@ -5460,7 +5650,7 @@ class _ProfessionalWebSeriesCardState extends State<ProfessionalWebSeriesCard>
         return Transform.scale(
           scale: _scaleAnimation.value,
           child: Container(
-            width: screenWidth * 0.19,
+            width: bannerwdt,
             margin: const EdgeInsets.symmetric(horizontal: 6),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -5476,7 +5666,7 @@ class _ProfessionalWebSeriesCardState extends State<ProfessionalWebSeriesCard>
   }
 
   Widget _buildProfessionalPoster(double screenWidth, double screenHeight) {
-    final posterHeight = _isFocused ? screenHeight * 0.28 : screenHeight * 0.22;
+    final posterHeight = _isFocused ? focussedBannerhgt : bannerhgt;
 
     return Container(
       height: posterHeight,
@@ -5707,7 +5897,7 @@ class _ProfessionalWebSeriesCardState extends State<ProfessionalWebSeriesCard>
     final webSeriesName = widget.webSeries.name.toUpperCase();
 
     return Container(
-      width: screenWidth * 0.18,
+      width: bannerwdt,
       child: AnimatedDefaultTextStyle(
         duration: AnimationTiming.medium,
         style: TextStyle(
@@ -5821,7 +6011,7 @@ class _ProfessionalWebSeriesViewAllButtonState extends State<ProfessionalWebSeri
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Container(
-      width: screenWidth * 0.19,
+      width: bannerwdt,
       margin: const EdgeInsets.symmetric(horizontal: 6),
       child: Column(
         children: [
@@ -6101,7 +6291,7 @@ class ProfessionalWebSeriesGridPage extends StatefulWidget {
 class _ProfessionalWebSeriesGridPageState extends State<ProfessionalWebSeriesGridPage>
     with TickerProviderStateMixin {
   int gridFocusedIndex = 0;
-  final int columnsCount = 5;
+  final int columnsCount = 6;
   Map<int, FocusNode> gridFocusNodes = {};
   late ScrollController _scrollController;
 
@@ -6293,8 +6483,8 @@ class _ProfessionalWebSeriesGridPageState extends State<ProfessionalWebSeriesGri
     return Container(
       padding: EdgeInsets.only(
         top: MediaQuery.of(context).padding.top + 10,
-        left: 20,
-        right: 20,
+        left: 40,
+        right: 40,
         bottom: 20,
       ),
       decoration: BoxDecoration(
@@ -6310,6 +6500,8 @@ class _ProfessionalWebSeriesGridPageState extends State<ProfessionalWebSeriesGri
       ),
       child: Row(
         children: [
+                const SizedBox(height: 10),
+
           Container(
             decoration: BoxDecoration(
               shape: BoxShape.circle,
@@ -6331,8 +6523,8 @@ class _ProfessionalWebSeriesGridPageState extends State<ProfessionalWebSeriesGri
           ),
           const SizedBox(width: 16),
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 ShaderMask(
                   shaderCallback: (bounds) => const LinearGradient(
@@ -6376,11 +6568,15 @@ class _ProfessionalWebSeriesGridPageState extends State<ProfessionalWebSeriesGri
                     ),
                   ),
                 ),
+                
               ],
             ),
           ),
+                const SizedBox(height: 10),
+
         ],
       ),
+
     );
   }
 
@@ -6466,7 +6662,7 @@ class _ProfessionalWebSeriesGridPageState extends State<ProfessionalWebSeriesGri
           controller: _scrollController,
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             // crossAxisCount: columnsCount,
-            crossAxisCount: 6,
+            crossAxisCount: columnsCount,
             crossAxisSpacing: 15,
             mainAxisSpacing: 15,
             childAspectRatio: 1.5,
