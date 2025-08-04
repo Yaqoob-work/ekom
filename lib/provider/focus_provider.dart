@@ -88,6 +88,7 @@ class FocusProvider extends ChangeNotifier {
   // FocusNode? _homeCategoryFirstItemFocusNode;
   FocusNode? _firstManageMoviesFocusNode;
   FocusNode? _firstManageWebseriesFocusNode;
+  FocusNode? _firstReligiousChannelFocusNode;
   FocusNode? _searchIconFocusNode;
   FocusNode? _youtubeSearchIconFocusNode;
   FocusNode? _searchNavigationFocusNode;
@@ -163,17 +164,18 @@ int _currentSelectedNavIndex = 0;
   // =================================================================
   // SCROLL CONTROLLERS MANAGEMENT
   // =================================================================
-  ScrollController? _moviesScrollController;
-  ScrollController? _webseriesScrollController;
+  // ScrollController? _moviesScrollController;
+  // ScrollController? _webseriesScrollController;
   Map<String, ScrollController> _webseriesScrollControllers = {};
+  Map<String, ScrollController> _religiousChannelScrollControllers = {};
 
   // void setMoviesScrollController(ScrollController controller) {
   //   _moviesScrollController = controller;
   // }
 
-  void setwebseriesScrollController(ScrollController controller) {
-    _webseriesScrollController = controller;
-  }
+  // void setwebseriesScrollController(ScrollController controller) {
+  //   _webseriesScrollController = controller;
+  // }
 
   void setWebseriesScrollControllers(
       Map<String, ScrollController> controllers) {
@@ -183,6 +185,29 @@ int _currentSelectedNavIndex = 0;
 
   void scrollWebseriesToFirst(String categoryId) {
     final controller = _webseriesScrollControllers[categoryId];
+    if (controller != null && controller.hasClients) {
+      controller.animateTo(
+        0.0,
+        duration: Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    }
+  }
+
+
+
+  // void setwebseriesScrollController(ScrollController controller) {
+  //   _webseriesScrollController = controller;
+  // }
+
+  void setReligiousChannelScrollControllers(
+      Map<String, ScrollController> controllers) {
+    _religiousChannelScrollControllers = controllers;
+    notifyListeners();
+  }
+
+  void scrollReligiousChannelToFirst(String categoryId) {
+    final controller = _religiousChannelScrollControllers[categoryId];
     if (controller != null && controller.hasClients) {
       controller.animateTo(
         0.0,
@@ -250,6 +275,43 @@ int _currentSelectedNavIndex = 0;
         scrollToElement('manageWebseries');
         Future.delayed(const Duration(milliseconds: 50), () {
           scrollToElement('manageWebseries');
+        });
+      });
+    }
+  }
+
+
+
+  
+  FocusNode? _firstSportsCategoryFocusNode;
+  // ✅ TV Shows functions (नए)
+  void setFirstSportsCategoryFocusNode(FocusNode focusNode) {
+    _firstSportsCategoryFocusNode = focusNode;
+  }
+
+  void requestFirstSportsCategoryFocus() {
+    if (_firstSportsCategoryFocusNode != null &&
+        _firstSportsCategoryFocusNode!.context != null) {
+      _firstSportsCategoryFocusNode!.requestFocus();
+      print('✅ TV Shows first focus requested');
+      scrollToElement('sportsCategory');
+    }
+
+  }
+
+
+  void setFirstReligiousChannelFocusNode(FocusNode node) {
+    _firstReligiousChannelFocusNode = node;
+    notifyListeners();
+  }
+
+  void requestFirstReligiousChannelFocus() {
+    if (_firstReligiousChannelFocusNode != null) {
+      Future.delayed(const Duration(milliseconds: 50), () {
+        _firstReligiousChannelFocusNode!.requestFocus();
+        scrollToElement('religiousChannels');
+        Future.delayed(const Duration(milliseconds: 50), () {
+          scrollToElement('religiousChannels');
         });
       });
     }
@@ -599,6 +661,9 @@ int _currentSelectedNavIndex = 0;
     }
   }
 
+
+
+
   FocusNode? _firstTVShowsFocusNode;
   // ✅ TV Shows functions (नए)
   void setFirstTVShowsFocusNode(FocusNode focusNode) {
@@ -614,6 +679,22 @@ int _currentSelectedNavIndex = 0;
     }
 
   }
+  FocusNode? _firstTVShowsPakFocusNode;
+  // ✅ TV Shows functions (नए)
+  void setFirstTVShowsPakFocusNode(FocusNode focusNode) {
+    _firstTVShowsPakFocusNode = focusNode;
+  }
+
+  void requestFirstTVShowsPakFocus() {
+    if (_firstTVShowsPakFocusNode != null &&
+        _firstTVShowsPakFocusNode!.context != null) {
+      _firstTVShowsPakFocusNode!.requestFocus();
+      print('✅ TV Shows first focus requested');
+      scrollToElement('tvShowsPak');
+    }
+
+  }
+
 
   FocusNode? _firstHorizontalListNetworksFocusNode;
   // ✅ TV Shows functions (नए)

@@ -12,6 +12,7 @@ import 'package:mobi_tv_entertainment/home_screen_pages/tv_show/tv_show.dart';
 import 'package:mobi_tv_entertainment/home_screen_pages/tv_show/tv_show_final_details_page.dart';
 import 'package:mobi_tv_entertainment/video_widget/custom_video_player.dart';
 import 'package:mobi_tv_entertainment/video_widget/custom_youtube_player.dart';
+// import 'package:mobi_tv_entertainment/video_widget/custom_youtube_player.dart';
 import 'package:mobi_tv_entertainment/video_widget/socket_service.dart';
 import 'package:mobi_tv_entertainment/main.dart';
 import 'package:mobi_tv_entertainment/video_widget/video_screen.dart';
@@ -863,38 +864,39 @@ class _HorizontalListDetailsPageState extends State<HorizontalListDetailsPage>
 
         // Navigate to appropriate player
         if (isYoutubeUrl(videoUrl)) {
-          videoUrl = await _socketService.getUpdatedUrl(videoUrl);
-          await Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => VideoScreen(
-                videoUrl: videoUrl,
-                name: tvShow.name,
-                unUpdatedUrl: videoUrl,
-                channelList: const [],
-                bannerImageUrl: tvShow.banner ?? '',
-                startAtPosition: Duration.zero,
-                videoType: 'vod',
-                isLive: false,
-                isVOD: true,
-                isLastPlayedStored: false,
-                isSearch: false,
-                isBannerSlider: false,
-                videoId: tvShow.id,
-                seasonId: null,
-                source: 'vod',
-                liveStatus: false,
-              ),
-            ),
-          );
+          // videoUrl = await _socketService.getUpdatedUrl(videoUrl);
           // await Navigator.push(
           //   context,
           //   MaterialPageRoute(
-          //     builder: (context) => CustomYoutubePlayer(
-          //       videoUrl: videoUrl, name: tvShow.name,
+          //     builder: (context) => VideoScreen(
+          //       videoUrl: videoUrl,
+          //       name: tvShow.name,
+          //       unUpdatedUrl: videoUrl,
+          //       channelList: const [],
+          //       bannerImageUrl: tvShow.banner ?? '',
+          //       startAtPosition: Duration.zero,
+          //       videoType: 'vod',
+          //       isLive: false,
+          //       isVOD: true,
+          //       isLastPlayedStored: false,
+          //       isSearch: false,
+          //       isBannerSlider: false,
+          //       videoId: tvShow.id,
+          //       seasonId: null,
+          //       source: 'vod',
+          //       liveStatus: false,
           //     ),
           //   ),
           // );
+          await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => CustomYoutubePlayer (
+                videoUrl: videoUrl, 
+                name: tvShow.name,
+              ),
+            ),
+          );
         } else {
           await Navigator.push(
             context,

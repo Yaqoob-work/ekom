@@ -4172,6 +4172,7 @@ import 'package:mobi_tv_entertainment/provider/color_provider.dart';
 import 'package:mobi_tv_entertainment/provider/focus_provider.dart';
 import 'package:mobi_tv_entertainment/video_widget/custom_video_player.dart';
 import 'package:mobi_tv_entertainment/video_widget/device_detector_firestick.dart';
+import 'package:mobi_tv_entertainment/video_widget/src/y_player_main.dart';
 import 'package:mobi_tv_entertainment/video_widget/video_screen.dart';
 import 'package:mobi_tv_entertainment/video_widget/custom_youtube_player.dart';
 
@@ -4585,6 +4586,7 @@ class MovieService {
       rethrow;
     }
   }
+  
 
   /// Cache movies list data
   static Future<void> _cacheMoviesList(SharedPreferences prefs, List<dynamic> moviesData) async {
@@ -5737,7 +5739,7 @@ void _scrollToFocusedItem(String itemId) {
           ),
           const SizedBox(height: 24),
           Text(
-            'No ${widget.displayTitle} Found',
+            'loading',
             style: TextStyle(
               color: ProfessionalColors.textPrimary,
               fontSize: 18,
@@ -5746,7 +5748,7 @@ void _scrollToFocusedItem(String itemId) {
           ),
           const SizedBox(height: 8),
           const Text(
-            'Check back later for new content',
+            '',
             style: TextStyle(
               color: ProfessionalColors.textSecondary,
               fontSize: 14,
@@ -7074,9 +7076,14 @@ Future<void> _loadMoviesDataset() async {
           await Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => CustomYoutubePlayer(
-                videoUrl: movie.movieUrl,
-                name: movie.name,
+              // builder: (context) => CustomYoutubePlayer(
+              //   videoUrl: movie.movieUrl,
+              //   name: movie.name,
+              // ),
+              builder: (context) => YPlayer(
+                // videoUrl: movie.movieUrl,
+                // name: movie.name,
+                 youtubeUrl: '${movie.movieUrl}',
               ),
             ),
           );
@@ -7476,7 +7483,7 @@ Future<void> _loadMoviesDataset() async {
             ),
             const SizedBox(height: 24),
             Text(
-              'No ${widget.categoryTitle} Found',
+              '',
               style: TextStyle(
                 color: ProfessionalColors.textPrimary,
                 fontSize: 18,

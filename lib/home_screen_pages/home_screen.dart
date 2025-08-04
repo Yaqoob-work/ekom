@@ -233,8 +233,11 @@
 
 
 // Updated HomeScreen with News Channels Integration
+import 'package:mobi_tv_entertainment/home_screen_pages/religious_channel/religious_channel.dart';
+import 'package:mobi_tv_entertainment/home_screen_pages/sports_category/sports_category.dart';
 import 'package:mobi_tv_entertainment/home_screen_pages/sub_vod_screen/horzontal_vod.dart';
 import 'package:mobi_tv_entertainment/home_screen_pages/tv_show/tv_show.dart';
+import 'package:mobi_tv_entertainment/home_screen_pages/tv_show_pak/tv_show_pak.dart';
 import 'package:mobi_tv_entertainment/menu/middle_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:mobi_tv_entertainment/main.dart';
@@ -269,6 +272,9 @@ class _HomeScreenState extends State<HomeScreen> {
   final GlobalKey manageMoviesKey = GlobalKey();
   final GlobalKey manageWebseriesKey = GlobalKey();
   final GlobalKey tvShowsKey = GlobalKey();
+  final GlobalKey tvShowsPakKey = GlobalKey();
+  final GlobalKey sportsCategoryKey = GlobalKey();
+  final GlobalKey religiousChannelKey = GlobalKey();
 
   late FocusNode watchNowFocusNode;
   late FocusNode subLiveFocusNode;
@@ -315,6 +321,8 @@ class _HomeScreenState extends State<HomeScreen> {
       focusProvider.registerElementKey('manageMovies', manageMoviesKey);
       focusProvider.registerElementKey('manageWebseries', manageWebseriesKey);
       focusProvider.registerElementKey('tvShows', tvShowsKey);
+      focusProvider.registerElementKey('religiousChannels', religiousChannelKey);
+      focusProvider.registerElementKey('tvShowPak', tvShowsPakKey);
     });
   }
 
@@ -327,7 +335,7 @@ class _HomeScreenState extends State<HomeScreen> {
     focusProvider.unregisterElementKey('manageMovies');
     focusProvider.unregisterElementKey('manageWebseries');
     focusProvider.unregisterElementKey('tvShows');
-    
+    focusProvider.unregisterElementKey('tvShowPak');
 
     // Clean up focus nodes
     watchNowFocusNode.dispose();
@@ -425,6 +433,27 @@ class _HomeScreenState extends State<HomeScreen> {
                       // ),
                       ProfessionalTVShowsHorizontalList()
                     ),
+                    SizedBox(
+                      height: screenhgt * 0.42,
+                      key: sportsCategoryKey,
+                      child: 
+                      // HorizontalChannelList(
+                      //   // focusNode: manageWebseriesFocusNode,
+                      // ),
+                      SportsCategory ()
+                    ),
+                    SizedBox(
+                      height: screenhgt * 0.42,
+                      key: religiousChannelKey,
+                      child: 
+                      ProfessionalReligiousChannelsHorizontalList ()
+                    ),
+                    // SizedBox(
+                    //   height: screenhgt * 0.42,
+                    //   key: tvShowsPakKey,
+                    //   child: 
+                    //   TvShowPak ()
+                    // ),
                     if (_isLoading) Center(child: LoadingIndicator()),
                   ],
                 ),

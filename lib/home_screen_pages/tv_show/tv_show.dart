@@ -6062,6 +6062,8 @@ class _ProfessionalTVShowsHorizontalListState
             Future.delayed(const Duration(milliseconds: 100), () {
               if (mounted) {
                 try {
+                  Provider.of<FocusProvider>(context, listen: false)
+                                .requestFirstSportsCategoryFocus();
                   // Navigate to next section
                   print('✅ Navigating down from TV shows');
                 } catch (e) {
@@ -6175,6 +6177,8 @@ class _ProfessionalTVShowsHorizontalListState
                       Future.delayed(const Duration(milliseconds: 100), () {
                         if (mounted) {
                           try {
+                            Provider.of<FocusProvider>(context, listen: false)
+                                .requestFirstSportsCategoryFocus();
                             // Navigate to next section after TV Shows
                             print('✅ Navigating down from TV Shows ViewAll');
                           } catch (e) {

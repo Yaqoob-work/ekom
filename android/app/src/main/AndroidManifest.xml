@@ -6,11 +6,12 @@
 <!-- <uses-feature android:name="android.software.leanback" /> -->
 <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
 <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+<uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
 
 
 
     <application
-        android:label="Ekom Eight"
+        android:label="Ekom Two"
         android:name="${applicationName}"
         android:banner="@drawable/banner"
         android:icon="@mipmap/ic_launcher"
