@@ -4132,7 +4132,7 @@
 // import 'package:flutter_vlc_player/flutter_vlc_player.dart';
 // import 'package:flutter/material.dart';
 // import 'dart:async';
-// import 'package:keep_screen_on/keep_screen_on.dart';
+// import 'package:keep_screen_on/keep_screen_on.dart';KeepScreenOn.turnOn();
 
 // class CustomYoutubePlayer extends StatefulWidget {
 //   final String videoUrl;
@@ -15593,17 +15593,3597 @@
 
 
 
-import 'dart:io';
+// import 'dart:io';
+// import 'package:flutter/material.dart';
+// import 'package:flutter/services.dart';
+// import 'package:mobi_tv_entertainment/main.dart';
+// import 'package:youtube_player_flutter/youtube_player_flutter.dart';
+// import 'dart:async';
+// import 'package:intl/intl.dart';
+
+// // Direct YouTube Player Screen - No Home Page Required
+// class CustomYoutubePlayer extends StatefulWidget {
+//   final videoUrl;
+//   final String? name;
+
+//   const CustomYoutubePlayer({
+//     Key? key,
+//     required this.videoUrl,
+//     required this.name,
+//   }) : super(key: key);
+
+//   @override
+//   _CustomYoutubePlayerState createState() => _CustomYoutubePlayerState();
+// }
+
+// // Enhanced Player State Enum
+// enum PlayerState { unknown, unstarted, ended, playing, paused, buffering, cued }
+
+// class _CustomYoutubePlayerState extends State<CustomYoutubePlayer>
+//     with TickerProviderStateMixin {
+//   YoutubePlayerController? _controller;
+//   bool _isPlayerReady = false;
+//   String? _error;
+//   bool _isLoading = true;
+//   bool _isDisposed = false;
+
+//   // Navigation control
+//   bool _isNavigating = false;
+//   bool _videoCompleted = false;
+
+//   // Scrolling text animation controller
+//   late AnimationController _scrollController;
+//   late Animation<Offset> _scrollAnimation;
+
+//   // Enhanced Control states
+//   bool _isPlaying = false;
+//   bool _isPaused = false;
+//   bool _wasPlayingBeforeSeek = false;
+//   PlayerState _currentPlayerState = PlayerState.unknown;
+//   Duration _currentPosition = Duration.zero;
+//   Duration _totalDuration = Duration.zero;
+
+//   // Progressive seeking states
+//   Timer? _seekTimer;
+//   int _pendingSeekSeconds = 0;
+//   Duration _targetSeekPosition = Duration.zero;
+//   bool _isSeeking = false;
+
+//   // Focus nodes for TV remote
+//   final FocusNode _mainFocusNode = FocusNode();
+
+//   // Date and time
+//   late Timer _dateTimeTimer;
+//   late Timer? _stateVerificationTimer;
+//   String _currentDate = '';
+//   String _currentTime = '';
+
+//   // Video thumbnail URL
+//   String? _thumbnailUrl;
+
+//   // Variable to track if video has started playing at least once
+//   bool _hasVideoStartedPlaying = false;
+
+//   // Timer for delaying text color change
+//   Timer? _textColorDelayTimer;
+
+//   // Timer for checking video completion more reliably
+//   Timer? _completionCheckTimer;
+
+//   @override
+//   void initState() {
+//     super.initState();
+
+//     // Initialize date and time
+//     _updateDateTime();
+//     _startDateTimeTimer();
+
+//     // Initialize scrolling animation
+//     _initializeScrollAnimation();
+
+//     // Set full screen immediately
+//     _setFullScreenMode();
+
+//     // Generate thumbnail URL
+//     _generateThumbnailUrl();
+
+//     // Start player initialization immediately
+//     _initializePlayer();
+
+//     // Start state verification timer
+//     _startStateVerificationTimer();
+
+//     // Start completion check timer
+//     _startCompletionCheckTimer();
+
+//     // Request focus on main node initially
+//     WidgetsBinding.instance.addPostFrameCallback((_) {
+//       _mainFocusNode.requestFocus();
+//     });
+//   }
+
+//   void _generateThumbnailUrl() {
+//     String? videoId = YoutubePlayer.convertUrlToId(widget.videoUrl);
+//     if (videoId != null && videoId.isNotEmpty) {
+//       // High quality thumbnail URL
+//       _thumbnailUrl = 'https://img.youtube.com/vi/$videoId/maxresdefault.jpg';
+//     }
+//   }
+
+//   void _updateDateTime() {
+//     final now = DateTime.now();
+//     _currentDate = DateFormat('MM/dd/yyyy').format(now);
+//     _currentTime = DateFormat('HH:mm:ss').format(now);
+//   }
+
+//   void _startDateTimeTimer() {
+//     _dateTimeTimer = Timer.periodic(Duration(seconds: 1), (timer) {
+//       if (mounted && !_isDisposed) {
+//         setState(() {
+//           _updateDateTime();
+//         });
+//       }
+//     });
+//   }
+
+//   void _initializeScrollAnimation() {
+//     _scrollController = AnimationController(
+//       duration: const Duration(seconds: 12),
+//       vsync: this,
+//     );
+
+//     _scrollAnimation = Tween<Offset>(
+//       begin: const Offset(1.0, 0.0),
+//       end: const Offset(-1.0, 0.0),
+//     ).animate(CurvedAnimation(
+//       parent: _scrollController,
+//       curve: Curves.linear,
+//     ));
+
+//     _scrollController.repeat();
+//   }
+
+//   void _setFullScreenMode() {
+//     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+//     SystemChrome.setPreferredOrientations([
+//       DeviceOrientation.landscapeLeft,
+//       DeviceOrientation.landscapeRight,
+//     ]);
+//     SystemChrome.setSystemUIOverlayStyle(
+//       const SystemUiOverlayStyle(
+//         statusBarColor: Colors.transparent,
+//         systemNavigationBarColor: Colors.transparent,
+//       ),
+//     );
+//   }
+
+//   // Quality control through YouTube Player flags only
+//   // Note: youtube_player_flutter doesn't support runtime quality change
+//   // Quality is controlled through YoutubePlayerFlags during initialization
+//   void _logCurrentQuality() {
+//     if (_controller != null && _isPlayerReady) {
+//       try {
+//         final playerValue = _controller!.value;
+//         print('Video quality info - IsReady: ${playerValue.isReady}, IsPlaying: ${playerValue.isPlaying}');
+//         print('Player initialized with forceHD: true (max 1080p)');
+//       } catch (e) {
+//         print('Quality info error: $e');
+//       }
+//     }
+//   }
+
+//   void _initializePlayer() {
+//     if (_isDisposed) return;
+
+//     try {
+//       String? videoId = YoutubePlayer.convertUrlToId(widget.videoUrl);
+
+//       if (videoId == null || videoId.isEmpty) {
+//         if (mounted && !_isDisposed) {
+//           setState(() {
+//             _error = 'Invalid YouTube URL: ${widget.videoUrl}';
+//             _isLoading = false;
+//           });
+//         }
+//         return;
+//       }
+
+//       _controller = YoutubePlayerController(
+//         initialVideoId: videoId,
+//         flags: const YoutubePlayerFlags(
+//           mute: false,
+//           autoPlay: true,
+//           disableDragSeek: false,
+//           loop: false,
+//           isLive: false,
+//           forceHD: false, 
+//           enableCaption: false,
+//           controlsVisibleAtStart: false,
+//           hideControls: true,
+//           hideThumbnail: false,
+//           useHybridComposition: true,
+//         ),
+//       );
+
+
+
+//       _controller!.addListener(_listener);
+
+//       Future.delayed(const Duration(milliseconds: 300), () {
+//         if (mounted && _controller != null && !_isDisposed) {
+//           _controller!.load(videoId);
+
+//           // Log quality info after loading (for debugging)
+//           Future.delayed(const Duration(milliseconds: 500), () {
+//             if (mounted && _controller != null && !_isDisposed) {
+//               // Log quality information
+//               _logCurrentQuality();
+//             }
+//           });
+
+          
+//   //       // After video starts playing, you can try to improve quality
+//   // Future.delayed(Duration(seconds: 120), () {
+//   //   if (_controller != null && mounted) {
+//   //     // This doesn't guarantee HD but may help
+//   //     _controller!.play();
+//   //   }
+//   // });
+
+//           Future.delayed(const Duration(milliseconds: 800), () {
+//             if (mounted && _controller != null && !_isDisposed) {
+//               _controller!.play();
+              
+//               // Log quality info after play starts
+//               Future.delayed(const Duration(milliseconds: 1000), () {
+//                 if (mounted && _controller != null && !_isDisposed) {
+//                   _logCurrentQuality();
+//                 }
+//               });
+
+//               if (mounted) {
+//                 setState(() {
+//                   _isLoading = false;
+//                   _isPlayerReady = true;
+//                   _isPlaying = true;
+//                   _currentPlayerState = PlayerState.playing;
+//                   // Start delay timer instead of immediately setting flag
+//                   _startTextColorDelayTimer();
+//                 });
+//               }
+//             }
+//           });
+//         }
+//       });
+//     } catch (e) {
+//       if (mounted && !_isDisposed) {
+//         setState(() {
+//           _error = 'Player Error: $e';
+//           _isLoading = false;
+//         });
+//       }
+//     }
+//   }
+
+//   // Enhanced Listener with Multiple State Checks
+//   void _listener() {
+//     if (_controller != null && mounted && !_isDisposed && !_isNavigating) {
+//       final playerValue = _controller!.value;
+
+//       // Get current states
+//       final bool isReady = playerValue.isReady;
+//       final bool isPlaying = playerValue.isPlaying;
+//       final bool isBuffering = isReady &&
+//           !isPlaying &&
+//           _currentPosition == playerValue.position &&
+//           playerValue.position.inSeconds > 0;
+//       final Duration position = playerValue.position;
+//       final Duration duration = playerValue.metaData.duration;
+
+//       // Check for video end state first
+//       if (duration.inSeconds > 0 && position.inSeconds > 0) {
+//         // Check if video has reached the end (within 2 seconds of duration)
+//         if (position.inSeconds >= (duration.inSeconds - 2)) {
+//           print('Video ended - Position: ${position.inSeconds}, Duration: ${duration.inSeconds}');
+//           _completeVideo();
+//           return;
+//         }
+//       }
+
+//       // Determine actual player state
+//       PlayerState newPlayerState = _determinePlayerState(
+//         isReady: isReady,
+//         isPlaying: isPlaying,
+//         isBuffering: isBuffering,
+//         position: position,
+//         duration: duration,
+//       );
+
+//       // Always sync with controller state for play/pause
+//       bool shouldUpdateState = false;
+
+//       if (newPlayerState != _currentPlayerState) {
+//         shouldUpdateState = true;
+//       }
+
+//       if (isPlaying != _isPlaying) {
+//         shouldUpdateState = true;
+//       }
+
+//       if (shouldUpdateState) {
+//         if (mounted) {
+//           setState(() {
+//             _currentPlayerState = newPlayerState;
+//             _isPlaying = isPlaying;
+//             _isPaused = _determinePausedState(newPlayerState, isPlaying);
+//             _currentPosition = position;
+//             _totalDuration = duration;
+
+//             // Update _hasVideoStartedPlaying when video actually starts playing
+//             if (isPlaying && position.inSeconds > 0 && !_hasVideoStartedPlaying) {
+//               _startTextColorDelayTimer();
+//             }
+//           });
+//         }
+//       } else {
+//         // Update position and duration even if states haven't changed
+//         if (mounted) {
+//           setState(() {
+//             _currentPosition = position;
+//             _totalDuration = duration;
+
+//             // Update _hasVideoStartedPlaying when video actually starts playing
+//             if (isPlaying && position.inSeconds > 0 && !_hasVideoStartedPlaying) {
+//               _startTextColorDelayTimer();
+//             }
+//           });
+//         }
+//       }
+
+//       // Handle ready state
+//       if (isReady && !_isPlayerReady) {
+//         if (mounted) {
+//           setState(() {
+//             _isPlayerReady = true;
+//             _isLoading = false;
+//           });
+//         }
+
+//         // Auto-play after ready with small delay to ensure frame appears
+//         Future.delayed(const Duration(milliseconds: 500), () {
+//           if (_controller != null && !_isDisposed) {
+//             _controller!.play();
+//             // Log quality info after play
+//             Future.delayed(const Duration(milliseconds: 500), () {
+//               _logCurrentQuality();
+//             });
+//           }
+//         });
+//       }
+//     }
+//   }
+
+//   // Start a timer to periodically check for video completion
+//   void _startCompletionCheckTimer() {
+//     _completionCheckTimer = Timer.periodic(Duration(seconds: 1), (timer) {
+//       if (_isDisposed) {
+//         timer.cancel();
+//         return;
+//       }
+
+//       if (_controller != null && _isPlayerReady && mounted && !_videoCompleted) {
+//         final playerValue = _controller!.value;
+//         final position = playerValue.position;
+//         final duration = playerValue.metaData.duration;
+
+//         // More aggressive completion check
+//         if (duration.inSeconds > 0 && position.inSeconds > 0) {
+//           // Check if video is within 3 seconds of end or if it's actually ended
+//           bool isNearEnd = position.inSeconds >= (duration.inSeconds - 3);
+//           bool hasActuallyEnded = position.inSeconds >= duration.inSeconds;
+//           bool isAtEnd = playerValue.position >= playerValue.metaData.duration;
+
+//           if (isNearEnd || hasActuallyEnded || isAtEnd) {
+//             print('Video completion detected - Position: ${position.inSeconds}, Duration: ${duration.inSeconds}');
+//             _completeVideo();
+//           }
+//         }
+//       }
+//     });
+//   }
+
+//   // Enhanced State Determination Logic
+//   PlayerState _determinePlayerState({
+//     required bool isReady,
+//     required bool isPlaying,
+//     required bool isBuffering,
+//     required Duration position,
+//     required Duration duration,
+//   }) {
+//     if (!isReady) {
+//       return PlayerState.unstarted;
+//     }
+
+//     if (isBuffering) {
+//       return PlayerState.buffering;
+//     }
+
+//     if (duration.inSeconds > 0 &&
+//         position.inSeconds >= duration.inSeconds - 1) {
+//       return PlayerState.ended;
+//     }
+
+//     if (isPlaying) {
+//       return PlayerState.playing;
+//     }
+
+//     // If ready but not playing and not buffering, it's paused
+//     if (position.inSeconds > 0) {
+//       return PlayerState.paused;
+//     }
+
+//     return PlayerState.cued;
+//   }
+
+//   // Accurate Pause State Detection
+//   bool _determinePausedState(PlayerState playerState, bool isPlaying) {
+//     return playerState == PlayerState.paused ||
+//         (!isPlaying &&
+//             _currentPosition.inSeconds > 0 &&
+//             playerState != PlayerState.buffering &&
+//             playerState != PlayerState.ended &&
+//             playerState != PlayerState.unstarted &&
+//             _isPlayerReady);
+//   }
+
+//   // Alternative Method: Direct Controller State Check
+//   bool _getAccuratePauseState() {
+//     if (_controller == null || !_isPlayerReady) return false;
+
+//     final playerValue = _controller!.value;
+
+//     // More reliable pause detection
+//     bool controllerNotPlaying = !playerValue.isPlaying;
+//     bool hasPosition = playerValue.position.inSeconds > 0;
+//     bool isReady = playerValue.isReady;
+//     bool notEnded = playerValue.position < playerValue.metaData.duration;
+
+//     return controllerNotPlaying && hasPosition && isReady && notEnded;
+//   }
+
+//   // Periodic State Verification
+//   void _startStateVerificationTimer() {
+//     _stateVerificationTimer =
+//         Timer.periodic(const Duration(seconds: 1), (timer) {
+//       if (_isDisposed) {
+//         timer.cancel();
+//         return;
+//       }
+
+//       if (_controller != null && _isPlayerReady && mounted) {
+//         final controllerPlaying = _controller!.value.isPlaying;
+//         final controllerReady = _controller!.value.isReady;
+
+//         // If there's a mismatch, correct it immediately
+//         if (controllerPlaying != _isPlaying && controllerReady) {
+//           setState(() {
+//             _isPlaying = controllerPlaying;
+//             _isPaused = !controllerPlaying &&
+//                 _currentPosition.inSeconds > 0 &&
+//                 controllerReady;
+
+//             _currentPlayerState =
+//                 controllerPlaying ? PlayerState.playing : PlayerState.paused;
+
+//             // Update _hasVideoStartedPlaying when video actually starts playing
+//             if (controllerPlaying && _currentPosition.inSeconds > 0 && !_hasVideoStartedPlaying) {
+//               _startTextColorDelayTimer();
+//             }
+//           });
+//         }
+//       }
+//     });
+//   }
+
+//   // Enhanced video completion method
+//   void _completeVideo() {
+//     if (_isNavigating || _videoCompleted || _isDisposed) return;
+
+//     print('_completeVideo called - Starting navigation back');
+
+//     _videoCompleted = true;
+//     _isNavigating = true;
+
+//     // Stop the player immediately
+//     if (_controller != null) {
+//       try {
+//         _controller!.pause();
+//         print('Video paused successfully');
+//       } catch (e) {
+//         print('Error pausing video: $e');
+//       }
+//     }
+
+//     // Cancel all timers
+//     _completionCheckTimer?.cancel();
+//     _seekTimer?.cancel();
+//     _stateVerificationTimer?.cancel();
+//     _textColorDelayTimer?.cancel();
+
+//     // Navigate back with a short delay to ensure cleanup
+//     Future.delayed(const Duration(milliseconds: 500), () {
+//       if (mounted && !_isDisposed) {
+//         print('Attempting to navigate back to source page');
+//         try {
+//           Navigator.of(context).pop();
+//           print('Navigation completed successfully');
+//         } catch (e) {
+//           print('Error during navigation: $e');
+//           // Try alternative navigation method
+//           Navigator.pop(context);
+//         }
+//       }
+//     });
+//   }
+
+//   // Enhanced Toggle Play/Pause with State Tracking
+//   void _togglePlayPause() {
+//     if (_controller != null && _isPlayerReady && !_isDisposed) {
+//       final currentControllerState = _controller!.value.isPlaying;
+
+//       if (currentControllerState) {
+//         // Video is currently playing, so pause it
+//         _controller!.pause();
+
+//         // Immediately update state
+//         setState(() {
+//           _isPlaying = false;
+//           _isPaused = true;
+//           _currentPlayerState = PlayerState.paused;
+//         });
+//       } else {
+//         // Video is not playing, so play it
+//         _controller!.play();
+
+//         // Immediately update state
+//         setState(() {
+//           _isPlaying = true;
+//           _isPaused = false;
+//           _currentPlayerState = PlayerState.playing;
+//           // Mark that video has started playing when manually played with delay
+//           if (_currentPosition.inSeconds > 0) {
+//             _startTextColorDelayTimer();
+//           }
+//         });
+
+//         // Log quality info after play
+//         Future.delayed(const Duration(milliseconds: 500), () {
+//           _logCurrentQuality();
+//         });
+
+//         // Additional verification after a short delay
+//         Future.delayed(const Duration(milliseconds: 300), () {
+//           if (_controller != null && mounted && !_isDisposed) {
+//             final verifyPlaying = _controller!.value.isPlaying;
+
+//             if (!verifyPlaying) {
+//               // If still not playing, try again
+//               _controller!.play();
+//             }
+//           }
+//         });
+//       }
+//     }
+//   }
+
+//   // Enhanced Seeking with Play State Preservation
+//   void _seekVideo(bool forward) {
+//     if (_controller != null &&
+//         _isPlayerReady &&
+//         _totalDuration.inSeconds > 24 &&
+//         !_isDisposed) {
+//       // Remember playing state before seeking
+//       _wasPlayingBeforeSeek = _isPlaying;
+
+//       final adjustedEndTime = _totalDuration.inSeconds - 12;
+//       final seekAmount = (adjustedEndTime / 200).round().clamp(5, 30);
+
+//       _seekTimer?.cancel();
+
+//       if (forward) {
+//         _pendingSeekSeconds += seekAmount;
+//       } else {
+//         _pendingSeekSeconds -= seekAmount;
+//       }
+
+//       final currentSeconds = _currentPosition.inSeconds;
+//       final targetSeconds =
+//           (currentSeconds + _pendingSeekSeconds).clamp(0, adjustedEndTime);
+//       _targetSeekPosition = Duration(seconds: targetSeconds);
+
+//       if (mounted && !_isDisposed) {
+//         setState(() {
+//           _isSeeking = true;
+//         });
+//       }
+
+//       _seekTimer = Timer(const Duration(milliseconds: 1000), () {
+//         _executeSeek();
+//       });
+//     }
+//   }
+
+//   void _executeSeek() {
+//     if (_controller != null &&
+//         _isPlayerReady &&
+//         !_isDisposed &&
+//         _pendingSeekSeconds != 0) {
+//       final adjustedEndTime = _totalDuration.inSeconds - 12;
+//       final currentSeconds = _currentPosition.inSeconds;
+//       final newPosition =
+//           (currentSeconds + _pendingSeekSeconds).clamp(0, adjustedEndTime);
+
+//       _controller!.seekTo(Duration(seconds: newPosition));
+
+//       // Restore playing state after seek
+//       Future.delayed(const Duration(milliseconds: 300), () {
+//         if (_controller != null && !_isDisposed) {
+//           if (_wasPlayingBeforeSeek) {
+//             _controller!.play();
+//             setState(() {
+//               _isPlaying = true;
+//               _isPaused = false;
+//               _currentPlayerState = PlayerState.playing;
+//             });
+//             // Log quality info after seek and play
+//             Future.delayed(const Duration(milliseconds: 500), () {
+//               _logCurrentQuality();
+//             });
+//           }
+//         }
+//       });
+
+//       _pendingSeekSeconds = 0;
+//       _targetSeekPosition = Duration.zero;
+
+//       if (mounted && !_isDisposed) {
+//         setState(() {
+//           _isSeeking = false;
+//         });
+//       }
+//     }
+//   }
+
+//   // Method to start the delay timer for text color change
+//   void _startTextColorDelayTimer() {
+//     // Cancel any existing timer
+//     _textColorDelayTimer?.cancel();
+
+//     // Start new timer with 5 second delay
+//     _textColorDelayTimer = Timer(const Duration(seconds: 5), () {
+//       if (mounted && !_isDisposed) {
+//         setState(() {
+//           _hasVideoStartedPlaying = true;
+//         });
+//       }
+//     });
+//   }
+
+//   bool _handleKeyEvent(RawKeyEvent event) {
+//     if (_isDisposed) return false;
+
+//     if (event is RawKeyDownEvent) {
+//       switch (event.logicalKey) {
+//         case LogicalKeyboardKey.select:
+//         case LogicalKeyboardKey.enter:
+//         case LogicalKeyboardKey.space:
+//           _togglePlayPause();
+//           return true;
+//         case LogicalKeyboardKey.arrowLeft:
+//           _seekVideo(false);
+//           return true;
+//         case LogicalKeyboardKey.arrowRight:
+//           _seekVideo(true);
+//           return true;
+//         case LogicalKeyboardKey.escape:
+//         case LogicalKeyboardKey.backspace:
+//           if (!_isDisposed) {
+//             Navigator.of(context).pop();
+//           }
+//           return true;
+//         default:
+//           break;
+//       }
+//     }
+//     return false;
+//   }
+
+//   Future<bool> _onWillPop() async {
+//     if (_isDisposed || _isNavigating) return true;
+
+//     try {
+//       _isNavigating = true;
+//       _isDisposed = true;
+
+//       _seekTimer?.cancel();
+//       _dateTimeTimer?.cancel();
+//       _stateVerificationTimer?.cancel();
+//       _textColorDelayTimer?.cancel();
+//       _completionCheckTimer?.cancel();
+//       _scrollController.dispose();
+
+//       if (_controller != null) {
+//         try {
+//           if (_controller!.value.isPlaying) {
+//             _controller!.pause();
+//           }
+//           _controller!.dispose();
+//           _controller = null;
+//         } catch (e) {
+//           // Handle dispose error silently
+//         }
+//       }
+
+//       try {
+//         await SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+//             overlays: SystemUiOverlay.values);
+//         await SystemChrome.setPreferredOrientations([
+//           DeviceOrientation.portraitUp,
+//           DeviceOrientation.portraitDown,
+//           DeviceOrientation.landscapeLeft,
+//           DeviceOrientation.landscapeRight,
+//         ]);
+//       } catch (e) {
+//         // Handle system UI error silently
+//       }
+
+//       return true;
+//     } catch (e) {
+//       return true;
+//     }
+//   }
+
+//   @override
+//   void dispose() {
+//     try {
+//       _isDisposed = true;
+//       _seekTimer?.cancel();
+//       _dateTimeTimer?.cancel();
+//       _stateVerificationTimer?.cancel();
+//       _textColorDelayTimer?.cancel();
+//       _completionCheckTimer?.cancel();
+//       _scrollController.dispose();
+
+//       if (_mainFocusNode.hasListeners) {
+//         _mainFocusNode.dispose();
+//       }
+
+//       if (_controller != null) {
+//         try {
+//           _controller!.pause();
+//           _controller!.dispose();
+//           _controller = null;
+//         } catch (e) {
+//           // Handle dispose error silently
+//         }
+//       }
+
+//       try {
+//         SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+//             overlays: SystemUiOverlay.values);
+//         SystemChrome.setPreferredOrientations([
+//           DeviceOrientation.portraitUp,
+//           DeviceOrientation.portraitDown,
+//           DeviceOrientation.landscapeLeft,
+//           DeviceOrientation.landscapeRight,
+//         ]);
+//       } catch (e) {
+//         // Handle system UI error silently
+//       }
+//     } catch (e) {
+//       // Handle any dispose error silently
+//     }
+
+//     super.dispose();
+//   }
+
+//   String _formatDuration(Duration duration) {
+//     String twoDigits(int n) => n.toString().padLeft(2, '0');
+//     String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
+//     String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
+//     return "${twoDigits(duration.inHours)}:$twoDigitMinutes:$twoDigitSeconds";
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     if (_isDisposed) {
+//       return const Scaffold(
+//         body: Center(
+//           child: CircularProgressIndicator(),
+//         ),
+//       );
+//     }
+
+//     return RawKeyboardListener(
+//       focusNode: _mainFocusNode,
+//       autofocus: true,
+//       onKey: _handleKeyEvent,
+//       child: WillPopScope(
+//         onWillPop: _onWillPop,
+//         child: Scaffold(
+//           body: GestureDetector(
+//             child: Stack(
+//               children: [
+//                 // Full screen video player
+//                 _buildVideoPlayer(),
+//                 // Top/Bottom Black Bars with Progress Bar
+//                 _buildTopBottomBlackBars(),
+//                 // Date display below top bar
+//                 _buildDateDisplay(),
+//                 // Custom Loading Overlay - Only show when controller is null
+//                 if (_controller == null) _buildCustomLoadingOverlay(),
+//               ],
+//             ),
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildDateDisplay() {
+//     return Positioned(
+//       top: screenhgt * 0.07,
+//       left: 0,
+//       right: 0,
+//       child: Row(
+//         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//         children: [
+//           // Left side - Date with minimal background
+//           Container(
+//             padding: EdgeInsets.symmetric(
+//               horizontal: screenwdt * 0.03,
+//               vertical: screenhgt * 0.001,
+//             ),
+//             decoration: BoxDecoration(
+//               color: Colors.black,
+//               borderRadius: BorderRadius.circular(5),
+//             ),
+//             child: Text(
+//               _currentDate,
+//               style: const TextStyle(
+//                 color: Colors.white,
+//                 fontSize: 16,
+//                 fontWeight: FontWeight.bold,
+//               ),
+//             ),
+//           ),
+//           // Right side - Time with minimal background
+//           Container(
+//             padding: EdgeInsets.symmetric(
+//               horizontal: screenwdt * 0.03,
+//               vertical: screenhgt * 0.001,
+//             ),
+//             decoration: BoxDecoration(
+//               color: Colors.black,
+//               borderRadius: BorderRadius.circular(5),
+//             ),
+//             child: Text(
+//               _currentTime,
+//               style: const TextStyle(
+//                 color: Colors.white,
+//                 fontSize: 16,
+//                 fontWeight: FontWeight.bold,
+//               ),
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+
+//   Widget _buildTopBottomBlackBars() {
+//     return Stack(
+//       children: [
+//         // Top Black Bar with Scrolling Name
+//         Positioned(
+//           top: 0,
+//           left: 0,
+//           right: 0,
+//           height: screenhgt * 0.1,
+//           child: Container(
+//             alignment: Alignment.center,
+//             color: Colors.black,
+//             child: Column(
+//               mainAxisAlignment: MainAxisAlignment.center,
+//               children: [
+//                 SizedBox(
+//                   height: screenhgt * 0.03,
+//                 ),
+//                 Text(
+//                   '${(widget.name?.toUpperCase() ?? '')}',
+//                   style: TextStyle(
+//                     // Dynamic color: black initially, white when video starts playing
+//                     color: _hasVideoStartedPlaying ? Colors.white : Colors.black,
+//                     fontSize: 18,
+//                     fontWeight: FontWeight.bold,
+//                   ),
+//                   textAlign: TextAlign.center,
+//                   maxLines: 1,
+//                   overflow: TextOverflow.ellipsis,
+//                 ),
+//               ],
+//             ),
+//           ),
+//         ),
+
+
+
+//         // Bottom Black Bar with Progress Bar
+//         Positioned(
+//           bottom: 0,
+//           left: screenwdt * 0.7,
+//           right: 0,
+//           height: screenhgt * 0.12,
+//           child: Container(
+//             color: Colors.black,
+//             child: Column(
+//               mainAxisAlignment: MainAxisAlignment.center,
+//               children: [
+//                 Container(
+//                   margin: const EdgeInsets.symmetric(horizontal: 40),
+//                   child: Column(
+//                     children: [
+//                       // Progress Bar
+//                       Container(
+//                         height: 6,
+//                         decoration: BoxDecoration(
+//                           borderRadius: BorderRadius.circular(3),
+//                         ),
+//                         child: ClipRRect(
+//                           borderRadius: BorderRadius.circular(3),
+//                           child: Stack(
+//                             children: [
+//                               Container(
+//                                 width: double.infinity,
+//                                 height: 6,
+//                                 color: Colors.white.withOpacity(0.3),
+//                               ),
+//                               if (_totalDuration.inSeconds > 0)
+//                                 FractionallySizedBox(
+//                                   widthFactor: _currentPosition.inSeconds /
+//                                       (_totalDuration.inSeconds - 12)
+//                                           .clamp(1, double.infinity),
+//                                   child: Container(
+//                                     height: 6,
+//                                     color: Colors.red,
+//                                   ),
+//                                 ),
+//                               if (_isSeeking && _totalDuration.inSeconds > 0)
+//                                 FractionallySizedBox(
+//                                   widthFactor: _targetSeekPosition.inSeconds /
+//                                       (_totalDuration.inSeconds - 12)
+//                                           .clamp(1, double.infinity),
+//                                   child: Container(
+//                                     height: 6,
+//                                     color: Colors.yellow.withOpacity(0.8),
+//                                   ),
+//                                 ),
+//                             ],
+//                           ),
+//                         ),
+//                       ),
+
+//                       // Time Display
+//                       Row(
+//                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                         children: [
+//                           Text(
+//                             _isSeeking
+//                                 ? _formatDuration(_targetSeekPosition)
+//                                 : _formatDuration(_currentPosition),
+//                             style: TextStyle(
+//                               color: _isSeeking ? Colors.yellow : Colors.white,
+//                               fontSize: 12,
+//                               fontWeight: _isSeeking
+//                                   ? FontWeight.bold
+//                                   : FontWeight.normal,
+//                             ),
+//                           ),
+//                           Text(
+//                             _formatDuration(Duration(
+//                                 seconds: (_totalDuration.inSeconds - 12)
+//                                     .clamp(0, double.infinity)
+//                                     .toInt())),
+//                             style: const TextStyle(
+//                                 color: Colors.white, fontSize: 12),
+//                           ),
+//                         ],
+//                       ),
+//                     ],
+//                   ),
+//                 ),
+//               ],
+//             ),
+//           ),
+//         ),
+//       ],
+//     );
+//   }
+
+//   Widget _buildVideoPlayer() {
+//     if (_error != null) {
+//       return Container(
+//         color: Colors.black,
+//         child: Center(
+//           child: Column(
+//             mainAxisAlignment: MainAxisAlignment.center,
+//             children: [
+//               const Icon(Icons.error, color: Colors.red, size: 48),
+//               const SizedBox(height: 16),
+//               Text(_error!, style: const TextStyle(color: Colors.white)),
+//               const SizedBox(height: 16),
+//               ElevatedButton(
+//                 onPressed: () {
+//                   if (!_isDisposed && mounted) {
+//                     setState(() {
+//                       _isLoading = true;
+//                       _error = null;
+//                       _isPlayerReady = false;
+//                       _isPlaying = false;
+//                       _hasVideoStartedPlaying = false;
+//                       _textColorDelayTimer?.cancel();
+//                     });
+//                     _controller?.dispose();
+//                     _initializePlayer();
+//                   }
+//                 },
+//                 child: const Text('Retry'),
+//               ),
+//             ],
+//           ),
+//         ),
+//       );
+//     }
+
+//     // Different width options - Choose one:
+
+//     // Option 1: 90% of screen width (10% kam)
+//     // double videoWidthMultiplier = 0.90;
+
+//     // Option 2: 95% of screen width (5% kam) - Recommended
+//     double videoWidthMultiplier = 0.98;
+
+//     // Option 3: 85% of screen width (15% kam) - More padding
+//     // double videoWidthMultiplier = 0.85;
+
+//     // Option 4: Fixed padding from sides (20 pixels each side)
+//     // double effectiveVideoWidth = screenwdt - 40;
+
+//     // Calculate video dimensions
+//     double effectiveVideoWidth = screenwdt * videoWidthMultiplier;
+//     double effectiveVideoHeight = effectiveVideoWidth * 9 / 16;
+
+//     return Center(
+//       child: Container(
+//         width: screenwdt,
+//         height: screenhgt,
+//         color: Colors.black,
+//         child: Stack(
+//           children: [
+//             // YouTube Player - Customizable Width
+//             if (_controller != null)
+//               Center(
+//                 child: Container(
+//                   width: effectiveVideoWidth,
+//                   height: effectiveVideoHeight,
+//                   decoration: BoxDecoration(
+//                     borderRadius: BorderRadius.circular(12), // Rounded corners
+//                     boxShadow: [
+//                       BoxShadow(
+//                         color: Colors.black.withOpacity(0.3),
+//                         blurRadius: 10,
+//                         spreadRadius: 2,
+//                       ),
+//                     ],
+//                   ),
+//                   child: ClipRRect(
+//                     borderRadius: BorderRadius.circular(12),
+//                     child: YoutubePlayer(
+//                       controller: _controller!,
+//                       showVideoProgressIndicator: false,
+//                       progressIndicatorColor: Colors.red,
+//                       bufferIndicator: Container(),
+//                       bottomActions: [],
+//                       topActions: [],
+//                       aspectRatio: 16 / 9,
+      
+//                       onReady: () {
+//                         if (!_isPlayerReady && !_isDisposed) {
+//                           if (mounted) {
+//                             setState(() {
+//                               _isPlayerReady = true;
+//                               _isLoading = false;
+//                             });
+//                           }
+      
+//                           Future.delayed(const Duration(milliseconds: 500), () {
+//                             if (!_isDisposed) {
+//                               _mainFocusNode.requestFocus();
+//                             }
+//                           });
+      
+//                           Future.delayed(const Duration(milliseconds: 100), () {
+//                             if (_controller != null && mounted && !_isDisposed) {
+//                               _controller!.play();
+//                               // Log quality info after play
+//                               Future.delayed(const Duration(milliseconds: 1000), () {
+//                                 _logCurrentQuality();
+//                               });
+//                             }
+//                           });
+//                         }
+//                       },
+      
+//                       onEnded: (_) {
+//                         print('onEnded callback triggered');
+//                         if (_isDisposed || _isNavigating || _videoCompleted) return;
+//                         _completeVideo();
+//                       },
+//                     ),
+//                   ),
+//                 ),
+//               ),
+      
+//             // Loading indicator
+//             if (_isLoading || !_isPlayerReady)
+//               Positioned.fill(
+//                 child: Container(
+//                   color: Colors.black.withOpacity(0.7),
+//                   child: const Center(
+//                     child: Column(
+//                       mainAxisAlignment: MainAxisAlignment.center,
+//                       children: [
+//                         CircularProgressIndicator(
+//                           color: Colors.red,
+//                           strokeWidth: 6,
+//                         ),
+//                         SizedBox(height: 20),
+//                         Text(
+//                           'Loading Video...',
+//                           style: TextStyle(
+//                             color: Colors.white,
+//                             fontSize: 18,
+//                             fontWeight: FontWeight.bold,
+//                           ),
+//                         ),
+//                       ],
+//                     ),
+//                   ),
+//                 ),
+//               ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+
+//   // Simple loading overlay for when controller is null
+//   Widget _buildCustomLoadingOverlay() {
+//     return Positioned.fill(
+//       child: Container(
+//         width: screenwdt,
+//         height: screenhgt,
+//         color: Colors.black,
+//         child: const Center(
+//           child: Column(
+//             mainAxisAlignment: MainAxisAlignment.center,
+//             children: [
+//               CircularProgressIndicator(
+//                 color: Colors.white,
+//                 strokeWidth: 6,
+//               ),
+//               // SizedBox(height: 20),
+//               // Text(
+//               //   'Initializing Player...',
+//               //   style: TextStyle(
+//               //     color: Colors.white,
+//               //     fontSize: 18,
+//               //     fontWeight: FontWeight.bold,
+//               //   ),
+//               // ),
+//             ],
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+
+
+
+
+
+
+
+// import 'dart:convert';
+// import 'package:flutter/material.dart';
+// import 'package:flutter/services.dart';
+// import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+// import 'dart:async';
+// import 'package:intl/intl.dart';
+// import 'package:mobi_tv_entertainment/main.dart'; // Ensure this path is correct
+// import 'package:keep_screen_on/keep_screen_on.dart';
+
+
+
+// /// A separate widget to handle the date and time updates.
+// class DateTimeWidget extends StatefulWidget {
+//   const DateTimeWidget({Key? key}) : super(key: key);
+
+//   @override
+//   _DateTimeWidgetState createState() => _DateTimeWidgetState();
+// }
+
+// class _DateTimeWidgetState extends State<DateTimeWidget> {
+//   late Timer _dateTimeTimer;
+//   String _currentDate = '';
+//   String _currentTime = '';
+
+//   @override
+//   void initState() {
+//     super.initState();
+    
+//     _updateDateTime();
+//     _startDateTimeTimer();
+//   }
+
+//   void _updateDateTime() {
+//     final now = DateTime.now();
+//     _currentDate = DateFormat('MM/dd/yyyy').format(now);
+//     _currentTime = DateFormat('HH:mm:ss').format(now);
+//   }
+
+//   void _startDateTimeTimer() {
+//     _dateTimeTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+//       if (mounted) {
+//         setState(() {
+//           _updateDateTime();
+//         });
+//       }
+//     });
+//   }
+
+//   @override
+//   void dispose() {
+//     _dateTimeTimer.cancel();
+//     super.dispose();
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Positioned(
+//       top: screenhgt * 0.07,
+//       left: 0,
+//       right: 0,
+//       child: Padding(
+//         padding: EdgeInsets.symmetric(horizontal: screenwdt * 0.03),
+//         child: Row(
+//           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//           children: [
+//             Container(
+//               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+//               decoration: BoxDecoration(color: Colors.black.withOpacity(0.5), borderRadius: BorderRadius.circular(5)),
+//               child: Text(_currentDate, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+//             ),
+//             Container(
+//               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+//               decoration: BoxDecoration(color: Colors.black.withOpacity(0.5), borderRadius: BorderRadius.circular(5)),
+//               child: Text(_currentTime, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+// /// The main YouTube player widget with all features.
+// class CustomYoutubePlayer extends StatefulWidget {
+//   final String videoUrl;
+//   final String? name;
+
+//   const CustomYoutubePlayer({
+//     Key? key,
+//     required this.videoUrl,
+//     required this.name,
+//   }) : super(key: key);
+
+//   @override
+//   _CustomYoutubePlayerState createState() => _CustomYoutubePlayerState();
+// }
+
+// class _CustomYoutubePlayerState extends State<CustomYoutubePlayer> with WidgetsBindingObserver {
+//   InAppWebViewController? _webViewController;
+//   String? _videoId;
+//   bool _isPageLoading = true;
+//   final FocusNode _focusNode = FocusNode();
+
+//   Duration _currentPosition = Duration.zero;
+//   Duration _totalDuration = Duration.zero;
+
+//   final List<ContentBlocker> adBlockers = [
+//     ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: '.*doubleclick\\.net/.*'), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+//     ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: '.*googlesyndication\\.com/.*'), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+//     ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: '.*googleadservices\\.com/.*'), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+//     ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: '.*adservice\\.google\\.com/.*'), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+//     ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: '.*youtube\\.com/api/stats/ads.*'), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+//     ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: '.*google-analytics\\.com/.*'), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+//     ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: '.*googletagservices\\.com/.*'), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+//     ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: '.*imasdk\\.googleapis\\.com/.*'), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+//   ];
+
+//   String? _extractVideoId(String url) {
+//     if (url.length == 11 && !url.contains('/') && !url.contains('?')) {
+//       return url; // It's already an ID
+//     }
+//     RegExp regExp = RegExp(
+//       r'.*(?:youtu\.be\/|v\/|vi\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*',
+//       caseSensitive: false,
+//       multiLine: false,
+//     );
+//     final match = regExp.firstMatch(url);
+//     return (match != null && match.group(1)!.length == 11) ? match.group(1) : null;
+//   }
+
+//   @override
+//   void initState() {
+//     super.initState();
+
+//     WidgetsBinding.instance.addObserver(this);
+//     KeepScreenOn.turnOn();
+//     _videoId = _extractVideoId(widget.videoUrl);
+//     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+//     SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
+//     _focusNode.requestFocus();
+//   }
+
+//   @override
+//   void dispose() {
+//     _focusNode.dispose();
+//     WidgetsBinding.instance.removeObserver(this);
+//     KeepScreenOn.turnOff();
+//     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: SystemUiOverlay.values);
+//     SystemChrome.setPreferredOrientations([]);
+//     super.dispose();
+//   }
+
+//   @override
+//   void didChangeAppLifecycleState(AppLifecycleState state) {
+//     super.didChangeAppLifecycleState(state);
+//     switch (state) {
+//       case AppLifecycleState.resumed:
+//         _webViewController?.resumeTimers();
+//         _webViewController?.evaluateJavascript(source: "if(player && player.playVideo) { player.playVideo(); }");
+//         break;
+//       case AppLifecycleState.paused:
+//       case AppLifecycleState.inactive:
+//       case AppLifecycleState.detached:
+//       case AppLifecycleState.hidden:
+//         _webViewController?.evaluateJavascript(source: "if(player && player.pauseVideo) { player.pauseVideo(); }");
+//         _webViewController?.pauseTimers();
+//         break;
+//     }
+//   }
+
+//   void _handleKeyEvent(RawKeyEvent event) {
+//     if (event is RawKeyDownEvent) {
+//       if (event.logicalKey == LogicalKeyboardKey.select || event.logicalKey == LogicalKeyboardKey.enter || event.logicalKey == LogicalKeyboardKey.mediaPlayPause) {
+//         _webViewController?.evaluateJavascript(source: "togglePlayPause();");
+//       } else if (event.logicalKey == LogicalKeyboardKey.arrowRight || event.logicalKey == LogicalKeyboardKey.mediaFastForward) {
+//         _webViewController?.evaluateJavascript(source: "seek(60);");
+//       } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft || event.logicalKey == LogicalKeyboardKey.mediaRewind) {
+//         _webViewController?.evaluateJavascript(source: "seek(-60);");
+//       }
+//     }
+//   }
+
+//   String _formatDuration(Duration duration) {
+//     String twoDigits(int n) => n.toString().padLeft(2, '0');
+//     String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
+//     String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
+//     return "${twoDigits(duration.inHours)}:$twoDigitMinutes:$twoDigitSeconds";
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final String livePlayerUrl = "https://yaqoob-work.github.io/my-player/player.html";
+
+//     return RawKeyboardListener(
+//       focusNode: _focusNode,
+//       autofocus: true,
+//       onKey: _handleKeyEvent,
+//       child: Scaffold(
+//         backgroundColor: Colors.black,
+//         body: _videoId == null
+//             ? const Center(child: Text('Invalid YouTube URL', style: TextStyle(color: Colors.white, fontSize: 18)))
+//             : Stack(
+//                 children: [
+//                   Positioned.fill(
+//                     child: Center(
+//                       child: AspectRatio(
+//                         aspectRatio: 16 / 9,
+//                         child: InAppWebView(
+//                           initialSettings: InAppWebViewSettings(
+//                             contentBlockers: adBlockers,
+//                             useHybridComposition: false,
+//                             userAgent: "Mozilla/5.0 (Linux; Android 10; SM-G975F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.106 Mobile Safari/537.36",
+//                             allowsInlineMediaPlayback: true,
+//                             mediaPlaybackRequiresUserGesture: false,
+//                             forceDark: ForceDark.OFF,
+//                           ),
+//                           onWebViewCreated: (controller) {
+//                             _webViewController = controller;
+//                             controller.addJavaScriptHandler(
+//                               handlerName: 'timeUpdate',
+//                               callback: (args) {
+//                                 if (args.length == 2 && args[0] is num && args[1] is num) {
+//                                   if (mounted) {
+//                                     setState(() {
+//                                       _currentPosition = Duration(seconds: (args[0] as num).toInt());
+//                                       _totalDuration = Duration(seconds: (args[1] as num).toInt());
+//                                     });
+//                                   }
+//                                 }
+//                               },
+//                             );
+//                             final urlToLoad = WebUri("$livePlayerUrl?id=$_videoId");
+//                             _webViewController?.loadUrl(urlRequest: URLRequest(url: urlToLoad));
+//                           },
+//                           onLoadStop: (controller, url) {
+//                             setState(() => _isPageLoading = false);
+//                             String cleanupJs = """
+//                               function cleanupAdUI() {
+//                                 const adElements = document.querySelectorAll('.ytp-ad-module, .ytp-ad-overlay-container');
+//                                 adElements.forEach(el => el.style.display = 'none');
+                                
+//                                 const skipButton = document.querySelector('.ytp-ad-skip-button, .ytp-ad-skip-button-modern');
+//                                 if (skipButton) {
+//                                   skipButton.click();
+//                                 }
+//                               }
+                              
+//                               setInterval(cleanupAdUI, 1000);
+//                               cleanupAdUI();
+//                             """;
+//                             _webViewController?.evaluateJavascript(source: cleanupJs);
+//                           },
+//                         ),
+//                       ),
+//                     ),
+//                   ),
+//                   _buildProgressBar(),
+//                   if (_isPageLoading)
+//                     const Center(child: CircularProgressIndicator(color: Colors.red)),
+//                 ],
+//               ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildProgressBar() {
+//     double progress = (_totalDuration.inSeconds == 0) ? 0 : _currentPosition.inSeconds / _totalDuration.inSeconds;
+//     if (progress > 1.0) progress = 1.0;
+//     if (progress < 0) progress = 0;
+
+//     return Positioned(
+//       bottom: 0,
+//       left: 0,
+//       right: 0,
+//       height: screenhgt * 0.05,
+//       child: Container(
+//         color: Colors.black,
+//         padding: const EdgeInsets.symmetric(horizontal: 12.0),
+//         child: Row(
+//           crossAxisAlignment: CrossAxisAlignment.center,
+//           children: [
+//             const SizedBox(width: 20),
+//             Text(
+//               _formatDuration(_currentPosition),
+//               style: const TextStyle(color: Colors.white, fontSize: 12),
+//             ),
+//             const SizedBox(width: 20),
+//             Expanded(
+//               child: LinearProgressIndicator(
+//                 value: progress,
+//                 backgroundColor: Colors.white.withOpacity(0.3),
+//                 valueColor: const AlwaysStoppedAnimation<Color>(Colors.red),
+//                 minHeight: 6,
+//               ),
+//             ),
+//             const SizedBox(width: 20),
+//             Text(
+//               _formatDuration(_totalDuration),
+//               style: const TextStyle(color: Colors.white, fontSize: 12),
+//             ),
+//             const SizedBox(width: 20),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+
+
+
+
+
+
+// import 'dart:async';
+// import 'package:flutter/material.dart';
+// import 'package:flutter/services.dart';
+// import 'package:intl/intl.dart';
+// import 'package:youtube_player_flutter/youtube_player_flutter.dart';
+// import 'package:mobi_tv_entertainment/main.dart'; // Make sure this path is correct
+
+// class CustomYoutubePlayer extends StatefulWidget {
+//   final String videoUrl;
+//   final String? name;
+
+//   const CustomYoutubePlayer({
+//     Key? key,
+//     required this.videoUrl,
+//     required this.name,
+//   }) : super(key: key);
+
+//   @override
+//   _CustomYoutubePlayerState createState() => _CustomYoutubePlayerState();
+// }
+
+// class _CustomYoutubePlayerState extends State<CustomYoutubePlayer> with TickerProviderStateMixin {
+//   YoutubePlayerController? _controller;
+//   bool _isPlayerReady = false;
+//   String? _error;
+//   bool _isLoading = true;
+
+//   // Timers
+//   Timer? _dateTimeTimer;
+//   Timer? _completionCheckTimer;
+//   Timer? _seekTimer;
+
+//   // UI State
+//   String _currentTime = '';
+//   String _currentDate = '';
+//   bool _isSeeking = false;
+//   Duration _currentPosition = Duration.zero;
+//   Duration _totalDuration = Duration.zero;
+//   bool _hasVideoStartedPlaying = false;
+//   int _pendingSeekSeconds = 0;
+//   bool _wasPlayingBeforeSeek = false;
+//   Duration _targetSeekPosition = Duration.zero;
+
+//   // Focus Node
+//   final FocusNode _mainFocusNode = FocusNode();
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     _setFullScreenMode();
+//     _updateDateTime();
+//     _startDateTimeTimer();
+//     _initializePlayer();
+//     WidgetsBinding.instance.addPostFrameCallback((_) {
+//       FocusScope.of(context).requestFocus(_mainFocusNode);
+//     });
+//   }
+
+//   void _initializePlayer() {
+//     final String? videoId = YoutubePlayer.convertUrlToId(widget.videoUrl);
+
+//     if (videoId == null || videoId.isEmpty) {
+//       setState(() {
+//         _error = "Invalid YouTube URL";
+//         _isLoading = false;
+//       });
+//       return;
+//     }
+
+//     _controller = YoutubePlayerController(
+//       initialVideoId: videoId,
+//       flags: const YoutubePlayerFlags(
+//         autoPlay: false, // **IMPORTANT**: Set to false. We will play manually in onReady.
+//         mute: false,
+//         disableDragSeek: false,
+//         loop: false,
+//         isLive: false,
+//         forceHD: false,
+//         enableCaption: false,
+//         hideControls: true,
+//         useHybridComposition: false,
+//       ),
+//     )..addListener(_playerListener);
+//   }
+
+//   void _playerListener() {
+//     if (_isPlayerReady && mounted && _controller != null) {
+//       setState(() {
+//         _currentPosition = _controller!.value.position;
+//         _totalDuration = _controller!.value.metaData.duration;
+//       });
+
+//       // Start a 5-second timer to show the channel name only after playback begins
+//       if (_controller!.value.isPlaying && !_hasVideoStartedPlaying) {
+//         if (_currentPosition > Duration.zero) {
+//           _hasVideoStartedPlaying = true;
+//           // Use a post-frame callback to safely call setState
+//           WidgetsBinding.instance.addPostFrameCallback((_) {
+//              if(mounted){
+//                 setState(() {});
+//              }
+//           });
+//         }
+//       }
+//     }
+//   }
+
+//   void _startDateTimeTimer() {
+//     _dateTimeTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+//       if (mounted) {
+//         _updateDateTime();
+//       }
+//     });
+//   }
+
+//   void _updateDateTime() {
+//     final now = DateTime.now();
+//     setState(() {
+//       _currentTime = DateFormat('HH:mm:ss').format(now);
+//       _currentDate = DateFormat('MM/dd/yyyy').format(now);
+//     });
+//   }
+
+//   void _setFullScreenMode() {
+//     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+//     SystemChrome.setPreferredOrientations([
+//       DeviceOrientation.landscapeLeft,
+//       DeviceOrientation.landscapeRight,
+//     ]);
+//   }
+
+//   void _handleKeyEvent(RawKeyEvent event) {
+//     if (event is RawKeyDownEvent) {
+//       if (event.logicalKey == LogicalKeyboardKey.select || event.logicalKey == LogicalKeyboardKey.enter) {
+//         _togglePlayPause();
+//       } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+//         _seekVideo(false);
+//       } else if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
+//         _seekVideo(true);
+//       } else if (event.logicalKey == LogicalKeyboardKey.backspace || event.logicalKey == LogicalKeyboardKey.escape) {
+//         Navigator.of(context).pop();
+//       }
+//     }
+//   }
+
+//   void _togglePlayPause() {
+//     if (_isPlayerReady && _controller != null) {
+//       _controller!.value.isPlaying ? _controller!.pause() : _controller!.play();
+//       setState(() {}); // Update UI to reflect play/pause state
+//     }
+//   }
+
+//   void _seekVideo(bool forward) {
+//     if (!_isPlayerReady || _controller == null || _totalDuration.inSeconds < 24) return;
+
+//     _wasPlayingBeforeSeek = _controller!.value.isPlaying;
+//     _seekTimer?.cancel();
+
+//     final int seekAmount = (_totalDuration.inSeconds / 200).round().clamp(5, 30);
+//     _pendingSeekSeconds += forward ? seekAmount : -seekAmount;
+
+//     final int targetSeconds = (_currentPosition.inSeconds + _pendingSeekSeconds).clamp(0, _totalDuration.inSeconds - 12);
+//     _targetSeekPosition = Duration(seconds: targetSeconds);
+
+//     setState(() => _isSeeking = true);
+
+//     _seekTimer = Timer(const Duration(milliseconds: 800), () {
+//       _controller!.seekTo(_targetSeekPosition);
+//       _pendingSeekSeconds = 0;
+//       if (_wasPlayingBeforeSeek) {
+//         _controller!.play();
+//       }
+//       setState(() => _isSeeking = false);
+//     });
+//   }
+
+//   Future<bool> _onWillPop() async {
+//     // Clean up before leaving the screen
+//     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: SystemUiOverlay.values);
+//     SystemChrome.setPreferredOrientations([]);
+//     return true;
+//   }
+
+//   @override
+//   void dispose() {
+//     _dateTimeTimer?.cancel();
+//     _completionCheckTimer?.cancel();
+//     _seekTimer?.cancel();
+//     _controller?.dispose();
+//     _mainFocusNode.dispose();
+//     super.dispose();
+//   }
+
+//   String _formatDuration(Duration d) {
+//     final minutes = d.inMinutes.remainder(60).toString().padLeft(2, '0');
+//     final seconds = d.inSeconds.remainder(60).toString().padLeft(2, '0');
+//     return "${d.inHours > 0 ? d.inHours.toString().padLeft(2, '0') + ':' : ''}$minutes:$seconds";
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return WillPopScope(
+//       onWillPop: _onWillPop,
+//       child: RawKeyboardListener(
+//         focusNode: _mainFocusNode,
+//         onKey: _handleKeyEvent,
+//         child: Scaffold(
+//           backgroundColor: Colors.black,
+//           body: _buildPlayerBody(),
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildPlayerBody() {
+//     if (_error != null) {
+//       return Center(child: Text(_error!, style: const TextStyle(color: Colors.white, fontSize: 18)));
+//     }
+
+//     if (_isLoading) {
+//       return const Center(child: CircularProgressIndicator(color: Colors.red));
+//     }
+
+//     return Stack(
+//       children: [
+//         // Video Player
+//         Center(
+//           child: AspectRatio(
+//             aspectRatio: 16 / 9,
+//             child: YoutubePlayer(
+//               controller: _controller!,
+//               showVideoProgressIndicator: false,
+//               onReady: () {
+//                 setState(() {
+//                   _isPlayerReady = true;
+//                   _isLoading = false;
+//                 });
+//                 _controller!.play(); // **Single, reliable play command**
+//               },
+//               onEnded: (_) => Navigator.of(context).pop(),
+//             ),
+//           ),
+//         ),
+
+//         // Top Info Bar
+//         _buildTopBar(),
+
+//         // Bottom Progress Bar
+//         _buildBottomBar(),
+//       ],
+//     );
+//   }
+
+//   Widget _buildTopBar() {
+//     return Positioned(
+//       top: 0,
+//       left: 0,
+//       right: 0,
+//       child: Container(
+//         color: Colors.black.withOpacity(0.5),
+//         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+//         child: Row(
+//           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//           children: [
+//             Text(
+//               // Show channel name only after video has started playing
+//               _hasVideoStartedPlaying ? (widget.name?.toUpperCase() ?? '') : '',
+//               style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+//             ),
+//             Text(
+//               _currentDate + "  " + _currentTime,
+//               style: const TextStyle(color: Colors.white, fontSize: 16),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildBottomBar() {
+//     double progress = 0.0;
+//     if (_totalDuration.inSeconds > 0) {
+//       progress = _currentPosition.inSeconds / _totalDuration.inSeconds;
+//     }
+
+//     return Positioned(
+//       bottom: 0,
+//       left: 0,
+//       right: 0,
+//       child: Container(
+//         color: Colors.black.withOpacity(0.5),
+//         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+//         child: Column(
+//           mainAxisSize: MainAxisSize.min,
+//           children: [
+//             LinearProgressIndicator(
+//               value: progress,
+//               backgroundColor: Colors.white24,
+//               valueColor: const AlwaysStoppedAnimation<Color>(Colors.red),
+//             ),
+//             const SizedBox(height: 5),
+//             Row(
+//               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//               children: [
+//                 Text(
+//                   _isSeeking ? _formatDuration(_targetSeekPosition) : _formatDuration(_currentPosition),
+//                   style: TextStyle(color: _isSeeking ? Colors.yellow : Colors.white, fontSize: 16),
+//                 ),
+//                 Text(
+//                   _formatDuration(_totalDuration),
+//                   style: const TextStyle(color: Colors.white, fontSize: 16),
+//                 ),
+//               ],
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+// import 'dart:convert';
+// import 'package:flutter/material.dart';
+// import 'package:flutter/services.dart';
+// import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+// import 'dart:async';
+// import 'package:intl/intl.dart';
+// import 'package:mobi_tv_entertainment/main.dart'; // Ensure this path is correct for screenhgt/wdt
+
+
+
+
+// /// A separate widget to handle the date and time updates to prevent flickering.
+// class DateTimeWidget extends StatefulWidget {
+//   const DateTimeWidget({Key? key}) : super(key: key);
+
+//   @override
+//   _DateTimeWidgetState createState() => _DateTimeWidgetState();
+// }
+
+// class _DateTimeWidgetState extends State<DateTimeWidget> {
+//   late Timer _dateTimeTimer;
+//   String _currentDate = '';
+//   String _currentTime = '';
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     _updateDateTime();
+//     _startDateTimeTimer();
+//   }
+
+//   void _updateDateTime() {
+//     final now = DateTime.now();
+//     _currentDate = DateFormat('MM/dd/yyyy').format(now);
+//     _currentTime = DateFormat('HH:mm:ss').format(now);
+//   }
+
+//   void _startDateTimeTimer() {
+//     _dateTimeTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+//       if (mounted) {
+//         setState(() {
+//           _updateDateTime();
+//         });
+//       }
+//     });
+//   }
+
+//   @override
+//   void dispose() {
+//     _dateTimeTimer.cancel();
+//     super.dispose();
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Positioned(
+//       top: screenhgt * 0.07,
+//       left: 0,
+//       right: 0,
+//       child: Padding(
+//         padding: EdgeInsets.symmetric(horizontal: screenwdt * 0.03),
+//         child: Row(
+//           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//           children: [
+//             Container(
+//               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+//               decoration: BoxDecoration(color: Colors.black.withOpacity(0.5), borderRadius: BorderRadius.circular(5)),
+//               child: Text(_currentDate, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+//             ),
+//             Container(
+//               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+//               decoration: BoxDecoration(color: Colors.black.withOpacity(0.5), borderRadius: BorderRadius.circular(5)),
+//               child: Text(_currentTime, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+// /// The main YouTube player widget with all features.
+// class CustomYoutubePlayer extends StatefulWidget {
+//   final String videoUrl;
+//   final String? name;
+
+//   const CustomYoutubePlayer({
+//     Key? key,
+//     required this.videoUrl,
+//     required this.name,
+//   }) : super(key: key);
+
+//   @override
+//   _CustomYoutubePlayerState createState() => _CustomYoutubePlayerState();
+// }
+
+// class _CustomYoutubePlayerState extends State<CustomYoutubePlayer> with WidgetsBindingObserver {
+//   InAppWebViewController? _webViewController;
+//   String? _videoId;
+//   bool _isPageLoading = true;
+//   final FocusNode _focusNode = FocusNode();
+
+//   Duration _currentPosition = Duration.zero;
+//   Duration _totalDuration = Duration.zero;
+
+//   // Expanded Ad Blocker List
+// //   final List<ContentBlocker> adBlockers = [
+// //     ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: ".*doubleclick\\.net/.*"), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+// //     ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: ".*googlesyndication\\.com/.*"), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+// //     ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: ".*googleadservices\\.com/.*"), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+// //     ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: ".*google-analytics\\.com/.*"), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+// //     ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: ".*adservice\\.google\\.com/.*"), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+// //     ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: ".*youtube\\.com/api/stats/ads.*"), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+// //     ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: ".*youtube\\.com/get_ad_break.*"), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+// //     ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: ".*youtube\\.com/pagead/.*"), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+// //     ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: ".*googlevideo\\.com/videoplayback.*adformat.*"), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+// //     ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: ".*googlevideo\\.com/videoplayback.*ctier.*"), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+// //     ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: ".*youtube\\.com/ptracking.*"), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+// //   ];
+
+
+//   final List<ContentBlocker> adBlockers = [
+//     ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: ".*doubleclick\\.net/.*"), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+//     ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: ".*googlesyndication\\.com/.*"), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+//     ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: ".*googleadservices\\.com/.*"), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+//     ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: ".*google-analytics\\.com/.*"), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+//     ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: ".*adservice\\.google\\.com/.*"), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+//     ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: ".*youtube\\.com/api/stats/ads.*"), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+//     ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: ".*youtube\\.com/get_ad_break.*"), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+//     ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: ".*youtube\\.com/pagead/.*"), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+//     ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: ".*googlevideo\\.com/videoplayback.*adformat.*"), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+//     ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: ".*googlevideo\\.com/videoplayback.*ctier.*"), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+//     ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: ".*youtube\\.com/ptracking.*"), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+//     ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: ".*youtube\\.com/api/stats/qoe.*"), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+//     ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: ".*youtube\\.com/ad_data.*"), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+//     ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: ".*youtube\\.com/api/stats/atr.*"), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+//     ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: ".*stats\\.g\\.doubleclick\\.net/.*"), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+//   ];
+
+//   String? _extractVideoId(String url) {
+//     if (url.length == 11 && !url.contains('/') && !url.contains('?')) {
+//       return url; // It's already an ID
+//     }
+//     RegExp regExp = RegExp(
+//       r'.*(?:youtu\.be\/|v\/|vi\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*',
+//       caseSensitive: false,
+//       multiLine: false,
+//     );
+//     final match = regExp.firstMatch(url);
+//     return (match != null && match.group(1)!.length == 11) ? match.group(1) : null;
+//   }
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     WidgetsBinding.instance.addObserver(this);
+//     _videoId = _extractVideoId(widget.videoUrl);
+//     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+//     SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
+//     _focusNode.requestFocus();
+//   }
+
+//   @override
+//   void dispose() {
+//     _focusNode.dispose();
+//     WidgetsBinding.instance.removeObserver(this);
+//     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: SystemUiOverlay.values);
+//     SystemChrome.setPreferredOrientations([]);
+//     super.dispose();
+//   }
+
+//   @override
+//   void didChangeAppLifecycleState(AppLifecycleState state) {
+//     super.didChangeAppLifecycleState(state);
+//     switch (state) {
+//       case AppLifecycleState.resumed:
+//         _webViewController?.resumeTimers();
+//         _webViewController?.evaluateJavascript(source: "if(player && player.playVideo) { player.playVideo(); }");
+//         break;
+//       case AppLifecycleState.paused:
+//       case AppLifecycleState.inactive:
+//       case AppLifecycleState.detached:
+//       case AppLifecycleState.hidden:
+//         _webViewController?.evaluateJavascript(source: "if(player && player.pauseVideo) { player.pauseVideo(); }");
+//         _webViewController?.pauseTimers();
+//         break;
+//     }
+//   }
+
+//   void _handleKeyEvent(RawKeyEvent event) {
+//     if (event is RawKeyDownEvent) {
+//       if (event.logicalKey == LogicalKeyboardKey.select || event.logicalKey == LogicalKeyboardKey.enter || event.logicalKey == LogicalKeyboardKey.mediaPlayPause) {
+//         _webViewController?.evaluateJavascript(source: "togglePlayPause();");
+//       } else if (event.logicalKey == LogicalKeyboardKey.arrowRight || event.logicalKey == LogicalKeyboardKey.mediaFastForward) {
+//         _webViewController?.evaluateJavascript(source: "seek(60);");
+//       } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft || event.logicalKey == LogicalKeyboardKey.mediaRewind) {
+//         _webViewController?.evaluateJavascript(source: "seek(-60);");
+//       }
+//     }
+//   }
+
+//   String _formatDuration(Duration duration) {
+//     String twoDigits(int n) => n.toString().padLeft(2, '0');
+//     String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
+//     String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
+//     return "${twoDigits(duration.inHours)}:$twoDigitMinutes:$twoDigitSeconds";
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final String livePlayerUrl = "https://yaqoob-work.github.io/my-player/player.html";
+
+//     return RawKeyboardListener(
+//       focusNode: _focusNode,
+//       autofocus: true,
+//       onKey: _handleKeyEvent,
+//       child: Scaffold(
+//         backgroundColor: Colors.black,
+//         body: _videoId == null
+//             ? const Center(child: Text('Invalid YouTube URL', style: TextStyle(color: Colors.white, fontSize: 18)))
+//             : Stack(
+//                 children: [
+//                   Center(
+//                     child: AspectRatio(
+//                       aspectRatio: 16 / 9,
+//                       child: InAppWebView(
+//                         initialSettings: InAppWebViewSettings(
+//                           contentBlockers: adBlockers,
+//                           useHybridComposition: false,
+//                           userAgent: "Mozilla/5.0 (Linux; Android 10; SM-G975F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.106 Mobile Safari/537.36",
+//                           allowsInlineMediaPlayback: true,
+//                           mediaPlaybackRequiresUserGesture: false,
+//                           forceDark: ForceDark.OFF,
+//                         ),
+//                         onWebViewCreated: (controller) {
+//                           _webViewController = controller;
+//                           controller.addJavaScriptHandler(
+//                             handlerName: 'timeUpdate',
+//                             callback: (args) {
+//                               if (args.length == 2 && args[0] is num && args[1] is num) {
+//                                 if (mounted) {
+//                                   setState(() {
+//                                     _currentPosition = Duration(seconds: (args[0] as num).toInt());
+//                                     _totalDuration = Duration(seconds: (args[1] as num).toInt());
+//                                   });
+//                                 }
+//                               }
+//                             },
+//                           );
+//                           final urlToLoad = WebUri("$livePlayerUrl?id=$_videoId");
+//                           _webViewController?.loadUrl(urlRequest: URLRequest(url: urlToLoad));
+//                         },
+//                         onLoadStop: (controller, url) {
+//                           setState(() => _isPageLoading = false);
+//                         },
+//                       ),
+//                     ),
+//                   ),
+                  
+//                   _buildTopBar(),
+//                   const DateTimeWidget(),
+//                   _buildProgressBar(),
+//                   if (_isPageLoading)
+//                     const Center(child: CircularProgressIndicator(color: Colors.red)),
+//                 ],
+//               ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildTopBar() {
+//     return Positioned(
+//       top: 0,
+//       left: 0,
+//       right: 0,
+//       child: Container(
+//         padding: const EdgeInsets.only(top: 8.0),
+//         height: screenhgt * 0.1,
+//         color: Colors.black.withOpacity(0.5),
+//         alignment: Alignment.center,
+//         child: Text(
+//           widget.name?.toUpperCase() ?? '',
+//           style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+//           textAlign: TextAlign.center,
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildProgressBar() {
+//     double progress = (_totalDuration.inSeconds == 0) ? 0 : _currentPosition.inSeconds / _totalDuration.inSeconds;
+//     if (progress > 1.0) progress = 1.0;
+//     if (progress < 0) progress = 0;
+
+//     return Positioned(
+//       bottom: 0,
+//       left: 0,
+//       right: 0,
+//       height: screenhgt * 0.05,
+//       child: Container(
+//         color: Colors.black,
+//         padding: const EdgeInsets.symmetric(horizontal: 12.0),
+//         child: Row(
+//           crossAxisAlignment: CrossAxisAlignment.center,
+//           children: [
+//             Text(
+//               _formatDuration(_currentPosition),
+//               style: const TextStyle(color: Colors.white, fontSize: 12),
+//             ),
+//             const SizedBox(width: 8),
+//             Expanded(
+//               child: LinearProgressIndicator(
+//                 value: progress,
+//                 backgroundColor: Colors.white.withOpacity(0.3),
+//                 valueColor: const AlwaysStoppedAnimation<Color>(Colors.red),
+//                 minHeight: 6,
+//               ),
+//             ),
+//             const SizedBox(width: 8),
+//             Text(
+//               _formatDuration(_totalDuration),
+//               style: const TextStyle(color: Colors.white, fontSize: 12),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+
+
+
+
+// import 'dart.convert';
+// import 'package.flutter/material.dart';
+// import 'package.flutter/services.dart';
+// import 'package.flutter_inappwebview/flutter_inappwebview.dart';
+// import 'dart:async';
+// import 'package.intl/intl.dart';
+// import 'package.mobi_tv_entertainment/main.dart'; // Ensure this path is correct for screenhgt/wdt
+
+
+
+
+// import 'dart:convert';
+// import 'package:flutter/material.dart';
+// import 'package:flutter/services.dart';
+// import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+// import 'dart:async';
+// import 'package:intl/intl.dart';
+// import 'package:keep_screen_on/keep_screen_on.dart';
+// import 'package:mobi_tv_entertainment/main.dart'; // Ensure this path is correct for screenhgt/wdt
+
+
+
+// /// A separate widget to handle the date and time updates to prevent flickering.
+// class DateTimeWidget extends StatefulWidget {
+//   const DateTimeWidget({Key? key}) : super(key: key);
+
+//   @override
+//   _DateTimeWidgetState createState() => _DateTimeWidgetState();
+// }
+
+// class _DateTimeWidgetState extends State<DateTimeWidget> {
+//   late Timer _dateTimeTimer;
+//   String _currentDate = '';
+//   String _currentTime = '';
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     _updateDateTime();
+//     _startDateTimeTimer();
+
+//   }
+
+//   void _updateDateTime() {
+//     final now = DateTime.now();
+//     _currentDate = DateFormat('MM/dd/yyyy').format(now);
+//     _currentTime = DateFormat('HH:mm:ss').format(now);
+//   }
+
+//   void _startDateTimeTimer() {
+//     _dateTimeTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+//       if (mounted) {
+//         setState(() {
+//           _updateDateTime();
+//         });
+//       }
+//     });
+//   }
+
+//   @override
+//   void dispose() {
+//     _dateTimeTimer.cancel();
+//     super.dispose();
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Positioned(
+//       top: screenhgt * 0.07,
+//       left: 0,
+//       right: 0,
+//       child: Padding(
+//         padding: EdgeInsets.symmetric(horizontal: screenwdt * 0.03),
+//         child: Row(
+//           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//           children: [
+//             Container(
+//               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+//               decoration: BoxDecoration(color: Colors.black, borderRadius: BorderRadius.circular(5)),
+//               child: Text(_currentDate, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+//             ),
+//             Container(
+//               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+//               decoration: BoxDecoration(color: Colors.black, borderRadius: BorderRadius.circular(5)),
+//               child: Text(_currentTime, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+// /// The main YouTube player widget with all features.
+// class CustomYoutubePlayer extends StatefulWidget {
+//   final String videoUrl;
+//   final String? name;
+
+//   const CustomYoutubePlayer({
+//     Key? key,
+//     required this.videoUrl,
+//     required this.name,
+//   }) : super(key: key);
+
+//   @override
+//   _CustomYoutubePlayerState createState() => _CustomYoutubePlayerState();
+// }
+
+// class _CustomYoutubePlayerState extends State<CustomYoutubePlayer> with WidgetsBindingObserver {
+//   InAppWebViewController? _webViewController;
+//   String? _videoId;
+//   bool _isPageLoading = true;
+//   final FocusNode _focusNode = FocusNode();
+
+//   Duration _currentPosition = Duration.zero;
+//   Duration _totalDuration = Duration.zero;
+
+//   // Updated Ad Blocker List
+//   final List<ContentBlocker> adBlockers = [
+//     ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: ".*doubleclick\\.net/.*"), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+//     ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: ".*googlesyndication\\.com/.*"), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+//     ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: ".*googleadservices\\.com/.*"), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+//     ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: ".*google-analytics\\.com/.*"), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+//     ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: ".*adservice\\.google\\.com/.*"), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+//     ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: ".*youtube\\.com/api/stats/ads.*"), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+//     ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: ".*youtube\\.com/get_ad_break.*"), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+//     ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: ".*youtube\\.com/pagead/.*"), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+//     ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: ".*googlevideo\\.com/videoplayback.*adformat.*"), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+//     ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: ".*googlevideo\\.com/videoplayback.*ctier.*"), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+//     ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: ".*youtube\\.com/ptracking.*"), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+//     ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: ".*youtube\\.com/api/stats/qoe.*"), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+//     ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: ".*youtube\\.com/ad_data.*"), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+//     ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: ".*youtube\\.com/api/stats/atr.*"), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+//     ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: ".*stats\\.g\\.doubleclick\\.net/.*"), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+//   ];
+
+//   String? _extractVideoId(String url) {
+//     if (url.length == 11 && !url.contains('/') && !url.contains('?')) {
+//       return url; // It's already an ID
+//     }
+//     RegExp regExp = RegExp(
+//       r'.*(?:youtu\.be\/|v\/|vi\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*',
+//       caseSensitive: false,
+//       multiLine: false,
+//     );
+//     final match = regExp.firstMatch(url);
+//     return (match != null && match.group(1)!.length == 11) ? match.group(1) : null;
+//   }
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     KeepScreenOn.turnOn();
+//     WidgetsBinding.instance.addObserver(this);
+//     _videoId = _extractVideoId(widget.videoUrl);
+//     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+//     SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
+//   }
+
+//   @override
+//   void dispose() {
+//     _focusNode.dispose();
+//     KeepScreenOn.turnOff();
+//     WidgetsBinding.instance.removeObserver(this);
+//     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: SystemUiOverlay.values);
+//     SystemChrome.setPreferredOrientations([]);
+//     super.dispose();
+//   }
+
+//   @override
+//   void didChangeAppLifecycleState(AppLifecycleState state) {
+//     super.didChangeAppLifecycleState(state);
+//     switch (state) {
+//       case AppLifecycleState.resumed:
+//         _webViewController?.resumeTimers();
+//         _webViewController?.evaluateJavascript(source: "if(player && player.playVideo) { player.playVideo(); }");
+//         break;
+//       case AppLifecycleState.paused:
+//       case AppLifecycleState.inactive:
+//       case AppLifecycleState.detached:
+//       case AppLifecycleState.hidden:
+//         _webViewController?.evaluateJavascript(source: "if(player && player.pauseVideo) { player.pauseVideo(); }");
+//         _webViewController?.pauseTimers();
+//         break;
+//     }
+//   }
+
+//   String _formatDuration(Duration duration) {
+//     String twoDigits(int n) => n.toString().padLeft(2, '0');
+//     String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
+//     String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
+//     return "${twoDigits(duration.inHours)}:$twoDigitMinutes:$twoDigitSeconds";
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final String livePlayerUrl = "https://yaqoob-work.github.io/my-player/player.html";
+
+//     return Focus(
+//       focusNode: _focusNode,
+//       autofocus: true,
+//       onKey: (node, event) {
+//         if (event is RawKeyDownEvent) {
+//           if (event.logicalKey == LogicalKeyboardKey.select || event.logicalKey == LogicalKeyboardKey.enter || event.logicalKey == LogicalKeyboardKey.mediaPlayPause) {
+//             _webViewController?.evaluateJavascript(source: "togglePlayPause();");
+//             return KeyEventResult.handled;
+//           } else if (event.logicalKey == LogicalKeyboardKey.arrowRight || event.logicalKey == LogicalKeyboardKey.mediaFastForward) {
+//             _webViewController?.evaluateJavascript(source: "seek(60);");
+//             return KeyEventResult.handled;
+//           } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft || event.logicalKey == LogicalKeyboardKey.mediaRewind) {
+//             _webViewController?.evaluateJavascript(source: "seek(-60);");
+//             return KeyEventResult.handled;
+//           }
+//         }
+//         return KeyEventResult.ignored;
+//       },
+//       child: Scaffold(
+//         backgroundColor: Colors.black,
+//         body: _videoId == null
+//             ? const Center(child: Text('Invalid YouTube URL', style: TextStyle(color: Colors.white, fontSize: 18)))
+//             : Stack(
+//                 children: [
+//                   Center(
+//                     child: AspectRatio(
+//                       aspectRatio: 16 / 9,
+//                       child: InAppWebView(
+//                         initialSettings: InAppWebViewSettings(
+//                           contentBlockers: adBlockers,
+//                           useHybridComposition: false,
+//                           userAgent: "Mozilla/5.0 (Linux; Android 10; SM-G975F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.106 Mobile Safari/537.36",
+//                           allowsInlineMediaPlayback: true,
+//                           mediaPlaybackRequiresUserGesture: false,
+//                           forceDark: ForceDark.OFF,
+//                         ),
+//                         onWebViewCreated: (controller) {
+//                           _webViewController = controller;
+//                           controller.addJavaScriptHandler(
+//                             handlerName: 'timeUpdate',
+//                             callback: (args) {
+//                               if (args.length == 2 && args[0] is num && args[1] is num) {
+//                                 if (mounted) {
+//                                   setState(() {
+//                                     _currentPosition = Duration(seconds: (args[0] as num).toInt());
+//                                     _totalDuration = Duration(seconds: (args[1] as num).toInt());
+//                                   });
+//                                 }
+//                               }
+//                             },
+//                           );
+//                           final urlToLoad = WebUri("$livePlayerUrl?id=$_videoId");
+//                           _webViewController?.loadUrl(urlRequest: URLRequest(url: urlToLoad));
+//                         },
+//                         onLoadStop: (controller, url) {
+//                           setState(() => _isPageLoading = false);
+//                           // Ensure focus is on the Flutter part
+//                           _focusNode.requestFocus();
+//                         },
+//                       ),
+//                     ),
+//                   ),
+//                   _buildTopBar(),
+//                   const DateTimeWidget(),
+//                   _buildProgressBar(),
+//                   if (_isPageLoading)
+//                     const Center(child: CircularProgressIndicator(color: Colors.red)),
+//                 ],
+//               ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildTopBar() {
+//     return Positioned(
+//       top: 0,
+//       left: 0,
+//       right: 0,
+//       child: Container(
+//         padding: const EdgeInsets.only(top: 8.0),
+//         height: screenhgt * 0.1,
+//         color: Colors.black,
+//         alignment: Alignment.center,
+//         child: Text(
+//           widget.name?.toUpperCase() ?? '',
+//           style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+//           textAlign: TextAlign.center,
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildProgressBar() {
+//     double progress = (_totalDuration.inSeconds == 0) ? 0 : _currentPosition.inSeconds / _totalDuration.inSeconds;
+//     if (progress > 1.0) progress = 1.0;
+//     if (progress < 0) progress = 0;
+
+//     return Positioned(
+//       bottom: 0,
+//       left: 0,
+//       right: 0,
+//       height: screenhgt * 0.05,
+//       child: Container(
+//         color: Colors.black,
+//         padding: const EdgeInsets.symmetric(horizontal: 12.0),
+//         child: Row(
+//           crossAxisAlignment: CrossAxisAlignment.center,
+//           children: [
+//             Text(
+//               _formatDuration(_currentPosition),
+//               style: const TextStyle(color: Colors.white, fontSize: 12),
+//             ),
+//             const SizedBox(width: 8),
+//             Expanded(
+//               child: LinearProgressIndicator(
+//                 value: progress,
+//                 backgroundColor: Colors.white.withOpacity(0.3),
+//                 valueColor: const AlwaysStoppedAnimation<Color>(Colors.red),
+//                 minHeight: 6,
+//               ),
+//             ),
+//             const SizedBox(width: 8),
+//             Text(
+//               _formatDuration(_totalDuration),
+//               style: const TextStyle(color: Colors.white, fontSize: 12),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+
+
+
+
+// import 'dart:convert';
+// import 'package:flutter/material.dart';
+// import 'package:flutter/services.dart';
+// import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+// import 'dart:async';
+// import 'package:intl/intl.dart';
+// import 'package:mobi_tv_entertainment/main.dart'; // Ensure this path is correct
+
+// /// A separate widget to handle the date and time updates to prevent flickering.
+// class DateTimeWidget extends StatefulWidget {
+//   const DateTimeWidget({Key? key}) : super(key: key);
+
+//   @override
+//   _DateTimeWidgetState createState() => _DateTimeWidgetState();
+// }
+
+// class _DateTimeWidgetState extends State<DateTimeWidget> {
+//   late Timer _dateTimeTimer;
+//   String _currentDate = '';
+//   String _currentTime = '';
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     _updateDateTime();
+//     _startDateTimeTimer();
+//   }
+
+//   void _updateDateTime() {
+//     final now = DateTime.now();
+//     _currentDate = DateFormat('MM/dd/yyyy').format(now);
+//     _currentTime = DateFormat('HH:mm:ss').format(now);
+//   }
+
+//   void _startDateTimeTimer() {
+//     _dateTimeTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+//       if (mounted) {
+//         setState(() {
+//           _updateDateTime();
+//         });
+//       }
+//     });
+//   }
+
+//   @override
+//   void dispose() {
+//     _dateTimeTimer.cancel();
+//     super.dispose();
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Positioned(
+//       top: screenhgt * 0.07,
+//       left: 0,
+//       right: 0,
+//       child: Padding(
+//         padding: EdgeInsets.symmetric(horizontal: screenwdt * 0.03),
+//         child: Row(
+//           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//           children: [
+//             Container(
+//               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+//               decoration: BoxDecoration(color: Colors.black, borderRadius: BorderRadius.circular(5)),
+//               child: Text(_currentDate, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+//             ),
+//             Container(
+//               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+//               decoration: BoxDecoration(color: Colors.black, borderRadius: BorderRadius.circular(5)),
+//               child: Text(_currentTime, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+// /// The main YouTube player widget with all features.
+// class CustomYoutubePlayer extends StatefulWidget {
+//   final String videoUrl;
+//   final String? name;
+
+//   const CustomYoutubePlayer({
+//     Key? key,
+//     required this.videoUrl,
+//     required this.name,
+//   }) : super(key: key);
+
+//   @override
+//   _CustomYoutubePlayerState createState() => _CustomYoutubePlayerState();
+// }
+
+// class _CustomYoutubePlayerState extends State<CustomYoutubePlayer> with WidgetsBindingObserver {
+//   InAppWebViewController? _webViewController;
+//   String? _videoId;
+//   bool _isPageLoading = true;
+//   final FocusNode _focusNode = FocusNode();
+
+//   Duration _currentPosition = Duration.zero;
+//   Duration _totalDuration = Duration.zero;
+
+//   final List<ContentBlocker> adBlockers = [
+//     ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: ".*doubleclick\\.net/.*"), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+//     ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: ".*googlesyndication\\.com/.*"), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+//     ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: ".*googleadservices\\.com/.*"), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+//     ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: ".*google-analytics\\.com/.*"), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+//     ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: ".*adservice\\.google\\.com/.*"), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+//     ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: ".*youtube\\.com/api/stats/ads.*"), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+//     ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: ".*youtube\\.com/get_ad_break.*"), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+//     ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: ".*youtube\\.com/pagead/.*"), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+//     ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: ".*googlevideo\\.com/videoplayback.*adformat.*"), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+//     ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: ".*googlevideo\\.com/videoplayback.*ctier.*"), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+//     ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: ".*youtube\\.com/ptracking.*"), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+//     ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: ".*youtube\\.com/api/stats/qoe.*"), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+//     ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: ".*youtube\\.com/ad_data.*"), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+//     ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: ".*youtube\\.com/api/stats/atr.*"), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+//     ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: ".*stats\\.g\\.doubleclick\\.net/.*"), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+//   ];
+
+//   String? _extractVideoId(String url) {
+//     if (url.length == 11 && !url.contains('/') && !url.contains('?')) {
+//       return url; // It's already an ID
+//     }
+//     RegExp regExp = RegExp(
+//       r'.*(?:youtu\.be\/|v\/|vi\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*',
+//       caseSensitive: false,
+//       multiLine: false,
+//     );
+//     final match = regExp.firstMatch(url);
+//     return (match != null && match.group(1)!.length == 11) ? match.group(1) : null;
+//   }
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     WidgetsBinding.instance.addObserver(this);
+//     _videoId = _extractVideoId(widget.videoUrl);
+//     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+//     SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
+//   }
+
+//   @override
+//   void dispose() {
+//     _focusNode.dispose();
+//     WidgetsBinding.instance.removeObserver(this);
+//     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: SystemUiOverlay.values);
+//     SystemChrome.setPreferredOrientations([]);
+//     super.dispose();
+//   }
+
+//   @override
+//   void didChangeAppLifecycleState(AppLifecycleState state) {
+//     super.didChangeAppLifecycleState(state);
+//     switch (state) {
+//       case AppLifecycleState.resumed:
+//         _webViewController?.resumeTimers();
+//         _webViewController?.evaluateJavascript(source: "if(player && player.playVideo) { player.playVideo(); }");
+//         break;
+//       case AppLifecycleState.paused:
+//       case AppLifecycleState.inactive:
+//       case AppLifecycleState.detached:
+//       case AppLifecycleState.hidden:
+//         _webViewController?.evaluateJavascript(source: "if(player && player.pauseVideo) { player.pauseVideo(); }");
+//         _webViewController?.pauseTimers();
+//         break;
+//     }
+//   }
+
+//   String _formatDuration(Duration duration) {
+//     String twoDigits(int n) => n.toString().padLeft(2, '0');
+//     String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
+//     String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
+//     return "${twoDigits(duration.inHours)}:$twoDigitMinutes:$twoDigitSeconds";
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final String livePlayerUrl = "https://yaqoob-work.github.io/my-player/player.html";
+
+//     return Focus(
+//       focusNode: _focusNode,
+//       autofocus: true,
+//       onKey: (node, event) {
+//         if (event is RawKeyDownEvent) {
+//           if (event.logicalKey == LogicalKeyboardKey.select || event.logicalKey == LogicalKeyboardKey.enter || event.logicalKey == LogicalKeyboardKey.mediaPlayPause) {
+//             _webViewController?.evaluateJavascript(source: "togglePlayPause();");
+//             return KeyEventResult.handled;
+//           } else if (event.logicalKey == LogicalKeyboardKey.arrowRight || event.logicalKey == LogicalKeyboardKey.mediaFastForward) {
+//             _webViewController?.evaluateJavascript(source: "seek(60);");
+//             return KeyEventResult.handled;
+//           } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft || event.logicalKey == LogicalKeyboardKey.mediaRewind) {
+//             _webViewController?.evaluateJavascript(source: "seek(-60);");
+//             return KeyEventResult.handled;
+//           }
+//         }
+//         return KeyEventResult.ignored;
+//       },
+//       child: Scaffold(
+//         backgroundColor: Colors.black,
+//         body: _videoId == null
+//             ? const Center(child: Text('Invalid YouTube URL', style: TextStyle(color: Colors.white, fontSize: 18)))
+//             : Stack(
+//                 children: [
+//                   // Video Player Container (100% height)
+//                   Positioned.fill(
+//                     child: Center(
+//                       child: AspectRatio(
+//                         aspectRatio: 16 / 9,
+//                         child: InAppWebView(
+//                           initialSettings: InAppWebViewSettings(
+//                             contentBlockers: adBlockers,
+//                             useHybridComposition: false,
+//                             userAgent: "Mozilla/5.0 (Linux; Android 10; SM-G975F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.106 Mobile Safari/537.36",
+//                             allowsInlineMediaPlayback: true,
+//                             mediaPlaybackRequiresUserGesture: false,
+//                             forceDark: ForceDark.OFF,
+//                           ),
+//                           onWebViewCreated: (controller) {
+//                             _webViewController = controller;
+//                             controller.addJavaScriptHandler(
+//                               handlerName: 'timeUpdate',
+//                               callback: (args) {
+//                                 if (args.length == 2 && args[0] is num && args[1] is num) {
+//                                   if (mounted) {
+//                                     setState(() {
+//                                       _currentPosition = Duration(seconds: (args[0] as num).toInt());
+//                                       _totalDuration = Duration(seconds: (args[1] as num).toInt());
+//                                     });
+//                                   }
+//                                 }
+//                               },
+//                             );
+//                             final urlToLoad = WebUri("$livePlayerUrl?id=$_videoId");
+//                             _webViewController?.loadUrl(urlRequest: URLRequest(url: urlToLoad));
+//                           },
+//                           onLoadStop: (controller, url) {
+//                             setState(() => _isPageLoading = false);
+//                             _focusNode.requestFocus();
+//                           },
+//                         ),
+//                       ),
+//                     ),
+//                   ),
+                  
+//                   _buildTopBar(),
+//                   const DateTimeWidget(),
+//                   _buildProgressBar(),
+//                   if (_isPageLoading)
+//                     const Center(child: CircularProgressIndicator(color: Colors.red)),
+//                 ],
+//               ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildTopBar() {
+//     return Positioned(
+//       top: 0,
+//       left: 0,
+//       right: 0,
+//       child: Container(
+//         padding: const EdgeInsets.only(top: 8.0),
+//         height: screenhgt * 0.1,
+//         color: Colors.black,
+//         alignment: Alignment.center,
+//         child: Text(
+//           widget.name?.toUpperCase() ?? '',
+//           style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+//           textAlign: TextAlign.center,
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildProgressBar() {
+//     double progress = (_totalDuration.inSeconds == 0) ? 0 : _currentPosition.inSeconds / _totalDuration.inSeconds;
+//     if (progress > 1.0) progress = 1.0;
+//     if (progress < 0) progress = 0;
+
+//     return Positioned(
+//       bottom: 0,
+//       left: screenwdt * 0.7,
+//       right: 0,
+//       height: screenhgt * 0.12,
+//       child: Container(
+//         color: Colors.black,
+//         padding: const EdgeInsets.symmetric(horizontal: 12.0),
+//         child: Column(
+//           mainAxisAlignment: MainAxisAlignment.center,
+//           children: [
+//             LinearProgressIndicator(
+//               value: progress,
+//               backgroundColor: Colors.white.withOpacity(0.3),
+//               valueColor: const AlwaysStoppedAnimation<Color>(Colors.red),
+//               minHeight: 6,
+//             ),
+//             const SizedBox(height: 4),
+//             Row(
+//               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//               children: [
+//                 Text(
+//                   _formatDuration(_currentPosition),
+//                   style: const TextStyle(color: Colors.white, fontSize: 12),
+//                 ),
+//                 Text(
+//                   _formatDuration(_totalDuration),
+//                   style: const TextStyle(color: Colors.white, fontSize: 12),
+//                 ),
+//               ],
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+
+
+
+
+
+
+// import 'dart:async';
+// import 'package:flutter/material.dart';
+// import 'package:flutter/services.dart';
+// import 'package:intl/intl.dart';
+// import 'package:keep_screen_on/keep_screen_on.dart';
+// import 'package:youtube_player_iframe/youtube_player_iframe.dart';
+// import 'package:mobi_tv_entertainment/main.dart'; // Ensure this path is correct
+
+// // /// A separate widget to handle the date and time updates to prevent flickering.
+// // class DateTimeWidget extends StatefulWidget {
+// //   const DateTimeWidget({Key? key}) : super(key: key);
+
+// //   @override
+// //   _DateTimeWidgetState createState() => _DateTimeWidgetState();
+// // }
+
+// // class _DateTimeWidgetState extends State<DateTimeWidget> {
+// //   late Timer _dateTimeTimer;
+// //   String _currentDate = '';
+// //   String _currentTime = '';
+
+// //   @override
+// //   void initState() {
+// //     super.initState();
+// //     _updateDateTime();
+// //     _startDateTimeTimer();
+// //   }
+
+// //   void _updateDateTime() {
+// //     final now = DateTime.now();
+// //     _currentDate = DateFormat('MM/dd/yyyy').format(now);
+// //     _currentTime = DateFormat('HH:mm:ss').format(now);
+// //   }
+
+// //   void _startDateTimeTimer() {
+// //     _dateTimeTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+// //       if (mounted) {
+// //         setState(() {
+// //           _updateDateTime();
+// //         });
+// //       }
+// //     });
+// //   }
+
+// //   @override
+// //   void dispose() {
+// //     _dateTimeTimer.cancel();
+// //     super.dispose();
+// //   }
+
+// //   @override
+// //   Widget build(BuildContext context) {
+// //     return Positioned(
+// //       top: screenhgt * 0.07,
+// //       left: 0,
+// //       right: 0,
+// //       child: Padding(
+// //         padding: EdgeInsets.symmetric(horizontal: screenwdt * 0.03),
+// //         child: Row(
+// //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+// //           children: [
+// //             Container(
+// //               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+// //               decoration: BoxDecoration(color: Colors.black, borderRadius: BorderRadius.circular(5)),
+// //               child: Text(_currentDate, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+// //             ),
+// //             Container(
+// //               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+// //               decoration: BoxDecoration(color: Colors.black, borderRadius: BorderRadius.circular(5)),
+// //               child: Text(_currentTime, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+// //             ),
+// //           ],
+// //         ),
+// //       ),
+// //     );
+// //   }
+// // }
+
+// /// The main YouTube player widget with youtube_player_iframe.
+// class CustomYoutubePlayer extends StatefulWidget {
+//   final String videoUrl;
+//   final String? name;
+
+//   const CustomYoutubePlayer({
+//     Key? key,
+//     required this.videoUrl,
+//     required this.name,
+//   }) : super(key: key);
+
+//   @override
+//   _CustomYoutubePlayerState createState() => _CustomYoutubePlayerState();
+// }
+
+// class _CustomYoutubePlayerState extends State<CustomYoutubePlayer> with WidgetsBindingObserver {
+//   late YoutubePlayerController _controller;
+//   String? _videoId;
+//   bool _isPlayerReady = false;
+//   final FocusNode _focusNode = FocusNode();
+  
+//   Duration _currentPosition = Duration.zero;
+//   Duration _totalDuration = Duration.zero;
+//   late Timer _progressTimer;
+
+//   String? _extractVideoId(String url) {
+//     if (url.length == 11 && !url.contains('/') && !url.contains('?')) {
+//       return url; // It's already an ID
+//     }
+//     RegExp regExp = RegExp(
+//       r'.*(?:youtu\.be\/|v\/|vi\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*',
+//       caseSensitive: false,
+//       multiLine: false,
+//     );
+//     final match = regExp.firstMatch(url);
+//     return (match != null && match.group(1)!.length == 11) ? match.group(1) : null;
+//   }
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     KeepScreenOn.turnOn();
+//     WidgetsBinding.instance.addObserver(this);
+//     _videoId = _extractVideoId(widget.videoUrl);
+    
+//     if (_videoId != null) {
+//       _controller = YoutubePlayerController.fromVideoId(
+//         videoId: _videoId!,
+//         autoPlay: true,
+//         params: const YoutubePlayerParams(
+//           showControls: false,
+//           showVideoAnnotations: false,
+//           showFullscreenButton: false,
+//           loop: false,
+//           mute: false,
+//           enableJavaScript: true,
+//           // privacyEnhanced: true,
+//           // useHybridComposition: true,
+//         ),
+//       );
+      
+//       _controller.setFullScreenListener(
+//         (isFullScreen) {
+//           // Handle fullscreen changes if needed
+//         },
+//       );
+      
+//       // Listen to player state changes to detect when ready
+//       _controller.listen((value) {
+//         if (value.playerState != PlayerState.unknown && !_isPlayerReady) {
+//           setState(() {
+//             _isPlayerReady = true;
+//           });
+//           _focusNode.requestFocus();
+//         }
+//       });
+      
+//       // Start progress timer
+//       _startProgressTimer();
+//     }
+    
+//     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+//     SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
+//   }
+
+//   void _startProgressTimer() {
+//     _progressTimer = Timer.periodic(const Duration(milliseconds: 500), (timer) async {
+//       if (_isPlayerReady && mounted) {
+//         try {
+//           final position = await _controller.currentTime;
+//           final duration = await _controller.duration;
+          
+//           setState(() {
+//             _currentPosition = Duration(seconds: position.toInt());
+//             _totalDuration = Duration(seconds: duration.toInt());
+//           });
+//         } catch (e) {
+//           // Handle errors silently
+//         }
+//       }
+//     });
+//   }
+
+//   @override
+//   void dispose() {
+//     _focusNode.dispose();
+//     KeepScreenOn.turnOff();
+//     _progressTimer.cancel();
+//     _controller.close();
+//     WidgetsBinding.instance.removeObserver(this);
+//     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: SystemUiOverlay.values);
+//     SystemChrome.setPreferredOrientations([]);
+//     super.dispose();
+//   }
+
+//   @override
+//   void didChangeAppLifecycleState(AppLifecycleState state) {
+//     super.didChangeAppLifecycleState(state);
+//     if (!_isPlayerReady) return;
+    
+//     switch (state) {
+//       case AppLifecycleState.resumed:
+//         _controller.playVideo();
+//         break;
+//       case AppLifecycleState.paused:
+//       case AppLifecycleState.inactive:
+//       case AppLifecycleState.detached:
+//       case AppLifecycleState.hidden:
+//         _controller.pauseVideo();
+//         break;
+//     }
+//   }
+
+//   String _formatDuration(Duration duration) {
+//     String twoDigits(int n) => n.toString().padLeft(2, '0');
+//     String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
+//     String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
+//     return "${twoDigits(duration.inHours)}:$twoDigitMinutes:$twoDigitSeconds";
+//   }
+
+//   Future<void> _handleKeyPress(LogicalKeyboardKey key) async {
+//     if (!_isPlayerReady) return;
+    
+//     if (key == LogicalKeyboardKey.select || 
+//         key == LogicalKeyboardKey.enter || 
+//         key == LogicalKeyboardKey.mediaPlayPause) {
+//       final playerState = await _controller.playerState;
+//       if (playerState == PlayerState.playing) {
+//         _controller.pauseVideo();
+//       } else {
+//         _controller.playVideo();
+//       }
+//     } else if (key == LogicalKeyboardKey.arrowRight || 
+//                key == LogicalKeyboardKey.mediaFastForward) {
+//       final currentTime = await _controller.currentTime;
+//       await _controller.seekTo(seconds: currentTime + 60);
+//       // Auto play after seek
+//       await Future.delayed(Duration(milliseconds: 100));
+//       _controller.playVideo();
+//     } else if (key == LogicalKeyboardKey.arrowLeft || 
+//                key == LogicalKeyboardKey.mediaRewind) {
+//       final currentTime = await _controller.currentTime;
+//       await _controller.seekTo(seconds: (currentTime - 60).clamp(0, double.infinity));
+//       // Auto play after seek
+//       await Future.delayed(Duration(milliseconds: 100));
+//       _controller.playVideo();
+//     }
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Focus(
+//       focusNode: _focusNode,
+//       autofocus: true,
+//       onKey: (node, event) {
+//         if (event is RawKeyDownEvent) {
+//           _handleKeyPress(event.logicalKey);
+//           return KeyEventResult.handled;
+//         }
+//         return KeyEventResult.ignored;
+//       },
+//       child: Scaffold(
+//         backgroundColor: Colors.black,
+//         body: _videoId == null
+//             ? const Center(child: Text('Invalid YouTube URL', style: TextStyle(color: Colors.white, fontSize: 18)))
+//             : Stack(
+//                 children: [
+//                   // Video Player Container (100% height)
+//                   Positioned.fill(
+//                     child: Center(
+//                       child: AspectRatio(
+//                         aspectRatio: 16 / 9,
+//                         child: YoutubePlayer(
+//                           controller: _controller,
+//                           aspectRatio: 16 / 9,
+//                         ),
+//                       ),
+//                     ),
+//                   ),
+                  
+//                   _buildTopBar(),
+//                   // const DateTimeWidget(),
+//                   _buildProgressBar(),
+                  
+//                   if (!_isPlayerReady)
+//                     const Center(child: CircularProgressIndicator(color: Colors.red)),
+//                 ],
+//               ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildTopBar() {
+//     return Positioned(
+//       top: 0,
+//       left: 0,
+//       right: 0,
+//       child: Container(
+//         padding: const EdgeInsets.only(top: 8.0),
+//         height: screenhgt * 0.1,
+//         color: Colors.black,
+//         alignment: Alignment.center,
+//         child: Text(
+//           widget.name?.toUpperCase() ?? '',
+//           style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+//           textAlign: TextAlign.center,
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildProgressBar() {
+//     double progress = (_totalDuration.inSeconds == 0) ? 0 : _currentPosition.inSeconds / _totalDuration.inSeconds;
+//     if (progress > 1.0) progress = 1.0;
+//     if (progress < 0) progress = 0;
+
+//     return Positioned(
+//       bottom: 0,
+//       left: screenwdt * 0.7,
+//       right: 0,
+//       height: screenhgt * 0.12,
+//       child: Container(
+//         color: Colors.black,
+//         padding: const EdgeInsets.symmetric(horizontal: 12.0),
+//         child: Column(
+//           mainAxisAlignment: MainAxisAlignment.center,
+//           children: [
+//             LinearProgressIndicator(
+//               value: progress,
+//               backgroundColor: Colors.white.withOpacity(0.3),
+//               valueColor: const AlwaysStoppedAnimation<Color>(Colors.red),
+//               minHeight: 6,
+//             ),
+//             const SizedBox(height: 4),
+//             Row(
+//               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//               children: [
+//                 Text(
+//                   _formatDuration(_currentPosition),
+//                   style: const TextStyle(color: Colors.white, fontSize: 12),
+//                 ),
+//                 Text(
+//                   _formatDuration(_totalDuration),
+//                   style: const TextStyle(color: Colors.white, fontSize: 12),
+//                 ),
+//               ],
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+
+
+
+
+// import 'dart:async';
+// import 'package:flutter/material.dart';
+// import 'package:flutter/services.dart';
+// import 'package:intl/intl.dart';
+// import 'package:keep_screen_on/keep_screen_on.dart';
+// import 'package:mobi_tv_entertainment/main.dart';
+// import 'package:youtube_player_iframe/youtube_player_iframe.dart';
+
+
+
+
+
+// /// A separate widget to handle the date and time updates to prevent flickering.
+// class DateTimeWidget extends StatefulWidget {
+//   const DateTimeWidget({Key? key}) : super(key: key);
+
+//   @override
+//   _DateTimeWidgetState createState() => _DateTimeWidgetState();
+// }
+
+// class _DateTimeWidgetState extends State<DateTimeWidget> {
+//   late Timer _dateTimeTimer;
+//   String _currentDate = '';
+//   String _currentTime = '';
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     _updateDateTime();
+//     _startDateTimeTimer();
+//   }
+
+//   void _updateDateTime() {
+//     final now = DateTime.now();
+//     _currentDate = DateFormat('MM/dd/yyyy').format(now);
+//     _currentTime = DateFormat('HH:mm:ss').format(now);
+//   }
+
+//   void _startDateTimeTimer() {
+//     _dateTimeTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+//       if (mounted) {
+//         setState(() {
+//           _updateDateTime();
+//         });
+//       }
+//     });
+//   }
+
+//   @override
+//   void dispose() {
+//     _dateTimeTimer.cancel();
+//     super.dispose();
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Positioned(
+//       top: screenhgt * 0.07,
+//       left: 0,
+//       right: 0,
+//       child: Padding(
+//         padding: EdgeInsets.symmetric(horizontal: screenwdt * 0.03),
+//         child: Row(
+//           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//           children: [
+//             Container(
+//               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+//               decoration: BoxDecoration(color: Colors.black.withOpacity(0.5), borderRadius: BorderRadius.circular(5)),
+//               child: Text(_currentDate, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+//             ),
+//             Container(
+//               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+//               decoration: BoxDecoration(color: Colors.black.withOpacity(0.5), borderRadius: BorderRadius.circular(5)),
+//               child: Text(_currentTime, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+// /// The main YouTube player widget with youtube_player_iframe.
+// class CustomYoutubePlayer extends StatefulWidget {
+//   final String videoUrl;
+//   final String? name;
+
+//   const CustomYoutubePlayer({
+//     Key? key,
+//     required this.videoUrl,
+//     required this.name,
+//   }) : super(key: key);
+
+//   @override
+//   _CustomYoutubePlayerState createState() => _CustomYoutubePlayerState();
+// }
+
+// class _CustomYoutubePlayerState extends State<CustomYoutubePlayer> with WidgetsBindingObserver {
+//   late YoutubePlayerController _controller;
+//   String? _videoId;
+//   bool _isPlayerReady = false;
+//   final FocusNode _focusNode = FocusNode();
+  
+//   // **PERFORMANCE FIX**: Using ValueNotifier instead of setState for progress updates.
+//   final ValueNotifier<Duration> _currentPositionNotifier = ValueNotifier(Duration.zero);
+//   final ValueNotifier<Duration> _totalDurationNotifier = ValueNotifier(Duration.zero);
+//   late Timer _progressTimer;
+
+//   String? _extractVideoId(String url) {
+//     if (url.length == 11 && !url.contains('/') && !url.contains('?')) {
+//       return url; // It's already an ID
+//     }
+//     RegExp regExp = RegExp(
+//       r'.*(?:youtu\.be\/|v\/|vi\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*',
+//       caseSensitive: false,
+//       multiLine: false,
+//     );
+//     final match = regExp.firstMatch(url);
+//     return (match != null && match.group(1)!.length == 11) ? match.group(1) : null;
+//   }
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     KeepScreenOn.turnOn();
+//     WidgetsBinding.instance.addObserver(this);
+//     _videoId = _extractVideoId(widget.videoUrl);
+    
+//     if (_videoId != null) {
+//       _controller = YoutubePlayerController.fromVideoId(
+//         videoId: _videoId!,
+//         autoPlay: true,
+//         params: const YoutubePlayerParams(
+//           showControls: false,
+//           showVideoAnnotations: false,
+//           showFullscreenButton: false,
+//           loop: false,
+//           mute: false,
+//           enableJavaScript: true,
+          
+//           // privacyEnhanced: true,
+//         ),
+//       );
+      
+//       _controller.setFullScreenListener(
+//         (isFullScreen) {
+//           // Handle fullscreen changes if needed
+//         },
+//       );
+      
+//       _controller.listen((value) {
+//         if (value.playerState != PlayerState.unknown && !_isPlayerReady) {
+//           setState(() {
+//             _isPlayerReady = true;
+//           });
+//           _focusNode.requestFocus();
+//         }
+//       });
+      
+//       _startProgressTimer();
+//     }
+    
+//     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+//     SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
+//   }
+
+//   void _startProgressTimer() {
+//     _progressTimer = Timer.periodic(const Duration(milliseconds: 500), (timer) async {
+//       if (_isPlayerReady && mounted) {
+//         try {
+//           final position = await _controller.currentTime;
+//           final duration = await _controller.duration;
+          
+//           // **PERFORMANCE FIX**: Update notifier values, do NOT call setState.
+//           _currentPositionNotifier.value = Duration(seconds: position.toInt());
+//           _totalDurationNotifier.value = Duration(seconds: duration.toInt());
+
+//         } catch (e) {
+//           // Handle errors silently, e.g., when player is disposing.
+//         }
+//       }
+//     });
+//   }
+
+//   @override
+//   void dispose() {
+//     KeepScreenOn.turnOff();
+//     _focusNode.dispose();
+//     _progressTimer.cancel();
+//     _currentPositionNotifier.dispose(); // **PERFORMANCE FIX**: Dispose notifier.
+//     _totalDurationNotifier.dispose();   // **PERFORMANCE FIX**: Dispose notifier.
+//     _controller.close();
+//     WidgetsBinding.instance.removeObserver(this);
+//     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: SystemUiOverlay.values);
+//     SystemChrome.setPreferredOrientations([]);
+//     super.dispose();
+//   }
+
+//   @override
+//   void didChangeAppLifecycleState(AppLifecycleState state) {
+//     super.didChangeAppLifecycleState(state);
+//     if (!_isPlayerReady) return;
+    
+//     switch (state) {
+//       case AppLifecycleState.resumed:
+//         _controller.playVideo();
+//         break;
+//       case AppLifecycleState.paused:
+//       case AppLifecycleState.inactive:
+//       case AppLifecycleState.detached:
+//       case AppLifecycleState.hidden:
+//         _controller.pauseVideo();
+//         break;
+//     }
+//   }
+
+//   String _formatDuration(Duration duration) {
+//     String twoDigits(int n) => n.toString().padLeft(2, '0');
+//     String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
+//     String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
+//     return "${twoDigits(duration.inHours)}:$twoDigitMinutes:$twoDigitSeconds";
+//   }
+
+//   Future<void> _handleKeyPress(LogicalKeyboardKey key) async {
+//     if (!_isPlayerReady) return;
+    
+//     if (key == LogicalKeyboardKey.select ||  
+//         key == LogicalKeyboardKey.enter ||  
+//         key == LogicalKeyboardKey.mediaPlayPause) {
+//       final playerState = await _controller.playerState;
+//       if (playerState == PlayerState.playing) {
+//         _controller.pauseVideo();
+//       } else {
+//         _controller.playVideo();
+//       }
+//     } else if (key == LogicalKeyboardKey.arrowRight ||  
+//                key == LogicalKeyboardKey.mediaFastForward) {
+//       final currentTime = await _controller.currentTime;
+//       await _controller.seekTo(seconds: currentTime + 60);
+//       await Future.delayed(const Duration(milliseconds: 100));
+//       _controller.playVideo();
+//     } else if (key == LogicalKeyboardKey.arrowLeft ||  
+//                key == LogicalKeyboardKey.mediaRewind) {
+//       final currentTime = await _controller.currentTime;
+//       await _controller.seekTo(seconds: (currentTime - 60).clamp(0, double.infinity));
+//       await Future.delayed(const Duration(milliseconds: 100));
+//       _controller.playVideo();
+//     }
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Focus(
+//       focusNode: _focusNode,
+//       autofocus: true,
+//       onKey: (node, event) {
+//         if (event is RawKeyDownEvent) {
+//           _handleKeyPress(event.logicalKey);
+//           return KeyEventResult.handled;
+//         }
+//         return KeyEventResult.ignored;
+//       },
+//       child: Scaffold(
+//         backgroundColor: Colors.black,
+//         body: _videoId == null
+//             ? const Center(child: Text('Invalid YouTube URL', style: TextStyle(color: Colors.white, fontSize: 18)))
+//             : Stack(
+//                 children: [
+//                   Positioned.fill(
+//                     child: Center(
+//                       child: AspectRatio(
+//                         aspectRatio: 16 / 9,
+//                         child: YoutubePlayer(
+//                           controller: _controller,
+//                           aspectRatio: 16 / 9,
+//                         ),
+//                       ),
+//                     ),
+//                   ),
+                  
+//                   _buildTopBar(),
+//                   const DateTimeWidget(),
+                  
+//                   // **PERFORMANCE FIX**: Wrap the progress bar in ValueListenableBuilders.
+//                   ValueListenableBuilder<Duration>(
+//                     valueListenable: _totalDurationNotifier,
+//                     builder: (context, totalDuration, _) {
+//                       return ValueListenableBuilder<Duration>(
+//                         valueListenable: _currentPositionNotifier,
+//                         builder: (context, currentPosition, _) {
+//                           return _buildProgressBar(currentPosition, totalDuration);
+//                         },
+//                       );
+//                     },
+//                   ),
+                  
+//                   if (!_isPlayerReady)
+//                     const Center(child: CircularProgressIndicator(color: Colors.red)),
+//                 ],
+//               ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildTopBar() {
+//     return Positioned(
+//       top: 0,
+//       left: 0,
+//       right: 0,
+//       child: Container(
+//         padding: const EdgeInsets.only(top: 8.0),
+//         height: screenhgt * 0.1,
+//         color: Colors.black.withOpacity(0.5),
+//         alignment: Alignment.center,
+//         child: Text(
+//           widget.name?.toUpperCase() ?? '',
+//           style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+//           textAlign: TextAlign.center,
+//         ),
+//       ),
+//     );
+//   }
+
+//   // **PERFORMANCE FIX**: This widget now accepts values instead of reading from state.
+//   Widget _buildProgressBar(Duration currentPosition, Duration totalDuration) {
+//     double progress = (totalDuration.inSeconds == 0) ? 0 : currentPosition.inSeconds / totalDuration.inSeconds;
+//     progress = progress.clamp(0.0, 1.0); // Ensure progress is between 0 and 1.
+
+//     return Positioned(
+//       bottom: 0,
+//       left: screenwdt * 0.7,
+//       right: 0,
+//       height: screenhgt * 0.12,
+//       child: Container(
+//         color: Colors.black.withOpacity(0.5),
+//         padding: const EdgeInsets.symmetric(horizontal: 12.0),
+//         child: Column(
+//           mainAxisAlignment: MainAxisAlignment.center,
+//           children: [
+//             LinearProgressIndicator(
+//               value: progress,
+//               backgroundColor: Colors.white.withOpacity(0.3),
+//               valueColor: const AlwaysStoppedAnimation<Color>(Colors.red),
+//               minHeight: 6,
+//             ),
+//             const SizedBox(height: 4),
+//             Row(
+//               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//               children: [
+//                 Text(
+//                   _formatDuration(currentPosition),
+//                   style: const TextStyle(color: Colors.white, fontSize: 12),
+//                 ),
+//                 Text(
+//                   _formatDuration(totalDuration),
+//                   style: const TextStyle(color: Colors.white, fontSize: 12),
+//                 ),
+//               ],
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+
+
+
+
+
+
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:mobi_tv_entertainment/main.dart';
-import 'package:youtube_player_flutter/youtube_player_flutter.dart';
-import 'dart:async';
 import 'package:intl/intl.dart';
+import 'package:keep_screen_on/keep_screen_on.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 
-// Direct YouTube Player Screen - No Home Page Required
 class CustomYoutubePlayer extends StatefulWidget {
-  final videoUrl;
+  final String videoUrl;
   final String? name;
 
   const CustomYoutubePlayer({
@@ -15616,131 +19196,109 @@ class CustomYoutubePlayer extends StatefulWidget {
   _CustomYoutubePlayerState createState() => _CustomYoutubePlayerState();
 }
 
-// Enhanced Player State Enum
-enum PlayerState { unknown, unstarted, ended, playing, paused, buffering, cued }
-
-class _CustomYoutubePlayerState extends State<CustomYoutubePlayer>
-    with TickerProviderStateMixin {
+class _CustomYoutubePlayerState extends State<CustomYoutubePlayer> {
   YoutubePlayerController? _controller;
-  bool _isPlayerReady = false;
   String? _error;
   bool _isLoading = true;
-  bool _isDisposed = false;
 
-  // Navigation control
-  bool _isNavigating = false;
-  bool _videoCompleted = false;
-
-  // Scrolling text animation controller
-  late AnimationController _scrollController;
-  late Animation<Offset> _scrollAnimation;
-
-  // Enhanced Control states
-  bool _isPlaying = false;
-  bool _isPaused = false;
-  bool _wasPlayingBeforeSeek = false;
-  PlayerState _currentPlayerState = PlayerState.unknown;
-  Duration _currentPosition = Duration.zero;
-  Duration _totalDuration = Duration.zero;
-
-  // Progressive seeking states
+  // Timers
   Timer? _seekTimer;
-  int _pendingSeekSeconds = 0;
-  Duration _targetSeekPosition = Duration.zero;
+
+  // UI State
   bool _isSeeking = false;
+  Duration _targetSeekPosition = Duration.zero;
+  int _pendingSeekSeconds = 0;
+  bool _wasPlayingBeforeSeek = false;
 
-  // Focus nodes for TV remote
+  // Focus Node
   final FocusNode _mainFocusNode = FocusNode();
-
-  // Date and time
-  late Timer _dateTimeTimer;
-  late Timer? _stateVerificationTimer;
-  String _currentDate = '';
-  String _currentTime = '';
-
-  // Video thumbnail URL
-  String? _thumbnailUrl;
-
-  // Variable to track if video has started playing at least once
-  bool _hasVideoStartedPlaying = false;
-
-  // Timer for delaying text color change
-  Timer? _textColorDelayTimer;
-
-  // Timer for checking video completion more reliably
-  Timer? _completionCheckTimer;
 
   @override
   void initState() {
     super.initState();
-
-    // Initialize date and time
-    _updateDateTime();
-    _startDateTimeTimer();
-
-    // Initialize scrolling animation
-    _initializeScrollAnimation();
-
-    // Set full screen immediately
+    KeepScreenOn.turnOn();
     _setFullScreenMode();
-
-    // Generate thumbnail URL
-    _generateThumbnailUrl();
-
-    // Start player initialization immediately
-    _initializePlayer();
-
-    // Start state verification timer
-    _startStateVerificationTimer();
-
-    // Start completion check timer
-    _startCompletionCheckTimer();
-
-    // Request focus on main node initially
+    _checkConnectivityAndInitialize();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _mainFocusNode.requestFocus();
+      FocusScope.of(context).requestFocus(_mainFocusNode);
     });
   }
 
-  void _generateThumbnailUrl() {
-    String? videoId = YoutubePlayer.convertUrlToId(widget.videoUrl);
-    if (videoId != null && videoId.isNotEmpty) {
-      // High quality thumbnail URL
-      _thumbnailUrl = 'https://img.youtube.com/vi/$videoId/maxresdefault.jpg';
+  Future<void> _checkConnectivityAndInitialize() async {
+    try {
+      final connectivityResult = await Connectivity().checkConnectivity();
+      if (connectivityResult == ConnectivityResult.none) {
+        setState(() {
+          _error = "No internet connection";
+          _isLoading = false;
+        });
+        return;
+      }
+      _initializePlayer();
+    } catch (e) {
+      setState(() {
+        _error = "Connection error: ${e.toString()}";
+        _isLoading = false;
+      });
     }
   }
 
-  void _updateDateTime() {
-    final now = DateTime.now();
-    _currentDate = DateFormat('MM/dd/yyyy').format(now);
-    _currentTime = DateFormat('HH:mm:ss').format(now);
-  }
+  void _initializePlayer() {
+    try {
+      final String? videoId = YoutubePlayer.convertUrlToId(widget.videoUrl);
 
-  void _startDateTimeTimer() {
-    _dateTimeTimer = Timer.periodic(Duration(seconds: 1), (timer) {
-      if (mounted && !_isDisposed) {
+      if (videoId == null || videoId.isEmpty) {
         setState(() {
-          _updateDateTime();
+          _error = "Invalid YouTube URL: ${widget.videoUrl}";
+          _isLoading = false;
         });
+        return;
       }
-    });
+
+      _controller = YoutubePlayerController(
+        initialVideoId: videoId,
+        flags: const YoutubePlayerFlags(
+          autoPlay: true,
+          mute: false,
+          disableDragSeek: false,
+          loop: false,
+          isLive: false,
+          forceHD: false,
+          enableCaption: false,
+          hideControls: true,
+          // CHANGED: Use Hybrid Composition for better performance on Android.
+          useHybridComposition: false,
+          startAt: 0,
+        ),
+      )..addListener(_playerListener); // Keep listener for state changes like errors or start.
+
+      setState(() {
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _error = "Player initialization error: ${e.toString()}";
+        _isLoading = false;
+      });
+    }
   }
 
-  void _initializeScrollAnimation() {
-    _scrollController = AnimationController(
-      duration: const Duration(seconds: 12),
-      vsync: this,
-    );
-
-    _scrollAnimation = Tween<Offset>(
-      begin: const Offset(1.0, 0.0),
-      end: const Offset(-1.0, 0.0),
-    ).animate(CurvedAnimation(
-      parent: _scrollController,
-      curve: Curves.linear,
-    ));
-
-    _scrollController.repeat();
+  // CHANGED: Listener is now simplified. It no longer calls setState for position.
+  void _playerListener() {
+    if (!mounted || _controller == null) return;
+    
+    // We only need to trigger a rebuild for state changes, not for every position update.
+    // The ValueListenableBuilder will handle position updates.
+    // We can still listen for errors.
+    if (_controller!.value.hasError) {
+      setState(() {
+        _error = "Playback error: ${_controller!.value.errorCode}";
+      });
+    }
+    // Force a single rebuild when the video starts playing to show the title.
+    if (_controller!.value.isPlaying && _controller!.value.position > Duration.zero) {
+        if (mounted) setState(() {});
+    }
   }
 
   void _setFullScreenMode() {
@@ -15749,1048 +19307,239 @@ class _CustomYoutubePlayerState extends State<CustomYoutubePlayer>
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
-    SystemChrome.setSystemUIOverlayStyle(
-      const SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
-        systemNavigationBarColor: Colors.transparent,
-      ),
-    );
   }
 
-  // Quality control through YouTube Player flags only
-  // Note: youtube_player_flutter doesn't support runtime quality change
-  // Quality is controlled through YoutubePlayerFlags during initialization
-  void _logCurrentQuality() {
-    if (_controller != null && _isPlayerReady) {
-      try {
-        final playerValue = _controller!.value;
-        print('Video quality info - IsReady: ${playerValue.isReady}, IsPlaying: ${playerValue.isPlaying}');
-        print('Player initialized with forceHD: true (max 1080p)');
-      } catch (e) {
-        print('Quality info error: $e');
-      }
-    }
-  }
-
-  void _initializePlayer() {
-    if (_isDisposed) return;
-
-    try {
-      String? videoId = YoutubePlayer.convertUrlToId(widget.videoUrl);
-
-      if (videoId == null || videoId.isEmpty) {
-        if (mounted && !_isDisposed) {
-          setState(() {
-            _error = 'Invalid YouTube URL: ${widget.videoUrl}';
-            _isLoading = false;
-          });
-        }
-        return;
-      }
-
-      _controller = YoutubePlayerController(
-        initialVideoId: videoId,
-        flags: const YoutubePlayerFlags(
-          mute: false,
-          autoPlay: true,
-          disableDragSeek: false,
-          loop: false,
-          isLive: false,
-          forceHD: false, 
-          enableCaption: false,
-          controlsVisibleAtStart: false,
-          hideControls: true,
-          hideThumbnail: false,
-          useHybridComposition: false,
-        ),
-      );
-
-
-
-      _controller!.addListener(_listener);
-
-      Future.delayed(const Duration(milliseconds: 300), () {
-        if (mounted && _controller != null && !_isDisposed) {
-          _controller!.load(videoId);
-
-          // Log quality info after loading (for debugging)
-          Future.delayed(const Duration(milliseconds: 500), () {
-            if (mounted && _controller != null && !_isDisposed) {
-              // Log quality information
-              _logCurrentQuality();
-            }
-          });
-
-          
-  //       // After video starts playing, you can try to improve quality
-  // Future.delayed(Duration(seconds: 120), () {
-  //   if (_controller != null && mounted) {
-  //     // This doesn't guarantee HD but may help
-  //     _controller!.play();
-  //   }
-  // });
-
-          Future.delayed(const Duration(seconds: 120), () {
-            if (mounted && _controller != null && !_isDisposed) {
-              _controller!.play();
-              
-              // Log quality info after play starts
-              Future.delayed(const Duration(milliseconds: 1000), () {
-                if (mounted && _controller != null && !_isDisposed) {
-                  _logCurrentQuality();
-                }
-              });
-
-              if (mounted) {
-                setState(() {
-                  _isLoading = false;
-                  _isPlayerReady = true;
-                  _isPlaying = true;
-                  _currentPlayerState = PlayerState.playing;
-                  // Start delay timer instead of immediately setting flag
-                  _startTextColorDelayTimer();
-                });
-              }
-            }
-          });
-        }
-      });
-    } catch (e) {
-      if (mounted && !_isDisposed) {
-        setState(() {
-          _error = 'Player Error: $e';
-          _isLoading = false;
-        });
-      }
-    }
-  }
-
-  // Enhanced Listener with Multiple State Checks
-  void _listener() {
-    if (_controller != null && mounted && !_isDisposed && !_isNavigating) {
-      final playerValue = _controller!.value;
-
-      // Get current states
-      final bool isReady = playerValue.isReady;
-      final bool isPlaying = playerValue.isPlaying;
-      final bool isBuffering = isReady &&
-          !isPlaying &&
-          _currentPosition == playerValue.position &&
-          playerValue.position.inSeconds > 0;
-      final Duration position = playerValue.position;
-      final Duration duration = playerValue.metaData.duration;
-
-      // Check for video end state first
-      if (duration.inSeconds > 0 && position.inSeconds > 0) {
-        // Check if video has reached the end (within 2 seconds of duration)
-        if (position.inSeconds >= (duration.inSeconds - 2)) {
-          print('Video ended - Position: ${position.inSeconds}, Duration: ${duration.inSeconds}');
-          _completeVideo();
-          return;
-        }
-      }
-
-      // Determine actual player state
-      PlayerState newPlayerState = _determinePlayerState(
-        isReady: isReady,
-        isPlaying: isPlaying,
-        isBuffering: isBuffering,
-        position: position,
-        duration: duration,
-      );
-
-      // Always sync with controller state for play/pause
-      bool shouldUpdateState = false;
-
-      if (newPlayerState != _currentPlayerState) {
-        shouldUpdateState = true;
-      }
-
-      if (isPlaying != _isPlaying) {
-        shouldUpdateState = true;
-      }
-
-      if (shouldUpdateState) {
-        if (mounted) {
-          setState(() {
-            _currentPlayerState = newPlayerState;
-            _isPlaying = isPlaying;
-            _isPaused = _determinePausedState(newPlayerState, isPlaying);
-            _currentPosition = position;
-            _totalDuration = duration;
-
-            // Update _hasVideoStartedPlaying when video actually starts playing
-            if (isPlaying && position.inSeconds > 0 && !_hasVideoStartedPlaying) {
-              _startTextColorDelayTimer();
-            }
-          });
-        }
-      } else {
-        // Update position and duration even if states haven't changed
-        if (mounted) {
-          setState(() {
-            _currentPosition = position;
-            _totalDuration = duration;
-
-            // Update _hasVideoStartedPlaying when video actually starts playing
-            if (isPlaying && position.inSeconds > 0 && !_hasVideoStartedPlaying) {
-              _startTextColorDelayTimer();
-            }
-          });
-        }
-      }
-
-      // Handle ready state
-      if (isReady && !_isPlayerReady) {
-        if (mounted) {
-          setState(() {
-            _isPlayerReady = true;
-            _isLoading = false;
-          });
-        }
-
-        // Auto-play after ready with small delay to ensure frame appears
-        Future.delayed(const Duration(milliseconds: 500), () {
-          if (_controller != null && !_isDisposed) {
-            _controller!.play();
-            // Log quality info after play
-            Future.delayed(const Duration(milliseconds: 500), () {
-              _logCurrentQuality();
-            });
-          }
-        });
-      }
-    }
-  }
-
-  // Start a timer to periodically check for video completion
-  void _startCompletionCheckTimer() {
-    _completionCheckTimer = Timer.periodic(Duration(seconds: 1), (timer) {
-      if (_isDisposed) {
-        timer.cancel();
-        return;
-      }
-
-      if (_controller != null && _isPlayerReady && mounted && !_videoCompleted) {
-        final playerValue = _controller!.value;
-        final position = playerValue.position;
-        final duration = playerValue.metaData.duration;
-
-        // More aggressive completion check
-        if (duration.inSeconds > 0 && position.inSeconds > 0) {
-          // Check if video is within 3 seconds of end or if it's actually ended
-          bool isNearEnd = position.inSeconds >= (duration.inSeconds - 3);
-          bool hasActuallyEnded = position.inSeconds >= duration.inSeconds;
-          bool isAtEnd = playerValue.position >= playerValue.metaData.duration;
-
-          if (isNearEnd || hasActuallyEnded || isAtEnd) {
-            print('Video completion detected - Position: ${position.inSeconds}, Duration: ${duration.inSeconds}');
-            _completeVideo();
-          }
-        }
-      }
-    });
-  }
-
-  // Enhanced State Determination Logic
-  PlayerState _determinePlayerState({
-    required bool isReady,
-    required bool isPlaying,
-    required bool isBuffering,
-    required Duration position,
-    required Duration duration,
-  }) {
-    if (!isReady) {
-      return PlayerState.unstarted;
-    }
-
-    if (isBuffering) {
-      return PlayerState.buffering;
-    }
-
-    if (duration.inSeconds > 0 &&
-        position.inSeconds >= duration.inSeconds - 1) {
-      return PlayerState.ended;
-    }
-
-    if (isPlaying) {
-      return PlayerState.playing;
-    }
-
-    // If ready but not playing and not buffering, it's paused
-    if (position.inSeconds > 0) {
-      return PlayerState.paused;
-    }
-
-    return PlayerState.cued;
-  }
-
-  // Accurate Pause State Detection
-  bool _determinePausedState(PlayerState playerState, bool isPlaying) {
-    return playerState == PlayerState.paused ||
-        (!isPlaying &&
-            _currentPosition.inSeconds > 0 &&
-            playerState != PlayerState.buffering &&
-            playerState != PlayerState.ended &&
-            playerState != PlayerState.unstarted &&
-            _isPlayerReady);
-  }
-
-  // Alternative Method: Direct Controller State Check
-  bool _getAccuratePauseState() {
-    if (_controller == null || !_isPlayerReady) return false;
-
-    final playerValue = _controller!.value;
-
-    // More reliable pause detection
-    bool controllerNotPlaying = !playerValue.isPlaying;
-    bool hasPosition = playerValue.position.inSeconds > 0;
-    bool isReady = playerValue.isReady;
-    bool notEnded = playerValue.position < playerValue.metaData.duration;
-
-    return controllerNotPlaying && hasPosition && isReady && notEnded;
-  }
-
-  // Periodic State Verification
-  void _startStateVerificationTimer() {
-    _stateVerificationTimer =
-        Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (_isDisposed) {
-        timer.cancel();
-        return;
-      }
-
-      if (_controller != null && _isPlayerReady && mounted) {
-        final controllerPlaying = _controller!.value.isPlaying;
-        final controllerReady = _controller!.value.isReady;
-
-        // If there's a mismatch, correct it immediately
-        if (controllerPlaying != _isPlaying && controllerReady) {
-          setState(() {
-            _isPlaying = controllerPlaying;
-            _isPaused = !controllerPlaying &&
-                _currentPosition.inSeconds > 0 &&
-                controllerReady;
-
-            _currentPlayerState =
-                controllerPlaying ? PlayerState.playing : PlayerState.paused;
-
-            // Update _hasVideoStartedPlaying when video actually starts playing
-            if (controllerPlaying && _currentPosition.inSeconds > 0 && !_hasVideoStartedPlaying) {
-              _startTextColorDelayTimer();
-            }
-          });
-        }
-      }
-    });
-  }
-
-  // Enhanced video completion method
-  void _completeVideo() {
-    if (_isNavigating || _videoCompleted || _isDisposed) return;
-
-    print('_completeVideo called - Starting navigation back');
-
-    _videoCompleted = true;
-    _isNavigating = true;
-
-    // Stop the player immediately
-    if (_controller != null) {
-      try {
-        _controller!.pause();
-        print('Video paused successfully');
-      } catch (e) {
-        print('Error pausing video: $e');
-      }
-    }
-
-    // Cancel all timers
-    _completionCheckTimer?.cancel();
-    _seekTimer?.cancel();
-    _stateVerificationTimer?.cancel();
-    _textColorDelayTimer?.cancel();
-
-    // Navigate back with a short delay to ensure cleanup
-    Future.delayed(const Duration(milliseconds: 500), () {
-      if (mounted && !_isDisposed) {
-        print('Attempting to navigate back to source page');
-        try {
-          Navigator.of(context).pop();
-          print('Navigation completed successfully');
-        } catch (e) {
-          print('Error during navigation: $e');
-          // Try alternative navigation method
-          Navigator.pop(context);
-        }
-      }
-    });
-  }
-
-  // Enhanced Toggle Play/Pause with State Tracking
-  void _togglePlayPause() {
-    if (_controller != null && _isPlayerReady && !_isDisposed) {
-      final currentControllerState = _controller!.value.isPlaying;
-
-      if (currentControllerState) {
-        // Video is currently playing, so pause it
-        _controller!.pause();
-
-        // Immediately update state
-        setState(() {
-          _isPlaying = false;
-          _isPaused = true;
-          _currentPlayerState = PlayerState.paused;
-        });
-      } else {
-        // Video is not playing, so play it
-        _controller!.play();
-
-        // Immediately update state
-        setState(() {
-          _isPlaying = true;
-          _isPaused = false;
-          _currentPlayerState = PlayerState.playing;
-          // Mark that video has started playing when manually played with delay
-          if (_currentPosition.inSeconds > 0) {
-            _startTextColorDelayTimer();
-          }
-        });
-
-        // Log quality info after play
-        Future.delayed(const Duration(milliseconds: 500), () {
-          _logCurrentQuality();
-        });
-
-        // Additional verification after a short delay
-        Future.delayed(const Duration(milliseconds: 300), () {
-          if (_controller != null && mounted && !_isDisposed) {
-            final verifyPlaying = _controller!.value.isPlaying;
-
-            if (!verifyPlaying) {
-              // If still not playing, try again
-              _controller!.play();
-            }
-          }
-        });
-      }
-    }
-  }
-
-  // Enhanced Seeking with Play State Preservation
-  void _seekVideo(bool forward) {
-    if (_controller != null &&
-        _isPlayerReady &&
-        _totalDuration.inSeconds > 24 &&
-        !_isDisposed) {
-      // Remember playing state before seeking
-      _wasPlayingBeforeSeek = _isPlaying;
-
-      final adjustedEndTime = _totalDuration.inSeconds - 12;
-      final seekAmount = (adjustedEndTime / 200).round().clamp(5, 30);
-
-      _seekTimer?.cancel();
-
-      if (forward) {
-        _pendingSeekSeconds += seekAmount;
-      } else {
-        _pendingSeekSeconds -= seekAmount;
-      }
-
-      final currentSeconds = _currentPosition.inSeconds;
-      final targetSeconds =
-          (currentSeconds + _pendingSeekSeconds).clamp(0, adjustedEndTime);
-      _targetSeekPosition = Duration(seconds: targetSeconds);
-
-      if (mounted && !_isDisposed) {
-        setState(() {
-          _isSeeking = true;
-        });
-      }
-
-      _seekTimer = Timer(const Duration(milliseconds: 1000), () {
-        _executeSeek();
-      });
-    }
-  }
-
-  void _executeSeek() {
-    if (_controller != null &&
-        _isPlayerReady &&
-        !_isDisposed &&
-        _pendingSeekSeconds != 0) {
-      final adjustedEndTime = _totalDuration.inSeconds - 12;
-      final currentSeconds = _currentPosition.inSeconds;
-      final newPosition =
-          (currentSeconds + _pendingSeekSeconds).clamp(0, adjustedEndTime);
-
-      _controller!.seekTo(Duration(seconds: newPosition));
-
-      // Restore playing state after seek
-      Future.delayed(const Duration(milliseconds: 300), () {
-        if (_controller != null && !_isDisposed) {
-          if (_wasPlayingBeforeSeek) {
-            _controller!.play();
-            setState(() {
-              _isPlaying = true;
-              _isPaused = false;
-              _currentPlayerState = PlayerState.playing;
-            });
-            // Log quality info after seek and play
-            Future.delayed(const Duration(milliseconds: 500), () {
-              _logCurrentQuality();
-            });
-          }
-        }
-      });
-
-      _pendingSeekSeconds = 0;
-      _targetSeekPosition = Duration.zero;
-
-      if (mounted && !_isDisposed) {
-        setState(() {
-          _isSeeking = false;
-        });
-      }
-    }
-  }
-
-  // Method to start the delay timer for text color change
-  void _startTextColorDelayTimer() {
-    // Cancel any existing timer
-    _textColorDelayTimer?.cancel();
-
-    // Start new timer with 5 second delay
-    _textColorDelayTimer = Timer(const Duration(seconds: 5), () {
-      if (mounted && !_isDisposed) {
-        setState(() {
-          _hasVideoStartedPlaying = true;
-        });
-      }
-    });
-  }
-
-  bool _handleKeyEvent(RawKeyEvent event) {
-    if (_isDisposed) return false;
-
+  void _handleKeyEvent(RawKeyEvent event) {
     if (event is RawKeyDownEvent) {
-      switch (event.logicalKey) {
-        case LogicalKeyboardKey.select:
-        case LogicalKeyboardKey.enter:
-        case LogicalKeyboardKey.space:
-          _togglePlayPause();
-          return true;
-        case LogicalKeyboardKey.arrowLeft:
-          _seekVideo(false);
-          return true;
-        case LogicalKeyboardKey.arrowRight:
-          _seekVideo(true);
-          return true;
-        case LogicalKeyboardKey.escape:
-        case LogicalKeyboardKey.backspace:
-          if (!_isDisposed) {
-            Navigator.of(context).pop();
-          }
-          return true;
-        default:
-          break;
+      if (event.logicalKey == LogicalKeyboardKey.select || event.logicalKey == LogicalKeyboardKey.enter) {
+        _togglePlayPause();
+      } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+        _seekVideo(false);
+      } else if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
+        _seekVideo(true);
+      } else if (event.logicalKey == LogicalKeyboardKey.backspace || event.logicalKey == LogicalKeyboardKey.escape) {
+        Navigator.of(context).pop();
       }
     }
-    return false;
+  }
+
+  void _togglePlayPause() {
+    if (_controller == null) return;
+    _controller!.value.isPlaying ? _controller!.pause() : _controller!.play();
+    // No need for setState, ValueListenableBuilder will update the icon if any.
+  }
+
+  void _seekVideo(bool forward) {
+    if (_controller == null || _controller!.metadata.duration.inSeconds < 24) return;
+    
+    final totalDuration = _controller!.metadata.duration;
+    
+    _wasPlayingBeforeSeek = _controller!.value.isPlaying;
+    _seekTimer?.cancel();
+    
+    final int seekAmount = (totalDuration.inSeconds / 200).round().clamp(5, 30);
+    _pendingSeekSeconds += forward ? seekAmount : -seekAmount;
+
+    final int targetSeconds = (_controller!.value.position.inSeconds + _pendingSeekSeconds).clamp(0, totalDuration.inSeconds - 12);
+    _targetSeekPosition = Duration(seconds: targetSeconds);
+
+    setState(() => _isSeeking = true);
+
+    _seekTimer = Timer(const Duration(milliseconds: 800), () {
+      if (_controller == null) return;
+      _controller!.seekTo(_targetSeekPosition);
+      _pendingSeekSeconds = 0;
+      if (_wasPlayingBeforeSeek) {
+        _controller!.play();
+      }
+      setState(() => _isSeeking = false);
+    });
   }
 
   Future<bool> _onWillPop() async {
-    if (_isDisposed || _isNavigating) return true;
-
-    try {
-      _isNavigating = true;
-      _isDisposed = true;
-
-      _seekTimer?.cancel();
-      _dateTimeTimer?.cancel();
-      _stateVerificationTimer?.cancel();
-      _textColorDelayTimer?.cancel();
-      _completionCheckTimer?.cancel();
-      _scrollController.dispose();
-
-      if (_controller != null) {
-        try {
-          if (_controller!.value.isPlaying) {
-            _controller!.pause();
-          }
-          _controller!.dispose();
-          _controller = null;
-        } catch (e) {
-          // Handle dispose error silently
-        }
-      }
-
-      try {
-        await SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
-            overlays: SystemUiOverlay.values);
-        await SystemChrome.setPreferredOrientations([
-          DeviceOrientation.portraitUp,
-          DeviceOrientation.portraitDown,
-          DeviceOrientation.landscapeLeft,
-          DeviceOrientation.landscapeRight,
-        ]);
-      } catch (e) {
-        // Handle system UI error silently
-      }
-
-      return true;
-    } catch (e) {
-      return true;
-    }
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: SystemUiOverlay.values);
+    SystemChrome.setPreferredOrientations([]);
+    return true;
   }
 
   @override
   void dispose() {
-    try {
-      _isDisposed = true;
-      _seekTimer?.cancel();
-      _dateTimeTimer?.cancel();
-      _stateVerificationTimer?.cancel();
-      _textColorDelayTimer?.cancel();
-      _completionCheckTimer?.cancel();
-      _scrollController.dispose();
-
-      if (_mainFocusNode.hasListeners) {
-        _mainFocusNode.dispose();
-      }
-
-      if (_controller != null) {
-        try {
-          _controller!.pause();
-          _controller!.dispose();
-          _controller = null;
-        } catch (e) {
-          // Handle dispose error silently
-        }
-      }
-
-      try {
-        SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
-            overlays: SystemUiOverlay.values);
-        SystemChrome.setPreferredOrientations([
-          DeviceOrientation.portraitUp,
-          DeviceOrientation.portraitDown,
-          DeviceOrientation.landscapeLeft,
-          DeviceOrientation.landscapeRight,
-        ]);
-      } catch (e) {
-        // Handle system UI error silently
-      }
-    } catch (e) {
-      // Handle any dispose error silently
-    }
-
+    KeepScreenOn.turnOff();
+    _seekTimer?.cancel();
+    // The controller listener is automatically removed on dispose.
+    _controller?.dispose();
+    _mainFocusNode.dispose();
     super.dispose();
   }
 
-  String _formatDuration(Duration duration) {
-    String twoDigits(int n) => n.toString().padLeft(2, '0');
-    String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
-    String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
-    return "${twoDigits(duration.inHours)}:$twoDigitMinutes:$twoDigitSeconds";
+  String _formatDuration(Duration d) {
+    final minutes = d.inMinutes.remainder(60).toString().padLeft(2, '0');
+    final seconds = d.inSeconds.remainder(60).toString().padLeft(2, '0');
+    return "${d.inHours > 0 ? '${d.inHours.toString().padLeft(2, '0')}:' : ''}$minutes:$seconds";
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_isDisposed) {
-      return const Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
-      );
-    }
-
-    return RawKeyboardListener(
-      focusNode: _mainFocusNode,
-      autofocus: true,
-      onKey: _handleKeyEvent,
-      child: WillPopScope(
-        onWillPop: _onWillPop,
+    return WillPopScope(
+      onWillPop: _onWillPop,
+      child: RawKeyboardListener(
+        focusNode: _mainFocusNode,
+        onKey: _handleKeyEvent,
         child: Scaffold(
-          body: GestureDetector(
-            child: Stack(
-              children: [
-                // Full screen video player
-                _buildVideoPlayer(),
-                // Top/Bottom Black Bars with Progress Bar
-                _buildTopBottomBlackBars(),
-                // Date display below top bar
-                _buildDateDisplay(),
-                // Custom Loading Overlay - Only show when controller is null
-                if (_controller == null) _buildCustomLoadingOverlay(),
-              ],
-            ),
-          ),
+          backgroundColor: Colors.black,
+          body: _buildPlayerBody(),
         ),
       ),
     );
   }
 
-  Widget _buildDateDisplay() {
+  Widget _buildPlayerBody() {
+    if (_error != null) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.error, color: Colors.red, size: 48),
+            const SizedBox(height: 16),
+            Text(
+              _error!,
+              style: const TextStyle(color: Colors.white, fontSize: 18),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  _error = null;
+                  _isLoading = true;
+                });
+                _checkConnectivityAndInitialize();
+              },
+              child: const Text('Retry'),
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (_isLoading || _controller == null) {
+      return const Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircularProgressIndicator(color: Colors.red),
+            SizedBox(height: 16),
+            Text(
+              'Loading video...',
+              style: TextStyle(color: Colors.white, fontSize: 16),
+            ),
+          ],
+        ),
+      );
+    }
+    
+    // ADDED: The entire player UI is now built inside a ValueListenableBuilder
+    // This ensures only the necessary parts rebuild on player updates.
+    return ValueListenableBuilder<YoutubePlayerValue>(
+        valueListenable: _controller!,
+        builder: (context, playerValue, child) {
+          return Stack(
+            children: [
+              // Video Player
+              Center(
+                child: AspectRatio(
+                  aspectRatio: 16 / 9,
+                  child: YoutubePlayer(
+                    controller: _controller!,
+                    showVideoProgressIndicator: false,
+                    onEnded: (_) {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ),
+              ),
+
+              // Top Info Bar
+              _buildTopBar(playerValue),
+
+              // Bottom Progress Bar
+              _buildBottomBar(playerValue),
+            ],
+          );
+        },
+    );
+  }
+
+  Widget _buildTopBar(YoutubePlayerValue playerValue) {
     return Positioned(
-      top: screenhgt * 0.07,
+      top: 0,
       left: 0,
       right: 0,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          // Left side - Date with minimal background
-          Container(
-            padding: EdgeInsets.symmetric(
-              horizontal: screenwdt * 0.03,
-              vertical: screenhgt * 0.001,
-            ),
-            decoration: BoxDecoration(
-              color: Colors.black,
-              borderRadius: BorderRadius.circular(5),
-            ),
-            child: Text(
-              _currentDate,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-          // Right side - Time with minimal background
-          Container(
-            padding: EdgeInsets.symmetric(
-              horizontal: screenwdt * 0.03,
-              vertical: screenhgt * 0.001,
-            ),
-            decoration: BoxDecoration(
-              color: Colors.black,
-              borderRadius: BorderRadius.circular(5),
-            ),
-            child: Text(
-              _currentTime,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTopBottomBlackBars() {
-    return Stack(
-      children: [
-        // Top Black Bar with Scrolling Name
-        Positioned(
-          top: 0,
-          left: 0,
-          right: 0,
-          height: screenhgt * 0.1,
-          child: Container(
-            alignment: Alignment.center,
-            color: Colors.black,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SizedBox(
-                  height: screenhgt * 0.03,
-                ),
-                Text(
-                  'YOU ARE WATCHING RIGHT NOW : ${(widget.name?.toUpperCase() ?? '')}',
-                  style: TextStyle(
-                    // Dynamic color: black initially, white when video starts playing
-                    color: _hasVideoStartedPlaying ? Colors.white : Colors.black,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  textAlign: TextAlign.center,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ),
-          ),
-        ),
-
-        // Bottom Black Bar with Progress Bar
-        Positioned(
-          bottom: 0,
-          left: screenwdt * 0.7,
-          right: 0,
-          height: screenhgt * 0.12,
-          child: Container(
-            color: Colors.black,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 40),
-                  child: Column(
-                    children: [
-                      // Progress Bar
-                      Container(
-                        height: 6,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(3),
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(3),
-                          child: Stack(
-                            children: [
-                              Container(
-                                width: double.infinity,
-                                height: 6,
-                                color: Colors.white.withOpacity(0.3),
-                              ),
-                              if (_totalDuration.inSeconds > 0)
-                                FractionallySizedBox(
-                                  widthFactor: _currentPosition.inSeconds /
-                                      (_totalDuration.inSeconds - 12)
-                                          .clamp(1, double.infinity),
-                                  child: Container(
-                                    height: 6,
-                                    color: Colors.red,
-                                  ),
-                                ),
-                              if (_isSeeking && _totalDuration.inSeconds > 0)
-                                FractionallySizedBox(
-                                  widthFactor: _targetSeekPosition.inSeconds /
-                                      (_totalDuration.inSeconds - 12)
-                                          .clamp(1, double.infinity),
-                                  child: Container(
-                                    height: 6,
-                                    color: Colors.yellow.withOpacity(0.8),
-                                  ),
-                                ),
-                            ],
-                          ),
-                        ),
-                      ),
-
-                      // Time Display
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            _isSeeking
-                                ? _formatDuration(_targetSeekPosition)
-                                : _formatDuration(_currentPosition),
-                            style: TextStyle(
-                              color: _isSeeking ? Colors.yellow : Colors.white,
-                              fontSize: 12,
-                              fontWeight: _isSeeking
-                                  ? FontWeight.bold
-                                  : FontWeight.normal,
-                            ),
-                          ),
-                          Text(
-                            _formatDuration(Duration(
-                                seconds: (_totalDuration.inSeconds - 12)
-                                    .clamp(0, double.infinity)
-                                    .toInt())),
-                            style: const TextStyle(
-                                color: Colors.white, fontSize: 12),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildVideoPlayer() {
-    if (_error != null) {
-      return Container(
-        color: Colors.black,
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.error, color: Colors.red, size: 48),
-              const SizedBox(height: 16),
-              Text(_error!, style: const TextStyle(color: Colors.white)),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () {
-                  if (!_isDisposed && mounted) {
-                    setState(() {
-                      _isLoading = true;
-                      _error = null;
-                      _isPlayerReady = false;
-                      _isPlaying = false;
-                      _hasVideoStartedPlaying = false;
-                      _textColorDelayTimer?.cancel();
-                    });
-                    _controller?.dispose();
-                    _initializePlayer();
-                  }
-                },
-                child: const Text('Retry'),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-
-    // Different width options - Choose one:
-
-    // Option 1: 90% of screen width (10% kam)
-    // double videoWidthMultiplier = 0.90;
-
-    // Option 2: 95% of screen width (5% kam) - Recommended
-    double videoWidthMultiplier = 0.98;
-
-    // Option 3: 85% of screen width (15% kam) - More padding
-    // double videoWidthMultiplier = 0.85;
-
-    // Option 4: Fixed padding from sides (20 pixels each side)
-    // double effectiveVideoWidth = screenwdt - 40;
-
-    // Calculate video dimensions
-    double effectiveVideoWidth = screenwdt * videoWidthMultiplier;
-    double effectiveVideoHeight = effectiveVideoWidth * 9 / 16;
-
-    return Center(
       child: Container(
-        width: screenwdt,
-        height: screenhgt,
         color: Colors.black,
-        child: Stack(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            // YouTube Player - Customizable Width
-            if (_controller != null)
-              Center(
-                child: Container(
-                  width: effectiveVideoWidth,
-                  height: effectiveVideoHeight,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12), // Rounded corners
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.3),
-                        blurRadius: 10,
-                        spreadRadius: 2,
-                      ),
-                    ],
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: YoutubePlayer(
-                      controller: _controller!,
-                      showVideoProgressIndicator: false,
-                      progressIndicatorColor: Colors.red,
-                      bufferIndicator: Container(),
-                      bottomActions: [],
-                      topActions: [],
-                      aspectRatio: 16 / 9,
-      
-                      onReady: () {
-                        if (!_isPlayerReady && !_isDisposed) {
-                          if (mounted) {
-                            setState(() {
-                              _isPlayerReady = true;
-                              _isLoading = false;
-                            });
-                          }
-      
-                          Future.delayed(const Duration(milliseconds: 500), () {
-                            if (!_isDisposed) {
-                              _mainFocusNode.requestFocus();
-                            }
-                          });
-      
-                          Future.delayed(const Duration(milliseconds: 100), () {
-                            if (_controller != null && mounted && !_isDisposed) {
-                              _controller!.play();
-                              // Log quality info after play
-                              Future.delayed(const Duration(milliseconds: 1000), () {
-                                _logCurrentQuality();
-                              });
-                            }
-                          });
-                        }
-                      },
-      
-                      onEnded: (_) {
-                        print('onEnded callback triggered');
-                        if (_isDisposed || _isNavigating || _videoCompleted) return;
-                        _completeVideo();
-                      },
-                    ),
-                  ),
-                ),
-              ),
-      
-            // Loading indicator
-            if (_isLoading || !_isPlayerReady)
-              Positioned.fill(
-                child: Container(
-                  color: Colors.black.withOpacity(0.7),
-                  child: const Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        CircularProgressIndicator(
-                          color: Colors.red,
-                          strokeWidth: 6,
-                        ),
-                        SizedBox(height: 20),
-                        Text(
-                          'Loading Video...',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
+            Text(
+              // Show title only when video has actually started playing
+              (playerValue.isPlaying && playerValue.position > Duration.zero)
+                  ? (widget.name?.toUpperCase() ?? '')
+                  : '',
+              style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold),
+            ),
+            // ADDED: An efficient clock widget that manages its own state.
+            _ClockWidget(),
           ],
         ),
       ),
     );
   }
 
-  // Simple loading overlay for when controller is null
-  Widget _buildCustomLoadingOverlay() {
-    return Positioned.fill(
+  Widget _buildBottomBar(YoutubePlayerValue playerValue) {
+    final currentPosition = playerValue.position;
+    final totalDuration = playerValue.metaData.duration;
+    double progress = totalDuration.inSeconds > 0
+        ? currentPosition.inSeconds / totalDuration.inSeconds
+        : 0.0;
+
+    return Positioned(
+      bottom: 0,
+      left: 0,
+      right: 0,
       child: Container(
-        width: screenwdt,
-        height: screenhgt,
         color: Colors.black,
-        child: const Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CircularProgressIndicator(
-                color: Colors.white,
-                strokeWidth: 6,
-              ),
-              // SizedBox(height: 20),
-              // Text(
-              //   'Initializing Player...',
-              //   style: TextStyle(
-              //     color: Colors.white,
-              //     fontSize: 18,
-              //     fontWeight: FontWeight.bold,
-              //   ),
-              // ),
-            ],
-          ),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            LinearProgressIndicator(
+              value: progress,
+              backgroundColor: Colors.white24,
+              valueColor: const AlwaysStoppedAnimation<Color>(Colors.red),
+            ),
+            const SizedBox(height: 5),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  _isSeeking
+                      ? _formatDuration(_targetSeekPosition)
+                      : _formatDuration(currentPosition),
+                  style: TextStyle(
+                      color: _isSeeking ? Colors.yellow : Colors.white,
+                      fontSize: 16),
+                ),
+                Text(
+                  _formatDuration(totalDuration),
+                  style: const TextStyle(color: Colors.white, fontSize: 16),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );
@@ -16798,3 +19547,49 @@ class _CustomYoutubePlayerState extends State<CustomYoutubePlayer>
 }
 
 
+// ADDED: A dedicated, efficient widget for the clock.
+class _ClockWidget extends StatefulWidget {
+  @override
+  __ClockWidgetState createState() => __ClockWidgetState();
+}
+
+class __ClockWidgetState extends State<_ClockWidget> {
+  String _timeString = '';
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _timeString = _formatDateTime(DateTime.now());
+    // Update the clock every second.
+    _timer = Timer.periodic(const Duration(seconds: 1), (Timer t) => _getTime());
+  }
+
+  void _getTime() {
+    final DateTime now = DateTime.now();
+    final String formattedDateTime = _formatDateTime(now);
+    if (mounted) {
+      setState(() {
+        _timeString = formattedDateTime;
+      });
+    }
+  }
+
+  String _formatDateTime(DateTime dateTime) {
+    return DateFormat('MM/dd/yyyy  HH:mm:ss').format(dateTime);
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      _timeString,
+      style: const TextStyle(color: Colors.white, fontSize: 16),
+    );
+  }
+}

@@ -448,12 +448,12 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: 
                       ProfessionalReligiousChannelsHorizontalList ()
                     ),
-                    // SizedBox(
-                    //   height: screenhgt * 0.42,
-                    //   key: tvShowsPakKey,
-                    //   child: 
-                    //   TvShowPak ()
-                    // ),
+                    SizedBox(
+                      height: screenhgt * 0.42,
+                      key: tvShowsPakKey,
+                      child: 
+                      TvShowPak ()
+                    ),
                     if (_isLoading) Center(child: LoadingIndicator()),
                   ],
                 ),

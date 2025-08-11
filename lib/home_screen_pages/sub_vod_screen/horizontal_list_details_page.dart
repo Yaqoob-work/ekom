@@ -258,7 +258,7 @@ Future<String?> fetchMovieUrlByContentId(BuildContext context, int contentId) as
     final headers = await ApiService.getHeaders();
 
     final response = await https.get(
-      Uri.parse('${ApiService.baseUrl}getAllMovies'),
+      Uri.parse('${ApiService.baseUrl}getAllMovies?records=50'),
       headers: headers,
     );
 
@@ -291,12 +291,37 @@ Future<String?> fetchMovieUrlByContentId(BuildContext context, int contentId) as
   }
 }
 
-// isYoutubeUrl helper function
-bool isYoutubeUrl(String url) {
-  if (url.isEmpty) return false;
-  return RegExp(r'^[a-zA-Z0-9_-]{11}$').hasMatch(url) ||
-      url.contains('youtube.com') ||
-      url.contains('youtu.be');
+// // isYoutubeUrl helper function
+// bool isYoutubeUrl(String url) {
+//   if (url.isEmpty) return false;
+//   return RegExp(r'^[a-zA-Z0-9_-]{11}$').hasMatch(url) ||
+//       url.contains('youtube.com') ||
+//       url.contains('youtu.be');
+// }
+
+
+bool isYoutubeUrl(String? url) {
+  if (url == null || url.isEmpty) {
+    return false;
+  }
+
+  url = url.toLowerCase().trim();
+
+  // First check if it's a YouTube ID (exactly 11 characters)
+  bool isYoutubeId = RegExp(r'^[a-zA-Z0-9_-]{11}$').hasMatch(url);
+  if (isYoutubeId) {
+    return true;
+  }
+
+  // Then check for regular YouTube URLs
+  bool isYoutubeUrl = url.contains('youtube.com') ||
+      url.contains('youtu.be') ||
+      url.contains('youtube.com/shorts/');
+  if (isYoutubeUrl) {
+    return true;
+  }
+
+  return false;
 }
 
 // TV Show Details Model
@@ -691,7 +716,7 @@ class _HorizontalListDetailsPageState extends State<HorizontalListDetailsPage>
     String authKey = prefs.getString('auth_key') ?? '';
 
     final response = await https.get(
-      Uri.parse('https://acomtv.coretechinfo.com/public/api/getAllContentsOfNetwork/${widget.tvChannelId}'),
+      Uri.parse('https://acomtv.coretechinfo.com/public/api/getAllContentsOfNetwork/${widget.tvChannelId}?records=50'),
       headers: {
         'auth-key': authKey,
         'Content-Type': 'application/json',

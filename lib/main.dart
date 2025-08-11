@@ -1532,7 +1532,6 @@ import 'package:mobi_tv_entertainment/menu_screens/live_screen.dart';
 import 'package:http/http.dart' as https;
 import 'package:mobi_tv_entertainment/provider/color_provider.dart';
 import 'package:mobi_tv_entertainment/provider/focus_provider.dart';
-import 'package:mobi_tv_entertainment/video_widget/y_player.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -1542,6 +1541,7 @@ import 'menu/top_navigation_bar.dart';
 import 'home_screen_pages/sub_vod_screen/sub_vod.dart';
 import 'widgets/small_widgets/app_assets.dart';
 import 'widgets/small_widgets/loading_indicator.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 // Global variable for authentication key
 String globalAuthKey = '';
@@ -1602,9 +1602,9 @@ class MyHttpOverrides extends HttpOverrides {
   }
 }
 
-void main() {
+void main() async{
   HttpOverrides.global = MyHttpOverrides();
-  YPlayerInitializer.ensureInitialized();
+  await initializeDateFormatting(null, null); 
   runApp(
     MultiProvider(
       providers: [

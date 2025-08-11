@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mobi_tv_entertainment/home_screen_pages/tv_show/tv_show.dart';
 import 'package:mobi_tv_entertainment/home_screen_pages/tv_show/tv_show_final_details_page.dart';
+import 'package:mobi_tv_entertainment/home_screen_pages/tv_show_pak/tv_show_final_details_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as https;
@@ -15,7 +16,7 @@ import 'package:mobi_tv_entertainment/home_screen_pages/tv_show/tv_show.dart';
 import 'package:mobi_tv_entertainment/home_screen_pages/tv_show/tv_show_final_details_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-// ✅ IMPORT करें TvShowFinalDetailsPage
+// ✅ IMPORT करें TvShowPakFinalDetailsPage
 
 // ✅ ADD: Cache Manager Class
 class TVShowCacheManager {
@@ -131,12 +132,12 @@ class TVShowDetailsModel {
   }
 }
 
-class TVShowDetailsPage extends StatefulWidget {
+class TVShowsPakDetailsPage extends StatefulWidget {
   final int tvChannelId;
   final String channelName;
   final String? channelLogo;
 
-  const TVShowDetailsPage({
+  const TVShowsPakDetailsPage({
     Key? key,
     required this.tvChannelId,
     required this.channelName,
@@ -144,11 +145,11 @@ class TVShowDetailsPage extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _TVShowDetailsPageState createState() => _TVShowDetailsPageState();
+  _TVShowsPakDetailsPageState createState() => _TVShowsPakDetailsPageState();
 }
 
 // 1. CLASS DECLARATION (keep exactly as is - no mixins added)
-class _TVShowDetailsPageState extends State<TVShowDetailsPage>
+class _TVShowsPakDetailsPageState extends State<TVShowsPakDetailsPage>
     with TickerProviderStateMixin {
   List<TVShowDetailsModel> tvShowsList = [];
   bool isLoading = true;
@@ -210,7 +211,7 @@ Future<void> _onTVShowSelected(TVShowDetailsModel tvShow) async {
   await Navigator.push(
     context,
     MaterialPageRoute(
-      builder: (context) => TvShowFinalDetailsPage(
+      builder: (context) => TvShowPakFinalDetailsPage(
         id: tvShow.id,
         banner: tvShow.thumbnail ?? '',
         poster: tvShow.thumbnail ?? '',
@@ -221,7 +222,7 @@ Future<void> _onTVShowSelected(TVShowDetailsModel tvShow) async {
   
   // ✅ Refresh when user returns
   print('🔄 User returned, refreshing data...');
-  _loadDataWithCache();
+  // _loadDataWithCache();
 }
 
 
@@ -313,7 +314,7 @@ Future<void> fetchTVShowsDetails() async {
     String authKey = prefs.getString('auth_key') ?? '';
 
     final response = await https.get(
-      Uri.parse('https://acomtv.coretechinfo.com/public/api/getTvShows/${widget.tvChannelId}'),
+      Uri.parse('https://acomtv.coretechinfo.com/public/api/getTvShowsPak/${widget.tvChannelId}'),
       headers: {
         'auth-key': authKey,
         'Content-Type': 'application/json',
@@ -496,7 +497,7 @@ Future<void> _refreshDataInBackground() async {
     String authKey = prefs.getString('auth_key') ?? '';
 
     final response = await https.get(
-      Uri.parse('https://acomtv.coretechinfo.com/public/api/getTvShows/${widget.tvChannelId}'),
+      Uri.parse('https://acomtv.coretechinfo.com/public/api/getTvShowsPak/${widget.tvChannelId}'),
       headers: {
         'auth-key': authKey,
         'Content-Type': 'application/json',
@@ -919,7 +920,7 @@ Future<void> _refreshDataInBackground() async {
   //   Navigator.push(
   //     context,
   //     MaterialPageRoute(
-  //       builder: (context) => TvShowFinalDetailsPage(
+  //       builder: (context) => TvShowPakFinalDetailsPage(
   //         id: tvShow.id,
   //         banner: tvShow.thumbnail ?? '',
   //         poster: tvShow.thumbnail ?? '',

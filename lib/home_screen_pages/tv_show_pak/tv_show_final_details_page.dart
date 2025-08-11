@@ -318,13 +318,13 @@ class ShowEpisodeModel {
   }
 }
 
-class TvShowFinalDetailsPage extends StatefulWidget {
+class TvShowPakFinalDetailsPage extends StatefulWidget {
   final int id;
   final String banner;
   final String poster;
   final String name;
 
-  const TvShowFinalDetailsPage({
+  const TvShowPakFinalDetailsPage({
     Key? key,
     required this.id,
     required this.banner,
@@ -333,10 +333,10 @@ class TvShowFinalDetailsPage extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _TvShowFinalDetailsPageState createState() => _TvShowFinalDetailsPageState();
+  _TvShowPakFinalDetailsPageState createState() => _TvShowPakFinalDetailsPageState();
 }
 
-class _TvShowFinalDetailsPageState extends State<TvShowFinalDetailsPage>
+class _TvShowPakFinalDetailsPageState extends State<TvShowPakFinalDetailsPage>
     with WidgetsBindingObserver, TickerProviderStateMixin {
   final SocketService _socketService = SocketService();
   final ScrollController _scrollController = ScrollController();
@@ -600,7 +600,7 @@ class _TvShowFinalDetailsPageState extends State<TvShowFinalDetailsPage>
 
     final response = await https.get(
       Uri.parse(
-          'https://acomtv.coretechinfo.com/public/api/getShowSeasons/${widget.id}'),
+          'https://acomtv.coretechinfo.com/public/api/getShowSeasonsPak/${widget.id}'),
       headers: {
         'auth-key': authKey,
         'Accept': 'application/json',
@@ -729,7 +729,7 @@ class _TvShowFinalDetailsPageState extends State<TvShowFinalDetailsPage>
 
     final response = await https.get(
       Uri.parse(
-          'https://acomtv.coretechinfo.com/public/api/getShowSeasonsEpisodes/$seasonId'),
+          'https://acomtv.coretechinfo.com/public/api/getShowSeasonsEpisodesPak/$seasonId'),
       headers: {
         'auth-key': authKey,
         'Accept': 'application/json',
@@ -2688,20 +2688,20 @@ class _TvShowFinalDetailsPageState extends State<TvShowFinalDetailsPage>
                         overflow: TextOverflow.ellipsis,
                       ),
 
-                      const SizedBox(height: 8),
+                      // const SizedBox(height: 8),
 
-                      // Episode Description
-                      if (episode.description.isNotEmpty)
-                        Text(
-                          episode.description,
-                          style: TextStyle(
-                            color: Colors.grey[400],
-                            fontSize: 13,
-                            height: 1.3,
-                          ),
-                          maxLines: 3,
-                          overflow: TextOverflow.ellipsis,
-                        ),
+                      // // Episode Description
+                      // if (episode.description.isNotEmpty)
+                      //   Text(
+                      //     episode.description,
+                      //     style: TextStyle(
+                      //       color: Colors.grey[400],
+                      //       fontSize: 13,
+                      //       height: 1.3,
+                      //     ),
+                      //     maxLines: 3,
+                      //     overflow: TextOverflow.ellipsis,
+                      //   ),
 
                       const SizedBox(height: 12),
 

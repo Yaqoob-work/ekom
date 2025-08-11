@@ -855,7 +855,7 @@
 // // //   late Animation<Offset> _headerSlideAnimation;
 // // //   late Animation<double> _listFadeAnimation;
 
-// // //   Map<String, FocusNode> tvshowsFocusNodes = {};
+// // //   Map<String, FocusNode> tvshowsPakFocusNodes = {};
 // // //   FocusNode? _viewAllFocusNode;
 // // //   FocusNode? _firstTVShowFocusNode;
 // // //   bool _hasReceivedFocusFromWebSeries = false;
@@ -909,8 +909,8 @@
 // // //   void _scrollToPosition(int index) {
 // // //     if (index < tvShowsList.length && index < maxHorizontalItems) {
 // // //       String tvShowId = tvShowsList[index].id.toString();
-// // //       if (tvshowsFocusNodes.containsKey(tvShowId)) {
-// // //         final focusNode = tvshowsFocusNodes[tvShowId]!;
+// // //       if (tvshowsPakFocusNodes.containsKey(tvShowId)) {
+// // //         final focusNode = tvshowsPakFocusNodes[tvShowId]!;
 
 // // //         Scrollable.ensureVisible(
 // // //           focusNode.context!,
@@ -944,12 +944,12 @@
 
 // // //           final firstTVShowId = tvShowsList[0].id.toString();
 
-// // //           if (!tvshowsFocusNodes.containsKey(firstTVShowId)) {
-// // //             tvshowsFocusNodes[firstTVShowId] = FocusNode();
+// // //           if (!tvshowsPakFocusNodes.containsKey(firstTVShowId)) {
+// // //             tvshowsPakFocusNodes[firstTVShowId] = FocusNode();
 // // //             print('✅ Created focus node for first TV show: $firstTVShowId');
 // // //           }
 
-// // //           _firstTVShowFocusNode = tvshowsFocusNodes[firstTVShowId];
+// // //           _firstTVShowFocusNode = tvshowsPakFocusNodes[firstTVShowId];
 
 // // //           _firstTVShowFocusNode!.addListener(() {
 // // //             if (_firstTVShowFocusNode!.hasFocus && !_hasReceivedFocusFromWebSeries) {
@@ -1015,21 +1015,21 @@
 // // //   }
 
 // // //   void _createFocusNodesForItems() {
-// // //     for (var node in tvshowsFocusNodes.values) {
+// // //     for (var node in tvshowsPakFocusNodes.values) {
 // // //       try {
 // // //         node.removeListener(() {});
 // // //         node.dispose();
 // // //       } catch (e) {}
 // // //     }
-// // //     tvshowsFocusNodes.clear();
+// // //     tvshowsPakFocusNodes.clear();
 
 // // //     for (int i = 0; i < tvShowsList.length && i < maxHorizontalItems; i++) {
 // // //       String tvShowId = tvShowsList[i].id.toString();
-// // //       if (!tvshowsFocusNodes.containsKey(tvShowId)) {
-// // //         tvshowsFocusNodes[tvShowId] = FocusNode();
+// // //       if (!tvshowsPakFocusNodes.containsKey(tvShowId)) {
+// // //         tvshowsPakFocusNodes[tvShowId] = FocusNode();
 
-// // //         tvshowsFocusNodes[tvShowId]!.addListener(() {
-// // //           if (mounted && tvshowsFocusNodes[tvShowId]!.hasFocus) {
+// // //         tvshowsPakFocusNodes[tvShowId]!.addListener(() {
+// // //           if (mounted && tvshowsPakFocusNodes[tvShowId]!.hasFocus) {
 // // //             setState(() {
 // // //               focusedIndex = i;
 // // //               _hasReceivedFocusFromWebSeries = true;
@@ -1040,7 +1040,7 @@
 // // //         });
 // // //       }
 // // //     }
-// // //     print('✅ Created ${tvshowsFocusNodes.length} TV show focus nodes with auto-scroll');
+// // //     print('✅ Created ${tvshowsPakFocusNodes.length} TV show focus nodes with auto-scroll');
 // // //   }
 
 // // //   // void _navigateToTVShowDetails(TVShowModel tvShow) {
@@ -1063,12 +1063,12 @@
 // // //   //   //       int currentIndex = tvShowsList.indexWhere((ts) => ts.id == tvShow.id);
 // // //   //   //       if (currentIndex != -1 && currentIndex < maxHorizontalItems) {
 // // //   //   //         String tvShowId = tvShow.id.toString();
-// // //   //   //         if (tvshowsFocusNodes.containsKey(tvShowId)) {
+// // //   //   //         if (tvshowsPakFocusNodes.containsKey(tvShowId)) {
 // // //   //   //           setState(() {
 // // //   //   //             focusedIndex = currentIndex;
 // // //   //   //             _hasReceivedFocusFromWebSeries = true;
 // // //   //   //           });
-// // //   //   //           tvshowsFocusNodes[tvShowId]!.requestFocus();
+// // //   //   //           tvshowsPakFocusNodes[tvShowId]!.requestFocus();
 // // //   //   //           _scrollToPosition(currentIndex);
 // // //   //   //           print('✅ Restored focus to ${tvShow.name}');
 // // //   //   //         }
@@ -1098,12 +1098,12 @@
 // // //         int currentIndex = tvShowsList.indexWhere((ts) => ts.id == tvShow.id);
 // // //         if (currentIndex != -1 && currentIndex < maxHorizontalItems) {
 // // //           String tvShowId = tvShow.id.toString();
-// // //           if (tvshowsFocusNodes.containsKey(tvShowId)) {
+// // //           if (tvshowsPakFocusNodes.containsKey(tvShowId)) {
 // // //             setState(() {
 // // //               focusedIndex = currentIndex;
 // // //               _hasReceivedFocusFromWebSeries = true;
 // // //             });
-// // //             tvshowsFocusNodes[tvShowId]!.requestFocus();
+// // //             tvshowsPakFocusNodes[tvShowId]!.requestFocus();
 // // //             _scrollToPosition(currentIndex);
 // // //             print('✅ Restored focus to ${tvShow.name}');
 // // //           }
@@ -1318,7 +1318,7 @@
 // // //                     } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
 // // //                       if (tvShowsList.isNotEmpty && tvShowsList.length > 6) {
 // // //                         String tvShowId = tvShowsList[6].id.toString();
-// // //                         FocusScope.of(context).requestFocus(tvshowsFocusNodes[tvShowId]);
+// // //                         FocusScope.of(context).requestFocus(tvshowsPakFocusNodes[tvShowId]);
 // // //                         return KeyEventResult.handled;
 // // //                       }
 // // //                     } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
@@ -1375,18 +1375,18 @@
 // // //   Widget _buildTVShowItem(TVShowModel tvShow, int index, double screenWidth, double screenHeight) {
 // // //     String tvShowId = tvShow.id.toString();
 
-// // //     tvshowsFocusNodes.putIfAbsent(
+// // //     tvshowsPakFocusNodes.putIfAbsent(
 // // //       tvShowId,
 // // //       () => FocusNode()
 // // //         ..addListener(() {
-// // //           if (mounted && tvshowsFocusNodes[tvShowId]!.hasFocus) {
+// // //           if (mounted && tvshowsPakFocusNodes[tvShowId]!.hasFocus) {
 // // //             _scrollToPosition(index);
 // // //           }
 // // //         }),
 // // //     );
 
 // // //     return Focus(
-// // //       focusNode: tvshowsFocusNodes[tvShowId],
+// // //       focusNode: tvshowsPakFocusNodes[tvShowId],
 // // //       onFocusChange: (hasFocus) async {
 // // //         if (hasFocus && mounted) {
 // // //           try {
@@ -1408,7 +1408,7 @@
 // // //           if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
 // // //             if (index < tvShowsList.length - 1 && index != 6) {
 // // //               String nextTVShowId = tvShowsList[index + 1].id.toString();
-// // //               FocusScope.of(context).requestFocus(tvshowsFocusNodes[nextTVShowId]);
+// // //               FocusScope.of(context).requestFocus(tvshowsPakFocusNodes[nextTVShowId]);
 // // //               return KeyEventResult.handled;
 // // //             } else if (index == 6 && tvShowsList.length > 7) {
 // // //               FocusScope.of(context).requestFocus(_viewAllFocusNode);
@@ -1417,7 +1417,7 @@
 // // //           } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
 // // //             if (index > 0) {
 // // //               String prevTVShowId = tvShowsList[index - 1].id.toString();
-// // //               FocusScope.of(context).requestFocus(tvshowsFocusNodes[prevTVShowId]);
+// // //               FocusScope.of(context).requestFocus(tvshowsPakFocusNodes[prevTVShowId]);
 // // //               return KeyEventResult.handled;
 // // //             }
 // // //           } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
@@ -1455,7 +1455,7 @@
 // // //         onTap: () => _navigateToTVShowDetails(tvShow),
 // // //         child: ProfessionalTVShowCard(
 // // //           tvShow: tvShow,
-// // //           focusNode: tvshowsFocusNodes[tvShowId]!,
+// // //           focusNode: tvshowsPakFocusNodes[tvShowId]!,
 // // //           onTap: () => _navigateToTVShowDetails(tvShow),
 // // //           onColorChange: (color) {
 // // //             setState(() {
@@ -1474,13 +1474,13 @@
 // // //     _headerAnimationController.dispose();
 // // //     _listAnimationController.dispose();
 
-// // //     for (var entry in tvshowsFocusNodes.entries) {
+// // //     for (var entry in tvshowsPakFocusNodes.entries) {
 // // //       try {
 // // //         entry.value.removeListener(() {});
 // // //         entry.value.dispose();
 // // //       } catch (e) {}
 // // //     }
-// // //     tvshowsFocusNodes.clear();
+// // //     tvshowsPakFocusNodes.clear();
 
 // // //     try {
 // // //       _viewAllFocusNode?.removeListener(() {});
@@ -2518,7 +2518,7 @@
 // //   late Animation<Offset> _headerSlideAnimation;
 // //   late Animation<double> _listFadeAnimation;
 
-// //   Map<String, FocusNode> tvshowsFocusNodes = {};
+// //   Map<String, FocusNode> tvshowsPakFocusNodes = {};
 // //   FocusNode? _viewAllFocusNode;
 // //   FocusNode? _firstTVShowFocusNode;
 // //   bool _hasReceivedFocusFromWebSeries = false;
@@ -2725,7 +2725,7 @@
 // //   // ✅ ENHANCED: Restore focus to specific show
 // //   void _restoreFocusToShow(String showId) {
 // //     WidgetsBinding.instance.addPostFrameCallback((_) {
-// //       if (mounted && tvshowsFocusNodes.containsKey(showId)) {
+// //       if (mounted && tvshowsPakFocusNodes.containsKey(showId)) {
 // //         final newIndex = tvShowsList.indexWhere((show) => show.id.toString() == showId);
 // //         if (newIndex != -1 && newIndex < maxHorizontalItems) {
 // //           setState(() {
@@ -2733,8 +2733,8 @@
 // //           });
 
 // //           Future.delayed(Duration(milliseconds: 100), () {
-// //             if (mounted && tvshowsFocusNodes.containsKey(showId)) {
-// //               tvshowsFocusNodes[showId]!.requestFocus();
+// //             if (mounted && tvshowsPakFocusNodes.containsKey(showId)) {
+// //               tvshowsPakFocusNodes[showId]!.requestFocus();
 // //               _scrollToPosition(newIndex);
 // //               print('✅ Restored focus to show $showId after UI update');
 // //             }
@@ -2878,8 +2878,8 @@
 // //   void _scrollToPosition(int index) {
 // //     if (index < tvShowsList.length && index < maxHorizontalItems) {
 // //       String tvShowId = tvShowsList[index].id.toString();
-// //       if (tvshowsFocusNodes.containsKey(tvShowId)) {
-// //         final focusNode = tvshowsFocusNodes[tvShowId]!;
+// //       if (tvshowsPakFocusNodes.containsKey(tvShowId)) {
+// //         final focusNode = tvshowsPakFocusNodes[tvShowId]!;
 
 // //         Scrollable.ensureVisible(
 // //           focusNode.context!,
@@ -2913,12 +2913,12 @@
 
 // //           final firstTVShowId = tvShowsList[0].id.toString();
 
-// //           if (!tvshowsFocusNodes.containsKey(firstTVShowId)) {
-// //             tvshowsFocusNodes[firstTVShowId] = FocusNode();
+// //           if (!tvshowsPakFocusNodes.containsKey(firstTVShowId)) {
+// //             tvshowsPakFocusNodes[firstTVShowId] = FocusNode();
 // //             print('✅ Created focus node for first TV show: $firstTVShowId');
 // //           }
 
-// //           _firstTVShowFocusNode = tvshowsFocusNodes[firstTVShowId];
+// //           _firstTVShowFocusNode = tvshowsPakFocusNodes[firstTVShowId];
 
 // //           _firstTVShowFocusNode!.addListener(() {
 // //             if (_firstTVShowFocusNode!.hasFocus && !_hasReceivedFocusFromWebSeries) {
@@ -2949,21 +2949,21 @@
 // //   }
 
 // //   void _createFocusNodesForItems() {
-// //     for (var node in tvshowsFocusNodes.values) {
+// //     for (var node in tvshowsPakFocusNodes.values) {
 // //       try {
 // //         node.removeListener(() {});
 // //         node.dispose();
 // //       } catch (e) {}
 // //     }
-// //     tvshowsFocusNodes.clear();
+// //     tvshowsPakFocusNodes.clear();
 
 // //     for (int i = 0; i < tvShowsList.length && i < maxHorizontalItems; i++) {
 // //       String tvShowId = tvShowsList[i].id.toString();
-// //       if (!tvshowsFocusNodes.containsKey(tvShowId)) {
-// //         tvshowsFocusNodes[tvShowId] = FocusNode();
+// //       if (!tvshowsPakFocusNodes.containsKey(tvShowId)) {
+// //         tvshowsPakFocusNodes[tvShowId] = FocusNode();
 
-// //         tvshowsFocusNodes[tvShowId]!.addListener(() {
-// //           if (mounted && tvshowsFocusNodes[tvShowId]!.hasFocus) {
+// //         tvshowsPakFocusNodes[tvShowId]!.addListener(() {
+// //           if (mounted && tvshowsPakFocusNodes[tvShowId]!.hasFocus) {
 // //             setState(() {
 // //               focusedIndex = i;
 // //               _hasReceivedFocusFromWebSeries = true;
@@ -2974,7 +2974,7 @@
 // //         });
 // //       }
 // //     }
-// //     print('✅ Created ${tvshowsFocusNodes.length} TV show focus nodes with auto-scroll');
+// //     print('✅ Created ${tvshowsPakFocusNodes.length} TV show focus nodes with auto-scroll');
 // //   }
 
 // //   // ✅ SOLUTION 1: Enhanced Navigation with Focus Restoration
@@ -3075,7 +3075,7 @@
 
 // //   WidgetsBinding.instance.addPostFrameCallback((_) {
 // //     // ✅ Check if data is loaded and focus nodes exist
-// //     if (tvShowsList.isNotEmpty && tvshowsFocusNodes.containsKey(showId)) {
+// //     if (tvShowsList.isNotEmpty && tvshowsPakFocusNodes.containsKey(showId)) {
 // //       final newIndex = tvShowsList.indexWhere((show) => show.id.toString() == showId);
 
 // //       if (newIndex != -1 && newIndex < maxHorizontalItems) {
@@ -3087,8 +3087,8 @@
 
 // //         // ✅ Request focus with delay
 // //         Future.delayed(Duration(milliseconds: 100 * attempt), () {
-// //           if (mounted && tvshowsFocusNodes.containsKey(showId)) {
-// //             final focusNode = tvshowsFocusNodes[showId]!;
+// //           if (mounted && tvshowsPakFocusNodes.containsKey(showId)) {
+// //             final focusNode = tvshowsPakFocusNodes[showId]!;
 
 // //             if (focusNode.context != null && focusNode.canRequestFocus) {
 // //               focusNode.requestFocus();
@@ -3152,15 +3152,15 @@
 // //   if (mounted && tvShowsList.isNotEmpty) {
 // //     final firstShowId = tvShowsList[0].id.toString();
 
-// //     if (tvshowsFocusNodes.containsKey(firstShowId)) {
+// //     if (tvshowsPakFocusNodes.containsKey(firstShowId)) {
 // //       setState(() {
 // //         focusedIndex = 0;
 // //         _hasReceivedFocusFromWebSeries = true;
 // //       });
 
 // //       Future.delayed(Duration(milliseconds: 200), () {
-// //         if (mounted && tvshowsFocusNodes.containsKey(firstShowId)) {
-// //           tvshowsFocusNodes[firstShowId]!.requestFocus();
+// //         if (mounted && tvshowsPakFocusNodes.containsKey(firstShowId)) {
+// //           tvshowsPakFocusNodes[firstShowId]!.requestFocus();
 // //           _scrollToPosition(0);
 // //           print('✅ Fallback: Focused first item');
 // //         }
@@ -3189,8 +3189,8 @@
 // //     if (focusedIndex < tvShowsList.length && focusedIndex < maxHorizontalItems) {
 // //       final showId = tvShowsList[focusedIndex].id.toString();
 
-// //       if (tvshowsFocusNodes.containsKey(showId)) {
-// //         final focusNode = tvshowsFocusNodes[showId]!;
+// //       if (tvshowsPakFocusNodes.containsKey(showId)) {
+// //         final focusNode = tvshowsPakFocusNodes[showId]!;
 
 // //         if (!focusNode.hasFocus && focusNode.canRequestFocus) {
 // //           focusNode.requestFocus();
@@ -3491,7 +3491,7 @@
 // //                     } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
 // //                       if (tvShowsList.isNotEmpty && tvShowsList.length > 6) {
 // //                         String tvShowId = tvShowsList[6].id.toString();
-// //                         FocusScope.of(context).requestFocus(tvshowsFocusNodes[tvShowId]);
+// //                         FocusScope.of(context).requestFocus(tvshowsPakFocusNodes[tvShowId]);
 // //                         return KeyEventResult.handled;
 // //                       }
 // //                     } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
@@ -3548,18 +3548,18 @@
 // //   Widget _buildTVShowItem(TVShowModel tvShow, int index, double screenWidth, double screenHeight) {
 // //     String tvShowId = tvShow.id.toString();
 
-// //     tvshowsFocusNodes.putIfAbsent(
+// //     tvshowsPakFocusNodes.putIfAbsent(
 // //       tvShowId,
 // //       () => FocusNode()
 // //         ..addListener(() {
-// //           if (mounted && tvshowsFocusNodes[tvShowId]!.hasFocus) {
+// //           if (mounted && tvshowsPakFocusNodes[tvShowId]!.hasFocus) {
 // //             _scrollToPosition(index);
 // //           }
 // //         }),
 // //     );
 
 // //     return Focus(
-// //       focusNode: tvshowsFocusNodes[tvShowId],
+// //       focusNode: tvshowsPakFocusNodes[tvShowId],
 // //       onFocusChange: (hasFocus) async {
 // //         if (hasFocus && mounted) {
 // //           try {
@@ -3581,7 +3581,7 @@
 // //           if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
 // //             if (index < tvShowsList.length - 1 && index != 6) {
 // //               String nextTVShowId = tvShowsList[index + 1].id.toString();
-// //               FocusScope.of(context).requestFocus(tvshowsFocusNodes[nextTVShowId]);
+// //               FocusScope.of(context).requestFocus(tvshowsPakFocusNodes[nextTVShowId]);
 // //               return KeyEventResult.handled;
 // //             } else if (index == 6 && tvShowsList.length > 7) {
 // //               FocusScope.of(context).requestFocus(_viewAllFocusNode);
@@ -3590,7 +3590,7 @@
 // //           } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
 // //             if (index > 0) {
 // //               String prevTVShowId = tvShowsList[index - 1].id.toString();
-// //               FocusScope.of(context).requestFocus(tvshowsFocusNodes[prevTVShowId]);
+// //               FocusScope.of(context).requestFocus(tvshowsPakFocusNodes[prevTVShowId]);
 // //               return KeyEventResult.handled;
 // //             }
 // //           } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
@@ -3628,7 +3628,7 @@
 // //         onTap: () => _navigateToTVShowDetails(tvShow),
 // //         child: ProfessionalTVShowCard(
 // //           tvShow: tvShow,
-// //           focusNode: tvshowsFocusNodes[tvShowId]!,
+// //           focusNode: tvshowsPakFocusNodes[tvShowId]!,
 // //           onTap: () => _navigateToTVShowDetails(tvShow),
 // //           onColorChange: (color) {
 // //             setState(() {
@@ -3647,13 +3647,13 @@
 // //     _headerAnimationController.dispose();
 // //     _listAnimationController.dispose();
 
-// //     for (var entry in tvshowsFocusNodes.entries) {
+// //     for (var entry in tvshowsPakFocusNodes.entries) {
 // //       try {
 // //         entry.value.removeListener(() {});
 // //         entry.value.dispose();
 // //       } catch (e) {}
 // //     }
-// //     tvshowsFocusNodes.clear();
+// //     tvshowsPakFocusNodes.clear();
 
 // //     try {
 // //       _viewAllFocusNode?.removeListener(() {});
@@ -5580,7 +5580,7 @@
 //   late Animation<Offset> _headerSlideAnimation;
 //   late Animation<double> _listFadeAnimation;
 
-//   Map<String, FocusNode> tvshowsFocusNodes = {};
+//   Map<String, FocusNode> tvshowsPakFocusNodes = {};
 //   FocusNode? _viewAllFocusNode;
 //   FocusNode? _firstTVShowFocusNode;
 //   bool _hasReceivedFocusFromWebSeries = false;
@@ -5635,8 +5635,8 @@
 //   void _scrollToPosition(int index) {
 //     if (index < tvShowsList.length && index < maxHorizontalItems) {
 //       String tvShowId = tvShowsList[index].id.toString();
-//       if (tvshowsFocusNodes.containsKey(tvShowId)) {
-//         final focusNode = tvshowsFocusNodes[tvShowId]!;
+//       if (tvshowsPakFocusNodes.containsKey(tvShowId)) {
+//         final focusNode = tvshowsPakFocusNodes[tvShowId]!;
 
 //         Scrollable.ensureVisible(
 //           focusNode.context!,
@@ -5669,12 +5669,12 @@
 
 //           final firstTVShowId = tvShowsList[0].id.toString();
 
-//           if (!tvshowsFocusNodes.containsKey(firstTVShowId)) {
-//             tvshowsFocusNodes[firstTVShowId] = FocusNode();
+//           if (!tvshowsPakFocusNodes.containsKey(firstTVShowId)) {
+//             tvshowsPakFocusNodes[firstTVShowId] = FocusNode();
 //             print('✅ Created focus node for first TV show: $firstTVShowId');
 //           }
 
-//           _firstTVShowFocusNode = tvshowsFocusNodes[firstTVShowId];
+//           _firstTVShowFocusNode = tvshowsPakFocusNodes[firstTVShowId];
 
 //           _firstTVShowFocusNode!.addListener(() {
 //             if (_firstTVShowFocusNode!.hasFocus && !_hasReceivedFocusFromWebSeries) {
@@ -5808,21 +5808,21 @@
 //   }
 
 //   void _createFocusNodesForItems() {
-//     for (var node in tvshowsFocusNodes.values) {
+//     for (var node in tvshowsPakFocusNodes.values) {
 //       try {
 //         node.removeListener(() {});
 //         node.dispose();
 //       } catch (e) {}
 //     }
-//     tvshowsFocusNodes.clear();
+//     tvshowsPakFocusNodes.clear();
 
 //     for (int i = 0; i < tvShowsList.length && i < maxHorizontalItems; i++) {
 //       String tvShowId = tvShowsList[i].id.toString();
-//       if (!tvshowsFocusNodes.containsKey(tvShowId)) {
-//         tvshowsFocusNodes[tvShowId] = FocusNode();
+//       if (!tvshowsPakFocusNodes.containsKey(tvShowId)) {
+//         tvshowsPakFocusNodes[tvShowId] = FocusNode();
 
-//         tvshowsFocusNodes[tvShowId]!.addListener(() {
-//           if (mounted && tvshowsFocusNodes[tvShowId]!.hasFocus) {
+//         tvshowsPakFocusNodes[tvShowId]!.addListener(() {
+//           if (mounted && tvshowsPakFocusNodes[tvShowId]!.hasFocus) {
 //             setState(() {
 //               focusedIndex = i;
 //               _hasReceivedFocusFromWebSeries = true;
@@ -5833,7 +5833,7 @@
 //         });
 //       }
 //     }
-//     print('✅ Created ${tvshowsFocusNodes.length} TV show focus nodes with auto-scroll');
+//     print('✅ Created ${tvshowsPakFocusNodes.length} TV show focus nodes with auto-scroll');
 //   }
 
 //   void _navigateToTVShowDetails(TVShowModel tvShow) {
@@ -5855,12 +5855,12 @@
 //           int currentIndex = tvShowsList.indexWhere((show) => show.id == tvShow.id);
 //           if (currentIndex != -1 && currentIndex < maxHorizontalItems) {
 //             String tvShowId = tvShow.id.toString();
-//             if (tvshowsFocusNodes.containsKey(tvShowId)) {
+//             if (tvshowsPakFocusNodes.containsKey(tvShowId)) {
 //               setState(() {
 //                 focusedIndex = currentIndex;
 //                 _hasReceivedFocusFromWebSeries = true;
 //               });
-//               tvshowsFocusNodes[tvShowId]!.requestFocus();
+//               tvshowsPakFocusNodes[tvShowId]!.requestFocus();
 //               _scrollToPosition(currentIndex);
 //               print('✅ Restored focus to ${tvShow.name}');
 //             }
@@ -5947,18 +5947,18 @@
 //   Widget _buildTVShowItem(TVShowModel tvShow, int index, double screenWidth, double screenHeight) {
 //     String tvShowId = tvShow.id.toString();
 
-//     tvshowsFocusNodes.putIfAbsent(
+//     tvshowsPakFocusNodes.putIfAbsent(
 //       tvShowId,
 //       () => FocusNode()
 //         ..addListener(() {
-//           if (mounted && tvshowsFocusNodes[tvShowId]!.hasFocus) {
+//           if (mounted && tvshowsPakFocusNodes[tvShowId]!.hasFocus) {
 //             _scrollToPosition(index);
 //           }
 //         }),
 //     );
 
 //     return Focus(
-//       focusNode: tvshowsFocusNodes[tvShowId],
+//       focusNode: tvshowsPakFocusNodes[tvShowId],
 //       onFocusChange: (hasFocus) async {
 //         if (hasFocus && mounted) {
 //           try {
@@ -5986,7 +5986,7 @@
 //           if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
 //             if (index < tvShowsList.length - 1 && index != 6) {
 //               String nextTVShowId = tvShowsList[index + 1].id.toString();
-//               FocusScope.of(context).requestFocus(tvshowsFocusNodes[nextTVShowId]);
+//               FocusScope.of(context).requestFocus(tvshowsPakFocusNodes[nextTVShowId]);
 //               return KeyEventResult.handled;
 //             } else if (index == 6 && tvShowsList.length > 7) {
 //               FocusScope.of(context).requestFocus(_viewAllFocusNode);
@@ -5995,7 +5995,7 @@
 //           } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
 //             if (index > 0) {
 //               String prevTVShowId = tvShowsList[index - 1].id.toString();
-//               FocusScope.of(context).requestFocus(tvshowsFocusNodes[prevTVShowId]);
+//               FocusScope.of(context).requestFocus(tvshowsPakFocusNodes[prevTVShowId]);
 //               return KeyEventResult.handled;
 //             }
 //           } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
@@ -6052,7 +6052,7 @@
 //         onTap: () => _navigateToTVShowDetails(tvShow),
 //         child: ProfessionalTVShowCard(
 //           tvShow: tvShow,
-//           focusNode: tvshowsFocusNodes[tvShowId]!,
+//           focusNode: tvshowsPakFocusNodes[tvShowId]!,
 //           onTap: () => _navigateToTVShowDetails(tvShow),
 //           onColorChange: (color) {
 //             setState(() {
@@ -6110,7 +6110,7 @@
 //                     } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
 //                       if (tvShowsList.isNotEmpty && tvShowsList.length > 6) {
 //                         String tvShowId = tvShowsList[6].id.toString();
-//                         FocusScope.of(context).requestFocus(tvshowsFocusNodes[tvShowId]);
+//                         FocusScope.of(context).requestFocus(tvshowsPakFocusNodes[tvShowId]);
 //                         return KeyEventResult.handled;
 //                       }
 //                     } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
@@ -6399,7 +6399,7 @@
 //   //                   } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
 //   //                     if (tvShowsList.isNotEmpty && tvShowsList.length > 6) {
 //   //                       String tvShowId = tvShowsList[6].id.toString();
-//   //                       FocusScope.of(context).requestFocus(tvshowsFocusNodes[tvShowId]);
+//   //                       FocusScope.of(context).requestFocus(tvshowsPakFocusNodes[tvShowId]);
 //   //                       return KeyEventResult.handled;
 //   //                     }
 //   //                   } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
@@ -6469,18 +6469,18 @@
 //   // Widget _buildTVShowItem(TVShowModel tvShow, int index, double screenWidth, double screenHeight) {
 //   //   String tvShowId = tvShow.id.toString();
 
-//   //   tvshowsFocusNodes.putIfAbsent(
+//   //   tvshowsPakFocusNodes.putIfAbsent(
 //   //     tvShowId,
 //   //     () => FocusNode()
 //   //       ..addListener(() {
-//   //         if (mounted && tvshowsFocusNodes[tvShowId]!.hasFocus) {
+//   //         if (mounted && tvshowsPakFocusNodes[tvShowId]!.hasFocus) {
 //   //           _scrollToPosition(index);
 //   //         }
 //   //       }),
 //   //   );
 
 //   //   return Focus(
-//   //     focusNode: tvshowsFocusNodes[tvShowId],
+//   //     focusNode: tvshowsPakFocusNodes[tvShowId],
 //   //     onFocusChange: (hasFocus) async {
 //   //       if (hasFocus && mounted) {
 //   //         try {
@@ -6502,7 +6502,7 @@
 //   //         if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
 //   //           if (index < tvShowsList.length - 1 && index != 6) {
 //   //             String nextTVShowId = tvShowsList[index + 1].id.toString();
-//   //             FocusScope.of(context).requestFocus(tvshowsFocusNodes[nextTVShowId]);
+//   //             FocusScope.of(context).requestFocus(tvshowsPakFocusNodes[nextTVShowId]);
 //   //             return KeyEventResult.handled;
 //   //           } else if (index == 6 && tvShowsList.length > 7) {
 //   //             FocusScope.of(context).requestFocus(_viewAllFocusNode);
@@ -6511,7 +6511,7 @@
 //   //         } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
 //   //           if (index > 0) {
 //   //             String prevTVShowId = tvShowsList[index - 1].id.toString();
-//   //             FocusScope.of(context).requestFocus(tvshowsFocusNodes[prevTVShowId]);
+//   //             FocusScope.of(context).requestFocus(tvshowsPakFocusNodes[prevTVShowId]);
 //   //             return KeyEventResult.handled;
 //   //           }
 //   //         } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
@@ -6562,7 +6562,7 @@
 //   //       onTap: () => _navigateToTVShowDetails(tvShow),
 //   //       child: ProfessionalTVShowCard(
 //   //         tvShow: tvShow,
-//   //         focusNode: tvshowsFocusNodes[tvShowId]!,
+//   //         focusNode: tvshowsPakFocusNodes[tvShowId]!,
 //   //         onTap: () => _navigateToTVShowDetails(tvShow),
 //   //         onColorChange: (color) {
 //   //           setState(() {
@@ -6581,13 +6581,13 @@
 //     _headerAnimationController.dispose();
 //     _listAnimationController.dispose();
 
-//     for (var entry in tvshowsFocusNodes.entries) {
+//     for (var entry in tvshowsPakFocusNodes.entries) {
 //       try {
 //         entry.value.removeListener(() {});
 //         entry.value.dispose();
 //       } catch (e) {}
 //     }
-//     tvshowsFocusNodes.clear();
+//     tvshowsPakFocusNodes.clear();
 
 //     try {
 //       _viewAllFocusNode?.removeListener(() {});
@@ -8233,6 +8233,7 @@ import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'dart:math' as math;
 import 'package:mobi_tv_entertainment/home_screen_pages/tv_show/tv_show_second_page.dart';
+import 'package:mobi_tv_entertainment/home_screen_pages/tv_show_pak/tv_show_second_page.dart';
 import 'package:mobi_tv_entertainment/main.dart';
 import 'package:mobi_tv_entertainment/provider/color_provider.dart';
 import 'package:mobi_tv_entertainment/provider/focus_provider.dart';
@@ -8614,7 +8615,7 @@ class _TvShowPakState extends State<TvShowPak>
   late Animation<Offset> _headerSlideAnimation;
   late Animation<double> _listFadeAnimation;
 
-  Map<String, FocusNode> tvshowsFocusNodes = {};
+  Map<String, FocusNode> tvshowsPakFocusNodes = {};
   FocusNode? _viewAllFocusNode;
   FocusNode? _firstTVShowFocusNode;
   bool _hasReceivedFocusFromWebSeries = false;
@@ -8669,8 +8670,8 @@ class _TvShowPakState extends State<TvShowPak>
   void _scrollToPosition(int index) {
     if (index < tvShowsList.length && index < maxHorizontalItems) {
       String tvShowId = tvShowsList[index].id.toString();
-      if (tvshowsFocusNodes.containsKey(tvShowId)) {
-        final focusNode = tvshowsFocusNodes[tvShowId]!;
+      if (tvshowsPakFocusNodes.containsKey(tvShowId)) {
+        final focusNode = tvshowsPakFocusNodes[tvShowId]!;
 
         Scrollable.ensureVisible(
           focusNode.context!,
@@ -8705,13 +8706,13 @@ class _TvShowPakState extends State<TvShowPak>
 
           final firstTVShowId = tvShowsList[0].id.toString();
 
-          if (!tvshowsFocusNodes.containsKey(firstTVShowId)) {
-            tvshowsFocusNodes[firstTVShowId] = FocusNode();
+          if (!tvshowsPakFocusNodes.containsKey(firstTVShowId)) {
+            tvshowsPakFocusNodes[firstTVShowId] = FocusNode();
             print(
                 '✅ Created focus node for first Pakistani TV show: $firstTVShowId');
           }
 
-          _firstTVShowFocusNode = tvshowsFocusNodes[firstTVShowId];
+          _firstTVShowFocusNode = tvshowsPakFocusNodes[firstTVShowId];
 
           _firstTVShowFocusNode!.addListener(() {
             if (_firstTVShowFocusNode!.hasFocus &&
@@ -8726,7 +8727,7 @@ class _TvShowPakState extends State<TvShowPak>
             }
           });
 
-          focusProvider.setFirstTVShowsFocusNode(_firstTVShowFocusNode!);
+          focusProvider.setFirstTVShowsPakFocusNode(_firstTVShowFocusNode!);
           print(
               '✅ Pakistani TV Shows first focus node registered: ${tvShowsList[0].name}');
         } catch (e) {
@@ -8847,21 +8848,21 @@ class _TvShowPakState extends State<TvShowPak>
   }
 
   void _createFocusNodesForItems() {
-    for (var node in tvshowsFocusNodes.values) {
+    for (var node in tvshowsPakFocusNodes.values) {
       try {
         node.removeListener(() {});
         node.dispose();
       } catch (e) {}
     }
-    tvshowsFocusNodes.clear();
+    tvshowsPakFocusNodes.clear();
 
     for (int i = 0; i < tvShowsList.length && i < maxHorizontalItems; i++) {
       String tvShowId = tvShowsList[i].id.toString();
-      if (!tvshowsFocusNodes.containsKey(tvShowId)) {
-        tvshowsFocusNodes[tvShowId] = FocusNode();
+      if (!tvshowsPakFocusNodes.containsKey(tvShowId)) {
+        tvshowsPakFocusNodes[tvShowId] = FocusNode();
 
-        tvshowsFocusNodes[tvShowId]!.addListener(() {
-          if (mounted && tvshowsFocusNodes[tvShowId]!.hasFocus) {
+        tvshowsPakFocusNodes[tvShowId]!.addListener(() {
+          if (mounted && tvshowsPakFocusNodes[tvShowId]!.hasFocus) {
             setState(() {
               focusedIndex = i;
               _hasReceivedFocusFromWebSeries = true;
@@ -8874,7 +8875,7 @@ class _TvShowPakState extends State<TvShowPak>
       }
     }
     print(
-        '✅ Created ${tvshowsFocusNodes.length} Pakistani TV show focus nodes with auto-scroll');
+        '✅ Created ${tvshowsPakFocusNodes.length} Pakistani TV show focus nodes with auto-scroll');
   }
 
   void _navigateToTVShowDetails(TVShowModel tvShow) {
@@ -8883,7 +8884,7 @@ class _TvShowPakState extends State<TvShowPak>
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => TVShowDetailsPage(
+        builder: (context) => TVShowsPakDetailsPage(
           tvChannelId: tvShow.id,
           channelName: tvShow.name,
           channelLogo: tvShow.logo,
@@ -8897,12 +8898,12 @@ class _TvShowPakState extends State<TvShowPak>
               tvShowsList.indexWhere((show) => show.id == tvShow.id);
           if (currentIndex != -1 && currentIndex < maxHorizontalItems) {
             String tvShowId = tvShow.id.toString();
-            if (tvshowsFocusNodes.containsKey(tvShowId)) {
+            if (tvshowsPakFocusNodes.containsKey(tvShowId)) {
               setState(() {
                 focusedIndex = currentIndex;
                 _hasReceivedFocusFromWebSeries = true;
               });
-              tvshowsFocusNodes[tvShowId]!.requestFocus();
+              tvshowsPakFocusNodes[tvShowId]!.requestFocus();
               _scrollToPosition(currentIndex);
               print('✅ Restored focus to ${tvShow.name}');
             }
@@ -8986,18 +8987,18 @@ class _TvShowPakState extends State<TvShowPak>
       TVShowModel tvShow, int index, double screenWidth, double screenHeight) {
     String tvShowId = tvShow.id.toString();
 
-    tvshowsFocusNodes.putIfAbsent(
+    tvshowsPakFocusNodes.putIfAbsent(
       tvShowId,
       () => FocusNode()
         ..addListener(() {
-          if (mounted && tvshowsFocusNodes[tvShowId]!.hasFocus) {
+          if (mounted && tvshowsPakFocusNodes[tvShowId]!.hasFocus) {
             _scrollToPosition(index);
           }
         }),
     );
 
     return Focus(
-      focusNode: tvshowsFocusNodes[tvShowId],
+      focusNode: tvshowsPakFocusNodes[tvShowId],
       onFocusChange: (hasFocus) async {
         if (hasFocus && mounted) {
           try {
@@ -9027,7 +9028,7 @@ class _TvShowPakState extends State<TvShowPak>
             if (index < tvShowsList.length - 1 && index != 6) {
               String nextTVShowId = tvShowsList[index + 1].id.toString();
               FocusScope.of(context)
-                  .requestFocus(tvshowsFocusNodes[nextTVShowId]);
+                  .requestFocus(tvshowsPakFocusNodes[nextTVShowId]);
               return KeyEventResult.handled;
             } else if (index == 6 && tvShowsList.length > 7) {
               FocusScope.of(context).requestFocus(_viewAllFocusNode);
@@ -9037,7 +9038,7 @@ class _TvShowPakState extends State<TvShowPak>
             if (index > 0) {
               String prevTVShowId = tvShowsList[index - 1].id.toString();
               FocusScope.of(context)
-                  .requestFocus(tvshowsFocusNodes[prevTVShowId]);
+                  .requestFocus(tvshowsPakFocusNodes[prevTVShowId]);
               return KeyEventResult.handled;
             }
           } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
@@ -9052,7 +9053,7 @@ class _TvShowPakState extends State<TvShowPak>
               if (mounted) {
                 try {
                   Provider.of<FocusProvider>(context, listen: false)
-                      .requestFirstWebseriesFocus();
+                      .requestFirstReligiousChannelFocus();
                   print(
                       '✅ Navigating back to webseries from Pakistani TV shows');
                 } catch (e) {
@@ -9096,7 +9097,7 @@ class _TvShowPakState extends State<TvShowPak>
         onTap: () => _navigateToTVShowDetails(tvShow),
         child: ProfessionalPakistaniTVShowCard(
           tvShow: tvShow,
-          focusNode: tvshowsFocusNodes[tvShowId]!,
+          focusNode: tvshowsPakFocusNodes[tvShowId]!,
           onTap: () => _navigateToTVShowDetails(tvShow),
           onColorChange: (color) {
             setState(() {
@@ -9159,7 +9160,7 @@ class _TvShowPakState extends State<TvShowPak>
                       if (tvShowsList.isNotEmpty && tvShowsList.length > 6) {
                         String tvShowId = tvShowsList[6].id.toString();
                         FocusScope.of(context)
-                            .requestFocus(tvshowsFocusNodes[tvShowId]);
+                            .requestFocus(tvshowsPakFocusNodes[tvShowId]);
                         return KeyEventResult.handled;
                       }
                     } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
@@ -9174,7 +9175,7 @@ class _TvShowPakState extends State<TvShowPak>
                         if (mounted) {
                           try {
                             Provider.of<FocusProvider>(context, listen: false)
-                                .requestFirstWebseriesFocus();
+                                .requestFirstReligiousChannelFocus();
                             print(
                                 '✅ Navigating back to webseries from Pakistani TV shows ViewAll');
                           } catch (e) {
@@ -9359,13 +9360,13 @@ class _TvShowPakState extends State<TvShowPak>
     _headerAnimationController.dispose();
     _listAnimationController.dispose();
 
-    for (var entry in tvshowsFocusNodes.entries) {
+    for (var entry in tvshowsPakFocusNodes.entries) {
       try {
         entry.value.removeListener(() {});
         entry.value.dispose();
       } catch (e) {}
     }
-    tvshowsFocusNodes.clear();
+    tvshowsPakFocusNodes.clear();
 
     try {
       _viewAllFocusNode?.removeListener(() {});
@@ -10354,7 +10355,7 @@ class _ProfessionalPakistaniTVShowsGridPageState
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => TVShowDetailsPage(
+        builder: (context) => TVShowsPakDetailsPage(
           tvChannelId: tvShow.id,
           channelName: tvShow.name,
           channelLogo: tvShow.logo,

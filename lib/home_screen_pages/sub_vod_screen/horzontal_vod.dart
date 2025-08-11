@@ -543,32 +543,55 @@ class _HorzontalVodState
 
 
 
+  // File: sub_vod.dart
+// Inside the _HorzontalVodState class
+
 void _scrollToPosition(int index) {
-  if (index < HorizontalVodList.length && index < maxHorizontalItems) {
-    // Calculate horizontal offset for the focused item
-    final double targetOffset = index * (_itemWidth + 40); // item width + margin
-    
-    // Animate to specific horizontal position
-    _scrollController.animateTo(
-      targetOffset,
-      duration: AnimationTiming.scroll,
-      curve: Curves.linear,
-    );
-    
-    print('🎯 Horizontal scroll to index $index: ${HorizontalVodList[index].name}');
-  } else if (index == maxHorizontalItems && _viewAllFocusNode != null) {
-    // Scroll to ViewAll button position
-    final double viewAllOffset = maxHorizontalItems * (_itemWidth + 40);
-    
-    _scrollController.animateTo(
-      viewAllOffset,
-      duration: AnimationTiming.scroll,
-      curve: Curves.linear,
-    );
-    
-    print('🎯 Horizontal scroll to ViewAll button');
-  }
+  // Ensure the controller has clients before using it
+  if (!_scrollController.hasClients) return;
+
+  // The item's width (156) + horizontal margin (6 + 6 = 12)
+  final double itemTotalWidth = _itemWidth + 12; 
+  final double targetOffset = index * itemTotalWidth;
+
+  _scrollController.animateTo(
+    // Clamp the value to ensure it doesn't go beyond the max scroll extent
+    targetOffset.clamp(0.0, _scrollController.position.maxScrollExtent),
+    duration: AnimationTiming.scroll,
+    curve: Curves.easeOutCubic, // A smoother curve than linear
+  );
+  
+  print('🎯 Horizontal scroll to index $index: ${HorizontalVodList[index].name}');
 }
+
+
+
+// void _scrollToPosition(int index) {
+//   if (index < HorizontalVodList.length && index < maxHorizontalItems) {
+//     // Calculate horizontal offset for the focused item
+//     final double targetOffset = index * (_itemWidth + 40); // item width + margin
+    
+//     // Animate to specific horizontal position
+//     _scrollController.animateTo(
+//       targetOffset,
+//       duration: AnimationTiming.scroll,
+//       curve: Curves.linear,
+//     );
+    
+//     print('🎯 Horizontal scroll to index $index: ${HorizontalVodList[index].name}');
+//   } else if (index == maxHorizontalItems && _viewAllFocusNode != null) {
+//     // Scroll to ViewAll button position
+//     final double viewAllOffset = maxHorizontalItems * (_itemWidth + 40);
+    
+//     _scrollController.animateTo(
+//       viewAllOffset,
+//       duration: AnimationTiming.scroll,
+//       curve: Curves.linear,
+//     );
+    
+//     print('🎯 Horizontal scroll to ViewAll button');
+//   }
+// }
 
 
   void _setupHorizontalVodFocusProvider() {
@@ -1197,7 +1220,11 @@ void _scrollToPosition(int index) {
                   if (event is RawKeyDownEvent) {
                     if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
                       return KeyEventResult.handled;
-                    } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+                    }
+                    
+                    
+                    
+                     else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
                       if (HorizontalVodList.isNotEmpty && HorizontalVodList.length > 6) {
                         String HorizontalVodId = HorizontalVodList[6].id.toString();
                         FocusScope.of(context).requestFocus(HorizontalVodFocusNodes[HorizontalVodId]);
@@ -1303,16 +1330,37 @@ void _scrollToPosition(int index) {
       },
       onKey: (FocusNode node, RawKeyEvent event) {
         if (event is RawKeyDownEvent) {
-          if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
-            if (index < HorizontalVodList.length - 1 && index != 6) {
-              String nextHorizontalVodId = HorizontalVodList[index + 1].id.toString();
-              FocusScope.of(context).requestFocus(HorizontalVodFocusNodes[nextHorizontalVodId]);
-              return KeyEventResult.handled;
-            } else if (index == 6 && HorizontalVodList.length > 7) {
-              FocusScope.of(context).requestFocus(_viewAllFocusNode);
-              return KeyEventResult.handled;
-            }
-          } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+          // if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
+          //   if (index < HorizontalVodList.length - 1 && index != 6) {
+          //     String nextHorizontalVodId = HorizontalVodList[index + 1].id.toString();
+          //     FocusScope.of(context).requestFocus(HorizontalVodFocusNodes[nextHorizontalVodId]);
+          //     return KeyEventResult.handled;
+          //   } else if (index == 6 && HorizontalVodList.length > 7) {
+          //     FocusScope.of(context).requestFocus(_viewAllFocusNode);
+          //     return KeyEventResult.handled;
+          //   }
+          // } 
+
+          // File: sub_vod.dart
+// Inside the onKey handler in _buildHorizontalVodItem
+
+if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
+  bool showViewAll = HorizontalVodList.length > maxHorizontalItems;
+
+  // If this is not the last visible logo...
+  if (index < maxHorizontalItems - 1 && index < HorizontalVodList.length - 1) {
+    String nextHorizontalVodId = HorizontalVodList[index + 1].id.toString();
+    FocusScope.of(context).requestFocus(HorizontalVodFocusNodes[nextHorizontalVodId]);
+    return KeyEventResult.handled;
+  }
+  // If this is the last logo and the "View All" button exists, move to it.
+  else if (showViewAll && index == maxHorizontalItems - 1) {
+      FocusScope.of(context).requestFocus(_viewAllFocusNode);
+      return KeyEventResult.handled;
+  }
+}
+          
+          else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
             if (index > 0) {
               String prevHorizontalVodId = HorizontalVodList[index - 1].id.toString();
               FocusScope.of(context).requestFocus(HorizontalVodFocusNodes[prevHorizontalVodId]);

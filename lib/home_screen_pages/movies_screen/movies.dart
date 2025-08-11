@@ -4172,9 +4172,9 @@ import 'package:mobi_tv_entertainment/provider/color_provider.dart';
 import 'package:mobi_tv_entertainment/provider/focus_provider.dart';
 import 'package:mobi_tv_entertainment/video_widget/custom_video_player.dart';
 import 'package:mobi_tv_entertainment/video_widget/device_detector_firestick.dart';
-import 'package:mobi_tv_entertainment/video_widget/src/y_player_main.dart';
 import 'package:mobi_tv_entertainment/video_widget/video_screen.dart';
 import 'package:mobi_tv_entertainment/video_widget/custom_youtube_player.dart';
+import 'package:mobi_tv_entertainment/video_widget/webPlayerScreen.dart';
 
 import 'package:mobi_tv_entertainment/widgets/models/news_item_model.dart';
 import 'package:flutter/material.dart';
@@ -4542,7 +4542,7 @@ class MovieService {
       String authKey = prefs.getString(_cacheKeyAuthKey) ?? '';
 
       final response = await http.get(
-        Uri.parse('https://acomtv.coretechinfo.com/public/api/getAllMovies'), // No records parameter for full data
+        Uri.parse('https://acomtv.coretechinfo.com/public/api/getAllMovies?records=50'), // No records parameter for full data
         headers: {'auth-key': authKey},
       ).timeout(
         const Duration(seconds: 30),
@@ -5183,6 +5183,43 @@ void _scrollToFocusedItem(String itemId) {
             .toList();
       }
 
+
+          // Aapka target URL banayein
+    String finalUrl = 'https://demo.coretechinfo.com/videojs.youtube-8.11.8-manbir/demo/?youtubeId=${movie.movieUrl}';
+
+    // Loading dialog dikhayein
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return const Center(child: CircularProgressIndicator());
+      },
+    );
+
+    // Thoda delay dein taaki UI update ho sake
+    await Future.delayed(const Duration(milliseconds: 500));
+
+    // Loading dialog ko hatayein
+    Navigator.of(context, rootNavigator: true).pop();
+
+  //   try {
+  //     // WebPlayerScreen par navigate karein
+  //     await Navigator.push(
+  //       context,
+  //       MaterialPageRoute(
+  //         builder: (context) => WebPlayerScreen(
+  //           videoUrl: finalUrl,
+  //         ),
+  //       ),
+  //     );
+  //   } catch (e) {
+  //     print('Navigation failed: $e');
+  //     // Yahan error handle karein
+  //   } finally {
+  //     _isNavigating = false;
+  //   }
+  // }
+
       if (isYoutubeUrl(movie.movieUrl)) {
         await Navigator.push(
           context,
@@ -5191,6 +5228,9 @@ void _scrollToFocusedItem(String itemId) {
               videoUrl: movie.movieUrl,
               name: movie.name,
             ),
+          //             builder: (context) => WebPlayerScreen(
+          //   videoUrl: finalUrl,
+          // ),
           ),
         );
       } else {
@@ -5222,21 +5262,21 @@ void _scrollToFocusedItem(String itemId) {
         errorMessage = 'Movie not found or unavailable';
       }
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(errorMessage),
-          backgroundColor: ProfessionalColors.accentRed,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          action: SnackBarAction(
-            label: 'Retry',
-            textColor: Colors.white,
-            onPressed: () => _handleMovieTap(movie),
-          ),
-        ),
-      );
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   SnackBar(
+      //     content: Text(errorMessage),
+      //     backgroundColor: ProfessionalColors.accentRed,
+      //     behavior: SnackBarBehavior.floating,
+      //     shape: RoundedRectangleBorder(
+      //       borderRadius: BorderRadius.circular(10),
+      //     ),
+      //     action: SnackBarAction(
+      //       label: 'Retry',
+      //       textColor: Colors.white,
+      //       onPressed: () => _handleMovieTap(movie),
+      //     ),
+      //   ),
+      // );
     } finally {
       _isNavigating = false;
     }
@@ -7076,15 +7116,15 @@ Future<void> _loadMoviesDataset() async {
           await Navigator.push(
             context,
             MaterialPageRoute(
-              // builder: (context) => CustomYoutubePlayer(
-              //   videoUrl: movie.movieUrl,
-              //   name: movie.name,
-              // ),
-              builder: (context) => YPlayer(
-                // videoUrl: movie.movieUrl,
-                // name: movie.name,
-                 youtubeUrl: '${movie.movieUrl}',
+              builder: (context) => CustomYoutubePlayer(
+                videoUrl: movie.movieUrl,
+                name: movie.name,
               ),
+              // builder: (context) => YPlayer(
+              //   // videoUrl: movie.movieUrl,
+              //   // name: movie.name,
+              //    youtubeUrl: '${movie.movieUrl}',
+              // ),
             ),
           );
         } else {
@@ -7116,21 +7156,21 @@ Future<void> _loadMoviesDataset() async {
           errorMessage = 'Movie not found or unavailable';
         }
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(errorMessage),
-            backgroundColor: ProfessionalColors.accentRed,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            action: SnackBarAction(
-              label: 'Retry',
-              textColor: Colors.white,
-              onPressed: () => _handleGridMovieTap(movie),
-            ),
-          ),
-        );
+      //   ScaffoldMessenger.of(context).showSnackBar(
+      //     SnackBar(
+      //       content: Text(errorMessage),
+      //       backgroundColor: ProfessionalColors.accentRed,
+      //       behavior: SnackBarBehavior.floating,
+      //       shape: RoundedRectangleBorder(
+      //         borderRadius: BorderRadius.circular(10),
+      //       ),
+      //       action: SnackBarAction(
+      //         label: 'Retry',
+      //         textColor: Colors.white,
+      //         onPressed: () => _handleGridMovieTap(movie),
+      //       ),
+      //     ),
+      //   );
       }
     } finally {
       if (mounted) {
@@ -7138,22 +7178,22 @@ Future<void> _loadMoviesDataset() async {
           _isLoading = false;
         });
         
-        // ✅ Restore focus to the same item after returning
-        Future.delayed(const Duration(milliseconds: 300), () {
-          if (mounted) {
-            final movieIndex = _fullMoviesList.indexWhere((m) => m.id == movie.id);
-            if (movieIndex != -1) {
-              final movieId = movie.id.toString();
-              if (_movieFocusNodes.containsKey(movieId)) {
-                setState(() {
-                  gridFocusedIndex = movieIndex;
-                });
-                FocusScope.of(context).requestFocus(_movieFocusNodes[movieId]);
-                print('✅ Restored movie grid focus to ${movie.name}');
-              }
-            }
-          }
-        });
+        // // ✅ Restore focus to the same item after returning
+        // Future.delayed(const Duration(milliseconds: 300), () {
+        //   if (mounted) {
+        //     final movieIndex = _fullMoviesList.indexWhere((m) => m.id == movie.id);
+        //     if (movieIndex != -1) {
+        //       final movieId = movie.id.toString();
+        //       if (_movieFocusNodes.containsKey(movieId)) {
+        //         setState(() {
+        //           gridFocusedIndex = movieIndex;
+        //         });
+        //         FocusScope.of(context).requestFocus(_movieFocusNodes[movieId]);
+        //         print('✅ Restored movie grid focus to ${movie.name}');
+        //       }
+        //     }
+        //   }
+        // });
       }
     }
   }
@@ -7492,7 +7532,7 @@ Future<void> _loadMoviesDataset() async {
             ),
             const SizedBox(height: 8),
             const Text(
-              'Check back later for new content',
+              '',
               style: TextStyle(
                 color: ProfessionalColors.textSecondary,
                 fontSize: 14,
