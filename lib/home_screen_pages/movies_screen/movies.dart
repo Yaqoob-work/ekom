@@ -4175,6 +4175,7 @@ import 'package:mobi_tv_entertainment/video_widget/device_detector_firestick.dar
 import 'package:mobi_tv_entertainment/video_widget/video_screen.dart';
 import 'package:mobi_tv_entertainment/video_widget/custom_youtube_player.dart';
 import 'package:mobi_tv_entertainment/video_widget/webPlayerScreen.dart';
+import 'package:mobi_tv_entertainment/video_widget/youtube_player_screen.dart';
 
 import 'package:mobi_tv_entertainment/widgets/models/news_item_model.dart';
 import 'package:flutter/material.dart';
@@ -5224,10 +5225,30 @@ void _scrollToFocusedItem(String itemId) {
         await Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => CustomYoutubePlayer(
-              videoUrl: movie.movieUrl,
-              name: movie.name,
+            builder: (context) => YouTubePlayerScreen (
+              // videoUrl: movie.movieUrl,
+              // name: movie.name, 
+              videoData: VideoData(
+                id: movie.movieUrl,
+                title: movie.name,
+                youtubeUrl: movie.movieUrl,
+                thumbnail: movie.banner ?? movie.poster ?? '',
+                description: movie.description ?? '',
+              ), 
+              playlist: [
+                VideoData(
+                  id: movie.movieUrl,
+                  title: movie.name,
+                  youtubeUrl: movie.movieUrl,
+                  thumbnail: movie.banner ?? movie.poster ?? '',
+                  description: movie.description ?? '',
+                ),
+              ],
             ),
+            // builder: (context) => CustomYoutubePlayer(
+            //   videoUrl: movie.movieUrl,
+            //   name: movie.name,
+            // ),
           //             builder: (context) => WebPlayerScreen(
           //   videoUrl: finalUrl,
           // ),
@@ -7116,10 +7137,30 @@ Future<void> _loadMoviesDataset() async {
           await Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => CustomYoutubePlayer(
-                videoUrl: movie.movieUrl,
-                name: movie.name,
-              ),
+               builder: (context) => YouTubePlayerScreen (
+              // videoUrl: movie.movieUrl,
+              // name: movie.name, 
+              videoData: VideoData(
+                id: movie.id.toString(),
+                title: movie.name,
+                youtubeUrl: movie.movieUrl,
+                thumbnail: movie.banner ?? movie.poster ?? '',
+                description: movie.description ?? '',
+              ), 
+              playlist: [
+                VideoData(
+                  id: movie.id.toString(),
+                  title: movie.name,
+                  youtubeUrl: movie.movieUrl,
+                  thumbnail: movie.banner ?? movie.poster ?? '',
+                  description: movie.description ?? '',
+                ),
+              ],
+            ),
+              // builder: (context) => CustomYoutubePlayer(
+              //   videoUrl: movie.movieUrl,
+              //   name: movie.name,
+              // ),
               // builder: (context) => YPlayer(
               //   // videoUrl: movie.movieUrl,
               //   // name: movie.name,

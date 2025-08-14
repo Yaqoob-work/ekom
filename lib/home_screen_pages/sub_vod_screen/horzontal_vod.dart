@@ -10,6 +10,7 @@ import 'package:mobi_tv_entertainment/home_screen_pages/sub_vod_screen/sub_vod.d
 import 'dart:math' as math;
 import 'package:mobi_tv_entertainment/home_screen_pages/tv_show/tv_show_second_page.dart';
 import 'package:mobi_tv_entertainment/main.dart';
+import 'package:mobi_tv_entertainment/provider/color_provider.dart';
 import 'package:mobi_tv_entertainment/provider/focus_provider.dart';
 import 'package:provider/provider.dart';
 import 'dart:convert';
@@ -1007,36 +1008,81 @@ void _scrollToPosition(int index) {
     });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    super.build(context);
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
+  // @override
+  // Widget build(BuildContext context) {
+  //   super.build(context);
+  //   final screenWidth = MediaQuery.of(context).size.width;
+  //   final screenHeight = MediaQuery.of(context).size.height;
 
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              ProfessionalColors.primaryDark,
-              ProfessionalColors.surfaceDark.withOpacity(0.5),
+  //   return Scaffold(
+  //     backgroundColor: Colors.transparent,
+  //     body: Container(
+  //       decoration: BoxDecoration(
+  //         gradient: LinearGradient(
+  //           begin: Alignment.topCenter,
+  //           end: Alignment.bottomCenter,
+  //           colors: [
+  //             ProfessionalColors.primaryDark,
+  //             ProfessionalColors.surfaceDark.withOpacity(0.5),
+  //           ],
+  //         ),
+  //       ),
+  //       child: Column(
+  //         children: [
+  //           SizedBox(height: screenHeight * 0.02),
+  //           _buildProfessionalTitle(screenWidth),
+  //           SizedBox(height: screenHeight * 0.01),
+  //           Expanded(child: _buildBody(screenWidth, screenHeight)),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
+
+
+
+  @override
+Widget build(BuildContext context) {
+  super.build(context);
+  final screenWidth = MediaQuery.of(context).size.width;
+  final screenHeight = MediaQuery.of(context).size.height;
+
+  // ✅ ADD: Consumer to listen to color changes (Same as WebSeries)
+  return Consumer<ColorProvider>(
+    builder: (context, colorProvider, child) {
+      final bgColor = colorProvider.isItemFocused
+          ? colorProvider.dominantColor.withOpacity(0.1)
+          // : const Color.fromARGB(255, 175, 180, 196);
+          :ProfessionalColors.primaryDark;
+
+      return Scaffold(
+        backgroundColor: Colors.transparent,
+        body: Container(
+          // ✅ ENHANCED: Dynamic background gradient based on focused item
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                bgColor,
+                bgColor.withOpacity(0.8),
+                ProfessionalColors.primaryDark,
+              ],
+            ),
+          ),
+          child: Column(
+            children: [
+              SizedBox(height: screenHeight * 0.02),
+              _buildProfessionalTitle(screenWidth),
+              SizedBox(height: screenHeight * 0.01),
+              Expanded(child: _buildBody(screenWidth, screenHeight)),
             ],
           ),
         ),
-        child: Column(
-          children: [
-            SizedBox(height: screenHeight * 0.02),
-            _buildProfessionalTitle(screenWidth),
-            SizedBox(height: screenHeight * 0.01),
-            Expanded(child: _buildBody(screenWidth, screenHeight)),
-          ],
-        ),
-      ),
-    );
-  }
+      );
+    },
+  );
+}
 
   // 🚀 Enhanced Title with Cache Status and Refresh Button
   Widget _buildProfessionalTitle(double screenWidth) {
@@ -1206,16 +1252,32 @@ void _scrollToPosition(int index) {
             if (showViewAll && index == 7) {
               return Focus(
                 focusNode: _viewAllFocusNode,
-                onFocusChange: (hasFocus) {
-                  if (hasFocus && mounted) {
-                    Color viewAllColor = ProfessionalColors.gradientColors[
-                        math.Random().nextInt(ProfessionalColors.gradientColors.length)];
+                // onFocusChange: (hasFocus) {
+                //   if (hasFocus && mounted) {
+                //     Color viewAllColor = ProfessionalColors.gradientColors[
+                //         math.Random().nextInt(ProfessionalColors.gradientColors.length)];
 
-                    setState(() {
-                      _currentAccentColor = viewAllColor;
-                    });
-                  }
-                },
+                //     setState(() {
+                //       _currentAccentColor = viewAllColor;
+                //     });
+                //   }
+                // },
+                onFocusChange: (hasFocus) {
+  if (hasFocus && mounted) {
+    Color viewAllColor = ProfessionalColors.gradientColors[
+        math.Random().nextInt(ProfessionalColors.gradientColors.length)];
+
+    setState(() {
+      _currentAccentColor = viewAllColor;
+    });
+
+    // ✅ ADD: Update color provider for ViewAll button
+    context.read<ColorProvider>().updateColor(viewAllColor, true);
+  } else if (mounted) {
+    // ✅ ADD: Reset color when ViewAll loses focus
+    context.read<ColorProvider>().resetColor();
+  }
+},
                 onKey: (FocusNode node, RawKeyEvent event) {
                   if (event is RawKeyDownEvent) {
                     if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
@@ -1236,6 +1298,7 @@ void _scrollToPosition(int index) {
                       focusedIndex = -1;
                       _hasReceivedFocusFromWebSeries = false;
                     });
+                      context.read<ColorProvider>().resetColor();
                     FocusScope.of(context).unfocus();
                     Future.delayed(const Duration(milliseconds: 100), () {
                       if (mounted) {
@@ -1255,6 +1318,7 @@ void _scrollToPosition(int index) {
                         focusedIndex = -1;
                         _hasReceivedFocusFromWebSeries = false;
                       });
+                        context.read<ColorProvider>().resetColor();
                       FocusScope.of(context).unfocus();
                       Future.delayed(const Duration(milliseconds: 100), () {
                         if (mounted) {
@@ -1312,22 +1376,44 @@ void _scrollToPosition(int index) {
 
     return Focus(
       focusNode: HorizontalVodFocusNodes[HorizontalVodId],
-      onFocusChange: (hasFocus) async {
-        if (hasFocus && mounted) {
-          try {
-            Color dominantColor = ProfessionalColors.gradientColors[
-                math.Random().nextInt(ProfessionalColors.gradientColors.length)];
+      // onFocusChange: (hasFocus) async {
+      //   if (hasFocus && mounted) {
+      //     try {
+      //       Color dominantColor = ProfessionalColors.gradientColors[
+      //           math.Random().nextInt(ProfessionalColors.gradientColors.length)];
 
-            setState(() {
-              _currentAccentColor = dominantColor;
-              focusedIndex = index;
-              _hasReceivedFocusFromWebSeries = true;
-            });
-          } catch (e) {
-            print('Focus change handling failed: $e');
-          }
-        }
-      },
+      //       setState(() {
+      //         _currentAccentColor = dominantColor;
+      //         focusedIndex = index;
+      //         _hasReceivedFocusFromWebSeries = true;
+      //       });
+      //     } catch (e) {
+      //       print('Focus change handling failed: $e');
+      //     }
+      //   }
+      // },
+      onFocusChange: (hasFocus) async {
+  if (hasFocus && mounted) {
+    try {
+      Color dominantColor = ProfessionalColors.gradientColors[
+          math.Random().nextInt(ProfessionalColors.gradientColors.length)];
+
+      setState(() {
+        _currentAccentColor = dominantColor;
+        focusedIndex = index;
+        _hasReceivedFocusFromWebSeries = true;
+      });
+
+      // ✅ ADD: Update color provider
+      context.read<ColorProvider>().updateColor(dominantColor, true);
+    } catch (e) {
+      print('Focus change handling failed: $e');
+    }
+  } else if (mounted) {
+    // ✅ ADD: Reset color when focus lost
+    context.read<ColorProvider>().resetColor();
+  }
+},
       onKey: (FocusNode node, RawKeyEvent event) {
         if (event is RawKeyDownEvent) {
           // if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
@@ -1372,6 +1458,8 @@ if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
             focusedIndex = -1;
             _hasReceivedFocusFromWebSeries = false;
           });
+          
+            context.read<ColorProvider>().resetColor();
           FocusScope.of(context).unfocus();
           Future.delayed(const Duration(milliseconds: 100), () {
             if (mounted) {
@@ -1391,6 +1479,7 @@ if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
               focusedIndex = -1;
               _hasReceivedFocusFromWebSeries = false;
             });
+              context.read<ColorProvider>().resetColor();
             FocusScope.of(context).unfocus();
             Future.delayed(const Duration(milliseconds: 100), () {
               if (mounted) {
@@ -1419,11 +1508,18 @@ if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
           HorizontalVod: HorizontalVod,
           focusNode: HorizontalVodFocusNodes[HorizontalVodId]!,
           onTap: () => _navigateToHorizontalVodDetails(HorizontalVod),
+          // onColorChange: (color) {
+          //   setState(() {
+          //     _currentAccentColor = color;
+          //   });
+          // },
           onColorChange: (color) {
-            setState(() {
-              _currentAccentColor = color;
-            });
-          },
+  setState(() {
+    _currentAccentColor = color;
+  });
+  // ✅ ADD: Update color provider when card changes color
+  context.read<ColorProvider>().updateColor(color, true);
+},
           index: index,
           categoryTitle: 'CONTENTS',
         ),

@@ -1516,11 +1516,6 @@
 // //   }
 // // }
 
-
-
-
-
-
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -1602,9 +1597,9 @@ class MyHttpOverrides extends HttpOverrides {
   }
 }
 
-void main() async{
+void main() async {
   HttpOverrides.global = MyHttpOverrides();
-  await initializeDateFormatting(null, null); 
+  await initializeDateFormatting(null, null);
   runApp(
     MultiProvider(
       providers: [
@@ -1655,10 +1650,10 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     screenhgt = MediaQuery.of(context).size.height;
     screenwdt = MediaQuery.of(context).size.width;
-bannerwdt = screenwdt * 0.18;
-    bannerhgt = screenhgt * 0.2;
-    focussedBannerwdt = screenwdt * 0.18;
-    focussedBannerhgt = screenhgt * 0.26;
+    bannerwdt = screenwdt * 0.15;
+    bannerhgt = screenhgt * 0.17;
+    focussedBannerwdt = screenwdt * 0.15;
+    focussedBannerhgt = screenhgt * 0.21;
     screensz = MediaQuery.of(context).size;
     nametextsz = MediaQuery.of(context).size.width / 60.0;
     menutextsz = MediaQuery.of(context).size.width / 70;
@@ -1836,11 +1831,6 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 }
 
-
-
-
-
-
 class LoginScreen extends StatefulWidget {
   @override
   _LoginScreenState createState() => _LoginScreenState();
@@ -1877,7 +1867,8 @@ class _LoginScreenState extends State<LoginScreen>
     _slideAnimation = Tween<Offset>(
       begin: Offset(0, 0.5),
       end: Offset.zero,
-    ).animate(CurvedAnimation(parent: _slideController, curve: Curves.easeOutCubic));
+    ).animate(
+        CurvedAnimation(parent: _slideController, curve: Curves.easeOutCubic));
 
     _initializeScreen();
   }
@@ -1906,14 +1897,16 @@ class _LoginScreenState extends State<LoginScreen>
         return androidInfo.id;
       } else if (Platform.isIOS) {
         IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
-        return iosInfo.identifierForVendor ?? 'iOS-${DateTime.now().millisecondsSinceEpoch}';
+        return iosInfo.identifierForVendor ??
+            'iOS-${DateTime.now().millisecondsSinceEpoch}';
       }
     } catch (_) {}
     return 'DEVICE-${DateTime.now().millisecondsSinceEpoch}';
   }
 
   Future<void> _login() async {
-    if (_pinController.text.trim().isEmpty || _pinController.text.trim().length < 4) {
+    if (_pinController.text.trim().isEmpty ||
+        _pinController.text.trim().length < 4) {
       _showError('Please enter a valid PIN');
       return;
     }
@@ -1999,7 +1992,8 @@ class _LoginScreenState extends State<LoginScreen>
           prefs.setString('user_pin', _pinController.text.trim()),
           prefs.setString('device_serial', serialNumber),
           prefs.setBool('is_logged_in', true),
-          prefs.setInt('login_timestamp', DateTime.now().millisecondsSinceEpoch),
+          prefs.setInt(
+              'login_timestamp', DateTime.now().millisecondsSinceEpoch),
         ]);
 
         await AuthManager.setAuthKey(authKey);
@@ -2017,7 +2011,8 @@ class _LoginScreenState extends State<LoginScreen>
         _showError('Invalid PIN. Please check and try again.');
       }
     } catch (e) {
-      _showError('Login failed. ${e.toString().contains('Timeout') ? 'Check your internet.' : 'Try again.'}');
+      _showError(
+          'Login failed. ${e.toString().contains('Timeout') ? 'Check your internet.' : 'Try again.'}');
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -2138,7 +2133,8 @@ class _LoginScreenState extends State<LoginScreen>
                                 if (_pinController.text.isNotEmpty) {
                                   setState(() {
                                     _pinController.text = _pinController.text
-                                        .substring(0, _pinController.text.length - 1);
+                                        .substring(
+                                            0, _pinController.text.length - 1);
                                   });
                                 }
                               } else if (label == 'OK') {
@@ -2182,7 +2178,8 @@ class _LoginScreenState extends State<LoginScreen>
                         padding: EdgeInsets.only(top: 20),
                         child: Text(
                           _errorMessage,
-                          style: TextStyle(color: Colors.red, fontSize: minitextsz),
+                          style: TextStyle(
+                              color: Colors.red, fontSize: minitextsz),
                         ),
                       ),
                   ],
@@ -2195,7 +2192,6 @@ class _LoginScreenState extends State<LoginScreen>
     );
   }
 }
-
 
 // Rest of your existing code (UpdateChecker, MyHome, etc.) remains the same...
 class UpdateChecker {
@@ -2511,9 +2507,3 @@ class _MyHomeState extends State<MyHome> {
     });
   }
 }
-
-
-
-
-
-

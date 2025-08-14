@@ -383,7 +383,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: SingleChildScrollView(
               controller: context.read<FocusProvider>().scrollController,
               child: Container(
-                margin: EdgeInsets.symmetric(horizontal: screenwdt * 0.03),
+                // margin: EdgeInsets.symmetric(horizontal: screenwdt * 0.03),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -396,7 +396,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                     Container(
-                      height: screenhgt * 0.52,
+                      height: screenhgt * 0.48,
                       key: subLiveKey,
                       child: SubLiveScreen(
                           // Note: SubLiveScreen now contains news channels
@@ -404,28 +404,28 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                     ),
                     SizedBox(
-                      height: screenhgt * 0.42,
+                      height: screenhgt * 0.38,
                       key: subVodKey,
                       child: HorzontalVod (
                         // focusNode: firstSubVodFocusNode,
                       ),
                     ),
                     SizedBox(
-                      height: screenhgt * 0.42,
+                      height: screenhgt * 0.38,
                       key: manageMoviesKey,
                       child: MoviesScreen(
                           // focusNode: manageMoviesFocusNode,
                           ),
                     ),
                     SizedBox(
-                      height: screenhgt * 0.42,
+                      height: screenhgt * 0.38,
                       key: manageWebseriesKey,
                       child: ProfessionalWebSeriesHorizontalList(
                         // focusNode: manageWebseriesFocusNode,
                       ),
                     ),
                     SizedBox(
-                      height: screenhgt * 0.42,
+                      height: screenhgt * 0.38,
                       key: tvShowsKey,
                       child: 
                       // HorizontalChannelList(
@@ -434,7 +434,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ProfessionalTVShowsHorizontalList()
                     ),
                     SizedBox(
-                      height: screenhgt * 0.42,
+                      height: screenhgt * 0.38,
                       key: sportsCategoryKey,
                       child: 
                       // HorizontalChannelList(
@@ -443,13 +443,13 @@ class _HomeScreenState extends State<HomeScreen> {
                       SportsCategory ()
                     ),
                     SizedBox(
-                      height: screenhgt * 0.42,
+                      height: screenhgt * 0.38,
                       key: religiousChannelKey,
                       child: 
                       ProfessionalReligiousChannelsHorizontalList ()
                     ),
                     SizedBox(
-                      height: screenhgt * 0.42,
+                      height: screenhgt * 0.38,
                       key: tvShowsPakKey,
                       child: 
                       TvShowPak ()
