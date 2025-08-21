@@ -781,8 +781,24 @@ class _TvShowPakFinalDetailsPageState extends State<TvShowPakFinalDetailsPage>
             context,
             MaterialPageRoute(
               builder: (context) => CustomYoutubePlayer(
-                videoUrl: episode.videoUrl,
-                name: episode.title,
+                // videoUrl: episode.videoUrl,
+                // name: episode.title,
+                videoData: VideoData(
+                  id: episode.videoUrl ?? '',
+                  title: episode.title,
+                  youtubeUrl: episode.videoUrl ?? '',
+                thumbnail: episode.thumbnail ?? '',
+                description: episode.description ?? '',
+              ), 
+              playlist: [
+                VideoData(
+                  id: episode.videoUrl??'',
+                  title: episode.title,
+                  youtubeUrl: episode.videoUrl??'',
+                  thumbnail: episode.thumbnail ?? '',
+                  description: episode.description ?? '',
+                ),
+              ],
               ),
             ),
           );

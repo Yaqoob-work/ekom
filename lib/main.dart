@@ -1906,7 +1906,7 @@ class _LoginScreenState extends State<LoginScreen>
 
   Future<void> _login() async {
     if (_pinController.text.trim().isEmpty ||
-        _pinController.text.trim().length < 4) {
+        _pinController.text.trim().length < 10) {
       _showError('Please enter a valid PIN');
       return;
     }
@@ -1926,14 +1926,14 @@ class _LoginScreenState extends State<LoginScreen>
       Map<String, dynamic>? userData;
 
       final loginEndpoints = [
-        {
-          'url': 'https://acomtv.coretechinfo.com/public/api/login',
-          'body': {
-            'token': '',
-            'mac_address': serialNumber,
-            'login_pin': _pinController.text.trim(),
-          }
-        },
+        // {
+        //   'url': 'https://acomtv.coretechinfo.com/public/api/login',
+        //   'body': {
+        //     'token': '',
+        //     'mac_address': serialNumber,
+        //     'login_pin': _pinController.text.trim(),
+        //   }
+        // },
         {
           'url': 'https://acomtv.coretechinfo.com/api/login',
           'body': {
@@ -1942,13 +1942,13 @@ class _LoginScreenState extends State<LoginScreen>
             'login_pin': _pinController.text.trim(),
           }
         },
-        {
-          'url': 'https://acomtv.coretechinfo.com/api/auth/login',
-          'body': {
-            'mac_address': serialNumber,
-            'pin': _pinController.text.trim(),
-          }
-        },
+        // {
+        //   'url': 'https://acomtv.coretechinfo.com/api/auth/login',
+        //   'body': {
+        //     'mac_address': serialNumber,
+        //     'pin': _pinController.text.trim(),
+        //   }
+        // },
       ];
 
       for (final endpoint in loginEndpoints) {

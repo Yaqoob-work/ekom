@@ -3454,9 +3454,30 @@ class _ReligiousChannelDetailsPageState extends State<ReligiousChannelDetailsPag
             context,
             MaterialPageRoute(
               builder: (context) => CustomYoutubePlayer(
-                videoUrl: episode.url,
-                name: episode.title,
+                // videoUrl: episode.url,
+                // name: episode.title,
+
+              videoData: VideoData(
+                id: episode.url,
+                title: episode.title ,
+                youtubeUrl: episode.url,
+                thumbnail: episode.episodeImage ?? '',
+                description: episode.episodeDescription ?? '',
+              ), 
+              playlist: [
+                VideoData(
+                  id: episode.url,
+                  title: episode.title,
+                  youtubeUrl: episode.url,
+                  thumbnail: episode.episodeImage ?? '',
+                  description: episode.episodeDescription ?? '',
+                ),
+              ],
               ),
+              // builder: (context) => CustomYoutubePlayer(
+              //   videoUrl: episode.url,
+              //   name: episode.title,
+              // ),
             ),
           );
         } else {

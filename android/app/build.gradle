@@ -59,7 +59,7 @@ android {
 
 
     defaultConfig {
-        applicationId "com.ekom.software"
+        applicationId "com.ekom.test"
         minSdk 21
         targetSdk 34
         versionCode flutterVersionCode.toInteger()

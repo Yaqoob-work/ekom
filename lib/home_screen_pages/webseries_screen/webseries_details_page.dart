@@ -3083,8 +3083,24 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
             context,
             MaterialPageRoute(
               builder: (context) => CustomYoutubePlayer(
-                videoUrl: episode.url,
-                name: episode.name,
+                // videoUrl: episode.url,
+                // name: episode.name,
+                                                          videoData: VideoData(
+                id: episode.url??'',
+                title: episode.name ,
+                youtubeUrl: episode.url??'',
+                thumbnail: episode.thumbnail ?? '',
+                description: episode.description ?? '',
+              ), 
+              playlist: [
+                VideoData(
+                  id: episode.url??'',
+                  title: episode.name,
+                  youtubeUrl: episode.url??'',
+                  thumbnail: episode.thumbnail ?? '',
+                  description: episode.description ?? '',
+                ),
+              ],
               ),
             ),
           );

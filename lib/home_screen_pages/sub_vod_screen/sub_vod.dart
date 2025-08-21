@@ -2354,10 +2354,14 @@ class _VODState extends State<VOD> with TickerProviderStateMixin {
       await Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => HorizontalListDetailsPage(
+          builder: (context) => GenreNetworkWidget(
             tvChannelId: network.id,
             channelName: network.name, 
           ),
+          // builder: (context) => HorizontalListDetailsPage(
+          //   tvChannelId: network.id,
+          //   channelName: network.name, 
+          // ),
         ),
       );
 

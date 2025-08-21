@@ -6846,8 +6846,24 @@ class _TournamentFinalDetailsPageState extends State<TournamentFinalDetailsPage>
             context,
             MaterialPageRoute(
               builder: (context) => CustomYoutubePlayer(
-                videoUrl: url,
-                name: match.matchTitle,
+                // videoUrl: url,
+                // name: match.matchTitle,
+                 videoData: VideoData(
+                id: match.videoUrl ??'' ,
+                title: match.matchTitle,
+                youtubeUrl: match.videoUrl ??'',
+                thumbnail: match.thumbnailUrl ?? '',
+                description: match.description ?? '',
+              ), 
+              playlist: [
+                VideoData(
+                  id: match.videoUrl ??'',
+                  title: match.matchTitle,
+                  youtubeUrl: match.videoUrl ??'',
+                  thumbnail: match.thumbnailUrl ?? '',
+                  description: match.description ?? '',
+                ),
+              ],
               ),
             ),
           );

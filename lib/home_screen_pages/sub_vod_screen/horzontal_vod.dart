@@ -953,11 +953,16 @@ void _scrollToPosition(int index) {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => HorizontalListDetailsPage(
+        builder: (context) => GenreNetworkWidget(
           tvChannelId: HorizontalVod.id,
           channelName: HorizontalVod.name,
           channelLogo: HorizontalVod.logo,
         ),
+        // builder: (context) => HorizontalListDetailsPage(
+        //   tvChannelId: HorizontalVod.id,
+        //   channelName: HorizontalVod.name,
+        //   channelLogo: HorizontalVod.logo,
+        // ),
       ),
     ).then((_) {
       print('🔙 Returned from TV Show Details');
@@ -3149,11 +3154,16 @@ class _ProfessionalHorizontalVodGridPageState extends State<ProfessionalHorizont
         context,
         PageRouteBuilder(
           // ✅ Smooth page transition
-          pageBuilder: (context, animation, secondaryAnimation) => HorizontalListDetailsPage(
+          pageBuilder: (context, animation, secondaryAnimation) => GenreNetworkWidget(
             tvChannelId: HorizontalVod.id,
             channelName: HorizontalVod.name,
             channelLogo: HorizontalVod.logo,
           ),
+          // pageBuilder: (context, animation, secondaryAnimation) => HorizontalListDetailsPage(
+          //   tvChannelId: HorizontalVod.id,
+          //   channelName: HorizontalVod.name,
+          //   channelLogo: HorizontalVod.logo,
+          // ),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return FadeTransition(
               opacity: animation,

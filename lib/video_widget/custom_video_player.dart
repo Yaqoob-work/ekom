@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:keep_screen_on/keep_screen_on.dart';
+import 'package:mobi_tv_entertainment/main.dart';
 import 'package:video_player/video_player.dart';
 import 'dart:async';
 
@@ -361,6 +362,38 @@ class _CustomVideoPlayerState extends State<CustomVideoPlayer> {
     return _currentPosition;
   }
 
+
+    Widget _buildVideoPlayer() {
+    if ( _controller == null) {
+      return Center(child: CircularProgressIndicator());
+    }
+
+    // video_player needs a different approach to aspect ratio handling
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // Get screen dimensions
+        final screenWidth = constraints.maxWidth;
+        final screenHeight = constraints.maxHeight;
+
+        // Calculate aspect ratio from the controller
+        // final videoAspectRatio = _controller!.value.aspectRatio;
+
+        // Use AspectRatio widget to maintain correct proportions
+        return Container(
+          width: screenWidth,
+          height: screenHeight,
+          color: Colors.black,
+          child: Center(
+            child: AspectRatio(
+              aspectRatio: 16 / 9,
+              child: VideoPlayer(_controller),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
@@ -375,16 +408,17 @@ class _CustomVideoPlayerState extends State<CustomVideoPlayer> {
           children: [
             // Full Screen Video Player
             if (_isInitialized)
-              SizedBox.expand(
-                child: FittedBox(
-                  fit: BoxFit.cover,
-                  child: SizedBox(
-                    width: _controller.value.size.width,
-                    height: _controller.value.size.height,
-                    child: VideoPlayer(_controller),
-                  ),
-                ),
-              )
+              // SizedBox.expand(
+              //   child: FittedBox(
+              //     fit: BoxFit.cover,
+              //     child: SizedBox(
+              //       width: screenwdt,
+              //       height:screenhgt,
+              //       child: VideoPlayer(_controller),
+              //     ),
+              //   ),
+              // )
+              _buildVideoPlayer()
             else
               const Center(
                 child: CircularProgressIndicator(
