@@ -1,0 +1,360 @@
+<!-- prettier-ignore -->
+
+
+<!DOCTYPE html>
+<html lang="en" class="h-100">
+    <head>
+         <meta charset="utf-8" />
+
+        <!-- General medatada -->
+        <meta name="author" content="Daniel Rossi" />
+        <meta name="title" content="Multi Format Playlist Selection" />
+
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+
+        <!-- Page title -->
+        <title>Multi Format Playlist Selection</title>
+ 
+
+        <!-- Block for additional page specific header tags -->
+        <!-- prettier-ignore -->
+                
+        <!-- CSS -->
+        <link rel="stylesheet" href="css/main.css" />
+
+    <script src="plugins/videojs/js/video.min.js"></script>
+    <link rel="stylesheet" href="plugins/videojs/css/video-js.min.css" />
+    
+
+    <script src="../../plugins/videojs/js/video.min.js"></script>
+    <link rel="stylesheet" href="../../plugins/videojs/css/video-js.min.css" />
+    
+
+         <!-- Plugin Stylesheets -->
+
+
+             <!-- Plugin Scripts -->
+      
+
+
+
+
+
+
+        
+
+<!-- CSS -->
+<link rel="stylesheet" href="../../css/main.css" />
+
+
+
+    
+        <link rel="stylesheet" href="/plugins/videojs/css/videojs-playlist-ui.min.css" type="text/css" />
+
+
+
+
+    <script src="../../js/youtube-8.11.8.js"></script>
+
+
+    
+         <script src="../../js/qualitymenu.min.js"></script>
+      
+         <script src="/plugins/videojs/js/videojs-playlist.min.js"></script>
+      
+         <script src="/plugins/videojs/js/videojs-playlist-ui.min.js"></script>
+      
+
+ 
+
+
+
+ 
+
+        <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+        
+    </head>
+
+    <body class="font-sans text-xl flex flex-col h-screen">
+
+        
+<div class="w-full text-gray-700 bg-white dark-mode:text-gray-200 dark-mode:bg-gray-800">
+    <div  class="flex flex-col max-w-screen-xl px-4 mx-auto md:items-center md:justify-between md:flex-row md:px-6 lg:px-8">
+                <div class="flex flex-row items-center justify-between p-4">
+                    <a href="/" class="text-lg font-semibold tracking-widest text-gray-900 uppercase rounded-lg dark-mode:text-white focus:outline-none">
+                      Electroteque Media
+                    </a>
+                </div>
+    
+    
+                <nav  class="flex-col flex-grow  pb-4 md:pb-0 md:flex md:justify-end md:flex-row">
+                    
+<a class="px-4 py-2 mt-2 text-sm font-semibold bg-transparent rounded-lg dark-mode:bg-transparent dark-mode:hover:bg-gray-600 dark-mode:focus:bg-gray-600 dark-mode:focus:text-white dark-mode:hover:text-white dark-mode:text-gray-200 md:mt-0 md:ml-4 hover:text-gray-900 focus:text-gray-900 hover:bg-gray-200 focus:bg-gray-200 focus:outline-none focus:shadow-outline" href="../../demos/">Demos</a>
+<a class="px-4 py-2 mt-2 text-sm font-semibold bg-transparent rounded-lg dark-mode:bg-transparent dark-mode:hover:bg-gray-600 dark-mode:focus:bg-gray-600 dark-mode:focus:text-white dark-mode:hover:text-white dark-mode:text-gray-200 md:mt-0 md:ml-4 hover:text-gray-900 focus:text-gray-900 hover:bg-gray-200 focus:bg-gray-200 focus:outline-none focus:shadow-outline" href="../../docs/">Docs</a>
+<a class="px-4 py-2 mt-2 text-sm font-semibold bg-transparent rounded-lg dark-mode:bg-transparent dark-mode:hover:bg-gray-600 dark-mode:focus:bg-gray-600 dark-mode:focus:text-white dark-mode:hover:text-white dark-mode:text-gray-200 md:mt-0 md:ml-4 hover:text-gray-900 focus:text-gray-900 hover:bg-gray-200 focus:bg-gray-200 focus:outline-none focus:shadow-outline" href="../../changelog/">Changelog</a>
+
+    
+                    
+                  
+                </nav>
+            </div>
+    </div>
+
+
+ 
+<nav class="bg-gray-200 text-black font-bold p-3 rounded font-sans w-full">
+      
+      <ol class="list-none p-0 inline-flex">
+
+        <li class="flex items-center">
+            <a href="../../">Youtube</a>
+             <svg class="fill-current w-3 h-3 mx-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M285.476 272.971L91.132 467.314c-9.373 9.373-24.569 9.373-33.941 0l-22.667-22.667c-9.357-9.357-9.375-24.522-.04-33.901L188.505 256 34.484 101.255c-9.335-9.379-9.317-24.544.04-33.901l22.667-22.667c9.373-9.373 24.569-9.373 33.941 0L285.475 239.03c9.373 9.372 9.373 24.568.001 33.941z"/></svg>
+          </li>
+         <li class="flex items-center">
+            <a href="../">Demos</a>
+             <svg class="fill-current w-3 h-3 mx-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M285.476 272.971L91.132 467.314c-9.373 9.373-24.569 9.373-33.941 0l-22.667-22.667c-9.357-9.357-9.375-24.522-.04-33.901L188.505 256 34.484 101.255c-9.335-9.379-9.317-24.544.04-33.901l22.667-22.667c9.373-9.373 24.569-9.373 33.941 0L285.475 239.03c9.373 9.372 9.373 24.568.001 33.941z"/></svg>
+          </li>
+         <li class="text-gray-500">Multi Format Playlist Selection</li> 
+     </ol>
+
+</nav>
+
+<!--<header class="flex flex-col my-5 items-center justify-center">
+            <h1 id="page-title">
+                <a
+                    href="../../../../../plugins/videojs/youtube/demos/multi-playlist/"
+                    class="text-4xl font-bold"
+                    rel="bookmark"
+                    title="Multi Format Playlist Selection"
+                    >Multi Format Playlist Selection</a
+                >
+            </h1>
+            <h2><p>Youtube Playlist With Mp4 videos</p></h2>
+</header>-->
+<header class="flex flex-col my-5 items-center justify-center">
+            <h1 id="page-title">
+                <a
+                    href="../../../../../plugins/videojs/youtube/demos/multi-playlist//"
+                    class="text-4xl font-bold"
+                    rel="bookmark"
+                    title="Multi Format Playlist Selection"
+                    >Multi Format Playlist Selection</a
+                >
+            </h1>
+                <h2>
+                     
+                </h2>
+                <h2>
+                    <p>Youtube Playlist With Mp4 videos</p> 
+                </h2>
+
+</header>
+        <!-- Page content block -->
+<section class="bg-gradient-to-b from-gray-100 to-gray-200 markdown">
+    <div class="text-gray-700 container md:px-8 lg:px-4 md:py-32 lg:py-24 mx-auto bg-gray">
+        <div class="flex flex-col text-left lg:text-center w-full">
+        
+  
+  <div class="flex w-full h-auto my-auto">
+      <video class="video-js vjs-default-skin vjs-fluid " crossorigin="anonymous" controls="" id="multi-playlist"></video>
+  </div>
+
+
+  
+
+     
+
+     
+
+<script type="text/javascript">
+
+var player;
+
+ document.addEventListener("DOMContentLoaded", (event) => {
+    player = videojs("multi-playlist", {
+    "plugins": {
+        "qualitymenu": {},
+        "youtube": {}
+    }
+});
+
+  
+          const playlistPlugin = player.playlistPlugin(player, {});
+          const PlaylistPluginClass = videojs.getPlugin('playlistPlugin');
+
+        
+          const videoList = [{'name': 'Big Buck Bunny', 'sources': [{'type': 'video/youtube', 'src': 'http://www.youtube.com/watch?v=Vpg9yizPP_g'}]}, {'name': 'Elephants Dream', 'sources': [{'type': 'video/youtube', 'src': 'http://www.youtube.com/watch?v=MFg8mBaMoPs'}]}];
+          const playlist = PlaylistPluginClass.createPlaylistFrom(videoList);
+
+          // Plugin methods
+          playlistPlugin.loadPlaylist(playlist);
+          player.playlistUi({playOnSelect: true});
+
+          playlistPlugin.loadFirstItem();
+          playlistPlugin.setAutoadvanceDelay(0);
+
+
+
+
+ 
+  });
+
+
+</script>
+
+       
+
+        </div>        
+    </div>
+</section>
+
+<article class="p-3 ">
+
+    <div class="markdown"><div class="vjs-playlist w-2/4"></div></div>
+    <div class="mt-6"><div class="highlight"><pre><span></span>    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;flex w-full h-auto my-auto&quot;</span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="nt">video</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;video-js vjs-default-skin vjs-fluid &quot;</span> <span class="na">crossorigin</span><span class="o">=</span><span class="s">&quot;anonymous&quot;</span> <span class="na">controls</span><span class="o">=</span><span class="s">&quot;&quot;</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;multi-playlist&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">video</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</pre></div>
+
+<div class="highlight"><pre><span></span>  <span class="p">&lt;</span><span class="nt">script</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;text/javascript&quot;</span><span class="p">&gt;</span>
+</pre></div>
+<div class="highlight"><pre><span></span><span class="w">  	</span><span class="kd">var</span><span class="w"> </span><span class="nx">player</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">videojs</span><span class="p">(</span><span class="s2">&quot;multi-playlist&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="s2">&quot;plugins&quot;</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="s2">&quot;qualitymenu&quot;</span><span class="o">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">        </span><span class="s2">&quot;youtube&quot;</span><span class="o">:</span><span class="w"> </span><span class="p">{}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">});</span>
+
+<span class="w">  </span>
+<span class="w">          </span><span class="kd">const</span><span class="w"> </span><span class="nx">playlistPlugin</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">player</span><span class="p">.</span><span class="nx">playlistPlugin</span><span class="p">(</span><span class="nx">player</span><span class="p">,</span><span class="w"> </span><span class="p">{});</span>
+<span class="w">          </span><span class="kd">const</span><span class="w"> </span><span class="nx">PlaylistPluginClass</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">videojs</span><span class="p">.</span><span class="nx">getPlugin</span><span class="p">(</span><span class="s1">&#39;playlistPlugin&#39;</span><span class="p">);</span>
+
+<span class="w">        </span>
+<span class="w">          </span><span class="kd">const</span><span class="w"> </span><span class="nx">videoList</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="s2">&quot;name&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;Big Buck Bunny&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">&quot;sources&quot;</span><span class="o">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">                </span><span class="s2">&quot;src&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;http://www.youtube.com/watch?v=Vpg9yizPP_g&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="s2">&quot;type&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;video/youtube&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">]</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="s2">&quot;name&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;Elephants Dream&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">&quot;sources&quot;</span><span class="o">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">                </span><span class="s2">&quot;src&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;http://www.youtube.com/watch?v=MFg8mBaMoPs&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="s2">&quot;type&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;video/youtube&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">]</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">];</span>
+<span class="w">          </span><span class="kd">const</span><span class="w"> </span><span class="nx">playlist</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">PlaylistPluginClass</span><span class="p">.</span><span class="nx">createPlaylistFrom</span><span class="p">(</span><span class="nx">videoList</span><span class="p">);</span>
+
+<span class="w">          </span><span class="c1">// Plugin methods</span>
+<span class="w">          </span><span class="nx">playlistPlugin</span><span class="p">.</span><span class="nx">loadPlaylist</span><span class="p">(</span><span class="nx">playlist</span><span class="p">);</span>
+<span class="w">          </span><span class="nx">player</span><span class="p">.</span><span class="nx">playlistUi</span><span class="p">({</span><span class="nx">playOnSelect</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="p">});</span>
+
+<span class="w">          </span><span class="nx">playlistPlugin</span><span class="p">.</span><span class="nx">loadFirstItem</span><span class="p">();</span>
+<span class="w">          </span><span class="nx">playlistPlugin</span><span class="p">.</span><span class="nx">setAutoadvanceDelay</span><span class="p">(</span><span class="mf">0</span><span class="p">);</span>
+</pre></div>
+<div class="highlight"><pre><span></span>  <span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+</article>
+
+<div class="flex content-center w-full place-content-center">
+    
+            <div class="max-w-screen-xl m-0 md:m-20 mt-1 place-content-center flex-grow grid grid-cols-2 md:grid-cols-3 gap-1 md:gap-7 md:space-x-7">
+                <!-- All articles in the blog -->
+
+                <div class="p-2 md:m-6 rounded-b-md shadow-xl transform hover:scale-110">
+                    <a href="../chapters" class="" rel="bookmark" title="Chapters">
+                            <img src="../../images/previews/subtitles.png" class="object-cover w-full rounded-t-lg"
+                            />
+                    <article class="bg-white p-3">
+                        <h3 class="text-xl font-bold">
+                           Chapters
+                        </h3>
+                      
+                        <p class="mt-3">
+                            
+                            <a class="link" href="../chapters">Youtube Chapters Demo</a>
+                        </p>
+                    </article>
+                    </a>
+                </div>
+                <div class="p-2 md:m-6 rounded-b-md shadow-xl transform hover:scale-110">
+                    <a href="../subtitles" class="" rel="bookmark" title="Subtitles">
+                            <img src="../../images/previews/subtitles.png" class="object-cover w-full rounded-t-lg"
+                            />
+                    <article class="bg-white p-3">
+                        <h3 class="text-xl font-bold">
+                           Subtitles
+                        </h3>
+                      
+                        <p class="mt-3">
+                            
+                            <a class="link" href="../subtitles">Youtube Subtitles Demo</a>
+                        </p>
+                    </article>
+                    </a>
+                </div>
+                <div class="p-2 md:m-6 rounded-b-md shadow-xl transform hover:scale-110">
+                    <a href="../multi-playlist" class="" rel="bookmark" title="Multi Format Playlist Selection">
+                            <img src="../../images/previews/playlists.png" class="object-cover w-full rounded-t-lg"
+                            />
+                    <article class="bg-white p-3">
+                        <h3 class="text-xl font-bold">
+                           Multi Format Playlist Selection
+                        </h3>
+                      
+                        <p class="mt-3">
+                            
+                            <a class="link" href="../multi-playlist">Youtube Playlist With Mp4 videos</a>
+                        </p>
+                    </article>
+                    </a>
+                </div>
+                <div class="p-2 md:m-6 rounded-b-md shadow-xl transform hover:scale-110">
+                    <a href="../ima-ads" class="" rel="bookmark" title="Ima Ads">
+                            <img src="../../images/previews/ima-ads.png" class="object-cover w-full rounded-t-lg"
+                            />
+                    <article class="bg-white p-3">
+                        <h3 class="text-xl font-bold">
+                           Ima Ads
+                        </h3>
+                      
+                        <p class="mt-3">
+                            
+                            <a class="link" href="../ima-ads">Youtube with Ima ads</a>
+                        </p>
+                    </article>
+                    </a>
+                </div>
+                <div class="p-2 md:m-6 rounded-b-md shadow-xl transform hover:scale-110">
+                    <a href="../vr" class="" rel="bookmark" title="Youtube VR360">
+                            <img src="../../images/previews/vr.png" class="object-cover w-full rounded-t-lg"
+                            />
+                    <article class="bg-white p-3">
+                        <h3 class="text-xl font-bold">
+                           Youtube VR360
+                        </h3>
+                      
+                        <p class="mt-3">
+                            
+                            <a class="link" href="../vr">Youtube VR360 Demo</a>
+                        </p>
+                    </article>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <!-- Footer -->
+       
+
+
+    </body>
+</html>

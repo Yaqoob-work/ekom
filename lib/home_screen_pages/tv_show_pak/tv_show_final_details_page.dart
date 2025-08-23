@@ -14,21 +14,6 @@ import 'package:mobi_tv_entertainment/widgets/models/news_item_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../video_widget/socket_service.dart';
 
-import 'dart:async';
-import 'dart:convert';
-import 'package:mobi_tv_entertainment/video_widget/custom_video_player.dart';
-import 'package:mobi_tv_entertainment/video_widget/video_screen.dart';
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:http/http.dart' as https;
-import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:mobi_tv_entertainment/home_screen_pages/movies_screen/movies.dart';
-import 'package:mobi_tv_entertainment/main.dart';
-import 'package:mobi_tv_entertainment/video_widget/custom_youtube_player.dart';
-import 'package:mobi_tv_entertainment/widgets/models/news_item_model.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import '../../video_widget/socket_service.dart';
 
 enum NavigationMode {
   seasons,
@@ -775,8 +760,7 @@ class _TvShowPakFinalDetailsPageState extends State<TvShowPakFinalDetailsPage>
       if (mounted) {
         dynamic result;
 
-        if (episode.streamingType.toLowerCase() == 'youtube' ||
-            isYoutubeUrl(episode.videoUrl)) {
+        if (episode.streamingType.toLowerCase() == 'youtubelive' ) {
           result = await Navigator.push(
             context,
             MaterialPageRoute(

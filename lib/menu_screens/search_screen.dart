@@ -379,8 +379,8 @@ class _SearchScreenState extends State<SearchScreen> {
             unUpdatedUrl: videoUrl,
             name: channel.name,
             liveStatus: liveStatus,
-            seasonId: null,
-            isLastPlayedStored: false,
+            // seasonId: null,
+            // isLastPlayedStored: false,
           ),
         ),
       );

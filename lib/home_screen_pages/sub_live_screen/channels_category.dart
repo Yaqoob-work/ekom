@@ -362,8 +362,8 @@ class _ChannelsCategoryState extends State<ChannelsCategory> {
               unUpdatedUrl: originalUrl,
               name: newsItem.name,
               liveStatus: liveStatus,
-              seasonId: null,
-              isLastPlayedStored: false,
+              // seasonId: null,
+              // isLastPlayedStored: false,
             ),
             //                                 builder: (context) => YouTubePlayerScreen(
             //    videoData: VideoData(

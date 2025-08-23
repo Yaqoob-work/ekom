@@ -6877,8 +6877,8 @@ class _BannerSliderState extends State<BannerSlider> with SingleTickerProviderSt
               unUpdatedUrl: responseData['url'] ?? '',
               name: responseData['name'] ?? '',
               liveStatus: true,
-              seasonId: null,
-              isLastPlayedStored: false,
+              // seasonId: null,
+              // isLastPlayedStored: false,
             ),
           ),
         );

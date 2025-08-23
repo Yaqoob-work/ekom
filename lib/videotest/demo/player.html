@@ -1,0 +1,89 @@
+<!-- prettier-ignore -->
+
+
+<!DOCTYPE html>
+<html lang="en" class="h-100">
+
+<head>
+    <meta charset="utf-8" />
+
+    <!-- General medatada -->
+    <meta name="author" content="Daniel Rossi" />
+    <meta name="title" content="360&#176; VR Video" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+
+    <!-- Page title -->
+    <title>360&#176; VR Video</title>
+
+
+    <!-- Block for additional page specific header tags -->
+    <!-- prettier-ignore -->
+
+    <script src="plugins/videojs/js/video.min.js"></script>
+    <link rel="stylesheet" href="plugins/videojs/css/video-js.min.css" />
+
+
+        <script src="js/qualitymenu.min.js"></script>
+
+
+
+        <script src="js/youtube-8.11.8.js"></script>
+
+    <style>
+        body,
+        html {
+            /* no scrollbars */
+            overflow: hidden;
+
+            /* pin player to top left corner of page/iframe */
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+
+</head>
+
+<body>
+
+
+
+    <video class="video-js vjs-default-skin vjs-fluid " crossorigin="anonymous" controls="" id="youtube"></video>
+
+   
+<script type="text/javascript">
+
+var player;
+
+ document.addEventListener("DOMContentLoaded", (event) => {
+    player = videojs("youtube", {
+    "autoplay": true,
+    "controlBar": {
+        "pictureInPictureToggle": false
+    },
+    "plugins": {
+        "qualitymenu": {},
+        "youtube": {}
+    },
+    "sources": [
+        {
+            "src": "http://www.youtube.com/watch?v=YE7VzlLtp-4",
+            "type": "video/youtube"
+        }
+    ]
+});
+
+
+
+
+ 
+  });
+
+
+</script>
+
+
+</body>
+
+</html>

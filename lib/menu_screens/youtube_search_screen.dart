@@ -192,7 +192,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
               unUpdatedUrl: originalUrl,
               name: result.name,
               liveStatus: false, // Not live content
-              seasonId: null, isLastPlayedStored: false,
+              // seasonId: null, isLastPlayedStored: false,
             ),
           ),
         );

@@ -36,7 +36,7 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.6
   get: ^4.6.6
-  video_player: ^2.8.7
+  # video_player: ^2.8.7
   http: ^1.2.1
   cached_network_image: ^3.3.1
   flutter_launcher_icons: ^0.14.4
@@ -64,11 +64,16 @@ dependencies:
   cast: ^2.1.0
   flutter_inappwebview: ^6.1.5
   webview_flutter: ^4.10.0
-  youtube_player_iframe: ^5.2.1
+  # youtube_player_iframe: ^5.2.1
   connectivity_plus: ^6.1.4
   intl: ^0.20.2
-  media_kit: ^1.2.0
-  y_player: ^2.0.0
+  flutter_vlc_player: ^7.4.2
+  video_player: ^2.9.5
+  chewie: ^1.10.0
+  better_player: ^0.0.84
+  vimeo_video_player: ^1.0.1
+  # media_kit: ^1.2.0
+  # y_player: ^2.0.0
   # flutter_vlc_player: ^7.0.0
   # pod_player: ^0.2.2
   # media_kit: ^1.2.0

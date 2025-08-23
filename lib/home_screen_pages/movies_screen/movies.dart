@@ -10072,9 +10072,6 @@ import 'package:mobi_tv_entertainment/video_widget/custom_video_player.dart';
 import 'package:mobi_tv_entertainment/video_widget/device_detector_firestick.dart';
 import 'package:mobi_tv_entertainment/video_widget/video_screen.dart';
 import 'package:mobi_tv_entertainment/video_widget/custom_youtube_player.dart';
-import 'package:mobi_tv_entertainment/video_widget/webPlayerScreen.dart';
-import 'package:mobi_tv_entertainment/video_widget/youtube_player_screen.dart';
-
 import 'package:mobi_tv_entertainment/widgets/models/news_item_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

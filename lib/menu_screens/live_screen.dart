@@ -704,8 +704,8 @@ class _LiveScreenState extends State<LiveScreen> {
               unUpdatedUrl: originalUrl,
               name: newsItem.name,
               liveStatus: liveStatus,
-              seasonId: null,
-              isLastPlayedStored: false,
+              // seasonId: null,
+              // isLastPlayedStored: false,
             ),
           ),
         );
