@@ -1,8 +1,6 @@
-
-
-
 import 'dart:async';
 import 'dart:convert';
+import 'package:mobi_tv_entertainment/provider/device_info_provider.dart';
 import 'package:mobi_tv_entertainment/video_widget/custom_video_player.dart';
 import 'package:mobi_tv_entertainment/video_widget/video_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -13,7 +11,9 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:mobi_tv_entertainment/home_screen_pages/movies_screen/movies.dart';
 import 'package:mobi_tv_entertainment/main.dart';
 import 'package:mobi_tv_entertainment/video_widget/custom_youtube_player.dart';
+import 'package:mobi_tv_entertainment/video_widget/youtube_webview_player.dart';
 import 'package:mobi_tv_entertainment/widgets/models/news_item_model.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../video_widget/socket_service.dart';
 
@@ -428,45 +428,42 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
   //   }
   // }
 
-
-
 // Load seasons from cache and update UI instantly
-Future<void> _loadSeasonsFromCache(List<SeasonModel> cachedSeasons) async {
-  final activeSeasons = _filterActiveSeasons(cachedSeasons);
+  Future<void> _loadSeasonsFromCache(List<SeasonModel> cachedSeasons) async {
+    final activeSeasons = _filterActiveSeasons(cachedSeasons);
 
-  setState(() {
-    _seasons = cachedSeasons;
-    _filteredSeasons = activeSeasons;
-    _isLoading = false;
-    _errorMessage = "";
-  });
-
-  // Create focus nodes for active seasons
-  _seasonsFocusNodes.clear();
-  for (int i = 0; i < _filteredSeasons.length; i++) {
-    _seasonsFocusNodes[i] = FocusNode();
-  }
-
-  if (_filteredSeasons.isNotEmpty) {
-    _pageTransitionController.forward();
-
-    // <<< MODIFICATION START
-    // Page load होते ही पहले season के episodes fetch करें
-    // We are not waiting for this to complete with 'await'
-    // so the UI can build while episodes are loading.
-    _fetchEpisodes(_filteredSeasons[0].id);
-    // <<< MODIFICATION END
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        // The focus will now be set to the episodes list once it loads.
-        // If you want the initial focus on the season, keep the line below.
-        // _seasonsFocusNodes[0]?.requestFocus();
-      }
+    setState(() {
+      _seasons = cachedSeasons;
+      _filteredSeasons = activeSeasons;
+      _isLoading = false;
+      _errorMessage = "";
     });
-  }
-}
 
+    // Create focus nodes for active seasons
+    _seasonsFocusNodes.clear();
+    for (int i = 0; i < _filteredSeasons.length; i++) {
+      _seasonsFocusNodes[i] = FocusNode();
+    }
+
+    if (_filteredSeasons.isNotEmpty) {
+      _pageTransitionController.forward();
+
+      // <<< MODIFICATION START
+      // Page load होते ही पहले season के episodes fetch करें
+      // We are not waiting for this to complete with 'await'
+      // so the UI can build while episodes are loading.
+      _fetchEpisodes(_filteredSeasons[0].id);
+      // <<< MODIFICATION END
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          // The focus will now be set to the episodes list once it loads.
+          // If you want the initial focus on the season, keep the line below.
+          // _seasonsFocusNodes[0]?.requestFocus();
+        }
+      });
+    }
+  }
 
   // Perform background refresh without showing loading indicators
   Future<void> _performBackgroundRefresh() async {
@@ -749,32 +746,55 @@ Future<void> _loadSeasonsFromCache(List<SeasonModel> cachedSeasons) async {
       if (mounted) {
         dynamic result;
 
-        if (isYoutubeUrl(episode.url)) {
-          result = await Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => CustomYoutubePlayer(
-                // videoUrl: episode.url,
-                // name: episode.name,
-                                                          videoData: VideoData(
-                id: episode.url??'',
-                title: episode.name ,
-                youtubeUrl: episode.url??'',
-                thumbnail: episode.thumbnail ?? '',
-                description: episode.description ?? '',
-              ), 
-              playlist: [
-                VideoData(
-                  id: episode.url??'',
-                  title: episode.name,
-                  youtubeUrl: episode.url??'',
-                  thumbnail: episode.thumbnail ?? '',
-                  description: episode.description ?? '',
+        if ( episode.source == "youtube" || isYoutubeUrl(episode.url)) {
+          print('isYoutube');
+
+          final deviceInfo = context.read<DeviceInfoProvider>();
+
+          if (deviceInfo.deviceName == 'AFTSS : Amazon Fire Stick HD') {
+            print('isAFTSS');
+
+            await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => YoutubeWebviewPlayer(
+                  videoUrl: episode.url,
+                  name: episode.name,
                 ),
-              ],
               ),
-            ),
-          );
+            );
+          } else {
+            result = await Navigator.push(
+              context,
+              MaterialPageRoute(
+                //     builder: (context) => YoutubeWebviewPlayer(
+                //       videoUrl: episode.url,
+                //   name: episode.name,
+
+                // ),
+                builder: (context) => CustomYoutubePlayer(
+                  // videoUrl: episode.url,
+                  // name: episode.name,
+                  videoData: VideoData(
+                    id: episode.url ?? '',
+                    title: episode.name,
+                    youtubeUrl: episode.url ?? '',
+                    thumbnail: episode.thumbnail ?? '',
+                    description: episode.description ?? '',
+                  ),
+                  playlist: [
+                    VideoData(
+                      id: episode.url ?? '',
+                      title: episode.name,
+                      youtubeUrl: episode.url ?? '',
+                      thumbnail: episode.thumbnail ?? '',
+                      description: episode.description ?? '',
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
         } else {
           result = await Navigator.push(
             context,
@@ -981,9 +1001,6 @@ Future<void> _loadSeasonsFromCache(List<SeasonModel> cachedSeasons) async {
     ));
   }
 
-
-
-
   // Helper method for URL validation
   bool _isValidImageUrl(String url) {
     if (url.isEmpty) return false;
@@ -1107,7 +1124,6 @@ Future<void> _loadSeasonsFromCache(List<SeasonModel> cachedSeasons) async {
 
             // Top Navigation Bar (Fixed Position)
             _buildTopNavigationBar(),
-
 
             // Processing Overlay
             if (_isProcessing) _buildProcessingOverlay(),
@@ -1248,8 +1264,6 @@ Future<void> _loadSeasonsFromCache(List<SeasonModel> cachedSeasons) async {
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             child: Row(
               children: [
-               
-
                 // Series Title
                 Expanded(
                   flex: 2,
@@ -1277,8 +1291,6 @@ Future<void> _loadSeasonsFromCache(List<SeasonModel> cachedSeasons) async {
       ),
     );
   }
-
-
 
   Widget _buildMainContentWithLayout() {
     return Positioned(
@@ -1473,22 +1485,21 @@ Future<void> _loadSeasonsFromCache(List<SeasonModel> cachedSeasons) async {
                         letterSpacing: 1.0,
                       ),
                     ),
-
                   ],
                 ),
                 const Spacer(),
-                                    if (_filteredSeasons.isNotEmpty &&
-                        _selectedSeasonIndex < _filteredSeasons.length)
-                      Text(
-                        _filteredSeasons[_selectedSeasonIndex].sessionName,
-                        style: TextStyle(
-                          color: Colors.grey[400],
-                          fontSize: 18,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const Spacer(),
+                if (_filteredSeasons.isNotEmpty &&
+                    _selectedSeasonIndex < _filteredSeasons.length)
+                  Text(
+                    _filteredSeasons[_selectedSeasonIndex].sessionName,
+                    style: TextStyle(
+                      color: Colors.grey[400],
+                      fontSize: 18,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                const Spacer(),
                 Container(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -2244,7 +2255,6 @@ Future<void> _loadSeasonsFromCache(List<SeasonModel> cachedSeasons) async {
               fontWeight: FontWeight.w600,
             ),
           ),
-
           if (_currentMode == NavigationMode.seasons) ...[
             const SizedBox(height: 16),
             Container(

@@ -1,8 +1,3 @@
-
-
-
-
-
 // // import 'package:mobi_tv_entertainment/main.dart';
 // // import 'package:mobi_tv_entertainment/provider/focus_provider.dart';
 // // import 'package:mobi_tv_entertainment/video_widget/custom_video_player.dart';
@@ -852,7 +847,6 @@
 // //   //   } catch (e) {}
 // //   // }
 
-
 // // // Option 1: Ultra Simple Version
 // // void _scrollToFocusedItem(String itemId) {
 // //   if (!mounted || !_scrollController.hasClients) return;
@@ -860,11 +854,11 @@
 // //   try {
 // //     // Find focused item index
 // //     int index = displayMoviesList.indexWhere((movie) => movie.id.toString() == itemId);
-    
+
 // //     if (index != -1) {
 // //       // Simple scroll calculation
 // //       double scrollPosition = index * 180.0; // Adjust 180 to your item width
-      
+
 // //       _scrollController.animateTo(
 // //         scrollPosition,
 // //         duration: const Duration(milliseconds: 500),
@@ -875,7 +869,6 @@
 // //     // Silent fail
 // //   }
 // // }
-  
 
 // //   Future<void> _handleMovieTap(Movie movie) async {
 // //     if (_isNavigating) return;
@@ -1174,7 +1167,7 @@
 // //                 ),
 // //               ),
 // //             ),
-            
+
 // //             Row(
 // //               children: [
 // //                 // 🆕 Refresh Button
@@ -2361,12 +2354,6 @@
 // //   }
 // // }
 
-
-
-
-
-
-
 // // // // Professional Movies Grid View
 // // // class ProfessionalMoviesGridView extends StatefulWidget {
 // // //   final List<Movie> moviesList;
@@ -2906,7 +2893,7 @@
 
 // // class _ProfessionalMoviesGridViewState extends State<ProfessionalMoviesGridView>
 // //     with TickerProviderStateMixin {
-  
+
 // //   // ✅ Focus Management with Scrolling
 // //   Map<String, FocusNode> _movieFocusNodes = {};
 // //   bool _isLoading = false;
@@ -2922,7 +2909,7 @@
 // //   @override
 // //   void initState() {
 // //     super.initState();
-    
+
 // //     // ✅ Initialize ScrollController
 // //     _scrollController = ScrollController();
 
@@ -3247,7 +3234,7 @@
 // //         setState(() {
 // //           _isLoading = false;
 // //         });
-        
+
 // //         // ✅ Restore focus to the same item after returning
 // //         Future.delayed(const Duration(milliseconds: 300), () {
 // //           if (mounted) {
@@ -3273,7 +3260,7 @@
 // //     _fadeController.dispose();
 // //     _staggerController.dispose();
 // //     _scrollController.dispose(); // ✅ Dispose ScrollController
-    
+
 // //     // ✅ Safely dispose all focus nodes
 // //     for (var entry in _movieFocusNodes.entries) {
 // //       try {
@@ -3285,7 +3272,7 @@
 // //       }
 // //     }
 // //     _movieFocusNodes.clear();
-    
+
 // //     super.dispose();
 // //   }
 
@@ -3623,7 +3610,6 @@
 // //   }
 // // }
 
-
 // // //   Widget _buildMoviesGrid() {
 // // //     if (widget.moviesList.isEmpty) {
 // // //       return Center(
@@ -3744,8 +3730,6 @@
 // // //     );
 // // //   }
 // // // }
-
-
 
 // // // Professional Grid Movie Card
 // // class ProfessionalGridMovieCard extends StatefulWidget {
@@ -4163,10 +4147,6 @@
 // //   }
 // // }
 
-
-
-
-
 // import 'dart:async';
 
 // import 'package:mobi_tv_entertainment/main.dart';
@@ -4324,11 +4304,11 @@
 // //   // Cache keys for list view (limited 8 items)
 // //   static const String _cacheKeyMoviesList = 'cached_movies_list';
 // //   static const String _cacheKeyMoviesListTimestamp = 'cached_movies_list_timestamp';
-  
+
 // //   // Cache keys for full data (all movies)
 // //   static const String _cacheKeyMoviesFull = 'cached_movies_full';
 // //   static const String _cacheKeyMoviesFullTimestamp = 'cached_movies_full_timestamp';
-  
+
 // //   static const String _cacheKeyAuthKey = 'auth_key';
 
 // //   // Cache duration (in milliseconds) - 1 hour
@@ -4469,7 +4449,7 @@
 // //       }
 
 // //       final List<dynamic> jsonData = json.decode(cachedData);
-      
+
 // //       // 🆕 Filter cached movies with status = 1 only
 // //       final filteredJsonData = jsonData.where((movieJson) {
 // //         final status = movieJson['status'] ?? 0;
@@ -4589,7 +4569,6 @@
 // //       rethrow;
 // //     }
 // //   }
-  
 
 // //   /// Cache movies list data
 // //   static Future<void> _cacheMoviesList(SharedPreferences prefs, List<dynamic> moviesData) async {
@@ -4603,10 +4582,10 @@
 
 // //   /// Generic method to cache movies data
 // //   static Future<void> _cacheMovies(
-// //       SharedPreferences prefs, 
-// //       List<dynamic> moviesData, 
-// //       String dataKey, 
-// //       String timestampKey, 
+// //       SharedPreferences prefs,
+// //       List<dynamic> moviesData,
+// //       String dataKey,
+// //       String timestampKey,
 // //       String type) async {
 // //     try {
 // //       final jsonString = json.encode(moviesData);
@@ -4672,15 +4651,15 @@
 // //   static Future<Map<String, dynamic>> getCacheInfo() async {
 // //     try {
 // //       final prefs = await SharedPreferences.getInstance();
-      
+
 // //       // List cache info
 // //       final listTimestampStr = prefs.getString(_cacheKeyMoviesListTimestamp);
 // //       final listCachedData = prefs.getString(_cacheKeyMoviesList);
-      
+
 // //       // Full cache info
 // //       final fullTimestampStr = prefs.getString(_cacheKeyMoviesFullTimestamp);
 // //       final fullCachedData = prefs.getString(_cacheKeyMoviesFull);
-      
+
 // //       final currentTimestamp = DateTime.now().millisecondsSinceEpoch;
 
 // //       Map<String, dynamic> listInfo = {'hasCachedData': false};
@@ -4750,8 +4729,6 @@
 // //     return await getMoviesForList(forceRefresh: forceRefresh);
 // //   }
 // // }
-
-
 
 // // 🚀 Enhanced Movie Service with Pagination Support
 // class MovieService {
@@ -4897,8 +4874,6 @@
 //     _fetchDisplayMovies();
 //   }
 
-
-  
 //   void _setupFocusProvider() {
 //     WidgetsBinding.instance.addPostFrameCallback((_) {
 //       if (mounted) {
@@ -5180,11 +5155,11 @@
 //   try {
 //     // Find focused item index
 //     int index = displayMoviesList.indexWhere((movie) => movie.id.toString() == itemId);
-    
+
 //     if (index != -1) {
 //       // Simple scroll calculation
 //       double scrollPosition = index * 180.0; // Adjust 180 to your item width
-      
+
 //       _scrollController.animateTo(
 //         scrollPosition,
 //         duration: const Duration(milliseconds: 500),
@@ -5196,15 +5171,12 @@
 //   }
 // }
 
-
-
-
 // // 🛡️ CRASH-SAFE Movie Navigation Handler
 // // Replace your existing _handleMovieTap method with this safe version
 
 // Future<void> _handleMovieTap(Movie movie) async {
 //   if (_isNavigating || !mounted) return;
-  
+
 //   // Safety flag
 //   setState(() {
 //     _isNavigating = true;
@@ -5243,7 +5215,7 @@
 //           ),
 //         ),
 //       );
-      
+
 //       Overlay.of(context).insert(loadingOverlay);
 //       dialogShown = true;
 //     }
@@ -5260,7 +5232,7 @@
 //     // 🛡️ SAFE NAVIGATION with proper error handling
 //     if (mounted) {
 //       print('🎬 [NAV] Navigating to: ${movie.name}');
-      
+
 //       // Create video data safely
 //       final videoData = VideoData(
 //         id: movie.id.toString(),
@@ -5276,7 +5248,7 @@
 //       await Navigator.push(
 //         context,
 //         PageRouteBuilder(
-//           pageBuilder: (context, animation, secondaryAnimation) => 
+//           pageBuilder: (context, animation, secondaryAnimation) =>
 //             CustomYoutubePlayer(
 //               videoData: videoData,
 //               playlist: playlist,
@@ -5298,7 +5270,7 @@
 
 //   } catch (e) {
 //     print('❌ [ERROR] Movie navigation failed: $e');
-    
+
 //     // Remove loading overlay if still showing
 //     if (dialogShown && loadingOverlay != null) {
 //       try {
@@ -5328,8 +5300,6 @@
 //     }
 //   }
 // }
-
-  
 
 //   // Future<void> _handleMovieTap(Movie movie) async {
 //   //   if (_isNavigating) return;
@@ -5410,7 +5380,6 @@
 //   //           .toList();
 //   //     }
 
-
 //   //         // Aapka target URL banayein
 //   //   String finalUrl = 'https://demo.coretechinfo.com/videojs.youtube-8.11.8-manbir/demo/?youtubeId=${movie.movieUrl}';
 
@@ -5453,14 +5422,14 @@
 //   //         MaterialPageRoute(
 //   //           // builder: (context) => YouTubePlayerScreen (
 //   //           //   // videoUrl: movie.movieUrl,
-//   //           //   // name: movie.name, 
+//   //           //   // name: movie.name,
 //   //           //   videoData: VideoData(
 //   //           //     id: movie.movieUrl,
 //   //           //     title: movie.name,
 //   //           //     youtubeUrl: movie.movieUrl,
 //   //           //     thumbnail: movie.banner ?? movie.poster ?? '',
 //   //           //     description: movie.description ?? '',
-//   //           //   ), 
+//   //           //   ),
 //   //           //   playlist: [
 //   //           //     VideoData(
 //   //           //       id: movie.movieUrl,
@@ -5473,14 +5442,14 @@
 //   //           // ),
 //   //           builder: (context) => CustomYoutubePlayer(
 //   //             //            videoUrl: movie.movieUrl,
-//   //             // name: movie.name, 
+//   //             // name: movie.name,
 //   //             videoData: VideoData(
 //   //               id: movie.movieUrl,
 //   //               title: movie.name,
 //   //               youtubeUrl: movie.movieUrl,
 //   //               thumbnail: movie.banner ?? movie.poster ?? '',
 //   //               description: movie.description ?? '',
-//   //             ), 
+//   //             ),
 //   //             playlist: [
 //   //               VideoData(
 //   //                 id: movie.movieUrl,
@@ -5552,7 +5521,7 @@
 //   // void _navigateToMoviesGrid() async {
 //   //   if (!_isNavigating && mounted) {
 //   //     _isNavigating = true;
-      
+
 //   //     // 🆕 Don't pre-fetch here, let grid page handle full data loading
 //   //     if (mounted) {
 //   //       Navigator.push(
@@ -5571,13 +5540,11 @@
 //   //   }
 //   // }
 
-
-
 // // 🆕 Update ViewAll navigation to use new paginated grid
 // void _navigateToMoviesGrid() async {
 //   if (!_isNavigating && mounted) {
 //     _isNavigating = true;
-    
+
 //     if (mounted) {
 //       Navigator.push(
 //         context,
@@ -5619,7 +5586,6 @@
 //     _isNavigating = false;
 //     super.dispose();
 //   }
-
 
 //   @override
 //   Widget build(BuildContext context) {
@@ -5872,8 +5838,6 @@
 //     );
 //   }
 
-
-
 //   // @override
 //   // Widget build(BuildContext context) {
 //   //   super.build(context);
@@ -5931,7 +5895,7 @@
 //                 ),
 //               ),
 //             ),
-            
+
 //             Row(
 //               children: [
 //                 // Movies Count
@@ -7021,10 +6985,9 @@
 //   }
 // }
 
-
 // // class ProfessionalMoviesGridView extends StatefulWidget {
 // //   final String categoryTitle; // ✅ Sirf title chahiye
-  
+
 // //   const ProfessionalMoviesGridView({
 // //     Key? key,
 // //     required this.categoryTitle, // ✅ No moviesList parameter
@@ -7049,7 +7012,7 @@
 
 // // class _ProfessionalMoviesGridViewState extends State<ProfessionalMoviesGridView>
 // //     with TickerProviderStateMixin {
-  
+
 // //   // ✅ Focus Management with Scrolling
 // //   Map<String, FocusNode> _movieFocusNodes = {};
 // //   bool _isLoading = false;
@@ -7057,7 +7020,7 @@
 // //   int gridFocusedIndex = 0;
 // //   final int columnsCount = 6;
 // //   late ScrollController _scrollController;
-  
+
 // //   // 🆕 Full movies list for grid
 // //   List<Movie> _fullMoviesList = [];
 // //   String _errorMessage = ''; // <-- Added to fix undefined name error
@@ -7070,10 +7033,10 @@
 // //   @override
 // //   void initState() {
 // //     super.initState();
-    
+
 // //     // ✅ Initialize ScrollController
 // //     _scrollController = ScrollController();
-    
+
 // //     // 🆕 Initialize with passed movies and load full dataset
 // //     // _fullMoviesList = List.from(widget.moviesList);
 // //     _loadFullMoviesDataset();
@@ -7090,8 +7053,6 @@
 // //     _startStaggeredAnimation();
 // //   }
 
-
-
 // //   // 🆕 Grid page khud se data fetch karta hai
 // // Future<void> _loadMoviesDataset() async {
 // //   setState(() {
@@ -7101,7 +7062,7 @@
 
 // //   // ✅ Complete independent API call
 // //   final fullMovies = await MovieService.getAllMoviesForGrid();
-  
+
 // //   setState(() {
 // //     _fullMoviesList = fullMovies;
 // //     _isLoading = false;
@@ -7111,7 +7072,7 @@
 // //   // 🆕 Load full movies dataset for grid
 // //   Future<void> _loadFullMoviesDataset() async {
 // //     if (!mounted) return;
-    
+
 // //     setState(() {
 // //       _isLoadingMoreMovies = true;
 // //     });
@@ -7120,18 +7081,18 @@
 // //       print('🔄 Loading full movies dataset for grid...');
 // //       // 🆕 Use the full API endpoint
 // //       final fullMovies = await MovieService.getAllMoviesForGrid();
-      
+
 // //       if (mounted && fullMovies.isNotEmpty) {
 // //         setState(() {
 // //           _fullMoviesList = fullMovies;
 // //           _isLoadingMoreMovies = false;
 // //         });
-        
+
 // //         // 🆕 Reinitialize focus nodes with full dataset AFTER setState
 // //         await Future.delayed(const Duration(milliseconds: 100));
 // //         if (mounted) {
 // //           _initializeMovieFocusNodes();
-          
+
 // //           // 🆕 Focus first item after initialization
 // //           WidgetsBinding.instance.addPostFrameCallback((_) {
 // //             if (mounted) {
@@ -7139,7 +7100,7 @@
 // //             }
 // //           });
 // //         }
-        
+
 // //         print('✅ Loaded ${fullMovies.length} movies for grid');
 // //       } else {
 // //         setState(() {
@@ -7193,7 +7154,7 @@
 // //       print('⚠️ Cannot focus first item: movies list is empty');
 // //       return;
 // //     }
-    
+
 // //     if (_movieFocusNodes.isEmpty) {
 // //       print('⚠️ Cannot focus first item: focus nodes not initialized');
 // //       return;
@@ -7205,7 +7166,7 @@
 // //         setState(() {
 // //           gridFocusedIndex = 0;
 // //         });
-        
+
 // //         // 🆕 Add a small delay to ensure widget is fully rendered
 // //         Future.delayed(const Duration(milliseconds: 200), () {
 // //           if (mounted && _movieFocusNodes.containsKey(firstMovieId)) {
@@ -7415,7 +7376,7 @@
 // //             //     youtubeUrl: movie.movieUrl,
 // //             //     thumbnail: movie.banner ?? movie.poster ?? '',
 // //             //     description: movie.description ?? '',
-// //             //   ), 
+// //             //   ),
 // //             //   playlist: [
 // //             //     VideoData(
 // //             //       id: movie.id.toString(),
@@ -7428,14 +7389,14 @@
 // //             // ),
 // //               builder: (context) => CustomYoutubePlayer(
 // //               // videoUrl: movie.movieUrl,
-// //               // name: movie.name, 
+// //               // name: movie.name,
 // //               videoData: VideoData(
 // //                 id: movie.id.toString(),
 // //                 title: movie.name,
 // //                 youtubeUrl: movie.movieUrl,
 // //                 thumbnail: movie.banner ?? movie.poster ?? '',
 // //                 description: movie.description ?? '',
-// //               ), 
+// //               ),
 // //               playlist: [
 // //                 VideoData(
 // //                   id: movie.id.toString(),
@@ -7507,7 +7468,7 @@
 // //         setState(() {
 // //           _isLoading = false;
 // //         });
-        
+
 // //         // // ✅ Restore focus to the same item after returning
 // //         // Future.delayed(const Duration(milliseconds: 300), () {
 // //         //   if (mounted) {
@@ -7533,7 +7494,7 @@
 // //     _fadeController.dispose();
 // //     _staggerController.dispose();
 // //     _scrollController.dispose();
-    
+
 // //     // ✅ Safely dispose all focus nodes
 // //     for (var entry in _movieFocusNodes.entries) {
 // //       try {
@@ -7545,7 +7506,7 @@
 // //       }
 // //     }
 // //     _movieFocusNodes.clear();
-    
+
 // //     super.dispose();
 // //   }
 
@@ -7593,7 +7554,7 @@
 
 // //             // ✅ Loading More Indicator (removed - not needed anymore)
 
-// //             // ✅ Loading Overlay - Always on top  
+// //             // ✅ Loading Overlay - Always on top
 // //             if (_isLoading)
 // //               Positioned.fill(
 // //                 child: Container(
@@ -7763,7 +7724,7 @@
 // //         child: ProfessionalLoadingIndicator(message: 'Loading Movies...'),
 // //       );
 // //     }
-    
+
 // //     // 🆕 Show error state if loading failed
 // //     if (_errorMessage.isNotEmpty) {
 // //       return Center(
@@ -7826,7 +7787,7 @@
 // //         ),
 // //       );
 // //     }
-    
+
 // //     // 🆕 Show empty state if no movies found
 // //     if (_fullMoviesList.isEmpty) {
 // //       return Center(
@@ -7949,14 +7910,11 @@
 // //   }
 // // }
 
-
-
-
 // // 🚀 Cumulative Progressive Loading Movies Grid
 // // Loads next 50 when focus enters each new range (51-100, 101-150, etc.)
 // class CumulativeProgressiveMoviesGrid extends StatefulWidget {
 //   final String categoryTitle;
-  
+
 //   const CumulativeProgressiveMoviesGrid({
 //     Key? key,
 //     required this.categoryTitle,
@@ -7969,30 +7927,30 @@
 
 // class _CumulativeProgressiveMoviesGridState extends State<CumulativeProgressiveMoviesGrid>
 //     with TickerProviderStateMixin, WidgetsBindingObserver {
-  
+
 //   // State Management
 //   List<Movie> _allMovies = [];
 //   Map<String, FocusNode> _movieFocusNodes = {};
-  
+
 //   // Loading states
 //   bool _isInitialLoading = true;
 //   bool _isLoadingMore = false;
 //   bool _hasMore = true;
 //   String _errorMessage = '';
 //   bool _isDisposed = false;
-  
+
 //   // 🆕 Cumulative loading configuration
 //   final int _batchSize = 50; // 50 movies per batch
 //   final int _columnsCount = 6;
-  
+
 //   // 🔥 KEY: Track loaded ranges and current focus
 //   Set<int> _loadedRanges = {1}; // Track which ranges are loaded (1 = 1-50, 2 = 51-100, etc.)
 //   Set<int> _loadingRanges = {}; // Track currently loading ranges
 //   int _focusedIndex = 0;
 //   int _currentMaxRange = 1; // Highest range we've loaded
-  
+
 //   late ScrollController _scrollController;
-  
+
 //   // Animation Controllers
 //   late AnimationController _fadeController;
 //   late AnimationController _staggerController;
@@ -8001,14 +7959,14 @@
 //   @override
 //   void initState() {
 //     super.initState();
-    
+
 //     WidgetsBinding.instance.addObserver(this);
 //     print('🚀 Initializing Cumulative Progressive Movies Grid...');
 //     print('📊 Initial load: Range 1 (Movies 1-50)');
-    
+
 //     _scrollController = ScrollController();
 //     _initializeAnimations();
-    
+
 //     // Load initial batch (1-50)
 //     _loadInitialRange();
 //   }
@@ -8016,7 +7974,7 @@
 //   // 🆕 Load initial range (1-50 movies)
 //   Future<void> _loadInitialRange() async {
 //     if (!mounted || _isDisposed) return;
-    
+
 //     setState(() {
 //       _isInitialLoading = true;
 //       _errorMessage = '';
@@ -8024,16 +7982,16 @@
 
 //     try {
 //       print('📡 Loading initial range 1 (Movies 1-50)...');
-      
+
 //       final result = await MovieService.getMoviesWithPagination(
 //         page: 1,
 //         recordsPerPage: _batchSize,
 //       );
-      
+
 //       if (mounted && !_isDisposed) {
 //         final movies = result['movies'] as List<Movie>;
 //         final hasMore = result['hasMore'] as bool;
-        
+
 //         setState(() {
 //           _allMovies = movies;
 //           _hasMore = hasMore;
@@ -8041,13 +7999,13 @@
 //           _currentMaxRange = 1;
 //           _isInitialLoading = false;
 //         });
-        
+
 //         print('✅ Initial range loaded: ${movies.length} movies (Total: ${_allMovies.length})');
 //         print('📊 Loaded ranges: $_loadedRanges');
-        
+
 //         // Initialize focus nodes and UI
 //         await _initializeAfterDataLoad();
-        
+
 //         // 🚀 AUTO-LOAD: Immediately load next range (51-100) after initial load
 //         if (_hasMore) {
 //           print('🔄 Auto-loading next range (51-100) for smoother experience...');
@@ -8072,27 +8030,27 @@
 //   // 🔥 KEY FUNCTION: Check if we need to load next range based on focus position
 //   Future<void> _checkAndLoadNextRange(int currentFocusIndex) async {
 //     if (!mounted || _isDisposed || !_hasMore) return;
-    
+
 //     // Calculate which range the current focus belongs to
 //     // Range 1: 0-49 (Movies 1-50)
-//     // Range 2: 50-99 (Movies 51-100)  
+//     // Range 2: 50-99 (Movies 51-100)
 //     // Range 3: 100-149 (Movies 101-150)
 //     final currentRange = (currentFocusIndex ~/ _batchSize) + 1;
-    
+
 //     print('🎯 Focus at index $currentFocusIndex = Range $currentRange (Movies ${((currentRange-1) * _batchSize) + 1}-${currentRange * _batchSize})');
-    
+
 //     // 🔥 KEY LOGIC: If focus entered a new range, load the NEXT range ahead
 //     if (currentRange > _currentMaxRange - 1 && !_loadedRanges.contains(currentRange + 1)) {
 //       final nextRangeToLoad = currentRange + 1;
-      
+
 //       // Only load if we haven't already loaded this range
 //       if (!_loadedRanges.contains(nextRangeToLoad) && !_loadingRanges.contains(nextRangeToLoad)) {
 //         print('🚀 Focus entered range $currentRange! Auto-loading next range $nextRangeToLoad (Movies ${((nextRangeToLoad-1) * _batchSize) + 1}-${nextRangeToLoad * _batchSize})...');
-        
+
 //         await _loadSpecificRange(nextRangeToLoad);
 //       }
 //     }
-    
+
 //     // 🔄 Also preload one range ahead for even smoother experience
 //     final preloadRange = currentRange + 2;
 //     if (!_loadedRanges.contains(preloadRange) && !_loadingRanges.contains(preloadRange) && _hasMore) {
@@ -8106,47 +8064,47 @@
 //     if (!mounted || _isDisposed || _loadingRanges.contains(rangeNumber) || _loadedRanges.contains(rangeNumber)) {
 //       return;
 //     }
-    
+
 //     // Mark this range as loading
 //     _loadingRanges.add(rangeNumber);
-    
+
 //     setState(() {
 //       _isLoadingMore = true;
 //     });
-    
+
 //     try {
 //       final pageNumber = rangeNumber; // Page number same as range number
 //       print('📡 Loading range $rangeNumber (Page $pageNumber, Movies ${((rangeNumber-1) * _batchSize) + 1}-${rangeNumber * _batchSize})...');
-      
+
 //       final result = await MovieService.getMoviesWithPagination(
 //         page: pageNumber,
 //         recordsPerPage: _batchSize,
 //       );
-      
+
 //       if (mounted && !_isDisposed) {
 //         final newMovies = result['movies'] as List<Movie>;
 //         final hasMore = result['hasMore'] as bool;
-        
+
 //         if (newMovies.isNotEmpty) {
 //           setState(() {
 //             // 🔥 CUMULATIVE: Add to existing movies list
 //             _allMovies.addAll(newMovies);
-            
+
 //             // Mark this range as loaded
 //             _loadedRanges.add(rangeNumber);
 //             _currentMaxRange = math.max(_currentMaxRange, rangeNumber);
-            
+
 //             _hasMore = hasMore;
 //           });
-          
+
 //           print('✅ Range $rangeNumber loaded: +${newMovies.length} movies');
 //           print('📊 Total movies: ${_allMovies.length}');
 //           print('📊 Loaded ranges: $_loadedRanges');
 //           print('📊 Current max range: $_currentMaxRange');
-          
+
 //           // Add focus nodes for newly loaded movies
 //           _addFocusNodesForNewMovies(newMovies, rangeNumber);
-          
+
 //           // 🚀 AUTO-LOAD: If this was range 2, also load range 3 for better UX
 //           if (rangeNumber == 2 && _hasMore && !_loadedRanges.contains(3) && !_loadingRanges.contains(3)) {
 //             print('🔄 Auto-loading range 3 after range 2 for seamless experience...');
@@ -8168,7 +8126,7 @@
 //     } finally {
 //       // Remove from loading set
 //       _loadingRanges.remove(rangeNumber);
-      
+
 //       if (mounted && !_isDisposed) {
 //         setState(() {
 //           _isLoadingMore = _loadingRanges.isNotEmpty;
@@ -8202,7 +8160,7 @@
 
 //         case LogicalKeyboardKey.arrowDown:
 //           final int nextRowIndex = (currentRow + 1) * _columnsCount + currentCol;
-          
+
 //           if (nextRowIndex < totalItems) {
 //             newIndex = nextRowIndex;
 //           } else {
@@ -8212,7 +8170,7 @@
 //               final nextRange = _currentMaxRange + 1;
 //               _loadSpecificRange(nextRange);
 //             }
-            
+
 //             // Navigate to last available item in current column
 //             final int lastRowStartIndex = ((totalItems - 1) ~/ _columnsCount) * _columnsCount;
 //             final int targetIndex = lastRowStartIndex + currentCol;
@@ -8237,10 +8195,10 @@
 //           });
 //           FocusScope.of(context).requestFocus(_movieFocusNodes[newMovieId]);
 //           HapticFeedback.lightImpact();
-          
+
 //           // 🔥 KEY: Check if we need to load next range
 //           _checkAndLoadNextRange(newIndex);
-          
+
 //           print('🎯 Focus moved to index $newIndex ${_getCurrentRangeInfo(newIndex)}');
 //         }
 //       }
@@ -8260,12 +8218,12 @@
 //   // Initialize focus nodes and UI after data loads
 //   Future<void> _initializeAfterDataLoad() async {
 //     if (!mounted || _isDisposed || _allMovies.isEmpty) return;
-    
+
 //     try {
 //       _initializeAllFocusNodes();
-      
+
 //       await Future.delayed(const Duration(milliseconds: 100));
-      
+
 //       if (mounted && !_isDisposed) {
 //         _startStaggeredAnimation();
 //         _focusFirstGridItem();
@@ -8279,7 +8237,7 @@
 //   // Initialize focus nodes for all loaded movies
 //   void _initializeAllFocusNodes() {
 //     if (_isDisposed) return;
-    
+
 //     try {
 //       // Safe dispose existing nodes
 //       _safeDisposeAllFocusNodes();
@@ -8287,7 +8245,7 @@
 //       // Create focus nodes for all movies
 //       for (int i = 0; i < _allMovies.length; i++) {
 //         if (_isDisposed) break;
-        
+
 //         String movieId = _allMovies[i].id.toString();
 //         _movieFocusNodes[movieId] = FocusNode()
 //           ..addListener(() {
@@ -8297,7 +8255,7 @@
 //                   _focusedIndex = i;
 //                 });
 //                 _scrollToFocusedItem(movieId);
-                
+
 //                 // 🔥 KEY: Check cumulative loading on focus change
 //                 _checkAndLoadNextRange(i);
 //               }
@@ -8314,18 +8272,18 @@
 //   // Add focus nodes for newly loaded movies
 //   void _addFocusNodesForNewMovies(List<Movie> newMovies, int rangeNumber) {
 //     if (_isDisposed) return;
-    
+
 //     try {
 //       // Calculate starting index for this range
 //       final startIndex = _allMovies.length - newMovies.length;
-      
+
 //       for (int i = 0; i < newMovies.length; i++) {
 //         if (_isDisposed) break;
-        
+
 //         final movieIndex = startIndex + i;
 //         final movie = newMovies[i];
 //         String movieId = movie.id.toString();
-        
+
 //         if (!_movieFocusNodes.containsKey(movieId)) {
 //           _movieFocusNodes[movieId] = FocusNode()
 //             ..addListener(() {
@@ -8335,7 +8293,7 @@
 //                     _focusedIndex = movieIndex;
 //                   });
 //                   _scrollToFocusedItem(movieId);
-                  
+
 //                   // 🔥 KEY: Check cumulative loading
 //                   _checkAndLoadNextRange(movieIndex);
 //                 }
@@ -8343,7 +8301,7 @@
 //             });
 //         }
 //       }
-      
+
 //       print('✅ Added ${newMovies.length} focus nodes for range $rangeNumber');
 //     } catch (e) {
 //       print('❌ Error adding new focus nodes: $e');
@@ -8370,14 +8328,14 @@
 //   // Safe first item focus
 //   void _focusFirstGridItem() {
 //     if (!mounted || _isDisposed || _allMovies.isEmpty || _movieFocusNodes.isEmpty) return;
-    
+
 //     try {
 //       final firstMovieId = _allMovies[0].id.toString();
 //       if (_movieFocusNodes.containsKey(firstMovieId)) {
 //         setState(() {
 //           _focusedIndex = 0;
 //         });
-        
+
 //         Future.delayed(const Duration(milliseconds: 300), () {
 //           if (mounted && !_isDisposed && _movieFocusNodes.containsKey(firstMovieId)) {
 //             FocusScope.of(context).requestFocus(_movieFocusNodes[firstMovieId]);
@@ -8431,7 +8389,7 @@
 
 //   void _startStaggeredAnimation() {
 //     if (_isDisposed) return;
-    
+
 //     try {
 //       _fadeController.forward();
 //       _staggerController.forward();
@@ -8440,17 +8398,13 @@
 //     }
 //   }
 
-
-
-
-  
 // // 🛡️ SAFE GRID MOVIE TAP HANDLER
 // Future<void> _handleGridMovieTap(Movie movie) async {
 //   if (_isInitialLoading || !mounted || _isDisposed) return;
 
 //   bool dialogShown = false;
 //   OverlayEntry? loadingOverlay;
-  
+
 //   try {
 //     // Show loading overlay
 //     if (mounted && !_isDisposed) {
@@ -8481,7 +8435,7 @@
 //           ),
 //         ),
 //       );
-      
+
 //       Overlay.of(context).insert(loadingOverlay);
 //       dialogShown = true;
 //     }
@@ -8497,7 +8451,7 @@
 //     // Navigate based on video type
 //     if (mounted && !_isDisposed) {
 //       print('🎬 [GRID] Playing movie: ${movie.name}');
-      
+
 //       // Check if it's YouTube URL
 //       if (isYoutubeUrl(movie.movieUrl)) {
 //         // Create video data
@@ -8512,7 +8466,7 @@
 //         await Navigator.push(
 //           context,
 //           PageRouteBuilder(
-//             pageBuilder: (context, animation, secondaryAnimation) => 
+//             pageBuilder: (context, animation, secondaryAnimation) =>
 //               CustomYoutubePlayer(
 //                 videoData: videoData,
 //                 playlist: [videoData],
@@ -8531,7 +8485,7 @@
 //         await Navigator.push(
 //           context,
 //           PageRouteBuilder(
-//             pageBuilder: (context, animation, secondaryAnimation) => 
+//             pageBuilder: (context, animation, secondaryAnimation) =>
 //               CustomVideoPlayer(
 //                 videoUrl: movie.movieUrl,
 //               ),
@@ -8548,7 +8502,7 @@
 //     }
 //   } catch (e) {
 //     print('❌ [ERROR] Grid movie tap failed: $e');
-    
+
 //     if (mounted && !_isDisposed && dialogShown && loadingOverlay != null) {
 //       try {
 //         loadingOverlay.remove();
@@ -8570,7 +8524,6 @@
 //   }
 // }
 
-
 // // 🛡️ ENHANCED isYoutubeUrl CHECK
 // bool isYoutubeUrl(String? url) {
 //   if (url == null || url.isEmpty) {
@@ -8590,7 +8543,7 @@
 //     bool isYoutubeUrl = url.contains('youtube.com') ||
 //         url.contains('youtu.be') ||
 //         url.contains('youtube.com/shorts/');
-    
+
 //     return isYoutubeUrl;
 //   } catch (e) {
 //     print('⚠️ [WARNING] YouTube URL check failed: $e');
@@ -8619,13 +8572,12 @@
 //   }
 // }
 
-
 //   // // Movie tap handling
 //   // Future<void> _handleGridMovieTap(Movie movie) async {
 //   //   if (_isInitialLoading || !mounted || _isDisposed) return;
 
 //   //   bool dialogShown = false;
-    
+
 //   //   try {
 //   //     // Show loading dialog
 //   //     if (mounted && !_isDisposed) {
@@ -8691,7 +8643,7 @@
 //   //                 youtubeUrl: movie.movieUrl,
 //   //                 thumbnail: movie.banner ?? movie.poster ?? '',
 //   //                 description: movie.description ?? '',
-//   //               ), 
+//   //               ),
 //   //               playlist: [
 //   //                 VideoData(
 //   //                   id: movie.id.toString(),
@@ -8717,7 +8669,7 @@
 //   //     }
 //   //   } catch (e) {
 //   //     print('❌ Error handling movie tap: $e');
-      
+
 //   //     if (mounted && !_isDisposed && dialogShown) {
 //   //       try {
 //   //         Navigator.of(context, rootNavigator: true).pop();
@@ -8746,7 +8698,7 @@
 //   @override
 //   void didChangeAppLifecycleState(AppLifecycleState state) {
 //     super.didChangeAppLifecycleState(state);
-    
+
 //     if (state == AppLifecycleState.paused) {
 //       print('📱 App paused - preserving state');
 //     } else if (state == AppLifecycleState.resumed) {
@@ -8761,9 +8713,9 @@
 //   void dispose() {
 //     print('🛡️ Starting safe disposal...');
 //     _isDisposed = true;
-    
+
 //     WidgetsBinding.instance.removeObserver(this);
-    
+
 //     try {
 //       _fadeController.dispose();
 //       _staggerController.dispose();
@@ -8774,7 +8726,7 @@
 //     } catch (e) {
 //       print('❌ Error during disposal: $e');
 //     }
-    
+
 //     print('🛡️ Disposal completed');
 //     super.dispose();
 //   }
@@ -8784,7 +8736,7 @@
 //     if (_isDisposed) {
 //       return const SizedBox.shrink();
 //     }
-    
+
 //     return Scaffold(
 //       backgroundColor: ProfessionalColors.primaryDark,
 //       body: Container(
@@ -8881,7 +8833,7 @@
 //       final totalMoviesShown = lastRange * _batchSize;
 //       rangeDisplay = ' (Ranges: ${sortedRanges.join(',')}, Showing 1-$totalMoviesShown)';
 //     }
-    
+
 //     return Container(
 //       decoration: BoxDecoration(
 //         gradient: LinearGradient(
@@ -8987,8 +8939,8 @@
 //                           ),
 //                         ),
 //                         child: Text(
-//                           _isInitialLoading 
-//                               ? 'Loading...' 
+//                           _isInitialLoading
+//                               ? 'Loading...'
 //                               : '${_allMovies.length} Movies$rangeDisplay${_hasMore ? " (more)" : ""}',
 //                           style: const TextStyle(
 //                             color: ProfessionalColors.accentBlue,
@@ -9014,14 +8966,14 @@
 //     if (_isDisposed) {
 //       return const SizedBox.shrink();
 //     }
-    
+
 //     // Initial Loading State
 //     if (_isInitialLoading) {
 //       return const Center(
 //         child: ProfessionalLoadingIndicator(message: 'Loading movies 1-50...'),
 //       );
 //     }
-    
+
 //     // Error State
 //     if (_errorMessage.isNotEmpty) {
 //       return Center(
@@ -9071,7 +9023,7 @@
 //         ),
 //       );
 //     }
-    
+
 //     // Empty State
 //     if (_allMovies.isEmpty) {
 //       return const Center(
@@ -9166,7 +9118,7 @@
 //                       currentRange: (index ~/ _batchSize) + 1,
 //                       positionInRange: (index % _batchSize) + 1,
 //                       totalRangesLoaded: _loadedRanges.length,
-//                       isInLatestRange: _loadedRanges.contains((index ~/ _batchSize) + 1) && 
+//                       isInLatestRange: _loadedRanges.contains((index ~/ _batchSize) + 1) &&
 //                                      (index ~/ _batchSize) + 1 == _currentMaxRange,
 //                     ),
 //                   ),
@@ -9255,7 +9207,7 @@
 
 //   void _handleFocusChange() {
 //     if (_isDisposed) return;
-    
+
 //     setState(() {
 //       _isFocused = widget.focusNode.hasFocus;
 //     });
@@ -9557,7 +9509,7 @@
 //     // Different colors for different ranges
 //     Color rangeColor;
 //     String rangeText;
-    
+
 //     switch (widget.currentRange) {
 //       case 1:
 //         rangeColor = ProfessionalColors.accentBlue;
@@ -9583,14 +9535,14 @@
 //         rangeColor = ProfessionalColors.accentRed;
 //         rangeText = 'R${widget.currentRange}';
 //     }
-    
+
 //     return Positioned(
 //       top: 12,
 //       left: 12,
 //       child: Container(
 //         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
 //         decoration: BoxDecoration(
-//           color: widget.isInLatestRange 
+//           color: widget.isInLatestRange
 //               ? rangeColor.withOpacity(0.9)
 //               : Colors.black.withOpacity(0.7),
 //           borderRadius: BorderRadius.circular(6),
@@ -9611,9 +9563,6 @@
 //     );
 //   }
 // }
-
-
-
 
 // // Professional Grid Movie Card
 // class ProfessionalGridMovieCard extends StatefulWidget {
@@ -10030,25 +9979,20 @@
 //   }
 // }
 
-
-
-
-
-
 // // 🛡️ MEMORY MANAGEMENT HELPERS
 // class SafeNavigationHelper {
 //   static const int MAX_CONCURRENT_NAVIGATIONS = 1;
 //   static int _activeNavigations = 0;
-  
+
 //   static bool canNavigate() {
 //     return _activeNavigations < MAX_CONCURRENT_NAVIGATIONS;
 //   }
-  
+
 //   static void incrementNavigation() {
 //     _activeNavigations++;
 //     print('📊 [NAV] Active navigations: $_activeNavigations');
 //   }
-  
+
 //   static void decrementNavigation() {
 //     if (_activeNavigations > 0) {
 //       _activeNavigations--;
@@ -10057,21 +10001,15 @@
 //   }
 // }
 
-
-
-
-
-
-
-
-
 import 'package:mobi_tv_entertainment/main.dart';
 import 'package:mobi_tv_entertainment/provider/color_provider.dart';
+import 'package:mobi_tv_entertainment/provider/device_info_provider.dart';
 import 'package:mobi_tv_entertainment/provider/focus_provider.dart';
 import 'package:mobi_tv_entertainment/video_widget/custom_video_player.dart';
 import 'package:mobi_tv_entertainment/video_widget/device_detector_firestick.dart';
 import 'package:mobi_tv_entertainment/video_widget/video_screen.dart';
 import 'package:mobi_tv_entertainment/video_widget/custom_youtube_player.dart';
+import 'package:mobi_tv_entertainment/video_widget/youtube_webview_player.dart';
 import 'package:mobi_tv_entertainment/widgets/models/news_item_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -10216,19 +10154,22 @@ class Network {
 class MovieService {
   // Cache keys for list view (limited 8 items)
   static const String _cacheKeyMoviesList = 'cached_movies_list';
-  static const String _cacheKeyMoviesListTimestamp = 'cached_movies_list_timestamp';
-  
+  static const String _cacheKeyMoviesListTimestamp =
+      'cached_movies_list_timestamp';
+
   // Cache keys for full data (all movies)
   static const String _cacheKeyMoviesFull = 'cached_movies_full';
-  static const String _cacheKeyMoviesFullTimestamp = 'cached_movies_full_timestamp';
-  
+  static const String _cacheKeyMoviesFullTimestamp =
+      'cached_movies_full_timestamp';
+
   static const String _cacheKeyAuthKey = 'auth_key';
 
   // Cache duration (in milliseconds) - 1 hour
   static const int _cacheDurationMs = 60 * 60 * 1000; // 1 hour
 
   /// 🆕 Get movies for list view (limited to 8 items)
-  static Future<List<Movie>> getMoviesForList({bool forceRefresh = false}) async {
+  static Future<List<Movie>> getMoviesForList(
+      {bool forceRefresh = false}) async {
     try {
       final prefs = await SharedPreferences.getInstance();
 
@@ -10237,7 +10178,8 @@ class MovieService {
         print('📦 Loading movies list from cache...');
         final cachedMovies = await _getCachedMoviesList(prefs);
         if (cachedMovies.isNotEmpty) {
-          print('✅ Successfully loaded ${cachedMovies.length} movies from list cache');
+          print(
+              '✅ Successfully loaded ${cachedMovies.length} movies from list cache');
           _loadFreshListDataInBackground();
           return cachedMovies;
         }
@@ -10266,7 +10208,8 @@ class MovieService {
   }
 
   /// 🆕 Get all movies for grid view (full dataset)
-  static Future<List<Movie>> getAllMoviesForGrid({bool forceRefresh = false}) async {
+  static Future<List<Movie>> getAllMoviesForGrid(
+      {bool forceRefresh = false}) async {
     try {
       final prefs = await SharedPreferences.getInstance();
 
@@ -10275,7 +10218,8 @@ class MovieService {
         print('📦 Loading full movies from cache...');
         final cachedMovies = await _getCachedMoviesFull(prefs);
         if (cachedMovies.isNotEmpty) {
-          print('✅ Successfully loaded ${cachedMovies.length} movies from full cache');
+          print(
+              '✅ Successfully loaded ${cachedMovies.length} movies from full cache');
           _loadFreshFullDataInBackground();
           return cachedMovies;
         }
@@ -10314,7 +10258,8 @@ class MovieService {
   }
 
   /// Generic cache validation method
-  static Future<bool> _shouldUseCache(SharedPreferences prefs, String timestampKey, String type) async {
+  static Future<bool> _shouldUseCache(
+      SharedPreferences prefs, String timestampKey, String type) async {
     try {
       final timestampStr = prefs.getString(timestampKey);
       if (timestampStr == null) return false;
@@ -10343,17 +10288,20 @@ class MovieService {
   }
 
   /// Get movies list from cache with status filtering
-  static Future<List<Movie>> _getCachedMoviesList(SharedPreferences prefs) async {
+  static Future<List<Movie>> _getCachedMoviesList(
+      SharedPreferences prefs) async {
     return await _getCachedMovies(prefs, _cacheKeyMoviesList, 'list');
   }
 
   /// Get full movies from cache with status filtering
-  static Future<List<Movie>> _getCachedMoviesFull(SharedPreferences prefs) async {
+  static Future<List<Movie>> _getCachedMoviesFull(
+      SharedPreferences prefs) async {
     return await _getCachedMovies(prefs, _cacheKeyMoviesFull, 'full');
   }
 
   /// Generic method to get cached movies with status filtering
-  static Future<List<Movie>> _getCachedMovies(SharedPreferences prefs, String cacheKey, String type) async {
+  static Future<List<Movie>> _getCachedMovies(
+      SharedPreferences prefs, String cacheKey, String type) async {
     try {
       final cachedData = prefs.getString(cacheKey);
       if (cachedData == null || cachedData.isEmpty) {
@@ -10362,7 +10310,7 @@ class MovieService {
       }
 
       final List<dynamic> jsonData = json.decode(cachedData);
-      
+
       // 🆕 Filter cached movies with status = 1 only
       final filteredJsonData = jsonData.where((movieJson) {
         final status = movieJson['status'] ?? 0;
@@ -10373,7 +10321,8 @@ class MovieService {
           .map((json) => Movie.fromJson(json as Map<String, dynamic>))
           .toList();
 
-      print('📦 Successfully loaded ${movies.length} active movies from $type cache (filtered from ${jsonData.length} total)');
+      print(
+          '📦 Successfully loaded ${movies.length} active movies from $type cache (filtered from ${jsonData.length} total)');
       return movies;
     } catch (e) {
       print('❌ Error loading cached $type movies: $e');
@@ -10382,12 +10331,14 @@ class MovieService {
   }
 
   /// Fetch fresh movies for list (limited to 8) with status filtering
-  static Future<List<Movie>> _fetchFreshMoviesList(SharedPreferences prefs) async {
+  static Future<List<Movie>> _fetchFreshMoviesList(
+      SharedPreferences prefs) async {
     try {
       String authKey = prefs.getString(_cacheKeyAuthKey) ?? '';
 
       final response = await http.get(
-        Uri.parse('https://acomtv.coretechinfo.com/public/api/getAllMovies?records=8'),
+        Uri.parse(
+            'https://acomtv.coretechinfo.com/public/api/getAllMovies?records=8'),
         headers: {'auth-key': authKey},
       ).timeout(
         const Duration(seconds: 30),
@@ -10421,10 +10372,12 @@ class MovieService {
         // Cache the filtered data
         await _cacheMoviesList(prefs, filteredJsonData);
 
-        print('✅ Successfully loaded ${movies.length} active movies for list from API (filtered from ${jsonData.length} total)');
+        print(
+            '✅ Successfully loaded ${movies.length} active movies for list from API (filtered from ${jsonData.length} total)');
         return movies;
       } else {
-        throw Exception('API Error: ${response.statusCode} - ${response.reasonPhrase}');
+        throw Exception(
+            'API Error: ${response.statusCode} - ${response.reasonPhrase}');
       }
     } catch (e) {
       print('❌ Error fetching fresh movies list: $e');
@@ -10433,12 +10386,14 @@ class MovieService {
   }
 
   /// 🆕 Fetch fresh movies for grid (full dataset - no limit) with status filtering
-  static Future<List<Movie>> _fetchFreshMoviesFull(SharedPreferences prefs) async {
+  static Future<List<Movie>> _fetchFreshMoviesFull(
+      SharedPreferences prefs) async {
     try {
       String authKey = prefs.getString(_cacheKeyAuthKey) ?? '';
 
       final response = await http.get(
-        Uri.parse('https://acomtv.coretechinfo.com/public/api/getAllMovies?records=50'), // No records parameter for full data
+        Uri.parse(
+            'https://acomtv.coretechinfo.com/public/api/getAllMovies?records=50'), // No records parameter for full data
         headers: {'auth-key': authKey},
       ).timeout(
         const Duration(seconds: 30),
@@ -10472,34 +10427,39 @@ class MovieService {
         // Cache the filtered full data
         await _cacheMoviesFull(prefs, filteredJsonData);
 
-        print('✅ Successfully loaded ${movies.length} active movies for grid from API (filtered from ${jsonData.length} total)');
+        print(
+            '✅ Successfully loaded ${movies.length} active movies for grid from API (filtered from ${jsonData.length} total)');
         return movies;
       } else {
-        throw Exception('API Error: ${response.statusCode} - ${response.reasonPhrase}');
+        throw Exception(
+            'API Error: ${response.statusCode} - ${response.reasonPhrase}');
       }
     } catch (e) {
       print('❌ Error fetching fresh movies full: $e');
       rethrow;
     }
   }
-  
 
   /// Cache movies list data
-  static Future<void> _cacheMoviesList(SharedPreferences prefs, List<dynamic> moviesData) async {
-    await _cacheMovies(prefs, moviesData, _cacheKeyMoviesList, _cacheKeyMoviesListTimestamp, 'list');
+  static Future<void> _cacheMoviesList(
+      SharedPreferences prefs, List<dynamic> moviesData) async {
+    await _cacheMovies(prefs, moviesData, _cacheKeyMoviesList,
+        _cacheKeyMoviesListTimestamp, 'list');
   }
 
   /// Cache movies full data
-  static Future<void> _cacheMoviesFull(SharedPreferences prefs, List<dynamic> moviesData) async {
-    await _cacheMovies(prefs, moviesData, _cacheKeyMoviesFull, _cacheKeyMoviesFullTimestamp, 'full');
+  static Future<void> _cacheMoviesFull(
+      SharedPreferences prefs, List<dynamic> moviesData) async {
+    await _cacheMovies(prefs, moviesData, _cacheKeyMoviesFull,
+        _cacheKeyMoviesFullTimestamp, 'full');
   }
 
   /// Generic method to cache movies data
   static Future<void> _cacheMovies(
-      SharedPreferences prefs, 
-      List<dynamic> moviesData, 
-      String dataKey, 
-      String timestampKey, 
+      SharedPreferences prefs,
+      List<dynamic> moviesData,
+      String dataKey,
+      String timestampKey,
       String type) async {
     try {
       final jsonString = json.encode(moviesData);
@@ -10565,15 +10525,15 @@ class MovieService {
   static Future<Map<String, dynamic>> getCacheInfo() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      
+
       // List cache info
       final listTimestampStr = prefs.getString(_cacheKeyMoviesListTimestamp);
       final listCachedData = prefs.getString(_cacheKeyMoviesList);
-      
+
       // Full cache info
       final fullTimestampStr = prefs.getString(_cacheKeyMoviesFullTimestamp);
       final fullCachedData = prefs.getString(_cacheKeyMoviesFull);
-      
+
       final currentTimestamp = DateTime.now().millisecondsSinceEpoch;
 
       Map<String, dynamic> listInfo = {'hasCachedData': false};
@@ -10722,11 +10682,13 @@ class _ProfessionalMoviesHorizontalListState
             if (movieFocusNodes.containsKey(firstMovieId)) {
               focusProvider.setFirstManageMoviesFocusNode(
                   movieFocusNodes[firstMovieId]!);
-              print('✅ Movies first focus node registered for SubVod navigation');
+              print(
+                  '✅ Movies first focus node registered for SubVod navigation');
             }
           }
 
-          print('✅ Generic focus registered for ${widget.displayTitle} (index: ${widget.navigationIndex})');
+          print(
+              '✅ Generic focus registered for ${widget.displayTitle} (index: ${widget.navigationIndex})');
         } catch (e) {
           print('❌ Focus provider setup failed: $e');
         }
@@ -10977,28 +10939,28 @@ class _ProfessionalMoviesHorizontalListState
   }
 
 // Option 1: Ultra Simple Version
-void _scrollToFocusedItem(String itemId) {
-  if (!mounted || !_scrollController.hasClients) return;
+  void _scrollToFocusedItem(String itemId) {
+    if (!mounted || !_scrollController.hasClients) return;
 
-  try {
-    // Find focused item index
-    int index = displayMoviesList.indexWhere((movie) => movie.id.toString() == itemId);
-    
-    if (index != -1) {
-      // Simple scroll calculation
-      double scrollPosition = index * 180.0; // Adjust 180 to your item width
-      
-      _scrollController.animateTo(
-        scrollPosition,
-        duration: const Duration(milliseconds: 500),
-        curve: Curves.easeOut,
-      );
+    try {
+      // Find focused item index
+      int index = displayMoviesList
+          .indexWhere((movie) => movie.id.toString() == itemId);
+
+      if (index != -1) {
+        // Simple scroll calculation
+        double scrollPosition = index * 180.0; // Adjust 180 to your item width
+
+        _scrollController.animateTo(
+          scrollPosition,
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeOut,
+        );
+      }
+    } catch (e) {
+      // Silent fail
     }
-  } catch (e) {
-    // Silent fail
   }
-}
-  
 
   Future<void> _handleMovieTap(Movie movie) async {
     if (_isNavigating) return;
@@ -11079,57 +11041,72 @@ void _scrollToFocusedItem(String itemId) {
             .toList();
       }
 
+      // Aapka target URL banayein
+      String finalUrl =
+          'https://demo.coretechinfo.com/videojs.youtube-8.11.8-manbir/demo/?youtubeId=${movie.movieUrl}';
 
-          // Aapka target URL banayein
-    String finalUrl = 'https://demo.coretechinfo.com/videojs.youtube-8.11.8-manbir/demo/?youtubeId=${movie.movieUrl}';
+      // Loading dialog dikhayein
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return const Center(child: CircularProgressIndicator());
+        },
+      );
 
-    // Loading dialog dikhayein
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return const Center(child: CircularProgressIndicator());
-      },
-    );
+      // Thoda delay dein taaki UI update ho sake
+      await Future.delayed(const Duration(milliseconds: 500));
 
-    // Thoda delay dein taaki UI update ho sake
-    await Future.delayed(const Duration(milliseconds: 500));
+      // Loading dialog ko hatayein
+      Navigator.of(context, rootNavigator: true).pop();
 
-    // Loading dialog ko hatayein
-    Navigator.of(context, rootNavigator: true).pop();
+      //   try {
+      //     // WebPlayerScreen par navigate karein
+      //     await Navigator.push(
+      //       context,
+      //       MaterialPageRoute(
+      //         builder: (context) => WebPlayerScreen(
+      //           videoUrl: finalUrl,
+      //         ),
+      //       ),
+      //     );
+      //   } catch (e) {
+      //     print('Navigation failed: $e');
+      //     // Yahan error handle karein
+      //   } finally {
+      //     _isNavigating = false;
+      //   }
+      // }
 
-  //   try {
-  //     // WebPlayerScreen par navigate karein
-  //     await Navigator.push(
-  //       context,
-  //       MaterialPageRoute(
-  //         builder: (context) => WebPlayerScreen(
-  //           videoUrl: finalUrl,
-  //         ),
-  //       ),
-  //     );
-  //   } catch (e) {
-  //     print('Navigation failed: $e');
-  //     // Yahan error handle karein
-  //   } finally {
-  //     _isNavigating = false;
-  //   }
-  // }
+      if ( movie.sourceType == 'YoutubeLive' ) {
+                final deviceInfo = context.read<DeviceInfoProvider>();
 
-      if (isYoutubeUrl(movie.movieUrl)) {
+        if (deviceInfo.deviceName == 'AFTSS : Amazon Fire Stick HD') {
+        print('isAFTSS');
+
+          await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => YoutubeWebviewPlayer(
+                videoUrl: movie.movieUrl,
+                name: movie.name,
+              ),
+            ),
+          );
+        } else {
         await Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => CustomYoutubePlayer(
               // videoUrl: movie.movieUrl,
-              // name: movie.name, 
+              // name: movie.name,
               videoData: VideoData(
                 id: movie.movieUrl,
                 title: movie.name,
                 youtubeUrl: movie.movieUrl,
                 thumbnail: movie.banner ?? movie.poster ?? '',
                 description: movie.description ?? '',
-              ), 
+              ),
               playlist: [
                 VideoData(
                   id: movie.movieUrl,
@@ -11144,11 +11121,11 @@ void _scrollToFocusedItem(String itemId) {
             //   videoUrl: movie.movieUrl,
             //   name: movie.name,
             // ),
-          //             builder: (context) => WebPlayerScreen(
-          //   videoUrl: finalUrl,
-          // ),
+            //             builder: (context) => WebPlayerScreen(
+            //   videoUrl: finalUrl,
+            // ),
           ),
-        );
+        );}
       } else {
         await Navigator.push(
           context,
@@ -11201,7 +11178,7 @@ void _scrollToFocusedItem(String itemId) {
   void _navigateToMoviesGrid() async {
     if (!_isNavigating && mounted) {
       _isNavigating = true;
-      
+
       // 🆕 Don't pre-fetch here, let grid page handle full data loading
       if (mounted) {
         Navigator.push(
@@ -11246,7 +11223,6 @@ void _scrollToFocusedItem(String itemId) {
     super.dispose();
   }
 
-
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -11274,7 +11250,7 @@ void _scrollToFocusedItem(String itemId) {
                   // ProfessionalColors.surfaceDark.withOpacity(0.5),
 
                   bgColor.withOpacity(0.8),
-                ProfessionalColors.primaryDark,
+                  ProfessionalColors.primaryDark,
                 ],
               ),
             ),
@@ -11293,7 +11269,8 @@ void _scrollToFocusedItem(String itemId) {
   }
 
   // ✅ ENHANCED: Movie item with color provider integration
-  Widget _buildMovieItem(Movie movie, int index, double screenWidth, double screenHeight) {
+  Widget _buildMovieItem(
+      Movie movie, int index, double screenWidth, double screenHeight) {
     String movieId = movie.id.toString();
 
     movieFocusNodes.putIfAbsent(
@@ -11428,7 +11405,9 @@ void _scrollToFocusedItem(String itemId) {
                     });
 
                     // ✅ ADD: Update color provider for ViewAll button
-                    context.read<ColorProvider>().updateColor(viewAllColor, true);
+                    context
+                        .read<ColorProvider>()
+                        .updateColor(viewAllColor, true);
                   } else if (mounted) {
                     // ✅ ADD: Reset color when ViewAll loses focus
                     context.read<ColorProvider>().resetColor();
@@ -11498,8 +11477,6 @@ void _scrollToFocusedItem(String itemId) {
     );
   }
 
-
-
   // @override
   // Widget build(BuildContext context) {
   //   super.build(context);
@@ -11557,7 +11534,6 @@ void _scrollToFocusedItem(String itemId) {
                 ),
               ),
             ),
-            
             Row(
               children: [
                 // Movies Count
@@ -12396,8 +12372,7 @@ class _ProfessionalViewAllButtonState extends State<ProfessionalViewAllButton>
                 child: Transform.rotate(
                   angle: _isFocused ? 0 : _rotateAnimation.value * 2 * math.pi,
                   child: Container(
-                    height:
-                        _isFocused ? focussedBannerhgt : bannerhgt,
+                    height: _isFocused ? focussedBannerhgt : bannerhgt,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(12),
                       gradient: LinearGradient(
@@ -12647,10 +12622,9 @@ class _ProfessionalLoadingIndicatorState
   }
 }
 
-
 class ProfessionalMoviesGridView extends StatefulWidget {
   final String categoryTitle; // ✅ Sirf title chahiye
-  
+
   const ProfessionalMoviesGridView({
     Key? key,
     required this.categoryTitle, // ✅ No moviesList parameter
@@ -12675,7 +12649,6 @@ class ProfessionalMoviesGridView extends StatefulWidget {
 
 class _ProfessionalMoviesGridViewState extends State<ProfessionalMoviesGridView>
     with TickerProviderStateMixin {
-  
   // ✅ Focus Management with Scrolling
   Map<String, FocusNode> _movieFocusNodes = {};
   bool _isLoading = false;
@@ -12683,7 +12656,7 @@ class _ProfessionalMoviesGridViewState extends State<ProfessionalMoviesGridView>
   int gridFocusedIndex = 0;
   final int columnsCount = 6;
   late ScrollController _scrollController;
-  
+
   // 🆕 Full movies list for grid
   List<Movie> _fullMoviesList = [];
   String _errorMessage = ''; // <-- Added to fix undefined name error
@@ -12696,10 +12669,10 @@ class _ProfessionalMoviesGridViewState extends State<ProfessionalMoviesGridView>
   @override
   void initState() {
     super.initState();
-    
+
     // ✅ Initialize ScrollController
     _scrollController = ScrollController();
-    
+
     // 🆕 Initialize with passed movies and load full dataset
     // _fullMoviesList = List.from(widget.moviesList);
     _loadFullMoviesDataset();
@@ -12716,28 +12689,26 @@ class _ProfessionalMoviesGridViewState extends State<ProfessionalMoviesGridView>
     _startStaggeredAnimation();
   }
 
-
-
   // 🆕 Grid page khud se data fetch karta hai
-Future<void> _loadMoviesDataset() async {
-  setState(() {
-    _isLoading = true;
-    _errorMessage = '';
-  });
+  Future<void> _loadMoviesDataset() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = '';
+    });
 
-  // ✅ Complete independent API call
-  final fullMovies = await MovieService.getAllMoviesForGrid();
-  
-  setState(() {
-    _fullMoviesList = fullMovies;
-    _isLoading = false;
-  });
-}
+    // ✅ Complete independent API call
+    final fullMovies = await MovieService.getAllMoviesForGrid();
+
+    setState(() {
+      _fullMoviesList = fullMovies;
+      _isLoading = false;
+    });
+  }
 
   // 🆕 Load full movies dataset for grid
   Future<void> _loadFullMoviesDataset() async {
     if (!mounted) return;
-    
+
     setState(() {
       _isLoadingMoreMovies = true;
     });
@@ -12746,18 +12717,18 @@ Future<void> _loadMoviesDataset() async {
       print('🔄 Loading full movies dataset for grid...');
       // 🆕 Use the full API endpoint
       final fullMovies = await MovieService.getAllMoviesForGrid();
-      
+
       if (mounted && fullMovies.isNotEmpty) {
         setState(() {
           _fullMoviesList = fullMovies;
           _isLoadingMoreMovies = false;
         });
-        
+
         // 🆕 Reinitialize focus nodes with full dataset AFTER setState
         await Future.delayed(const Duration(milliseconds: 100));
         if (mounted) {
           _initializeMovieFocusNodes();
-          
+
           // 🆕 Focus first item after initialization
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (mounted) {
@@ -12765,7 +12736,7 @@ Future<void> _loadMoviesDataset() async {
             }
           });
         }
-        
+
         print('✅ Loaded ${fullMovies.length} movies for grid');
       } else {
         setState(() {
@@ -12819,7 +12790,7 @@ Future<void> _loadMoviesDataset() async {
       print('⚠️ Cannot focus first item: movies list is empty');
       return;
     }
-    
+
     if (_movieFocusNodes.isEmpty) {
       print('⚠️ Cannot focus first item: focus nodes not initialized');
       return;
@@ -12831,7 +12802,7 @@ Future<void> _loadMoviesDataset() async {
         setState(() {
           gridFocusedIndex = 0;
         });
-        
+
         // 🆕 Add a small delay to ensure widget is fully rendered
         Future.delayed(const Duration(milliseconds: 200), () {
           if (mounted && _movieFocusNodes.containsKey(firstMovieId)) {
@@ -12895,7 +12866,8 @@ Future<void> _loadMoviesDataset() async {
 
   // ✅ Enhanced Grid Navigation
   void _navigateGrid(LogicalKeyboardKey key) {
-    if (_isLoading || _fullMoviesList.isEmpty) return; // 🆕 Check if data is available
+    if (_isLoading || _fullMoviesList.isEmpty)
+      return; // 🆕 Check if data is available
 
     int newIndex = gridFocusedIndex;
     final int totalItems = _fullMoviesList.length;
@@ -12920,7 +12892,8 @@ Future<void> _loadMoviesDataset() async {
         if (nextRowIndex < totalItems) {
           newIndex = nextRowIndex;
         } else {
-          final int lastRowStartIndex = ((totalItems - 1) ~/ columnsCount) * columnsCount;
+          final int lastRowStartIndex =
+              ((totalItems - 1) ~/ columnsCount) * columnsCount;
           final int targetIndex = lastRowStartIndex + currentCol;
           if (targetIndex < totalItems) {
             newIndex = targetIndex;
@@ -12938,7 +12911,9 @@ Future<void> _loadMoviesDataset() async {
         break;
     }
 
-    if (newIndex != gridFocusedIndex && newIndex >= 0 && newIndex < totalItems) {
+    if (newIndex != gridFocusedIndex &&
+        newIndex >= 0 &&
+        newIndex < totalItems) {
       final newMovieId = _fullMoviesList[newIndex].id.toString();
       if (_movieFocusNodes.containsKey(newMovieId)) {
         setState(() {
@@ -13028,41 +13003,57 @@ Future<void> _loadMoviesDataset() async {
           Navigator.of(context, rootNavigator: true).pop();
         }
 
-        if (isYoutubeUrl(movie.movieUrl)) {
-          await Navigator.push(
-            context,
-            MaterialPageRoute(
-               builder: (context) => CustomYoutubePlayer(
-              // videoUrl: movie.movieUrl,
-              // name: movie.name, 
-              videoData: VideoData(
-                id: movie.id.toString(),
-                title: movie.name,
-                youtubeUrl: movie.movieUrl,
-                thumbnail: movie.banner ?? movie.poster ?? '',
-                description: movie.description ?? '',
-              ), 
-              playlist: [
-                VideoData(
-                  id: movie.id.toString(),
-                  title: movie.name,
-                  youtubeUrl: movie.movieUrl,
-                  thumbnail: movie.banner ?? movie.poster ?? '',
-                  description: movie.description ?? '',
+        if ( movie.sourceType == 'YoutubeLive' ) {
+          final deviceInfo = context.read<DeviceInfoProvider>();
+
+          if (deviceInfo.deviceName == 'AFTSS : Amazon Fire Stick HD') {
+            print('isAFTSS');
+
+            await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => YoutubeWebviewPlayer(
+                  videoUrl: movie.movieUrl,
+                  name: movie.name,
                 ),
-              ],
-            ),
-              // builder: (context) => CustomYoutubePlayer(
-              //   videoUrl: movie.movieUrl,
-              //   name: movie.name,
-              // ),
-              // builder: (context) => YPlayer(
-              //   // videoUrl: movie.movieUrl,
-              //   // name: movie.name,
-              //    youtubeUrl: '${movie.movieUrl}',
-              // ),
-            ),
-          );
+              ),
+            );
+          } else {
+            await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => CustomYoutubePlayer(
+                  // videoUrl: movie.movieUrl,
+                  // name: movie.name,
+                  videoData: VideoData(
+                    id: movie.id.toString(),
+                    title: movie.name,
+                    youtubeUrl: movie.movieUrl,
+                    thumbnail: movie.banner ?? movie.poster ?? '',
+                    description: movie.description ?? '',
+                  ),
+                  playlist: [
+                    VideoData(
+                      id: movie.id.toString(),
+                      title: movie.name,
+                      youtubeUrl: movie.movieUrl,
+                      thumbnail: movie.banner ?? movie.poster ?? '',
+                      description: movie.description ?? '',
+                    ),
+                  ],
+                ),
+                // builder: (context) => CustomYoutubePlayer(
+                //   videoUrl: movie.movieUrl,
+                //   name: movie.name,
+                // ),
+                // builder: (context) => YPlayer(
+                //   // videoUrl: movie.movieUrl,
+                //   // name: movie.name,
+                //    youtubeUrl: '${movie.movieUrl}',
+                // ),
+              ),
+            );
+          }
         } else {
           await Navigator.push(
             context,
@@ -13092,28 +13083,28 @@ Future<void> _loadMoviesDataset() async {
           errorMessage = 'Movie not found or unavailable';
         }
 
-      //   ScaffoldMessenger.of(context).showSnackBar(
-      //     SnackBar(
-      //       content: Text(errorMessage),
-      //       backgroundColor: ProfessionalColors.accentRed,
-      //       behavior: SnackBarBehavior.floating,
-      //       shape: RoundedRectangleBorder(
-      //         borderRadius: BorderRadius.circular(10),
-      //       ),
-      //       action: SnackBarAction(
-      //         label: 'Retry',
-      //         textColor: Colors.white,
-      //         onPressed: () => _handleGridMovieTap(movie),
-      //       ),
-      //     ),
-      //   );
+        //   ScaffoldMessenger.of(context).showSnackBar(
+        //     SnackBar(
+        //       content: Text(errorMessage),
+        //       backgroundColor: ProfessionalColors.accentRed,
+        //       behavior: SnackBarBehavior.floating,
+        //       shape: RoundedRectangleBorder(
+        //         borderRadius: BorderRadius.circular(10),
+        //       ),
+        //       action: SnackBarAction(
+        //         label: 'Retry',
+        //         textColor: Colors.white,
+        //         onPressed: () => _handleGridMovieTap(movie),
+        //       ),
+        //     ),
+        //   );
       }
     } finally {
       if (mounted) {
         setState(() {
           _isLoading = false;
         });
-        
+
         // // ✅ Restore focus to the same item after returning
         // Future.delayed(const Duration(milliseconds: 300), () {
         //   if (mounted) {
@@ -13139,7 +13130,7 @@ Future<void> _loadMoviesDataset() async {
     _fadeController.dispose();
     _staggerController.dispose();
     _scrollController.dispose();
-    
+
     // ✅ Safely dispose all focus nodes
     for (var entry in _movieFocusNodes.entries) {
       try {
@@ -13151,7 +13142,7 @@ Future<void> _loadMoviesDataset() async {
       }
     }
     _movieFocusNodes.clear();
-    
+
     super.dispose();
   }
 
@@ -13199,13 +13190,14 @@ Future<void> _loadMoviesDataset() async {
 
             // ✅ Loading More Indicator (removed - not needed anymore)
 
-            // ✅ Loading Overlay - Always on top  
+            // ✅ Loading Overlay - Always on top
             if (_isLoading)
               Positioned.fill(
                 child: Container(
                   color: Colors.black.withOpacity(0.7),
                   child: const Center(
-                    child: ProfessionalLoadingIndicator(message: 'Loading Movie...'),
+                    child: ProfessionalLoadingIndicator(
+                        message: 'Loading Movie...'),
                   ),
                 ),
               ),
@@ -13314,7 +13306,8 @@ Future<void> _loadMoviesDataset() async {
                       ),
                       // ✅ Count badge with dynamic count from full dataset
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: [
@@ -13324,12 +13317,14 @@ Future<void> _loadMoviesDataset() async {
                           ),
                           borderRadius: BorderRadius.circular(15),
                           border: Border.all(
-                            color: ProfessionalColors.accentBlue.withOpacity(0.4),
+                            color:
+                                ProfessionalColors.accentBlue.withOpacity(0.4),
                             width: 1,
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: ProfessionalColors.accentBlue.withOpacity(0.2),
+                              color: ProfessionalColors.accentBlue
+                                  .withOpacity(0.2),
                               blurRadius: 6,
                               offset: const Offset(0, 2),
                             ),
@@ -13369,7 +13364,7 @@ Future<void> _loadMoviesDataset() async {
         child: ProfessionalLoadingIndicator(message: 'Loading Movies...'),
       );
     }
-    
+
     // 🆕 Show error state if loading failed
     if (_errorMessage.isNotEmpty) {
       return Center(
@@ -13418,7 +13413,8 @@ Future<void> _loadMoviesDataset() async {
               style: ElevatedButton.styleFrom(
                 backgroundColor: ProfessionalColors.accentBlue,
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -13432,7 +13428,7 @@ Future<void> _loadMoviesDataset() async {
         ),
       );
     }
-    
+
     // 🆕 Show empty state if no movies found
     if (_fullMoviesList.isEmpty) {
       return Center(
@@ -13482,7 +13478,8 @@ Future<void> _loadMoviesDataset() async {
     return Focus(
       autofocus: true,
       onKey: (node, event) {
-        if (event is RawKeyDownEvent && !_isLoading) { // 🆕 Only check main loading
+        if (event is RawKeyDownEvent && !_isLoading) {
+          // 🆕 Only check main loading
           if ([
             LogicalKeyboardKey.arrowUp,
             LogicalKeyboardKey.arrowDown,
@@ -13492,7 +13489,7 @@ Future<void> _loadMoviesDataset() async {
             _navigateGrid(event.logicalKey);
             return KeyEventResult.handled;
           } else if (event.logicalKey == LogicalKeyboardKey.enter ||
-                     event.logicalKey == LogicalKeyboardKey.select) {
+              event.logicalKey == LogicalKeyboardKey.select) {
             if (gridFocusedIndex < _fullMoviesList.length) {
               _handleGridMovieTap(_fullMoviesList[gridFocusedIndex]);
             }

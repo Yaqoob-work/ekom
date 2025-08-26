@@ -11,7 +11,7 @@
 
 
     <application
-        android:label="Ekom Test"
+        android:label="Ekom Testing"
         android:name="${applicationName}"
         android:banner="@drawable/banner"
         android:icon="@mipmap/ic_launcher"

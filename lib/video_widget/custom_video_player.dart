@@ -1190,96 +1190,642 @@
 
 
 
+// import 'dart:async';
+// import 'package:flutter/material.dart';
+// import 'package:flutter/services.dart';
+// import 'package:flutter_vlc_player/flutter_vlc_player.dart';
+// import 'package:keep_screen_on/keep_screen_on.dart';
+
+// /// Un reproductor de video simple y de pantalla completa.
+// ///
+// /// Este widget solo requiere una [videoUrl] para reproducir un video.
+// /// Controla la reproducción con las teclas de flecha (adelantar/retroceder) y
+// /// la tecla Enter (reproducir/pausar).
+// class CustomVideoPlayer extends StatefulWidget {
+//   final String videoUrl;
+
+//   const CustomVideoPlayer({super.key, required this.videoUrl});
+
+//   @override
+//   _CustomVideoPlayerState createState() => _CustomVideoPlayerState();
+// }
+
+// class _CustomVideoPlayerState extends State<CustomVideoPlayer> with WidgetsBindingObserver {
+//   VlcPlayerController? _controller;
+//   bool _controlsVisible = true;
+//   late Timer _hideControlsTimer;
+//   bool _isBuffering = false;
+//   bool _isVideoInitialized = false;
+//   final FocusNode screenFocusNode = FocusNode();
+//       bool _isDisposing = false;
+//   bool _isDisposed = false;
+  
+//   // Para la barra de progreso
+//   double _progress = 0.0;
+
+//   // Para la funcionalidad de búsqueda (adelantar/retroceder)
+//   int _accumulatedSeekForward = 0;
+//   int _accumulatedSeekBackward = 0;
+//   Timer? _seekTimer;
+//   Duration _previewPosition = Duration.zero;
+//   final int _seekDuration = 10; // segundos
+//   final int _seekDelay = 1000; // milisegundos
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     WidgetsBinding.instance.addObserver(this);
+//     KeepScreenOn.turnOn(); // Mantiene la pantalla encendida
+
+//     // Inicializa el reproductor de video
+//     _initializeVLCController();
+
+//     // Inicia un temporizador para ocultar los controles después de un tiempo
+//     _startHideControlsTimer();
+    
+//     // Solicita el foco para poder recibir eventos del teclado
+//     WidgetsBinding.instance.addPostFrameCallback((_) {
+//       FocusScope.of(context).requestFocus(screenFocusNode);
+//     });
+//   }
+  
+//   /// Listener para los cambios de estado del reproductor VLC
+//   void _vlcListener() {
+//     if (!mounted || _controller == null || !_controller!.value.isInitialized) return;
+
+//     final isBuffering = _controller!.value.isBuffering;
+//     final position = _controller!.value.position;
+//     final duration = _controller!.value.duration;
+
+//     if (mounted) {
+//       setState(() {
+//         _isBuffering = isBuffering;
+//         if (duration > Duration.zero) {
+//            _progress = position.inMilliseconds / duration.inMilliseconds;
+//         }
+//       });
+//     }
+//   }
+
+//   /// Inicializa el controlador VLC con la URL del video proporcionada
+//   Future<void> _initializeVLCController() async {
+//     setState(() {
+//       _isBuffering = true;
+//     });
+
+//     // Añade opciones de caché a la URL para un mejor rendimiento
+//     String modifiedUrl = '${widget.videoUrl}?network-caching=5000&live-caching=500&rtsp-tcp';
+
+//     _controller = VlcPlayerController.network(
+//       modifiedUrl,
+//       hwAcc: HwAcc.full,
+//       autoPlay: true,
+//       options: VlcPlayerOptions(
+//         video: VlcVideoOptions([
+//           VlcVideoOptions.dropLateFrames(true),
+//           VlcVideoOptions.skipFrames(true),
+//         ]),
+//       ),
+//     );
+
+//     // await _controller!.initialize();
+//     // _controller!.addListener(_vlcListener);
+
+//     // setState(() {
+//     //   _isVideoInitialized = true;
+//     //   _isBuffering = false;
+//     // });
+
+
+//       try {
+//      _controller!.initialize();
+//      await _retryPlayback(modifiedUrl, 5);
+//       if (_controller!.value.isInitialized) {
+//     _controller!.play();
+//   } else {
+//     print("Controller failed to initialize.");
+//   }
+
+//     _controller!.addListener(_vlcListener);
+
+
+//     if (mounted) {
+//       setState(() {
+//         _isVideoInitialized = true;
+//         _isBuffering = false;
+//       });
+//     }
+//   } catch (e) {
+//     // This will catch the actual error and print it
+//     print("Error initializing VLC controller: $e");
+    
+//     if (mounted) {
+//       // You can optionally show an error message on the screen
+//       setState(() {
+//         _isBuffering = false;
+//         // You could add an error flag here to show a message in the UI
+//       });
+//     }
+//   }
+//   }
+
+
+
+  
+//   Future<void> _retryPlayback(String url, int retries) async {
+//     for (int i = 0; i < retries; i++) {
+//       if (!mounted || !_controller!.value.isInitialized) return;
+
+//       try {
+//         await _controller!.setMediaFromNetwork(url);
+//         // Add position seeking after successful playback start
+
+//         // await _controller!.play();
+
+//         _controller!.addListener(() async {
+
+//         });
+
+//         return; // Exit on success
+//       } catch (e) {
+//         print("Retry ${i + 1} failed: $e");
+//         await Future.delayed(Duration(seconds: 1));
+//       }
+//     }
+//     print("All retries failed for URL: $url");
+//   }
+
+
+//   // @override
+//   // void dispose() {
+//   //   WidgetsBinding.instance.removeObserver(this);
+//   //   KeepScreenOn.turnOff();
+    
+//   //   _hideControlsTimer.cancel();
+//   //   _seekTimer?.cancel();
+//   //   screenFocusNode.dispose();
+    
+//   //   _controller?.removeListener(_vlcListener);
+//   //   _controller?.stop();
+//   //   _controller?.dispose();
+    
+//   //   super.dispose();
+//   // }
+
+
+//   // आपके dispose() method को इससे replace करें:
+// @override
+// void dispose() {
+//   // Screen को ऑन रखने वाली सुविधा बंद करें
+//   KeepScreenOn.turnOff();
+  
+//   // सभी Dart objects को पहले dispose करें
+//   _hideControlsTimer.cancel();
+//   _seekTimer?.cancel();
+//   screenFocusNode.dispose();
+  
+//   // VLC controller को अंत में dispose करें, बिना async/await के
+//   _controller?.removeListener(_vlcListener);
+//   _controller?.stop();
+//   _controller?.dispose();
+  
+//   WidgetsBinding.instance.removeObserver(this);
+//   super.dispose();
+// }
+
+//   /// Temporizador para ocultar automáticamente los controles después de 5 segundos de inactividad
+//   void _startHideControlsTimer() {
+//     _hideControlsTimer = Timer(const Duration(seconds: 5), () {
+//       if (mounted) {
+//         setState(() {
+//           _controlsVisible = false;
+//         });
+//       }
+//     });
+//   }
+
+//   /// Reinicia el temporizador y muestra los controles
+//   void _resetHideControlsTimer() {
+//     _hideControlsTimer.cancel();
+//     if (mounted && !_controlsVisible) {
+//       setState(() {
+//         _controlsVisible = true;
+//       });
+//     }
+//     _startHideControlsTimer();
+//   }
+  
+//   /// Alterna entre los estados de reproducción y pausa
+//   void _togglePlayPause() {
+//     if (_controller == null || !_controller!.value.isInitialized) return;
+
+//     setState(() {
+//       if (_controller!.value.isPlaying) {
+//         _controller!.pause();
+//       } else {
+//         _controller!.play();
+//       }
+//     });
+//     _resetHideControlsTimer();
+//   }
+
+//   /// Lógica para adelantar el video
+//   void _seekForward() {
+//     if (_controller == null || !_controller!.value.isInitialized) return;
+//     _resetHideControlsTimer();
+
+//     setState(() {
+//       _accumulatedSeekForward += _seekDuration;
+//       _previewPosition = _controller!.value.position + Duration(seconds: _accumulatedSeekForward);
+//       if (_previewPosition > _controller!.value.duration) {
+//         _previewPosition = _controller!.value.duration;
+//       }
+//     });
+
+//     _seekTimer?.cancel();
+//     _seekTimer = Timer(Duration(milliseconds: _seekDelay), () {
+//       if (_controller != null) {
+//         _controller!.seekTo(_previewPosition);
+//         setState(() {
+//           _accumulatedSeekForward = 0;
+//         });
+//       }
+//     });
+//   }
+
+//   /// Lógica para retroceder el video
+//   void _seekBackward() {
+//     if (_controller == null || !_controller!.value.isInitialized) return;
+//     _resetHideControlsTimer();
+
+//     setState(() {
+//       _accumulatedSeekBackward += _seekDuration;
+//       final newPosition = _controller!.value.position - Duration(seconds: _accumulatedSeekBackward);
+//       _previewPosition = newPosition > Duration.zero ? newPosition : Duration.zero;
+//     });
+
+//     _seekTimer?.cancel();
+//     _seekTimer = Timer(Duration(milliseconds: _seekDelay), () {
+//       if (_controller != null) {
+//         _controller!.seekTo(_previewPosition);
+//         setState(() {
+//           _accumulatedSeekBackward = 0;
+//         });
+//       }
+//     });
+//   }
+
+//   /// Maneja las entradas del teclado para el control remoto
+//   void _handleKeyEvent(RawKeyEvent event) {
+//     if (event is RawKeyDownEvent) {
+//       _resetHideControlsTimer(); // Muestra los controles con cualquier pulsación
+
+//       switch (event.logicalKey) {
+
+//         case LogicalKeyboardKey.escape:
+//         case LogicalKeyboardKey.backspace:
+//         case LogicalKeyboardKey.goBack:
+//         if (_isDisposing || _isDisposed) return;
+//         _startSafeDisposal();
+//         Navigator.of(context).pop();
+//         break;
+
+//         case LogicalKeyboardKey.select:
+//         case LogicalKeyboardKey.enter:
+//           _togglePlayPause();
+//           break;
+//         case LogicalKeyboardKey.arrowRight:
+//           _seekForward();
+//           break;
+//         case LogicalKeyboardKey.arrowLeft:
+//           _seekBackward();
+//           break;
+//       }
+//     }
+//   }
+
+//   /// Formatea una [Duration] a un string legible (ej. 01:23:45 o 23:45)
+//   String _formatDuration(Duration duration) {
+//     String twoDigits(int n) => n.toString().padLeft(2, '0');
+//     String hours = duration.inHours > 0 ? '${twoDigits(duration.inHours)}:' : '';
+//     String minutes = twoDigits(duration.inMinutes.remainder(60));
+//     String seconds = twoDigits(duration.inSeconds.remainder(60));
+//     return '$hours$minutes:$seconds';
+//   }
+
+
+
+// // आपके CustomVideoPlayer class में ये methods add करें:
+
+// void _startSafeDisposal() {
+//   if (_isDisposing || _isDisposed) return;
+  
+//   print('Starting safe disposal for CustomVideoPlayer...');
+//   setState(() {
+//     _isDisposing = true;
+//   });
+
+//   // सभी टाइमर्स को रद्द करें
+//   _hideControlsTimer.cancel();
+//   _seekTimer?.cancel();
+  
+//   // कंट्रोलर को बैकग्राउंड में डिस्पोज़ करें
+//   _disposeControllerInBackground();
+// }
+
+// void _disposeControllerInBackground() {
+//   // Future.microtask यह सुनिश्चित करता है कि यह काम UI थ्रेड को ब्लॉक किए बिना हो
+//   Future.microtask(() async {
+//     print('Background controller disposal started...');
+//     try {
+//       if (_controller != null) {
+//         _controller?.removeListener(_vlcListener);
+//         // टाइमआउट के साथ स्टॉप और डिस्पोज़ करें ताकि ऐप अटके नहीं
+//         await _controller?.stop().timeout(const Duration(seconds: 2));
+//         await _controller?.dispose().timeout(const Duration(seconds: 2));
+//         print('VLC Controller disposed successfully in background.');
+//       }
+//     } catch (e) {
+//       print('Error during background controller disposal: $e');
+//     } finally {
+//       // सुनिश्चित करें कि नियंत्रक को अंत में null पर सेट किया गया है
+//       _controller = null; 
+//       _isDisposed = true;
+//     }
+//   });
+// }
+
+
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return
+// // WillPopScope(
+// //   onWillPop: () async {
+// //     if (_isDisposing || _isDisposed) return true;
+    
+// //     _startSafeDisposal();
+    
+// //     // Add a small delay to ensure disposal starts
+// //     await Future.delayed(const Duration(milliseconds: 500));
+// //     return true;
+// //   },
+
+// //     child:
+//      Scaffold(
+//       backgroundColor: Colors.black,
+//       body: Focus(
+//         focusNode: screenFocusNode,
+//         autofocus: true,
+//         onKey: (node, event) {
+//           _handleKeyEvent(event);
+//           return KeyEventResult.handled;
+//         },
+//         child: GestureDetector(
+//           onTap: _resetHideControlsTimer,
+//           child: Stack(
+//             alignment: Alignment.center,
+//             children: [
+//               // Widget del reproductor de video
+//               if (_isVideoInitialized && _controller != null)
+//                 Center(
+//                   child: VlcPlayer(
+//                     controller: _controller!,
+//                     aspectRatio: 16 / 9,
+//                     placeholder: const Center(child: CircularProgressIndicator()),
+//                   ),
+//                 ),
+
+//               // Indicador de carga/buffering
+//               if (_isBuffering || !_isVideoInitialized)
+//                 const Center(
+//                   child: CircularProgressIndicator(color: Colors.white),
+//                 ),
+
+//               // Superposición de controles
+//               AnimatedOpacity(
+//                 opacity: _controlsVisible ? 1.0 : 0.0,
+//                 duration: const Duration(milliseconds: 300),
+//                 child: AbsorbPointer(
+//                   absorbing: !_controlsVisible,
+//                   child: Container(
+//                     color: Colors.black.withOpacity(0.4),
+//                     child: Stack(
+//                       children: [
+//                         // Botón de Play/Pause centrado
+//                         Center(
+//                            child: IconButton(
+//                             icon: Icon(
+//                               _controller?.value.isPlaying ?? false
+//                                 ? Icons.pause_circle_outline
+//                                 : Icons.play_circle_outline,
+//                               color: Colors.white,
+//                               size: 64,
+//                             ),
+//                             onPressed: _togglePlayPause,
+//                           ),
+//                         ),
+//                         // Controles inferiores (Barra de progreso y tiempo)
+//                         _buildBottomControls(),
+//                       ],
+//                     ),
+//                   ),
+//                 ),
+//               ),
+//             ],
+//           ),
+//         ),
+//       ),
+//     // )
+//     );
+//   }
+
+//   /// Construye la barra de control inferior con el progreso y el tiempo
+//   Widget _buildBottomControls() {
+//     return Positioned(
+//       bottom: 20,
+//       left: 20,
+//       right: 20,
+//       child: Column(
+//         mainAxisSize: MainAxisSize.min,
+//         children: [
+//            LinearProgressIndicator(
+//              value: _progress.isNaN ? 0.0 : _progress,
+//              backgroundColor: Colors.white.withOpacity(0.3),
+//              valueColor: const AlwaysStoppedAnimation<Color>(Colors.red),
+//           ),
+//           const SizedBox(height: 8),
+//           Row(
+//             children: [
+//               Text(
+//                 _formatDuration(_controller?.value.position ?? Duration.zero),
+//                 style: const TextStyle(color: Colors.white, fontSize: 16),
+//               ),
+//               const Spacer(),
+//               Text(
+//                 _formatDuration(_controller?.value.duration ?? Duration.zero),
+//                 style: const TextStyle(color: Colors.white, fontSize: 16),
+//               ),
+//             ],
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }
+
+
+
+
+
+
+
 import 'dart:async';
+import 'dart:io';
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_vlc_player/flutter_vlc_player.dart';
 import 'package:keep_screen_on/keep_screen_on.dart';
+import 'package:mobi_tv_entertainment/main.dart';
+import 'package:mobi_tv_entertainment/widgets/small_widgets/rainbow_page.dart';
 
-/// Un reproductor de video simple y de pantalla completa.
-///
-/// Este widget solo requiere una [videoUrl] para reproducir un video.
-/// Controla la reproducción con las teclas de flecha (adelantar/retroceder) y
-/// la tecla Enter (reproducir/pausar).
 class CustomVideoPlayer extends StatefulWidget {
   final String videoUrl;
+  final String? name;
 
-  const CustomVideoPlayer({super.key, required this.videoUrl});
+  CustomVideoPlayer({
+    required this.videoUrl,
+    this.name,
+  });
 
   @override
   _CustomVideoPlayerState createState() => _CustomVideoPlayerState();
 }
 
-class _CustomVideoPlayerState extends State<CustomVideoPlayer> with WidgetsBindingObserver {
+class _CustomVideoPlayerState extends State<CustomVideoPlayer>
+    with WidgetsBindingObserver {
   VlcPlayerController? _controller;
   bool _controlsVisible = true;
   late Timer _hideControlsTimer;
-  bool _isBuffering = false;
+  bool _isBuffering = true; // Start with buffering true
   bool _isVideoInitialized = false;
-  final FocusNode screenFocusNode = FocusNode();
-      bool _isDisposing = false;
-  bool _isDisposed = false;
-  
-  // Para la barra de progreso
-  double _progress = 0.0;
+  Timer? _networkCheckTimer;
+  bool _wasDisconnected = false;
 
-  // Para la funcionalidad de búsqueda (adelantar/retroceder)
-  int _accumulatedSeekForward = 0;
-  int _accumulatedSeekBackward = 0;
-  Timer? _seekTimer;
-  Duration _previewPosition = Duration.zero;
-  final int _seekDuration = 10; // segundos
-  final int _seekDelay = 1000; // milisegundos
+  final FocusNode screenFocusNode = FocusNode();
+
+  double _progress = 0.0;
+  Duration _lastKnownPosition = Duration.zero;
+  String? _currentModifiedUrl;
+  String? _seekPreviewTime;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    KeepScreenOn.turnOn(); // Mantiene la pantalla encendida
-
-    // Inicializa el reproductor de video
+    KeepScreenOn.turnOn();
     _initializeVLCController();
-
-    // Inicia un temporizador para ocultar los controles después de un tiempo
     _startHideControlsTimer();
-    
-    // Solicita el foco para poder recibir eventos del teclado
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      FocusScope.of(context).requestFocus(screenFocusNode);
-    });
+    _startNetworkMonitor();
+    _startPositionUpdater();
   }
-  
-  /// Listener para los cambios de estado del reproductor VLC
-  void _vlcListener() {
-    if (!mounted || _controller == null || !_controller!.value.isInitialized) return;
 
-    final isBuffering = _controller!.value.isBuffering;
-    final position = _controller!.value.position;
-    final duration = _controller!.value.duration;
+  void _vlcListener() {
+    if (!mounted || _controller == null || !_controller!.value.isInitialized)
+      return;
 
     if (mounted) {
       setState(() {
-        _isBuffering = isBuffering;
-        if (duration > Duration.zero) {
-           _progress = position.inMilliseconds / duration.inMilliseconds;
-        }
+        _isBuffering = _controller!.value.isBuffering;
       });
     }
   }
 
-  /// Inicializa el controlador VLC con la URL del video proporcionada
+  @override
+  void dispose() {
+    KeepScreenOn.turnOff();
+    _hideControlsTimer.cancel();
+    _networkCheckTimer?.cancel();
+    screenFocusNode.dispose();
+    if (_controller != null) {
+      _controller?.removeListener(_vlcListener);
+      _controller?.stop();
+      _controller?.dispose();
+    }
+    super.dispose();
+  }
+
+  Future<bool> _handleWillPop() async {
+    if (mounted && _controller != null) {
+      await _controller?.stop();
+      print("Video player stopped before going back.");
+    }
+    return true;
+  }
+
+  Future<void> _onNetworkReconnected() async {
+    if (_controller != null) {
+      print("Network reconnected. Attempting to resume video...");
+      try {
+        if (_currentModifiedUrl != null) {
+          await _retryPlayback(_currentModifiedUrl!, 3);
+        }
+      } catch (e) {
+        print("Error during reconnection: $e");
+      }
+    }
+  }
+
+  void _startNetworkMonitor() {
+    _networkCheckTimer = Timer.periodic(Duration(seconds: 5), (_) async {
+      bool isConnected = await _isInternetAvailable();
+      if (!isConnected && !_wasDisconnected) {
+        _wasDisconnected = true;
+        print("Network disconnected");
+      } else if (isConnected && _wasDisconnected) {
+        _wasDisconnected = false;
+        if (_controller?.value.isInitialized ?? false) {
+          _onNetworkReconnected();
+        }
+      }
+    });
+  }
+
+  Future<bool> _isInternetAvailable() async {
+    try {
+      final result = await InternetAddress.lookup('google.com');
+      return result.isNotEmpty && result[0].rawAddress.isNotEmpty;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  void _startPositionUpdater() {
+    Timer.periodic(Duration(seconds: 1), (_) {
+      if (mounted && _controller?.value.isInitialized == true) {
+        setState(() {
+          _lastKnownPosition = _controller!.value.position;
+          if (_controller!.value.duration > Duration.zero) {
+            _progress = _lastKnownPosition.inMilliseconds /
+                _controller!.value.duration.inMilliseconds;
+          }
+        });
+      }
+    });
+  }
+
   Future<void> _initializeVLCController() async {
     setState(() {
       _isBuffering = true;
     });
 
-    // Añade opciones de caché a la URL para un mejor rendimiento
-    String modifiedUrl = '${widget.videoUrl}?network-caching=5000&live-caching=500&rtsp-tcp';
+    _currentModifiedUrl =
+        '${widget.videoUrl}?network-caching=5000&live-caching=500&rtsp-tcp';
 
     _controller = VlcPlayerController.network(
-      modifiedUrl,
+      _currentModifiedUrl!,
       hwAcc: HwAcc.full,
-      autoPlay: true,
       options: VlcPlayerOptions(
         video: VlcVideoOptions([
           VlcVideoOptions.dropLateFrames(true),
@@ -1288,114 +1834,56 @@ class _CustomVideoPlayerState extends State<CustomVideoPlayer> with WidgetsBindi
       ),
     );
 
-    // await _controller!.initialize();
-    // _controller!.addListener(_vlcListener);
-
-    // setState(() {
-    //   _isVideoInitialized = true;
-    //   _isBuffering = false;
-    // });
-
-
-      try {
      _controller!.initialize();
-     await _retryPlayback(modifiedUrl, 5);
-      if (_controller!.value.isInitialized) {
-    _controller!.play();
-  } else {
-    print("Controller failed to initialize.");
-  }
-
     _controller!.addListener(_vlcListener);
-
-
+    
     if (mounted) {
       setState(() {
         _isVideoInitialized = true;
-        _isBuffering = false;
       });
     }
-  } catch (e) {
-    // This will catch the actual error and print it
-    print("Error initializing VLC controller: $e");
-    
-    if (mounted) {
-      // You can optionally show an error message on the screen
-      setState(() {
-        _isBuffering = false;
-        // You could add an error flag here to show a message in the UI
-      });
+
+     _retryPlayback(_currentModifiedUrl!, 5);
+
+    if (_controller!.value.isInitialized) {
+      _controller!.play();
+    } else {
+      print("Controller failed to initialize.");
     }
   }
-  }
 
-
-
-  
   Future<void> _retryPlayback(String url, int retries) async {
     for (int i = 0; i < retries; i++) {
-      if (!mounted || !_controller!.value.isInitialized) return;
-
+      if (!mounted || _controller == null) return;
       try {
-        await _controller!.setMediaFromNetwork(url);
-        // Add position seeking after successful playback start
-
-        // await _controller!.play();
-
-        _controller!.addListener(() async {
-
-        });
-
-        return; // Exit on success
+        await _controller!.setMediaFromNetwork(url, autoPlay: true);
+        return;
       } catch (e) {
-        print("Retry ${i + 1} failed: $e");
+        print("Playback retry ${i + 1} failed: $e");
         await Future.delayed(Duration(seconds: 1));
       }
     }
     print("All retries failed for URL: $url");
   }
 
+  void _togglePlayPause() {
+    if (_controller != null && _controller!.value.isInitialized) {
+      _controller!.value.isPlaying ? _controller!.pause() : _controller!.play();
+      setState(() {});
+    }
+    _resetHideControlsTimer();
+  }
 
-  // @override
-  // void dispose() {
-  //   WidgetsBinding.instance.removeObserver(this);
-  //   KeepScreenOn.turnOff();
-    
-  //   _hideControlsTimer.cancel();
-  //   _seekTimer?.cancel();
-  //   screenFocusNode.dispose();
-    
-  //   _controller?.removeListener(_vlcListener);
-  //   _controller?.stop();
-  //   _controller?.dispose();
-    
-  //   super.dispose();
-  // }
+  void _resetHideControlsTimer() {
+    _hideControlsTimer.cancel();
+    setState(() {
+      _controlsVisible = true;
+    });
+    _startHideControlsTimer();
+  }
 
-
-  // आपके dispose() method को इससे replace करें:
-@override
-void dispose() {
-  // Screen को ऑन रखने वाली सुविधा बंद करें
-  KeepScreenOn.turnOff();
-  
-  // सभी Dart objects को पहले dispose करें
-  _hideControlsTimer.cancel();
-  _seekTimer?.cancel();
-  screenFocusNode.dispose();
-  
-  // VLC controller को अंत में dispose करें, बिना async/await के
-  _controller?.removeListener(_vlcListener);
-  _controller?.stop();
-  _controller?.dispose();
-  
-  WidgetsBinding.instance.removeObserver(this);
-  super.dispose();
-}
-
-  /// Temporizador para ocultar automáticamente los controles después de 5 segundos de inactividad
   void _startHideControlsTimer() {
-    _hideControlsTimer = Timer(const Duration(seconds: 5), () {
+    _hideControlsTimer = Timer(Duration(seconds: 10), () {
       if (mounted) {
         setState(() {
           _controlsVisible = false;
@@ -1404,42 +1892,24 @@ void dispose() {
     });
   }
 
-  /// Reinicia el temporizador y muestra los controles
-  void _resetHideControlsTimer() {
-    _hideControlsTimer.cancel();
-    if (mounted && !_controlsVisible) {
-      setState(() {
-        _controlsVisible = true;
-      });
-    }
-    _startHideControlsTimer();
-  }
-  
-  /// Alterna entre los estados de reproducción y pausa
-  void _togglePlayPause() {
-    if (_controller == null || !_controller!.value.isInitialized) return;
+  int _accumulatedSeekForward = 0;
+  int _accumulatedSeekBackward = 0;
+  Timer? _seekTimer;
+  Duration _previewPosition = Duration.zero;
+  final _seekDuration = 10;
+  final _seekDelay = 1000;
 
-    setState(() {
-      if (_controller!.value.isPlaying) {
-        _controller!.pause();
-      } else {
-        _controller!.play();
-      }
-    });
-    _resetHideControlsTimer();
-  }
-
-  /// Lógica para adelantar el video
   void _seekForward() {
     if (_controller == null || !_controller!.value.isInitialized) return;
-    _resetHideControlsTimer();
 
     setState(() {
       _accumulatedSeekForward += _seekDuration;
-      _previewPosition = _controller!.value.position + Duration(seconds: _accumulatedSeekForward);
+      _previewPosition = _controller!.value.position +
+          Duration(seconds: _accumulatedSeekForward);
       if (_previewPosition > _controller!.value.duration) {
         _previewPosition = _controller!.value.duration;
       }
+      _seekPreviewTime = _formatDuration(_previewPosition);
     });
 
     _seekTimer?.cancel();
@@ -1448,20 +1918,23 @@ void dispose() {
         _controller!.seekTo(_previewPosition);
         setState(() {
           _accumulatedSeekForward = 0;
+          _seekPreviewTime = null;
         });
       }
     });
+    _resetHideControlsTimer();
   }
 
-  /// Lógica para retroceder el video
   void _seekBackward() {
     if (_controller == null || !_controller!.value.isInitialized) return;
-    _resetHideControlsTimer();
 
     setState(() {
       _accumulatedSeekBackward += _seekDuration;
-      final newPosition = _controller!.value.position - Duration(seconds: _accumulatedSeekBackward);
-      _previewPosition = newPosition > Duration.zero ? newPosition : Duration.zero;
+      final newPosition = _controller!.value.position -
+          Duration(seconds: _accumulatedSeekBackward);
+      _previewPosition =
+          newPosition > Duration.zero ? newPosition : Duration.zero;
+      _seekPreviewTime = _formatDuration(_previewPosition);
     });
 
     _seekTimer?.cancel();
@@ -1470,206 +1943,199 @@ void dispose() {
         _controller!.seekTo(_previewPosition);
         setState(() {
           _accumulatedSeekBackward = 0;
+          _seekPreviewTime = null;
         });
       }
     });
+    _resetHideControlsTimer();
   }
 
-  /// Maneja las entradas del teclado para el control remoto
+  // ## UPDATED KEY HANDLER ##
   void _handleKeyEvent(RawKeyEvent event) {
     if (event is RawKeyDownEvent) {
-      _resetHideControlsTimer(); // Muestra los controles con cualquier pulsación
+      _resetHideControlsTimer();
 
       switch (event.logicalKey) {
+        case LogicalKeyboardKey.arrowRight:
+          _seekForward();
+          break;
 
-        case LogicalKeyboardKey.escape:
-        case LogicalKeyboardKey.backspace:
-        case LogicalKeyboardKey.goBack:
-        if (_isDisposing || _isDisposed) return;
-        _startSafeDisposal();
-        Navigator.of(context).pop();
-        break;
+        case LogicalKeyboardKey.arrowLeft:
+          _seekBackward();
+          break;
+
+        case LogicalKeyboardKey.arrowUp:
+        case LogicalKeyboardKey.arrowDown:
+          // In keys se ab sirf controls dikhenge, seek nahi hoga
+          break;
 
         case LogicalKeyboardKey.select:
         case LogicalKeyboardKey.enter:
           _togglePlayPause();
           break;
-        case LogicalKeyboardKey.arrowRight:
-          _seekForward();
-          break;
-        case LogicalKeyboardKey.arrowLeft:
-          _seekBackward();
-          break;
       }
     }
   }
 
-  /// Formatea una [Duration] a un string legible (ej. 01:23:45 o 23:45)
   String _formatDuration(Duration duration) {
     String twoDigits(int n) => n.toString().padLeft(2, '0');
-    String hours = duration.inHours > 0 ? '${twoDigits(duration.inHours)}:' : '';
+    String hours = twoDigits(duration.inHours);
     String minutes = twoDigits(duration.inMinutes.remainder(60));
     String seconds = twoDigits(duration.inSeconds.remainder(60));
-    return '$hours$minutes:$seconds';
+    return '$hours:$minutes:$seconds';
   }
-
-
-
-// आपके CustomVideoPlayer class में ये methods add करें:
-
-void _startSafeDisposal() {
-  if (_isDisposing || _isDisposed) return;
-  
-  print('Starting safe disposal for CustomVideoPlayer...');
-  setState(() {
-    _isDisposing = true;
-  });
-
-  // सभी टाइमर्स को रद्द करें
-  _hideControlsTimer.cancel();
-  _seekTimer?.cancel();
-  
-  // कंट्रोलर को बैकग्राउंड में डिस्पोज़ करें
-  _disposeControllerInBackground();
-}
-
-void _disposeControllerInBackground() {
-  // Future.microtask यह सुनिश्चित करता है कि यह काम UI थ्रेड को ब्लॉक किए बिना हो
-  Future.microtask(() async {
-    print('Background controller disposal started...');
-    try {
-      if (_controller != null) {
-        _controller?.removeListener(_vlcListener);
-        // टाइमआउट के साथ स्टॉप और डिस्पोज़ करें ताकि ऐप अटके नहीं
-        await _controller?.stop().timeout(const Duration(seconds: 2));
-        await _controller?.dispose().timeout(const Duration(seconds: 2));
-        print('VLC Controller disposed successfully in background.');
-      }
-    } catch (e) {
-      print('Error during background controller disposal: $e');
-    } finally {
-      // सुनिश्चित करें कि नियंत्रक को अंत में null पर सेट किया गया है
-      _controller = null; 
-      _isDisposed = true;
-    }
-  });
-}
-
-
 
   @override
   Widget build(BuildContext context) {
-    return
-        WillPopScope(
-    onWillPop: () async {
-      // अगर पहले से डिस्पोज़ हो रहा है तो कुछ न करें
-      if (_isDisposing || _isDisposed) {
-        return true; 
-      }
-      
-      // सुरक्षित डिस्पोज़ल प्रक्रिया शुरू करें
-      _startSafeDisposal();
-      
-      // Flutter को तुरंत स्क्रीन बंद करने की अनुमति दें
-      return true;
-    },
-    child:
-     Scaffold(
-      backgroundColor: Colors.black,
-      body: Focus(
-        focusNode: screenFocusNode,
-        autofocus: true,
-        onKey: (node, event) {
-          _handleKeyEvent(event);
-          return KeyEventResult.handled;
-        },
-        child: GestureDetector(
-          onTap: _resetHideControlsTimer,
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              // Widget del reproductor de video
-              if (_isVideoInitialized && _controller != null)
-                Center(
-                  child: VlcPlayer(
+    return WillPopScope(
+      onWillPop: _handleWillPop,
+      child: Scaffold(
+        backgroundColor: Colors.black,
+        body: Focus(
+          focusNode: screenFocusNode,
+          autofocus: true,
+          onKey: (node, event) {
+            final handledKeys = <LogicalKeyboardKey>{
+              LogicalKeyboardKey.arrowLeft,
+              LogicalKeyboardKey.arrowRight,
+              LogicalKeyboardKey.arrowUp,
+              LogicalKeyboardKey.arrowDown,
+              LogicalKeyboardKey.select,
+              LogicalKeyboardKey.enter,
+            };
+
+            if (event is RawKeyDownEvent &&
+                handledKeys.contains(event.logicalKey)) {
+              _handleKeyEvent(event);
+              return KeyEventResult.handled;
+            }
+            return KeyEventResult.ignored;
+          },
+          child: GestureDetector(
+            onTap: _resetHideControlsTimer,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                if (_isVideoInitialized && _controller != null)
+                  VlcPlayer(
                     controller: _controller!,
                     aspectRatio: 16 / 9,
-                    placeholder: const Center(child: CircularProgressIndicator()),
+                    placeholder: Center(child: CircularProgressIndicator()),
                   ),
-                ),
-
-              // Indicador de carga/buffering
-              if (_isBuffering || !_isVideoInitialized)
-                const Center(
-                  child: CircularProgressIndicator(color: Colors.white),
-                ),
-
-              // Superposición de controles
-              AnimatedOpacity(
-                opacity: _controlsVisible ? 1.0 : 0.0,
-                duration: const Duration(milliseconds: 300),
-                child: AbsorbPointer(
-                  absorbing: !_controlsVisible,
-                  child: Container(
-                    color: Colors.black.withOpacity(0.4),
-                    child: Stack(
-                      children: [
-                        // Botón de Play/Pause centrado
-                        Center(
-                           child: IconButton(
-                            icon: Icon(
-                              _controller?.value.isPlaying ?? false
-                                ? Icons.pause_circle_outline
-                                : Icons.play_circle_outline,
-                              color: Colors.white,
-                              size: 64,
-                            ),
-                            onPressed: _togglePlayPause,
-                          ),
-                        ),
-                        // Controles inferiores (Barra de progreso y tiempo)
-                        _buildBottomControls(),
-                      ],
-                    ),
+                if (!_isVideoInitialized || _isBuffering)
+                  Container(
+                    color: Colors.black54,
+                    child: Center(
+                        child: RainbowPage(backgroundColor: Colors.black)),
                   ),
-                ),
-              ),
-            ],
+                if (_controlsVisible) _buildControls(),
+              ],
+            ),
           ),
         ),
       ),
-    ));
+    );
   }
 
-  /// Construye la barra de control inferior con el progreso y el tiempo
-  Widget _buildBottomControls() {
+  Widget _buildCustomProgressIndicator() {
+    if (_controller == null || !_controller!.value.isInitialized || _controller!.value.duration <= Duration.zero) {
+      return LinearProgressIndicator(value: 0, backgroundColor: Colors.grey.withOpacity(0.5));
+    }
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        double totalWidth = constraints.maxWidth;
+        Duration duration = _controller!.value.duration;
+        Duration position = _controller!.value.position;
+        
+        bool isSeeking = _accumulatedSeekForward > 0 || _accumulatedSeekBackward > 0;
+        Duration finalPreviewPosition = isSeeking ? _previewPosition : position;
+
+        double playedPercent = (position.inMilliseconds / duration.inMilliseconds).clamp(0.0, 1.0);
+        double previewPercent = (finalPreviewPosition.inMilliseconds / duration.inMilliseconds).clamp(0.0, 1.0);
+
+        return Stack(
+          clipBehavior: Clip.none,
+          children: [
+            Container(
+              width: totalWidth,
+              height: 6,
+              decoration: BoxDecoration(
+                color: Colors.grey.withOpacity(0.5),
+                borderRadius: BorderRadius.circular(4),
+              ),
+            ),
+            Container(
+              width: totalWidth * playedPercent,
+              height: 6,
+              decoration: BoxDecoration(
+                color: const Color.fromARGB(211, 155, 40, 248),
+                borderRadius: BorderRadius.circular(4),
+              ),
+            ),
+            if (isSeeking)
+              Positioned(
+                left: totalWidth * (previewPercent > playedPercent ? playedPercent : previewPercent),
+                child: Container(
+                  width: totalWidth * (previewPercent - playedPercent).abs(),
+                  height: 6,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.4),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ),
+              ),
+            if (_seekPreviewTime != null)
+              Positioned(
+                left: (totalWidth * previewPercent).clamp(20.0, totalWidth - 20.0) - 20,
+                bottom: 15,
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.7),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Text(
+                    _seekPreviewTime!,
+                    style: TextStyle(color: Colors.white, fontSize: 14),
+                  ),
+                ),
+              ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildControls() {
     return Positioned(
-      bottom: 20,
-      left: 20,
-      right: 20,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-           LinearProgressIndicator(
-             value: _progress.isNaN ? 0.0 : _progress,
-             backgroundColor: Colors.white.withOpacity(0.3),
-             valueColor: const AlwaysStoppedAnimation<Color>(Colors.red),
-          ),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              Text(
-                _formatDuration(_controller?.value.position ?? Duration.zero),
-                style: const TextStyle(color: Colors.white, fontSize: 16),
-              ),
-              const Spacer(),
-              Text(
-                _formatDuration(_controller?.value.duration ?? Duration.zero),
-                style: const TextStyle(color: Colors.white, fontSize: 16),
-              ),
-            ],
-          ),
-        ],
+      bottom: 0,
+      left: 0,
+      right: 0,
+      child: Container(
+        color: Colors.black.withOpacity(0.6),
+        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+        child: Row(
+          children: [
+            SizedBox(width: 10),
+
+            Text(
+              _formatDuration(_controller?.value.position ?? Duration.zero),
+              style: TextStyle(color: Colors.white, fontSize: 16),
+            ),
+            SizedBox(width: 10),
+            Expanded(
+              child: _buildCustomProgressIndicator(),
+            ),
+            SizedBox(width: 10),
+            Text(
+              _formatDuration(_controller?.value.duration ?? Duration.zero),
+              style: TextStyle(color: Colors.white, fontSize: 16),
+            ),
+            SizedBox(width: 10),
+
+          ],
+        ),
       ),
     );
   }

@@ -5879,15 +5879,18 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
 import 'dart:typed_data';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:http/http.dart' as https;
 import 'package:mobi_tv_entertainment/main.dart';
 import 'package:mobi_tv_entertainment/provider/color_provider.dart';
+import 'package:mobi_tv_entertainment/provider/device_info_provider.dart';
 import 'package:mobi_tv_entertainment/provider/focus_provider.dart';
 import 'package:mobi_tv_entertainment/video_widget/socket_service.dart';
 import 'package:mobi_tv_entertainment/video_widget/video_screen.dart';
@@ -6174,6 +6177,7 @@ class _BannerSliderState extends State<BannerSlider> with SingleTickerProviderSt
   bool _isNavigating = false;
   final PaletteColorService _paletteColorService = PaletteColorService();
   late FocusProvider _refreshProvider;
+  // String _deviceName = '';
 
   // Animation controllers for shimmer effect
   late AnimationController _shimmerController;
@@ -6190,9 +6194,77 @@ class _BannerSliderState extends State<BannerSlider> with SingleTickerProviderSt
   @override
   void initState() {
     super.initState();
+    // _getDeviceInfo();
     _initializeShimmerAnimation();
     _initializeSlider();
+
   }
+
+// // ✅ Apne purane function ko is naye aur behtar function se replace karein
+//   Future<void> _getDeviceInfo() async {
+//     final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
+//     String deviceIdentifier = 'Unknown Device';
+
+//     try {
+//       if (Platform.isAndroid) {
+//         final AndroidDeviceInfo androidInfo = await deviceInfoPlugin.androidInfo;
+//         final String brand = androidInfo.brand.toLowerCase();
+//         final String model = androidInfo.model;
+//         final String device = androidInfo.device; // 'device' name bhi zaroori hai
+
+//         if (brand == 'amazon') {
+//           //  AMAZON FIRE STICK CHECK
+//           switch (model) {
+//             case 'AFTKM':
+//               deviceIdentifier = 'AFTKM : Amazon Fire Stick 4K';
+//               break;
+//             case 'AFTKA':
+//               deviceIdentifier = 'AFTKA : Amazon Fire Stick 4K TEST';
+//               break;
+//             case 'AFTSS':
+//               deviceIdentifier = 'AFTSS : Amazon Fire Stick HD';
+//               break;
+//             // case 'AFTMM':
+//             case 'AFTT': // Ye dono HD models ho sakte hain
+//               deviceIdentifier = 'AFTT : Amazon Fire Stick ABC';
+//               break;
+//             default:
+//               deviceIdentifier = 'Amazon Fire TV Device';
+//           }
+//         } else if (brand == 'google') {
+//           // GOOGLE CHROMECAST CHECK
+//           // Yahan hum 'device' codename (sabrina/boreal) se check kar rahe hain jo zyada aasan hai
+//           switch (device) {
+//             case 'sabrina':
+//               deviceIdentifier = 'sabrina : Chromecast with Google TV (4K)';
+//               break;
+//             case 'boreal':
+//               deviceIdentifier = 'boreal : Chromecast with Google TV (HD)';
+//               break;
+//             default:
+//               deviceIdentifier = 'Google TV Device';
+//           }
+//         } else {
+//           // Baaki sabhi TV's ke liye fallback
+//           final bool isTv = androidInfo.systemFeatures.contains('android.software.leanback');
+//           String name = model.isEmpty ? '${androidInfo.brand} ${device}' : model;
+//           deviceIdentifier = isTv ? '$name (TV)' : name;
+//         }
+//       } else if (Platform.isIOS) {
+//         final IosDeviceInfo iosInfo = await deviceInfoPlugin.iosInfo;
+//         deviceIdentifier = iosInfo.name;
+//       }
+//     } catch (e) {
+//       print('Failed to get device info: $e');
+//       deviceIdentifier = 'Error getting name';
+//     }
+
+//     if (mounted) {
+//       setState(() {
+//         _deviceName = deviceIdentifier;
+//       });
+//     }
+//   }
 
   void _initializeShimmerAnimation() {
     _shimmerController = AnimationController(
@@ -6603,6 +6675,7 @@ class _BannerSliderState extends State<BannerSlider> with SingleTickerProviderSt
 
   // ✅ Simplified banner without heavy operations
   Widget _buildSimpleBanner(BannerDataModel banner, FocusProvider focusProvider) {
+    final String deviceName = context.watch<DeviceInfoProvider>().deviceName;
     return Container(
       margin: const EdgeInsets.only(top: 1),
       width: screenwdt,
@@ -6668,6 +6741,33 @@ class _BannerSliderState extends State<BannerSlider> with SingleTickerProviderSt
                 );
               },
             ),
+             // ✨ YEH NAYA CODE HAI DEVICE KA NAAM DIKHANE KE LIYE ✨
+          Positioned(
+            bottom: 100, // Neeche se 20 pixels upar
+            left: 200,   // Baayein se 20 pixels door
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.6), // Semi-transparent background
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                deviceName, // Yahan device ka naam show hoga
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16, // Font size aap adjust kar sakte hain
+                  fontWeight: FontWeight.bold,
+                  shadows: [
+                    Shadow(
+                      blurRadius: 2.0,
+                      color: Colors.black.withOpacity(0.5),
+                      offset: Offset(1.0, 1.0),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );

@@ -1,11 +1,3 @@
-
-
-
-
-
-
-
-
 // import 'dart:async';
 // import 'dart:convert';
 // import 'package:mobi_tv_entertainment/video_widget/custom_video_player.dart';
@@ -15,60 +7,139 @@
 // import 'package:flutter/services.dart';
 // import 'package:http/http.dart' as https;
 // import 'package:flutter_spinkit/flutter_spinkit.dart';
-// import 'package:mobi_tv_entertainment/home_screen_pages/movies_screen/movies.dart';
 // import 'package:mobi_tv_entertainment/main.dart';
 // import 'package:mobi_tv_entertainment/video_widget/custom_youtube_player.dart';
-// import 'package:mobi_tv_entertainment/widgets/models/news_item_model.dart';
+// import 'package:mobi_tv_entertainment/video_widget/youtube_webview_player.dart';
 // import 'package:shared_preferences/shared_preferences.dart';
 // import '../../video_widget/socket_service.dart';
 
+// // Define highlightColor constant
+// const Color highlightColor =
+//     Color(0xFF4FC3F7); // Light blue color for highlights
+
 // enum NavigationMode {
-//   seasons,
+//   shows,
 //   episodes,
 // }
 
-// // Cache Manager Class for Web Series Data
-// class WebSeriesCacheManager {
-//   static const String _cacheKeyPrefix = 'web_series_cache_';
-//   static const String _episodesCacheKeyPrefix = 'episodes_cache_';
-//   static const String _lastUpdatedKeyPrefix = 'last_updated_';
-//   static const Duration _cacheValidDuration =
-//       Duration(hours: 6); // Cache validity period
+// // Religious Show Model
+// class ReligiousShowModel {
+//   final int id;
+//   final int channelId;
+//   final String title;
+//   final String genre;
+//   final String description;
+//   final String thumbnail;
+//   final int status;
+//   final int relOrder;
 
-//   // Save seasons data to cache
-//   static Future<void> saveSeasonsCache(
-//       int showId, List<SeasonModel> seasons) async {
+//   ReligiousShowModel({
+//     required this.id,
+//     required this.channelId,
+//     required this.title,
+//     required this.genre,
+//     required this.description,
+//     required this.thumbnail,
+//     required this.status,
+//     required this.relOrder,
+//   });
+
+//   factory ReligiousShowModel.fromJson(Map<String, dynamic> json) {
+//     return ReligiousShowModel(
+//       id: json['id'] ?? 0,
+//       channelId: json['channel_id'] ?? 0,
+//       title: json['title'] ?? '',
+//       genre: json['genre'] ?? '',
+//       description: json['description'] ?? '',
+//       thumbnail: json['thumbnail'] ?? '',
+//       status: json['status'] ?? 1,
+//       relOrder: json['rel_order'] ?? 1,
+//     );
+//   }
+// }
+
+// // Religious Episode Model
+// class ReligiousEpisodeModel {
+//   final int id;
+//   final int showId;
+//   final int episodeOrder;
+//   final String title;
+//   final String episodeImage;
+//   final String episodeDescription;
+//   final String source;
+//   final String url;
+//   final int status;
+
+//   ReligiousEpisodeModel({
+//     required this.id,
+//     required this.showId,
+//     required this.episodeOrder,
+//     required this.title,
+//     required this.episodeImage,
+//     required this.episodeDescription,
+//     required this.source,
+//     required this.url,
+//     required this.status,
+//   });
+
+//   factory ReligiousEpisodeModel.fromJson(Map<String, dynamic> json) {
+//     return ReligiousEpisodeModel(
+//       id: json['id'] ?? 0,
+//       showId: json['show_id'] ?? 0,
+//       episodeOrder: json['episode_order'] ?? 1,
+//       title: json['title'] ?? '',
+//       episodeImage: json['episode_image'] ?? '',
+//       episodeDescription: json['episode_description'] ?? '',
+//       source: json['source'] ?? '',
+//       url: json['url'] ?? '',
+//       status: json['status'] ?? 1,
+//     );
+//   }
+// }
+
+// // Cache Manager Class for Religious Shows Data
+// class ReligiousShowsCacheManager {
+//   static const String _cacheKeyPrefix = 'religious_shows_cache_';
+//   static const String _episodesCacheKeyPrefix = 'religious_episodes_cache_';
+//   static const String _lastUpdatedKeyPrefix = 'last_updated_';
+//   static const Duration _cacheValidDuration = Duration(hours: 6);
+
+//   // Save shows data to cache
+//   static Future<void> saveShowsCache(
+//       int channelId, List<ReligiousShowModel> shows) async {
 //     try {
 //       final prefs = await SharedPreferences.getInstance();
-//       final cacheKey = '$_cacheKeyPrefix$showId';
-//       final lastUpdatedKey = '$_lastUpdatedKeyPrefix$showId';
+//       final cacheKey = '$_cacheKeyPrefix$channelId';
+//       final lastUpdatedKey = '$_lastUpdatedKeyPrefix$channelId';
 
-//       final seasonsJson = seasons
-//           .map((season) => {
-//                 'id': season.id,
-//                 'Session_Name': season.sessionName,
-//                 'banner': season.banner,
-//                 'season_order': season.seasonOrder,
-//                 'web_series_id': season.webSeriesId,
-//                 'status': season.status,
+//       final showsJson = shows
+//           .map((show) => {
+//                 'id': show.id,
+//                 'channel_id': show.channelId,
+//                 'title': show.title,
+//                 'genre': show.genre,
+//                 'description': show.description,
+//                 'thumbnail': show.thumbnail,
+//                 'status': show.status,
+//                 'rel_order': show.relOrder,
 //               })
 //           .toList();
 
-//       await prefs.setString(cacheKey, jsonEncode(seasonsJson));
+//       await prefs.setString(cacheKey, jsonEncode(showsJson));
 //       await prefs.setInt(lastUpdatedKey, DateTime.now().millisecondsSinceEpoch);
 
-//       print('✅ Web Series seasons cache saved for show $showId');
+//       print('✅ Religious shows cache saved for channel $channelId');
 //     } catch (e) {
-//       print('❌ Error saving web series seasons cache: $e');
+//       print('❌ Error saving religious shows cache: $e');
 //     }
 //   }
 
-//   // Get seasons data from cache
-//   static Future<List<SeasonModel>?> getSeasonsCache(int showId) async {
+//   // Get shows data from cache
+//   static Future<List<ReligiousShowModel>?> getShowsCache(int channelId) async {
 //     try {
 //       final prefs = await SharedPreferences.getInstance();
-//       final cacheKey = '$_cacheKeyPrefix$showId';
-//       final lastUpdatedKey = '$_lastUpdatedKeyPrefix$showId';
+//       final cacheKey = '$_cacheKeyPrefix$channelId';
+//       final lastUpdatedKey = '$_lastUpdatedKeyPrefix$channelId';
 
 //       final cachedData = prefs.getString(cacheKey);
 //       final lastUpdated = prefs.getInt(lastUpdatedKey);
@@ -82,58 +153,61 @@
 //       final isExpired = cacheAge > _cacheValidDuration.inMilliseconds;
 
 //       if (isExpired) {
-//         print('⏰ Web Series seasons cache expired for show $showId');
+//         print('⏰ Religious shows cache expired for channel $channelId');
 //         return null;
 //       }
 
-//       final List<dynamic> seasonsJson = jsonDecode(cachedData);
-//       final seasons =
-//           seasonsJson.map((json) => SeasonModel.fromJson(json)).toList();
+//       final List<dynamic> showsJson = jsonDecode(cachedData);
+//       final shows =
+//           showsJson.map((json) => ReligiousShowModel.fromJson(json)).toList();
 
 //       print(
-//           '✅ Web Series seasons cache loaded for show $showId (${seasons.length} seasons)');
-//       return seasons;
+//           '✅ Religious shows cache loaded for channel $channelId (${shows.length} shows)');
+//       return shows;
 //     } catch (e) {
-//       print('❌ Error loading web series seasons cache: $e');
+//       print('❌ Error loading religious shows cache: $e');
 //       return null;
 //     }
 //   }
 
 //   // Save episodes data to cache
 //   static Future<void> saveEpisodesCache(
-//       int seasonId, List<NewsItemModel> episodes) async {
+//       int showId, List<ReligiousEpisodeModel> episodes) async {
 //     try {
 //       final prefs = await SharedPreferences.getInstance();
-//       final cacheKey = '$_episodesCacheKeyPrefix$seasonId';
-//       final lastUpdatedKey = '${_lastUpdatedKeyPrefix}episodes_$seasonId';
+//       final cacheKey = '$_episodesCacheKeyPrefix$showId';
+//       final lastUpdatedKey = '${_lastUpdatedKeyPrefix}episodes_$showId';
 
 //       final episodesJson = episodes
 //           .map((episode) => {
 //                 'id': episode.id,
-//                 'name': episode.name,
-//                 'description': episode.description,
-//                 'banner': episode.banner,
+//                 'show_id': episode.showId,
+//                 'episode_order': episode.episodeOrder,
+//                 'title': episode.title,
+//                 'episode_image': episode.episodeImage,
+//                 'episode_description': episode.episodeDescription,
+//                 'source': episode.source,
 //                 'url': episode.url,
 //                 'status': episode.status,
-//                 // Add other fields as needed
 //               })
 //           .toList();
 
 //       await prefs.setString(cacheKey, jsonEncode(episodesJson));
 //       await prefs.setInt(lastUpdatedKey, DateTime.now().millisecondsSinceEpoch);
 
-//       print('✅ Web Series episodes cache saved for season $seasonId');
+//       print('✅ Religious episodes cache saved for show $showId');
 //     } catch (e) {
-//       print('❌ Error saving web series episodes cache: $e');
+//       print('❌ Error saving religious episodes cache: $e');
 //     }
 //   }
 
 //   // Get episodes data from cache
-//   static Future<List<NewsItemModel>?> getEpisodesCache(int seasonId) async {
+//   static Future<List<ReligiousEpisodeModel>?> getEpisodesCache(
+//       int showId) async {
 //     try {
 //       final prefs = await SharedPreferences.getInstance();
-//       final cacheKey = '$_episodesCacheKeyPrefix$seasonId';
-//       final lastUpdatedKey = '${_lastUpdatedKeyPrefix}episodes_$seasonId';
+//       final cacheKey = '$_episodesCacheKeyPrefix$showId';
+//       final lastUpdatedKey = '${_lastUpdatedKeyPrefix}episodes_$showId';
 
 //       final cachedData = prefs.getString(cacheKey);
 //       final lastUpdated = prefs.getInt(lastUpdatedKey);
@@ -147,26 +221,27 @@
 //       final isExpired = cacheAge > _cacheValidDuration.inMilliseconds;
 
 //       if (isExpired) {
-//         print('⏰ Web Series episodes cache expired for season $seasonId');
+//         print('⏰ Religious episodes cache expired for show $showId');
 //         return null;
 //       }
 
 //       final List<dynamic> episodesJson = jsonDecode(cachedData);
-//       final episodes =
-//           episodesJson.map((json) => NewsItemModel.fromJson(json)).toList();
+//       final episodes = episodesJson
+//           .map((json) => ReligiousEpisodeModel.fromJson(json))
+//           .toList();
 
 //       print(
-//           '✅ Web Series episodes cache loaded for season $seasonId (${episodes.length} episodes)');
+//           '✅ Religious episodes cache loaded for show $showId (${episodes.length} episodes)');
 //       return episodes;
 //     } catch (e) {
-//       print('❌ Error loading web series episodes cache: $e');
+//       print('❌ Error loading religious episodes cache: $e');
 //       return null;
 //     }
 //   }
 
-//   // Compare two season lists and check if they're different
-//   static bool areSeasonsDifferent(
-//       List<SeasonModel> cached, List<SeasonModel> fresh) {
+//   // Compare two show lists and check if they're different
+//   static bool areShowsDifferent(
+//       List<ReligiousShowModel> cached, List<ReligiousShowModel> fresh) {
 //     if (cached.length != fresh.length) return true;
 
 //     for (int i = 0; i < cached.length; i++) {
@@ -174,9 +249,9 @@
 //       final f = fresh[i];
 
 //       if (c.id != f.id ||
-//           c.sessionName != f.sessionName ||
+//           c.title != f.title ||
 //           c.status != f.status ||
-//           c.banner != f.banner) {
+//           c.thumbnail != f.thumbnail) {
 //         return true;
 //       }
 //     }
@@ -185,7 +260,7 @@
 
 //   // Compare two episode lists and check if they're different
 //   static bool areEpisodesDifferent(
-//       List<NewsItemModel> cached, List<NewsItemModel> fresh) {
+//       List<ReligiousEpisodeModel> cached, List<ReligiousEpisodeModel> fresh) {
 //     if (cached.length != fresh.length) return true;
 
 //     for (int i = 0; i < cached.length; i++) {
@@ -193,7 +268,7 @@
 //       final f = fresh[i];
 
 //       if (c.id != f.id ||
-//           c.name != f.name ||
+//           c.title != f.title ||
 //           c.status != f.status ||
 //           c.url != f.url) {
 //         return true;
@@ -202,45 +277,16 @@
 //     return false;
 //   }
 
-//   // Clear all cache for a specific show
-//   static Future<void> clearShowCache(int showId) async {
+//   // Clear all cache for a specific channel
+//   static Future<void> clearChannelCache(int channelId) async {
 //     try {
 //       final prefs = await SharedPreferences.getInstance();
-//       await prefs.remove('$_cacheKeyPrefix$showId');
-//       await prefs.remove('$_lastUpdatedKeyPrefix$showId');
-//       print('🗑️ Cleared web series cache for show $showId');
+//       await prefs.remove('$_cacheKeyPrefix$channelId');
+//       await prefs.remove('$_lastUpdatedKeyPrefix$channelId');
+//       print('🗑️ Cleared religious shows cache for channel $channelId');
 //     } catch (e) {
-//       print('❌ Error clearing web series cache: $e');
+//       print('❌ Error clearing religious shows cache: $e');
 //     }
-//   }
-// }
-
-// class SeasonModel {
-//   final int id;
-//   final String sessionName;
-//   final String banner;
-//   final int seasonOrder;
-//   final int webSeriesId;
-//   final int status;
-
-//   SeasonModel({
-//     required this.id,
-//     required this.sessionName,
-//     required this.banner,
-//     required this.seasonOrder,
-//     required this.webSeriesId,
-//     required this.status,
-//   });
-
-//   factory SeasonModel.fromJson(Map<String, dynamic> json) {
-//     return SeasonModel(
-//       id: json['id'] ?? 0,
-//       sessionName: json['Session_Name'] ?? '',
-//       banner: json['banner'] ?? '',
-//       seasonOrder: json['season_order'] ?? 1,
-//       webSeriesId: json['web_series_id'] ?? 0,
-//       status: json['status'] ?? 1,
-//     );
 //   }
 // }
 
@@ -259,47 +305,45 @@
 //   }) : super(key: key);
 
 //   @override
-//   _ReligiousChannelDetailsPageState createState() => _ReligiousChannelDetailsPageState();
+//   _ReligiousChannelDetailsPageState createState() =>
+//       _ReligiousChannelDetailsPageState();
 // }
 
-// class _ReligiousChannelDetailsPageState extends State<ReligiousChannelDetailsPage>
+// class _ReligiousChannelDetailsPageState
+//     extends State<ReligiousChannelDetailsPage>
 //     with WidgetsBindingObserver, TickerProviderStateMixin {
 //   final SocketService _socketService = SocketService();
 //   final ScrollController _scrollController = ScrollController();
-//   final ScrollController _seasonsScrollController = ScrollController();
+//   final ScrollController _showsScrollController = ScrollController();
 //   final FocusNode _mainFocusNode = FocusNode();
 
 //   // Data structures
-//   List<SeasonModel> _seasons = [];
-//   Map<int, List<NewsItemModel>> _episodesMap = {};
+//   List<ReligiousShowModel> _shows = [];
+//   Map<int, List<ReligiousEpisodeModel>> _episodesMap = {};
 
-//   int _selectedSeasonIndex = 0;
+//   int _selectedShowIndex = 0;
 //   int _selectedEpisodeIndex = 0;
 
-//   NavigationMode _currentMode = NavigationMode.seasons;
+//   NavigationMode _currentMode = NavigationMode.shows;
 
-//   final Map<int, FocusNode> _seasonsFocusNodes = {};
+//   final Map<int, FocusNode> _showsFocusNodes = {};
 //   final Map<String, FocusNode> _episodeFocusNodes = {};
 
 //   String _errorMessage = "";
 //   String _authKey = '';
 
-//   bool _showInstructions = true;
-//   Timer? _instructionTimer;
-
 //   // Filtered data variables for active content
-//   List<SeasonModel> _filteredSeasons = [];
-//   Map<int, List<NewsItemModel>> _filteredEpisodesMap = {};
+//   List<ReligiousShowModel> _filteredShows = [];
+//   Map<int, List<ReligiousEpisodeModel>> _filteredEpisodesMap = {};
 
 //   // Loading states
-//   bool _isLoading = false; // Only true when no cache and loading from API
+//   bool _isLoading = false;
 //   bool _isProcessing = false;
 //   bool _isLoadingEpisodes = false;
-//   bool _isBackgroundRefreshing = false; // New flag for background refresh
+//   bool _isBackgroundRefreshing = false;
 
 //   // Animation Controllers
 //   late AnimationController _navigationModeController;
-//   late AnimationController _instructionController;
 //   late AnimationController _pageTransitionController;
 
 //   // Animations
@@ -307,26 +351,13 @@
 //   late Animation<Offset> _slideAnimation;
 
 //   // Filter methods for active content
-//   List<SeasonModel> _filterActiveSeasons(List<SeasonModel> seasons) {
-//     return seasons.where((season) => season.status == 1).toList();
+//   List<ReligiousShowModel> _filterActiveShows(List<ReligiousShowModel> shows) {
+//     return shows.where((show) => show.status == 1).toList();
 //   }
 
-//   List<NewsItemModel> _filterActiveEpisodes(List<NewsItemModel> episodes) {
-//     return episodes.where((episode) {
-//       try {
-//         final status = episode.status;
-//         if (status == null) return false;
-
-//         if (status is int) {
-//           return status == 1;
-//         } else if (status is String) {
-//           return status == '1';
-//         }
-//         return false;
-//       } catch (e) {
-//         return false;
-//       }
-//     }).toList();
+//   List<ReligiousEpisodeModel> _filterActiveEpisodes(
+//       List<ReligiousEpisodeModel> episodes) {
+//     return episodes.where((episode) => episode.status == 1).toList();
 //   }
 
 //   @override
@@ -337,22 +368,19 @@
 
 //     _initializeAnimations();
 //     _loadAuthKey();
-//     _startInstructionTimer();
 //   }
 
 //   @override
 //   void dispose() {
 //     WidgetsBinding.instance.removeObserver(this);
 //     _scrollController.dispose();
-//     _seasonsScrollController.dispose();
+//     _showsScrollController.dispose();
 //     _mainFocusNode.dispose();
-//     _seasonsFocusNodes.values.forEach((node) => node.dispose());
+//     _showsFocusNodes.values.forEach((node) => node.dispose());
 //     _episodeFocusNodes.values.forEach((node) => node.dispose());
 //     _socketService.dispose();
 //     _navigationModeController.dispose();
-//     _instructionController.dispose();
 //     _pageTransitionController.dispose();
-//     _instructionTimer?.cancel();
 //     super.dispose();
 //   }
 
@@ -386,50 +414,58 @@
 
 //   // Enhanced initialization with smart caching
 //   Future<void> _initializePageWithCache() async {
-//     print('🚀 Initializing web series page with cache for show ${widget.id}');
+//     print(
+//         '🚀 Initializing religious shows page with cache for channel ${widget.id}');
 
 //     // Try to load from cache first
-//     final cachedSeasons =
-//         await WebSeriesCacheManager.getSeasonsCache(widget.id);
+//     final cachedShows =
+//         await ReligiousShowsCacheManager.getShowsCache(widget.id);
 
-//     if (cachedSeasons != null && cachedSeasons.isNotEmpty) {
+//     if (cachedShows != null && cachedShows.isNotEmpty) {
 //       // Show cached data immediately
-//       print('⚡ Loading web series from cache instantly');
-//       await _loadSeasonsFromCache(cachedSeasons);
+//       print('⚡ Loading religious shows from cache instantly');
+//       await _loadShowsFromCache(cachedShows);
 
 //       // Start background refresh
 //       _performBackgroundRefresh();
 //     } else {
 //       // No cache available, load from API with loading indicator
-//       print('📡 No web series cache available, loading from API');
-//       await _fetchSeasonsFromAPI(showLoading: true);
+//       print('📡 No religious shows cache available, loading from API');
+//       await _fetchShowsFromAPI(showLoading: true);
 //     }
 //   }
 
-//   // Load seasons from cache and update UI instantly
-//   Future<void> _loadSeasonsFromCache(List<SeasonModel> cachedSeasons) async {
-//     final activeSeasons = _filterActiveSeasons(cachedSeasons);
+//   // Load shows from cache and update UI instantly
+//   Future<void> _loadShowsFromCache(List<ReligiousShowModel> cachedShows) async {
+//     final activeShows = _filterActiveShows(cachedShows);
 
 //     setState(() {
-//       _seasons = cachedSeasons;
-//       _filteredSeasons = activeSeasons;
+//       _shows = cachedShows;
+//       _filteredShows = activeShows;
 //       _isLoading = false;
 //       _errorMessage = "";
 //     });
 
-//     // Create focus nodes for active seasons
-//     _seasonsFocusNodes.clear();
-//     for (int i = 0; i < _filteredSeasons.length; i++) {
-//       _seasonsFocusNodes[i] = FocusNode();
+//     // Create focus nodes for active shows
+//     _showsFocusNodes.clear();
+//     for (int i = 0; i < _filteredShows.length; i++) {
+//       _showsFocusNodes[i] = FocusNode();
 //     }
 
-//     if (_filteredSeasons.isNotEmpty) {
-//       _setNavigationMode(NavigationMode.seasons);
+//     if (_filteredShows.isNotEmpty) {
 //       _pageTransitionController.forward();
+
+//       // <<< MODIFICATION START: Pehle show ke episodes turant fetch karein
+//       // Hum `await` nahi laga rahe hain taaki UI build hota rahe
+//       // aur episodes background mein load ho jaayein.
+//       _fetchEpisodes(_filteredShows[0].id);
+//       // <<< MODIFICATION END
 
 //       WidgetsBinding.instance.addPostFrameCallback((_) {
 //         if (mounted) {
-//           _seasonsFocusNodes[0]?.requestFocus();
+//           // Focus ab episodes load hone par set hoga.
+//           // Isliye neeche di gayi line ko comment ya remove kar dein.
+//           // _showsFocusNodes[0]?.requestFocus();
 //         }
 //       });
 //     }
@@ -437,34 +473,35 @@
 
 //   // Perform background refresh without showing loading indicators
 //   Future<void> _performBackgroundRefresh() async {
-//     print('🔄 Starting web series background refresh');
+//     print('🔄 Starting religious shows background refresh');
 //     setState(() {
 //       _isBackgroundRefreshing = true;
 //     });
 
 //     try {
-//       final freshSeasons = await _fetchSeasonsFromAPIDirectly();
+//       final freshShows = await _fetchShowsFromAPIDirectly();
 
-//       if (freshSeasons != null) {
+//       if (freshShows != null) {
 //         // Compare with cached data
-//         final cachedSeasons = _seasons;
-//         final hasChanges = WebSeriesCacheManager.areSeasonsDifferent(
-//             cachedSeasons, freshSeasons);
+//         final cachedShows = _shows;
+//         final hasChanges = ReligiousShowsCacheManager.areShowsDifferent(
+//             cachedShows, freshShows);
 
 //         if (hasChanges) {
-//           print('🔄 Web series changes detected, updating UI silently');
+//           print('🔄 Religious shows changes detected, updating UI silently');
 
 //           // Save new data to cache
-//           await WebSeriesCacheManager.saveSeasonsCache(widget.id, freshSeasons);
+//           await ReligiousShowsCacheManager.saveShowsCache(
+//               widget.id, freshShows);
 
 //           // Update UI without disrupting user experience
-//           await _updateSeasonsData(freshSeasons);
+//           await _updateShowsData(freshShows);
 //         } else {
-//           print('✅ No web series changes detected in background refresh');
+//           print('✅ No religious shows changes detected in background refresh');
 //         }
 //       }
 //     } catch (e) {
-//       print('❌ Web series background refresh failed: $e');
+//       print('❌ Religious shows background refresh failed: $e');
 //     } finally {
 //       if (mounted) {
 //         setState(() {
@@ -474,55 +511,55 @@
 //     }
 //   }
 
-//   // Update seasons data while preserving user's current selection
-//   Future<void> _updateSeasonsData(List<SeasonModel> newSeasons) async {
-//     final activeSeasons = _filterActiveSeasons(newSeasons);
-//     final currentSelectedSeasonId = _filteredSeasons.isNotEmpty &&
-//             _selectedSeasonIndex < _filteredSeasons.length
-//         ? _filteredSeasons[_selectedSeasonIndex].id
-//         : null;
+//   // Update shows data while preserving user's current selection
+//   Future<void> _updateShowsData(List<ReligiousShowModel> newShows) async {
+//     final activeShows = _filterActiveShows(newShows);
+//     final currentSelectedShowId =
+//         _filteredShows.isNotEmpty && _selectedShowIndex < _filteredShows.length
+//             ? _filteredShows[_selectedShowIndex].id
+//             : null;
 
 //     setState(() {
-//       _seasons = newSeasons;
-//       _filteredSeasons = activeSeasons;
+//       _shows = newShows;
+//       _filteredShows = activeShows;
 //     });
 
 //     // Try to maintain user's current selection
-//     if (currentSelectedSeasonId != null) {
+//     if (currentSelectedShowId != null) {
 //       final newIndex =
-//           _filteredSeasons.indexWhere((s) => s.id == currentSelectedSeasonId);
+//           _filteredShows.indexWhere((s) => s.id == currentSelectedShowId);
 //       if (newIndex >= 0) {
 //         setState(() {
-//           _selectedSeasonIndex = newIndex;
+//           _selectedShowIndex = newIndex;
 //         });
 //       }
 //     }
 
 //     // Recreate focus nodes if needed
-//     _seasonsFocusNodes.clear();
-//     for (int i = 0; i < _filteredSeasons.length; i++) {
-//       _seasonsFocusNodes[i] = FocusNode();
+//     _showsFocusNodes.clear();
+//     for (int i = 0; i < _filteredShows.length; i++) {
+//       _showsFocusNodes[i] = FocusNode();
 //     }
 //   }
 
-//   // Fetch seasons from API with loading indicator
-//   Future<void> _fetchSeasonsFromAPI({bool showLoading = false}) async {
+//   // Fetch shows from API with loading indicator
+//   Future<void> _fetchShowsFromAPI({bool showLoading = false}) async {
 //     if (showLoading) {
 //       setState(() {
 //         _isLoading = true;
-//         _errorMessage = "Loading seasons...";
+//         _errorMessage = "Loading shows...";
 //       });
 //     }
 
 //     try {
-//       final seasons = await _fetchSeasonsFromAPIDirectly();
+//       final shows = await _fetchShowsFromAPIDirectly();
 
-//       if (seasons != null) {
+//       if (shows != null) {
 //         // Save to cache
-//         await WebSeriesCacheManager.saveSeasonsCache(widget.id, seasons);
+//         await ReligiousShowsCacheManager.saveShowsCache(widget.id, shows);
 
 //         // Update UI
-//         await _loadSeasonsFromCache(seasons);
+//         await _loadShowsFromCache(shows);
 //       }
 //     } catch (e) {
 //       setState(() {
@@ -532,14 +569,14 @@
 //     }
 //   }
 
-//   // Direct API call for seasons
-//   Future<List<SeasonModel>?> _fetchSeasonsFromAPIDirectly() async {
+//   // Direct API call for shows
+//   Future<List<ReligiousShowModel>?> _fetchShowsFromAPIDirectly() async {
 //     final prefs = await SharedPreferences.getInstance();
 //     final authKey = prefs.getString('auth_key') ?? _authKey;
 
 //     final response = await https.get(
 //       Uri.parse(
-//           'https://acomtv.coretechinfo.com/public/api/getSeasons/${widget.id}'),
+//           'https://acomtv.coretechinfo.com/public/api/getReligiousShows/${widget.id}'),
 //       headers: {
 //         'auth-key': authKey,
 //         'Accept': 'application/json',
@@ -551,20 +588,20 @@
 //       String responseBody = response.body.trim();
 //       if (responseBody.startsWith('[') || responseBody.startsWith('{')) {
 //         final List<dynamic> data = jsonDecode(responseBody);
-//         return data.map((season) => SeasonModel.fromJson(season)).toList();
+//         return data.map((show) => ReligiousShowModel.fromJson(show)).toList();
 //       }
 //     }
 
-//     throw Exception('Failed to load seasons (${response.statusCode})');
+//     throw Exception('Failed to load religious shows (${response.statusCode})');
 //   }
 
 //   // Enhanced episodes fetching with cache
-//   Future<void> _fetchEpisodes(int seasonId) async {
+//   Future<void> _fetchEpisodes(int showId) async {
 //     // Check if already loaded
-//     if (_filteredEpisodesMap.containsKey(seasonId)) {
+//     if (_filteredEpisodesMap.containsKey(showId)) {
 //       setState(() {
-//         _selectedSeasonIndex =
-//             _filteredSeasons.indexWhere((season) => season.id == seasonId);
+//         _selectedShowIndex =
+//             _filteredShows.indexWhere((show) => show.id == showId);
 //         _selectedEpisodeIndex = 0;
 //       });
 //       _setNavigationMode(NavigationMode.episodes);
@@ -573,35 +610,31 @@
 
 //     // Try cache first
 //     final cachedEpisodes =
-//         await WebSeriesCacheManager.getEpisodesCache(seasonId);
+//         await ReligiousShowsCacheManager.getEpisodesCache(showId);
 
 //     if (cachedEpisodes != null) {
 //       // Load from cache instantly
-//       await _loadEpisodesFromCache(seasonId, cachedEpisodes);
-
-//       // Start background refresh for episodes
-//       _performEpisodesBackgroundRefresh(seasonId);
+//       await _loadEpisodesFromCache(showId, cachedEpisodes);
 //     } else {
 //       // Load from API with loading indicator
-//       await _fetchEpisodesFromAPI(seasonId, showLoading: true);
+//       await _fetchEpisodesFromAPI(showId, showLoading: true);
 //     }
 //   }
 
 //   // Load episodes from cache
 //   Future<void> _loadEpisodesFromCache(
-//       int seasonId, List<NewsItemModel> cachedEpisodes) async {
+//       int showId, List<ReligiousEpisodeModel> cachedEpisodes) async {
 //     final activeEpisodes = _filterActiveEpisodes(cachedEpisodes);
 
 //     _episodeFocusNodes.clear();
 //     for (var episode in activeEpisodes) {
-//       _episodeFocusNodes[episode.id] = FocusNode();
+//       _episodeFocusNodes[episode.id.toString()] = FocusNode();
 //     }
 
 //     setState(() {
-//       _episodesMap[seasonId] = cachedEpisodes;
-//       _filteredEpisodesMap[seasonId] = activeEpisodes;
-//       _selectedSeasonIndex =
-//           _filteredSeasons.indexWhere((s) => s.id == seasonId);
+//       _episodesMap[showId] = cachedEpisodes;
+//       _filteredEpisodesMap[showId] = activeEpisodes;
+//       _selectedShowIndex = _filteredShows.indexWhere((s) => s.id == showId);
 //       _selectedEpisodeIndex = 0;
 //       _isLoadingEpisodes = false;
 //     });
@@ -609,34 +642,8 @@
 //     _setNavigationMode(NavigationMode.episodes);
 //   }
 
-//   // Background refresh for episodes
-//   Future<void> _performEpisodesBackgroundRefresh(int seasonId) async {
-//     try {
-//       final freshEpisodes = await _fetchEpisodesFromAPIDirectly(seasonId);
-
-//       if (freshEpisodes != null) {
-//         final cachedEpisodes = _episodesMap[seasonId] ?? [];
-//         final hasChanges = WebSeriesCacheManager.areEpisodesDifferent(
-//             cachedEpisodes, freshEpisodes);
-
-//         if (hasChanges) {
-//           print('🔄 Web series episodes changes detected for season $seasonId');
-
-//           // Save to cache
-//           await WebSeriesCacheManager.saveEpisodesCache(
-//               seasonId, freshEpisodes);
-
-//           // Update UI
-//           await _loadEpisodesFromCache(seasonId, freshEpisodes);
-//         }
-//       }
-//     } catch (e) {
-//       print('❌ Web series episodes background refresh failed: $e');
-//     }
-//   }
-
 //   // Fetch episodes from API with loading indicator
-//   Future<void> _fetchEpisodesFromAPI(int seasonId,
+//   Future<void> _fetchEpisodesFromAPI(int showId,
 //       {bool showLoading = false}) async {
 //     if (showLoading) {
 //       setState(() {
@@ -645,14 +652,14 @@
 //     }
 
 //     try {
-//       final episodes = await _fetchEpisodesFromAPIDirectly(seasonId);
+//       final episodes = await _fetchEpisodesFromAPIDirectly(showId);
 
 //       if (episodes != null) {
 //         // Save to cache
-//         await WebSeriesCacheManager.saveEpisodesCache(seasonId, episodes);
+//         await ReligiousShowsCacheManager.saveEpisodesCache(showId, episodes);
 
 //         // Update UI
-//         await _loadEpisodesFromCache(seasonId, episodes);
+//         await _loadEpisodesFromCache(showId, episodes);
 //       }
 //     } catch (e) {
 //       setState(() {
@@ -663,14 +670,14 @@
 //   }
 
 //   // Direct API call for episodes
-//   Future<List<NewsItemModel>?> _fetchEpisodesFromAPIDirectly(
-//       int seasonId) async {
+//   Future<List<ReligiousEpisodeModel>?> _fetchEpisodesFromAPIDirectly(
+//       int showId) async {
 //     final prefs = await SharedPreferences.getInstance();
 //     final authKey = prefs.getString('auth_key') ?? _authKey;
 
 //     final response = await https.get(
 //       Uri.parse(
-//           'https://acomtv.coretechinfo.com/public/api/getEpisodes/$seasonId/0'),
+//           'https://acomtv.coretechinfo.com/public/api/getReligiousShowsEpisodes/$showId'),
 //       headers: {
 //         'auth-key': authKey,
 //         'Accept': 'application/json',
@@ -682,63 +689,64 @@
 //       String responseBody = response.body.trim();
 //       if (responseBody.startsWith('[') || responseBody.startsWith('{')) {
 //         final List<dynamic> data = jsonDecode(responseBody);
-//         return data.map((e) => NewsItemModel.fromJson(e)).toList();
+//         return data.map((e) => ReligiousEpisodeModel.fromJson(e)).toList();
 //       }
 //     }
 
-//     throw Exception('Failed to load episodes for season $seasonId');
+//     throw Exception('Failed to load episodes for show $showId');
 //   }
 
-//   // Method to refresh data when returning from video player
-//   Future<void> _refreshDataOnReturn() async {
-//     print('🔄 Refreshing web series data on return from video player');
-//     await _performBackgroundRefresh();
-
-//     // Also refresh current season's episodes if any are loaded
-//     if (_filteredSeasons.isNotEmpty &&
-//         _selectedSeasonIndex < _filteredSeasons.length) {
-//       final currentSeasonId = _filteredSeasons[_selectedSeasonIndex].id;
-//       if (_filteredEpisodesMap.containsKey(currentSeasonId)) {
-//         await _performEpisodesBackgroundRefresh(currentSeasonId);
-//       }
-//     }
-//   }
-
-//   // Updated play episode method with refresh on return
-//   Future<void> _playEpisode(NewsItemModel episode) async {
+//   Future<void> _playEpisode(ReligiousEpisodeModel episode) async {
 //     if (_isProcessing) return;
 
 //     setState(() => _isProcessing = true);
 
 //     try {
-//       String url = episode.url;
-
 //       if (mounted) {
-//         dynamic result;
-
-//         if (isYoutubeUrl(episode.url)) {
-//           result = await Navigator.push(
+//         if (episode.source.toLowerCase() == 'youtube'
+//             // || isYoutubeUrl(episode.url)
+//             ) {
+//           await Navigator.push(
+//               context,
+//               MaterialPageRoute(
+//                   builder: (context) => YoutubeWebviewPlayer(
+//                         videoUrl: episode.url,
+//                         name: episode.title,
+//                       )));
+//         } else {
+//           await Navigator.push(
 //             context,
 //             MaterialPageRoute(
 //               builder: (context) => CustomYoutubePlayer(
-//                 videoUrl: episode.url,
-//                 name: episode.name,
-//               ),
-//             ),
-//           );
-//         } else {
-//           result = await Navigator.push(
-//             context,
-//             MaterialPageRoute(
-//               builder: (context) => CustomVideoPlayer(
-//                 videoUrl: episode.url,
+//                 videoData: VideoData(
+//                   id: episode.url,
+//                   title: episode.title,
+//                   youtubeUrl: episode.url,
+//                   thumbnail: episode.episodeImage,
+//                   description: episode.episodeDescription,
+//                 ),
+//                 playlist: [
+//                   VideoData(
+//                     id: episode.url,
+//                     title: episode.title,
+//                     youtubeUrl: episode.url,
+//                     thumbnail: episode.episodeImage,
+//                     description: episode.episodeDescription,
+//                   ),
+//                 ],
 //               ),
 //             ),
 //           );
 //         }
-
-//         // Refresh data after returning from video player
-//         await _refreshDataOnReturn();
+//       } else {
+//         await Navigator.push(
+//           context,
+//           MaterialPageRoute(
+//             builder: (context) => CustomVideoPlayer(
+//               videoUrl: episode.url,
+//             ),
+//           ),
+//         );
 //       }
 //     } catch (e) {
 //       if (mounted) {
@@ -765,40 +773,40 @@
 //         url.contains('youtube.com/shorts/');
 //   }
 
-//   void _selectSeason(int index) {
-//     if (index >= 0 && index < _filteredSeasons.length) {
+//   void _selectShow(int index) {
+//     if (index >= 0 && index < _filteredShows.length) {
 //       setState(() {
-//         _selectedSeasonIndex = index;
+//         _selectedShowIndex = index;
 //       });
-//       _fetchEpisodes(_filteredSeasons[index].id);
+//       _fetchEpisodes(_filteredShows[index].id);
 //     }
 //   }
 
-//   void _handleSeasonsNavigation(RawKeyEvent event) {
+//   void _handleShowsNavigation(RawKeyEvent event) {
 //     switch (event.logicalKey) {
 //       case LogicalKeyboardKey.arrowDown:
-//         if (_selectedSeasonIndex < _filteredSeasons.length - 1) {
+//         if (_selectedShowIndex < _filteredShows.length - 1) {
 //           setState(() {
-//             _selectedSeasonIndex++;
+//             _selectedShowIndex++;
 //           });
-//           _seasonsFocusNodes[_selectedSeasonIndex]?.requestFocus();
+//           _showsFocusNodes[_selectedShowIndex]?.requestFocus();
 //         }
 //         break;
 
 //       case LogicalKeyboardKey.arrowUp:
-//         if (_selectedSeasonIndex > 0) {
+//         if (_selectedShowIndex > 0) {
 //           setState(() {
-//             _selectedSeasonIndex--;
+//             _selectedShowIndex--;
 //           });
-//           _seasonsFocusNodes[_selectedSeasonIndex]?.requestFocus();
+//           _showsFocusNodes[_selectedShowIndex]?.requestFocus();
 //         }
 //         break;
 
 //       case LogicalKeyboardKey.enter:
 //       case LogicalKeyboardKey.select:
 //       case LogicalKeyboardKey.arrowRight:
-//         if (_filteredSeasons.isNotEmpty) {
-//           _selectSeason(_selectedSeasonIndex);
+//         if (_filteredShows.isNotEmpty) {
+//           _selectShow(_selectedShowIndex);
 //         }
 //         break;
 //     }
@@ -835,18 +843,16 @@
 
 //       case LogicalKeyboardKey.arrowLeft:
 //       case LogicalKeyboardKey.escape:
-//         _setNavigationMode(NavigationMode.seasons);
+//         _setNavigationMode(NavigationMode.shows);
 //         break;
 //     }
 //   }
 
-//   List<NewsItemModel> get _currentEpisodes {
-//     if (_filteredSeasons.isEmpty ||
-//         _selectedSeasonIndex >= _filteredSeasons.length) {
+//   List<ReligiousEpisodeModel> get _currentEpisodes {
+//     if (_filteredShows.isEmpty || _selectedShowIndex >= _filteredShows.length) {
 //       return [];
 //     }
-//     return _filteredEpisodesMap[_filteredSeasons[_selectedSeasonIndex].id] ??
-//         [];
+//     return _filteredEpisodesMap[_filteredShows[_selectedShowIndex].id] ?? [];
 //   }
 
 //   void _setNavigationMode(NavigationMode mode) {
@@ -854,16 +860,20 @@
 //       _currentMode = mode;
 //     });
 
-//     if (mode == NavigationMode.seasons) {
+//     if (mode == NavigationMode.shows) {
 //       _navigationModeController.reverse();
 //       WidgetsBinding.instance.addPostFrameCallback((_) {
-//         _seasonsFocusNodes[_selectedSeasonIndex]?.requestFocus();
+//         if (_selectedShowIndex < _showsFocusNodes.length) {
+//           _showsFocusNodes[_selectedShowIndex]?.requestFocus();
+//         }
 //       });
 //     } else {
 //       _navigationModeController.forward();
 //       WidgetsBinding.instance.addPostFrameCallback((_) {
-//         if (_currentEpisodes.isNotEmpty) {
-//           _episodeFocusNodes[_currentEpisodes[_selectedEpisodeIndex].id]
+//         if (_currentEpisodes.isNotEmpty &&
+//             _selectedEpisodeIndex < _currentEpisodes.length) {
+//           _episodeFocusNodes[
+//                   _currentEpisodes[_selectedEpisodeIndex].id.toString()]
 //               ?.requestFocus();
 //         }
 //       });
@@ -875,8 +885,8 @@
 
 //     if (event is RawKeyDownEvent) {
 //       switch (_currentMode) {
-//         case NavigationMode.seasons:
-//           _handleSeasonsNavigation(event);
+//         case NavigationMode.shows:
+//           _handleShowsNavigation(event);
 //           break;
 //         case NavigationMode.episodes:
 //           _handleEpisodesNavigation(event);
@@ -888,7 +898,8 @@
 //   Future<void> _scrollAndFocusEpisode(int index) async {
 //     if (index < 0 || index >= _currentEpisodes.length) return;
 
-//     final context = _episodeFocusNodes[_currentEpisodes[index].id]?.context;
+//     final context =
+//         _episodeFocusNodes[_currentEpisodes[index].id.toString()]?.context;
 //     if (context != null) {
 //       await Scrollable.ensureVisible(
 //         context,
@@ -902,11 +913,6 @@
 //   void _initializeAnimations() {
 //     _navigationModeController = AnimationController(
 //       duration: const Duration(milliseconds: 400),
-//       vsync: this,
-//     );
-
-//     _instructionController = AnimationController(
-//       duration: const Duration(milliseconds: 600),
 //       vsync: this,
 //     );
 
@@ -932,26 +938,6 @@
 //     ));
 //   }
 
-//   void _startInstructionTimer() {
-//     _instructionController.forward();
-//     _instructionTimer = Timer(const Duration(seconds: 6), () {
-//       if (mounted) {
-//         _instructionController.reverse();
-//         setState(() {
-//           _showInstructions = false;
-//         });
-//       }
-//     });
-//   }
-
-//   void _showInstructionsAgain() {
-//     setState(() {
-//       _showInstructions = true;
-//     });
-//     _instructionController.forward();
-//     _startInstructionTimer();
-//   }
-
 //   // Helper method for URL validation
 //   bool _isValidImageUrl(String url) {
 //     if (url.isEmpty) return false;
@@ -975,88 +961,6 @@
 //     }
 //   }
 
-//   // Enhanced image widget builder
-//   Widget _buildEnhancedImage({
-//     required String imageUrl,
-//     required double width,
-//     required double height,
-//     BoxFit fit = BoxFit.cover,
-//     Widget? fallbackWidget,
-//   }) {
-//     return Container(
-//       width: width,
-//       height: height,
-//       decoration: BoxDecoration(
-//         borderRadius: BorderRadius.circular(12),
-//         color: Colors.grey[800],
-//       ),
-//       child: ClipRRect(
-//         borderRadius: BorderRadius.circular(12),
-//         child: _isValidImageUrl(imageUrl)
-//             ? CachedNetworkImage(
-//                 imageUrl: imageUrl,
-//                 width: width,
-//                 height: height,
-//                 fit: fit,
-//                 placeholder: (context, url) => Container(
-//                   decoration: BoxDecoration(
-//                     gradient: LinearGradient(
-//                       colors: [Colors.grey[800]!, Colors.grey[700]!],
-//                       begin: Alignment.topLeft,
-//                       end: Alignment.bottomRight,
-//                     ),
-//                   ),
-//                   child: const Center(
-//                     child: CircularProgressIndicator(
-//                       strokeWidth: 2,
-//                       valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
-//                     ),
-//                   ),
-//                 ),
-//                 errorWidget: (context, url, error) =>
-//                     fallbackWidget ??
-//                     _buildDefaultImagePlaceholder(width, height),
-//                 fadeInDuration: const Duration(milliseconds: 300),
-//                 fadeOutDuration: const Duration(milliseconds: 100),
-//               )
-//             : fallbackWidget ?? _buildDefaultImagePlaceholder(width, height),
-//       ),
-//     );
-//   }
-
-//   // Default placeholder builder
-//   Widget _buildDefaultImagePlaceholder(double width, double height) {
-//     return Container(
-//       width: width,
-//       height: height,
-//       decoration: BoxDecoration(
-//         gradient: LinearGradient(
-//           colors: [Colors.grey[800]!, Colors.grey[700]!],
-//           begin: Alignment.topLeft,
-//           end: Alignment.bottomRight,
-//         ),
-//         borderRadius: BorderRadius.circular(12),
-//       ),
-//       child: const Center(
-//         child: Column(
-//           mainAxisAlignment: MainAxisAlignment.center,
-//           children: [
-//             Icon(Icons.broken_image, color: Colors.grey, size: 32),
-//             SizedBox(height: 4),
-//             Text(
-//               "No Image",
-//               style: TextStyle(
-//                 color: Colors.grey,
-//                 fontSize: 10,
-//                 fontWeight: FontWeight.w500,
-//               ),
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-
 //   @override
 //   Widget build(BuildContext context) {
 //     return Scaffold(
@@ -1076,12 +980,6 @@
 //             // Top Navigation Bar (Fixed Position)
 //             _buildTopNavigationBar(),
 
-//             // Help Button (Fixed Position)
-//             _buildHelpButton(),
-
-//             // Instructions Overlay (Bottom)
-//             if (_showInstructions) _buildInstructionsOverlay(),
-
 //             // Processing Overlay
 //             if (_isProcessing) _buildProcessingOverlay(),
 
@@ -1093,7 +991,6 @@
 //     );
 //   }
 
-//   // New method to show subtle background refresh indicator
 //   Widget _buildBackgroundRefreshIndicator() {
 //     return Positioned(
 //       top: 100,
@@ -1142,23 +1039,50 @@
 //       children: [
 //         // Background Image
 //         Positioned.fill(
-//           child: Image.network(
-//             widget.banner,
-//             fit: BoxFit.cover,
-//             errorBuilder: (_, __, ___) => Container(
-//               decoration: const BoxDecoration(
-//                 gradient: LinearGradient(
-//                   colors: [
-//                     Color(0xFF1a1a2e),
-//                     Color(0xFF16213e),
-//                     Color(0xFF0f0f23),
-//                   ],
-//                   begin: Alignment.topLeft,
-//                   end: Alignment.bottomRight,
+//           child: _isValidImageUrl(widget.banner)
+//               ? CachedNetworkImage(
+//                   imageUrl: widget.banner,
+//                   fit: BoxFit.cover,
+//                   placeholder: (context, url) => Container(
+//                     decoration: const BoxDecoration(
+//                       gradient: LinearGradient(
+//                         colors: [
+//                           Color(0xFF1a1a2e),
+//                           Color(0xFF16213e),
+//                           Color(0xFF0f0f23),
+//                         ],
+//                         begin: Alignment.topLeft,
+//                         end: Alignment.bottomRight,
+//                       ),
+//                     ),
+//                   ),
+//                   errorWidget: (context, url, error) => Container(
+//                     decoration: const BoxDecoration(
+//                       gradient: LinearGradient(
+//                         colors: [
+//                           Color(0xFF1a1a2e),
+//                           Color(0xFF16213e),
+//                           Color(0xFF0f0f23),
+//                         ],
+//                         begin: Alignment.topLeft,
+//                         end: Alignment.bottomRight,
+//                       ),
+//                     ),
+//                   ),
+//                 )
+//               : Container(
+//                   decoration: const BoxDecoration(
+//                     gradient: LinearGradient(
+//                       colors: [
+//                         Color(0xFF1a1a2e),
+//                         Color(0xFF16213e),
+//                         Color(0xFF0f0f23),
+//                       ],
+//                       begin: Alignment.topLeft,
+//                       end: Alignment.bottomRight,
+//                     ),
+//                   ),
 //                 ),
-//               ),
-//             ),
-//           ),
 //         ),
 
 //         // Gradient Overlays for better readability
@@ -1221,65 +1145,7 @@
 //             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
 //             child: Row(
 //               children: [
-//                 // Current Mode Indicator
-//                 AnimatedBuilder(
-//                   animation: _navigationModeController,
-//                   builder: (context, child) {
-//                     return Container(
-//                       padding: const EdgeInsets.symmetric(
-//                           horizontal: 16, vertical: 8),
-//                       decoration: BoxDecoration(
-//                         color: Colors.black.withOpacity(0.8),
-//                         borderRadius: BorderRadius.circular(25),
-//                         border: Border.all(
-//                           color: _currentMode == NavigationMode.seasons
-//                               ? Colors.blue
-//                               : Colors.green,
-//                           width: 5,
-//                         ),
-//                         boxShadow: [
-//                           BoxShadow(
-//                             color: (_currentMode == NavigationMode.seasons
-//                                     ? Colors.blue
-//                                     : Colors.green)
-//                                 .withOpacity(0.3),
-//                             blurRadius: 8,
-//                             spreadRadius: 2,
-//                           ),
-//                         ],
-//                       ),
-//                       child: Row(
-//                         mainAxisSize: MainAxisSize.min,
-//                         children: [
-//                           Icon(
-//                             _currentMode == NavigationMode.seasons
-//                                 ? Icons.list_alt
-//                                 : Icons.play_circle_outline,
-//                             color: _currentMode == NavigationMode.seasons
-//                                 ? Colors.blue
-//                                 : Colors.green,
-//                             size: 20,
-//                           ),
-//                           const SizedBox(width: 8),
-//                           Text(
-//                             _currentMode == NavigationMode.seasons
-//                                 ? 'BROWSING SEASONS'
-//                                 : 'BROWSING EPISODES',
-//                             style: const TextStyle(
-//                               color: Colors.white,
-//                               fontWeight: FontWeight.bold,
-//                               fontSize: 14,
-//                             ),
-//                           ),
-//                         ],
-//                       ),
-//                     );
-//                   },
-//                 ),
-
-//                 const Spacer(),
-
-//                 // Series Title
+//                 // Channel Title
 //                 Expanded(
 //                   flex: 2,
 //                   child: Center(
@@ -1297,51 +1163,6 @@
 //                     ),
 //                   ),
 //                 ),
-
-//                 const Spacer(),
-//               ],
-//             ),
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-
-//   Widget _buildHelpButton() {
-//     return Positioned(
-//       top: 50,
-//       right: 20,
-//       child: SafeArea(
-//         child: GestureDetector(
-//           onTap: _showInstructionsAgain,
-//           child: Container(
-//             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-//             decoration: BoxDecoration(
-//               color: Colors.black.withOpacity(0.8),
-//               borderRadius: BorderRadius.circular(25),
-//               border:
-//                   Border.all(color: Colors.white.withOpacity(0.5), width: 1),
-//               boxShadow: [
-//                 BoxShadow(
-//                   color: Colors.white.withOpacity(0.1),
-//                   blurRadius: 8,
-//                   spreadRadius: 1,
-//                 ),
-//               ],
-//             ),
-//             child: const Row(
-//               mainAxisSize: MainAxisSize.min,
-//               children: [
-//                 Icon(Icons.help_outline, color: Colors.white, size: 18),
-//                 SizedBox(width: 6),
-//                 Text(
-//                   'HELP',
-//                   style: TextStyle(
-//                     color: Colors.white,
-//                     fontWeight: FontWeight.bold,
-//                     fontSize: 12,
-//                   ),
-//                 ),
 //               ],
 //             ),
 //           ),
@@ -1352,10 +1173,10 @@
 
 //   Widget _buildMainContentWithLayout() {
 //     return Positioned(
-//       top: 100, // Below navigation bar
+//       top: 100,
 //       left: 0,
 //       right: 0,
-//       bottom: 80, // Above instructions
+//       bottom: 20,
 //       child: FadeTransition(
 //         opacity: _fadeAnimation,
 //         child: SlideTransition(
@@ -1367,11 +1188,11 @@
 //   }
 
 //   Widget _buildMainContent() {
-//     if (_isLoading && _seasons.isEmpty) {
+//     if (_isLoading && _shows.isEmpty) {
 //       return _buildLoadingWidget();
 //     }
 
-//     if (_errorMessage.isNotEmpty && _seasons.isEmpty) {
+//     if (_errorMessage.isNotEmpty && _shows.isEmpty) {
 //       return _buildErrorWidget();
 //     }
 
@@ -1380,14 +1201,12 @@
 //       child: Row(
 //         crossAxisAlignment: CrossAxisAlignment.start,
 //         children: [
-//           // Left Panel - Seasons
+//           // Left Panel - Shows
 //           Expanded(
 //             flex: 2,
-//             child: _buildSeasonsPanel(),
+//             child: _buildShowsPanel(),
 //           ),
-
 //           const SizedBox(width: 20),
-
 //           // Right Panel - Episodes
 //           Expanded(
 //             flex: 3,
@@ -1398,13 +1217,13 @@
 //     );
 //   }
 
-//   Widget _buildSeasonsPanel() {
+//   Widget _buildShowsPanel() {
 //     return Container(
 //       decoration: BoxDecoration(
 //         color: Colors.black.withOpacity(0.3),
 //         borderRadius: BorderRadius.circular(16),
 //         border: Border.all(
-//           color: _currentMode == NavigationMode.seasons
+//           color: _currentMode == NavigationMode.shows
 //               ? Colors.blue.withOpacity(0.5)
 //               : Colors.white.withOpacity(0.1),
 //           width: 2,
@@ -1446,7 +1265,7 @@
 //                 ),
 //                 const SizedBox(width: 12),
 //                 const Text(
-//                   "ACTIVE SEASONS",
+//                   "SHOWS",
 //                   style: TextStyle(
 //                     color: Colors.white,
 //                     fontSize: 18,
@@ -1463,7 +1282,7 @@
 //                     borderRadius: BorderRadius.circular(12),
 //                   ),
 //                   child: Text(
-//                     '${_filteredSeasons.length}',
+//                     '${_filteredShows.length}',
 //                     style: const TextStyle(
 //                       color: Colors.blue,
 //                       fontSize: 12,
@@ -1474,10 +1293,9 @@
 //               ],
 //             ),
 //           ),
-
-//           // Seasons List
+//           // Shows List
 //           Expanded(
-//             child: _buildSeasonsList(),
+//             child: _buildShowsList(),
 //           ),
 //         ],
 //       ),
@@ -1535,7 +1353,7 @@
 //                   crossAxisAlignment: CrossAxisAlignment.start,
 //                   children: [
 //                     const Text(
-//                       "ACTIVE EPISODES",
+//                       "EPISODES",
 //                       style: TextStyle(
 //                         color: Colors.white,
 //                         fontSize: 18,
@@ -1543,10 +1361,10 @@
 //                         letterSpacing: 1.0,
 //                       ),
 //                     ),
-//                     if (_filteredSeasons.isNotEmpty &&
-//                         _selectedSeasonIndex < _filteredSeasons.length)
+//                     if (_filteredShows.isNotEmpty &&
+//                         _selectedShowIndex < _filteredShows.length)
 //                       Text(
-//                         _filteredSeasons[_selectedSeasonIndex].sessionName,
+//                         _filteredShows[_selectedShowIndex].title,
 //                         style: TextStyle(
 //                           color: Colors.grey[400],
 //                           fontSize: 12,
@@ -1576,7 +1394,6 @@
 //               ],
 //             ),
 //           ),
-
 //           // Episodes List
 //           Expanded(
 //             child: _isLoadingEpisodes
@@ -1588,34 +1405,33 @@
 //     );
 //   }
 
-//   Widget _buildSeasonsList() {
+//   Widget _buildShowsList() {
 //     return ListView.builder(
-//       controller: _seasonsScrollController,
+//       controller: _showsScrollController,
 //       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-//       itemCount: _filteredSeasons.length,
-//       itemBuilder: (context, index) => _buildSeasonItem(index),
+//       itemCount: _filteredShows.length,
+//       itemBuilder: (context, index) => _buildShowItem(index),
 //     );
 //   }
 
-//   void _onSeasonTap(int index) {
+//   void _onShowTap(int index) {
 //     setState(() {
-//       _selectedSeasonIndex = index;
-//       _currentMode = NavigationMode.seasons;
+//       _selectedShowIndex = index;
+//       _currentMode = NavigationMode.shows;
 //     });
-//     _seasonsFocusNodes[index]?.requestFocus();
-//     _selectSeason(index);
+//     _showsFocusNodes[index]?.requestFocus();
+//     _selectShow(index);
 //   }
 
-//   Widget _buildSeasonItem(int index) {
-//     final season = _filteredSeasons[index];
-//     final isSelected = index == _selectedSeasonIndex;
-//     final isFocused = _currentMode == NavigationMode.seasons && isSelected;
-//     final episodeCount = _filteredEpisodesMap[season.id]?.length ?? 0;
+//   Widget _buildShowItem(int index) {
+//     final show = _filteredShows[index];
+//     final isFocused =
+//         _currentMode == NavigationMode.shows && index == _selectedShowIndex;
 
 //     return GestureDetector(
-//       onTap: () => _onSeasonTap(index),
+//       onTap: () => _onShowTap(index),
 //       child: Focus(
-//         focusNode: _seasonsFocusNodes[index],
+//         focusNode: _showsFocusNodes[index],
 //         child: AnimatedContainer(
 //           duration: const Duration(milliseconds: 300),
 //           margin: const EdgeInsets.symmetric(vertical: 6),
@@ -1630,99 +1446,56 @@
 //                     begin: Alignment.centerLeft,
 //                     end: Alignment.centerRight,
 //                   )
-//                 : isSelected
-//                     ? LinearGradient(
-//                         colors: [
-//                           Colors.white.withOpacity(0.1),
-//                           Colors.white.withOpacity(0.05),
-//                         ],
-//                         begin: Alignment.centerLeft,
-//                         end: Alignment.centerRight,
-//                       )
-//                     : null,
-//             color: !isFocused && !isSelected
-//                 ? Colors.grey[900]?.withOpacity(0.4)
 //                 : null,
+//             color: !isFocused ? Colors.grey[900]?.withOpacity(0.4) : null,
 //             borderRadius: BorderRadius.circular(12),
-//             border: isFocused
-//                 ? Border.all(color: Colors.blue, width: 2)
-//                 : isSelected
-//                     ? Border.all(color: Colors.white.withOpacity(0.3), width: 1)
-//                     : null,
-//             boxShadow: isFocused
-//                 ? [
-//                     BoxShadow(
-//                       color: Colors.blue.withOpacity(0.3),
-//                       blurRadius: 12,
-//                       spreadRadius: 2,
-//                     )
-//                   ]
-//                 : null,
+//             border: isFocused ? Border.all(color: Colors.blue, width: 2) : null,
 //           ),
 //           child: Row(
 //             children: [
-//               // Enhanced Season Image with multiple fallbacks
-//               Stack(
-//                 children: [
-//                   // Background with season number
-//                   Container(
-//                     width: 50,
-//                     height: 50,
-//                     decoration: BoxDecoration(
-//                       gradient: LinearGradient(
-//                         colors: isFocused
-//                             ? [Colors.blue, Colors.blue.shade300]
-//                             : [Colors.grey[700]!, Colors.grey[600]!],
-//                         begin: Alignment.topLeft,
-//                         end: Alignment.bottomRight,
-//                       ),
-//                       borderRadius: BorderRadius.circular(25),
-//                       boxShadow: [
-//                         BoxShadow(
-//                           color: (isFocused ? Colors.blue : Colors.grey[700]!)
-//                               .withOpacity(0.4),
-//                           blurRadius: 6,
-//                           spreadRadius: 1,
-//                         )
-//                       ],
-//                     ),
-//                     child: Center(
-//                       child: Text(
-//                         '${season.seasonOrder}',
-//                         style: const TextStyle(
-//                           color: Colors.white,
-//                           fontWeight: FontWeight.bold,
-//                           fontSize: 18,
+//               // Show thumbnail
+//               Container(
+//                 width: 50,
+//                 height: 50,
+//                 decoration: BoxDecoration(
+//                   borderRadius: BorderRadius.circular(25),
+//                   color: Colors.grey[700],
+//                 ),
+//                 child: _isValidImageUrl(show.thumbnail)
+//                     ? ClipRRect(
+//                         borderRadius: BorderRadius.circular(25),
+//                         child: CachedNetworkImage(
+//                           imageUrl: show.thumbnail,
+//                           fit: BoxFit.cover,
+//                           errorWidget: (context, url, error) => Center(
+//                             child: Text(
+//                               '${show.relOrder}',
+//                               style: const TextStyle(
+//                                 color: Colors.white,
+//                                 fontWeight: FontWeight.bold,
+//                               ),
+//                             ),
+//                           ),
+//                         ),
+//                       )
+//                     : Center(
+//                         child: Text(
+//                           '${show.relOrder}',
+//                           style: const TextStyle(
+//                             color: Colors.white,
+//                             fontWeight: FontWeight.bold,
+//                           ),
 //                         ),
 //                       ),
-//                     ),
-//                   ),
-
-//                   // Season image overlay (if available)
-//                   if (_isValidImageUrl(season.banner))
-//                     ClipRRect(
-//                       borderRadius: BorderRadius.circular(25),
-//                       child: _buildEnhancedImage(
-//                         imageUrl: season.banner,
-//                         width: 50,
-//                         height: 50,
-//                         fit: BoxFit.cover,
-//                         fallbackWidget:
-//                             Container(), // Transparent fallback to show background
-//                       ),
-//                     ),
-//                 ],
 //               ),
-
 //               const SizedBox(width: 16),
-
-//               // Season Info
+//               // Show info
 //               Expanded(
 //                 child: Column(
 //                   crossAxisAlignment: CrossAxisAlignment.start,
 //                   children: [
 //                     Text(
-//                       season.sessionName,
+//                       show.title,
 //                       style: TextStyle(
 //                         color: isFocused ? Colors.blue : Colors.white,
 //                         fontWeight: FontWeight.bold,
@@ -1732,59 +1505,20 @@
 //                       overflow: TextOverflow.ellipsis,
 //                     ),
 //                     const SizedBox(height: 6),
-//                     Row(
-//                       children: [
-//                         Container(
-//                           padding: const EdgeInsets.symmetric(
-//                               horizontal: 8, vertical: 4),
-//                           decoration: BoxDecoration(
-//                             color: isFocused
-//                                 ? Colors.blue.withOpacity(0.2)
-//                                 : Colors.grey[700]?.withOpacity(0.5),
-//                             borderRadius: BorderRadius.circular(12),
-//                           ),
-//                           child: Text(
-//                             'Season ${season.seasonOrder}',
-//                             style: TextStyle(
-//                               color: isFocused ? Colors.blue : Colors.grey[300],
-//                               fontSize: 11,
-//                               fontWeight: FontWeight.w600,
-//                             ),
-//                           ),
-//                         ),
-//                         if (episodeCount > 0) ...[
-//                           const SizedBox(width: 8),
-//                           Container(
-//                             padding: const EdgeInsets.symmetric(
-//                                 horizontal: 8, vertical: 4),
-//                             decoration: BoxDecoration(
-//                               color: Colors.green.withOpacity(0.2),
-//                               borderRadius: BorderRadius.circular(12),
-//                             ),
-//                             child: Text(
-//                               '$episodeCount episodes',
-//                               style: const TextStyle(
-//                                 color: Colors.green,
-//                                 fontSize: 11,
-//                                 fontWeight: FontWeight.w600,
-//                               ),
-//                             ),
-//                           ),
-//                         ],
-//                       ],
+//                     Text(
+//                       show.genre.isNotEmpty ? show.genre : 'Religious',
+//                       style: TextStyle(
+//                         color: Colors.grey[400],
+//                         fontSize: 12,
+//                       ),
 //                     ),
 //                   ],
 //                 ),
 //               ),
-
-//               AnimatedRotation(
-//                 turns: isFocused ? 0.0 : -0.25,
-//                 duration: const Duration(milliseconds: 300),
-//                 child: Icon(
-//                   Icons.chevron_right,
-//                   color: isFocused ? Colors.blue : Colors.grey[600],
-//                   size: 24,
-//                 ),
+//               Icon(
+//                 Icons.chevron_right,
+//                 color: isFocused ? Colors.blue : Colors.grey[600],
+//                 size: 24,
 //               ),
 //             ],
 //           ),
@@ -1814,13 +1548,16 @@
 //         _selectedEpisodeIndex = index;
 //         _currentMode = NavigationMode.episodes;
 //       });
-//       _episodeFocusNodes[_currentEpisodes[index].id]?.requestFocus();
+//       _episodeFocusNodes[_currentEpisodes[index].id.toString()]?.requestFocus();
 //       _playEpisode(_currentEpisodes[index]);
 //     }
 //   }
 
 //   Widget _buildEpisodeItem(int index) {
-//     final episode = _currentEpisodes[index];
+//     final episodes = _currentEpisodes;
+//     if (index >= episodes.length) return Container();
+
+//     final episode = episodes[index];
 //     final isSelected = index == _selectedEpisodeIndex;
 //     final isFocused = _currentMode == NavigationMode.episodes && isSelected;
 //     final isProcessing = _isProcessing && isSelected;
@@ -1828,7 +1565,7 @@
 //     return GestureDetector(
 //       onTap: () => _onEpisodeTap(index),
 //       child: Focus(
-//         focusNode: _episodeFocusNodes[episode.id],
+//         focusNode: _episodeFocusNodes[episode.id.toString()],
 //         child: AnimatedContainer(
 //           duration: const Duration(milliseconds: 300),
 //           margin: const EdgeInsets.symmetric(vertical: 8),
@@ -1873,7 +1610,7 @@
 //           ),
 //           child: Row(
 //             children: [
-//               // Enhanced Thumbnail with multiple fallbacks
+//               // Enhanced Thumbnail
 //               Container(
 //                 margin: const EdgeInsets.all(12),
 //                 width: 140,
@@ -1914,7 +1651,7 @@
 //                             ),
 //                             const SizedBox(height: 4),
 //                             Text(
-//                               "EP ${index + 1}",
+//                               "EP ${episode.episodeOrder}",
 //                               style: const TextStyle(
 //                                 color: Colors.white,
 //                                 fontWeight: FontWeight.bold,
@@ -1926,12 +1663,12 @@
 //                       ),
 //                     ),
 
-//                     // Try to load images with fallback priority
-//                     if (_isValidImageUrl(episode.banner))
+//                     // Try to load episode image
+//                     if (_isValidImageUrl(episode.episodeImage))
 //                       ClipRRect(
 //                         borderRadius: BorderRadius.circular(12),
 //                         child: CachedNetworkImage(
-//                           imageUrl: episode.banner,
+//                           imageUrl: episode.episodeImage,
 //                           width: 140,
 //                           height: 90,
 //                           fit: BoxFit.cover,
@@ -1952,18 +1689,23 @@
 //                             ),
 //                           ),
 //                           errorWidget: (context, url, error) {
-//                             // Fallback to series banner
-//                             if (_isValidImageUrl(widget.banner)) {
+//                             // Fallback to show thumbnail
+//                             if (_filteredShows.isNotEmpty &&
+//                                 _selectedShowIndex < _filteredShows.length &&
+//                                 _isValidImageUrl(
+//                                     _filteredShows[_selectedShowIndex]
+//                                         .thumbnail)) {
 //                               return CachedNetworkImage(
-//                                 imageUrl: widget.banner,
+//                                 imageUrl: _filteredShows[_selectedShowIndex]
+//                                     .thumbnail,
 //                                 width: 140,
 //                                 height: 90,
 //                                 fit: BoxFit.cover,
 //                                 errorWidget: (context, url, error) {
-//                                   // Fallback to poster
-//                                   if (_isValidImageUrl(widget.poster)) {
+//                                   // Fallback to channel banner
+//                                   if (_isValidImageUrl(widget.banner)) {
 //                                     return CachedNetworkImage(
-//                                       imageUrl: widget.poster,
+//                                       imageUrl: widget.banner,
 //                                       width: 140,
 //                                       height: 90,
 //                                       fit: BoxFit.cover,
@@ -1980,80 +1722,9 @@
 //                           fadeInDuration: const Duration(milliseconds: 300),
 //                           fadeOutDuration: const Duration(milliseconds: 100),
 //                         ),
-//                       )
-//                     else if (_isValidImageUrl(widget.banner))
-//                       ClipRRect(
-//                         borderRadius: BorderRadius.circular(12),
-//                         child: CachedNetworkImage(
-//                           imageUrl: widget.banner,
-//                           width: 140,
-//                           height: 90,
-//                           fit: BoxFit.cover,
-//                           placeholder: (context, url) => Container(
-//                             decoration: BoxDecoration(
-//                               gradient: LinearGradient(
-//                                 colors: [Colors.grey[800]!, Colors.grey[700]!],
-//                                 begin: Alignment.topLeft,
-//                                 end: Alignment.bottomRight,
-//                               ),
-//                             ),
-//                             child: const Center(
-//                               child: CircularProgressIndicator(
-//                                 strokeWidth: 2,
-//                                 valueColor:
-//                                     AlwaysStoppedAnimation<Color>(Colors.blue),
-//                               ),
-//                             ),
-//                           ),
-//                           errorWidget: (context, url, error) {
-//                             // Fallback to poster
-//                             if (_isValidImageUrl(widget.poster)) {
-//                               return CachedNetworkImage(
-//                                 imageUrl: widget.poster,
-//                                 width: 140,
-//                                 height: 90,
-//                                 fit: BoxFit.cover,
-//                                 errorWidget: (context, url, error) =>
-//                                     Container(),
-//                               );
-//                             }
-//                             return Container();
-//                           },
-//                           fadeInDuration: const Duration(milliseconds: 300),
-//                           fadeOutDuration: const Duration(milliseconds: 100),
-//                         ),
-//                       )
-//                     else if (_isValidImageUrl(widget.poster))
-//                       ClipRRect(
-//                         borderRadius: BorderRadius.circular(12),
-//                         child: CachedNetworkImage(
-//                           imageUrl: widget.poster,
-//                           width: 140,
-//                           height: 90,
-//                           fit: BoxFit.cover,
-//                           placeholder: (context, url) => Container(
-//                             decoration: BoxDecoration(
-//                               gradient: LinearGradient(
-//                                 colors: [Colors.grey[800]!, Colors.grey[700]!],
-//                                 begin: Alignment.topLeft,
-//                                 end: Alignment.bottomRight,
-//                               ),
-//                             ),
-//                             child: const Center(
-//                               child: CircularProgressIndicator(
-//                                 strokeWidth: 2,
-//                                 valueColor:
-//                                     AlwaysStoppedAnimation<Color>(Colors.blue),
-//                               ),
-//                             ),
-//                           ),
-//                           errorWidget: (context, url, error) => Container(),
-//                           fadeInDuration: const Duration(milliseconds: 300),
-//                           fadeOutDuration: const Duration(milliseconds: 100),
-//                         ),
 //                       ),
 
-//                     // Play/Loading overlay with beautiful animations
+//                     // Play/Loading overlay
 //                     if (isProcessing)
 //                       Container(
 //                         width: 50,
@@ -2092,20 +1763,6 @@
 //                           color: Colors.white,
 //                           size: 28,
 //                         ),
-//                       )
-//                     else if (isSelected)
-//                       Container(
-//                         width: 40,
-//                         height: 40,
-//                         decoration: BoxDecoration(
-//                           color: Colors.white.withOpacity(0.2),
-//                           borderRadius: BorderRadius.circular(20),
-//                         ),
-//                         child: const Icon(
-//                           Icons.play_arrow,
-//                           color: Colors.white,
-//                           size: 24,
-//                         ),
 //                       ),
 //                   ],
 //                 ),
@@ -2121,7 +1778,7 @@
 //                     children: [
 //                       // Episode Title
 //                       Text(
-//                         episode.name,
+//                         episode.title,
 //                         style: TextStyle(
 //                           color: isFocused ? Colors.green : Colors.white,
 //                           fontWeight: FontWeight.bold,
@@ -2130,21 +1787,6 @@
 //                         maxLines: 2,
 //                         overflow: TextOverflow.ellipsis,
 //                       ),
-
-//                       // const SizedBox(height: 8),
-
-//                       // // Episode Description
-//                       // if (episode.description.isNotEmpty)
-//                       //   Text(
-//                       //     episode.description,
-//                       //     style: TextStyle(
-//                       //       color: Colors.grey[400],
-//                       //       fontSize: 13,
-//                       //       height: 1.3,
-//                       //     ),
-//                       //     maxLines: 3,
-//                       //     overflow: TextOverflow.ellipsis,
-//                       //   ),
 
 //                       const SizedBox(height: 12),
 
@@ -2174,7 +1816,7 @@
 //                               ),
 //                             ),
 //                             child: Text(
-//                               'Episode ${index + 1}',
+//                               'Episode ${episode.episodeOrder}',
 //                               style: TextStyle(
 //                                 color:
 //                                     isFocused ? Colors.green : Colors.grey[300],
@@ -2183,24 +1825,6 @@
 //                               ),
 //                             ),
 //                           ),
-//                           const SizedBox(width: 8),
-//                           if (isFocused)
-//                             Container(
-//                               padding: const EdgeInsets.symmetric(
-//                                   horizontal: 8, vertical: 4),
-//                               decoration: BoxDecoration(
-//                                 color: Colors.green.withOpacity(0.2),
-//                                 borderRadius: BorderRadius.circular(12),
-//                               ),
-//                               child: const Text(
-//                                 'READY TO PLAY',
-//                                 style: TextStyle(
-//                                   color: Colors.green,
-//                                   fontSize: 10,
-//                                   fontWeight: FontWeight.bold,
-//                                 ),
-//                               ),
-//                             ),
 //                         ],
 //                       ),
 //                     ],
@@ -2211,72 +1835,39 @@
 //               // Action Button Area
 //               Padding(
 //                 padding: const EdgeInsets.all(16),
-//                 child: Column(
-//                   mainAxisAlignment: MainAxisAlignment.center,
-//                   children: [
-//                     AnimatedScale(
-//                       scale: isFocused ? 1.2 : 1.0,
-//                       duration: const Duration(milliseconds: 300),
-//                       child: Container(
-//                         width: 56,
-//                         height: 56,
-//                         decoration: BoxDecoration(
-//                           gradient: LinearGradient(
-//                             colors: isFocused
-//                                 ? [Colors.green, Colors.green.shade400]
-//                                 : isSelected
-//                                     ? [
-//                                         Colors.white.withOpacity(0.3),
-//                                         Colors.white.withOpacity(0.1)
-//                                       ]
-//                                     : [Colors.grey[700]!, Colors.grey[600]!],
-//                             begin: Alignment.topLeft,
-//                             end: Alignment.bottomRight,
-//                           ),
-//                           borderRadius: BorderRadius.circular(28),
-//                           boxShadow: isFocused
-//                               ? [
-//                                   BoxShadow(
-//                                     color: Colors.green.withOpacity(0.5),
-//                                     blurRadius: 12,
-//                                     spreadRadius: 3,
-//                                   )
-//                                 ]
-//                               : null,
-//                         ),
-//                         child: isProcessing
-//                             ? const SpinKitRing(
-//                                 color: Colors.white,
-//                                 size: 24,
-//                                 lineWidth: 2,
-//                               )
-//                             : const Icon(
-//                                 Icons.play_arrow,
-//                                 color: Colors.white,
-//                                 size: 32,
-//                               ),
-//                       ),
+//                 child: Container(
+//                   width: 56,
+//                   height: 56,
+//                   decoration: BoxDecoration(
+//                     gradient: LinearGradient(
+//                       colors: isFocused
+//                           ? [Colors.green, Colors.green.shade400]
+//                           : [Colors.grey[700]!, Colors.grey[600]!],
+//                       begin: Alignment.topLeft,
+//                       end: Alignment.bottomRight,
 //                     ),
-//                     if (isFocused) ...[
-//                       const SizedBox(height: 8),
-//                       Container(
-//                         padding: const EdgeInsets.symmetric(
-//                             horizontal: 8, vertical: 4),
-//                         decoration: BoxDecoration(
-//                           color: Colors.green.withOpacity(0.2),
-//                           borderRadius: BorderRadius.circular(8),
+//                     borderRadius: BorderRadius.circular(28),
+//                     boxShadow: isFocused
+//                         ? [
+//                             BoxShadow(
+//                               color: Colors.green.withOpacity(0.5),
+//                               blurRadius: 12,
+//                               spreadRadius: 3,
+//                             )
+//                           ]
+//                         : null,
+//                   ),
+//                   child: isProcessing
+//                       ? const SpinKitRing(
+//                           color: Colors.white,
+//                           size: 24,
+//                           lineWidth: 2,
+//                         )
+//                       : const Icon(
+//                           Icons.play_arrow,
+//                           color: Colors.white,
+//                           size: 32,
 //                         ),
-//                         child: const Text(
-//                           'PRESS ENTER',
-//                           style: TextStyle(
-//                             color: Colors.green,
-//                             fontSize: 9,
-//                             fontWeight: FontWeight.bold,
-//                           ),
-//                         ),
-//                       ),
-//                     ],
-//                   ],
 //                 ),
 //               ),
 //             ],
@@ -2291,171 +1882,22 @@
 //       child: Column(
 //         mainAxisAlignment: MainAxisAlignment.center,
 //         children: [
-//           Container(
-//             padding: const EdgeInsets.all(20),
-//             decoration: BoxDecoration(
-//               color: Colors.grey[800]?.withOpacity(0.3),
-//               borderRadius: BorderRadius.circular(50),
-//             ),
-//             child: Icon(
-//               Icons.video_library_outlined,
-//               color: Colors.grey[500],
-//               size: 64,
-//             ),
+//           Icon(
+//             Icons.video_library_outlined,
+//             color: Colors.grey[500],
+//             size: 64,
 //           ),
 //           const SizedBox(height: 20),
 //           Text(
-//             "No Active Episodes Available",
+//             "Press Enter To Load Episodes",
 //             style: TextStyle(
 //               color: Colors.grey[400],
 //               fontSize: 18,
 //               fontWeight: FontWeight.w600,
 //             ),
 //           ),
-//           const SizedBox(height: 8),
-//           Text(
-//             "This season has no active episodes",
-//             style: TextStyle(
-//               color: Colors.grey[600],
-//               fontSize: 14,
-//             ),
-//           ),
-//           if (_currentMode == NavigationMode.seasons) ...[
-//             const SizedBox(height: 16),
-//             Container(
-//               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-//               decoration: BoxDecoration(
-//                 color: Colors.blue.withOpacity(0.1),
-//                 borderRadius: BorderRadius.circular(20),
-//                 border: Border.all(color: Colors.blue.withOpacity(0.3)),
-//               ),
-//               child: const Text(
-//                 "Select another season or check back later",
-//                 style: TextStyle(
-//                   color: Colors.blue,
-//                   fontSize: 12,
-//                   fontWeight: FontWeight.w600,
-//                 ),
-//               ),
-//             ),
-//           ],
 //         ],
 //       ),
-//     );
-//   }
-
-//   Widget _buildInstructionsOverlay() {
-//     return Positioned(
-//       bottom: 0,
-//       left: 0,
-//       right: 0,
-//       child: FadeTransition(
-//         opacity: _instructionController,
-//         child: Container(
-//           margin: const EdgeInsets.all(20),
-//           padding: const EdgeInsets.all(20),
-//           decoration: BoxDecoration(
-//             gradient: LinearGradient(
-//               colors: [
-//                 Colors.black.withOpacity(0.95),
-//                 Colors.black.withOpacity(0.85),
-//               ],
-//               begin: Alignment.topCenter,
-//               end: Alignment.bottomCenter,
-//             ),
-//             borderRadius: BorderRadius.circular(16),
-//             border:
-//                 Border.all(color: highlightColor.withOpacity(0.3), width: 1),
-//             boxShadow: [
-//               BoxShadow(
-//                 color: highlightColor.withOpacity(0.2),
-//                 blurRadius: 20,
-//                 spreadRadius: 5,
-//               ),
-//             ],
-//           ),
-//           child: Column(
-//             mainAxisSize: MainAxisSize.min,
-//             children: [
-//               Row(
-//                 mainAxisAlignment: MainAxisAlignment.center,
-//                 children: [
-//                   Icon(Icons.gamepad, color: highlightColor, size: 20),
-//                   const SizedBox(width: 8),
-//                   Text(
-//                     'NAVIGATION GUIDE',
-//                     style: TextStyle(
-//                       color: highlightColor,
-//                       fontWeight: FontWeight.bold,
-//                       fontSize: 16,
-//                       letterSpacing: 1.0,
-//                     ),
-//                   ),
-//                 ],
-//               ),
-//               const SizedBox(height: 16),
-//               Row(
-//                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-//                 children: [
-//                   if (_currentMode == NavigationMode.seasons) ...[
-//                     _buildInstructionItem(
-//                         '↑ ↓', 'Navigate Seasons', Icons.list_alt),
-//                     _buildInstructionItem(
-//                         '→ ENTER', 'Select Season', Icons.chevron_right),
-//                     _buildInstructionItem('← BACK', 'Exit', Icons.exit_to_app),
-//                   ] else ...[
-//                     _buildInstructionItem(
-//                         '↑ ↓', 'Navigate Episodes', Icons.video_library),
-//                     _buildInstructionItem(
-//                         'ENTER', 'Play Episode', Icons.play_arrow),
-//                     _buildInstructionItem(
-//                         '← BACK', 'Back to Seasons', Icons.arrow_back),
-//                   ],
-//                 ],
-//               ),
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-
-//   Widget _buildInstructionItem(String keys, String action, IconData icon) {
-//     return Column(
-//       children: [
-//         Container(
-//           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-//           decoration: BoxDecoration(
-//             gradient: LinearGradient(
-//               colors: [
-//                 highlightColor.withOpacity(0.3),
-//                 highlightColor.withOpacity(0.1),
-//               ],
-//             ),
-//             borderRadius: BorderRadius.circular(8),
-//             border: Border.all(color: highlightColor.withOpacity(0.5)),
-//           ),
-//           child: Text(
-//             keys,
-//             style: TextStyle(
-//               color: highlightColor,
-//               fontWeight: FontWeight.bold,
-//               fontSize: 12,
-//             ),
-//           ),
-//         ),
-//         const SizedBox(height: 6),
-//         Icon(icon, color: Colors.white70, size: 16),
-//         const SizedBox(height: 4),
-//         Text(
-//           action,
-//           style: const TextStyle(
-//             color: Colors.white70,
-//             fontSize: 11,
-//           ),
-//           textAlign: TextAlign.center,
-//         ),
-//       ],
 //     );
 //   }
 
@@ -2588,9 +2030,9 @@
 
 
 
-
 import 'dart:async';
 import 'dart:convert';
+import 'package:mobi_tv_entertainment/provider/device_info_provider.dart';
 import 'package:mobi_tv_entertainment/video_widget/custom_video_player.dart';
 import 'package:mobi_tv_entertainment/video_widget/video_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -2598,15 +2040,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as https;
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:mobi_tv_entertainment/home_screen_pages/movies_screen/movies.dart';
 import 'package:mobi_tv_entertainment/main.dart';
 import 'package:mobi_tv_entertainment/video_widget/custom_youtube_player.dart';
-import 'package:mobi_tv_entertainment/widgets/models/news_item_model.dart';
+import 'package:mobi_tv_entertainment/video_widget/youtube_webview_player.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../video_widget/socket_service.dart';
 
 // Define highlightColor constant
-const Color highlightColor = Color(0xFF4FC3F7); // Light blue color for highlights
+const Color highlightColor =
+    Color(0xFF4FC3F7); // Light blue color for highlights
 
 enum NavigationMode {
   shows,
@@ -2793,7 +2236,8 @@ class ReligiousShowsCacheManager {
   }
 
   // Get episodes data from cache
-  static Future<List<ReligiousEpisodeModel>?> getEpisodesCache(int showId) async {
+  static Future<List<ReligiousEpisodeModel>?> getEpisodesCache(
+      int showId) async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final cacheKey = '$_episodesCacheKeyPrefix$showId';
@@ -2816,8 +2260,9 @@ class ReligiousShowsCacheManager {
       }
 
       final List<dynamic> episodesJson = jsonDecode(cachedData);
-      final episodes =
-          episodesJson.map((json) => ReligiousEpisodeModel.fromJson(json)).toList();
+      final episodes = episodesJson
+          .map((json) => ReligiousEpisodeModel.fromJson(json))
+          .toList();
 
       print(
           '✅ Religious episodes cache loaded for show $showId (${episodes.length} episodes)');
@@ -2894,10 +2339,12 @@ class ReligiousChannelDetailsPage extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _ReligiousChannelDetailsPageState createState() => _ReligiousChannelDetailsPageState();
+  _ReligiousChannelDetailsPageState createState() =>
+      _ReligiousChannelDetailsPageState();
 }
 
-class _ReligiousChannelDetailsPageState extends State<ReligiousChannelDetailsPage>
+class _ReligiousChannelDetailsPageState
+    extends State<ReligiousChannelDetailsPage>
     with WidgetsBindingObserver, TickerProviderStateMixin {
   final SocketService _socketService = SocketService();
   final ScrollController _scrollController = ScrollController();
@@ -2919,9 +2366,6 @@ class _ReligiousChannelDetailsPageState extends State<ReligiousChannelDetailsPag
   String _errorMessage = "";
   String _authKey = '';
 
-  bool _showInstructions = true;
-  Timer? _instructionTimer;
-
   // Filtered data variables for active content
   List<ReligiousShowModel> _filteredShows = [];
   Map<int, List<ReligiousEpisodeModel>> _filteredEpisodesMap = {};
@@ -2934,7 +2378,6 @@ class _ReligiousChannelDetailsPageState extends State<ReligiousChannelDetailsPag
 
   // Animation Controllers
   late AnimationController _navigationModeController;
-  late AnimationController _instructionController;
   late AnimationController _pageTransitionController;
 
   // Animations
@@ -2946,7 +2389,8 @@ class _ReligiousChannelDetailsPageState extends State<ReligiousChannelDetailsPag
     return shows.where((show) => show.status == 1).toList();
   }
 
-  List<ReligiousEpisodeModel> _filterActiveEpisodes(List<ReligiousEpisodeModel> episodes) {
+  List<ReligiousEpisodeModel> _filterActiveEpisodes(
+      List<ReligiousEpisodeModel> episodes) {
     return episodes.where((episode) => episode.status == 1).toList();
   }
 
@@ -2958,7 +2402,6 @@ class _ReligiousChannelDetailsPageState extends State<ReligiousChannelDetailsPag
 
     _initializeAnimations();
     _loadAuthKey();
-    _startInstructionTimer();
   }
 
   @override
@@ -2971,9 +2414,7 @@ class _ReligiousChannelDetailsPageState extends State<ReligiousChannelDetailsPag
     _episodeFocusNodes.values.forEach((node) => node.dispose());
     _socketService.dispose();
     _navigationModeController.dispose();
-    _instructionController.dispose();
     _pageTransitionController.dispose();
-    _instructionTimer?.cancel();
     super.dispose();
   }
 
@@ -3007,10 +2448,12 @@ class _ReligiousChannelDetailsPageState extends State<ReligiousChannelDetailsPag
 
   // Enhanced initialization with smart caching
   Future<void> _initializePageWithCache() async {
-    print('🚀 Initializing religious shows page with cache for channel ${widget.id}');
+    print(
+        '🚀 Initializing religious shows page with cache for channel ${widget.id}');
 
     // Try to load from cache first
-    final cachedShows = await ReligiousShowsCacheManager.getShowsCache(widget.id);
+    final cachedShows =
+        await ReligiousShowsCacheManager.getShowsCache(widget.id);
 
     if (cachedShows != null && cachedShows.isNotEmpty) {
       // Show cached data immediately
@@ -3044,22 +2487,1045 @@ class _ReligiousChannelDetailsPageState extends State<ReligiousChannelDetailsPag
     }
 
     if (_filteredShows.isNotEmpty) {
-      _setNavigationMode(NavigationMode.shows);
       _pageTransitionController.forward();
+
+      // Automatically fetch episodes for the first show without waiting.
+      // This allows the UI to remain responsive while episodes load in the background.
+      _fetchEpisodes(_filteredShows[0].id);
 
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
-          _showsFocusNodes[0]?.requestFocus();
+          // Focus is now set when episodes are loaded.
         }
       });
     }
   }
 
-  // Rest of the methods with proper variable names...
+  // Perform background refresh without showing loading indicators
+  Future<void> _performBackgroundRefresh() async {
+    print('🔄 Starting religious shows background refresh');
+    setState(() {
+      _isBackgroundRefreshing = true;
+    });
+
+    try {
+      final freshShows = await _fetchShowsFromAPIDirectly();
+
+      if (freshShows != null) {
+        // Compare with cached data
+        final cachedShows = _shows;
+        final hasChanges = ReligiousShowsCacheManager.areShowsDifferent(
+            cachedShows, freshShows);
+
+        if (hasChanges) {
+          print('🔄 Religious shows changes detected, updating UI silently');
+
+          // Save new data to cache
+          await ReligiousShowsCacheManager.saveShowsCache(
+              widget.id, freshShows);
+
+          // Update UI without disrupting user experience
+          await _updateShowsData(freshShows);
+        } else {
+          print('✅ No religious shows changes detected in background refresh');
+        }
+      }
+    } catch (e) {
+      print('❌ Religious shows background refresh failed: $e');
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isBackgroundRefreshing = false;
+        });
+      }
+    }
+  }
+
+  // Update shows data while preserving user's current selection
+  Future<void> _updateShowsData(List<ReligiousShowModel> newShows) async {
+    final activeShows = _filterActiveShows(newShows);
+    final currentSelectedShowId =
+        _filteredShows.isNotEmpty && _selectedShowIndex < _filteredShows.length
+            ? _filteredShows[_selectedShowIndex].id
+            : null;
+
+    setState(() {
+      _shows = newShows;
+      _filteredShows = activeShows;
+    });
+
+    // Try to maintain user's current selection
+    if (currentSelectedShowId != null) {
+      final newIndex =
+          _filteredShows.indexWhere((s) => s.id == currentSelectedShowId);
+      if (newIndex >= 0) {
+        setState(() {
+          _selectedShowIndex = newIndex;
+        });
+      }
+    }
+
+    // Recreate focus nodes if needed
+    _showsFocusNodes.clear();
+    for (int i = 0; i < _filteredShows.length; i++) {
+      _showsFocusNodes[i] = FocusNode();
+    }
+  }
+
+  // Fetch shows from API with loading indicator
+  Future<void> _fetchShowsFromAPI({bool showLoading = false}) async {
+    if (showLoading) {
+      setState(() {
+        _isLoading = true;
+        _errorMessage = "Loading shows...";
+      });
+    }
+
+    try {
+      final shows = await _fetchShowsFromAPIDirectly();
+
+      if (shows != null) {
+        // Save to cache
+        await ReligiousShowsCacheManager.saveShowsCache(widget.id, shows);
+
+        // Update UI
+        await _loadShowsFromCache(shows);
+      }
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+        _errorMessage = "Error: ${e.toString()}";
+      });
+    }
+  }
+
+  // Direct API call for shows
+  Future<List<ReligiousShowModel>?> _fetchShowsFromAPIDirectly() async {
+    final prefs = await SharedPreferences.getInstance();
+    final authKey = prefs.getString('auth_key') ?? _authKey;
+
+    final response = await https.get(
+      Uri.parse(
+          'https://acomtv.coretechinfo.com/public/api/getReligiousShows/${widget.id}'),
+      headers: {
+        'auth-key': authKey,
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+    ).timeout(const Duration(seconds: 15));
+
+    if (response.statusCode == 200) {
+      String responseBody = response.body.trim();
+      if (responseBody.startsWith('[') || responseBody.startsWith('{')) {
+        final List<dynamic> data = jsonDecode(responseBody);
+        return data.map((show) => ReligiousShowModel.fromJson(show)).toList();
+      }
+    }
+
+    throw Exception('Failed to load religious shows (${response.statusCode})');
+  }
+
+  // Enhanced episodes fetching with cache
+  Future<void> _fetchEpisodes(int showId) async {
+    // Check if already loaded
+    if (_filteredEpisodesMap.containsKey(showId)) {
+      setState(() {
+        _selectedShowIndex =
+            _filteredShows.indexWhere((show) => show.id == showId);
+        _selectedEpisodeIndex = 0;
+      });
+      _setNavigationMode(NavigationMode.episodes);
+      return;
+    }
+
+    // Try cache first
+    final cachedEpisodes =
+        await ReligiousShowsCacheManager.getEpisodesCache(showId);
+
+    if (cachedEpisodes != null) {
+      // Load from cache instantly
+      await _loadEpisodesFromCache(showId, cachedEpisodes);
+    } else {
+      // Load from API with loading indicator
+      await _fetchEpisodesFromAPI(showId, showLoading: true);
+    }
+  }
+
+  // Load episodes from cache
+  Future<void> _loadEpisodesFromCache(
+      int showId, List<ReligiousEpisodeModel> cachedEpisodes) async {
+    final activeEpisodes = _filterActiveEpisodes(cachedEpisodes);
+
+    _episodeFocusNodes.clear();
+    for (var episode in activeEpisodes) {
+      _episodeFocusNodes[episode.id.toString()] = FocusNode();
+    }
+
+    setState(() {
+      _episodesMap[showId] = cachedEpisodes;
+      _filteredEpisodesMap[showId] = activeEpisodes;
+      _selectedShowIndex = _filteredShows.indexWhere((s) => s.id == showId);
+      _selectedEpisodeIndex = 0;
+      _isLoadingEpisodes = false;
+    });
+
+    _setNavigationMode(NavigationMode.episodes);
+  }
+
+  // Fetch episodes from API with loading indicator
+  Future<void> _fetchEpisodesFromAPI(int showId,
+      {bool showLoading = false}) async {
+    if (showLoading) {
+      setState(() {
+        _isLoadingEpisodes = true;
+      });
+    }
+
+    try {
+      final episodes = await _fetchEpisodesFromAPIDirectly(showId);
+
+      if (episodes != null) {
+        // Save to cache
+        await ReligiousShowsCacheManager.saveEpisodesCache(showId, episodes);
+
+        // Update UI
+        await _loadEpisodesFromCache(showId, episodes);
+      }
+    } catch (e) {
+      setState(() {
+        _isLoadingEpisodes = false;
+        _errorMessage = "Error loading episodes: ${e.toString()}";
+      });
+    }
+  }
+
+  // Direct API call for episodes
+  Future<List<ReligiousEpisodeModel>?> _fetchEpisodesFromAPIDirectly(
+      int showId) async {
+    final prefs = await SharedPreferences.getInstance();
+    final authKey = prefs.getString('auth_key') ?? _authKey;
+
+    final response = await https.get(
+      Uri.parse(
+          'https://acomtv.coretechinfo.com/public/api/getReligiousShowsEpisodes/$showId'),
+      headers: {
+        'auth-key': authKey,
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+    ).timeout(const Duration(seconds: 15));
+
+    if (response.statusCode == 200) {
+      String responseBody = response.body.trim();
+      if (responseBody.startsWith('[') || responseBody.startsWith('{')) {
+        final List<dynamic> data = jsonDecode(responseBody);
+        return data.map((e) => ReligiousEpisodeModel.fromJson(e)).toList();
+      }
+    }
+
+    throw Exception('Failed to load episodes for show $showId');
+  }
+
+  Future<void> _playEpisode(ReligiousEpisodeModel episode) async {
+    if (_isProcessing) return;
+
+    setState(() => _isProcessing = true);
+
+    try {
+      if (mounted) {
+        if (episode.source.toLowerCase() == 'youtube'
+            // || isYoutubeUrl(episode.url)
+            ) {
+          final deviceInfo = context.read<DeviceInfoProvider>();
+
+          if (deviceInfo.deviceName == 'AFTSS : Amazon Fire Stick HD') {
+            print('isAFTSS');
+            await Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => YoutubeWebviewPlayer(
+                          videoUrl: episode.url,
+                          name: episode.title,
+                        )));
+          } else {
+            await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => CustomYoutubePlayer(
+                  videoData: VideoData(
+                    id: episode.url,
+                    title: episode.title,
+                    youtubeUrl: episode.url,
+                    thumbnail: episode.episodeImage,
+                    description: episode.episodeDescription,
+                  ),
+                  playlist: [
+                    VideoData(
+                      id: episode.url,
+                      title: episode.title,
+                      youtubeUrl: episode.url,
+                      thumbnail: episode.episodeImage,
+                      description: episode.episodeDescription,
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
+        }
+      } else {
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => CustomVideoPlayer(
+              videoUrl: episode.url,
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Error playing video'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isProcessing = false);
+      }
+    }
+  }
+
+  bool isYoutubeUrl(String? url) {
+    if (url == null || url.isEmpty) return false;
+    url = url.toLowerCase().trim();
+    return RegExp(r'^[a-zA-Z0-9_-]{11}$').hasMatch(url) ||
+        url.contains('youtube.com') ||
+        url.contains('youtu.be') ||
+        url.contains('youtube.com/shorts/');
+  }
+
+  void _selectShow(int index) {
+    if (index >= 0 && index < _filteredShows.length) {
+      setState(() {
+        _selectedShowIndex = index;
+      });
+      _fetchEpisodes(_filteredShows[index].id);
+    }
+  }
+
+  void _handleShowsNavigation(RawKeyEvent event) {
+    switch (event.logicalKey) {
+      case LogicalKeyboardKey.arrowDown:
+        if (_selectedShowIndex < _filteredShows.length - 1) {
+          setState(() {
+            _selectedShowIndex++;
+          });
+          _showsFocusNodes[_selectedShowIndex]?.requestFocus();
+        }
+        break;
+
+      case LogicalKeyboardKey.arrowUp:
+        if (_selectedShowIndex > 0) {
+          setState(() {
+            _selectedShowIndex--;
+          });
+          _showsFocusNodes[_selectedShowIndex]?.requestFocus();
+        }
+        break;
+
+      case LogicalKeyboardKey.enter:
+      case LogicalKeyboardKey.select:
+      case LogicalKeyboardKey.arrowRight:
+        if (_filteredShows.isNotEmpty) {
+          _selectShow(_selectedShowIndex);
+        }
+        break;
+    }
+  }
+
+  void _handleEpisodesNavigation(RawKeyEvent event) {
+    final episodes = _currentEpisodes;
+
+    switch (event.logicalKey) {
+      case LogicalKeyboardKey.arrowDown:
+        if (_selectedEpisodeIndex < episodes.length - 1) {
+          setState(() {
+            _selectedEpisodeIndex++;
+          });
+          _scrollAndFocusEpisode(_selectedEpisodeIndex);
+        }
+        break;
+
+      case LogicalKeyboardKey.arrowUp:
+        if (_selectedEpisodeIndex > 0) {
+          setState(() {
+            _selectedEpisodeIndex--;
+          });
+          _scrollAndFocusEpisode(_selectedEpisodeIndex);
+        }
+        break;
+
+      case LogicalKeyboardKey.enter:
+      case LogicalKeyboardKey.select:
+        if (episodes.isNotEmpty) {
+          _playEpisode(episodes[_selectedEpisodeIndex]);
+        }
+        break;
+
+      case LogicalKeyboardKey.arrowLeft:
+      case LogicalKeyboardKey.escape:
+        _setNavigationMode(NavigationMode.shows);
+        break;
+    }
+  }
+
+  List<ReligiousEpisodeModel> get _currentEpisodes {
+    if (_filteredShows.isEmpty || _selectedShowIndex >= _filteredShows.length) {
+      return [];
+    }
+    return _filteredEpisodesMap[_filteredShows[_selectedShowIndex].id] ?? [];
+  }
+
+  void _setNavigationMode(NavigationMode mode) {
+    setState(() {
+      _currentMode = mode;
+    });
+
+    if (mode == NavigationMode.shows) {
+      _navigationModeController.reverse();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (_selectedShowIndex < _showsFocusNodes.length) {
+          _showsFocusNodes[_selectedShowIndex]?.requestFocus();
+        }
+      });
+    } else {
+      _navigationModeController.forward();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (_currentEpisodes.isNotEmpty &&
+            _selectedEpisodeIndex < _currentEpisodes.length) {
+          _episodeFocusNodes[
+                  _currentEpisodes[_selectedEpisodeIndex].id.toString()]
+              ?.requestFocus();
+        }
+      });
+    }
+  }
+
+  void _handleKeyEvent(RawKeyEvent event) {
+    if (_isProcessing) return;
+
+    if (event is RawKeyDownEvent) {
+      switch (_currentMode) {
+        case NavigationMode.shows:
+          _handleShowsNavigation(event);
+          break;
+        case NavigationMode.episodes:
+          _handleEpisodesNavigation(event);
+          break;
+      }
+    }
+  }
+
+  Future<void> _scrollAndFocusEpisode(int index) async {
+    if (index < 0 || index >= _currentEpisodes.length) return;
+
+    final context =
+        _episodeFocusNodes[_currentEpisodes[index].id.toString()]?.context;
+    if (context != null) {
+      await Scrollable.ensureVisible(
+        context,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+        alignment: 0.3,
+      );
+    }
+  }
+
+  void _initializeAnimations() {
+    _navigationModeController = AnimationController(
+      duration: const Duration(milliseconds: 400),
+      vsync: this,
+    );
+
+    _pageTransitionController = AnimationController(
+      duration: const Duration(milliseconds: 800),
+      vsync: this,
+    );
+
+    _fadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _pageTransitionController,
+      curve: Curves.easeInOut,
+    ));
+
+    _slideAnimation = Tween<Offset>(
+      begin: const Offset(0.0, 0.1),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(
+      parent: _pageTransitionController,
+      curve: Curves.easeOutCubic,
+    ));
+  }
+
+  // Helper method for URL validation
+  bool _isValidImageUrl(String url) {
+    if (url.isEmpty) return false;
+
+    try {
+      final uri = Uri.parse(url);
+      if (!uri.hasAbsolutePath) return false;
+      if (uri.scheme != 'http' && uri.scheme != 'https') return false;
+
+      final path = uri.path.toLowerCase();
+      return path.contains('.jpg') ||
+          path.contains('.jpeg') ||
+          path.contains('.png') ||
+          path.contains('.webp') ||
+          path.contains('.gif') ||
+          path.contains('image') ||
+          path.contains('thumb') ||
+          path.contains('banner');
+    } catch (e) {
+      return false;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: RawKeyboardListener(
+        focusNode: _mainFocusNode,
+        autofocus: true,
+        onKey: _handleKeyEvent,
+        child: Stack(
+          children: [
+            // Beautiful Background
+            _buildBackgroundLayer(),
+
+            // Main Content with proper spacing
+            _buildMainContentWithLayout(),
+
+            // Top Navigation Bar (Fixed Position)
+            _buildTopNavigationBar(),
+
+            // Processing Overlay
+            if (_isProcessing) _buildProcessingOverlay(),
+
+            // Background refresh indicator (subtle)
+            if (_isBackgroundRefreshing) _buildBackgroundRefreshIndicator(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBackgroundRefreshIndicator() {
+    return Positioned(
+      top: 100,
+      right: 20,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: Colors.blue.withOpacity(0.8),
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.blue.withOpacity(0.3),
+              blurRadius: 8,
+              spreadRadius: 2,
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              width: 12,
+              height: 12,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+              ),
+            ),
+            const SizedBox(width: 6),
+            const Text(
+              'Updating...',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 10,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBackgroundLayer() {
+    return Stack(
+      children: [
+        // Background Image
+        Positioned.fill(
+          child: _isValidImageUrl(widget.banner)
+              ? CachedNetworkImage(
+                  imageUrl: widget.banner,
+                  fit: BoxFit.cover,
+                  placeholder: (context, url) => Container(
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Color(0xFF1a1a2e),
+                          Color(0xFF16213e),
+                          Color(0xFF0f0f23),
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                    ),
+                  ),
+                  errorWidget: (context, url, error) => Container(
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Color(0xFF1a1a2e),
+                          Color(0xFF16213e),
+                          Color(0xFF0f0f23),
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                    ),
+                  ),
+                )
+              : Container(
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        Color(0xFF1a1a2e),
+                        Color(0xFF16213e),
+                        Color(0xFF0f0f23),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                  ),
+                ),
+        ),
+
+        // Gradient Overlays for better readability
+        Positioned.fill(
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Colors.black.withOpacity(0.4),
+                  Colors.black.withOpacity(0.7),
+                  Colors.black.withOpacity(0.9),
+                ],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
+            ),
+          ),
+        ),
+
+        // Side gradients for better separation
+        Positioned.fill(
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Colors.black.withOpacity(0.8),
+                  Colors.transparent,
+                  Colors.black.withOpacity(0.6),
+                ],
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTopNavigationBar() {
+    return Positioned(
+      top: 0,
+      left: 0,
+      right: 0,
+      child: Container(
+        height: 80, // MODIFIED: Reduced height
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Colors.black.withOpacity(0.9),
+              Colors.black.withOpacity(0.7),
+              Colors.transparent,
+            ],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            child: Row(
+              children: [
+                // Channel Title
+                Expanded(
+                  flex: 2,
+                  child: Center(
+                    child: Text(
+                      widget.name.toUpperCase(),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                        letterSpacing: 1.5,
+                      ),
+                      textAlign: TextAlign.center,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMainContentWithLayout() {
+    return Positioned(
+      top: 80, // MODIFIED: Adjusted top position
+      left: 0,
+      right: 0,
+      bottom: 0, // MODIFIED: Extended to bottom
+      child: FadeTransition(
+        opacity: _fadeAnimation,
+        child: SlideTransition(
+          position: _slideAnimation,
+          child: _buildMainContent(),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMainContent() {
+    if (_isLoading && _shows.isEmpty) {
+      return _buildLoadingWidget();
+    }
+
+    if (_errorMessage.isNotEmpty && _shows.isEmpty) {
+      return _buildErrorWidget();
+    }
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 20),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Left Panel - Shows
+          Expanded(
+            flex: 2,
+            child: _buildShowsPanel(),
+          ),
+          const SizedBox(width: 20),
+          // Right Panel - Episodes
+          Expanded(
+            flex: 3,
+            child: _buildEpisodesPanel(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildShowsPanel() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.black.withOpacity(0.3),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: _currentMode == NavigationMode.shows
+              ? Colors.blue.withOpacity(0.5)
+              : Colors.white.withOpacity(0.1),
+          width: 2,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Colors.blue.withOpacity(0.2),
+                  Colors.transparent,
+                ],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(14),
+                topRight: Radius.circular(14),
+              ),
+            ),
+            child: const Text(
+              // MODIFIED: Simplified header
+              "SHOWS",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1.0,
+              ),
+            ),
+          ),
+          // Shows List
+          Expanded(
+            child: _buildShowsList(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEpisodesPanel() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.black.withOpacity(0.3),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: _currentMode == NavigationMode.episodes
+              ? Colors.green.withOpacity(0.5)
+              : Colors.white.withOpacity(0.1),
+          width: 2,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Colors.green.withOpacity(0.2),
+                  Colors.transparent,
+                ],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(14),
+                topRight: Radius.circular(14),
+              ),
+            ),
+            child: Column(
+              // MODIFIED: Simplified header
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  "EPISODES",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.0,
+                  ),
+                ),
+                if (_filteredShows.isNotEmpty &&
+                    _selectedShowIndex < _filteredShows.length)
+                  Text(
+                    _filteredShows[_selectedShowIndex].title,
+                    style: TextStyle(
+                      color: Colors.grey[400],
+                      fontSize: 12,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+              ],
+            ),
+          ),
+          // Episodes List
+          Expanded(
+            child: _isLoadingEpisodes
+                ? _buildLoadingWidget()
+                : _buildEpisodesList(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildShowsList() {
+    return ListView.builder(
+      controller: _showsScrollController,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      itemCount: _filteredShows.length,
+      itemBuilder: (context, index) => _buildShowItem(index),
+    );
+  }
+
+  void _onShowTap(int index) {
+    setState(() {
+      _selectedShowIndex = index;
+      _currentMode = NavigationMode.shows;
+    });
+    _showsFocusNodes[index]?.requestFocus();
+    _selectShow(index);
+  }
+
+  Widget _buildShowItem(int index) {
+    final show = _filteredShows[index];
+    final isFocused =
+        _currentMode == NavigationMode.shows && index == _selectedShowIndex;
+
+    return GestureDetector(
+      onTap: () => _onShowTap(index),
+      child: Focus(
+        focusNode: _showsFocusNodes[index],
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 300),
+          margin: const EdgeInsets.symmetric(vertical: 6),
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            gradient: isFocused
+                ? LinearGradient(
+                    colors: [
+                      Colors.blue.withOpacity(0.3),
+                      Colors.blue.withOpacity(0.1),
+                    ],
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
+                  )
+                : null,
+            color: !isFocused ? Colors.grey[900]?.withOpacity(0.4) : null,
+            borderRadius: BorderRadius.circular(12),
+            border: isFocused ? Border.all(color: Colors.blue, width: 2) : null,
+          ),
+          child: Row(
+            children: [
+              // Show thumbnail
+              Container(
+                width: 50,
+                height: 50,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(25),
+                  color: Colors.grey[700],
+                ),
+                child: _isValidImageUrl(show.thumbnail)
+                    ? ClipRRect(
+                        borderRadius: BorderRadius.circular(25),
+                        child: CachedNetworkImage(
+                          imageUrl: show.thumbnail,
+                          fit: BoxFit.cover,
+                          errorWidget: (context, url, error) => Center(
+                            child: Text(
+                              '${show.relOrder}',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      )
+                    : Center(
+                        child: Text(
+                          '${show.relOrder}',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+              ),
+              const SizedBox(width: 16),
+              // Show info
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      show.title,
+                      style: TextStyle(
+                        color: isFocused ? Colors.blue : Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      show.genre.isNotEmpty ? show.genre : 'Religious',
+                      style: TextStyle(
+                        color: Colors.grey[400],
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(
+                Icons.chevron_right,
+                color: isFocused ? Colors.blue : Colors.grey[600],
+                size: 24,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEpisodesList() {
+    final episodes = _currentEpisodes;
+
+    if (episodes.isEmpty) {
+      return _buildEmptyEpisodesState();
+    }
+
+    return ListView.builder(
+      controller: _scrollController,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      itemCount: episodes.length,
+      itemBuilder: (context, index) => _buildEpisodeItem(index),
+    );
+  }
+
+  void _onEpisodeTap(int index) {
+    if (_currentEpisodes.isNotEmpty && index < _currentEpisodes.length) {
+      setState(() {
+        _selectedEpisodeIndex = index;
+        _currentMode = NavigationMode.episodes;
+      });
+      _episodeFocusNodes[_currentEpisodes[index].id.toString()]?.requestFocus();
+      _playEpisode(_currentEpisodes[index]);
+    }
+  }
+
   Widget _buildEpisodeItem(int index) {
     final episodes = _currentEpisodes;
     if (index >= episodes.length) return Container();
-    
+
     final episode = episodes[index];
     final isSelected = index == _selectedEpisodeIndex;
     final isFocused = _currentMode == NavigationMode.episodes && isSelected;
@@ -3186,17 +3652,21 @@ class _ReligiousChannelDetailsPageState extends State<ReligiousChannelDetailsPag
                             child: const Center(
                               child: CircularProgressIndicator(
                                 strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+                                valueColor:
+                                    AlwaysStoppedAnimation<Color>(Colors.blue),
                               ),
                             ),
                           ),
                           errorWidget: (context, url, error) {
                             // Fallback to show thumbnail
-                            if (_filteredShows.isNotEmpty && 
+                            if (_filteredShows.isNotEmpty &&
                                 _selectedShowIndex < _filteredShows.length &&
-                                _isValidImageUrl(_filteredShows[_selectedShowIndex].thumbnail)) {
+                                _isValidImageUrl(
+                                    _filteredShows[_selectedShowIndex]
+                                        .thumbnail)) {
                               return CachedNetworkImage(
-                                imageUrl: _filteredShows[_selectedShowIndex].thumbnail,
+                                imageUrl: _filteredShows[_selectedShowIndex]
+                                    .thumbnail,
                                 width: 140,
                                 height: 90,
                                 fit: BoxFit.cover,
@@ -3208,7 +3678,8 @@ class _ReligiousChannelDetailsPageState extends State<ReligiousChannelDetailsPag
                                       width: 140,
                                       height: 90,
                                       fit: BoxFit.cover,
-                                      errorWidget: (context, url, error) => Container(),
+                                      errorWidget: (context, url, error) =>
+                                          Container(),
                                     );
                                   }
                                   return Container();
@@ -3269,7 +3740,8 @@ class _ReligiousChannelDetailsPageState extends State<ReligiousChannelDetailsPag
               // Episode Information
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -3285,29 +3757,14 @@ class _ReligiousChannelDetailsPageState extends State<ReligiousChannelDetailsPag
                         overflow: TextOverflow.ellipsis,
                       ),
 
-                      const SizedBox(height: 8),
-
-                      // Episode Description (if available and not too long)
-                      if (episode.episodeDescription.isNotEmpty && 
-                          episode.episodeDescription.length < 200)
-                        Text(
-                          episode.episodeDescription,
-                          style: TextStyle(
-                            color: Colors.grey[400],
-                            fontSize: 13,
-                            height: 1.3,
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-
                       const SizedBox(height: 12),
 
                       // Episode Metadata
                       Row(
                         children: [
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 5),
                             decoration: BoxDecoration(
                               gradient: LinearGradient(
                                 colors: isFocused
@@ -3330,45 +3787,11 @@ class _ReligiousChannelDetailsPageState extends State<ReligiousChannelDetailsPag
                             child: Text(
                               'Episode ${episode.episodeOrder}',
                               style: TextStyle(
-                                color: isFocused ? Colors.green : Colors.grey[300],
+                                color:
+                                    isFocused ? Colors.green : Colors.grey[300],
                                 fontSize: 11,
                                 fontWeight: FontWeight.w600,
                               ),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: episode.source == 'youtube' 
-                                  ? Colors.red.withOpacity(0.2)
-                                  : Colors.purple.withOpacity(0.2),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(
-                                  episode.source == 'youtube' 
-                                      ? Icons.play_circle_filled
-                                      : Icons.video_library,
-                                  color: episode.source == 'youtube' 
-                                      ? Colors.red 
-                                      : Colors.purple,
-                                  size: 12,
-                                ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  episode.source.toUpperCase(),
-                                  style: TextStyle(
-                                    color: episode.source == 'youtube' 
-                                        ? Colors.red 
-                                        : Colors.purple,
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
                             ),
                           ),
                         ],
@@ -3423,1024 +3846,6 @@ class _ReligiousChannelDetailsPageState extends State<ReligiousChannelDetailsPag
     );
   }
 
-  // Helper methods that were missing
-  List<ReligiousEpisodeModel> get _currentEpisodes {
-    if (_filteredShows.isEmpty || _selectedShowIndex >= _filteredShows.length) {
-      return [];
-    }
-    return _filteredEpisodesMap[_filteredShows[_selectedShowIndex].id] ?? [];
-  }
-
-  void _onEpisodeTap(int index) {
-    if (_currentEpisodes.isNotEmpty && index < _currentEpisodes.length) {
-      setState(() {
-        _selectedEpisodeIndex = index;
-        _currentMode = NavigationMode.episodes;
-      });
-      _episodeFocusNodes[_currentEpisodes[index].id.toString()]?.requestFocus();
-      _playEpisode(_currentEpisodes[index]);
-    }
-  }
-
-  Future<void> _playEpisode(ReligiousEpisodeModel episode) async {
-    if (_isProcessing) return;
-
-    setState(() => _isProcessing = true);
-
-    try {
-      if (mounted) {
-        if (isYoutubeUrl(episode.url)) {
-          await Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => CustomYoutubePlayer(
-                // videoUrl: episode.url,
-                // name: episode.title,
-
-              videoData: VideoData(
-                id: episode.url,
-                title: episode.title ,
-                youtubeUrl: episode.url,
-                thumbnail: episode.episodeImage ?? '',
-                description: episode.episodeDescription ?? '',
-              ), 
-              playlist: [
-                VideoData(
-                  id: episode.url,
-                  title: episode.title,
-                  youtubeUrl: episode.url,
-                  thumbnail: episode.episodeImage ?? '',
-                  description: episode.episodeDescription ?? '',
-                ),
-              ],
-              ),
-              // builder: (context) => CustomYoutubePlayer(
-              //   videoUrl: episode.url,
-              //   name: episode.title,
-              // ),
-            ),
-          );
-        } else {
-          await Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => CustomVideoPlayer(
-                videoUrl: episode.url,
-              ),
-            ),
-          );
-        }
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Error playing video'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    } finally {
-      if (mounted) {
-        setState(() => _isProcessing = false);
-      }
-    }
-  }
-
-  bool isYoutubeUrl(String? url) {
-    if (url == null || url.isEmpty) return false;
-    url = url.toLowerCase().trim();
-    return RegExp(r'^[a-zA-Z0-9_-]{11}$').hasMatch(url) ||
-        url.contains('youtube.com') ||
-        url.contains('youtu.be') ||
-        url.contains('youtube.com/shorts/');
-  }
-
-  bool _isValidImageUrl(String url) {
-    if (url.isEmpty) return false;
-
-    try {
-      final uri = Uri.parse(url);
-      if (!uri.hasAbsolutePath) return false;
-      if (uri.scheme != 'http' && uri.scheme != 'https') return false;
-
-      final path = uri.path.toLowerCase();
-      return path.contains('.jpg') ||
-          path.contains('.jpeg') ||
-          path.contains('.png') ||
-          path.contains('.webp') ||
-          path.contains('.gif') ||
-          path.contains('image') ||
-          path.contains('thumb') ||
-          path.contains('banner');
-    } catch (e) {
-      return false;
-    }
-  }
-
-  // Perform background refresh without showing loading indicators
-  Future<void> _performBackgroundRefresh() async {
-    print('🔄 Starting religious shows background refresh');
-    setState(() {
-      _isBackgroundRefreshing = true;
-    });
-
-    try {
-      final freshShows = await _fetchShowsFromAPIDirectly();
-
-      if (freshShows != null) {
-        // Compare with cached data
-        final cachedShows = _shows;
-        final hasChanges = ReligiousShowsCacheManager.areShowsDifferent(
-            cachedShows, freshShows);
-
-        if (hasChanges) {
-          print('🔄 Religious shows changes detected, updating UI silently');
-
-          // Save new data to cache
-          await ReligiousShowsCacheManager.saveShowsCache(widget.id, freshShows);
-
-          // Update UI without disrupting user experience
-          await _updateShowsData(freshShows);
-        } else {
-          print('✅ No religious shows changes detected in background refresh');
-        }
-      }
-    } catch (e) {
-      print('❌ Religious shows background refresh failed: $e');
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isBackgroundRefreshing = false;
-        });
-      }
-    }
-  }
-
-  // Update shows data while preserving user's current selection
-  Future<void> _updateShowsData(List<ReligiousShowModel> newShows) async {
-    final activeShows = _filterActiveShows(newShows);
-    final currentSelectedShowId = _filteredShows.isNotEmpty &&
-            _selectedShowIndex < _filteredShows.length
-        ? _filteredShows[_selectedShowIndex].id
-        : null;
-
-    setState(() {
-      _shows = newShows;
-      _filteredShows = activeShows;
-    });
-
-    // Try to maintain user's current selection
-    if (currentSelectedShowId != null) {
-      final newIndex =
-          _filteredShows.indexWhere((s) => s.id == currentSelectedShowId);
-      if (newIndex >= 0) {
-        setState(() {
-          _selectedShowIndex = newIndex;
-        });
-      }
-    }
-
-    // Recreate focus nodes if needed
-    _showsFocusNodes.clear();
-    for (int i = 0; i < _filteredShows.length; i++) {
-      _showsFocusNodes[i] = FocusNode();
-    }
-  }
-
-  // Fetch shows from API with loading indicator
-  Future<void> _fetchShowsFromAPI({bool showLoading = false}) async {
-    if (showLoading) {
-      setState(() {
-        _isLoading = true;
-        _errorMessage = "Loading shows...";
-      });
-    }
-
-    try {
-      final shows = await _fetchShowsFromAPIDirectly();
-
-      if (shows != null) {
-        // Save to cache
-        await ReligiousShowsCacheManager.saveShowsCache(widget.id, shows);
-
-        // Update UI
-        await _loadShowsFromCache(shows);
-      }
-    } catch (e) {
-      setState(() {
-        _isLoading = false;
-        _errorMessage = "Error: ${e.toString()}";
-      });
-    }
-  }
-
-  // Direct API call for shows
-  Future<List<ReligiousShowModel>?> _fetchShowsFromAPIDirectly() async {
-    final prefs = await SharedPreferences.getInstance();
-    final authKey = prefs.getString('auth_key') ?? _authKey;
-
-    final response = await https.get(
-      Uri.parse(
-          'https://acomtv.coretechinfo.com/public/api/getReligiousShows/${widget.id}'),
-      headers: {
-        'auth-key': authKey,
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-    ).timeout(const Duration(seconds: 15));
-
-    if (response.statusCode == 200) {
-      String responseBody = response.body.trim();
-      if (responseBody.startsWith('[') || responseBody.startsWith('{')) {
-        final List<dynamic> data = jsonDecode(responseBody);
-        return data.map((show) => ReligiousShowModel.fromJson(show)).toList();
-      }
-    }
-
-    throw Exception('Failed to load religious shows (${response.statusCode})');
-  }
-
-  void _selectShow(int index) {
-    if (index >= 0 && index < _filteredShows.length) {
-      setState(() {
-        _selectedShowIndex = index;
-      });
-      _fetchEpisodes(_filteredShows[index].id);
-    }
-  }
-
-  // Enhanced episodes fetching with cache
-  Future<void> _fetchEpisodes(int showId) async {
-    // Check if already loaded
-    if (_filteredEpisodesMap.containsKey(showId)) {
-      setState(() {
-        _selectedShowIndex =
-            _filteredShows.indexWhere((show) => show.id == showId);
-        _selectedEpisodeIndex = 0;
-      });
-      _setNavigationMode(NavigationMode.episodes);
-      return;
-    }
-
-    // Try cache first
-    final cachedEpisodes =
-        await ReligiousShowsCacheManager.getEpisodesCache(showId);
-
-    if (cachedEpisodes != null) {
-      // Load from cache instantly
-      await _loadEpisodesFromCache(showId, cachedEpisodes);
-    } else {
-      // Load from API with loading indicator
-      await _fetchEpisodesFromAPI(showId, showLoading: true);
-    }
-  }
-
-  // Load episodes from cache
-  Future<void> _loadEpisodesFromCache(
-      int showId, List<ReligiousEpisodeModel> cachedEpisodes) async {
-    final activeEpisodes = _filterActiveEpisodes(cachedEpisodes);
-
-    _episodeFocusNodes.clear();
-    for (var episode in activeEpisodes) {
-      _episodeFocusNodes[episode.id.toString()] = FocusNode();
-    }
-
-    setState(() {
-      _episodesMap[showId] = cachedEpisodes;
-      _filteredEpisodesMap[showId] = activeEpisodes;
-      _selectedShowIndex =
-          _filteredShows.indexWhere((s) => s.id == showId);
-      _selectedEpisodeIndex = 0;
-      _isLoadingEpisodes = false;
-    });
-
-    _setNavigationMode(NavigationMode.episodes);
-  }
-
-  // Fetch episodes from API with loading indicator
-  Future<void> _fetchEpisodesFromAPI(int showId,
-      {bool showLoading = false}) async {
-    if (showLoading) {
-      setState(() {
-        _isLoadingEpisodes = true;
-      });
-    }
-
-    try {
-      final episodes = await _fetchEpisodesFromAPIDirectly(showId);
-
-      if (episodes != null) {
-        // Save to cache
-        await ReligiousShowsCacheManager.saveEpisodesCache(showId, episodes);
-
-        // Update UI
-        await _loadEpisodesFromCache(showId, episodes);
-      }
-    } catch (e) {
-      setState(() {
-        _isLoadingEpisodes = false;
-        _errorMessage = "Error loading episodes: ${e.toString()}";
-      });
-    }
-  }
-
-  // Direct API call for episodes
-  Future<List<ReligiousEpisodeModel>?> _fetchEpisodesFromAPIDirectly(
-      int showId) async {
-    final prefs = await SharedPreferences.getInstance();
-    final authKey = prefs.getString('auth_key') ?? _authKey;
-
-    final response = await https.get(
-      Uri.parse(
-          'https://acomtv.coretechinfo.com/public/api/getReligiousShowsEpisodes/$showId'),
-      headers: {
-        'auth-key': authKey,
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-    ).timeout(const Duration(seconds: 15));
-
-    if (response.statusCode == 200) {
-      String responseBody = response.body.trim();
-      if (responseBody.startsWith('[') || responseBody.startsWith('{')) {
-        final List<dynamic> data = jsonDecode(responseBody);
-        return data.map((e) => ReligiousEpisodeModel.fromJson(e)).toList();
-      }
-    }
-
-    throw Exception('Failed to load episodes for show $showId');
-  }
-
-  void _setNavigationMode(NavigationMode mode) {
-    setState(() {
-      _currentMode = mode;
-    });
-
-    if (mode == NavigationMode.shows) {
-      _navigationModeController.reverse();
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (_selectedShowIndex < _showsFocusNodes.length) {
-          _showsFocusNodes[_selectedShowIndex]?.requestFocus();
-        }
-      });
-    } else {
-      _navigationModeController.forward();
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (_currentEpisodes.isNotEmpty && _selectedEpisodeIndex < _currentEpisodes.length) {
-          _episodeFocusNodes[_currentEpisodes[_selectedEpisodeIndex].id.toString()]
-              ?.requestFocus();
-        }
-      });
-    }
-  }
-
-  void _handleKeyEvent(RawKeyEvent event) {
-    if (_isProcessing) return;
-
-    if (event is RawKeyDownEvent) {
-      switch (_currentMode) {
-        case NavigationMode.shows:
-          _handleShowsNavigation(event);
-          break;
-        case NavigationMode.episodes:
-          _handleEpisodesNavigation(event);
-          break;
-      }
-    }
-  }
-
-  void _handleShowsNavigation(RawKeyEvent event) {
-    switch (event.logicalKey) {
-      case LogicalKeyboardKey.arrowDown:
-        if (_selectedShowIndex < _filteredShows.length - 1) {
-          setState(() {
-            _selectedShowIndex++;
-          });
-          _showsFocusNodes[_selectedShowIndex]?.requestFocus();
-        }
-        break;
-
-      case LogicalKeyboardKey.arrowUp:
-        if (_selectedShowIndex > 0) {
-          setState(() {
-            _selectedShowIndex--;
-          });
-          _showsFocusNodes[_selectedShowIndex]?.requestFocus();
-        }
-        break;
-
-      case LogicalKeyboardKey.enter:
-      case LogicalKeyboardKey.select:
-      case LogicalKeyboardKey.arrowRight:
-        if (_filteredShows.isNotEmpty) {
-          _selectShow(_selectedShowIndex);
-        }
-        break;
-    }
-  }
-
-  void _handleEpisodesNavigation(RawKeyEvent event) {
-    final episodes = _currentEpisodes;
-
-    switch (event.logicalKey) {
-      case LogicalKeyboardKey.arrowDown:
-        if (_selectedEpisodeIndex < episodes.length - 1) {
-          setState(() {
-            _selectedEpisodeIndex++;
-          });
-          _scrollAndFocusEpisode(_selectedEpisodeIndex);
-        }
-        break;
-
-      case LogicalKeyboardKey.arrowUp:
-        if (_selectedEpisodeIndex > 0) {
-          setState(() {
-            _selectedEpisodeIndex--;
-          });
-          _scrollAndFocusEpisode(_selectedEpisodeIndex);
-        }
-        break;
-
-      case LogicalKeyboardKey.enter:
-      case LogicalKeyboardKey.select:
-        if (episodes.isNotEmpty) {
-          _playEpisode(episodes[_selectedEpisodeIndex]);
-        }
-        break;
-
-      case LogicalKeyboardKey.arrowLeft:
-      case LogicalKeyboardKey.escape:
-        _setNavigationMode(NavigationMode.shows);
-        break;
-    }
-  }
-
-  Future<void> _scrollAndFocusEpisode(int index) async {
-    if (index < 0 || index >= _currentEpisodes.length) return;
-
-    final context = _episodeFocusNodes[_currentEpisodes[index].id.toString()]?.context;
-    if (context != null) {
-      await Scrollable.ensureVisible(
-        context,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-        alignment: 0.3,
-      );
-    }
-  }
-
-  void _initializeAnimations() {
-    _navigationModeController = AnimationController(
-      duration: const Duration(milliseconds: 400),
-      vsync: this,
-    );
-
-    _instructionController = AnimationController(
-      duration: const Duration(milliseconds: 600),
-      vsync: this,
-    );
-
-    _pageTransitionController = AnimationController(
-      duration: const Duration(milliseconds: 800),
-      vsync: this,
-    );
-
-    _fadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _pageTransitionController,
-      curve: Curves.easeInOut,
-    ));
-
-    _slideAnimation = Tween<Offset>(
-      begin: const Offset(0.0, 0.1),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _pageTransitionController,
-      curve: Curves.easeOutCubic,
-    ));
-  }
-
-  void _startInstructionTimer() {
-    _instructionController.forward();
-    _instructionTimer = Timer(const Duration(seconds: 6), () {
-      if (mounted) {
-        _instructionController.reverse();
-        setState(() {
-          _showInstructions = false;
-        });
-      }
-    });
-  }
-
-  void _showInstructionsAgain() {
-    setState(() {
-      _showInstructions = true;
-    });
-    _instructionController.forward();
-    _startInstructionTimer();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: RawKeyboardListener(
-        focusNode: _mainFocusNode,
-        autofocus: true,
-        onKey: _handleKeyEvent,
-        child: Stack(
-          children: [
-            // Beautiful Background
-            _buildBackgroundLayer(),
-
-            // Main Content with proper spacing
-            _buildMainContentWithLayout(),
-
-            // Top Navigation Bar (Fixed Position)
-            _buildTopNavigationBar(),
-
-            // Help Button (Fixed Position)
-            _buildHelpButton(),
-
-            // Instructions Overlay (Bottom)
-            if (_showInstructions) _buildInstructionsOverlay(),
-
-            // Processing Overlay
-            if (_isProcessing) _buildProcessingOverlay(),
-
-            // Background refresh indicator (subtle)
-            if (_isBackgroundRefreshing) _buildBackgroundRefreshIndicator(),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildBackgroundLayer() {
-    return Stack(
-      children: [
-        // Background Image
-        Positioned.fill(
-          child: _isValidImageUrl(widget.banner)
-              ? CachedNetworkImage(
-                  imageUrl: widget.banner,
-                  fit: BoxFit.cover,
-                  placeholder: (context, url) => Container(
-                    decoration: const BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          Color(0xFF1a1a2e),
-                          Color(0xFF16213e),
-                          Color(0xFF0f0f23),
-                        ],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                    ),
-                  ),
-                  errorWidget: (context, url, error) => Container(
-                    decoration: const BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          Color(0xFF1a1a2e),
-                          Color(0xFF16213e),
-                          Color(0xFF0f0f23),
-                        ],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                    ),
-                  ),
-                )
-              : Container(
-                  decoration: const BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        Color(0xFF1a1a2e),
-                        Color(0xFF16213e),
-                        Color(0xFF0f0f23),
-                      ],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                  ),
-                ),
-        ),
-
-        // Gradient Overlays for better readability
-        Positioned.fill(
-          child: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Colors.black.withOpacity(0.4),
-                  Colors.black.withOpacity(0.7),
-                  Colors.black.withOpacity(0.9),
-                ],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-              ),
-            ),
-          ),
-        ),
-
-        // Side gradients for better separation
-        Positioned.fill(
-          child: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Colors.black.withOpacity(0.8),
-                  Colors.transparent,
-                  Colors.black.withOpacity(0.6),
-                ],
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  // Add placeholder methods for missing UI components
-  Widget _buildMainContentWithLayout() {
-    return Positioned(
-      top: 100,
-      left: 0,
-      right: 0,
-      bottom: 80,
-      child: FadeTransition(
-        opacity: _fadeAnimation,
-        child: SlideTransition(
-          position: _slideAnimation,
-          child: _buildMainContent(),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildMainContent() {
-    if (_isLoading && _shows.isEmpty) {
-      return _buildLoadingWidget();
-    }
-
-    if (_errorMessage.isNotEmpty && _shows.isEmpty) {
-      return _buildErrorWidget();
-    }
-
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Left Panel - Shows
-          Expanded(
-            flex: 2,
-            child: _buildShowsPanel(),
-          ),
-          const SizedBox(width: 20),
-          // Right Panel - Episodes
-          Expanded(
-            flex: 3,
-            child: _buildEpisodesPanel(),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildShowsPanel() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.3),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: _currentMode == NavigationMode.shows
-              ? Colors.blue.withOpacity(0.5)
-              : Colors.white.withOpacity(0.1),
-          width: 2,
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Header
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Colors.blue.withOpacity(0.2),
-                  Colors.transparent,
-                ],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-              ),
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(14),
-                topRight: Radius.circular(14),
-              ),
-            ),
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.blue.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Icon(
-                    Icons.list_alt,
-                    color: Colors.blue,
-                    size: 24,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                const Text(
-                  "ACTIVE SHOWS",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1.0,
-                  ),
-                ),
-                const Spacer(),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: Colors.blue.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    '${_filteredShows.length}',
-                    style: const TextStyle(
-                      color: Colors.blue,
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          // Shows List
-          Expanded(
-            child: _buildShowsList(),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildEpisodesPanel() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.3),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: _currentMode == NavigationMode.episodes
-              ? Colors.green.withOpacity(0.5)
-              : Colors.white.withOpacity(0.1),
-          width: 2,
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Header
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Colors.green.withOpacity(0.2),
-                  Colors.transparent,
-                ],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-              ),
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(14),
-                topRight: Radius.circular(14),
-              ),
-            ),
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.green.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Icon(
-                    Icons.play_circle_outline,
-                    color: Colors.green,
-                    size: 24,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      "ACTIVE EPISODES",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1.0,
-                      ),
-                    ),
-                    if (_filteredShows.isNotEmpty &&
-                        _selectedShowIndex < _filteredShows.length)
-                      Text(
-                        _filteredShows[_selectedShowIndex].title,
-                        style: TextStyle(
-                          color: Colors.grey[400],
-                          fontSize: 12,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                  ],
-                ),
-                const Spacer(),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: Colors.green.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    '${_currentEpisodes.length}',
-                    style: const TextStyle(
-                      color: Colors.green,
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          // Episodes List
-          Expanded(
-            child: _isLoadingEpisodes
-                ? _buildLoadingWidget()
-                : _buildEpisodesList(),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildShowsList() {
-    return ListView.builder(
-      controller: _showsScrollController,
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      itemCount: _filteredShows.length,
-      itemBuilder: (context, index) => _buildShowItem(index),
-    );
-  }
-
-  Widget _buildShowItem(int index) {
-    final show = _filteredShows[index];
-    final isSelected = index == _selectedShowIndex;
-    final isFocused = _currentMode == NavigationMode.shows && isSelected;
-
-    return GestureDetector(
-      onTap: () => _onShowTap(index),
-      child: Focus(
-        focusNode: _showsFocusNodes[index],
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 300),
-          margin: const EdgeInsets.symmetric(vertical: 6),
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            gradient: isFocused
-                ? LinearGradient(
-                    colors: [
-                      Colors.blue.withOpacity(0.3),
-                      Colors.blue.withOpacity(0.1),
-                    ],
-                    begin: Alignment.centerLeft,
-                    end: Alignment.centerRight,
-                  )
-                : null,
-            color: !isFocused
-                ? Colors.grey[900]?.withOpacity(0.4)
-                : null,
-            borderRadius: BorderRadius.circular(12),
-            border: isFocused
-                ? Border.all(color: Colors.blue, width: 2)
-                : null,
-          ),
-          child: Row(
-            children: [
-              // Show thumbnail
-              Container(
-                width: 50,
-                height: 50,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(25),
-                  color: Colors.grey[700],
-                ),
-                child: _isValidImageUrl(show.thumbnail)
-                    ? ClipRRect(
-                        borderRadius: BorderRadius.circular(25),
-                        child: CachedNetworkImage(
-                          imageUrl: show.thumbnail,
-                          fit: BoxFit.cover,
-                          errorWidget: (context, url, error) => Center(
-                            child: Text(
-                              '${show.relOrder}',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                      )
-                    : Center(
-                        child: Text(
-                          '${show.relOrder}',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-              ),
-              const SizedBox(width: 16),
-              // Show info
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      show.title,
-                      style: TextStyle(
-                        color: isFocused ? Colors.blue : Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      show.genre.isNotEmpty ? show.genre : 'Religious',
-                      style: TextStyle(
-                        color: Colors.grey[400],
-                        fontSize: 12,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Icon(
-                Icons.chevron_right,
-                color: isFocused ? Colors.blue : Colors.grey[600],
-                size: 24,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _onShowTap(int index) {
-    setState(() {
-      _selectedShowIndex = index;
-      _currentMode = NavigationMode.shows;
-    });
-    _showsFocusNodes[index]?.requestFocus();
-    _selectShow(index);
-  }
-
-  Widget _buildEpisodesList() {
-    final episodes = _currentEpisodes;
-
-    if (episodes.isEmpty) {
-      return _buildEmptyEpisodesState();
-    }
-
-    return ListView.builder(
-      controller: _scrollController,
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      itemCount: episodes.length,
-      itemBuilder: (context, index) => _buildEpisodeItem(index),
-    );
-  }
-
   Widget _buildEmptyEpisodesState() {
     return Center(
       child: Column(
@@ -4453,7 +3858,7 @@ class _ReligiousChannelDetailsPageState extends State<ReligiousChannelDetailsPag
           ),
           const SizedBox(height: 20),
           Text(
-            "No Episodes Available",
+            "No Episodes Found", // MODIFIED: Updated message
             style: TextStyle(
               color: Colors.grey[400],
               fontSize: 18,
@@ -4462,234 +3867,6 @@ class _ReligiousChannelDetailsPageState extends State<ReligiousChannelDetailsPag
           ),
         ],
       ),
-    );
-  }
-
-  // Add remaining UI methods
-  Widget _buildTopNavigationBar() {
-    return Positioned(
-      top: 0,
-      left: 0,
-      right: 0,
-      child: Container(
-        height: 100,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Colors.black.withOpacity(0.9),
-              Colors.black.withOpacity(0.7),
-              Colors.transparent,
-            ],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            child: Row(
-              children: [
-                // Current Mode Indicator
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.8),
-                    borderRadius: BorderRadius.circular(25),
-                    border: Border.all(
-                      color: _currentMode == NavigationMode.shows
-                          ? Colors.blue
-                          : Colors.green,
-                      width: 2,
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        _currentMode == NavigationMode.shows
-                            ? Icons.list_alt
-                            : Icons.play_circle_outline,
-                        color: _currentMode == NavigationMode.shows
-                            ? Colors.blue
-                            : Colors.green,
-                        size: 20,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        _currentMode == NavigationMode.shows
-                            ? 'BROWSING SHOWS'
-                            : 'BROWSING EPISODES',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const Spacer(),
-                // Channel Title
-                Expanded(
-                  flex: 2,
-                  child: Center(
-                    child: Text(
-                      widget.name.toUpperCase(),
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                        letterSpacing: 1.5,
-                      ),
-                      textAlign: TextAlign.center,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ),
-                const Spacer(),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildHelpButton() {
-    return Positioned(
-      top: 50,
-      right: 20,
-      child: SafeArea(
-        child: GestureDetector(
-          onTap: _showInstructionsAgain,
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.8),
-              borderRadius: BorderRadius.circular(25),
-              border: Border.all(color: Colors.white.withOpacity(0.5), width: 1),
-            ),
-            child: const Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.help_outline, color: Colors.white, size: 18),
-                SizedBox(width: 6),
-                Text(
-                  'HELP',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 12,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildInstructionsOverlay() {
-    return Positioned(
-      bottom: 0,
-      left: 0,
-      right: 0,
-      child: FadeTransition(
-        opacity: _instructionController,
-        child: Container(
-          margin: const EdgeInsets.all(20),
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                Colors.black.withOpacity(0.95),
-                Colors.black.withOpacity(0.85),
-              ],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-            ),
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: highlightColor.withOpacity(0.3), width: 1),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.gamepad, color: highlightColor, size: 20),
-                  const SizedBox(width: 8),
-                  Text(
-                    'NAVIGATION GUIDE',
-                    style: TextStyle(
-                      color: highlightColor,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                      letterSpacing: 1.0,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  if (_currentMode == NavigationMode.shows) ...[
-                    _buildInstructionItem('↑ ↓', 'Navigate Shows', Icons.list_alt),
-                    _buildInstructionItem('→ ENTER', 'Select Show', Icons.chevron_right),
-                    _buildInstructionItem('← BACK', 'Exit', Icons.exit_to_app),
-                  ] else ...[
-                    _buildInstructionItem('↑ ↓', 'Navigate Episodes', Icons.video_library),
-                    _buildInstructionItem('ENTER', 'Play Episode', Icons.play_arrow),
-                    _buildInstructionItem('← BACK', 'Back to Shows', Icons.arrow_back),
-                  ],
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildInstructionItem(String keys, String action, IconData icon) {
-    return Column(
-      children: [
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                highlightColor.withOpacity(0.3),
-                highlightColor.withOpacity(0.1),
-              ],
-            ),
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: highlightColor.withOpacity(0.5)),
-          ),
-          child: Text(
-            keys,
-            style: TextStyle(
-              color: highlightColor,
-              fontWeight: FontWeight.bold,
-              fontSize: 12,
-            ),
-          ),
-        ),
-        const SizedBox(height: 6),
-        Icon(icon, color: Colors.white70, size: 16),
-        const SizedBox(height: 4),
-        Text(
-          action,
-          style: const TextStyle(
-            color: Colors.white70,
-            fontSize: 11,
-          ),
-          textAlign: TextAlign.center,
-        ),
-      ],
     );
   }
 
@@ -4753,7 +3930,8 @@ class _ReligiousChannelDetailsPageState extends State<ReligiousChannelDetailsPag
               style: ElevatedButton.styleFrom(
                 backgroundColor: highlightColor,
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
               ),
             ),
           ],
@@ -4799,49 +3977,6 @@ class _ReligiousChannelDetailsPageState extends State<ReligiousChannelDetailsPag
               ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildBackgroundRefreshIndicator() {
-    return Positioned(
-      top: 100,
-      right: 20,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        decoration: BoxDecoration(
-          color: Colors.blue.withOpacity(0.8),
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.blue.withOpacity(0.3),
-              blurRadius: 8,
-              spreadRadius: 2,
-            ),
-          ],
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SizedBox(
-              width: 12,
-              height: 12,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-              ),
-            ),
-            const SizedBox(width: 6),
-            const Text(
-              'Updating...',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 10,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
         ),
       ),
     );

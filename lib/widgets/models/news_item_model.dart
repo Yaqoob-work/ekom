@@ -403,6 +403,7 @@ class NewsItemModel {
   final String url;
   final String videoId;
   final String streamType;
+  final String streamingType;
   final String type;
   final String genres;
   final String status;
@@ -444,6 +445,7 @@ class NewsItemModel {
     required this.url,
     this.videoId = '',
     this.streamType = '',
+    this.streamingType = '',
     this.type = '',
     this.genres = '',
     this.status = '',
@@ -502,6 +504,7 @@ class NewsItemModel {
       url: safeToString(json['url']?? json['movie_url'] ),
       videoId: safeToString(json['videoId']),
       streamType: safeToString(json['stream_type']),
+      streamingType: safeToString(json['streaming_type']),
       type: safeToString(json['type']),
       genres: safeToString(json['genres']),
       status: safeIntToString(json['status']),  // Convert int to String properly
@@ -547,6 +550,7 @@ class NewsItemModel {
       'url': url,
       'videoId': videoId,
       'stream_type': streamType,
+      'streaming_type': streamingType,
       'type': type,
       'genres': genres,
       'status': status,
@@ -588,6 +592,7 @@ class NewsItemModel {
     String? url,
     String? videoId,
     String? streamType,
+    String? streamingType,
     String? type,
     String? genres,
     String? status,
@@ -627,6 +632,7 @@ class NewsItemModel {
       url: url ?? this.url,
       videoId: videoId ?? this.videoId,
       streamType: streamType ?? this.streamType,
+      streamingType: streamingType ?? this.streamingType,
       type: type ?? this.type,
       genres: genres ?? this.genres,
       status: status ?? this.status,

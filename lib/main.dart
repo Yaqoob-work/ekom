@@ -1527,6 +1527,7 @@ import 'package:mobi_tv_entertainment/menu_screens/search_screen.dart';
 import 'package:mobi_tv_entertainment/menu_screens/live_screen.dart';
 import 'package:http/http.dart' as https;
 import 'package:mobi_tv_entertainment/provider/color_provider.dart';
+import 'package:mobi_tv_entertainment/provider/device_info_provider.dart';
 import 'package:mobi_tv_entertainment/provider/focus_provider.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
@@ -1599,6 +1600,9 @@ class MyHttpOverrides extends HttpOverrides {
 }
 
 void main() async {
+
+WidgetsFlutterBinding.ensureInitialized();
+
   HttpOverrides.global = MyHttpOverrides();
   await initializeDateFormatting(null, null);
      SystemChrome.setEnabledSystemUIMode(
@@ -1615,11 +1619,19 @@ void main() async {
       systemNavigationBarIconBrightness: Brightness.light,
     ),
   );
+
+
+    // ✅ Provider ko initialize karein
+  final deviceInfoProvider = DeviceInfoProvider();
+  await deviceInfoProvider.loadDeviceInfo(); // ✅ Device info pehle hi load kar lein
+
   runApp(
     MultiProvider(
       providers: [
+        // ChangeNotifierProvider(create: (_) => DeviceInfoProvider()),
         ChangeNotifierProvider(create: (_) => ColorProvider()),
         ChangeNotifierProvider(create: (_) => FocusProvider()),
+        ChangeNotifierProvider.value(value: deviceInfoProvider),
         // ChangeNotifierProvider(create: (_) => SharedDataProvider()),
       ],
       child: MyApp(),
