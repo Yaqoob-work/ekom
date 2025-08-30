@@ -6,14 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:mobi_tv_entertainment/home_screen_pages/tv_show/tv_show.dart';
 import 'package:mobi_tv_entertainment/home_screen_pages/tv_show/tv_show_final_details_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:convert';
-import 'package:http/http.dart' as https;
-import 'dart:math' as math;
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:mobi_tv_entertainment/home_screen_pages/tv_show/tv_show.dart';
-import 'package:mobi_tv_entertainment/home_screen_pages/tv_show/tv_show_final_details_page.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
 
 // ✅ IMPORT करें TvShowFinalDetailsPage
 
@@ -313,11 +306,12 @@ Future<void> fetchTVShowsDetails() async {
     String authKey = prefs.getString('auth_key') ?? '';
 
     final response = await https.get(
-      Uri.parse('https://acomtv.coretechinfo.com/public/api/getTvShows/${widget.tvChannelId}'),
+      Uri.parse('https://acomtv.coretechinfo.com/api/v2/getTvShows/${widget.tvChannelId}'),
       headers: {
         'auth-key': authKey,
         'Content-Type': 'application/json',
         'Accept': 'application/json',
+        'domain': 'coretechinfo.com'
       },
     );
 
@@ -496,11 +490,12 @@ Future<void> _refreshDataInBackground() async {
     String authKey = prefs.getString('auth_key') ?? '';
 
     final response = await https.get(
-      Uri.parse('https://acomtv.coretechinfo.com/public/api/getTvShows/${widget.tvChannelId}'),
+      Uri.parse('https://acomtv.coretechinfo.com/api/v2/getTvShows/${widget.tvChannelId}'),
       headers: {
         'auth-key': authKey,
         'Content-Type': 'application/json',
         'Accept': 'application/json',
+        'domain': 'coretechinfo.com'
       },
     );
 

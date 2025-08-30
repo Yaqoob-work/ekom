@@ -314,11 +314,12 @@ Future<void> fetchTVShowsDetails() async {
     String authKey = prefs.getString('auth_key') ?? '';
 
     final response = await https.get(
-      Uri.parse('https://acomtv.coretechinfo.com/public/api/getTvShowsPak/${widget.tvChannelId}'),
+      Uri.parse('https://acomtv.coretechinfo.com/api/v2/getTvShowsPak/${widget.tvChannelId}'),
       headers: {
         'auth-key': authKey,
         'Content-Type': 'application/json',
         'Accept': 'application/json',
+        'domain': 'coretechinfo.com'
       },
     );
 
@@ -497,11 +498,12 @@ Future<void> _refreshDataInBackground() async {
     String authKey = prefs.getString('auth_key') ?? '';
 
     final response = await https.get(
-      Uri.parse('https://acomtv.coretechinfo.com/public/api/getTvShowsPak/${widget.tvChannelId}'),
+      Uri.parse('https://acomtv.coretechinfo.com/api/v2/getTvShowsPak/${widget.tvChannelId}'),
       headers: {
         'auth-key': authKey,
         'Content-Type': 'application/json',
         'Accept': 'application/json',
+        'domain': 'coretechinfo.com'
       },
     );
 

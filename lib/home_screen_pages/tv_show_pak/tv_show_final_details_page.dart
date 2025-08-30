@@ -3082,6 +3082,10 @@
 //   }
 // }
 
+
+
+
+
 import 'dart:async';
 import 'dart:convert';
 import 'package:mobi_tv_entertainment/provider/device_info_provider.dart';
@@ -3660,11 +3664,12 @@ class _TvShowPakFinalDetailsPageState extends State<TvShowPakFinalDetailsPage>
 
     final response = await https.get(
       Uri.parse(
-          'https://acomtv.coretechinfo.com/public/api/getShowSeasonsPak/${widget.id}'),
+          'https://acomtv.coretechinfo.com/api/v2/getShowSeasonsPak/${widget.id}'),
       headers: {
         'auth-key': authKey,
         'Accept': 'application/json',
         'Content-Type': 'application/json',
+        'domain': 'coretechinfo.com'
       },
     ).timeout(const Duration(seconds: 15));
 
@@ -3789,11 +3794,12 @@ class _TvShowPakFinalDetailsPageState extends State<TvShowPakFinalDetailsPage>
 
     final response = await https.get(
       Uri.parse(
-          'https://acomtv.coretechinfo.com/public/api/getShowSeasonsEpisodesPak/$seasonId'),
+          'https://acomtv.coretechinfo.com/api/v2/getShowSeasonsEpisodesPak/$seasonId'),
       headers: {
         'auth-key': authKey,
         'Accept': 'application/json',
         'Content-Type': 'application/json',
+        'domain': 'coretechinfo.com'
       },
     ).timeout(const Duration(seconds: 15));
 

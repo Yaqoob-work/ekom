@@ -2606,11 +2606,12 @@ class _ReligiousChannelDetailsPageState
 
     final response = await https.get(
       Uri.parse(
-          'https://acomtv.coretechinfo.com/public/api/getReligiousShows/${widget.id}'),
+          'https://acomtv.coretechinfo.com/public/api/v2/getReligiousShows/${widget.id}'),
       headers: {
         'auth-key': authKey,
         'Accept': 'application/json',
         'Content-Type': 'application/json',
+        'domain': 'coretechinfo.com',
       },
     ).timeout(const Duration(seconds: 15));
 
@@ -2707,11 +2708,12 @@ class _ReligiousChannelDetailsPageState
 
     final response = await https.get(
       Uri.parse(
-          'https://acomtv.coretechinfo.com/public/api/getReligiousShowsEpisodes/$showId'),
+          'https://acomtv.coretechinfo.com/public/api/v2/getReligiousShowsEpisodes/$showId'),
       headers: {
         'auth-key': authKey,
         'Accept': 'application/json',
         'Content-Type': 'application/json',
+        'domain': 'coretechinfo.com',
       },
     ).timeout(const Duration(seconds: 15));
 

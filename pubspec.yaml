@@ -72,6 +72,10 @@ dependencies:
   chewie: ^1.10.0
   better_player: ^0.0.84
   vimeo_video_player: ^1.0.1
+  animated_text_kit: ^4.2.3
+  sensors_plus: ^6.1.2
+  animate_do: ^4.2.0
+  google_fonts: ^6.3.0
   # media_kit: ^1.2.0
   # y_player: ^2.0.0
   # flutter_vlc_player: ^7.0.0

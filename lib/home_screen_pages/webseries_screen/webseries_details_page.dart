@@ -243,6 +243,7 @@ class WebSeriesDetailsPage extends StatefulWidget {
   final int id;
   final String banner;
   final String poster;
+  final String logo;
   final String name;
 
   const WebSeriesDetailsPage({
@@ -250,6 +251,7 @@ class WebSeriesDetailsPage extends StatefulWidget {
     required this.id,
     required this.banner,
     required this.poster,
+    required this.logo,
     required this.name,
   }) : super(key: key);
 
@@ -569,11 +571,12 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
 
     final response = await https.get(
       Uri.parse(
-          'https://acomtv.coretechinfo.com/public/api/getSeasons/${widget.id}'),
+          'https://acomtv.coretechinfo.com/api/v2/getSeasons/${widget.id}'),
       headers: {
         'auth-key': authKey,
         'Accept': 'application/json',
         'Content-Type': 'application/json',
+        'domain': 'coretechinfo.com'
       },
     ).timeout(const Duration(seconds: 15));
 
@@ -700,11 +703,12 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
 
     final response = await https.get(
       Uri.parse(
-          'https://acomtv.coretechinfo.com/public/api/getEpisodes/$seasonId/0'),
+          'https://acomtv.coretechinfo.com/api/v2/getEpisodes/$seasonId/0'),
       headers: {
         'auth-key': authKey,
         'Accept': 'application/json',
         'Content-Type': 'application/json',
+        'domain': 'coretechinfo.com',
       },
     ).timeout(const Duration(seconds: 15));
 
@@ -1241,56 +1245,113 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
     );
   }
 
+  // Widget _buildTopNavigationBar() {
+  //   return Positioned(
+  //     top: 0,
+  //     left: 0,
+  //     right: 0,
+  //     child: Container(
+  //       height: 100,
+  //       decoration: BoxDecoration(
+  //         gradient: LinearGradient(
+  //           colors: [
+  //             Colors.black.withOpacity(0.9),
+  //             Colors.black.withOpacity(0.7),
+  //             Colors.transparent,
+  //           ],
+  //           begin: Alignment.topCenter,
+  //           end: Alignment.bottomCenter,
+  //         ),
+  //       ),
+  //       child: SafeArea(
+  //         child: Padding(
+  //           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+  //           child: Row(
+  //             children: [
+  //               // Series Title
+  //               Expanded(
+  //                 flex: 2,
+  //                 child: Center(
+  //                   child: Text(
+  //                     widget.name.toUpperCase(),
+  //                     style: const TextStyle(
+  //                       color: Colors.white,
+  //                       fontWeight: FontWeight.bold,
+  //                       fontSize: 18,
+  //                       letterSpacing: 1.5,
+  //                     ),
+  //                     textAlign: TextAlign.center,
+  //                     maxLines: 1,
+  //                     overflow: TextOverflow.ellipsis,
+  //                   ),
+  //                 ),
+  //               ),
+
+  //               // const Spacer(),
+  //             ],
+  //           ),
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
+
+
+
   Widget _buildTopNavigationBar() {
-    return Positioned(
-      top: 0,
-      left: 0,
-      right: 0,
-      child: Container(
-        height: 100,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Colors.black.withOpacity(0.9),
-              Colors.black.withOpacity(0.7),
-              Colors.transparent,
-            ],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
+  return Positioned(
+    top: 0,
+    left: 0,
+    right: 0,
+    child: Container(
+      height: 100,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Colors.black.withOpacity(0.9),
+            Colors.black.withOpacity(0.7),
+            Colors.transparent,
+          ],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
         ),
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            child: Row(
-              children: [
-                // Series Title
-                Expanded(
-                  flex: 2,
-                  child: Center(
-                    child: Text(
-                      widget.name.toUpperCase(),
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                        letterSpacing: 1.5,
-                      ),
-                      textAlign: TextAlign.center,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+      ),
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          child: Row(
+            children: [
+              const SizedBox(width: 16), // Spacing between image and title
+
+
+              CachedNetworkImage(imageUrl: widget.logo,width: 50,height: 50,fit: BoxFit.contain,),
+              // <<< MODIFICATION END
+
+              // Series Title
+              Expanded(
+                flex: 2,
+                child: Center(
+                  child: Text(
+                    widget.name.toUpperCase(),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                      letterSpacing: 1.5,
                     ),
+                    textAlign: TextAlign.center,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
-
-                // const Spacer(),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildMainContentWithLayout() {
     return Positioned(

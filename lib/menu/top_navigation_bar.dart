@@ -269,6 +269,8 @@
 //   }
 // }
 
+
+
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -340,7 +342,7 @@ class _TopNavigationBarState extends State<TopNavigationBar> {
         child:
             Consumer<ColorProvider>(builder: (context, colorProvider, child) {
           Color backgroundColor = colorProvider.isItemFocused
-              ? colorProvider.dominantColor.withOpacity(0.5)
+              ? colorProvider.dominantColor.withOpacity(0.8)
               : cardColor;
 
           return Container(
@@ -553,3 +555,224 @@ class _TopNavigationBarState extends State<TopNavigationBar> {
     );
   }
 }
+
+
+
+// import 'dart:math';
+// import 'package:flutter/material.dart';
+// import 'package:flutter/services.dart';
+// import 'package:google_fonts/google_fonts.dart'; // NEW: Google Fonts import
+// import 'package:mobi_tv_entertainment/provider/color_provider.dart';
+// import 'package:mobi_tv_entertainment/provider/focus_provider.dart';
+// import 'package:provider/provider.dart';
+// import '../main.dart'; // Make sure your screen sizes are defined here
+
+// // ✅ Professional Color Palette
+// class ProfessionalColors {
+//   static const accentBlue = Color(0xFF3B82F6);
+//   static const accentPurple = Color(0xFF8B5CF6);
+//   static const accentGreen = Color(0xFF10B981);
+//   static const accentRed = Color(0xFFEF4444);
+//   static const accentOrange = Color(0xFFF59E0B);
+//   static const accentPink = Color(0xFFEC4899);
+  
+//   static List<Color> gradientColors = [
+//     accentBlue, accentPurple, accentGreen, accentRed, accentOrange, accentPink,
+//   ];
+// }
+
+// class TopNavigationBar extends StatefulWidget {
+//   final int selectedPage;
+//   final ValueChanged<int> onPageSelected;
+//   final bool tvenableAll;
+
+//   const TopNavigationBar({
+//     super.key,
+//     required this.selectedPage,
+//     required this.onPageSelected,
+//     required this.tvenableAll,
+//   });
+
+//   @override
+//   _TopNavigationBarState createState() => _TopNavigationBarState();
+// }
+
+// class _TopNavigationBarState extends State<TopNavigationBar> {
+//   late List<FocusNode> _focusNodes;
+//   final List<String> navItems = ['Vod', 'Live TV', 'Search'];
+//   late Color _currentFocusColor;
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     _focusNodes = List.generate(navItems.length + 1, (index) => FocusNode());
+//     _currentFocusColor = _generateRandomColor();
+
+//     WidgetsBinding.instance.addPostFrameCallback((_) {
+//       if (mounted) {
+//         _focusNodes[0].requestFocus();
+//         context.read<FocusProvider>().setTopNavigationFocusNode(_focusNodes[0]);
+//       }
+//     });
+//   }
+
+//   @override
+//   void dispose() {
+//     for (var node in _focusNodes) {
+//       node.dispose();
+//     }
+//     super.dispose();
+//   }
+
+//   Color _generateRandomColor() {
+//     final professionalColors = ProfessionalColors.gradientColors;
+//     return professionalColors[Random().nextInt(professionalColors.length)];
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return PopScope(
+//         canPop: false,
+//         onPopInvoked: (didPop) {
+//           if (!didPop) {
+//             context.read<FocusProvider>().requestWatchNowFocus();
+//           }
+//         },
+//         child: Consumer<ColorProvider>(builder: (context, colorProvider, child) {
+//           Color backgroundColor = colorProvider.isItemFocused
+//               ? colorProvider.dominantColor.withOpacity(0.8)
+//               : cardColor;
+
+//           return Container(
+//             color: backgroundColor,
+//             child: Container(
+//               // padding: EdgeInsets.symmetric(
+//               //     vertical: screenhgt * 0.02, horizontal: screenwdt * 0.04),
+//               padding: EdgeInsets.only(
+//                   top: screenhgt * 0.03,
+//                   bottom: screenhgt * 0.01,
+//                   left: screenwdt * 0.04,
+//                   right: screenwdt * 0.04),
+//               color: cardColor,
+//               child: Row(
+//                 children: [
+//                   _buildNavigationItem('', 0, _focusNodes[0]),
+//                   const Spacer(),
+//                   Row(
+//                     children: List.generate(navItems.length, (i) {
+//                       final index = i + 1;
+//                       return _buildNavigationItem(
+//                           navItems[i], index, _focusNodes[index]);
+//                     }),
+//                   ),
+//                 ],
+//               ),
+//             ),
+//           );
+//         }));
+//   }
+
+//   // UPDATED: BEUTIFIED NAVIGATION ITEM WIDGET
+//   Widget _buildNavigationItem(String title, int index, FocusNode focusNode) {
+//     final isFocused = focusNode.hasFocus;
+//     final transform = isFocused ? (Matrix4.identity()..scale(1.1)) : Matrix4.identity();
+
+//     final Map<int, IconData> navIcons = {
+//       1: Icons.movie_filter_outlined,
+//       2: Icons.live_tv_rounded,
+//       3: Icons.search_rounded,
+//     };
+
+//     return Padding(
+//       padding: EdgeInsets.symmetric(horizontal: screenwdt * 0.01, vertical: screenhgt * 0.005),
+//       child: Focus(
+//         focusNode: focusNode,
+//         onFocusChange: (hasFocus) {
+//           setState(() {
+//             if (hasFocus) {
+//               _currentFocusColor = _generateRandomColor();
+//               context.read<ColorProvider>().updateColor(_currentFocusColor, true);
+//               // Focus Provider related calls...
+//             } else {
+//               context.read<ColorProvider>().resetColor();
+//             }
+//           });
+//         },
+//         onKeyEvent: (node, event) {
+//           // Aapka onKeyEvent logic yahan paste karein...
+//           // For brevity, I've omitted the detailed key event logic
+//           if (event is KeyDownEvent) {
+//              if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
+//                 _focusNodes[(index + 1) % _focusNodes.length].requestFocus();
+//                 return KeyEventResult.handled;
+//               } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+//                 _focusNodes[
+//                         (index - 1 + _focusNodes.length) % _focusNodes.length]
+//                     .requestFocus();
+//                 return KeyEventResult.handled;
+//               } else if (event.logicalKey == LogicalKeyboardKey.enter ||
+//                   event.logicalKey == LogicalKeyboardKey.select) {
+//                 widget.onPageSelected(index);
+//                  // Focus transfer logic...
+//                 return KeyEventResult.handled;
+//               }
+//           }
+//           return KeyEventResult.ignored;
+//         },
+//         child: GestureDetector(
+//           onTap: () {
+//             widget.onPageSelected(index);
+//             focusNode.requestFocus();
+//           },
+//           child: AnimatedContainer(
+//             duration: const Duration(milliseconds: 250),
+//             curve: Curves.easeInOut,
+//             transform: transform,
+//             transformAlignment: Alignment.center,
+//             decoration: BoxDecoration(
+//               color: isFocused ? _currentFocusColor.withOpacity(0.15) : Colors.transparent,
+//               borderRadius: BorderRadius.circular(30), // Pill shape
+//               border: Border.all(
+//                 color: isFocused ? _currentFocusColor : Colors.transparent,
+//                 width: 2,
+//               ),
+//               boxShadow: isFocused ? [
+//                 BoxShadow(
+//                   color: _currentFocusColor.withOpacity(0.5),
+//                   blurRadius: 15.0,
+//                   spreadRadius: 1.0,
+//                 ),
+//               ] : [],
+//             ),
+//             padding: EdgeInsets.symmetric(
+//               vertical: screenhgt * 0.008,
+//               horizontal: screenwdt * 0.015,
+//             ),
+//             child: index == 0
+//                 ? Image.asset('assets/logo3.png', height: screenhgt * 0.05)
+//                 : Row(
+//                     mainAxisSize: MainAxisSize.min,
+//                     children: [
+//                       if (navIcons.containsKey(index))
+//                         Icon(
+//                           navIcons[index],
+//                           color: isFocused ? Colors.white : hintColor,
+//                           size: menutextsz * 1.1,
+//                         ),
+//                       if (navIcons.containsKey(index)) const SizedBox(width: 8),
+//                       Text(
+//                         title,
+//                         style: GoogleFonts.poppins(
+//                           color: isFocused ? Colors.white : hintColor,
+//                           fontSize: menutextsz,
+//                           fontWeight: isFocused ? FontWeight.w600 : FontWeight.w400,
+//                         ),
+//                       ),
+//                     ],
+//                   ),
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }

@@ -3371,10 +3371,6 @@
 // //   }
 // // }
 
-
-
-
-
 // // // // Enhanced Grid View for WebSeries
 // // // class ProfessionalCategoryWebSeriesGridView extends StatefulWidget {
 // // //   final Map<String, dynamic> category;
@@ -4129,7 +4125,7 @@
 // // // 🎯 INTEGRATION GUIDE:
 
 // // // 1. Replace your existing ManageWebseries class with ProfessionalManageWebseries
-// // // 2. Replace ViewAllWidget with ProfessionalWebSeriesViewAllButton  
+// // // 2. Replace ViewAllWidget with ProfessionalWebSeriesViewAllButton
 // // // 3. Replace CategoryMoviesGridView with ProfessionalCategoryWebSeriesGridView
 // // // 4. Add the Professional color scheme and timing classes
 
@@ -4164,7 +4160,7 @@
 // // // ✅ Purple/Blue gradient theme for WebSeries
 
 // // // 📱 RESULT:
-// // // Your WebSeries screen will now perfectly match the professional 
+// // // Your WebSeries screen will now perfectly match the professional
 // // // Movies screen with consistent animations, colors, and effects!
 
 // // // 🚀 All features from the Movies screen are now available for WebSeries:
@@ -4176,10 +4172,6 @@
 // // // - Same grid layout
 // // // - Same focus management
 // // // */
-
-
-
-
 
 // import 'package:flutter/material.dart';
 // import 'package:flutter/services.dart';
@@ -4262,44 +4254,42 @@
 //   }
 // }
 
-
-
 // // 🚀 Enhanced WebSeries Service with Caching (Similar to TV Shows)
 // class WebSeriesService {
 //   // Cache keys
 //   static const String _cacheKeyWebSeries = 'cached_web_series';
 //   static const String _cacheKeyTimestamp = 'cached_web_series_timestamp';
 //   static const String _cacheKeyAuthKey = 'auth_key';
-  
+
 //   // Cache duration (in milliseconds) - 1 hour
 //   static const int _cacheDurationMs = 60 * 60 * 1000; // 1 hour
-  
+
 //   /// Main method to get all web series with caching
 //   static Future<List<WebSeriesModel>> getAllWebSeries({bool forceRefresh = false}) async {
 //     try {
 //       final prefs = await SharedPreferences.getInstance();
-      
+
 //       // Check if we should use cache
 //       if (!forceRefresh && await _shouldUseCache(prefs)) {
 //         print('📦 Loading Web Series from cache...');
 //         final cachedWebSeries = await _getCachedWebSeries(prefs);
 //         if (cachedWebSeries.isNotEmpty) {
 //           print('✅ Successfully loaded ${cachedWebSeries.length} web series from cache');
-          
+
 //           // Load fresh data in background (without waiting)
 //           _loadFreshDataInBackground();
-          
+
 //           return cachedWebSeries;
 //         }
 //       }
-      
+
 //       // Load fresh data if no cache or force refresh
 //       print('🌐 Loading fresh Web Series from API...');
 //       return await _fetchFreshWebSeries(prefs);
-      
+
 //     } catch (e) {
 //       print('❌ Error in getAllWebSeries: $e');
-      
+
 //       // Try to return cached data as fallback
 //       try {
 //         final prefs = await SharedPreferences.getInstance();
@@ -4311,25 +4301,25 @@
 //       } catch (cacheError) {
 //         print('❌ Cache fallback also failed: $cacheError');
 //       }
-      
+
 //       throw Exception('Failed to load web series: $e');
 //     }
 //   }
-  
+
 //   /// Check if cached data is still valid
 //   static Future<bool> _shouldUseCache(SharedPreferences prefs) async {
 //     try {
 //       final timestampStr = prefs.getString(_cacheKeyTimestamp);
 //       if (timestampStr == null) return false;
-      
+
 //       final cachedTimestamp = int.tryParse(timestampStr);
 //       if (cachedTimestamp == null) return false;
-      
+
 //       final currentTimestamp = DateTime.now().millisecondsSinceEpoch;
 //       final cacheAge = currentTimestamp - cachedTimestamp;
-      
+
 //       final isValid = cacheAge < _cacheDurationMs;
-      
+
 //       if (isValid) {
 //         final ageMinutes = (cacheAge / (1000 * 60)).round();
 //         print('📦 WebSeries Cache is valid (${ageMinutes} minutes old)');
@@ -4337,14 +4327,14 @@
 //         final ageMinutes = (cacheAge / (1000 * 60)).round();
 //         print('⏰ WebSeries Cache expired (${ageMinutes} minutes old)');
 //       }
-      
+
 //       return isValid;
 //     } catch (e) {
 //       print('❌ Error checking WebSeries cache validity: $e');
 //       return false;
 //     }
 //   }
-  
+
 //   /// Get web series from cache
 //   static Future<List<WebSeriesModel>> _getCachedWebSeries(SharedPreferences prefs) async {
 //     try {
@@ -4353,12 +4343,12 @@
 //         print('📦 No cached WebSeries data found');
 //         return [];
 //       }
-      
+
 //       final List<dynamic> jsonData = json.decode(cachedData);
 //       final webSeries = jsonData
 //           .map((json) => WebSeriesModel.fromJson(json as Map<String, dynamic>))
 //           .toList();
-      
+
 //       print('📦 Successfully loaded ${webSeries.length} web series from cache');
 //       return webSeries;
 //     } catch (e) {
@@ -4366,12 +4356,12 @@
 //       return [];
 //     }
 //   }
-  
+
 //   /// Fetch fresh web series from API and cache them
 //   static Future<List<WebSeriesModel>> _fetchFreshWebSeries(SharedPreferences prefs) async {
 //     try {
 //       String authKey = prefs.getString(_cacheKeyAuthKey) ?? '';
-      
+
 //       final response = await http.get(
 //         Uri.parse('https://acomtv.coretechinfo.com/public/api/getAllWebSeries'),
 //         headers: {
@@ -4385,20 +4375,20 @@
 //           throw Exception('Request timeout');
 //         },
 //       );
-      
+
 //       if (response.statusCode == 200) {
 //         final List<dynamic> jsonData = json.decode(response.body);
-        
+
 //         final webSeries = jsonData
 //             .map((json) => WebSeriesModel.fromJson(json as Map<String, dynamic>))
 //             .toList();
-        
+
 //         // Cache the fresh data
 //         await _cacheWebSeries(prefs, jsonData);
-        
+
 //         print('✅ Successfully loaded ${webSeries.length} fresh web series from API');
 //         return webSeries;
-        
+
 //       } else {
 //         throw Exception('API Error: ${response.statusCode} - ${response.reasonPhrase}');
 //       }
@@ -4407,25 +4397,25 @@
 //       rethrow;
 //     }
 //   }
-  
+
 //   /// Cache web series data
 //   static Future<void> _cacheWebSeries(SharedPreferences prefs, List<dynamic> webSeriesData) async {
 //     try {
 //       final jsonString = json.encode(webSeriesData);
 //       final currentTimestamp = DateTime.now().millisecondsSinceEpoch.toString();
-      
+
 //       // Save web series data and timestamp
 //       await Future.wait([
 //         prefs.setString(_cacheKeyWebSeries, jsonString),
 //         prefs.setString(_cacheKeyTimestamp, currentTimestamp),
 //       ]);
-      
+
 //       print('💾 Successfully cached ${webSeriesData.length} web series');
 //     } catch (e) {
 //       print('❌ Error caching web series: $e');
 //     }
 //   }
-  
+
 //   /// Load fresh data in background without blocking UI
 //   static void _loadFreshDataInBackground() {
 //     Future.delayed(const Duration(milliseconds: 500), () async {
@@ -4439,7 +4429,7 @@
 //       }
 //     });
 //   }
-  
+
 //   /// Clear all cached data
 //   static Future<void> clearCache() async {
 //     try {
@@ -4453,14 +4443,14 @@
 //       print('❌ Error clearing WebSeries cache: $e');
 //     }
 //   }
-  
+
 //   /// Get cache info for debugging
 //   static Future<Map<String, dynamic>> getCacheInfo() async {
 //     try {
 //       final prefs = await SharedPreferences.getInstance();
 //       final timestampStr = prefs.getString(_cacheKeyTimestamp);
 //       final cachedData = prefs.getString(_cacheKeyWebSeries);
-      
+
 //       if (timestampStr == null || cachedData == null) {
 //         return {
 //           'hasCachedData': false,
@@ -4469,15 +4459,15 @@
 //           'cacheSize': 0,
 //         };
 //       }
-      
+
 //       final cachedTimestamp = int.tryParse(timestampStr) ?? 0;
 //       final currentTimestamp = DateTime.now().millisecondsSinceEpoch;
 //       final cacheAge = currentTimestamp - cachedTimestamp;
 //       final cacheAgeMinutes = (cacheAge / (1000 * 60)).round();
-      
+
 //       final List<dynamic> jsonData = json.decode(cachedData);
 //       final cacheSizeKB = (cachedData.length / 1024).round();
-      
+
 //       return {
 //         'hasCachedData': true,
 //         'cacheAge': cacheAgeMinutes,
@@ -4496,7 +4486,7 @@
 //       };
 //     }
 //   }
-  
+
 //   /// Force refresh data (bypass cache)
 //   static Future<List<WebSeriesModel>> forceRefresh() async {
 //     print('🔄 Force refreshing WebSeries data...');
@@ -4543,7 +4533,7 @@
 //     _scrollController = ScrollController();
 //     _initializeAnimations();
 //     _initializeFocusNodes();
-    
+
 //     // 🚀 Use enhanced caching service
 //     fetchWebSeriesWithCache();
 //   }
@@ -4586,7 +4576,7 @@
 //       String webSeriesId = webSeriesList[index].id.toString();
 //       if (webseriesFocusNodes.containsKey(webSeriesId)) {
 //         final focusNode = webseriesFocusNodes[webSeriesId]!;
-        
+
 //         Scrollable.ensureVisible(
 //           focusNode.context!,
 //           duration: AnimationTiming.scroll,
@@ -4594,7 +4584,7 @@
 //           alignment: 0.03,
 //           alignmentPolicy: ScrollPositionAlignmentPolicy.explicit,
 //         );
-        
+
 //         print('🎯 Scrollable.ensureVisible for index $index: ${webSeriesList[index].name}');
 //       }
 //     } else if (index == maxHorizontalItems && _viewAllFocusNode != null) {
@@ -4605,7 +4595,7 @@
 //         alignment: 0.2,
 //         alignmentPolicy: ScrollPositionAlignmentPolicy.explicit,
 //       );
-      
+
 //       print('🎯 Scrollable.ensureVisible for ViewAll button');
 //     }
 //   }
@@ -4667,11 +4657,11 @@
 
 //           _createFocusNodesForItems();
 //           _setupFocusProvider();
-          
+
 //           // Start animations after data loads
 //           _headerAnimationController.forward();
 //           _listAnimationController.forward();
-          
+
 //           // Debug cache info
 //           _debugCacheInfo();
 //         }
@@ -4723,10 +4713,10 @@
 
 //           _createFocusNodesForItems();
 //           _setupFocusProvider();
-          
+
 //           _headerAnimationController.forward();
 //           _listAnimationController.forward();
-          
+
 //           // Show success message
 //           ScaffoldMessenger.of(context).showSnackBar(
 //             SnackBar(
@@ -4854,7 +4844,7 @@
 //   //   final screenHeight = MediaQuery.of(context).size.height;
 
 //   //   return
-    
+
 //   //    Scaffold(
 //   //     backgroundColor: Colors.transparent,
 //   //     body: Container(
@@ -4880,14 +4870,13 @@
 //   //   );
 //   // }
 
-
 //   //   @override
 //   // void initState() {
 //   //   super.initState();
 //   //   _scrollController = ScrollController();
 //   //   _initializeAnimations();
 //   //   _initializeFocusNodes();
-    
+
 //   //   fetchWebSeriesWithCache();
 //   // }
 
@@ -4937,7 +4926,6 @@
 //       },
 //     );
 //   }
-
 
 //   // 🚀 Enhanced Title with Cache Status and Refresh Button
 //   Widget _buildProfessionalTitle(double screenWidth) {
@@ -5192,8 +5180,6 @@
 //     );
 //   }
 
-
-
 //     // ✅ ENHANCED: WebSeries item with color provider integration
 //   Widget _buildWebSeriesItem(WebSeriesModel webSeries, int index, double screenWidth, double screenHeight) {
 //     String webSeriesId = webSeries.id.toString();
@@ -5317,7 +5303,6 @@
 //       ),
 //     );
 //   }
-
 
 //   // Widget _buildWebSeriesItem(WebSeriesModel webSeries, int index, double screenWidth, double screenHeight) {
 //   //   String webSeriesId = webSeries.id.toString();
@@ -6272,7 +6257,6 @@
 //   }
 // }
 
-
 // // ✅ Professional WebSeries Grid Page
 // class ProfessionalWebSeriesGridPage extends StatefulWidget {
 //   final List<WebSeriesModel> webSeriesList;
@@ -6568,7 +6552,7 @@
 //                     ),
 //                   ),
 //                 ),
-                
+
 //               ],
 //             ),
 //           ),
@@ -7090,11 +7074,6 @@
 //   }
 // }
 
-
-
-
-
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
@@ -7190,38 +7169,40 @@ class ReligiousChannelModel {
 class ReligiousChannelsService {
   // Cache keys
   static const String _cacheKeyChannels = 'cached_religious_channels';
-  static const String _cacheKeyTimestamp = 'cached_religious_channels_timestamp';
+  static const String _cacheKeyTimestamp =
+      'cached_religious_channels_timestamp';
   static const String _cacheKeyAuthKey = 'auth_key';
-  
+
   // Cache duration (in milliseconds) - 1 hour
   static const int _cacheDurationMs = 60 * 60 * 1000; // 1 hour
-  
+
   /// Main method to get all religious channels with caching
-  static Future<List<ReligiousChannelModel>> getAllReligiousChannels({bool forceRefresh = false}) async {
+  static Future<List<ReligiousChannelModel>> getAllReligiousChannels(
+      {bool forceRefresh = false}) async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      
+
       // Check if we should use cache
       if (!forceRefresh && await _shouldUseCache(prefs)) {
         print('📦 Loading Religious Channels from cache...');
         final cachedChannels = await _getCachedChannels(prefs);
         if (cachedChannels.isNotEmpty) {
-          print('✅ Successfully loaded ${cachedChannels.length} religious channels from cache');
-          
+          print(
+              '✅ Successfully loaded ${cachedChannels.length} religious channels from cache');
+
           // Load fresh data in background (without waiting)
           _loadFreshDataInBackground();
-          
+
           return cachedChannels;
         }
       }
-      
+
       // Load fresh data if no cache or force refresh
       print('🌐 Loading fresh Religious Channels from API...');
       return await _fetchFreshChannels(prefs);
-      
     } catch (e) {
       print('❌ Error in getAllReligiousChannels: $e');
-      
+
       // Try to return cached data as fallback
       try {
         final prefs = await SharedPreferences.getInstance();
@@ -7233,73 +7214,80 @@ class ReligiousChannelsService {
       } catch (cacheError) {
         print('❌ Cache fallback also failed: $cacheError');
       }
-      
+
       throw Exception('Failed to load religious channels: $e');
     }
   }
-  
+
   /// Check if cached data is still valid
   static Future<bool> _shouldUseCache(SharedPreferences prefs) async {
     try {
       final timestampStr = prefs.getString(_cacheKeyTimestamp);
       if (timestampStr == null) return false;
-      
+
       final cachedTimestamp = int.tryParse(timestampStr);
       if (cachedTimestamp == null) return false;
-      
+
       final currentTimestamp = DateTime.now().millisecondsSinceEpoch;
       final cacheAge = currentTimestamp - cachedTimestamp;
-      
+
       final isValid = cacheAge < _cacheDurationMs;
-      
+
       if (isValid) {
         final ageMinutes = (cacheAge / (1000 * 60)).round();
-        print('📦 Religious Channels Cache is valid (${ageMinutes} minutes old)');
+        print(
+            '📦 Religious Channels Cache is valid (${ageMinutes} minutes old)');
       } else {
         final ageMinutes = (cacheAge / (1000 * 60)).round();
         print('⏰ Religious Channels Cache expired (${ageMinutes} minutes old)');
       }
-      
+
       return isValid;
     } catch (e) {
       print('❌ Error checking Religious Channels cache validity: $e');
       return false;
     }
   }
-  
+
   /// Get religious channels from cache
-  static Future<List<ReligiousChannelModel>> _getCachedChannels(SharedPreferences prefs) async {
+  static Future<List<ReligiousChannelModel>> _getCachedChannels(
+      SharedPreferences prefs) async {
     try {
       final cachedData = prefs.getString(_cacheKeyChannels);
       if (cachedData == null || cachedData.isEmpty) {
         print('📦 No cached Religious Channels data found');
         return [];
       }
-      
+
       final List<dynamic> jsonData = json.decode(cachedData);
       final channels = jsonData
-          .map((json) => ReligiousChannelModel.fromJson(json as Map<String, dynamic>))
+          .map((json) =>
+              ReligiousChannelModel.fromJson(json as Map<String, dynamic>))
           .toList();
-      
-      print('📦 Successfully loaded ${channels.length} religious channels from cache');
+
+      print(
+          '📦 Successfully loaded ${channels.length} religious channels from cache');
       return channels;
     } catch (e) {
       print('❌ Error loading cached religious channels: $e');
       return [];
     }
   }
-  
+
   /// Fetch fresh religious channels from API and cache them
-  static Future<List<ReligiousChannelModel>> _fetchFreshChannels(SharedPreferences prefs) async {
+  static Future<List<ReligiousChannelModel>> _fetchFreshChannels(
+      SharedPreferences prefs) async {
     try {
       String authKey = prefs.getString(_cacheKeyAuthKey) ?? '';
-      
+
       final response = await http.get(
-        Uri.parse('https://acomtv.coretechinfo.com/public/api/getReligiousChannels'),
+        Uri.parse(
+            'https://acomtv.coretechinfo.com/public/api/v2/getReligiousChannels'),
         headers: {
           'auth-key': authKey,
           'Content-Type': 'application/json',
           'Accept': 'application/json',
+          'domain': 'coretechinfo.com',
         },
       ).timeout(
         const Duration(seconds: 30),
@@ -7307,47 +7295,50 @@ class ReligiousChannelsService {
           throw Exception('Request timeout');
         },
       );
-      
+
       if (response.statusCode == 200) {
         final List<dynamic> jsonData = json.decode(response.body);
-        
+
         final channels = jsonData
-            .map((json) => ReligiousChannelModel.fromJson(json as Map<String, dynamic>))
+            .map((json) =>
+                ReligiousChannelModel.fromJson(json as Map<String, dynamic>))
             .toList();
-        
+
         // Cache the fresh data
         await _cacheChannels(prefs, jsonData);
-        
-        print('✅ Successfully loaded ${channels.length} fresh religious channels from API');
+
+        print(
+            '✅ Successfully loaded ${channels.length} fresh religious channels from API');
         return channels;
-        
       } else {
-        throw Exception('API Error: ${response.statusCode} - ${response.reasonPhrase}');
+        throw Exception(
+            'API Error: ${response.statusCode} - ${response.reasonPhrase}');
       }
     } catch (e) {
       print('❌ Error fetching fresh religious channels: $e');
       rethrow;
     }
   }
-  
+
   /// Cache religious channels data
-  static Future<void> _cacheChannels(SharedPreferences prefs, List<dynamic> channelsData) async {
+  static Future<void> _cacheChannels(
+      SharedPreferences prefs, List<dynamic> channelsData) async {
     try {
       final jsonString = json.encode(channelsData);
       final currentTimestamp = DateTime.now().millisecondsSinceEpoch.toString();
-      
+
       // Save channels data and timestamp
       await Future.wait([
         prefs.setString(_cacheKeyChannels, jsonString),
         prefs.setString(_cacheKeyTimestamp, currentTimestamp),
       ]);
-      
+
       print('💾 Successfully cached ${channelsData.length} religious channels');
     } catch (e) {
       print('❌ Error caching religious channels: $e');
     }
   }
-  
+
   /// Load fresh data in background without blocking UI
   static void _loadFreshDataInBackground() {
     Future.delayed(const Duration(milliseconds: 500), () async {
@@ -7361,7 +7352,7 @@ class ReligiousChannelsService {
       }
     });
   }
-  
+
   /// Clear all cached data
   static Future<void> clearCache() async {
     try {
@@ -7375,14 +7366,14 @@ class ReligiousChannelsService {
       print('❌ Error clearing Religious Channels cache: $e');
     }
   }
-  
+
   /// Get cache info for debugging
   static Future<Map<String, dynamic>> getCacheInfo() async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final timestampStr = prefs.getString(_cacheKeyTimestamp);
       final cachedData = prefs.getString(_cacheKeyChannels);
-      
+
       if (timestampStr == null || cachedData == null) {
         return {
           'hasCachedData': false,
@@ -7391,15 +7382,15 @@ class ReligiousChannelsService {
           'cacheSize': 0,
         };
       }
-      
+
       final cachedTimestamp = int.tryParse(timestampStr) ?? 0;
       final currentTimestamp = DateTime.now().millisecondsSinceEpoch;
       final cacheAge = currentTimestamp - cachedTimestamp;
       final cacheAgeMinutes = (cacheAge / (1000 * 60)).round();
-      
+
       final List<dynamic> jsonData = json.decode(cachedData);
       final cacheSizeKB = (cachedData.length / 1024).round();
-      
+
       return {
         'hasCachedData': true,
         'cacheAge': cacheAgeMinutes,
@@ -7418,7 +7409,7 @@ class ReligiousChannelsService {
       };
     }
   }
-  
+
   /// Force refresh data (bypass cache)
   static Future<List<ReligiousChannelModel>> forceRefresh() async {
     print('🔄 Force refreshing Religious Channels data...');
@@ -7465,7 +7456,7 @@ class _ProfessionalReligiousChannelsHorizontalListState
     _scrollController = ScrollController();
     _initializeAnimations();
     _initializeFocusNodes();
-    
+
     // 🚀 Use enhanced caching service
     fetchChannelsWithCache();
   }
@@ -7508,7 +7499,7 @@ class _ProfessionalReligiousChannelsHorizontalListState
       String channelId = channelsList[index].id.toString();
       if (channelsFocusNodes.containsKey(channelId)) {
         final focusNode = channelsFocusNodes[channelId]!;
-        
+
         Scrollable.ensureVisible(
           focusNode.context!,
           duration: AnimationTiming.scroll,
@@ -7516,8 +7507,9 @@ class _ProfessionalReligiousChannelsHorizontalListState
           alignment: 0.03,
           alignmentPolicy: ScrollPositionAlignmentPolicy.explicit,
         );
-        
-        print('🎯 Scrollable.ensureVisible for index $index: ${channelsList[index].name}');
+
+        print(
+            '🎯 Scrollable.ensureVisible for index $index: ${channelsList[index].name}');
       }
     } else if (index == maxHorizontalItems && _viewAllFocusNode != null) {
       Scrollable.ensureVisible(
@@ -7527,7 +7519,7 @@ class _ProfessionalReligiousChannelsHorizontalListState
         alignment: 0.2,
         alignmentPolicy: ScrollPositionAlignmentPolicy.explicit,
       );
-      
+
       print('🎯 Scrollable.ensureVisible for ViewAll button');
     }
   }
@@ -7536,32 +7528,37 @@ class _ProfessionalReligiousChannelsHorizontalListState
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted && channelsList.isNotEmpty) {
         try {
-          final focusProvider = Provider.of<FocusProvider>(context, listen: false);
+          final focusProvider =
+              Provider.of<FocusProvider>(context, listen: false);
 
           final firstChannelId = channelsList[0].id.toString();
 
           if (!channelsFocusNodes.containsKey(firstChannelId)) {
             channelsFocusNodes[firstChannelId] = FocusNode();
-            print('✅ Created focus node for first religious channel: $firstChannelId');
+            print(
+                '✅ Created focus node for first religious channel: $firstChannelId');
           }
 
           _firstChannelFocusNode = channelsFocusNodes[firstChannelId];
 
           _firstChannelFocusNode!.addListener(() {
-            if (_firstChannelFocusNode!.hasFocus && !_hasReceivedFocusFromWebSeries) {
+            if (_firstChannelFocusNode!.hasFocus &&
+                !_hasReceivedFocusFromWebSeries) {
               _hasReceivedFocusFromWebSeries = true;
               setState(() {
                 focusedIndex = 0;
               });
               _scrollToPosition(0);
-              print('✅ Religious Channels received focus from web series and scrolled');
+              print(
+                  '✅ Religious Channels received focus from web series and scrolled');
             }
           });
 
           // Register with focus provider using appropriate method
-          focusProvider.setFirstReligiousChannelFocusNode(_firstChannelFocusNode!);
-          print('✅ Religious Channels first focus node registered: ${channelsList[0].name}');
-
+          focusProvider
+              .setFirstReligiousChannelFocusNode(_firstChannelFocusNode!);
+          print(
+              '✅ Religious Channels first focus node registered: ${channelsList[0].name}');
         } catch (e) {
           print('❌ Religious Channels focus provider setup failed: $e');
         }
@@ -7579,7 +7576,8 @@ class _ProfessionalReligiousChannelsHorizontalListState
 
     try {
       // Use cached data first, then fresh data
-      final fetchedChannels = await ReligiousChannelsService.getAllReligiousChannels();
+      final fetchedChannels =
+          await ReligiousChannelsService.getAllReligiousChannels();
 
       if (fetchedChannels.isNotEmpty) {
         if (mounted) {
@@ -7590,11 +7588,11 @@ class _ProfessionalReligiousChannelsHorizontalListState
 
           _createFocusNodesForItems();
           _setupFocusProvider();
-          
+
           // Start animations after data loads
           _headerAnimationController.forward();
           _listAnimationController.forward();
-          
+
           // Debug cache info
           _debugCacheInfo();
         }
@@ -7646,10 +7644,10 @@ class _ProfessionalReligiousChannelsHorizontalListState
 
           _createFocusNodesForItems();
           _setupFocusProvider();
-          
+
           _headerAnimationController.forward();
           _listAnimationController.forward();
-          
+
           // Show success message
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -7700,12 +7698,14 @@ class _ProfessionalReligiousChannelsHorizontalListState
               _hasReceivedFocusFromWebSeries = true;
             });
             _scrollToPosition(i);
-            print('✅ Religious Channel $i focused and scrolled: ${channelsList[i].name}');
+            print(
+                '✅ Religious Channel $i focused and scrolled: ${channelsList[i].name}');
           }
         });
       }
     }
-    print('✅ Created ${channelsFocusNodes.length} religious channels focus nodes with auto-scroll');
+    print(
+        '✅ Created ${channelsFocusNodes.length} religious channels focus nodes with auto-scroll');
   }
 
   // void _navigateToChannelDetails(ReligiousChannelModel channel) {
@@ -7740,8 +7740,8 @@ class _ProfessionalReligiousChannelsHorizontalListState
   //           Text(
   //             'Status: ${channel.status == 1 ? "Active" : "Inactive"}',
   //             style: TextStyle(
-  //               color: channel.status == 1 
-  //                   ? ProfessionalColors.accentGreen 
+  //               color: channel.status == 1
+  //                   ? ProfessionalColors.accentGreen
   //                   : ProfessionalColors.accentRed,
   //             ),
   //           ),
@@ -7779,48 +7779,44 @@ class _ProfessionalReligiousChannelsHorizontalListState
   //   });
   // }
 
-
-
-
 // ✅ Updated _navigateToChannelDetails method in ProfessionalReligiousChannelsHorizontalList
 
-void _navigateToChannelDetails(ReligiousChannelModel channel) {
-  print('📺 Navigating to Religious Channel Details: ${channel.name}');
+  void _navigateToChannelDetails(ReligiousChannelModel channel) {
+    print('📺 Navigating to Religious Channel Details: ${channel.name}');
 
-  // Navigate to ReligiousChannelDetailsPage instead of showing dialog
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => ReligiousChannelDetailsPage(
-        id: channel.id,
-        banner: channel.logo ?? '', // Use logo as banner if available
-        poster: channel.logo ?? '', // Use logo as poster if available
-        name: channel.name,
+    // Navigate to ReligiousChannelDetailsPage instead of showing dialog
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ReligiousChannelDetailsPage(
+          id: channel.id,
+          banner: channel.logo ?? '', // Use logo as banner if available
+          poster: channel.logo ?? '', // Use logo as poster if available
+          name: channel.name,
+        ),
       ),
-    ),
-  ).then((_) {
-    print('🔙 Returned from Religious Channel Details');
-    Future.delayed(Duration(milliseconds: 300), () {
-      if (mounted) {
-        int currentIndex = channelsList.indexWhere((ch) => ch.id == channel.id);
-        if (currentIndex != -1 && currentIndex < maxHorizontalItems) {
-          String channelId = channel.id.toString();
-          if (channelsFocusNodes.containsKey(channelId)) {
-            setState(() {
-              focusedIndex = currentIndex;
-              _hasReceivedFocusFromWebSeries = true;
-            });
-            channelsFocusNodes[channelId]!.requestFocus();
-            _scrollToPosition(currentIndex);
-            print('✅ Restored focus to ${channel.name}');
-          }
-        }
-      }
-    });
-  });
-}
-
-
+    );
+    //.then((_) {
+    //   print('🔙 Returned from Religious Channel Details');
+    //   Future.delayed(Duration(milliseconds: 300), () {
+    //     if (mounted) {
+    //       int currentIndex = channelsList.indexWhere((ch) => ch.id == channel.id);
+    //       if (currentIndex != -1 && currentIndex < maxHorizontalItems) {
+    //         String channelId = channel.id.toString();
+    //         if (channelsFocusNodes.containsKey(channelId)) {
+    //           setState(() {
+    //             focusedIndex = currentIndex;
+    //             _hasReceivedFocusFromWebSeries = true;
+    //           });
+    //           channelsFocusNodes[channelId]!.requestFocus();
+    //           _scrollToPosition(currentIndex);
+    //           print('✅ Restored focus to ${channel.name}');
+    //         }
+    //       }
+    //     }
+    //   });
+    // });
+  }
 
   void _navigateToGridPage() {
     print('📺 Navigating to Religious Channels Grid Page...');
@@ -7922,7 +7918,8 @@ void _navigateToChannelDetails(ReligiousChannelModel channel) {
                 // Channels Count
                 if (channelsList.length > 0)
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
@@ -8030,7 +8027,8 @@ void _navigateToChannelDetails(ReligiousChannelModel channel) {
                 onFocusChange: (hasFocus) {
                   if (hasFocus && mounted) {
                     Color viewAllColor = ProfessionalColors.gradientColors[
-                        math.Random().nextInt(ProfessionalColors.gradientColors.length)];
+                        math.Random()
+                            .nextInt(ProfessionalColors.gradientColors.length)];
 
                     setState(() {
                       _currentAccentColor = viewAllColor;
@@ -8041,10 +8039,12 @@ void _navigateToChannelDetails(ReligiousChannelModel channel) {
                   if (event is RawKeyDownEvent) {
                     if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
                       return KeyEventResult.handled;
-                    } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+                    } else if (event.logicalKey ==
+                        LogicalKeyboardKey.arrowLeft) {
                       if (channelsList.isNotEmpty && channelsList.length > 6) {
                         String channelId = channelsList[6].id.toString();
-                        FocusScope.of(context).requestFocus(channelsFocusNodes[channelId]);
+                        FocusScope.of(context)
+                            .requestFocus(channelsFocusNodes[channelId]);
                         return KeyEventResult.handled;
                       }
                     } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
@@ -8060,14 +8060,16 @@ void _navigateToChannelDetails(ReligiousChannelModel channel) {
                             //     .requestFirstSportsCategoryFocus();
                             Provider.of<FocusProvider>(context, listen: false)
                                 .requestFirstSportsCategoryFocus();
-                            print('✅ Navigating back to web series from religious channels');
+                            print(
+                                '✅ Navigating back to web series from religious channels');
                           } catch (e) {
                             print('❌ Failed to navigate to web series: $e');
                           }
                         }
                       });
                       return KeyEventResult.handled;
-                    } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+                    } else if (event.logicalKey ==
+                        LogicalKeyboardKey.arrowDown) {
                       setState(() {
                         focusedIndex = -1;
                         _hasReceivedFocusFromWebSeries = false;
@@ -8078,7 +8080,8 @@ void _navigateToChannelDetails(ReligiousChannelModel channel) {
                           try {
                             Provider.of<FocusProvider>(context, listen: false)
                                 .requestFirstTVShowsPakFocus();
-                            print('✅ Navigating to TV Shows from religious channels ViewAll');
+                            print(
+                                '✅ Navigating to TV Shows from religious channels ViewAll');
                           } catch (e) {
                             print('❌ Failed to navigate to TV Shows: $e');
                           }
@@ -8086,7 +8089,7 @@ void _navigateToChannelDetails(ReligiousChannelModel channel) {
                       });
                       return KeyEventResult.handled;
                     } else if (event.logicalKey == LogicalKeyboardKey.enter ||
-                               event.logicalKey == LogicalKeyboardKey.select) {
+                        event.logicalKey == LogicalKeyboardKey.select) {
                       print('📺 ViewAll button pressed - Opening Grid Page...');
                       _navigateToGridPage();
                       return KeyEventResult.handled;
@@ -8115,7 +8118,8 @@ void _navigateToChannelDetails(ReligiousChannelModel channel) {
   }
 
   // ✅ ENHANCED: Channel item with color provider integration
-  Widget _buildChannelItem(ReligiousChannelModel channel, int index, double screenWidth, double screenHeight) {
+  Widget _buildChannelItem(ReligiousChannelModel channel, int index,
+      double screenWidth, double screenHeight) {
     String channelId = channel.id.toString();
 
     channelsFocusNodes.putIfAbsent(
@@ -8134,7 +8138,8 @@ void _navigateToChannelDetails(ReligiousChannelModel channel) {
         if (hasFocus && mounted) {
           try {
             Color dominantColor = ProfessionalColors.gradientColors[
-                math.Random().nextInt(ProfessionalColors.gradientColors.length)];
+                math.Random()
+                    .nextInt(ProfessionalColors.gradientColors.length)];
 
             setState(() {
               _currentAccentColor = dominantColor;
@@ -8157,7 +8162,8 @@ void _navigateToChannelDetails(ReligiousChannelModel channel) {
           if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
             if (index < channelsList.length - 1 && index != 6) {
               String nextChannelId = channelsList[index + 1].id.toString();
-              FocusScope.of(context).requestFocus(channelsFocusNodes[nextChannelId]);
+              FocusScope.of(context)
+                  .requestFocus(channelsFocusNodes[nextChannelId]);
               return KeyEventResult.handled;
             } else if (index == 6 && channelsList.length > 7) {
               FocusScope.of(context).requestFocus(_viewAllFocusNode);
@@ -8166,7 +8172,8 @@ void _navigateToChannelDetails(ReligiousChannelModel channel) {
           } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
             if (index > 0) {
               String prevChannelId = channelsList[index - 1].id.toString();
-              FocusScope.of(context).requestFocus(channelsFocusNodes[prevChannelId]);
+              FocusScope.of(context)
+                  .requestFocus(channelsFocusNodes[prevChannelId]);
               return KeyEventResult.handled;
             }
           } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
@@ -8182,7 +8189,8 @@ void _navigateToChannelDetails(ReligiousChannelModel channel) {
                 try {
                   Provider.of<FocusProvider>(context, listen: false)
                       .requestFirstSportsCategoryFocus();
-                  print('✅ Navigating back to web series from religious channels');
+                  print(
+                      '✅ Navigating back to web series from religious channels');
                 } catch (e) {
                   print('❌ Failed to navigate to web series: $e');
                 }
@@ -8210,7 +8218,7 @@ void _navigateToChannelDetails(ReligiousChannelModel channel) {
             });
             return KeyEventResult.handled;
           } else if (event.logicalKey == LogicalKeyboardKey.enter ||
-                     event.logicalKey == LogicalKeyboardKey.select) {
+              event.logicalKey == LogicalKeyboardKey.select) {
             print('📺 Enter pressed on ${channel.name} - Opening Details...');
             _navigateToChannelDetails(channel);
             return KeyEventResult.handled;
@@ -8264,12 +8272,6 @@ void _navigateToChannelDetails(ReligiousChannelModel channel) {
   }
 }
 
-
-
-
-
-
-
 // ✅ Professional Religious Channel Card
 class ProfessionalReligiousChannelCard extends StatefulWidget {
   final ReligiousChannelModel channel;
@@ -8290,10 +8292,12 @@ class ProfessionalReligiousChannelCard extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _ProfessionalReligiousChannelCardState createState() => _ProfessionalReligiousChannelCardState();
+  _ProfessionalReligiousChannelCardState createState() =>
+      _ProfessionalReligiousChannelCardState();
 }
 
-class _ProfessionalReligiousChannelCardState extends State<ProfessionalReligiousChannelCard>
+class _ProfessionalReligiousChannelCardState
+    extends State<ProfessionalReligiousChannelCard>
     with TickerProviderStateMixin {
   late AnimationController _scaleController;
   late AnimationController _glowController;
@@ -8685,7 +8689,8 @@ class ProfessionalReligiousChannelsViewAllButton extends StatefulWidget {
       _ProfessionalReligiousChannelsViewAllButtonState();
 }
 
-class _ProfessionalReligiousChannelsViewAllButtonState extends State<ProfessionalReligiousChannelsViewAllButton>
+class _ProfessionalReligiousChannelsViewAllButtonState
+    extends State<ProfessionalReligiousChannelsViewAllButton>
     with TickerProviderStateMixin {
   late AnimationController _pulseController;
   late AnimationController _rotateController;
@@ -8762,7 +8767,8 @@ class _ProfessionalReligiousChannelsViewAllButtonState extends State<Professiona
                 child: Transform.rotate(
                   angle: _isFocused ? 0 : _rotateAnimation.value * 2 * math.pi,
                   child: Container(
-                    height: _isFocused ? screenHeight * 0.28 : screenHeight * 0.22,
+                    height:
+                        _isFocused ? focussedBannerhgt : bannerhgt ,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(12),
                       gradient: LinearGradient(
@@ -8846,7 +8852,8 @@ class _ProfessionalReligiousChannelsViewAllButtonState extends State<Professiona
                 ),
                 const SizedBox(height: 6),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.25),
                     borderRadius: BorderRadius.circular(12),
@@ -8910,7 +8917,8 @@ class ProfessionalReligiousChannelsLoadingIndicator extends StatefulWidget {
       _ProfessionalReligiousChannelsLoadingIndicatorState();
 }
 
-class _ProfessionalReligiousChannelsLoadingIndicatorState extends State<ProfessionalReligiousChannelsLoadingIndicator>
+class _ProfessionalReligiousChannelsLoadingIndicatorState
+    extends State<ProfessionalReligiousChannelsLoadingIndicator>
     with TickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
@@ -9023,10 +9031,12 @@ class ProfessionalReligiousChannelsGridPage extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _ProfessionalReligiousChannelsGridPageState createState() => _ProfessionalReligiousChannelsGridPageState();
+  _ProfessionalReligiousChannelsGridPageState createState() =>
+      _ProfessionalReligiousChannelsGridPageState();
 }
 
-class _ProfessionalReligiousChannelsGridPageState extends State<ProfessionalReligiousChannelsGridPage>
+class _ProfessionalReligiousChannelsGridPageState
+    extends State<ProfessionalReligiousChannelsGridPage>
     with TickerProviderStateMixin {
   int gridFocusedIndex = 0;
   final int columnsCount = 6;
@@ -9144,7 +9154,9 @@ class _ProfessionalReligiousChannelsGridPageState extends State<ProfessionalReli
         break;
     }
 
-    if (newIndex != gridFocusedIndex && newIndex >= 0 && newIndex < totalItems) {
+    if (newIndex != gridFocusedIndex &&
+        newIndex >= 0 &&
+        newIndex < totalItems) {
       setState(() {
         gridFocusedIndex = newIndex;
       });
@@ -9155,64 +9167,30 @@ class _ProfessionalReligiousChannelsGridPageState extends State<ProfessionalReli
   void _navigateToChannelDetails(ReligiousChannelModel channel, int index) {
     print('📺 Grid: Navigating to Religious Channel Details: ${channel.name}');
 
-    // For now, show a dialog with channel info
-    // You can replace this with your channel details page
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: ProfessionalColors.cardDark,
-        title: Text(
-          channel.name,
-          style: TextStyle(color: ProfessionalColors.textPrimary),
+    // Navigate to ReligiousChannelDetailsPage instead of showing dialog
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ReligiousChannelDetailsPage(
+          id: channel.id,
+          banner: channel.logo ?? '', // Use logo as banner if available
+          poster: channel.logo ?? '', // Use logo as poster if available
+          name: channel.name,
         ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Language: ${channel.language}',
-              style: TextStyle(color: ProfessionalColors.textSecondary),
-            ),
-            if (channel.description != null) ...[
-              SizedBox(height: 8),
-              Text(
-                'Description: ${channel.description}',
-                style: TextStyle(color: ProfessionalColors.textSecondary),
-              ),
-            ],
-            SizedBox(height: 8),
-            Text(
-              'Status: ${channel.status == 1 ? "Active" : "Inactive"}',
-              style: TextStyle(
-                color: channel.status == 1 
-                    ? ProfessionalColors.accentGreen 
-                    : ProfessionalColors.accentRed,
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              'Close',
-              style: TextStyle(color: ProfessionalColors.accentOrange),
-            ),
-          ),
-        ],
       ),
-    ).then((_) {
-      print('🔙 Returned from Channel Details to Grid');
-      Future.delayed(Duration(milliseconds: 300), () {
-        if (mounted && gridFocusNodes.containsKey(index)) {
-          setState(() {
-            gridFocusedIndex = index;
-          });
-          gridFocusNodes[index]!.requestFocus();
-          print('✅ Restored grid focus to index $index');
-        }
-      });
-    });
+    );
+    // .then((_) {
+    //     print('🔙 Returned from Channel Details to Grid');
+    //     Future.delayed(Duration(milliseconds: 300), () {
+    //       if (mounted && gridFocusNodes.containsKey(index)) {
+    //         setState(() {
+    //           gridFocusedIndex = index;
+    //         });
+    //         gridFocusNodes[index]!.requestFocus();
+    //         print('✅ Restored grid focus to index $index');
+    //       }
+    //     });
+    //   });
   }
 
   @override
@@ -9318,7 +9296,8 @@ class _ProfessionalReligiousChannelsGridPageState extends State<ProfessionalReli
                 ),
                 const SizedBox(height: 4),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
@@ -9409,7 +9388,7 @@ class _ProfessionalReligiousChannelsGridPageState extends State<ProfessionalReli
             _navigateGrid(event.logicalKey);
             return KeyEventResult.handled;
           } else if (event.logicalKey == LogicalKeyboardKey.enter ||
-                     event.logicalKey == LogicalKeyboardKey.select) {
+              event.logicalKey == LogicalKeyboardKey.select) {
             if (gridFocusedIndex < widget.channelsList.length) {
               _navigateToChannelDetails(
                 widget.channelsList[gridFocusedIndex],
@@ -9450,7 +9429,8 @@ class _ProfessionalReligiousChannelsGridPageState extends State<ProfessionalReli
                     child: ProfessionalGridReligiousChannelCard(
                       channel: widget.channelsList[index],
                       focusNode: gridFocusNodes[index]!,
-                      onTap: () => _navigateToChannelDetails(widget.channelsList[index], index),
+                      onTap: () => _navigateToChannelDetails(
+                          widget.channelsList[index], index),
                       index: index,
                       categoryTitle: widget.title,
                     ),
@@ -9496,10 +9476,12 @@ class ProfessionalGridReligiousChannelCard extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _ProfessionalGridReligiousChannelCardState createState() => _ProfessionalGridReligiousChannelCardState();
+  _ProfessionalGridReligiousChannelCardState createState() =>
+      _ProfessionalGridReligiousChannelCardState();
 }
 
-class _ProfessionalGridReligiousChannelCardState extends State<ProfessionalGridReligiousChannelCard>
+class _ProfessionalGridReligiousChannelCardState
+    extends State<ProfessionalGridReligiousChannelCard>
     with TickerProviderStateMixin {
   late AnimationController _hoverController;
   late AnimationController _glowController;
@@ -9651,7 +9633,8 @@ class _ProfessionalGridReligiousChannelCardState extends State<ProfessionalGridR
                 if (loadingProgress == null) return child;
                 return _buildImagePlaceholder();
               },
-              errorBuilder: (context, error, stackTrace) => _buildImagePlaceholder(),
+              errorBuilder: (context, error, stackTrace) =>
+                  _buildImagePlaceholder(),
             )
           : _buildImagePlaceholder(),
     );
@@ -9779,7 +9762,8 @@ class _ProfessionalGridReligiousChannelCardState extends State<ProfessionalGridR
               Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                     decoration: BoxDecoration(
                       color: ProfessionalColors.accentOrange.withOpacity(0.3),
                       borderRadius: BorderRadius.circular(8),
@@ -9799,7 +9783,8 @@ class _ProfessionalGridReligiousChannelCardState extends State<ProfessionalGridR
                   ),
                   const SizedBox(width: 8),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                     decoration: BoxDecoration(
                       color: _dominantColor.withOpacity(0.2),
                       borderRadius: BorderRadius.circular(8),

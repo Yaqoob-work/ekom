@@ -1516,9 +1516,18 @@
 // //   }
 // // }
 
+
+
+
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math' as math;
+import 'dart:ui';
+import 'package:animate_do/animate_do.dart'; // Import kiya gaya package
+import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:sensors_plus/sensors_plus.dart'; // For Parallax effect
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mobi_tv_entertainment/home_screen_pages/home_screen.dart';
@@ -1857,6 +1866,16 @@ class _SplashScreenState extends State<SplashScreen> {
     );
   }
 }
+
+
+
+
+
+
+
+
+
+
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -2219,6 +2238,9 @@ class _LoginScreenState extends State<LoginScreen>
     );
   }
 }
+
+
+
 
 // Rest of your existing code (UpdateChecker, MyHome, etc.) remains the same...
 class UpdateChecker {

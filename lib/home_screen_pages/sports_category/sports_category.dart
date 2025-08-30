@@ -5890,11 +5890,12 @@ class SportsCategoriesService {
       String authKey = prefs.getString(_cacheKeyAuthKey) ?? '';
       
       final response = await http.get(
-        Uri.parse('https://acomtv.coretechinfo.com/public/api/getsportCategories'),
+        Uri.parse('https://acomtv.coretechinfo.com/public/api/v2/getsportCategories'),
         headers: {
           'auth-key': authKey,
           'Content-Type': 'application/json',
           'Accept': 'application/json',
+          'domain': 'coretechinfo.com',
         },
       ).timeout(
         const Duration(seconds: 30),

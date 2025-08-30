@@ -38,10 +38,11 @@ class ApiService {
       'auth-key': authKey, // Updated header name
       'Accept': 'application/json',
       'Content-Type': 'application/json',
+      'domain': 'coretechinfo.com'
     };
   }
 
-  static String get baseUrl => 'https://acomtv.coretechinfo.com/public/api/';
+  static String get baseUrl => 'https://acomtv.coretechinfo.com/api/v2/';
 }
 
 // Helper function to safely parse integers from dynamic values

@@ -55,6 +55,48 @@ class AnimationTiming {
   static const Duration scroll = Duration(milliseconds: 800);
 }
 
+// // ✅ TV Show Model (same structure)
+// class HorizontalVodModel {
+//   final int id;
+//   final String name;
+//   final String? description;
+//   final String? logo;
+//   final String? releaseDate;
+//   final String? genres;
+//   final String? rating;
+//   final String? language;
+//   final int status;
+
+//   HorizontalVodModel({
+//     required this.id,
+//     required this.name,
+//     this.description,
+//     this.logo,
+//     this.releaseDate,
+//     this.genres,
+//     this.rating,
+//     this.language,
+//     required this.status,
+//   });
+
+//   factory HorizontalVodModel.fromJson(Map<String, dynamic> json) {
+//     return HorizontalVodModel(
+//       id: json['id'] ?? 0,
+//       name: json['name'] ?? '',
+//       description: json['description'],
+//       logo: json['logo'],
+//       releaseDate: json['release_date'],
+//       genres: json['genres'],
+//       rating: json['rating'],
+//       language: json['language'],
+//       status: json['status'] ?? 0,
+//     );
+//   }
+// }
+
+
+
+
 // ✅ TV Show Model (same structure)
 class HorizontalVodModel {
   final int id;
@@ -66,6 +108,7 @@ class HorizontalVodModel {
   final String? rating;
   final String? language;
   final int status;
+  final int networks_order; // ✅ ADD THIS FIELD
 
   HorizontalVodModel({
     required this.id,
@@ -77,6 +120,7 @@ class HorizontalVodModel {
     this.rating,
     this.language,
     required this.status,
+    required this.networks_order, // ✅ ADD THIS TO CONSTRUCTOR
   });
 
   factory HorizontalVodModel.fromJson(Map<String, dynamic> json) {
@@ -90,10 +134,10 @@ class HorizontalVodModel {
       rating: json['rating'],
       language: json['language'],
       status: json['status'] ?? 0,
+      networks_order: json['networks_order'] ?? 999, // ✅ PARSE THE FIELD (use a high default)
     );
   }
 }
-
 
 // Updated displayImage function with SVG support and better error handling
 Widget displayImage(
@@ -273,6 +317,33 @@ class HorizontalVodService {
     }
   }
   
+  // /// Get Vod from cache
+  // static Future<List<HorizontalVodModel>> _getCachedHorizontalVod(SharedPreferences prefs) async {
+  //   try {
+  //     final cachedData = prefs.getString(_cacheKeyHorizontalVod);
+  //     if (cachedData == null || cachedData.isEmpty) {
+  //       print('📦 No cached Vod data found');
+  //       return [];
+  //     }
+      
+  //     final List<dynamic> jsonData = json.decode(cachedData);
+  //     final HorizontalVod = jsonData
+  //         .map((json) => HorizontalVodModel.fromJson(json as Map<String, dynamic>))
+  //         .where((show) => show.status == 1) // Filter active shows
+  //         .toList();
+      
+  //     print('📦 Successfully loaded ${HorizontalVod.length} Vod from cache');
+  //     return HorizontalVod;
+  //   } catch (e) {
+  //     print('❌ Error loading cached Vod: $e');
+  //     return [];
+  //   }
+  // }
+
+
+
+
+
   /// Get Vod from cache
   static Future<List<HorizontalVodModel>> _getCachedHorizontalVod(SharedPreferences prefs) async {
     try {
@@ -283,12 +354,15 @@ class HorizontalVodService {
       }
       
       final List<dynamic> jsonData = json.decode(cachedData);
+      
+      // Filter and sort the cached data
       final HorizontalVod = jsonData
           .map((json) => HorizontalVodModel.fromJson(json as Map<String, dynamic>))
-          .where((show) => show.status == 1) // Filter active shows
-          .toList();
+          .where((show) => show.status == 1) // First, filter by status
+          .toList()
+        ..sort((a, b) => a.networks_order.compareTo(b.networks_order)); // ✅ THEN, SORT THE LIST
       
-      print('📦 Successfully loaded ${HorizontalVod.length} Vod from cache');
+      print('📦 Successfully loaded and sorted ${HorizontalVod.length} Vod from cache');
       return HorizontalVod;
     } catch (e) {
       print('❌ Error loading cached Vod: $e');
@@ -296,17 +370,69 @@ class HorizontalVodService {
     }
   }
   
+
+
+
+  // /// Fetch fresh Vod from API and cache them
+  // static Future<List<HorizontalVodModel>> _fetchFreshHorizontalVod(SharedPreferences prefs) async {
+  //   try {
+  //     String authKey = prefs.getString(_cacheKeyAuthKey) ?? '';
+      
+  //     final response = await http.get(
+  //       // Uri.parse('https://acomtv.coretechinfo.com/public/api/getNetworks'),
+  //       Uri.parse('https://acomtv.coretechinfo.com/api/v2/getNetworks'),
+  //       headers: {
+  //         'auth-key': authKey,
+  //         'Content-Type': 'application/json',
+  //         'Accept': 'application/json',
+  //         'domain':'coretechinfo.com'
+  //       },
+  //     ).timeout(
+  //       const Duration(seconds: 30),
+  //       onTimeout: () {
+  //         throw Exception('Request timeout');
+  //       },
+  //     );
+      
+  //     if (response.statusCode == 200) {
+  //       final List<dynamic> jsonData = json.decode(response.body);
+        
+  //       final allHorizontalVod = jsonData
+  //           .map((json) => HorizontalVodModel.fromJson(json as Map<String, dynamic>))
+  //           .toList();
+            
+  //       // Filter only active shows (status = 1)
+  //       final activeHorizontalVod = allHorizontalVod.where((show) => show.status == 1).toList();
+        
+  //       // Cache the fresh data (save all shows, but return only active ones)
+  //       await _cacheHorizontalVod(prefs, jsonData);
+        
+  //       print('✅ Successfully loaded ${activeHorizontalVod.length} active Vod from API (from ${allHorizontalVod.length} total)');
+  //       return activeHorizontalVod;
+        
+  //     } else {
+  //       throw Exception('API Error: ${response.statusCode} - ${response.reasonPhrase}');
+  //     }
+  //   } catch (e) {
+  //     print('❌ Error fetching fresh Vod: $e');
+  //     rethrow;
+  //   }
+  // }
+
+
+
   /// Fetch fresh Vod from API and cache them
   static Future<List<HorizontalVodModel>> _fetchFreshHorizontalVod(SharedPreferences prefs) async {
     try {
       String authKey = prefs.getString(_cacheKeyAuthKey) ?? '';
       
       final response = await http.get(
-        Uri.parse('https://acomtv.coretechinfo.com/public/api/getNetworks'),
+        Uri.parse('https://acomtv.coretechinfo.com/api/v2/getNetworks'),
         headers: {
           'auth-key': authKey,
           'Content-Type': 'application/json',
           'Accept': 'application/json',
+          'domain':'coretechinfo.com'
         },
       ).timeout(
         const Duration(seconds: 30),
@@ -318,17 +444,17 @@ class HorizontalVodService {
       if (response.statusCode == 200) {
         final List<dynamic> jsonData = json.decode(response.body);
         
-        final allHorizontalVod = jsonData
+        // Filter and Sort in one go
+        final activeHorizontalVod = jsonData
             .map((json) => HorizontalVodModel.fromJson(json as Map<String, dynamic>))
-            .toList();
-            
-        // Filter only active shows (status = 1)
-        final activeHorizontalVod = allHorizontalVod.where((show) => show.status == 1).toList();
-        
+            .where((show) => show.status == 1) // First, filter by status
+            .toList()
+          ..sort((a, b) => a.networks_order.compareTo(b.networks_order)); // ✅ THEN, SORT THE LIST
+
         // Cache the fresh data (save all shows, but return only active ones)
         await _cacheHorizontalVod(prefs, jsonData);
         
-        print('✅ Successfully loaded ${activeHorizontalVod.length} active Vod from API (from ${allHorizontalVod.length} total)');
+        print('✅ Successfully loaded and sorted ${activeHorizontalVod.length} active Vod from API');
         return activeHorizontalVod;
         
       } else {
@@ -552,7 +678,7 @@ void _scrollToPosition(int index) {
   if (!_scrollController.hasClients) return;
 
   // The item's width (156) + horizontal margin (6 + 6 = 12)
-  final double itemTotalWidth = _itemWidth + 12; 
+  final double itemTotalWidth = _itemWidth ; 
   final double targetOffset = index * itemTotalWidth;
 
   _scrollController.animateTo(

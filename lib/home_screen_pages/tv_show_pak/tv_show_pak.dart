@@ -8451,11 +8451,12 @@ class PakistaniTVShowsService {
 
       final response = await http.get(
         Uri.parse(
-            'https://acomtv.coretechinfo.com/public/api/getTvChannelsPak'),
+            'https://acomtv.coretechinfo.com/api/v2/getTvChannelsPak'),
         headers: {
           'auth-key': authKey,
           'Content-Type': 'application/json',
           'Accept': 'application/json',
+          'domain': 'coretechinfo.com'
         },
       ).timeout(
         const Duration(seconds: 30),

@@ -3477,11 +3477,12 @@ class _SportsCategorySecondPageState extends State<SportsCategorySecondPage>
 
       final response = await http.get(
         Uri.parse(
-            'https://acomtv.coretechinfo.com/public/api/getsportTournament/${widget.tvChannelId}'),
+            'https://acomtv.coretechinfo.com/public/api/v2/getsportTournament/${widget.tvChannelId}'),
         headers: {
           'auth-key': authKey,
           'Content-Type': 'application/json',
           'Accept': 'application/json',
+          'domain': 'coretechinfo.com',
         },
       );
 
@@ -3532,8 +3533,8 @@ class _SportsCategorySecondPageState extends State<SportsCategorySecondPage>
 
       final response = await http.get(
         Uri.parse(
-            'https://acomtv.coretechinfo.com/public/api/getsportTournament/${widget.tvChannelId}'),
-        headers: {'auth-key': authKey},
+            'https://acomtv.coretechinfo.com/public/api/v2/getsportTournament/${widget.tvChannelId}'),
+        headers: {'auth-key': authKey, 'domain': 'coretechinfo.com'},
       );
       
       if (!mounted) return;
