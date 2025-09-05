@@ -6,9 +6,9 @@
 // // class YoutubeWebviewPlayer extends StatefulWidget {
 // //   final String youtubeId;
 // //   final bool enableRepeat;
-  
+
 // //   const YoutubeWebviewPlayer({
-// //     Key? key, 
+// //     Key? key,
 // //     required this.youtubeId,
 // //     this.enableRepeat = false,
 // //   }) : super(key: key);
@@ -30,7 +30,7 @@
 
 // //   void _initializePlayer() {
 // //     String customHtml = _buildEnhancedPlayerHtml();
-    
+
 // //     controller = WebViewController()
 // //       ..setJavaScriptMode(JavaScriptMode.unrestricted)
 // //       ..setNavigationDelegate(NavigationDelegate(
@@ -51,28 +51,28 @@
 // //     <head>
 // //         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 // //         <style>
-// //             body { 
-// //                 margin: 0; 
-// //                 padding: 0; 
-// //                 background: #000; 
+// //             body {
+// //                 margin: 0;
+// //                 padding: 0;
+// //                 background: #000;
 // //                 font-family: Arial, sans-serif;
 // //             }
-            
-// //             #video-container { 
-// //                 width: 100vw; 
-// //                 height: 100vh; 
+
+// //             #video-container {
+// //                 width: 100vw;
+// //                 height: 100vh;
 // //                 display: flex;
 // //                 align-items: center;
 // //                 justify-content: center;
 // //                 position: relative;
 // //             }
-            
-// //             iframe { 
-// //                 width: 100%; 
-// //                 height: 100%; 
+
+// //             iframe {
+// //                 width: 100%;
+// //                 height: 100%;
 // //                 border: none;
 // //             }
-            
+
 // //             #remote-info {
 // //                 position: absolute;
 // //                 top: 20px;
@@ -85,7 +85,7 @@
 // //                 z-index: 1000;
 // //                 display: block;
 // //             }
-            
+
 // //             #volume-indicator {
 // //                 position: absolute;
 // //                 bottom: 20px;
@@ -111,29 +111,29 @@
 // //                 ⏩ → = +10s<br>
 // //                 🔀 R = Repeat Toggle
 // //             </div>
-            
+
 // //             <div id="volume-indicator">
 // //                 Volume: <span id="volume-level">50</span>%
 // //                 <span id="mute-status"></span>
 // //             </div>
-            
-// //             <iframe 
+
+// //             <iframe
 // //                 id="video-iframe"
-// //                 src="https://demo.coretechinfo.com/videojs.youtube-8.11.8-manbir-2/demo/player.php?youtubeId=${widget.youtubeId}" 
+// //                 src="https://demo.coretechinfo.com/videojs.youtube-8.11.8-manbir-2/demo/player.php?youtubeId=${widget.youtubeId}"
 // //                 allowfullscreen>
 // //             </iframe>
 // //         </div>
-        
+
 // //         <script>
 // //             let currentVolume = 50;
 // //             let isMuted = false;
 // //             let repeatEnabled = ${widget.enableRepeat};
-            
+
 // //             const volumeIndicator = document.getElementById('volume-indicator');
 // //             const volumeLevel = document.getElementById('volume-level');
 // //             const muteStatus = document.getElementById('mute-status');
 // //             const iframe = document.getElementById('video-iframe');
-            
+
 // //             // Show volume indicator temporarily
 // //             function showVolumeIndicator() {
 // //                 volumeIndicator.style.display = 'block';
@@ -141,14 +141,14 @@
 // //                     volumeIndicator.style.display = 'none';
 // //                 }, 2000);
 // //             }
-            
+
 // //             // Update volume display
 // //             function updateVolumeDisplay() {
 // //                 volumeLevel.textContent = currentVolume;
 // //                 muteStatus.textContent = isMuted ? ' (MUTED)' : '';
 // //                 showVolumeIndicator();
 // //             }
-            
+
 // //             // Send commands to iframe
 // //             function sendPlayerCommand(command, value = null) {
 // //                 try {
@@ -161,11 +161,11 @@
 // //                     console.log('Cross-origin message failed:', e);
 // //                 }
 // //             }
-            
+
 // //             // TV Remote Key Handler - Always enabled
 // //             document.addEventListener('keydown', function(event) {
 // //                 console.log('Key pressed:', event.key, event.keyCode);
-                
+
 // //                 switch(event.key.toLowerCase()) {
 // //                     case 'm': // Mute/Unmute
 // //                         isMuted = !isMuted;
@@ -173,7 +173,7 @@
 // //                         updateVolumeDisplay();
 // //                         event.preventDefault();
 // //                         break;
-                        
+
 // //                     case 'arrowup': // Volume Up
 // //                         if (currentVolume < 100) {
 // //                             currentVolume = Math.min(100, currentVolume + 10);
@@ -182,7 +182,7 @@
 // //                         }
 // //                         event.preventDefault();
 // //                         break;
-                        
+
 // //                     case 'arrowdown': // Volume Down
 // //                         if (currentVolume > 0) {
 // //                             currentVolume = Math.max(0, currentVolume - 10);
@@ -191,49 +191,49 @@
 // //                         }
 // //                         event.preventDefault();
 // //                         break;
-                        
+
 // //                     case ' ': // Play/Pause
 // //                     case 'enter':
 // //                         sendPlayerCommand('playPause');
 // //                         event.preventDefault();
 // //                         break;
-                        
+
 // //                     case 'arrowleft': // Seek backward
 // //                         sendPlayerCommand('seek', -10);
 // //                         event.preventDefault();
 // //                         break;
-                        
+
 // //                     case 'arrowright': // Seek forward
 // //                         sendPlayerCommand('seek', 10);
 // //                         event.preventDefault();
 // //                         break;
-                        
+
 // //                     case 'r': // Toggle repeat
 // //                         repeatEnabled = !repeatEnabled;
 // //                         sendPlayerCommand('repeat', repeatEnabled);
 // //                         event.preventDefault();
 // //                         break;
-                        
+
 // //                     case 'f': // Fullscreen
 // //                         sendPlayerCommand('fullscreen');
 // //                         event.preventDefault();
 // //                         break;
 // //                 }
 // //             });
-            
+
 // //             // Listen for player state updates
 // //             window.addEventListener('message', function(event) {
 // //                 if (event.data.type === 'playerState') {
 // //                     // Handle player state changes
 // //                     console.log('Player state:', event.data);
 // //                 }
-                
+
 // //                 if (event.data.type === 'videoEnded' && repeatEnabled) {
 // //                     // Restart video
 // //                     iframe.src = iframe.src;
 // //                 }
 // //             });
-            
+
 // //             // Initialize player communication
 // //             iframe.onload = function() {
 // //                 setTimeout(() => {
@@ -257,14 +257,14 @@
 // //         // Try to access video.js player if available
 // //         if (typeof player !== 'undefined') {
 // //           console.log('Video.js player found');
-          
+
 // //           // Listen for video events
 // //           player.on('ended', function() {
 // //             window.parent.postMessage({
 // //               type: 'videoEnded'
 // //             }, '*');
 // //           });
-          
+
 // //           player.on('volumechange', function() {
 // //             window.parent.postMessage({
 // //               type: 'playerState',
@@ -272,13 +272,13 @@
 // //               muted: player.muted()
 // //             }, '*');
 // //           });
-          
+
 // //           // Handle remote commands
 // //           window.addEventListener('message', function(event) {
 // //             if (event.data.type === 'playerCommand') {
 // //               const cmd = event.data.command;
 // //               const value = event.data.value;
-              
+
 // //               switch(cmd) {
 // //                 case 'mute':
 // //                   player.muted(value);
@@ -371,7 +371,7 @@
 // //     setState(() {
 // //       volume = (volume + delta / 100).clamp(0.0, 1.0);
 // //     });
-    
+
 // //     controller.runJavaScript('''
 // //       if (typeof player !== 'undefined') {
 // //         player.volume($volume);
@@ -384,7 +384,7 @@
 // //     setState(() {
 // //       isMuted = !isMuted;
 // //     });
-    
+
 // //     controller.runJavaScript('''
 // //       if (typeof player !== 'undefined') {
 // //         player.muted($isMuted);
@@ -467,7 +467,7 @@
 // //                 ],
 // //               ),
 // //             ),
-            
+
 // //             // Video Player
 // //             Expanded(
 // //               child: YoutubeWebviewPlayer(
@@ -481,16 +481,6 @@
 // //     );
 // //   }
 // // }
-
-
-
-
-
-
-
-
-
-
 
 // import 'dart:convert';
 // import 'package:flutter/material.dart';
@@ -763,7 +753,7 @@
 //                       ),
 //                     ),
 //                   ),
-                  
+
 //                   _buildTopBar(),
 //                   const DateTimeWidget(),
 //                   _buildProgressBar(),
@@ -839,9 +829,6 @@
 //   }
 // }
 
-
-
-
 // import 'dart:async';
 //  import 'package:flutter/material.dart';
 //  import 'package:flutter/services.dart';
@@ -849,7 +836,6 @@
 // import 'package:flutter_spinkit/flutter_spinkit.dart';
 // import 'package:intl/intl.dart';
 // import 'package:keep_screen_on/keep_screen_on.dart';
-
 
 //  /// तारीख और समय को दिखाने के लिए एक अलग विजेट।
 //  class DateTimeWidget extends StatefulWidget {
@@ -1173,7 +1159,7 @@
 //                           ),
 //                           onWebViewCreated: (controller) {
 //                             _webViewController = controller;
-                            
+
 //                             // बदलाव 2: timeUpdate हैंडलर को सही किया गया
 //                             controller.addJavaScriptHandler(
 //                               handlerName: 'timeUpdate',
@@ -1195,7 +1181,7 @@
 //                                   if (!_isEnding &&
 //                                       totalTime > 12 &&
 //                                       currentTime >= (totalTime - 12)) {
-                                    
+
 //                                     // फ्लैग को true पर सेट करें ताकि यह दोबारा न चले
 //                                     setState(() {
 //                                       _isEnding = true;
@@ -1431,10 +1417,6 @@
 //   }
 //  }
 
-
-
-
-
 import 'dart:async';
 import 'dart:ui'; // ImageFilter के लिए यह import ज़रूरी है
 import 'package:flutter/material.dart';
@@ -1558,7 +1540,7 @@ class _YoutubeWebviewPlayerState extends State<YoutubeWebviewPlayer>
   Duration _currentPosition = Duration.zero;
   Duration _totalDuration = Duration.zero;
   bool _showEndBlur = false; // <-- बदलाव 1: नया वेरिएबल जोड़ा गया
-bool _isBufferingMidStream = false;
+  bool _isBufferingMidStream = false;
   // Progressive Seeking
   Timer? _seekTimer;
   int _pendingSeekSeconds = 0;
@@ -1566,23 +1548,63 @@ bool _isBufferingMidStream = false;
   bool _isSeeking = false;
 
   final List<ContentBlocker> adBlockers = [
-
-        ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: ".*doubleclick\\.net/.*"), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
-    ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: ".*googlesyndication\\.com/.*"), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
-    ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: ".*googleadservices\\.com/.*"), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
-    ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: ".*google-analytics\\.com/.*"), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
-    ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: ".*adservice\\.google\\.com/.*"), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
-    ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: ".*youtube\\.com/api/stats/ads.*"), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
-    ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: ".*youtube\\.com/get_ad_break.*"), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
-    ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: ".*youtube\\.com/pagead/.*"), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
-    ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: ".*googlevideo\\.com/videoplayback.*adformat.*"), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
-    ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: ".*googlevideo\\.com/videoplayback.*ctier.*"), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
-    ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: ".*youtube\\.com/ptracking.*"), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
-    ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: ".*youtube\\.com/api/stats/qoe.*"), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
-    ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: ".*youtube\\.com/ad_data.*"), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
-    ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: ".*youtube\\.com/api/stats/atr.*"), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
-    ContentBlocker(trigger: ContentBlockerTrigger(urlFilter: ".*stats\\.g\\.doubleclick\\.net/.*"), action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
-
+    ContentBlocker(
+        trigger: ContentBlockerTrigger(urlFilter: ".*doubleclick\\.net/.*"),
+        action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+    ContentBlocker(
+        trigger:
+            ContentBlockerTrigger(urlFilter: ".*googlesyndication\\.com/.*"),
+        action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+    ContentBlocker(
+        trigger:
+            ContentBlockerTrigger(urlFilter: ".*googleadservices\\.com/.*"),
+        action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+    ContentBlocker(
+        trigger:
+            ContentBlockerTrigger(urlFilter: ".*google-analytics\\.com/.*"),
+        action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+    ContentBlocker(
+        trigger:
+            ContentBlockerTrigger(urlFilter: ".*adservice\\.google\\.com/.*"),
+        action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+    ContentBlocker(
+        trigger:
+            ContentBlockerTrigger(urlFilter: ".*youtube\\.com/api/stats/ads.*"),
+        action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+    ContentBlocker(
+        trigger:
+            ContentBlockerTrigger(urlFilter: ".*youtube\\.com/get_ad_break.*"),
+        action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+    ContentBlocker(
+        trigger: ContentBlockerTrigger(urlFilter: ".*youtube\\.com/pagead/.*"),
+        action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+    ContentBlocker(
+        trigger: ContentBlockerTrigger(
+            urlFilter: ".*googlevideo\\.com/videoplayback.*adformat.*"),
+        action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+    ContentBlocker(
+        trigger: ContentBlockerTrigger(
+            urlFilter: ".*googlevideo\\.com/videoplayback.*ctier.*"),
+        action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+    ContentBlocker(
+        trigger:
+            ContentBlockerTrigger(urlFilter: ".*youtube\\.com/ptracking.*"),
+        action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+    ContentBlocker(
+        trigger:
+            ContentBlockerTrigger(urlFilter: ".*youtube\\.com/api/stats/qoe.*"),
+        action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+    ContentBlocker(
+        trigger: ContentBlockerTrigger(urlFilter: ".*youtube\\.com/ad_data.*"),
+        action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+    ContentBlocker(
+        trigger:
+            ContentBlockerTrigger(urlFilter: ".*youtube\\.com/api/stats/atr.*"),
+        action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+    ContentBlocker(
+        trigger: ContentBlockerTrigger(
+            urlFilter: ".*stats\\.g\\.doubleclick\\.net/.*"),
+        action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
   ];
 
   @override
@@ -1709,8 +1731,10 @@ bool _isBufferingMidStream = false;
         "https://yaqoob-work.github.io/my-player/player.html";
     // final screenHeight = MediaQuery.of(context).size.height;
     // final bottomBarHeight = screenHeight * 0.06;
-        // final bool isBuffering = _isPageLoading || (_currentPosition.inSeconds < 2 && _isPlaying);
-final bool isBuffering = _isPageLoading || (_currentPosition.inSeconds < 2 && _isPlaying) || _isBufferingMidStream;
+    // final bool isBuffering = _isPageLoading || (_currentPosition.inSeconds < 2 && _isPlaying);
+    final bool isBuffering = _isPageLoading ||
+        (_currentPosition.inSeconds < 2 && _isPlaying) ||
+        _isBufferingMidStream;
 
     return Focus(
       focusNode: _focusNode,
@@ -1749,7 +1773,7 @@ final bool isBuffering = _isPageLoading || (_currentPosition.inSeconds < 2 && _i
                     duration: const Duration(milliseconds: 250),
                     padding: EdgeInsets.only(
                         // bottom: _showControls ? bottomBarHeight : 0.0),
-                        bottom:  0.0),
+                        bottom: 0.0),
                     child: Center(
                       child: AspectRatio(
                         aspectRatio: 16 / 9,
@@ -1773,7 +1797,8 @@ final bool isBuffering = _isPageLoading || (_currentPosition.inSeconds < 2 && _i
                                     args[0] is num &&
                                     args[1] is num &&
                                     mounted) {
-                                  final currentTime = (args[0] as num).toDouble();
+                                  final currentTime =
+                                      (args[0] as num).toDouble();
                                   final totalTime = (args[1] as num).toDouble();
 
                                   bool shouldShowBlurAndMute = totalTime > 25 &&
@@ -1782,14 +1807,15 @@ final bool isBuffering = _isPageLoading || (_currentPosition.inSeconds < 2 && _i
                                   if (shouldShowBlurAndMute && !_showEndBlur) {
                                     _webViewController?.evaluateJavascript(
                                         source: "mutePlayer();");
-                                  } else if (!shouldShowBlurAndMute && _showEndBlur) {
+                                  } else if (!shouldShowBlurAndMute &&
+                                      _showEndBlur) {
                                     _webViewController?.evaluateJavascript(
                                         source: "unMutePlayer();");
                                   }
 
                                   setState(() {
-                                    _currentPosition = Duration(
-                                        seconds: currentTime.toInt());
+                                    _currentPosition =
+                                        Duration(seconds: currentTime.toInt());
                                     _totalDuration =
                                         Duration(seconds: totalTime.toInt());
                                     _showEndBlur = shouldShowBlurAndMute;
@@ -1812,24 +1838,25 @@ final bool isBuffering = _isPageLoading || (_currentPosition.inSeconds < 2 && _i
 
                             // onWebViewCreated के अंदर...
 
-controller.addJavaScriptHandler(
-  handlerName: 'playerStateChange',
-  callback: (args) {
-    if (args.isNotEmpty &&
-        args[0] is int &&
-        mounted) {
-      final playerState = args[0] as int;
-      setState(() {
-        // playerState 1 का मतलब है 'playing'
-        _isPlaying = (playerState == 1); 
-        // playerState 3 का मतलब है 'buffering'
-        _isBufferingMidStream = (playerState == 3); 
-      });
-    }
-  },
-);
+                            controller.addJavaScriptHandler(
+                              handlerName: 'playerStateChange',
+                              callback: (args) {
+                                if (args.isNotEmpty &&
+                                    args[0] is int &&
+                                    mounted) {
+                                  final playerState = args[0] as int;
+                                  setState(() {
+                                    // playerState 1 का मतलब है 'playing'
+                                    _isPlaying = (playerState == 1);
+                                    // playerState 3 का मतलब है 'buffering'
+                                    _isBufferingMidStream = (playerState == 3);
+                                  });
+                                }
+                              },
+                            );
 
-                            final urlToLoad = WebUri("$livePlayerUrl?id=$_videoId");
+                            final urlToLoad =
+                                WebUri("$livePlayerUrl?id=$_videoId");
                             _webViewController?.loadUrl(
                                 urlRequest: URLRequest(url: urlToLoad));
                           },
@@ -1851,16 +1878,13 @@ controller.addJavaScriptHandler(
                       ),
                     ),
 
-
-
-
                   if (_showSplashScreen) _buildSplashScreenOverlay(),
                   if (!_isPlaying && !_showControls && !_showSplashScreen)
                     _buildPauseOverlay(),
 
                   AnimatedOpacity(
                     // opacity: isBuffering ? 1.0 : 0.0,
-                    opacity: 1.0 ,
+                    opacity: 1.0,
                     duration: const Duration(milliseconds: 300),
                     child: _buildTopControlsOverlay(),
                   ),
@@ -1950,8 +1974,7 @@ controller.addJavaScriptHandler(
   }
 
   Widget _buildTopControlsOverlay() {
-    
-         double progress = (_totalDuration.inSeconds == 0)
+    double progress = (_totalDuration.inSeconds == 0)
         ? 0
         : _currentPosition.inSeconds / _totalDuration.inSeconds;
     double seekProgress = (_totalDuration.inSeconds == 0)
@@ -1997,71 +2020,65 @@ controller.addJavaScriptHandler(
             ),
           ),
         ),
-
-
-
-     Positioned(
-      bottom: 0,
-      left: screenwdt * 0.65,
-      right: 0,
-      height: screenhgt * 0.12,
-      // width: screenwdt * 0.35,
-      child: Container(
-        color: Colors.black,
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-              _isSeeking
-                  ? _formatDuration(_targetSeekPosition)
-                  : _formatDuration(_currentPosition),
-              style: TextStyle(
-                color: _isSeeking ? Colors.yellow : Colors.white,
-                fontSize: 14,
-                fontWeight: _isSeeking ? FontWeight.bold : FontWeight.normal,
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(4),
-                child: Stack(
-                  alignment: Alignment.centerLeft,
-                  children: [
-                    Container(height: 6, color: Colors.white.withOpacity(0.3)),
-                    if (_isSeeking)
-                      FractionallySizedBox(
-                          widthFactor: seekProgress,
-                          child: Container(
-                              height: 6, color: Colors.yellow.withOpacity(0.8))),
-                    FractionallySizedBox(
-                        widthFactor: progress,
-                        child: Container(height: 6, color: Colors.red)),
-                  ],
+        Positioned(
+          bottom: 0,
+          left: screenwdt * 0.65,
+          right: 0,
+          height: screenhgt * 0.12,
+          // width: screenwdt * 0.35,
+          child: Container(
+            color: Colors.black,
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  _isSeeking
+                      ? _formatDuration(_targetSeekPosition)
+                      : _formatDuration(_currentPosition),
+                  style: TextStyle(
+                    color: _isSeeking ? Colors.yellow : Colors.white,
+                    fontSize: 14,
+                    fontWeight:
+                        _isSeeking ? FontWeight.bold : FontWeight.normal,
+                  ),
                 ),
-              ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(4),
+                    child: Stack(
+                      alignment: Alignment.centerLeft,
+                      children: [
+                        Container(
+                            height: 6, color: Colors.white.withOpacity(0.3)),
+                        if (_isSeeking)
+                          FractionallySizedBox(
+                              widthFactor: seekProgress,
+                              child: Container(
+                                  height: 6,
+                                  color: Colors.yellow.withOpacity(0.8))),
+                        FractionallySizedBox(
+                            widthFactor: progress,
+                            child: Container(height: 6, color: Colors.red)),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  _formatDuration(Duration(
+                      seconds:
+                          (_totalDuration.inSeconds - 12).clamp(0, 999999))),
+                  style: const TextStyle(color: Colors.white, fontSize: 14),
+                ),
+              ],
             ),
-            const SizedBox(width: 12),
-            Text(
-              _formatDuration(Duration(
-                  seconds: (_totalDuration.inSeconds - 12).clamp(0, 999999))),
-              style: const TextStyle(color: Colors.white, fontSize: 14),
-            ),
-          ],
-        ),
-      ),
-    )
+          ),
+        )
       ],
     );
   }
-
-
-
-
-
-
-
 
   Widget _buildBottomProgressBar(double barHeight) {
     double progress = (_totalDuration.inSeconds == 0)
@@ -2104,7 +2121,8 @@ controller.addJavaScriptHandler(
                       FractionallySizedBox(
                           widthFactor: seekProgress,
                           child: Container(
-                              height: 6, color: Colors.yellow.withOpacity(0.8))),
+                              height: 6,
+                              color: Colors.yellow.withOpacity(0.8))),
                     FractionallySizedBox(
                         widthFactor: progress,
                         child: Container(height: 6, color: Colors.red)),

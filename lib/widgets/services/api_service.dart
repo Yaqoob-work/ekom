@@ -1335,6 +1335,9 @@
 //   }
 // }
 
+
+
+
 import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as https;
@@ -1365,41 +1368,43 @@ class ApiService {
   final _updateController = StreamController<bool>.broadcast();
   Stream<bool> get updateStream => _updateController.stream;
 
-  Future<String> _getAuthKeyForFeaturedLiveTV() async {
-    try {
-      await AuthManager.initialize();
+  // Future<String> _getAuthKeyForFeaturedLiveTV() async {
+    // try {
+  //     await AuthManager.initialize();
 
-      // if (AuthManager.hasValidAuthKey) {
-      //   return AuthManager.authKey;
-      // }
+  //     // if (AuthManager.hasValidAuthKey) {
+  //     //   return AuthManager.authKey;
+  //     // }
 
-      if (globalAuthKey.isNotEmpty) {
-        return globalAuthKey;
-      }
+  //     if (globalAuthKey.isNotEmpty) {
+  //       return globalAuthKey;
+  //     }
 
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String? authKey = prefs.getString('auth_key');
+  //     SharedPreferences prefs = await SharedPreferences.getInstance();
+  //     String? authKey = prefs.getString('auth_key');
 
-      if (authKey != null && authKey.isNotEmpty) {
-        await AuthManager.setAuthKey(authKey);
-        return authKey;
-      }
+  //     if (authKey != null && authKey.isNotEmpty) {
+  //       await AuthManager.setAuthKey(authKey);
+  //       return authKey;
+  //     }
 
-      throw Exception('Authentication required - please login again');
-    } catch (e) {
-      throw Exception('Failed to get authentication key');
-    }
-  }
+  //     throw Exception('Authentication required - please login again');
+  //   } catch (e) {
+  //     throw Exception('Failed to get authentication key');
+  //   }
+  // }
 
   Future<List<NewsItemModel>> fetchMusicData() async {
     try {
-      String authKey = await _getAuthKeyForFeaturedLiveTV();
+      // String authKey = await _getAuthKeyForFeaturedLiveTV();
+            SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? authKey = prefs.getString('auth_key');
 
       final response = await https.get(
         Uri.parse(
             'https://acomtv.coretechinfo.com/public/api/getFeaturedLiveTV'),
         headers: {
-          'auth-key': authKey,
+          'auth-key': authKey??'',
           'Accept': 'application/json',
         },
       );
@@ -1620,13 +1625,15 @@ class ApiService {
 
   Future<void> _fetchAndCacheEntertainment() async {
     try {
-      String authKey = await _getAuthKeyForFeaturedLiveTV();
+      // String authKey = await _getAuthKeyForFeaturedLiveTV();
+            SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? authKey = prefs.getString('auth_key');
 
       final response = await https.get(
         Uri.parse(
             'https://acomtv.coretechinfo.com/public/api/getFeaturedLiveTV'),
         headers: {
-          'auth-key': authKey,
+          'auth-key': authKey??'',
           'Accept': 'application/json',
         },
       );

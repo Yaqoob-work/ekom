@@ -358,7 +358,7 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
       setState(() {
         _authKey = prefs.getString('auth_key') ?? '';
         if (_authKey.isEmpty) {
-          _authKey = globalAuthKey ?? '';
+          _authKey = SessionManager.authKey;
         }
       });
 

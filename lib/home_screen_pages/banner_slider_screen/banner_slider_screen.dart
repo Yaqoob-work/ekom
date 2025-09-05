@@ -182,9 +182,9 @@ Future<Map<String, String>> getAuthHeaders() async {
     try {
       final prefs = await SharedPreferences.getInstance();
       authKey = prefs.getString('auth_key') ?? '';
-      if (authKey.isNotEmpty) {
-        globalAuthKey = authKey;
-      }
+      // if (authKey.isNotEmpty) {
+      //   globalAuthKey = authKey;
+      // }
     } catch (e) {
       // Silent error
     }
@@ -281,6 +281,8 @@ Future<List<dynamic>> fetchBannersData() async {
 class BannerSlider extends StatefulWidget {
   final Function(bool)? onFocusChange;
   final FocusNode focusNode;
+
+  
 
   const BannerSlider({
     Key? key,
@@ -814,6 +816,7 @@ class _BannerSliderState extends State<BannerSlider> with SingleTickerProviderSt
           CachedNetworkImage(
             imageUrl: banner.banner,
             fit: BoxFit.fill,
+            // fit: BoxFit.cover,
             placeholder: (context, url) => Image.asset('assets/streamstarting.gif'),
             // Container(
             //   color: Colors.grey[900],

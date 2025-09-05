@@ -23,6 +23,10 @@ import 'package:mobi_tv_entertainment/video_widget/youtube_webview_player.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+
+
+
+
 // Optimized Genre Network Widget - Caching Version
 class GenreNetworkWidget extends StatefulWidget {
   final int tvChannelId;
@@ -551,7 +555,7 @@ class _GenreNetworkWidgetState extends State<GenreNetworkWidget>
           builder: (context) => GenreAllContentPage(
             genreTitle: currentGenre,
             allContent: currentGenreItems,
-            channelName: widget.channelName,
+            channelName: widget.channelName, channelLogo: widget.channelLogo??'' ,
           ),
         ),
       );
@@ -1083,7 +1087,7 @@ class _GenreNetworkWidgetState extends State<GenreNetworkWidget>
                           builder: (context) => GenreAllContentPage(
                             genreTitle: genre,
                             allContent: contentList,
-                            channelName: widget.channelName,
+                            channelName: widget.channelName, channelLogo: widget.channelLogo??'',
                           ),
                         ),
                       );
@@ -2003,12 +2007,14 @@ class GenreAllContentPage extends StatefulWidget {
   final String genreTitle;
   final List<ContentItem> allContent;
   final String channelName;
+  final String channelLogo;
 
   const GenreAllContentPage({
     Key? key,
     required this.genreTitle,
     required this.allContent,
     required this.channelName,
+    required this.channelLogo,
   }) : super(key: key);
 
   @override
@@ -2139,22 +2145,29 @@ class _GenreAllContentPageState extends State<GenreAllContentPage>
 
       if (playableUrl == null || playableUrl.isEmpty) {
         if (content.contentType == 2) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content:
-                  Text('${content.name} - Episodes will be available soon'),
-              backgroundColor: ProfessionalColors.accentBlue,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
+
+
+                  await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => WebSeriesDetailsPage(
+              id: content.id,
+              banner: content.banner ?? '',
+              poster: content.poster ?? '',
+              logo: widget.channelLogo ?? '',
+              name: content.name,
             ),
-          );
-          return;
+          ),
+        );
+        return; // Exit early for web series
+
         } else {
           throw Exception('No video URL found for this content');
         }
       }
+
+
+
 
       if (!mounted) return;
 

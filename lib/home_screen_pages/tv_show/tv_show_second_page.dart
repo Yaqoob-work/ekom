@@ -214,7 +214,7 @@ Future<void> _onTVShowSelected(TVShowDetailsModel tvShow) async {
   
   // ✅ Refresh when user returns
   print('🔄 User returned, refreshing data...');
-  _loadDataWithCache();
+  // _loadDataWithCache();
 }
 
 

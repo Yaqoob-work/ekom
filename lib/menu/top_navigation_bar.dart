@@ -271,7 +271,11 @@
 
 
 
+
+
+
 import 'dart:math';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mobi_tv_entertainment/provider/color_provider.dart';
@@ -299,10 +303,13 @@ class TopNavigationBar extends StatefulWidget {
 class _TopNavigationBarState extends State<TopNavigationBar> {
   late List<FocusNode> _focusNodes;
   final List<String> navItems = ['Vod', 'Live TV', 'Search'];
+  String logoUrl = '';
 
   @override
   void initState() {
     super.initState();
+    logoUrl = SessionManager.logoUrl;
+    print('logoUrl:$logoUrl');
     _focusNodes = List.generate(navItems.length + 1, (index) => FocusNode());
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -331,6 +338,7 @@ class _TopNavigationBarState extends State<TopNavigationBar> {
 
   @override
   Widget build(BuildContext context) {
+    print('LOGOURL: "${SessionManager.logoUrl}"');
     return PopScope(
         canPop: false, // Back button se page pop nahi hoga
         onPopInvoked: (didPop) {
@@ -521,10 +529,21 @@ class _TopNavigationBarState extends State<TopNavigationBar> {
 // )
 
 // AppAssets.logoSmall()
-                      Image.asset(
-                          'assets/logo3.png',
-                          height: screenhgt * 0.05,
-                        )
+                      // Image.asset(
+                      //     'assets/logo3.png',
+                      //     height: screenhgt * 0.05,
+                      //   )
+                      // if (logo.isNotEmpty) // Check karein ki URL khali na ho
+                      CachedNetworkImage(
+                          imageUrl: SessionManager.logoUrl ,
+                          height: screenhgt *
+                              0.05, // Apni zaroorat ke hisab se height/width set karein
+                          placeholder: (context, url) =>
+                              CircularProgressIndicator(), // Jab tak image load ho rahi hai
+                          errorWidget: (context, url, error) =>
+                              Icon(Icons.error)
+                          // Agar image load na ho paye
+                          )
                       : index == 4 // Youtube icon
                           ? Image.asset(
                               'assets/youtube.png',

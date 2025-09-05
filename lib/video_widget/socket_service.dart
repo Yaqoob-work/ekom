@@ -388,7 +388,7 @@ class SocketService {
       Duration(seconds: 25),
       onTimeout: () {
         _pendingUrlUpdates.remove(originalUrl);
-        throw TimeoutException('Failed to get YouTube URL: Timeout');
+        throw TimeoutException('Failed to get URL: Timeout');
       },
     );
 

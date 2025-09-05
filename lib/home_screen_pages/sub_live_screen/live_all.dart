@@ -4299,87 +4299,386 @@ class _GenericLiveChannelsState extends State<GenericLiveChannels>
   Timer? _backgroundFetchTimer;
   bool _isBackgroundFetching = false;
 
-  // ✅ OPTIMIZED: Modified initState and data loading methods
+  // // ✅ OPTIMIZED: Modified initState and data loading methods
 
-  @override
-  void initState() {
-    super.initState();
-    _cacheKey = 'live_channels_${widget.apiCategory}';
-    _initializeAnimations();
-    _initializeViewAllFocusNode();
-    _setupFocusProvider();
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   _cacheKey = 'live_channels_${widget.apiCategory}';
+  //   _initializeAnimations();
+  //   _initializeViewAllFocusNode();
+  //   _setupFocusProvider();
 
-    // ✅ NEW: Load data with optimized caching strategy
-    _loadDataWithCaching();
-    _startBackgroundFetching();
+  //   // ✅ NEW: Load data with optimized caching strategy
+  //   _loadDataWithCaching();
+  //   _startBackgroundFetching();
+  // }
+
+
+
+  // ✅ OPTIMIZED: Preload full channels on widget creation
+@override
+void initState() {
+  super.initState();
+  _cacheKey = 'live_channels_${widget.apiCategory}';
+  _initializeAnimations();
+  _initializeViewAllFocusNode();
+  _setupFocusProvider();
+
+  // Load data with optimized caching strategy
+  _loadDataWithCaching();
+  _startBackgroundFetching();
+  
+  // ✅ SMART PRELOADING: Start fetching full list immediately if display list loads quickly
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    Future.delayed(Duration(milliseconds: 500), () {
+      if (mounted && displayChannelsList.isNotEmpty && fullChannelsList.isEmpty) {
+        print('🚀 Smart preloading full channels list...');
+        _fetchFullChannelsList();
+      }
+    });
+  });
+}
+
+// ✅ ENHANCED: Better caching strategy for full channels
+Future<void> _loadDataWithCaching() async {
+  if (!mounted) return;
+
+  // Step 1: Try to load from cache instantly
+  final cachedData = await _loadFromCache();
+
+  if (cachedData != null && cachedData.isNotEmpty) {
+    // ✅ INSTANT: Show cached data immediately
+    if (mounted) {
+      setState(() {
+        displayChannelsList = cachedData.take(7).toList();
+        fullChannelsList = cachedData; // ✅ Also populate full list from cache
+        totalActiveChannelsCount = cachedData.length;
+        _initializeChannelFocusNodes();
+        _isLoading = false;
+      });
+      _headerAnimationController.forward();
+      _listAnimationController.forward();
+    }
+
+    print('✅ Cache data loaded instantly: ${cachedData.length} channels (both display and full list)');
+
+    // Step 2: Fetch fresh data in background to update cache
+    _fetchFreshDataInBackground();
+  } else {
+    // ✅ NO CACHE: Show loading and fetch from API
+    print('❌ No cache found, fetching from API...');
+    setState(() {
+      _isLoading = true;
+    });
+    await _fetchDisplayChannels();
   }
+}
 
-// ✅ NEW: Optimized data loading with instant cache + background refresh
-  Future<void> _loadDataWithCaching() async {
-    if (!mounted) return;
+// ✅ SMART: Enhanced display channels fetch that also populates full list
+Future<void> _fetchDisplayChannels() async {
+  if (!mounted) return;
 
-    // Step 1: Try to load from cache instantly
-    final cachedData = await _loadFromCache();
+  setState(() {
+    _isLoading = true;
+    _errorMessage = '';
+  });
 
-    if (cachedData != null && cachedData.isNotEmpty) {
-      // ✅ INSTANT: Show cached data immediately
+  try {
+    final freshData = await _fetchChannelsFromAPI();
+
+    if (freshData.isNotEmpty) {
+      // Save to cache
+      await _saveToCache(freshData);
+
       if (mounted) {
         setState(() {
-          displayChannelsList = cachedData.take(7).toList();
-          totalActiveChannelsCount = cachedData.length;
+          totalActiveChannelsCount = freshData.length;
+          displayChannelsList = freshData.take(7).toList();
+          fullChannelsList = freshData; // ✅ Also populate full list
           _initializeChannelFocusNodes();
           _isLoading = false;
         });
+
         _headerAnimationController.forward();
         _listAnimationController.forward();
+        
+        print('✅ Both display (${displayChannelsList.length}) and full (${fullChannelsList.length}) lists populated');
       }
-
-      print('✅ Cache data loaded instantly: ${cachedData.length} channels');
-
-      // Step 2: Fetch fresh data in background to update cache
-      _fetchFreshDataInBackground();
     } else {
-      // ✅ NO CACHE: Show loading and fetch from API
-      print('❌ No cache found, fetching from API...');
-      setState(() {
-        _isLoading = true;
-      });
-      await _fetchDisplayChannels();
-    }
-  }
-
-// ✅ NEW: Background cache update WITHOUT UI changes
-  Future<void> _fetchFreshDataInBackground() async {
-    if (!mounted) return;
-
-    try {
-      print('🔄 Fetching fresh data in background...');
-      final freshData = await _fetchChannelsFromAPI();
-
-      if (freshData.isNotEmpty) {
-        final cachedData = await _loadFromCache();
-
-        // Compare fresh data with cached data
-        if (cachedData == null ||
-            !_areChannelListsEqual(cachedData, freshData)) {
-          print('🆕 Fresh data different from cache, updating...');
-
-          // ✅ ONLY UPDATE CACHE - DO NOT UPDATE UI
-          await _saveToCache(freshData);
-
-          // ✅ REMOVED: UI update code - keeping current UI as is
-          // User jo dekh raha hai woh same rahega
-
-          print('✅ Cache updated with fresh data (UI unchanged)');
-        } else {
-          print('✅ Cache data is already fresh, no update needed');
-        }
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          // Don't show error message if we already have cached data
+          if (displayChannelsList.isEmpty) {
+            _errorMessage = 'No ${widget.apiCategory} channels found';
+          }
+        });
       }
-    } catch (e) {
-      print('❌ Background fetch error: $e');
-      // Don't show error to user since this is background operation
+    }
+  } catch (e) {
+    if (mounted) {
+      setState(() {
+        _isLoading = false;
+        // Don't show error message if we already have cached data
+        if (displayChannelsList.isEmpty) {
+          _errorMessage = 'Network error: Please check connection';
+        }
+      });
     }
   }
+}
+
+// ✅ OPTIMIZED: Better background fetching that updates both lists
+Future<void> _fetchFreshDataInBackground() async {
+  if (!mounted) return;
+
+  try {
+    print('🔄 Fetching fresh data in background...');
+    final freshData = await _fetchChannelsFromAPI();
+
+    if (freshData.isNotEmpty) {
+      final cachedData = await _loadFromCache();
+
+      // Compare fresh data with cached data
+      if (cachedData == null ||
+          !_areChannelListsEqual(cachedData, freshData)) {
+        print('🆕 Fresh data different from cache, updating...');
+
+        // ✅ UPDATE CACHE
+        await _saveToCache(freshData);
+
+        // ✅ SILENT UPDATE: Update full list without UI disruption
+        if (mounted) {
+          setState(() {
+            fullChannelsList = freshData;
+            totalActiveChannelsCount = freshData.length;
+          });
+        }
+
+        print('✅ Cache and full list updated with fresh data (${freshData.length} channels)');
+      } else {
+        print('✅ Cache data is already fresh, no update needed');
+      }
+    }
+  } catch (e) {
+    print('❌ Background fetch error: $e');
+    // Don't show error to user since this is background operation
+  }
+}
+
+// ✅ FALLBACK: Ensure full list is available before video navigation
+Future<List<NewsItemModel>> _getCompleteChannelsList() async {
+  // If full list is empty, try to populate it
+  if (fullChannelsList.isEmpty && displayChannelsList.isNotEmpty) {
+    print('⚠️ Full list empty, trying to populate from API...');
+    await _fetchFullChannelsList();
+  }
+  
+  // Return full list if available, otherwise display list
+  if (fullChannelsList.isNotEmpty) {
+    print('📺 Using full channels list: ${fullChannelsList.length} channels');
+    return _convertFullChannelsToNewsItems();
+  } else {
+    print('⚠️ Using display channels list as fallback: ${displayChannelsList.length} channels');
+    return _convertDisplayChannelsToNewsItems();
+  }
+}
+
+// ✅ FINAL: Updated handle channel tap with guaranteed full list
+Future<void> _handleChannelTap(NewsChannel channel) async {
+  if (_isNavigating) return;
+  _isNavigating = true;
+
+  bool dialogShown = false;
+
+  if (mounted) {
+    dialogShown = true;
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return WillPopScope(
+          onWillPop: () async {
+            _isNavigating = false;
+            return true;
+          },
+          child: Center(
+            child: Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.8),
+                borderRadius: BorderRadius.circular(15),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 50,
+                    height: 50,
+                    child: const CircularProgressIndicator(
+                      strokeWidth: 3,
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        ProfessionalColors.accentBlue,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Loading channel...',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Timer(Duration(seconds: 10), () {
+    _isNavigating = false;
+  });
+
+  try {
+    String categoryName = widget.apiCategory == 'All'
+        ? (channel.genres.toLowerCase().isNotEmpty
+            ? channel.genres.toLowerCase()
+            : 'live')
+        : widget.apiCategory.toLowerCase();
+
+    // Current channel ko NewsItemModel में convert करें
+    NewsItemModel currentChannel = NewsItemModel(
+      id: channel.id.toString(),
+      videoId: '',
+      name: channel.name,
+      description: channel.description ?? '',
+      banner: channel.banner,
+      poster: channel.banner,
+      category: categoryName,
+      url: channel.url,
+      streamType: channel.streamType,
+      type: channel.streamType,
+      genres: channel.genres,
+      status: channel.status.toString(),
+      index: displayChannelsList.indexOf(channel).toString(),
+      image: channel.banner,
+      unUpdatedUrl: channel.url,
+    );
+
+    // ✅ GUARANTEED: Get complete channels list
+    List<NewsItemModel> allChannels = await _getCompleteChannelsList();
+
+    if (dialogShown) {
+      Navigator.of(context, rootNavigator: true).pop();
+    }
+
+    bool liveStatus = true;
+
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => VideoScreen(
+          videoUrl: currentChannel.url,
+          bannerImageUrl: currentChannel.banner,
+          startAtPosition: Duration.zero,
+          videoType: currentChannel.streamType,
+          channelList: allChannels, // ✅ Complete channel list guaranteed
+          isLive: true,
+          isVOD: false,
+          isBannerSlider: false,
+          source: 'isLiveScreen',
+          isSearch: false,
+          videoId: int.tryParse(currentChannel.id),
+          unUpdatedUrl: currentChannel.url,
+          name: currentChannel.name,
+          liveStatus: liveStatus,
+        ),
+      ),
+    );
+  } catch (e) {
+    if (dialogShown) {
+      Navigator.of(context, rootNavigator: true).pop();
+    }
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Something Went Wrong')),
+    );
+  } finally {
+    _isNavigating = false;
+  }
+}
+
+// // ✅ NEW: Optimized data loading with instant cache + background refresh
+//   Future<void> _loadDataWithCaching() async {
+//     if (!mounted) return;
+
+//     // Step 1: Try to load from cache instantly
+//     final cachedData = await _loadFromCache();
+
+//     if (cachedData != null && cachedData.isNotEmpty) {
+//       // ✅ INSTANT: Show cached data immediately
+//       if (mounted) {
+//         setState(() {
+//           displayChannelsList = cachedData.take(7).toList();
+//           totalActiveChannelsCount = cachedData.length;
+//           _initializeChannelFocusNodes();
+//           _isLoading = false;
+//         });
+//         _headerAnimationController.forward();
+//         _listAnimationController.forward();
+//       }
+
+//       print('✅ Cache data loaded instantly: ${cachedData.length} channels');
+
+//       // Step 2: Fetch fresh data in background to update cache
+//       _fetchFreshDataInBackground();
+//     } else {
+//       // ✅ NO CACHE: Show loading and fetch from API
+//       print('❌ No cache found, fetching from API...');
+//       setState(() {
+//         _isLoading = true;
+//       });
+//       await _fetchDisplayChannels();
+//     }
+//   }
+
+// // ✅ NEW: Background cache update WITHOUT UI changes
+//   Future<void> _fetchFreshDataInBackground() async {
+//     if (!mounted) return;
+
+//     try {
+//       print('🔄 Fetching fresh data in background...');
+//       final freshData = await _fetchChannelsFromAPI();
+
+//       if (freshData.isNotEmpty) {
+//         final cachedData = await _loadFromCache();
+
+//         // Compare fresh data with cached data
+//         if (cachedData == null ||
+//             !_areChannelListsEqual(cachedData, freshData)) {
+//           print('🆕 Fresh data different from cache, updating...');
+
+//           // ✅ ONLY UPDATE CACHE - DO NOT UPDATE UI
+//           await _saveToCache(freshData);
+
+//           // ✅ REMOVED: UI update code - keeping current UI as is
+//           // User jo dekh raha hai woh same rahega
+
+//           print('✅ Cache updated with fresh data (UI unchanged)');
+//         } else {
+//           print('✅ Cache data is already fresh, no update needed');
+//         }
+//       }
+//     } catch (e) {
+//       print('❌ Background fetch error: $e');
+//       // Don't show error to user since this is background operation
+//     }
+//   }
 
 // ✅ MODIFIED: Enhanced cache loading with better error handling
   Future<List<NewsChannel>?> _loadFromCache() async {
@@ -4522,56 +4821,56 @@ class _GenericLiveChannelsState extends State<GenericLiveChannels>
     return [];
   }
 
-// ✅ SIMPLIFIED: Display channels fetch now just calls the API method
-  Future<void> _fetchDisplayChannels() async {
-    if (!mounted) return;
+// // ✅ SIMPLIFIED: Display channels fetch now just calls the API method
+//   Future<void> _fetchDisplayChannels() async {
+//     if (!mounted) return;
 
-    setState(() {
-      _isLoading = true;
-      _errorMessage = '';
-    });
+//     setState(() {
+//       _isLoading = true;
+//       _errorMessage = '';
+//     });
 
-    try {
-      final freshData = await _fetchChannelsFromAPI();
+//     try {
+//       final freshData = await _fetchChannelsFromAPI();
 
-      if (freshData.isNotEmpty) {
-        // Save to cache
-        await _saveToCache(freshData);
+//       if (freshData.isNotEmpty) {
+//         // Save to cache
+//         await _saveToCache(freshData);
 
-        if (mounted) {
-          setState(() {
-            totalActiveChannelsCount = freshData.length;
-            displayChannelsList = freshData.take(7).toList();
-            _initializeChannelFocusNodes();
-            _isLoading = false;
-          });
+//         if (mounted) {
+//           setState(() {
+//             totalActiveChannelsCount = freshData.length;
+//             displayChannelsList = freshData.take(7).toList();
+//             _initializeChannelFocusNodes();
+//             _isLoading = false;
+//           });
 
-          _headerAnimationController.forward();
-          _listAnimationController.forward();
-        }
-      } else {
-        if (mounted) {
-          setState(() {
-            _isLoading = false;
-            // Don't show error message if we already have cached data
-            if (displayChannelsList.isEmpty) {
-              _errorMessage = 'No ${widget.apiCategory} channels found';
-            }
-          });
-        }
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-          // Don't show error message if we already have cached data
-          if (displayChannelsList.isEmpty) {
-            _errorMessage = 'Network error: Please check connection';
-          }
-        });
-      }
-    }
-  }
+//           _headerAnimationController.forward();
+//           _listAnimationController.forward();
+//         }
+//       } else {
+//         if (mounted) {
+//           setState(() {
+//             _isLoading = false;
+//             // Don't show error message if we already have cached data
+//             if (displayChannelsList.isEmpty) {
+//               _errorMessage = 'No ${widget.apiCategory} channels found';
+//             }
+//           });
+//         }
+//       }
+//     } catch (e) {
+//       if (mounted) {
+//         setState(() {
+//           _isLoading = false;
+//           // Don't show error message if we already have cached data
+//           if (displayChannelsList.isEmpty) {
+//             _errorMessage = 'Network error: Please check connection';
+//           }
+//         });
+//       }
+//     }
+//   }
 
 // ✅ NEW: Method to manually refresh data (can be called from pull-to-refresh)
   Future<void> _refreshData() async {
@@ -4949,134 +5248,134 @@ class _GenericLiveChannelsState extends State<GenericLiveChannels>
     }).toList();
   }
 
-  // ✅ OPTIMIZED: Handle channel tap with display channels
-  Future<void> _handleChannelTap(NewsChannel channel) async {
-    if (_isNavigating) return;
-    _isNavigating = true;
+  // // ✅ OPTIMIZED: Handle channel tap with display channels
+  // Future<void> _handleChannelTap(NewsChannel channel) async {
+  //   if (_isNavigating) return;
+  //   _isNavigating = true;
 
-    bool dialogShown = false;
+  //   bool dialogShown = false;
 
-    if (mounted) {
-      dialogShown = true;
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext context) {
-          return WillPopScope(
-            onWillPop: () async {
-              _isNavigating = false;
-              return true;
-            },
-            child: Center(
-              child: Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.8),
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      width: 50,
-                      height: 50,
-                      child: const CircularProgressIndicator(
-                        strokeWidth: 3,
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                          ProfessionalColors.accentBlue,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    const Text(
-                      'Loading channel...',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          );
-        },
-      );
-    }
+  //   if (mounted) {
+  //     dialogShown = true;
+  //     showDialog(
+  //       context: context,
+  //       barrierDismissible: false,
+  //       builder: (BuildContext context) {
+  //         return WillPopScope(
+  //           onWillPop: () async {
+  //             _isNavigating = false;
+  //             return true;
+  //           },
+  //           child: Center(
+  //             child: Container(
+  //               padding: const EdgeInsets.all(20),
+  //               decoration: BoxDecoration(
+  //                 color: Colors.black.withOpacity(0.8),
+  //                 borderRadius: BorderRadius.circular(15),
+  //               ),
+  //               child: Column(
+  //                 mainAxisSize: MainAxisSize.min,
+  //                 children: [
+  //                   Container(
+  //                     width: 50,
+  //                     height: 50,
+  //                     child: const CircularProgressIndicator(
+  //                       strokeWidth: 3,
+  //                       valueColor: AlwaysStoppedAnimation<Color>(
+  //                         ProfessionalColors.accentBlue,
+  //                       ),
+  //                     ),
+  //                   ),
+  //                   const SizedBox(height: 16),
+  //                   const Text(
+  //                     'Loading channel...',
+  //                     style: TextStyle(
+  //                       color: Colors.white,
+  //                       fontSize: 16,
+  //                       fontWeight: FontWeight.w500,
+  //                     ),
+  //                   ),
+  //                 ],
+  //               ),
+  //             ),
+  //           ),
+  //         );
+  //       },
+  //     );
+  //   }
 
-    Timer(Duration(seconds: 10), () {
-      _isNavigating = false;
-    });
+  //   Timer(Duration(seconds: 10), () {
+  //     _isNavigating = false;
+  //   });
 
-    try {
-      String categoryName = widget.apiCategory == 'All'
-          ? (channel.genres.toLowerCase().isNotEmpty
-              ? channel.genres.toLowerCase()
-              : 'live')
-          : widget.apiCategory.toLowerCase();
+  //   try {
+  //     String categoryName = widget.apiCategory == 'All'
+  //         ? (channel.genres.toLowerCase().isNotEmpty
+  //             ? channel.genres.toLowerCase()
+  //             : 'live')
+  //         : widget.apiCategory.toLowerCase();
 
-      // Current channel ko NewsItemModel में convert करें
-      NewsItemModel currentChannel = NewsItemModel(
-        id: channel.id.toString(),
-        videoId: '',
-        name: channel.name,
-        description: channel.description ?? '',
-        banner: channel.banner,
-        poster: channel.banner,
-        category: categoryName,
-        url: channel.url,
-        streamType: channel.streamType,
-        type: channel.streamType,
-        genres: channel.genres,
-        status: channel.status.toString(),
-        index: displayChannelsList.indexOf(channel).toString(),
-        image: channel.banner,
-        unUpdatedUrl: channel.url,
-      );
+  //     // Current channel ko NewsItemModel में convert करें
+  //     NewsItemModel currentChannel = NewsItemModel(
+  //       id: channel.id.toString(),
+  //       videoId: '',
+  //       name: channel.name,
+  //       description: channel.description ?? '',
+  //       banner: channel.banner,
+  //       poster: channel.banner,
+  //       category: categoryName,
+  //       url: channel.url,
+  //       streamType: channel.streamType,
+  //       type: channel.streamType,
+  //       genres: channel.genres,
+  //       status: channel.status.toString(),
+  //       index: displayChannelsList.indexOf(channel).toString(),
+  //       image: channel.banner,
+  //       unUpdatedUrl: channel.url,
+  //     );
 
-      // ✅ OPTIMIZED: Use display channels for navigation
-      List<NewsItemModel> allChannels =
-          _convertDisplayChannelsToNewsItems();
+  //     // ✅ OPTIMIZED: Use display channels for navigation
+  //     List<NewsItemModel> allChannels =
+  //         _convertDisplayChannelsToNewsItems();
 
-      if (dialogShown) {
-        Navigator.of(context, rootNavigator: true).pop();
-      }
+  //     if (dialogShown) {
+  //       Navigator.of(context, rootNavigator: true).pop();
+  //     }
 
-      bool liveStatus = true;
+  //     bool liveStatus = true;
 
-      await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => VideoScreen(
-            videoUrl: currentChannel.url,
-            bannerImageUrl: currentChannel.banner,
-            startAtPosition: Duration.zero,
-            videoType: currentChannel.streamType,
-            channelList: allChannels,
-            isLive: true,
-            isVOD: false,
-            isBannerSlider: false,
-            source: 'isLiveScreen',
-            isSearch: false,
-            videoId: int.tryParse(currentChannel.id),
-            unUpdatedUrl: currentChannel.url,
-            name: currentChannel.name,
-            liveStatus: liveStatus,
-          ),
-        ),
-      );
-    } catch (e) {
-      if (dialogShown) {
-        Navigator.of(context, rootNavigator: true).pop();
-      }
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Something Went Wrong')),
-      );
-    } finally {
-      _isNavigating = false;
-    }
-  }
+  //     await Navigator.push(
+  //       context,
+  //       MaterialPageRoute(
+  //         builder: (context) => VideoScreen(
+  //           videoUrl: currentChannel.url,
+  //           bannerImageUrl: currentChannel.banner,
+  //           startAtPosition: Duration.zero,
+  //           videoType: currentChannel.streamType,
+  //           channelList: allChannels,
+  //           isLive: true,
+  //           isVOD: false,
+  //           isBannerSlider: false,
+  //           source: 'isLiveScreen',
+  //           isSearch: false,
+  //           videoId: int.tryParse(currentChannel.id),
+  //           unUpdatedUrl: currentChannel.url,
+  //           name: currentChannel.name,
+  //           liveStatus: liveStatus,
+  //         ),
+  //       ),
+  //     );
+  //   } catch (e) {
+  //     if (dialogShown) {
+  //       Navigator.of(context, rootNavigator: true).pop();
+  //     }
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(content: Text('Something Went Wrong')),
+  //     );
+  //   } finally {
+  //     _isNavigating = false;
+  //   }
+  // }
 
   // ✅ OPTIMIZED: Navigate to grid view and fetch full list if needed
   void _navigateToChannelsGrid() async {
@@ -6060,7 +6359,7 @@ class _ProfessionalViewAllButtonState extends State<ProfessionalViewAllButton>
                   angle: _isFocused ? 0 : _rotateAnimation.value * 2 * math.pi,
                   child: Container(
                     height:
-                        _isFocused ? screenHeight * 0.28 : screenHeight * 0.22,
+                        _isFocused ? focussedBannerhgt : bannerhgt,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(12),
                       gradient: LinearGradient(

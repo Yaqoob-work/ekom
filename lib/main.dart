@@ -1520,83 +1520,1914 @@
 
 
 
+// import 'dart:async';
+// import 'dart:convert';
+// import 'dart:io';
+// import 'dart:math' as math;
+// import 'dart:ui';
+// import 'package:animate_do/animate_do.dart'; // Import kiya gaya package
+// import 'package:animated_text_kit/animated_text_kit.dart';
+// import 'package:sensors_plus/sensors_plus.dart'; // For Parallax effect
+// import 'package:flutter/material.dart';
+// import 'package:flutter/services.dart';
+// import 'package:mobi_tv_entertainment/home_screen_pages/home_screen.dart';
+// import 'package:mobi_tv_entertainment/menu_screens/youtube_search_screen.dart';
+// import 'package:mobi_tv_entertainment/menu_screens/search_screen.dart';
+// import 'package:mobi_tv_entertainment/menu_screens/live_screen.dart';
+// import 'package:http/http.dart' as https;
+// import 'package:mobi_tv_entertainment/provider/color_provider.dart';
+// import 'package:mobi_tv_entertainment/provider/device_info_provider.dart';
+// import 'package:mobi_tv_entertainment/provider/focus_provider.dart';
+// import 'package:package_info_plus/package_info_plus.dart';
+// import 'package:provider/provider.dart';
+// import 'package:url_launcher/url_launcher.dart';
+// import 'package:shared_preferences/shared_preferences.dart';
+// import 'package:device_info_plus/device_info_plus.dart';
+// import 'menu/top_navigation_bar.dart';
+// import 'home_screen_pages/sub_vod_screen/sub_vod.dart';
+// import 'widgets/small_widgets/app_assets.dart';
+// import 'widgets/small_widgets/loading_indicator.dart';
+// import 'package:intl/date_symbol_data_local.dart';
+
+// // Global variable for authentication key
+// String globalAuthKey = '';
+
+// // Auth key manager class
+// class AuthManager {
+//   static String _authKey = '';
+//   static bool _isInitialized = false;
+
+//   static String get authKey => _authKey;
+
+//   static Future<void> initialize() async {
+//     if (!_isInitialized) {
+//       await _loadAuthKey();
+//       _isInitialized = true;
+//     }
+//   }
+
+//   static Future<void> _loadAuthKey() async {
+//     try {
+//       SharedPreferences prefs = await SharedPreferences.getInstance();
+//       String? authKey = prefs.getString('auth_key');
+
+//       if (authKey != null && authKey.isNotEmpty) {
+//         _authKey = authKey;
+//         globalAuthKey =
+//             authKey; // Also set global variable for backward compatibility
+//       } else {}
+//     } catch (e) {}
+//   }
+
+//   static Future<void> setAuthKey(String authKey) async {
+//     _authKey = authKey;
+//     globalAuthKey = authKey; // Also set global variable
+
+//     // Save to SharedPreferences
+//     SharedPreferences prefs = await SharedPreferences.getInstance();
+//     await prefs.setString('auth_key', authKey);
+//   }
+
+//   static Future<void> clearAuthKey() async {
+//     _authKey = '';
+//     globalAuthKey = '';
+
+//     SharedPreferences prefs = await SharedPreferences.getInstance();
+//     await prefs.remove('auth_key');
+//   }
+
+//   static bool get hasValidAuthKey => _authKey.isNotEmpty;
+// }
+
+// class MyHttpOverrides extends HttpOverrides {
+//   @override
+//   HttpClient createHttpClient(SecurityContext? context) {
+//     return super.createHttpClient(context)
+//       ..badCertificateCallback =
+//           (X509Certificate cert, String host, int port) => true;
+//   }
+// }
+
+// void main() async {
+
+// WidgetsFlutterBinding.ensureInitialized();
+
+//   HttpOverrides.global = MyHttpOverrides();
+//   await initializeDateFormatting(null, null);
+//      SystemChrome.setEnabledSystemUIMode(
+//     SystemUiMode.immersiveSticky,
+//     overlays: [],
+//   );
+  
+//   SystemChrome.setSystemUIOverlayStyle(
+//     const SystemUiOverlayStyle(
+//       statusBarColor: Colors.transparent,
+//       systemNavigationBarColor: Colors.transparent,
+//       statusBarBrightness: Brightness.dark,
+//       statusBarIconBrightness: Brightness.light,
+//       systemNavigationBarIconBrightness: Brightness.light,
+//     ),
+//   );
+
+
+//     // ✅ Provider ko initialize karein
+//   final deviceInfoProvider = DeviceInfoProvider();
+//   await deviceInfoProvider.loadDeviceInfo(); // ✅ Device info pehle hi load kar lein
+
+//   runApp(
+//     MultiProvider(
+//       providers: [
+//         // ChangeNotifierProvider(create: (_) => DeviceInfoProvider()),
+//         ChangeNotifierProvider(create: (_) => ColorProvider()),
+//         ChangeNotifierProvider(create: (_) => FocusProvider()),
+//         ChangeNotifierProvider.value(value: deviceInfoProvider),
+//         // ChangeNotifierProvider(create: (_) => SharedDataProvider()),
+//       ],
+//       child: MyApp(),
+//     ),
+//   );
+// }
+
+// String baseUrl = 'https://acomtv.coretechinfo.com/public/api/';
+// var highlightColor;
+// var cardColor;
+// var hintColor;
+// var borderColor;
+
+// var screenhgt;
+// var screenwdt;
+// var bannerwdt;
+// var bannerhgt;
+// var focussedBannerwdt;
+// var focussedBannerhgt;
+// var screensz;
+// var nametextsz;
+// var menutextsz;
+// var minitextsz;
+// var Headingtextsz;
+
+// String localImage = 'assets/logo.png';
+// String streamImage = 'assets/streamstarting.gif';
+
+// class MyApp extends StatefulWidget {
+//   @override
+//   _MyAppState createState() => _MyAppState();
+// }
+
+// class _MyAppState extends State<MyApp> {
+//   @override
+//   void initState() {
+//     super.initState();
+//     // Initialize auth manager
+//     AuthManager.initialize();
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     screenhgt = MediaQuery.of(context).size.height;
+//     screenwdt = MediaQuery.of(context).size.width;
+//     bannerwdt = screenwdt * 0.15;
+//     bannerhgt = screenhgt * 0.17;
+//     focussedBannerwdt = screenwdt * 0.15;
+//     focussedBannerhgt = screenhgt * 0.21;
+//     screensz = MediaQuery.of(context).size;
+//     nametextsz = MediaQuery.of(context).size.width / 60.0;
+//     menutextsz = MediaQuery.of(context).size.width / 70;
+//     minitextsz = MediaQuery.of(context).size.width / 80;
+//     Headingtextsz = MediaQuery.of(context).size.width / 50;
+//     highlightColor = Colors.blue;
+//     cardColor = const Color.fromARGB(200, 0, 0, 0).withOpacity(0.7);
+//     hintColor = Colors.white;
+//     borderColor = Color.fromARGB(255, 247, 6, 118);
+
+// // ✅ SOLUTION: localImage ko global getter banayiye
+// // Widget get localImage => AppAssets.localImage();
+
+// // ✅ ALTERNATIVE: Function approach
+// // Widget  localImage({double? width, double? height, bool animated = false}) {
+// //   return AppAssets.localImage(
+// //     width: width,
+// //     height: height,
+// //     animated: animated,
+// //   );
+// // }
+
+//     // localImage = '/assets/app_assets.dart';
+
+//     // ✅ SOLUTION: localImage ko global getter banayiye
+// // Widget get localImage => AppAssets.localImage();
+
+// // ✅ ALTERNATIVE: Function approach
+//     Widget localImage({double? width, double? height, bool animated = false}) {
+//       return AppAssets.localImage(
+//         width: width,
+//         height: height,
+//         animated: animated,
+//       );
+//     }
+// // localImage = Container(
+// //   decoration: BoxDecoration(
+// //     borderRadius: BorderRadius.circular(screenwdt * 0.01),
+// //     boxShadow: [
+// //       // Much darker and stronger shadows
+// //       BoxShadow(
+// //         color: Colors.black.withOpacity(0.95), // Increased opacity
+// //         blurRadius: 25,
+// //         spreadRadius: 3,
+// //         offset: Offset(0, 10),
+// //       ),
+// //       BoxShadow(
+// //         color: Colors.black.withOpacity(0.8),
+// //         blurRadius: 50,
+// //         spreadRadius: 8,
+// //         offset: Offset(0, 20),
+// //       ),
+// //       // Additional deep shadow for more darkness
+// //       BoxShadow(
+// //         color: Colors.black.withOpacity(0.6),
+// //         blurRadius: 80,
+// //         spreadRadius: 15,
+// //         offset: Offset(0, 30),
+// //       ),
+// //     ],
+// //   ),
+// //   child: ClipRRect(
+// //     borderRadius: BorderRadius.circular(screenwdt * 0.0),
+// //     child: Container(
+// //       foregroundDecoration: BoxDecoration(
+// //         // Much darker gradient overlay
+// //         gradient: LinearGradient(
+// //           begin: Alignment.topCenter,
+// //           end: Alignment.bottomCenter,
+// //           colors: [
+// //             Colors.black.withOpacity(0.3),  // Much darker start
+// //             Colors.black.withOpacity(0.4),  // Darker middle
+// //             Colors.black.withOpacity(0.5),  // Very dark end
+// //           ],
+// //           stops: [0.0, 0.5, 1.0],
+// //         ),
+// //         borderRadius: BorderRadius.circular(screenwdt * 0.0),
+// //       ),
+// //       child: Image.asset(
+// //         'assets/logo.png',
+// //         fit: BoxFit.cover,
+// //       ),
+// //     ),
+// //   ),
+// // );
+
+//     // localImage = Container(
+//     //   width: double.infinity,
+//     //   padding: const EdgeInsets.all(20),
+//     //   child:
+//     //   EkomLogoWidget(
+//     //     width: AppLogos.getResponsiveWidth(MediaQuery.of(context).size.width),
+//     //     animated: true,
+//     //   ),
+//     // );
+
+//     return MaterialApp(
+//       debugShowCheckedModeBanner: false,
+//       home: SplashScreen(),
+//       routes: {
+//         '/mainscreen': (context) => HomeScreen(),
+//         '/search': (context) => SearchScreen(),
+//         '/vod': (context) => VOD(),
+//         '/live': (context) => LiveScreen(),
+//         '/home': (context) => MyHome(),
+//         '/login': (context) => LoginScreen(),
+//       },
+//     );
+//   }
+// }
+
+// class SplashScreen extends StatefulWidget {
+//   @override
+//   _SplashScreenState createState() => _SplashScreenState();
+// }
+
+// class _SplashScreenState extends State<SplashScreen> {
+//   @override
+//   void initState() {
+//     super.initState();
+//     _checkLoginStatus();
+//   }
+
+//   Future<void> _checkLoginStatus() async {
+//     // Show splash for at least 2 seconds
+//     await Future.delayed(Duration(seconds: 2));
+
+//     // Initialize auth manager first
+//     await AuthManager.initialize();
+
+//     SharedPreferences prefs = await SharedPreferences.getInstance();
+//     bool isLoggedIn = prefs.getBool('is_logged_in') ?? false;
+//     String? authKey = prefs.getString('auth_key');
+//     String? userData = prefs.getString('user_data');
+
+//     if (isLoggedIn && authKey != null && userData != null) {
+//       // Set auth key in AuthManager
+//       await AuthManager.setAuthKey(authKey);
+
+//       Navigator.pushReplacement(
+//         context,
+//         MaterialPageRoute(builder: (context) => MyHome()),
+//       );
+//     } else {
+//       Navigator.pushReplacement(
+//         context,
+//         MaterialPageRoute(builder: (context) => LoginScreen()),
+//       );
+//     }
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       backgroundColor: cardColor,
+//       body: Center(
+//         child: Column(
+//           mainAxisAlignment: MainAxisAlignment.center,
+//           children: [
+//             Container(
+//               width: screenwdt * 0.5,
+//               height: screenhgt * 0.5,
+//               child: Image.asset('assets/streamstarting.gif'),
+//             ),
+//             // SizedBox(height: 30),
+//             // CircularProgressIndicator(
+//             //   valueColor: AlwaysStoppedAnimation<Color>(highlightColor),
+//             // ),
+//             // SizedBox(height: 20),
+//             LoadingIndicator(),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+
+
+
+
+
+
+
+
+
+
+// class LoginScreen extends StatefulWidget {
+//   @override
+//   _LoginScreenState createState() => _LoginScreenState();
+// }
+
+// class _LoginScreenState extends State<LoginScreen>
+//     with TickerProviderStateMixin {
+//   final TextEditingController _pinController = TextEditingController();
+//   bool _isLoading = false;
+//   String _errorMessage = '';
+//   String _deviceSerial = '';
+//   late AnimationController _fadeController;
+//   late AnimationController _slideController;
+//   late Animation<double> _fadeAnimation;
+//   late Animation<Offset> _slideAnimation;
+
+//   @override
+//   void initState() {
+//     super.initState();
+
+//     _fadeController = AnimationController(
+//       duration: Duration(milliseconds: 800),
+//       vsync: this,
+//     );
+//     _slideController = AnimationController(
+//       duration: Duration(milliseconds: 600),
+//       vsync: this,
+//     );
+
+//     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+//       CurvedAnimation(parent: _fadeController, curve: Curves.easeInOut),
+//     );
+
+//     _slideAnimation = Tween<Offset>(
+//       begin: Offset(0, 0.5),
+//       end: Offset.zero,
+//     ).animate(
+//         CurvedAnimation(parent: _slideController, curve: Curves.easeOutCubic));
+
+//     _initializeScreen();
+//   }
+
+//   Future<void> _initializeScreen() async {
+//     _loadDeviceSerial();
+//     _fadeController.forward();
+//     await Future.delayed(Duration(milliseconds: 200));
+//     _slideController.forward();
+//   }
+
+//   Future<void> _loadDeviceSerial() async {
+//     try {
+//       String serial = await _getDeviceSerialNumber();
+//       if (mounted) setState(() => _deviceSerial = serial);
+//     } catch (e) {
+//       if (mounted) setState(() => _deviceSerial = '123456789');
+//     }
+//   }
+
+//   Future<String> _getDeviceSerialNumber() async {
+//     try {
+//       DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+//       if (Platform.isAndroid) {
+//         AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+//         return androidInfo.id;
+//       } else if (Platform.isIOS) {
+//         IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
+//         return iosInfo.identifierForVendor ??
+//             'iOS-${DateTime.now().millisecondsSinceEpoch}';
+//       }
+//     } catch (_) {}
+//     return 'DEVICE-${DateTime.now().millisecondsSinceEpoch}';
+//   }
+
+//   Future<void> _login() async {
+//     if (_pinController.text.trim().isEmpty ||
+//         _pinController.text.trim().length < 10) {
+//       _showError('Please enter a valid PIN');
+//       return;
+//     }
+
+//     setState(() {
+//       _isLoading = true;
+//       _errorMessage = '';
+//     });
+
+//     try {
+//       String serialNumber = _deviceSerial.isNotEmpty
+//           ? _deviceSerial
+//           : await _getDeviceSerialNumber();
+
+//       bool loginSuccess = false;
+//       String authKey = '';
+//       Map<String, dynamic>? userData;
+
+//       final loginEndpoints = [
+//         // {
+//         //   'url': 'https://acomtv.coretechinfo.com/public/api/login',
+//         //   'body': {
+//         //     'token': '',
+//         //     'mac_address': serialNumber,
+//         //     'login_pin': _pinController.text.trim(),
+//         //   }
+//         // },
+//         {
+//           'url': 'https://acomtv.coretechinfo.com/api/login',
+//           'body': {
+//             'token': '',
+//             'mac_address': serialNumber,
+//             'login_pin': _pinController.text.trim(),
+//           }
+//         },
+//         // {
+//         //   'url': 'https://acomtv.coretechinfo.com/api/auth/login',
+//         //   'body': {
+//         //     'mac_address': serialNumber,
+//         //     'pin': _pinController.text.trim(),
+//         //   }
+//         // },
+//       ];
+
+//       for (final endpoint in loginEndpoints) {
+//         try {
+//           final response = await https
+//               .post(
+//                 Uri.parse(endpoint['url'] as String),
+//                 headers: {
+//                   'Content-Type': 'application/json',
+//                   'Accept': 'application/json',
+//                   'User-Agent': 'MobiTV-Flutter-App',
+//                 },
+//                 body: jsonEncode(endpoint['body']),
+//               )
+//               .timeout(Duration(seconds: 15));
+
+//           if (response.statusCode == 200) {
+//             final data = jsonDecode(response.body);
+
+//             if (data['status'] == true || data['success'] == true) {
+//               authKey = data['result_auth_key'] ??
+//                   data['auth_key'] ??
+//                   data['token'] ??
+//                   '';
+//               userData = data['data'] ?? data['user'] ?? {};
+
+//               if (authKey.isNotEmpty) {
+//                 loginSuccess = true;
+//                 break;
+//               }
+//             }
+//           }
+//         } catch (_) {}
+//       }
+
+//       if (loginSuccess && authKey.isNotEmpty) {
+//         SharedPreferences prefs = await SharedPreferences.getInstance();
+//         await Future.wait([
+//           prefs.setString('auth_key', authKey),
+//           prefs.setString('user_data', jsonEncode(userData ?? {})),
+//           prefs.setString('user_pin', _pinController.text.trim()),
+//           prefs.setString('device_serial', serialNumber),
+//           prefs.setBool('is_logged_in', true),
+//           prefs.setInt(
+//               'login_timestamp', DateTime.now().millisecondsSinceEpoch),
+//         ]);
+
+//         await AuthManager.setAuthKey(authKey);
+
+//         Navigator.pushReplacement(
+//           context,
+//           PageRouteBuilder(
+//             pageBuilder: (context, animation, _) => MyHome(),
+//             transitionsBuilder: (_, animation, __, child) =>
+//                 FadeTransition(opacity: animation, child: child),
+//             transitionDuration: Duration(milliseconds: 500),
+//           ),
+//         );
+//       } else {
+//         _showError('Invalid PIN. Please check and try again.');
+//       }
+//     } catch (e) {
+//       _showError(
+//           'Login failed. ${e.toString().contains('Timeout') ? 'Check your internet.' : 'Try again.'}');
+//     } finally {
+//       if (mounted) setState(() => _isLoading = false);
+//     }
+//   }
+
+//   void _showError(String message) {
+//     if (!mounted) return;
+//     setState(() => _errorMessage = message);
+//     Timer(Duration(seconds: 5), () {
+//       if (mounted) setState(() => _errorMessage = '');
+//     });
+//   }
+
+//   @override
+//   void dispose() {
+//     _pinController.dispose();
+//     _fadeController.dispose();
+//     _slideController.dispose();
+//     super.dispose();
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       backgroundColor: cardColor,
+//       body: SafeArea(
+//         child: Center(
+//           child: SingleChildScrollView(
+//             padding: EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+//             child: SlideTransition(
+//               position: _slideAnimation,
+//               child: FadeTransition(
+//                 opacity: _fadeAnimation,
+//                 child: Column(
+//                   mainAxisAlignment: MainAxisAlignment.center,
+//                   children: [
+//                     // Logo
+//                     Container(
+//                       width: 120,
+//                       height: 120,
+//                       margin: EdgeInsets.only(bottom: 30),
+//                       decoration: BoxDecoration(
+//                         shape: BoxShape.circle,
+//                         color: Colors.white.withOpacity(0.1),
+//                         border: Border.all(
+//                           color: borderColor.withOpacity(0.3),
+//                           width: 2,
+//                         ),
+//                         boxShadow: [
+//                           BoxShadow(
+//                             color: Colors.black.withOpacity(0.3),
+//                             blurRadius: 20,
+//                             spreadRadius: 5,
+//                           ),
+//                         ],
+//                       ),
+//                       child: ClipOval(
+//                         child: Padding(
+//                           padding: EdgeInsets.all(20),
+//                           child: Image.asset(
+//                             'assets/streamstarting.gif',
+//                             fit: BoxFit.contain,
+//                           ),
+//                         ),
+//                       ),
+//                     ),
+
+//                     Text(
+//                       'Enter your PIN',
+//                       style: TextStyle(
+//                         color: Colors.white,
+//                         fontSize: Headingtextsz,
+//                         fontWeight: FontWeight.bold,
+//                         letterSpacing: 1,
+//                       ),
+//                     ),
+
+//                     SizedBox(height: 20),
+
+//                     // PIN Display
+//                     Container(
+//                       padding: EdgeInsets.all(10),
+//                       child: Text(
+//                         _pinController.text.padRight(10, '_'),
+//                         style: TextStyle(
+//                           fontSize: nametextsz * 1.3,
+//                           letterSpacing: 6,
+//                           color: Colors.white,
+//                         ),
+//                       ),
+//                     ),
+
+//                     SizedBox(height: 20),
+
+//                     // Number Pad
+//                     Wrap(
+//                       spacing: 12,
+//                       runSpacing: 12,
+//                       alignment: WrapAlignment.center,
+//                       children: List.generate(12, (index) {
+//                         String label = '';
+//                         if (index < 9) {
+//                           label = '${index + 1}';
+//                         } else if (index == 9) {
+//                           label = 'Del';
+//                         } else if (index == 10) {
+//                           label = '0';
+//                         } else if (index == 11) {
+//                           label = 'OK';
+//                         }
+
+//                         return SizedBox(
+//                           width: screenwdt * 0.18,
+//                           height: 55,
+//                           child: ElevatedButton(
+//                             onPressed: () {
+//                               if (label == 'Del') {
+//                                 if (_pinController.text.isNotEmpty) {
+//                                   setState(() {
+//                                     _pinController.text = _pinController.text
+//                                         .substring(
+//                                             0, _pinController.text.length - 1);
+//                                   });
+//                                 }
+//                               } else if (label == 'OK') {
+//                                 _login();
+//                               } else {
+//                                 if (_pinController.text.length < 10) {
+//                                   setState(() {
+//                                     _pinController.text += label;
+//                                   });
+//                                 }
+//                               }
+//                             },
+//                             style: ElevatedButton.styleFrom(
+//                               backgroundColor: Colors.white.withOpacity(0.1),
+//                               foregroundColor: Colors.white,
+//                               shape: RoundedRectangleBorder(
+//                                 borderRadius: BorderRadius.circular(10),
+//                               ),
+//                             ),
+//                             child: Text(
+//                               label,
+//                               style: TextStyle(
+//                                 fontSize: nametextsz * 1.2,
+//                                 fontWeight: FontWeight.bold,
+//                               ),
+//                             ),
+//                           ),
+//                         );
+//                       }),
+//                     ),
+
+//                     SizedBox(height: 25),
+
+//                     if (_isLoading)
+//                       CircularProgressIndicator(
+//                         valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+//                       ),
+
+//                     if (_errorMessage.isNotEmpty)
+//                       Padding(
+//                         padding: EdgeInsets.only(top: 20),
+//                         child: Text(
+//                           _errorMessage,
+//                           style: TextStyle(
+//                               color: Colors.red, fontSize: minitextsz),
+//                         ),
+//                       ),
+//                   ],
+//                 ),
+//               ),
+//             ),
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+
+
+
+// // Rest of your existing code (UpdateChecker, MyHome, etc.) remains the same...
+// class UpdateChecker {
+//   static const String LAST_UPDATE_CHECK_KEY = 'last_update_check';
+//   static const String FORCE_UPDATE_TIME_KEY = 'force_update_time';
+//   static const Duration CHECK_INTERVAL = Duration(hours: 8);
+
+//   late BuildContext context;
+//   Timer? _timer;
+//   bool _forceUpdate = false;
+//   bool _isDialogShowing = false;
+
+//   UpdateChecker(this.context) {
+//     _startUpdateCheckTimer();
+//   }
+
+//   void _startUpdateCheckTimer() {
+//     _checkForUpdate();
+//     _timer = Timer.periodic(CHECK_INTERVAL, (timer) {
+//       _checkForUpdate();
+//     });
+//   }
+
+//   Future<void> _checkForUpdate() async {
+//     final prefs = await SharedPreferences.getInstance();
+//     final lastCheck = prefs.getInt(LAST_UPDATE_CHECK_KEY) ?? 0;
+//     final now = DateTime.now().millisecondsSinceEpoch;
+
+//     if (now - lastCheck >= CHECK_INTERVAL.inMilliseconds || _forceUpdate) {
+//       await prefs.setInt(LAST_UPDATE_CHECK_KEY, now);
+
+//       try {
+//         final response = await https.get(
+//           Uri.parse('https://api.ekomflix.com/android/getSettings'),
+//           headers: {'x-api-key': 'vLQTuPZUxktl5mVW'},
+//         );
+
+//         if (response.statusCode == 200) {
+//           final data = jsonDecode(response.body);
+
+//           String apiVersion = data['playstore_version'] ?? "";
+//           String apkUrl = data['playstore_apkUrl'];
+//           String releaseNotes = data['playstore_releaseNotes'];
+
+//           int forceUpdateTime =
+//               DateTime.parse(data['playstore_forceUpdateTime'])
+//                   .millisecondsSinceEpoch;
+
+//           PackageInfo packageInfo = await PackageInfo.fromPlatform();
+//           String appVersion = packageInfo.version;
+
+//           if (_isVersionGreater(apiVersion, appVersion)) {
+//             if (forceUpdateTime > 0 && now >= forceUpdateTime) {
+//               _forceUpdate = true;
+//               await prefs.setInt(FORCE_UPDATE_TIME_KEY, forceUpdateTime);
+//             }
+//             if (!_isDialogShowing) {
+//               _showUpdateDialog(apkUrl, releaseNotes, appVersion, apiVersion);
+//             }
+//           }
+//         }
+//       } catch (e) {
+//         // Handle error
+//       }
+//     }
+//   }
+
+//   bool _isVersionGreater(String v1, String v2) {
+//     List<int> v1Parts = v1.split('.').map(int.parse).toList();
+//     List<int> v2Parts = v2.split('.').map(int.parse).toList();
+
+//     for (int i = 0; i < v1Parts.length && i < v2Parts.length; i++) {
+//       if (v1Parts[i] > v2Parts[i]) return true;
+//       if (v1Parts[i] < v2Parts[i]) return false;
+//     }
+
+//     return v1Parts.length > v2Parts.length;
+//   }
+
+//   void _showUpdateDialog(String apkUrl, String releaseNotes,
+//       String currentVersion, String newVersion) {
+//     _isDialogShowing = true;
+//     showDialog(
+//       barrierColor: Colors.black54,
+//       context: context,
+//       barrierDismissible: !_forceUpdate,
+//       builder: (BuildContext context) {
+//         return WillPopScope(
+//           onWillPop: () async => !_forceUpdate,
+//           child: AlertDialog(
+//             backgroundColor: cardColor,
+//             title: Center(
+//                 child: Text('NEW UPDATE AVAILABLE',
+//                     style: TextStyle(color: hintColor))),
+//             actions: [
+//               if (!_forceUpdate)
+//                 TextButton(
+//                   onPressed: () {
+//                     Navigator.of(context).pop();
+//                     _isDialogShowing = false;
+//                   },
+//                   child: Center(child: Text('Later')),
+//                 ),
+//               TextButton(
+//                 onPressed: () {
+//                   _launchURL(apkUrl);
+//                 },
+//                 child: Center(child: Text('Update Now')),
+//               ),
+//             ],
+//           ),
+//         );
+//       },
+//     ).then((_) {
+//       if (_forceUpdate) {
+//         _showUpdateDialog(apkUrl, releaseNotes, currentVersion, newVersion);
+//       } else {
+//         _isDialogShowing = false;
+//       }
+//     });
+//   }
+
+//   Future<void> _launchURL(String url) async {
+//     if (await canLaunch(url)) {
+//       await launch(url);
+//     } else {
+//       throw 'Could not launch $url';
+//     }
+//   }
+
+//   void dispose() {
+//     _timer?.cancel();
+//   }
+// }
+
+// class MyHome extends StatefulWidget {
+//   @override
+//   _MyHomeState createState() => _MyHomeState();
+// }
+
+// class _MyHomeState extends State<MyHome> {
+//   int _selectedPage = 0;
+//   late PageController _pageController;
+//   bool _tvenableAll = false;
+//   late UpdateChecker _updateChecker;
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     _pageController = PageController(initialPage: _selectedPage);
+//     _fetchTvenableAllStatus();
+//     _updateChecker = UpdateChecker(context);
+
+//     // Ensure auth key is loaded when entering main app
+//     _ensureAuthKeyLoaded();
+//   }
+
+//   Future<void> _ensureAuthKeyLoaded() async {
+//     await AuthManager.initialize();
+//   }
+
+//   @override
+//   void dispose() {
+//     _pageController.dispose();
+//     _updateChecker.dispose();
+//     super.dispose();
+//   }
+
+//   void _onPageSelected(int index) {
+//     setState(() {
+//       _selectedPage = index;
+//     });
+//     _pageController.jumpToPage(index);
+//   }
+
+//   Future<void> _fetchTvenableAllStatus() async {
+//     try {
+//       final response = await https.get(
+//         Uri.parse('https://api.ekomflix.com/android/getSettings'),
+//         headers: {
+//           'x-api-key': 'vLQTuPZUxktl5mVW',
+//         },
+//       );
+
+//       if (response.statusCode == 200) {
+//         final data = jsonDecode(response.body);
+//         setState(() {
+//           _tvenableAll = data['tvenableAll'] == 1;
+//         });
+//       } else {}
+//     } catch (e) {}
+//   }
+
+//   // void _showLogoutDialog() {
+//   //   showDialog(
+//   //     context: context,
+//   //     builder: (BuildContext context) {
+//   //       return AlertDialog(
+//   //         backgroundColor: cardColor,
+//   //         title: Text(
+//   //           'Logout',
+//   //           style: TextStyle(color: hintColor),
+//   //         ),
+//   //         content: Text(
+//   //           'Are you sure you want to logout?',
+//   //           style: TextStyle(color: hintColor),
+//   //         ),
+//   //         actions: [
+//   //           TextButton(
+//   //             onPressed: () => Navigator.of(context).pop(),
+//   //             child: Text('Cancel'),
+//   //           ),
+//   //           TextButton(
+//   //             onPressed: () async {
+//   //               Navigator.of(context).pop();
+//   //               await _logout();
+//   //             },
+//   //             child: Text('Logout', style: TextStyle(color: Colors.red)),
+//   //           ),
+//   //         ],
+//   //       );
+//   //     },
+//   //   );
+//   // }
+
+//   // Future<void> _logout() async {
+//   //   SharedPreferences prefs = await SharedPreferences.getInstance();
+//   //   await prefs.clear();
+//   //   await AuthManager.clearAuthKey();
+
+//   //   Navigator.pushAndRemoveUntil(
+//   //     context,
+//   //     MaterialPageRoute(builder: (context) => LoginScreen()),
+//   //     (route) => false,
+//   //   );
+//   // }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     List<Widget> pages = [
+//       HomeScreen(),
+//       VOD(),
+//       LiveScreen(),
+//       SearchScreen(),
+//       YoutubeSearchScreen()
+//     ];
+
+//     return Consumer<ColorProvider>(builder: (context, colorProvider, child) {
+//       Color backgroundColor = colorProvider.isItemFocused
+//           ? colorProvider.dominantColor.withOpacity(0.5)
+//           : cardColor;
+//       return SafeArea(
+//         child: Scaffold(
+//           body: Container(
+//             color: backgroundColor,
+//             child: Stack(
+//               children: [
+//                 Container(
+//                   width: screenwdt,
+//                   height: screenhgt,
+//                   color: cardColor,
+//                   child: Column(
+//                     children: [
+//                       Container(
+//                         child: Stack(
+//                           children: [
+//                             TopNavigationBar(
+//                               selectedPage: _selectedPage,
+//                               onPageSelected: _onPageSelected,
+//                               tvenableAll: _tvenableAll,
+//                             ),
+//                             // Positioned(
+//                             //   top: 10,
+//                             //   right: 10,
+//                             //   child: GestureDetector(
+//                             //     onTap: _showLogoutDialog,
+//                             //     child: Container(
+//                             //       padding: EdgeInsets.all(8),
+//                             //       decoration: BoxDecoration(
+//                             //         color: Colors.red.withOpacity(0.7),
+//                             //         borderRadius: BorderRadius.circular(20),
+//                             //       ),
+//                             //       child: Icon(
+//                             //         Icons.logout,
+//                             //         color: Colors.white,
+//                             //         size: 20,
+//                             //       ),
+//                             //     ),
+//                             //   ),
+//                             // ),
+//                           ],
+//                         ),
+//                       ),
+//                       Expanded(
+//                         child: PageView(
+//                           controller: _pageController,
+//                           onPageChanged: (index) {
+//                             setState(() {
+//                               _selectedPage = index;
+//                             });
+//                           },
+//                           children: pages,
+//                         ),
+//                       ),
+//                     ],
+//                   ),
+//                 ),
+//               ],
+//             ),
+//           ),
+//         ),
+//       );
+//     });
+//   }
+// }
+
+
+
+
+
+// // lib/main.dart
+
+// import 'dart:async';
+// import 'dart:convert';
+// import 'dart:io';
+// import 'package:flutter/material.dart';
+// import 'package:flutter/services.dart';
+// import 'package:http/http.dart' as https;
+// import 'package:mobi_tv_entertainment/home_screen_pages/home_screen.dart';
+// import 'package:mobi_tv_entertainment/menu_screens/live_screen.dart';
+// import 'package:mobi_tv_entertainment/menu_screens/search_screen.dart';
+// import 'package:mobi_tv_entertainment/menu_screens/youtube_search_screen.dart';
+// import 'package:mobi_tv_entertainment/provider/color_provider.dart';
+// import 'package:mobi_tv_entertainment/provider/device_info_provider.dart';
+// import 'package:mobi_tv_entertainment/provider/focus_provider.dart';
+// import 'package:mobi_tv_entertainment/widgets/small_widgets/loading_indicator.dart';
+// import 'package:package_info_plus/package_info_plus.dart';
+// import 'package:provider/provider.dart';
+// import 'package:shared_preferences/shared_preferences.dart';
+// import 'package:url_launcher/url_launcher.dart';
+// import 'package:device_info_plus/device_info_plus.dart';
+// import 'package:intl/date_symbol_data_local.dart';
+
+// import 'home_screen_pages/sub_vod_screen/sub_vod.dart';
+// import 'menu/top_navigation_bar.dart';
+
+
+// // lib/provider/session_manager.dart
+
+// import 'dart:convert';
+// import 'package:shared_preferences/shared_preferences.dart';
+
+// class SessionManager {
+//   static bool _isInitialized = false;
+
+//   // --- Session Data ---
+//   static String _authKey = '';
+//   static String _imageBaseUrl = '';
+//   static Map<String, dynamic>? _userData;
+//   static String _logoUrl = '';
+
+//   // ✅ Step 1: Feature flags ke liye naye variables banayein
+//   static bool _showMovies = false;
+//   static bool _showWebseries = false;
+//   static bool _showTvShow = false;
+//   static bool _showTvShowPak = false;
+//   static bool _showKidsShow = false;
+//   static bool _showReligious = false;
+//   static bool _showSports = false;
+//   static bool _showStageShows = false;
+//   static bool _showLaughterShows = false;
+//   static bool _showContentNetwork = false;
+//   static bool _showSearch = false;
+
+//   // --- Public Getters ---
+//   static String get authKey => _authKey;
+//   static String get imageBaseUrl => _imageBaseUrl;
+//   static Map<String, dynamic>? get userData => _userData;
+//   static String get logoUrl => _logoUrl;
+//   static bool get isLoggedIn => _authKey.isNotEmpty && _userData != null;
+
+//   // ✅ Step 2: Feature flags ke liye public getters banayein
+//   static bool get showMovies => _showMovies;
+//   static bool get showWebseries => _showWebseries;
+//   static bool get showTvShow => _showTvShow;
+//   static bool get showTvShowPak => _showTvShowPak;
+//   static bool get showKidsShow => _showKidsShow;
+//   static bool get showReligious => _showReligious;
+//   static bool get showSports => _showSports;
+//   static bool get showStageShows => _showStageShows;
+//   static bool get showLaughterShows => _showLaughterShows;
+//   static bool get showContentNetwork => _showContentNetwork;
+//   static bool get showSearch => _showSearch;
+
+//   // --- Methods ---
+
+//   static Future<void> initialize() async {
+//     if (!_isInitialized) {
+//       await _loadSession();
+//       _isInitialized = true;
+//     }
+//   }
+
+//   static Future<void> _loadSession() async {
+//     try {
+//       SharedPreferences prefs = await SharedPreferences.getInstance();
+//       _authKey = prefs.getString('auth_key') ?? '';
+//       _imageBaseUrl = prefs.getString('image_base_url') ?? '';
+//       _logoUrl = prefs.getString('logo_url') ?? '';
+
+//       String? userDataString = prefs.getString('user_data');
+//       if (userDataString != null) {
+//         _userData = jsonDecode(userDataString);
+//       }
+
+//       // ✅ Step 3: SharedPreferences se feature flags load karein
+//       _showMovies = prefs.getBool('show_movies') ?? false;
+//       _showWebseries = prefs.getBool('show_webseries') ?? false;
+//       _showTvShow = prefs.getBool('show_tvshow') ?? false;
+//       _showTvShowPak = prefs.getBool('show_tvshow_pak') ?? false;
+//       _showKidsShow = prefs.getBool('show_kids_show') ?? false;
+//       _showReligious = prefs.getBool('show_religious') ?? false;
+//       _showSports = prefs.getBool('show_sports') ?? false;
+//       _showStageShows = prefs.getBool('show_stage_shows') ?? false;
+//       _showLaughterShows = prefs.getBool('show_laughter_shows') ?? false;
+//       _showContentNetwork = prefs.getBool('show_content_network') ?? false;
+//       _showSearch = prefs.getBool('show_search') ?? false;
+
+//     } catch (e) {
+//       // Error hone par sab clear kar dein
+//       await clearSession();
+//     }
+//   }
+
+//   static Future<void> saveSession(Map<String, dynamic> apiResponse) async {
+
+//   print("--- 1. saveSession के अंदर ---"); // मार्कर 1
+//   SharedPreferences prefs = await SharedPreferences.getInstance();
+
+//   _authKey = apiResponse['result_auth_key'] ?? '';
+//   _imageBaseUrl = apiResponse['imageBaseUrl'] ?? '';
+//   _userData = apiResponse['data'] as Map<String, dynamic>?;
+
+//   if (_userData != null && _userData!['domain_content'] != null) {
+//     final domainContent = _userData!['domain_content'];
+//     print("--- 2. domain_content मिला: $domainContent ---"); // मार्कर 2
+    
+//     _logoUrl = domainContent['logo'] ?? 'API_SE_URL_NULL_AAYA'; // डीबगिंग के लिए डिफ़ॉल्ट टेक्स्ट
+//     print("--- 3. निकाला गया LogoURLs: $_logoUrl ---"); // मार्कर 3
+//   } else {
+//     print("--- गड़बड़: userData या domain_content null है! ---"); // एरर केस
+//     _logoUrl = '';
+//   }
+
+//   // SharedPreferences में डेटा write karein
+//   await prefs.setString('logo_url', _logoUrl);
+//   print("--- 4. SharedPreferences में '$_logoUrl' सेव किया गया। ---"); // मार्कर 4
+  
+
+
+//     // // SharedPreferences prefs = await SharedPreferences.getInstance();
+
+//     // // Basic info save karein
+//     // _authKey = apiResponse['result_auth_key'] ?? '';
+//     // _imageBaseUrl = apiResponse['imageBaseUrl'] ?? '';
+//     // _userData = apiResponse['data'] as Map<String, dynamic>?;
+
+//     // Logo aur feature flags save karein
+//     if (_userData != null && _userData!['domain_content'] != null) {
+//       final domainContent = _userData!['domain_content'];
+//       _logoUrl = domainContent['logo'] ?? '';
+
+//       // ✅ Step 4: API se feature flags nikalein aur unhe boolean mein convert karein
+//       _showMovies = (domainContent['movies'] ?? 0) == 1;
+//       _showWebseries = (domainContent['webseries'] ?? 0) == 1;
+//       _showTvShow = (domainContent['tvshow'] ?? 0) == 1;
+//       _showTvShowPak = (domainContent['tvshow_pak'] ?? 0) == 1;
+//       _showKidsShow = (domainContent['kids_show'] ?? 0) == 1;
+//       _showReligious = (domainContent['religious'] ?? 0) == 1;
+//       _showSports = (domainContent['sports'] ?? 0) == 1;
+//       _showStageShows = (domainContent['stage_shows'] ?? 0) == 1;
+//       _showLaughterShows = (domainContent['laughter_shows'] ?? 0) == 1;
+//       _showContentNetwork = (domainContent['content_network'] ?? 0) == 1;
+//       _showSearch = (domainContent['search'] ?? 0) == 1;
+//     }
+
+//     // SharedPreferences mein data write karein
+//     await prefs.setString('auth_key', _authKey);
+//     await prefs.setString('image_base_url', _imageBaseUrl);
+//     await prefs.setString('logo_url', _logoUrl);
+//     if (_userData != null) {
+//       await prefs.setString('user_data', jsonEncode(_userData));
+//     }
+
+//     // ✅ Step 5: Feature flags ko SharedPreferences mein save karein
+//     await prefs.setBool('show_movies', _showMovies);
+//     await prefs.setBool('show_webseries', _showWebseries);
+//     await prefs.setBool('show_tvshow', _showTvShow);
+//     await prefs.setBool('show_tvshow_pak', _showTvShowPak);
+//     await prefs.setBool('show_kids_show', _showKidsShow);
+//     await prefs.setBool('show_religious', _showReligious);
+//     await prefs.setBool('show_sports', _showSports);
+//     await prefs.setBool('show_stage_shows', _showStageShows);
+//     await prefs.setBool('show_laughter_shows', _showLaughterShows);
+//     await prefs.setBool('show_content_network', _showContentNetwork);
+//     await prefs.setBool('show_search', _showSearch);
+
+//     await prefs.setBool('is_logged_in', true);
+//   }
+
+//   static Future<void> clearSession() async {
+//     // Sabhi variables ko reset karein
+//     _authKey = '';
+//     _imageBaseUrl = '';
+//     _userData = null;
+//     _logoUrl = '';
+
+//     // ✅ Step 6: Logout par feature flags ko bhi reset karein
+//     _showMovies = false;
+//     _showWebseries = false;
+//     _showTvShow = false;
+//     _showTvShowPak = false;
+//     _showKidsShow = false;
+//     _showReligious = false;
+//     _showSports = false;
+//     _showStageShows = false;
+//     _showLaughterShows = false;
+//     _showContentNetwork = false;
+//     _showSearch = false;
+
+//     // SharedPreferences se saara data delete karein
+//     SharedPreferences prefs = await SharedPreferences.getInstance();
+//     await prefs.clear();
+//   }
+// }
+
+// // Global variable for backward compatibility (optional but can be helpful)
+// String get globalAuthKey => SessionManager.authKey;
+
+// // HttpOverrides to allow self-signed certificates (keep as is)
+// class MyHttpOverrides extends HttpOverrides {
+//   @override
+//   HttpClient createHttpClient(SecurityContext? context) {
+//     return super.createHttpClient(context)
+//       ..badCertificateCallback =
+//           (X509Certificate cert, String host, int port) => true;
+//   }
+// }
+
+// void main() async {
+//   WidgetsFlutterBinding.ensureInitialized();
+//   HttpOverrides.global = MyHttpOverrides();
+//   await initializeDateFormatting(null, null);
+
+//   // ✅ Initialize SessionManager at app start
+//   await SessionManager.initialize();
+
+//   SystemChrome.setEnabledSystemUIMode(
+//     SystemUiMode.immersiveSticky,
+//     overlays: [],
+//   );
+
+//   SystemChrome.setSystemUIOverlayStyle(
+//     const SystemUiOverlayStyle(
+//       statusBarColor: Colors.transparent,
+//       systemNavigationBarColor: Colors.transparent,
+//       statusBarBrightness: Brightness.dark,
+//       statusBarIconBrightness: Brightness.light,
+//       systemNavigationBarIconBrightness: Brightness.light,
+//     ),
+//   );
+
+//   final deviceInfoProvider = DeviceInfoProvider();
+//   await deviceInfoProvider.loadDeviceInfo();
+
+//   runApp(
+//     MultiProvider(
+//       providers: [
+//         ChangeNotifierProvider(create: (_) => ColorProvider()),
+//         ChangeNotifierProvider(create: (_) => FocusProvider()),
+//         ChangeNotifierProvider.value(value: deviceInfoProvider),
+//       ],
+//       child: MyApp(),
+//     ),
+//   );
+// }
+
+// // Global variables
+// String baseUrl = 'https://acomtv.coretechinfo.com/public/api/';
+// var highlightColor;
+// var cardColor;
+// var hintColor;
+// var borderColor;
+
+// var screenhgt;
+// var screenwdt;
+// var bannerwdt;
+// var bannerhgt;
+// var focussedBannerwdt;
+// var focussedBannerhgt;
+// var screensz;
+// var nametextsz;
+// var menutextsz;
+// var minitextsz;
+// var Headingtextsz;
+
+// String localImage = 'assets/logo.png';
+// String streamImage = 'assets/streamstarting.gif';
+
+// class MyApp extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     screenhgt = MediaQuery.of(context).size.height;
+//     screenwdt = MediaQuery.of(context).size.width;
+//     bannerwdt = screenwdt * 0.15;
+//     bannerhgt = screenhgt * 0.17;
+//     focussedBannerwdt = screenwdt * 0.15;
+//     focussedBannerhgt = screenhgt * 0.21;
+//     screensz = MediaQuery.of(context).size;
+//     nametextsz = MediaQuery.of(context).size.width / 60.0;
+//     menutextsz = MediaQuery.of(context).size.width / 70;
+//     minitextsz = MediaQuery.of(context).size.width / 80;
+//     Headingtextsz = MediaQuery.of(context).size.width / 50;
+//     highlightColor = Colors.blue;
+//     cardColor = const Color.fromARGB(200, 0, 0, 0).withOpacity(0.7);
+//     hintColor = Colors.white;
+//     borderColor = Color.fromARGB(255, 247, 6, 118);
+
+//     return MaterialApp(
+//       debugShowCheckedModeBanner: false,
+//       home: SplashScreen(),
+//       routes: {
+//         '/mainscreen': (context) => HomeScreen(),
+//         '/search': (context) => SearchScreen(),
+//         '/vod': (context) => VOD(),
+//         '/live': (context) => LiveScreen(),
+//         '/home': (context) => MyHome(),
+//         '/login': (context) => LoginScreen(),
+//       },
+//     );
+//   }
+// }
+
+// class SplashScreen extends StatefulWidget {
+//   @override
+//   _SplashScreenState createState() => _SplashScreenState();
+// }
+
+// class _SplashScreenState extends State<SplashScreen> {
+//   @override
+//   void initState() {
+//     super.initState();
+//     _checkLoginStatus();
+//   }
+
+//   Future<void> _checkLoginStatus() async {
+//     // Show splash for at least 2 seconds
+//     await Future.delayed(Duration(seconds: 2));
+
+//     // ✅ Use SessionManager to check login status
+//     if (SessionManager.isLoggedIn) {
+//       Navigator.pushReplacement(
+//         context,
+//         MaterialPageRoute(builder: (context) => MyHome()),
+//       );
+//     } else {
+//       Navigator.pushReplacement(
+//         context,
+//         MaterialPageRoute(builder: (context) => LoginScreen()),
+//       );
+//     }
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       backgroundColor: cardColor,
+//       body: Center(
+//         child: Column(
+//           mainAxisAlignment: MainAxisAlignment.center,
+//           children: [
+//             Container(
+//               width: screenwdt * 0.5,
+//               height: screenhgt * 0.5,
+//               child: Image.asset('assets/streamstarting.gif'),
+//             ),
+//             LoadingIndicator(),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+// class LoginScreen extends StatefulWidget {
+//   @override
+//   _LoginScreenState createState() => _LoginScreenState();
+// }
+
+// class _LoginScreenState extends State<LoginScreen>
+//     with TickerProviderStateMixin {
+//   final TextEditingController _pinController = TextEditingController();
+//   bool _isLoading = false;
+//   String _errorMessage = '';
+//   String _deviceSerial = '';
+//   late AnimationController _fadeController;
+//   late AnimationController _slideController;
+//   late Animation<double> _fadeAnimation;
+//   late Animation<Offset> _slideAnimation;
+
+//   @override
+//   void initState() {
+//     super.initState();
+
+//     _fadeController = AnimationController(
+//       duration: Duration(milliseconds: 800),
+//       vsync: this,
+//     );
+//     _slideController = AnimationController(
+//       duration: Duration(milliseconds: 600),
+//       vsync: this,
+//     );
+
+//     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+//       CurvedAnimation(parent: _fadeController, curve: Curves.easeInOut),
+//     );
+
+//     _slideAnimation = Tween<Offset>(
+//       begin: Offset(0, 0.5),
+//       end: Offset.zero,
+//     ).animate(
+//         CurvedAnimation(parent: _slideController, curve: Curves.easeOutCubic));
+
+//     _initializeScreen();
+//   }
+
+//   Future<void> _initializeScreen() async {
+//     _loadDeviceSerial();
+//     _fadeController.forward();
+//     await Future.delayed(Duration(milliseconds: 200));
+//     _slideController.forward();
+//   }
+
+//   Future<void> _loadDeviceSerial() async {
+//     try {
+//       String serial = await _getDeviceSerialNumber();
+//       if (mounted) setState(() => _deviceSerial = serial);
+//     } catch (e) {
+//       if (mounted) setState(() => _deviceSerial = '123456789');
+//     }
+//   }
+
+//   Future<String> _getDeviceSerialNumber() async {
+//     try {
+//       DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+//       if (Platform.isAndroid) {
+//         AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+//         return androidInfo.id;
+//       } else if (Platform.isIOS) {
+//         IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
+//         return iosInfo.identifierForVendor ??
+//             'iOS-${DateTime.now().millisecondsSinceEpoch}';
+//       }
+//     } catch (_) {}
+//     return 'DEVICE-${DateTime.now().millisecondsSinceEpoch}';
+//   }
+
+//   Future<void> _login() async {
+//     if (_pinController.text.trim().length < 10) {
+//       _showError('Please enter a valid 10-digit PIN');
+//       return;
+//     }
+
+//     setState(() {
+//       _isLoading = true;
+//       _errorMessage = '';
+//     });
+
+//     try {
+//       String serialNumber = _deviceSerial.isNotEmpty
+//           ? _deviceSerial
+//           : await _getDeviceSerialNumber();
+
+//       final response = await https
+//           .post(
+//             // Uri.parse('https://acomtv.coretechinfo.com/api/login'),
+//             Uri.parse('https://acomtv.coretechinfo.com/api/v2/login'),
+//             headers: {
+//               'Content-Type': 'application/json',
+//               'Accept': 'application/json',
+//               'User-Agent': 'MobiTV-Flutter-App',
+//             },
+//             body: jsonEncode({
+//               'token': '',
+//               'mac_address': serialNumber,
+//               'login_pin': _pinController.text.trim(),
+//               'domain':'coretechinfo.com'
+
+//             }),
+//           )
+//           .timeout(Duration(seconds: 15));
+
+//       if (response.statusCode == 200) {
+//         final data = jsonDecode(response.body);
+
+//         if (data['status'] == true) {
+//           // ✅ Save all session data using the manager
+//           await SessionManager.saveSession(data);
+
+//           // Save pin and serial separately if needed for other purposes
+//           SharedPreferences prefs = await SharedPreferences.getInstance();
+//           await prefs.setString('user_pin', _pinController.text.trim());
+//           await prefs.setString('device_serial', serialNumber);
+
+//           Navigator.pushReplacement(
+//             context,
+//             PageRouteBuilder(
+//               pageBuilder: (context, animation, _) => MyHome(),
+//               transitionsBuilder: (_, animation, __, child) =>
+//                   FadeTransition(opacity: animation, child: child),
+//               transitionDuration: Duration(milliseconds: 500),
+//             ),
+//           );
+//         } else {
+//           _showError(data['msg'] ?? 'Invalid PIN. Please try again.');
+//         }
+//       } else {
+//         _showError('Server error. Please try again later.');
+//       }
+//     } catch (e) {
+//       _showError(
+//           'Login failed. ${e.toString().contains('Timeout') ? 'Check your internet.' : 'Try again.'}');
+//     } finally {
+//       if (mounted) setState(() => _isLoading = false);
+//     }
+//   }
+
+//   void _showError(String message) {
+//     if (!mounted) return;
+//     setState(() => _errorMessage = message);
+//     Timer(Duration(seconds: 5), () {
+//       if (mounted) setState(() => _errorMessage = '');
+//     });
+//   }
+
+//   @override
+//   void dispose() {
+//     _pinController.dispose();
+//     _fadeController.dispose();
+//     _slideController.dispose();
+//     super.dispose();
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     // Login Screen UI remains the same
+//     return Scaffold(
+//       backgroundColor: cardColor,
+//       body: SafeArea(
+//         child: Center(
+//           child: SingleChildScrollView(
+//             padding: EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+//             child: SlideTransition(
+//               position: _slideAnimation,
+//               child: FadeTransition(
+//                 opacity: _fadeAnimation,
+//                 child: Column(
+//                   mainAxisAlignment: MainAxisAlignment.center,
+//                   children: [
+//                     Container(
+//                       width: 120,
+//                       height: 120,
+//                       margin: EdgeInsets.only(bottom: 30),
+//                       decoration: BoxDecoration(
+//                         shape: BoxShape.circle,
+//                         color: Colors.white.withOpacity(0.1),
+//                         border: Border.all(
+//                           color: borderColor.withOpacity(0.3),
+//                           width: 2,
+//                         ),
+//                         boxShadow: [
+//                           BoxShadow(
+//                             color: Colors.black.withOpacity(0.3),
+//                             blurRadius: 20,
+//                             spreadRadius: 5,
+//                           ),
+//                         ],
+//                       ),
+//                       child: ClipOval(
+//                         child: Padding(
+//                           padding: EdgeInsets.all(20),
+//                           child: Image.asset(
+//                             'assets/streamstarting.gif',
+//                             fit: BoxFit.contain,
+//                           ),
+//                         ),
+//                       ),
+//                     ),
+
+//                     Text(
+//                       'Enter your PIN',
+//                       style: TextStyle(
+//                         color: Colors.white,
+//                         fontSize: Headingtextsz,
+//                         fontWeight: FontWeight.bold,
+//                         letterSpacing: 1,
+//                       ),
+//                     ),
+//                     SizedBox(height: 20),
+
+//                     Container(
+//                       padding: EdgeInsets.all(10),
+//                       child: Text(
+//                         _pinController.text.padRight(10, '_'),
+//                         style: TextStyle(
+//                           fontSize: nametextsz * 1.3,
+//                           letterSpacing: 6,
+//                           color: Colors.white,
+//                         ),
+//                       ),
+//                     ),
+//                     SizedBox(height: 20),
+
+//                     Wrap(
+//                       spacing: 12,
+//                       runSpacing: 12,
+//                       alignment: WrapAlignment.center,
+//                       children: List.generate(12, (index) {
+//                         String label = '';
+//                         if (index < 9) {
+//                           label = '${index + 1}';
+//                         } else if (index == 9) {
+//                           label = 'Del';
+//                         } else if (index == 10) {
+//                           label = '0';
+//                         } else if (index == 11) {
+//                           label = 'OK';
+//                         }
+
+//                         return SizedBox(
+//                           width: screenwdt * 0.18,
+//                           height: 55,
+//                           child: ElevatedButton(
+//                             onPressed: () {
+//                               if (label == 'Del') {
+//                                 if (_pinController.text.isNotEmpty) {
+//                                   setState(() {
+//                                     _pinController.text = _pinController.text
+//                                         .substring(
+//                                             0, _pinController.text.length - 1);
+//                                   });
+//                                 }
+//                               } else if (label == 'OK') {
+//                                 _login();
+//                               } else {
+//                                 if (_pinController.text.length < 10) {
+//                                   setState(() {
+//                                     _pinController.text += label;
+//                                   });
+//                                 }
+//                               }
+//                             },
+//                             style: ElevatedButton.styleFrom(
+//                               backgroundColor: Colors.white.withOpacity(0.1),
+//                               foregroundColor: Colors.white,
+//                               shape: RoundedRectangleBorder(
+//                                 borderRadius: BorderRadius.circular(10),
+//                               ),
+//                             ),
+//                             child: Text(
+//                               label,
+//                               style: TextStyle(
+//                                 fontSize: nametextsz * 1.2,
+//                                 fontWeight: FontWeight.bold,
+//                               ),
+//                             ),
+//                           ),
+//                         );
+//                       }),
+//                     ),
+
+//                     SizedBox(height: 25),
+
+//                     if (_isLoading)
+//                       CircularProgressIndicator(
+//                         valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+//                       ),
+
+//                     if (_errorMessage.isNotEmpty)
+//                       Padding(
+//                         padding: EdgeInsets.only(top: 20),
+//                         child: Text(
+//                           _errorMessage,
+//                           style: TextStyle(
+//                               color: Colors.red, fontSize: minitextsz),
+//                         ),
+//                       ),
+//                   ],
+//                 ),
+//               ),
+//             ),
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+
+
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:math' as math;
-import 'dart:ui';
-import 'package:animate_do/animate_do.dart'; // Import kiya gaya package
-import 'package:animated_text_kit/animated_text_kit.dart';
-import 'package:sensors_plus/sensors_plus.dart'; // For Parallax effect
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:mobi_tv_entertainment/home_screen_pages/home_screen.dart';
-import 'package:mobi_tv_entertainment/menu_screens/youtube_search_screen.dart';
-import 'package:mobi_tv_entertainment/menu_screens/search_screen.dart';
-import 'package:mobi_tv_entertainment/menu_screens/live_screen.dart';
 import 'package:http/http.dart' as https;
+import 'package:mobi_tv_entertainment/home_screen_pages/home_screen.dart';
+import 'package:mobi_tv_entertainment/menu_screens/live_screen.dart';
+import 'package:mobi_tv_entertainment/menu_screens/search_screen.dart';
+import 'package:mobi_tv_entertainment/menu_screens/youtube_search_screen.dart';
 import 'package:mobi_tv_entertainment/provider/color_provider.dart';
 import 'package:mobi_tv_entertainment/provider/device_info_provider.dart';
 import 'package:mobi_tv_entertainment/provider/focus_provider.dart';
+import 'package:mobi_tv_entertainment/widgets/small_widgets/loading_indicator.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:device_info_plus/device_info_plus.dart';
-import 'menu/top_navigation_bar.dart';
-import 'home_screen_pages/sub_vod_screen/sub_vod.dart';
-import 'widgets/small_widgets/app_assets.dart';
-import 'widgets/small_widgets/loading_indicator.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'home_screen_pages/sub_vod_screen/sub_vod.dart';
+import 'menu/top_navigation_bar.dart';
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
-// Global variable for authentication key
-String globalAuthKey = '';
 
-// Auth key manager class
-class AuthManager {
-  static String _authKey = '';
+
+
+
+class SessionManager {
   static bool _isInitialized = false;
 
-  static String get authKey => _authKey;
+  // --- Session Data ---
+  static String _authKey = '';
+  static String _imageBaseUrl = '';
+  static Map<String, dynamic>? _userData;
+  static String _logoUrl = '';
+  static String _savedDomain = ''; // API se mile domain ko store karne ke liye variable
 
+  // --- Feature flags (No changes here) ---
+  static bool _showMovies = false;
+  static bool _showWebseries = false;
+  static bool _showTvShow = false;
+  static bool _showTvShowPak = false;
+  static bool _showKidsShow = false;
+  static bool _showReligious = false;
+  static bool _showSports = false;
+  static bool _showStageShows = false;
+  static bool _showLaughterShows = false;
+  static bool _showContentNetwork = false;
+  static bool _showSearch = false;
+
+  // --- Public Getters ---
+  static String get authKey => _authKey;
+  static String get imageBaseUrl => _imageBaseUrl;
+  static Map<String, dynamic>? get userData => _userData;
+  static String get logoUrl => _logoUrl;
+  static String get savedDomain => _savedDomain; // Domain ke liye public getter
+  static bool get isLoggedIn => _authKey.isNotEmpty && _userData != null;
+
+  // --- Feature flag getters (No changes here) ---
+  static bool get showMovies => _showMovies;
+  static bool get showWebseries => _showWebseries;
+  static bool get showTvShow => _showTvShow;
+  static bool get showTvShowPak => _showTvShowPak;
+  static bool get showKidsShow => _showKidsShow;
+  static bool get showReligious => _showReligious;
+  static bool get showSports => _showSports;
+  static bool get showStageShows => _showStageShows;
+  static bool get showLaughterShows => _showLaughterShows;
+  static bool get showContentNetwork => _showContentNetwork;
+  static bool get showSearch => _showSearch;
+  
+  // --- Methods ---
   static Future<void> initialize() async {
     if (!_isInitialized) {
-      await _loadAuthKey();
+      await _loadSession();
       _isInitialized = true;
     }
   }
 
-  static Future<void> _loadAuthKey() async {
+  static Future<void> _loadSession() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      String? authKey = prefs.getString('auth_key');
+      _authKey = prefs.getString('auth_key') ?? '';
+      _imageBaseUrl = prefs.getString('image_base_url') ?? '';
+      _logoUrl = prefs.getString('logo_url') ?? '';
+      _savedDomain = prefs.getString('saved_domain') ?? ''; // Saved domain ko load karein
 
-      if (authKey != null && authKey.isNotEmpty) {
-        _authKey = authKey;
-        globalAuthKey =
-            authKey; // Also set global variable for backward compatibility
-      } else {}
-    } catch (e) {}
+      String? userDataString = prefs.getString('user_data');
+      if (userDataString != null) {
+        _userData = jsonDecode(userDataString);
+      }
+      
+      _showMovies = prefs.getBool('show_movies') ?? false;
+      _showWebseries = prefs.getBool('show_webseries') ?? false;
+      _showTvShow = prefs.getBool('show_tvshow') ?? false;
+      _showTvShowPak = prefs.getBool('show_tvshow_pak') ?? false;
+      _showKidsShow = prefs.getBool('show_kids_show') ?? false;
+      _showReligious = prefs.getBool('show_religious') ?? false;
+      _showSports = prefs.getBool('show_sports') ?? false;
+      _showStageShows = prefs.getBool('show_stage_shows') ?? false;
+      _showLaughterShows = prefs.getBool('show_laughter_shows') ?? false;
+      _showContentNetwork = prefs.getBool('show_content_network') ?? false;
+      _showSearch = prefs.getBool('show_search') ?? false;
+
+    } catch (e) {
+      await clearSession();
+    }
   }
 
-  static Future<void> setAuthKey(String authKey) async {
-    _authKey = authKey;
-    globalAuthKey = authKey; // Also set global variable
-
-    // Save to SharedPreferences
+  static Future<void> saveSession(Map<String, dynamic> apiResponse) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('auth_key', authKey);
+
+    _authKey = apiResponse['result_auth_key'] ?? '';
+    _imageBaseUrl = apiResponse['imageBaseUrl'] ?? '';
+    _userData = apiResponse['data'] as Map<String, dynamic>?;
+
+    // ✅ API response se domain nikalein aur save karein
+    // Note: Yahan hum maan rahe hain ki domain `data` object ke andar 'domain' key se aa raha hai.
+    // Agar API response mein key ka naam alag hai to use yahan badal dein.
+    if (_userData != null && _userData!['domain'] != null) {
+      _savedDomain = _userData!['domain'];
+      await prefs.setString('saved_domain', _savedDomain);
+    }
+    
+    if (_userData != null && _userData!['domain_content'] != null) {
+      final domainContent = _userData!['domain_content'];
+      _logoUrl = domainContent['logo'] ?? '';
+      _showMovies = (domainContent['movies'] ?? 0) == 1;
+      _showWebseries = (domainContent['webseries'] ?? 0) == 1;
+      _showTvShow = (domainContent['tvshow'] ?? 0) == 1;
+      _showTvShowPak = (domainContent['tvshow_pak'] ?? 0) == 1;
+      _showKidsShow = (domainContent['kids_show'] ?? 0) == 1;
+      _showReligious = (domainContent['religious'] ?? 0) == 1;
+      _showSports = (domainContent['sports'] ?? 0) == 1;
+      _showStageShows = (domainContent['stage_shows'] ?? 0) == 1;
+      _showLaughterShows = (domainContent['laughter_shows'] ?? 0) == 1;
+      _showContentNetwork = (domainContent['content_network'] ?? 0) == 1;
+      _showSearch = (domainContent['search'] ?? 0) == 1;
+    }
+
+    await prefs.setString('auth_key', _authKey);
+    await prefs.setString('image_base_url', _imageBaseUrl);
+    await prefs.setString('logo_url', _logoUrl);
+    if (_userData != null) {
+      await prefs.setString('user_data', jsonEncode(_userData));
+    }
+    await prefs.setBool('is_logged_in', true);
+
+    await prefs.setBool('show_movies', _showMovies);
+    await prefs.setBool('show_webseries', _showWebseries);
+    await prefs.setBool('show_tvshow', _showTvShow);
+    await prefs.setBool('show_tvshow_pak', _showTvShowPak);
+    await prefs.setBool('show_kids_show', _showKidsShow);
+    await prefs.setBool('show_religious', _showReligious);
+    await prefs.setBool('show_sports', _showSports);
+    await prefs.setBool('show_stage_shows', _showStageShows);
+    await prefs.setBool('show_laughter_shows', _showLaughterShows);
+    await prefs.setBool('show_content_network', _showContentNetwork);
+    await prefs.setBool('show_search', _showSearch);
   }
 
-  static Future<void> clearAuthKey() async {
-    _authKey = '';
-    globalAuthKey = '';
-
+  static Future<void> clearSession() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    
+    // Sirf session related data clear karein, domain ko chhod dein
     await prefs.remove('auth_key');
-  }
+    await prefs.remove('user_data');
+    await prefs.remove('is_logged_in');
 
-  static bool get hasValidAuthKey => _authKey.isNotEmpty;
+    // Variables reset karein
+    _authKey = '';
+    _userData = null;
+    _logoUrl = '';
+  }
 }
 
 class MyHttpOverrides extends HttpOverrides {
@@ -1609,16 +3440,17 @@ class MyHttpOverrides extends HttpOverrides {
 }
 
 void main() async {
-
-WidgetsFlutterBinding.ensureInitialized();
-
+  WidgetsFlutterBinding.ensureInitialized();
   HttpOverrides.global = MyHttpOverrides();
   await initializeDateFormatting(null, null);
-     SystemChrome.setEnabledSystemUIMode(
+
+  await SessionManager.initialize();
+
+  SystemChrome.setEnabledSystemUIMode(
     SystemUiMode.immersiveSticky,
     overlays: [],
   );
-  
+
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
@@ -1629,25 +3461,22 @@ WidgetsFlutterBinding.ensureInitialized();
     ),
   );
 
-
-    // ✅ Provider ko initialize karein
   final deviceInfoProvider = DeviceInfoProvider();
-  await deviceInfoProvider.loadDeviceInfo(); // ✅ Device info pehle hi load kar lein
+  await deviceInfoProvider.loadDeviceInfo();
 
   runApp(
     MultiProvider(
       providers: [
-        // ChangeNotifierProvider(create: (_) => DeviceInfoProvider()),
         ChangeNotifierProvider(create: (_) => ColorProvider()),
         ChangeNotifierProvider(create: (_) => FocusProvider()),
         ChangeNotifierProvider.value(value: deviceInfoProvider),
-        // ChangeNotifierProvider(create: (_) => SharedDataProvider()),
       ],
       child: MyApp(),
     ),
   );
 }
 
+// Global variables
 String baseUrl = 'https://acomtv.coretechinfo.com/public/api/';
 var highlightColor;
 var cardColor;
@@ -1669,19 +3498,7 @@ var Headingtextsz;
 String localImage = 'assets/logo.png';
 String streamImage = 'assets/streamstarting.gif';
 
-class MyApp extends StatefulWidget {
-  @override
-  _MyAppState createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  @override
-  void initState() {
-    super.initState();
-    // Initialize auth manager
-    AuthManager.initialize();
-  }
-
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     screenhgt = MediaQuery.of(context).size.height;
@@ -1699,92 +3516,6 @@ class _MyAppState extends State<MyApp> {
     cardColor = const Color.fromARGB(200, 0, 0, 0).withOpacity(0.7);
     hintColor = Colors.white;
     borderColor = Color.fromARGB(255, 247, 6, 118);
-
-// ✅ SOLUTION: localImage ko global getter banayiye
-// Widget get localImage => AppAssets.localImage();
-
-// ✅ ALTERNATIVE: Function approach
-// Widget  localImage({double? width, double? height, bool animated = false}) {
-//   return AppAssets.localImage(
-//     width: width,
-//     height: height,
-//     animated: animated,
-//   );
-// }
-
-    // localImage = '/assets/app_assets.dart';
-
-    // ✅ SOLUTION: localImage ko global getter banayiye
-// Widget get localImage => AppAssets.localImage();
-
-// ✅ ALTERNATIVE: Function approach
-    Widget localImage({double? width, double? height, bool animated = false}) {
-      return AppAssets.localImage(
-        width: width,
-        height: height,
-        animated: animated,
-      );
-    }
-// localImage = Container(
-//   decoration: BoxDecoration(
-//     borderRadius: BorderRadius.circular(screenwdt * 0.01),
-//     boxShadow: [
-//       // Much darker and stronger shadows
-//       BoxShadow(
-//         color: Colors.black.withOpacity(0.95), // Increased opacity
-//         blurRadius: 25,
-//         spreadRadius: 3,
-//         offset: Offset(0, 10),
-//       ),
-//       BoxShadow(
-//         color: Colors.black.withOpacity(0.8),
-//         blurRadius: 50,
-//         spreadRadius: 8,
-//         offset: Offset(0, 20),
-//       ),
-//       // Additional deep shadow for more darkness
-//       BoxShadow(
-//         color: Colors.black.withOpacity(0.6),
-//         blurRadius: 80,
-//         spreadRadius: 15,
-//         offset: Offset(0, 30),
-//       ),
-//     ],
-//   ),
-//   child: ClipRRect(
-//     borderRadius: BorderRadius.circular(screenwdt * 0.0),
-//     child: Container(
-//       foregroundDecoration: BoxDecoration(
-//         // Much darker gradient overlay
-//         gradient: LinearGradient(
-//           begin: Alignment.topCenter,
-//           end: Alignment.bottomCenter,
-//           colors: [
-//             Colors.black.withOpacity(0.3),  // Much darker start
-//             Colors.black.withOpacity(0.4),  // Darker middle
-//             Colors.black.withOpacity(0.5),  // Very dark end
-//           ],
-//           stops: [0.0, 0.5, 1.0],
-//         ),
-//         borderRadius: BorderRadius.circular(screenwdt * 0.0),
-//       ),
-//       child: Image.asset(
-//         'assets/logo.png',
-//         fit: BoxFit.cover,
-//       ),
-//     ),
-//   ),
-// );
-
-    // localImage = Container(
-    //   width: double.infinity,
-    //   padding: const EdgeInsets.all(20),
-    //   child:
-    //   EkomLogoWidget(
-    //     width: AppLogos.getResponsiveWidth(MediaQuery.of(context).size.width),
-    //     animated: true,
-    //   ),
-    // );
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -1814,21 +3545,9 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _checkLoginStatus() async {
-    // Show splash for at least 2 seconds
     await Future.delayed(Duration(seconds: 2));
 
-    // Initialize auth manager first
-    await AuthManager.initialize();
-
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    bool isLoggedIn = prefs.getBool('is_logged_in') ?? false;
-    String? authKey = prefs.getString('auth_key');
-    String? userData = prefs.getString('user_data');
-
-    if (isLoggedIn && authKey != null && userData != null) {
-      // Set auth key in AuthManager
-      await AuthManager.setAuthKey(authKey);
-
+    if (SessionManager.isLoggedIn) {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => MyHome()),
@@ -1854,11 +3573,6 @@ class _SplashScreenState extends State<SplashScreen> {
               height: screenhgt * 0.5,
               child: Image.asset('assets/streamstarting.gif'),
             ),
-            // SizedBox(height: 30),
-            // CircularProgressIndicator(
-            //   valueColor: AlwaysStoppedAnimation<Color>(highlightColor),
-            // ),
-            // SizedBox(height: 20),
             LoadingIndicator(),
           ],
         ),
@@ -1867,15 +3581,10 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 }
 
+// Paste this updated LoginScreen widget and its State class into your main.dart file.
+// All other parts of your file can remain the same.
 
-
-
-
-
-
-
-
-
+enum InputFocus { domain, pin }
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -1885,6 +3594,10 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen>
     with TickerProviderStateMixin {
   final TextEditingController _pinController = TextEditingController();
+  final TextEditingController _domainController = TextEditingController();
+  InputFocus _currentFocus = InputFocus.domain;
+  bool _isShiftEnabled = false;
+
   bool _isLoading = false;
   String _errorMessage = '';
   String _deviceSerial = '';
@@ -1905,11 +3618,9 @@ class _LoginScreenState extends State<LoginScreen>
       duration: Duration(milliseconds: 600),
       vsync: this,
     );
-
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _fadeController, curve: Curves.easeInOut),
     );
-
     _slideAnimation = Tween<Offset>(
       begin: Offset(0, 0.5),
       end: Offset.zero,
@@ -1920,6 +3631,15 @@ class _LoginScreenState extends State<LoginScreen>
   }
 
   Future<void> _initializeScreen() async {
+    if (mounted) {
+      setState(() {
+        _domainController.text = SessionManager.savedDomain;
+        if (_domainController.text.isNotEmpty) {
+          _currentFocus = InputFocus.pin;
+        }
+      });
+    }
+
     _loadDeviceSerial();
     _fadeController.forward();
     await Future.delayed(Duration(milliseconds: 200));
@@ -1951,9 +3671,12 @@ class _LoginScreenState extends State<LoginScreen>
   }
 
   Future<void> _login() async {
-    if (_pinController.text.trim().isEmpty ||
-        _pinController.text.trim().length < 10) {
-      _showError('Please enter a valid PIN');
+    if (_domainController.text.trim().isEmpty) {
+      _showError('Please enter a valid domain');
+      return;
+    }
+    if (_pinController.text.trim().length < 10) {
+      _showError('Please enter a valid 10-digit PIN');
       return;
     }
 
@@ -1967,94 +3690,47 @@ class _LoginScreenState extends State<LoginScreen>
           ? _deviceSerial
           : await _getDeviceSerialNumber();
 
-      bool loginSuccess = false;
-      String authKey = '';
-      Map<String, dynamic>? userData;
+      final response = await https
+          .post(
+            Uri.parse('https://acomtv.coretechinfo.com/api/v2/login'),
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+              'User-Agent': 'MobiTV-Flutter-App',
+            },
+            body: jsonEncode({
+              'token': '',
+              'mac_address': serialNumber,
+              'login_pin': _pinController.text.trim(),
+              'domain': _domainController.text.trim(),
+            }),
+          )
+          .timeout(Duration(seconds: 15));
 
-      final loginEndpoints = [
-        // {
-        //   'url': 'https://acomtv.coretechinfo.com/public/api/login',
-        //   'body': {
-        //     'token': '',
-        //     'mac_address': serialNumber,
-        //     'login_pin': _pinController.text.trim(),
-        //   }
-        // },
-        {
-          'url': 'https://acomtv.coretechinfo.com/api/login',
-          'body': {
-            'token': '',
-            'mac_address': serialNumber,
-            'login_pin': _pinController.text.trim(),
-          }
-        },
-        // {
-        //   'url': 'https://acomtv.coretechinfo.com/api/auth/login',
-        //   'body': {
-        //     'mac_address': serialNumber,
-        //     'pin': _pinController.text.trim(),
-        //   }
-        // },
-      ];
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
 
-      for (final endpoint in loginEndpoints) {
-        try {
-          final response = await https
-              .post(
-                Uri.parse(endpoint['url'] as String),
-                headers: {
-                  'Content-Type': 'application/json',
-                  'Accept': 'application/json',
-                  'User-Agent': 'MobiTV-Flutter-App',
-                },
-                body: jsonEncode(endpoint['body']),
-              )
-              .timeout(Duration(seconds: 15));
+        if (data['status'] == true) {
+          await SessionManager.saveSession(data);
 
-          if (response.statusCode == 200) {
-            final data = jsonDecode(response.body);
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          await prefs.setString('user_pin', _pinController.text.trim());
+          await prefs.setString('device_serial', serialNumber);
 
-            if (data['status'] == true || data['success'] == true) {
-              authKey = data['result_auth_key'] ??
-                  data['auth_key'] ??
-                  data['token'] ??
-                  '';
-              userData = data['data'] ?? data['user'] ?? {};
-
-              if (authKey.isNotEmpty) {
-                loginSuccess = true;
-                break;
-              }
-            }
-          }
-        } catch (_) {}
-      }
-
-      if (loginSuccess && authKey.isNotEmpty) {
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        await Future.wait([
-          prefs.setString('auth_key', authKey),
-          prefs.setString('user_data', jsonEncode(userData ?? {})),
-          prefs.setString('user_pin', _pinController.text.trim()),
-          prefs.setString('device_serial', serialNumber),
-          prefs.setBool('is_logged_in', true),
-          prefs.setInt(
-              'login_timestamp', DateTime.now().millisecondsSinceEpoch),
-        ]);
-
-        await AuthManager.setAuthKey(authKey);
-
-        Navigator.pushReplacement(
-          context,
-          PageRouteBuilder(
-            pageBuilder: (context, animation, _) => MyHome(),
-            transitionsBuilder: (_, animation, __, child) =>
-                FadeTransition(opacity: animation, child: child),
-            transitionDuration: Duration(milliseconds: 500),
-          ),
-        );
+          Navigator.pushReplacement(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (context, animation, _) => MyHome(),
+              transitionsBuilder: (_, animation, __, child) =>
+                  FadeTransition(opacity: animation, child: child),
+              transitionDuration: Duration(milliseconds: 500),
+            ),
+          );
+        } else {
+          _showError(data['msg'] ?? 'Invalid credentials. Please try again.');
+        }
       } else {
-        _showError('Invalid PIN. Please check and try again.');
+        _showError('Server error. Please try again later.');
       }
     } catch (e) {
       _showError(
@@ -2075,9 +3751,90 @@ class _LoginScreenState extends State<LoginScreen>
   @override
   void dispose() {
     _pinController.dispose();
+    _domainController.dispose();
     _fadeController.dispose();
     _slideController.dispose();
     super.dispose();
+  }
+
+  void _onKeyPressed(String value) {
+    setState(() {
+      if (value == 'OK') {
+        if (_currentFocus == InputFocus.domain) {
+          _currentFocus = InputFocus.pin;
+        } else {
+          _login();
+        }
+        return;
+      }
+
+      if (value == 'SHIFT') {
+        _isShiftEnabled = !_isShiftEnabled;
+        return;
+      }
+
+      TextEditingController activeController =
+          _currentFocus == InputFocus.domain
+              ? _domainController
+              : _pinController;
+
+      if (value == 'DEL') {
+        if (activeController.text.isNotEmpty) {
+          activeController.text = activeController.text
+              .substring(0, activeController.text.length - 1);
+        }
+      } else if (_currentFocus == InputFocus.pin) {
+        if (RegExp(r'^[0-9]$').hasMatch(value) &&
+            activeController.text.length < 10) {
+          activeController.text += value;
+        }
+      } else {
+        activeController.text += value;
+      }
+    });
+  }
+
+  Widget _buildInputField({
+    required TextEditingController controller,
+    required String hint,
+    required InputFocus focus,
+    bool isPin = false,
+  }) {
+    final bool isActive = _currentFocus == focus;
+    String displayText = controller.text;
+
+    if (isPin) {
+      displayText = displayText.padRight(10, '_');
+    }
+    if (controller.text.isEmpty) {
+      displayText = hint;
+    }
+
+    return GestureDetector(
+      onTap: () => setState(() => _currentFocus = focus),
+      child: Container(
+        width: double.infinity,
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.05),
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            color: isActive ? borderColor : Colors.white.withOpacity(0.2),
+            width: 2,
+          ),
+        ),
+        child: Text(
+          displayText,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: controller.text.isEmpty ? Colors.white54 : Colors.white,
+            fontSize: nametextsz * (isPin ? 1.2 : 0.9),
+            letterSpacing: isPin ? 5 : 1,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -2087,7 +3844,8 @@ class _LoginScreenState extends State<LoginScreen>
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+            // Reduced padding for a more compact view
+            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
             child: SlideTransition(
               position: _slideAnimation,
               child: FadeTransition(
@@ -2095,11 +3853,11 @@ class _LoginScreenState extends State<LoginScreen>
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // Logo
+                    // Reduced logo size and margin
                     Container(
-                      width: 120,
-                      height: 120,
-                      margin: EdgeInsets.only(bottom: 30),
+                      width: 100,
+                      height: 100,
+                      margin: EdgeInsets.only(bottom: 20),
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         color: Colors.white.withOpacity(0.1),
@@ -2107,17 +3865,10 @@ class _LoginScreenState extends State<LoginScreen>
                           color: borderColor.withOpacity(0.3),
                           width: 2,
                         ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.3),
-                            blurRadius: 20,
-                            spreadRadius: 5,
-                          ),
-                        ],
                       ),
                       child: ClipOval(
                         child: Padding(
-                          padding: EdgeInsets.all(20),
+                          padding: EdgeInsets.all(15),
                           child: Image.asset(
                             'assets/streamstarting.gif',
                             fit: BoxFit.contain,
@@ -2125,107 +3876,77 @@ class _LoginScreenState extends State<LoginScreen>
                         ),
                       ),
                     ),
-
-                    Text(
-                      'Enter your PIN',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: Headingtextsz,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1,
-                      ),
-                    ),
-
-                    SizedBox(height: 20),
-
-                    // PIN Display
-                    Container(
-                      padding: EdgeInsets.all(10),
-                      child: Text(
-                        _pinController.text.padRight(10, '_'),
-                        style: TextStyle(
-                          fontSize: nametextsz * 1.3,
-                          letterSpacing: 6,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-
-                    SizedBox(height: 20),
-
-                    // Number Pad
-                    Wrap(
-                      spacing: 12,
-                      runSpacing: 12,
-                      alignment: WrapAlignment.center,
-                      children: List.generate(12, (index) {
-                        String label = '';
-                        if (index < 9) {
-                          label = '${index + 1}';
-                        } else if (index == 9) {
-                          label = 'Del';
-                        } else if (index == 10) {
-                          label = '0';
-                        } else if (index == 11) {
-                          label = 'OK';
-                        }
-
-                        return SizedBox(
-                          width: screenwdt * 0.18,
-                          height: 55,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              if (label == 'Del') {
-                                if (_pinController.text.isNotEmpty) {
-                                  setState(() {
-                                    _pinController.text = _pinController.text
-                                        .substring(
-                                            0, _pinController.text.length - 1);
-                                  });
-                                }
-                              } else if (label == 'OK') {
-                                _login();
-                              } else {
-                                if (_pinController.text.length < 10) {
-                                  setState(() {
-                                    _pinController.text += label;
-                                  });
-                                }
-                              }
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.white.withOpacity(0.1),
-                              foregroundColor: Colors.white,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
+                    
+                    // Fields are now in a Row
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            children: [
+                              Text(
+                                'Enter your Domain',
+                                style: TextStyle(
+                                  color: Colors.white70,
+                                  fontSize: menutextsz,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
-                            ),
-                            child: Text(
-                              label,
-                              style: TextStyle(
-                                fontSize: nametextsz * 1.2,
-                                fontWeight: FontWeight.bold,
+                              SizedBox(height: 8),
+                              _buildInputField(
+                                controller: _domainController,
+                                hint: 'example.com',
+                                focus: InputFocus.domain,
                               ),
-                            ),
+                            ],
                           ),
-                        );
-                      }),
+                        ),
+                        SizedBox(width: 20), // Space between fields
+                        Expanded(
+                          child: Column(
+                            children: [
+                              Text(
+                                'Enter your PIN',
+                                style: TextStyle(
+                                  color: Colors.white70,
+                                  fontSize: menutextsz,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              SizedBox(height: 8),
+                              _buildInputField(
+                                controller: _pinController,
+                                hint: '__________',
+                                focus: InputFocus.pin,
+                                isPin: true,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
 
-                    SizedBox(height: 25),
+                    SizedBox(height: 20), // Reduced spacing
+                    if (_currentFocus == InputFocus.pin)
+                      _buildNumpad()
+                    else
+                      _buildQwertyKeyboard(),
 
+                    SizedBox(height: 20), // Reduced spacing
                     if (_isLoading)
                       CircularProgressIndicator(
                         valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                       ),
-
                     if (_errorMessage.isNotEmpty)
                       Padding(
-                        padding: EdgeInsets.only(top: 20),
+                        padding: EdgeInsets.only(top: 15),
                         child: Text(
                           _errorMessage,
+                          textAlign: TextAlign.center,
                           style: TextStyle(
-                              color: Colors.red, fontSize: minitextsz),
+                              color: Colors.redAccent,
+                              fontSize: minitextsz * 1.2,
+                              fontWeight: FontWeight.bold),
                         ),
                       ),
                   ],
@@ -2237,12 +3958,103 @@ class _LoginScreenState extends State<LoginScreen>
       ),
     );
   }
+
+  Widget _buildNumpad() {
+    return Wrap(
+      spacing: 10, // Reduced spacing
+      runSpacing: 10, // Reduced spacing
+      alignment: WrapAlignment.center,
+      children: List.generate(12, (index) {
+        String label = '';
+        if (index < 9) {
+          label = '${index + 1}';
+        } else if (index == 9) {
+          label = 'DEL';
+        } else if (index == 10) {
+          label = '0';
+        } else if (index == 11) {
+          label = 'OK';
+        }
+        // Reduced key width
+        return _buildKey(label, width: screenwdt * 0.20);
+      }),
+    );
+  }
+
+  Widget _buildQwertyKeyboard() {
+    final row1 = "1234567890".split('');
+    final row2 = "qwertyuiop".split('');
+    final row3 = "asdfghjkl,".split('');
+    final row4 = ["SHIFT", ..."zxcvbnm".split(''), "DEL"];
+    final row5 = ["@", ".", " ", ".com", "OK"];
+
+    return Column(
+      children: [
+        _buildKeyboardRow(row1),
+        _buildKeyboardRow(row2),
+        _buildKeyboardRow(row3),
+        _buildKeyboardRow(row4),
+        _buildKeyboardRow(row5, isSpecialRow: true),
+      ],
+    );
+  }
+
+  Widget _buildKeyboardRow(List<String> keys, {bool isSpecialRow = false}) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: keys.map((key) {
+        // Reduced key widths
+        double width = screenwdt * 0.07;
+        if (key == ' ') width = screenwdt * 0.18;
+        if (key == 'OK' || key == 'SHIFT' || key == '.com' || key == 'DEL')
+          width = screenwdt * 0.11;
+
+        String displayKey = key;
+        if (key != 'SHIFT' && key != 'DEL' && key != 'OK' && key.length == 1) {
+          displayKey = _isShiftEnabled ? key.toUpperCase() : key.toLowerCase();
+        }
+
+        return _buildKey(displayKey, originalKey: key, width: width);
+      }).toList(),
+    );
+  }
+
+  Widget _buildKey(String label, {String? originalKey, double? width}) {
+    final keyToProcess = originalKey ?? label;
+
+    return Container(
+      // Adjusted width and height for smaller buttons
+      width: width ?? screenwdt * 0.18,
+      height: screenhgt * 0.1 ,
+      // Reduced margin for less padding between keys
+      margin: const EdgeInsets.all(2),
+      child: ElevatedButton(
+        onPressed: () => _onKeyPressed(keyToProcess),
+        style: ElevatedButton.styleFrom(
+            backgroundColor: (keyToProcess == 'SHIFT' && _isShiftEnabled)
+                ? Colors.white.withOpacity(0.3)
+                : Colors.white.withOpacity(0.1),
+            foregroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8), // slightly smaller radius
+            ),
+            padding: EdgeInsets.zero),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: nametextsz * 1.7, // Slightly smaller font
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 
 
-
-// Rest of your existing code (UpdateChecker, MyHome, etc.) remains the same...
+// Rest of your code (UpdateChecker, MyHome, etc.)
+// ...
 class UpdateChecker {
   static const String LAST_UPDATE_CHECK_KEY = 'last_update_check';
   static const String FORCE_UPDATE_TIME_KEY = 'force_update_time';
@@ -2394,12 +4206,13 @@ class _MyHomeState extends State<MyHome> {
     _fetchTvenableAllStatus();
     _updateChecker = UpdateChecker(context);
 
-    // Ensure auth key is loaded when entering main app
-    _ensureAuthKeyLoaded();
-  }
+    // Example of how to access user data
+    // You can access user data anywhere like this:
+    String? userName = SessionManager.userData?['name'];
+    print('Logged in user: $userName');
 
-  Future<void> _ensureAuthKeyLoaded() async {
-    await AuthManager.initialize();
+    String? imageUrl = SessionManager.imageBaseUrl;
+    print('Base Image URL: $imageUrl');
   }
 
   @override
@@ -2434,49 +4247,48 @@ class _MyHomeState extends State<MyHome> {
     } catch (e) {}
   }
 
-  // void _showLogoutDialog() {
-  //   showDialog(
-  //     context: context,
-  //     builder: (BuildContext context) {
-  //       return AlertDialog(
-  //         backgroundColor: cardColor,
-  //         title: Text(
-  //           'Logout',
-  //           style: TextStyle(color: hintColor),
-  //         ),
-  //         content: Text(
-  //           'Are you sure you want to logout?',
-  //           style: TextStyle(color: hintColor),
-  //         ),
-  //         actions: [
-  //           TextButton(
-  //             onPressed: () => Navigator.of(context).pop(),
-  //             child: Text('Cancel'),
-  //           ),
-  //           TextButton(
-  //             onPressed: () async {
-  //               Navigator.of(context).pop();
-  //               await _logout();
-  //             },
-  //             child: Text('Logout', style: TextStyle(color: Colors.red)),
-  //           ),
-  //         ],
-  //       );
-  //     },
-  //   );
-  // }
+  void _showLogoutDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: cardColor,
+          title: Text(
+            'Logout',
+            style: TextStyle(color: hintColor),
+          ),
+          content: Text(
+            'Are you sure you want to logout?',
+            style: TextStyle(color: hintColor),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () async {
+                Navigator.of(context).pop();
+                await _logout();
+              },
+              child: Text('Logout', style: TextStyle(color: Colors.red)),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
-  // Future<void> _logout() async {
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   await prefs.clear();
-  //   await AuthManager.clearAuthKey();
+  Future<void> _logout() async {
+    // ✅ Clear session using the manager
+    await SessionManager.clearSession();
 
-  //   Navigator.pushAndRemoveUntil(
-  //     context,
-  //     MaterialPageRoute(builder: (context) => LoginScreen()),
-  //     (route) => false,
-  //   );
-  // }
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => LoginScreen()),
+      (route) => false,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -2516,7 +4328,7 @@ class _MyHomeState extends State<MyHome> {
                             //   top: 10,
                             //   right: 10,
                             //   child: GestureDetector(
-                            //     onTap: _showLogoutDialog,
+                            //     onTap: _showLogoutDialog, // Enable logout button
                             //     child: Container(
                             //       padding: EdgeInsets.all(8),
                             //       decoration: BoxDecoration(

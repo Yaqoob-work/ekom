@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class SubLiveScreen extends StatefulWidget {
+  const SubLiveScreen({super.key});
   @override
   State<SubLiveScreen> createState() => _SubLiveScreenState();
 }

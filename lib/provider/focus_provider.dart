@@ -282,6 +282,28 @@ int _currentSelectedNavIndex = 0;
 
 
 
+
+  
+  FocusNode? _firstTVShowsFocusNode;
+  // ✅ TV Shows functions (नए)
+  void setFirstTVShowsFocusNode(FocusNode focusNode) {
+    _firstTVShowsFocusNode = focusNode;
+  }
+
+  void requestFirstTVShowsFocus() {
+    if (_firstTVShowsFocusNode != null &&
+        _firstTVShowsFocusNode!.context != null) {
+      _firstTVShowsFocusNode!.requestFocus();
+      print('✅ TV Shows first focus requested');
+      scrollToElement('tvShows');
+              Future.delayed(const Duration(milliseconds: 50), () {
+          scrollToElement('tvShows');
+        });
+    }
+  }
+
+
+
   
   FocusNode? _firstSportsCategoryFocusNode;
   // ✅ TV Shows functions (नए)
@@ -295,6 +317,9 @@ int _currentSelectedNavIndex = 0;
       _firstSportsCategoryFocusNode!.requestFocus();
       print('✅ TV Shows first focus requested');
       scrollToElement('sportsCategory');
+        Future.delayed(const Duration(milliseconds: 50), () {
+          scrollToElement('sportsCategory');
+        });
     }
 
   }
@@ -664,21 +689,9 @@ int _currentSelectedNavIndex = 0;
 
 
 
-  FocusNode? _firstTVShowsFocusNode;
-  // ✅ TV Shows functions (नए)
-  void setFirstTVShowsFocusNode(FocusNode focusNode) {
-    _firstTVShowsFocusNode = focusNode;
-  }
 
-  void requestFirstTVShowsFocus() {
-    if (_firstTVShowsFocusNode != null &&
-        _firstTVShowsFocusNode!.context != null) {
-      _firstTVShowsFocusNode!.requestFocus();
-      print('✅ TV Shows first focus requested');
-      scrollToElement('tvShows');
-    }
 
-  }
+
   FocusNode? _firstTVShowsPakFocusNode;
   // ✅ TV Shows functions (नए)
   void setFirstTVShowsPakFocusNode(FocusNode focusNode) {
@@ -729,332 +742,3 @@ int _currentSelectedNavIndex = 0;
     super.dispose();
   }
 }
-
-// class FocusProvider extends ChangeNotifier {
-  // =================================================================
-  // NEWS CHANNELS METHODS (NEW)
-  // =================================================================
-
-  // void setNewsChannelsViewAllFocusNode(FocusNode node) {
-  //   _newsChannelsViewAllFocusNode = node;
-  //   notifyListeners();
-  // }
-
-  // void setNewsChannelsScrollController(ScrollController controller) {
-  //   _newsChannelsScrollController = controller;
-  // }
-
-  // void requestNewsChannelsViewAllFocus() {
-  //   if (_newsChannelsViewAllFocusNode != null) {
-  //     _newsChannelsViewAllFocusNode!.requestFocus();
-  //     notifyListeners();
-  //   }
-  // }
-
-  // void setMusicChannelsViewAllFocusNode(FocusNode node) {
-  //   _musicChannelsViewAllFocusNode = node;
-  //   notifyListeners();
-  // }
-
-  // void setMusicChannelsScrollController(ScrollController controller) {
-  //   _musicChannelsScrollController = controller;
-  // }
-
-  // void requestFirstMusicChannelFocus() {
-  //   if (_firstMusicChannelFocusNode != null) {
-  //     _firstMusicChannelFocusNode!.requestFocus();
-  //     notifyListeners();
-  //     scrollToElement('subLiveScreen');
-  //   }
-  // }
-
-  // void requestMusicChannelsViewAllFocus() {
-  //   if (_musicChannelsViewAllFocusNode != null) {
-  //     _musicChannelsViewAllFocusNode!.requestFocus();
-  //     notifyListeners();
-  //   }
-  // }
-
-  // void requestMusicChannelsFocus() {
-  //   requestFirstMusicChannelFocus();
-  // }
-
-  // =================================================================
-  // LAST PLAYED METHODS
-  // =================================================================
-  // void setFirstLastPlayedFocusNode(FocusNode node) {
-  //   _firstLastPlayedFocusNode = node;
-  // }
-
-  // void requestFirstLastPlayedFocus() {
-  //   _firstLastPlayedFocusNode?.requestFocus();
-  //   notifyListeners();
-  // }
-
-  // void requestLastPlayedFocus() {
-  //   if (firstLastPlayedFocusNode != null) {
-  //     firstLastPlayedFocusNode!.requestFocus();
-  //     setLastPlayedFocus(0);
-  //     scrollToElement('lastPlayed');
-  //   }
-  // }
-
-  // void requestWebSeriesFocus() {
-  //   requestFirstWebseriesFocus();
-  // }
-
-  // void clearWebseriesFocus() {
-  //   _firstManageWebseriesFocusNode = null;
-  //   _webseriesFocusPrepared = false;
-  // }
-
-  // =================================================================
-  // MUSIC/SUB LIVE METHODS
-  // =================================================================
-  // FocusNode? getFirstMusicItemFocusNode() {
-  //   return _firstMusicItemFocusNode;
-  // }
-
-  // void setFirstMusicItemFocusNode(FocusNode node) {
-  //   firstMusicItemFocusNode = node;
-  //   node.addListener(() {
-  //     if (node.hasFocus) {
-  //       scrollToElement('subLiveScreen');
-  //     }
-  //   });
-  //   notifyListeners();
-  // }
-
-  // void requestMusicItemFocus(BuildContext context) {
-  //   if (firstMusicItemFocusNode != null) {
-  //     Future.delayed(Duration(milliseconds: 100), () {
-  //       if (firstMusicItemFocusNode!.canRequestFocus) {
-  //         firstMusicItemFocusNode!.requestFocus();
-  //         scrollToElement('subLiveScreen');
-  //       }
-  //     });
-  //   }
-  // }
-
-  // =================================================================
-  // NEWS ITEMS METHODS
-  // =================================================================
-  // final Map<String, FocusNode> _newsItemFocusNodes = {};
-  // String? _firstNewsItemId;
-
-  // void requestNewsItemFocusNode(FocusNode focusNode) {
-  //   if (focusNode.canRequestFocus) {
-  //     focusNode.requestFocus();
-  //   }
-  // }
-
-  // void registerNewsItemFocusNode(String id, FocusNode node) {
-  //   _newsItemFocusNodes[id] = node;
-  //   _firstNewsItemId ??= id;
-  //   notifyListeners();
-  // }
-
-  // FocusNode? getNewsItemFocusNode(String id) {
-  //   return _newsItemFocusNodes[id];
-  // }
-
-  // FocusNode? getFirstNewsItemFocusNode() {
-  //   if (_firstNewsItemId != null) {
-  //     return _newsItemFocusNodes[_firstNewsItemId];
-  //   }
-  //   return null;
-  // }
-
-  // void unregisterNewsItemFocusNode(String id) {
-  //   _newsItemFocusNodes.remove(id);
-  //   notifyListeners();
-  // }
-
-  // void requestNewsItemFocus() {
-  //   if (_newsItemFocusNode?.context != null) {
-  //     _newsItemFocusNode?.requestFocus();
-  //   }
-  // }
-
-// // ✅ Updated generic method to handle Live (index 0)
-// void requestFirstChannelFocus(int navIndex) {
-//   if (navIndex == 0) {
-//     // Special handling for Live page
-//     requestLiveChannelsFocus();
-//     return;
-//   }
-
-//   if (_channelFirstFocusNodes.containsKey(navIndex)) {
-//     _channelFirstFocusNodes[navIndex]?.requestFocus();
-//     scrollToElement('subLiveScreen');
-//     notifyListeners();
-//     print('✅ Focusing first channel for index: $navIndex');
-//   } else {
-//     print('❌ First channel focus failed for index: $navIndex');
-//   }
-// }
-
-  // Live TV related focus nodes
-  // FocusNode? _liveTvNavigationFocusNode;
-
-  // // Navigation focus nodes for other sections
-  // FocusNode? _newsNavigationFocusNode;
-  // FocusNode? _sportsNavigationFocusNode;
-  // FocusNode? _religiousNavigationFocusNode;
-  // FocusNode? _moreNavigationFocusNode;
-
-  // void setLiveTvFocusNode(FocusNode node) {
-  //   _liveTvNavigationFocusNode = node;
-  // }
-
-  // void setNewsNavigationFocusNode(FocusNode node) {
-  //   _newsNavigationFocusNode = node;
-  // }
-
-  // void setSportsNavigationFocusNode(FocusNode node) {
-  //   _sportsNavigationFocusNode = node;
-  // }
-
-  // void setReligiousNavigationFocusNode(FocusNode node) {
-  //   _religiousNavigationFocusNode = node;
-  // }
-
-  // void setMoreNavigationFocusNode(FocusNode node) {
-  //   _moreNavigationFocusNode = node;
-  // }
-
-  // void requestSportsContentFocus() {
-  //   // Add your sports content focus logic
-  // }
-
-  // void requestReligiousContentFocus() {
-  //   // Add your religious content focus logic
-  // }
-
-  // void forceSubVodFocus() {
-  //   if (firstSubVodFocusNode == null) {
-  //     return;
-  //   }
-  //   firstSubVodFocusNode!.requestFocus();
-  //   Future.delayed(Duration(milliseconds: 100), () {
-  //     if (!firstSubVodFocusNode!.hasFocus) {
-  //       firstSubVodFocusNode!.requestFocus();
-  //     }
-  //   });
-  //   Future.delayed(Duration(milliseconds: 200), () {
-  //     if (!firstSubVodFocusNode!.hasFocus && _subVodContext != null) {
-  //       FocusScope.of(_subVodContext!).requestFocus(firstSubVodFocusNode!);
-  //     }
-  //   });
-  // }
-
-  // void forceSubVodFocusWithContext(BuildContext context) {
-  //   if (firstSubVodFocusNode == null) {
-  //     return;
-  //   }
-  //   FocusScope.of(context).unfocus();
-  //   Future.delayed(Duration(milliseconds: 50), () {
-  //     FocusScope.of(context).requestFocus(firstSubVodFocusNode!);
-  //     Future.delayed(Duration(milliseconds: 100), () {
-  //       // Success callback if needed
-  //     });
-  //   });
-  // }
-
-  // void nuclearSubVodFocus(BuildContext context) {
-  //   if (firstSubVodFocusNode == null) {
-  //     return;
-  //   }
-  //   FocusScope.of(context).unfocus();
-  //   Future.delayed(Duration(milliseconds: 100), () {
-  //     FocusScope.of(context).requestFocus(firstSubVodFocusNode!);
-  //     Future.delayed(Duration(milliseconds: 50), () {
-  //       firstSubVodFocusNode!.requestFocus();
-  //       Future.delayed(Duration(milliseconds: 50), () {
-  //         if (!firstSubVodFocusNode!.hasFocus) {
-  //           firstSubVodFocusNode!.requestFocus();
-  //         }
-  //         Future.delayed(Duration(milliseconds: 100), () {
-  //           // Final verification
-  //         });
-  //       });
-  //     });
-  //   });
-  // }
-
-  // FocusNode? getFirstSubVodFocusNode() {
-  //   return _firstSubVodFocusNode;
-  // }
-
-  // =================================================================
-  // FOCUS STATE MANAGEMENT
-  // =================================================================
-
-  // void setLastPlayedFocus(int index) {
-  //   _isLastPlayedFocused = true;
-  //   _focusedVideoIndex = index;
-  //   _isButtonFocused = false;
-  //   notifyListeners();
-  // }
-
-
-
-  // void updateFocusColor(Color color) {
-  //   _currentFocusColor = color;
-  //   notifyListeners();
-  // }
-
-  // =================================================================
-  // CATEGORY COUNT MANAGEMENT
-  // =================================================================
-  // int _categoryCountMovies = 0;
-  // int _categoryCountWebseries = 0;
-  // double _totalHeightMovies = 0.0;
-  // double _totalHeightWebseries = 0.0;
-
-  // int get categoryCount => _categoryCountMovies;
-  // double get totalHeight => _totalHeightMovies;
-  // int get categoryCountWebseries => _categoryCountWebseries;
-  // double get totalHeightWebseries => _totalHeightWebseries;
-
-  // void updateCategoryCountMovies(int count) {
-  //   _categoryCountMovies = count;
-  //   notifyListeners();
-  // }
-
-  // void updateCategoryCountWebseries(int count) {
-  //   _categoryCountWebseries = count;
-  //   notifyListeners();
-  // }
-
-//   // ✅ 6. Keep existing specific methods for backward compatibility
-//   void requestMusicNavigationFocus() => requestNavigationFocus(2);
-//   void requestNewsNavigationFocus() => requestNavigationFocus(4);
-//   void requestMovieNavigationFocus() => requestNavigationFocus(3);
-//   void requestEntertainmentNavigationFocus() => requestNavigationFocus(1);
-//   void requestSportsNavigationFocus() => requestNavigationFocus(5);
-//   void requestReligiousNavigationFocus() => requestNavigationFocus(6);
-//   void requestLiveNavigationFocus() => requestNavigationFocus(0);
-
-//   // ✅ 7. Enhanced specific channel focus methods
-//   void requestEntertainmentChannelsFocus() => requestFirstChannelFocus(1);
-//   void requestMovieChannelsFocus() => requestFirstChannelFocus(3);
-//   void requestSportsChannelsFocus() => requestFirstChannelFocus(5);
-//   void requestReligiousChannelsFocus() => requestFirstChannelFocus(6);
-
-//   // ✅ DEBUGGING HELPER - Add this method in FocusProvider for testing
-// // focus_provider.dart में add करें:
-
-// void testWebseriesFocus() {
-//   print('🔍 Testing webseries focus...');
-//   print('First webseries focus node: $_firstManageWebseriesFocusNode');
-//   if (_firstManageWebseriesFocusNode != null) {
-//     print('Can request focus: ${_firstManageWebseriesFocusNode!.canRequestFocus}');
-//     print('Has focus: ${_firstManageWebseriesFocusNode!.hasFocus}');
-//     _firstManageWebseriesFocusNode!.requestFocus();
-//     print('✅ Focus requested for webseries');
-//   } else {
-//     print('❌ No webseries focus node found');
-//   }
-// }
-// }

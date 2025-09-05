@@ -282,15 +282,16 @@ class _HomeScreenState extends State<HomeScreen> {
   late FocusNode manageMoviesFocusNode;
   late FocusNode manageWebseriesFocusNode;
   late FocusNode tvShowsFocusNode;
+  late FocusNode sportsCategoryFocusNode;
 
   bool _isLoading = false;
   int _selectedPage = 0;
 
   late UpdateChecker _updateChecker;
 
-  Future<void> _ensureAuthKeyLoaded() async {
-    await AuthManager.initialize();
-  }
+  // Future<void> _ensureAuthKeyLoaded() async {
+  //   await AuthManager.initialize();
+  // }
 
   @override
   void initState() {
@@ -321,6 +322,7 @@ class _HomeScreenState extends State<HomeScreen> {
       focusProvider.registerElementKey('manageMovies', manageMoviesKey);
       focusProvider.registerElementKey('manageWebseries', manageWebseriesKey);
       focusProvider.registerElementKey('tvShows', tvShowsKey);
+      focusProvider.registerElementKey('sportsCategory', sportsCategoryKey);
       focusProvider.registerElementKey('religiousChannels', religiousChannelKey);
       focusProvider.registerElementKey('tvShowPak', tvShowsPakKey);
     });
@@ -336,6 +338,7 @@ class _HomeScreenState extends State<HomeScreen> {
     focusProvider.unregisterElementKey('manageWebseries');
     focusProvider.unregisterElementKey('tvShows');
     focusProvider.unregisterElementKey('tvShowPak');
+    focusProvider.unregisterElementKey('sportsCategory');
 
     // Clean up focus nodes
     watchNowFocusNode.dispose();
@@ -344,6 +347,7 @@ class _HomeScreenState extends State<HomeScreen> {
     manageMoviesFocusNode.dispose();
     manageWebseriesFocusNode.dispose();
     tvShowsFocusNode.dispose();
+    sportsCategoryFocusNode.dispose();
     _socketService.dispose();
     super.dispose();
   }
@@ -435,12 +439,15 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     SizedBox(
                       height: screenhgt * 0.38,
-                      key: sportsCategoryKey,
+                      // key: sportsCategoryKey,
                       child: 
                       // HorizontalChannelList(
                       //   // focusNode: manageWebseriesFocusNode,
                       // ),
-                      SportsCategory ()
+                      SportsCategory (
+                      key: sportsCategoryKey,
+
+                      )
                     ),
                     SizedBox(
                       height: screenhgt * 0.38,

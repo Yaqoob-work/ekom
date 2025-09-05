@@ -9,36 +9,36 @@ import 'package:mobi_tv_entertainment/video_widget/youtube_webview_player.dart';
 import 'package:mobi_tv_entertainment/widgets/models/news_item_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:http/http.dart' as http;
+import 'package:http/http.dart' as https;
 import 'dart:convert';
 import 'dart:math' as math;
 import 'dart:ui';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
 
-bool isYoutubeUrl(String? url) {
-  if (url == null || url.isEmpty) {
-    return false;
-  }
+// bool isYoutubeUrl(String? url) {
+//   if (url == null || url.isEmpty) {
+//     return false;
+//   }
 
-  url = url.toLowerCase().trim();
+//   url = url.toLowerCase().trim();
 
-  // First check if it's a YouTube ID (exactly 11 characters)
-  bool isYoutubeId = RegExp(r'^[a-zA-Z0-9_-]{11}$').hasMatch(url);
-  if (isYoutubeId) {
-    return true;
-  }
+//   // First check if it's a YouTube ID (exactly 11 characters)
+//   bool isYoutubeId = RegExp(r'^[a-zA-Z0-9_-]{11}$').hasMatch(url);
+//   if (isYoutubeId) {
+//     return true;
+//   }
 
-  // Then check for regular YouTube URLs
-  bool isYoutubeUrl = url.contains('youtube.com') ||
-      url.contains('youtu.be') ||
-      url.contains('youtube.com/shorts/');
-  if (isYoutubeUrl) {
-    return true;
-  }
+//   // Then check for regular YouTube URLs
+//   bool isYoutubeUrl = url.contains('youtube.com') ||
+//       url.contains('youtu.be') ||
+//       url.contains('youtube.com/shorts/');
+//   if (isYoutubeUrl) {
+//     return true;
+//   }
 
-  return false;
-}
+//   return false;
+// }
 
 // Professional Color Palette
 class ProfessionalColors {
@@ -499,7 +499,7 @@ class MovieService {
     try {
       String authKey = prefs.getString(_cacheKeyAuthKey) ?? '';
 
-      final response = await http.get(
+      final response = await https.get(
         Uri.parse(
             'https://acomtv.coretechinfo.com/api/v2/getAllMovies?records=8'),
         headers: {
@@ -559,7 +559,7 @@ class MovieService {
     try {
       String authKey = prefs.getString(_cacheKeyAuthKey) ?? '';
 
-      final response = await http.get(
+      final response = await https.get(
         Uri.parse(
             'https://acomtv.coretechinfo.com/api/v2/getAllMovies?records=100'),
         headers: {
@@ -1208,7 +1208,8 @@ class _ProfessionalMoviesHorizontalListState
                   url: movie.movieUrl,
                   unUpdatedUrl: movie.movieUrl,
                   contentType: '1', // Movie type
-                  streamType: movie.sourceType,
+                  // streamType: movie.streamType ,
+                  sourceType: movie.sourceType,
                   liveStatus: false,
                   poster: movie.poster ?? movie.banner ?? '',
                   image: movie.banner ?? movie.poster ?? '',
@@ -4129,6 +4130,7 @@ class _ProfessionalGridMovieCardState extends State<ProfessionalGridMovieCard>
 
 // Main Movies Screen
 class MoviesScreen extends StatefulWidget {
+  const MoviesScreen({super.key});
   @override
   _MoviesScreenState createState() => _MoviesScreenState();
 }

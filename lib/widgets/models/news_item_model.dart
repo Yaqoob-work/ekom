@@ -404,6 +404,7 @@ class NewsItemModel {
   final String videoId;
   final String streamType;
   final String streamingType;
+  final String sourceType;
   final String type;
   final String genres;
   final String status;
@@ -446,6 +447,7 @@ class NewsItemModel {
     this.videoId = '',
     this.streamType = '',
     this.streamingType = '',
+    this.sourceType = '',
     this.type = '',
     this.genres = '',
     this.status = '',
@@ -492,18 +494,20 @@ class NewsItemModel {
     return NewsItemModel(
       id: safeIntToString(json['id']),  // Convert int to String properly
       index: safeIntToString(json['index']),  // Convert int to String properly
-      name: safeToString(json['name'] ?? json['Episoade_Name'] ?? json['session_name'], defaultValue: 'No Name'),
+      name: safeToString(json['name'] ?? json['Episoade_Name'] ?? json['session_name']??json['channel_name'] , defaultValue: 'No Name'),
       unUpdatedUrl: safeIntToString(json['unUpdatedUrl']),
       description: safeToString(json['description'] ?? json['episoade_description'] ?? json['session_description']),
       thumbnail_high: safeToString(json['thumbnail_high']),
-      thumbnail: safeToString(json['thumbnail']),
-      banner: safeToString(json['banner'] ?? json['session_image'] ?? json['episoade_image']),
-      poster: safeToString(json['poster'] ?? json['session_image'] ?? json['episoade_image']),
-      image: safeToString(json['image']),
+      thumbnail: safeToString(json['thumbnail']??json['channel_logo']),
+      banner: safeToString(json['banner'] ?? json['session_image'] ?? json['episoade_image']??json['channel_logo']),
+      poster: safeToString(json['poster'] ?? json['session_image'] ?? json['episoade_image']??json['channel_logo']),
+      image: safeToString(json['image']??json['channel_logo']),
       // poster: safeToString(json['poster']),
-      url: safeToString(json['url']?? json['movie_url'] ),
+      // json['url']?? json['movie_url']??
+      url: safeToString(json['channel_link'] ),
       videoId: safeToString(json['videoId']),
       streamType: safeToString(json['stream_type']),
+      sourceType: safeToString(json['source_type']),
       streamingType: safeToString(json['streaming_type']),
       type: safeToString(json['type']),
       genres: safeToString(json['genres']),
@@ -550,6 +554,7 @@ class NewsItemModel {
       'url': url,
       'videoId': videoId,
       'stream_type': streamType,
+      'source_type': sourceType,
       'streaming_type': streamingType,
       'type': type,
       'genres': genres,
@@ -592,6 +597,7 @@ class NewsItemModel {
     String? url,
     String? videoId,
     String? streamType,
+    String? sourceType,
     String? streamingType,
     String? type,
     String? genres,
@@ -632,6 +638,7 @@ class NewsItemModel {
       url: url ?? this.url,
       videoId: videoId ?? this.videoId,
       streamType: streamType ?? this.streamType,
+      sourceType: sourceType ?? this.sourceType,
       streamingType: streamingType ?? this.streamingType,
       type: type ?? this.type,
       genres: genres ?? this.genres,
@@ -683,3 +690,6 @@ class NewsItemModel {
       index.hashCode ^ 
       status.hashCode;
 }
+
+
+

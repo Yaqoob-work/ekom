@@ -564,6 +564,7 @@ class HorizontalVodService {
 
 // 🚀 Enhanced HorzontalVod with Caching (WebSeries Style)
 class HorzontalVod extends StatefulWidget {
+   const HorzontalVod({super.key});
   @override
   _HorzontalVodState createState() =>
       _HorzontalVodState();
