@@ -3,6 +3,7 @@ import 'package:mobi_tv_entertainment/main.dart';
 import 'package:mobi_tv_entertainment/provider/color_provider.dart';
 import 'package:mobi_tv_entertainment/provider/device_info_provider.dart';
 import 'package:mobi_tv_entertainment/provider/focus_provider.dart';
+import 'package:mobi_tv_entertainment/services/history_service.dart';
 import 'package:mobi_tv_entertainment/video_widget/custom_video_player.dart';
 import 'package:mobi_tv_entertainment/video_widget/custom_youtube_player.dart';
 import 'package:mobi_tv_entertainment/video_widget/youtube_webview_player.dart';
@@ -136,6 +137,7 @@ class Movie {
   final String? poster;
   final String? banner;
   final String sourceType;
+  final String contentType;
   final String movieUrl;
   final List<Network> networks;
   final int status;
@@ -151,6 +153,7 @@ class Movie {
     this.poster,
     this.banner,
     required this.sourceType,
+    required this.contentType,
     required this.movieUrl,
     required this.networks,
     required this.status,
@@ -168,6 +171,7 @@ class Movie {
       poster: json['poster'],
       banner: json['banner'],
       sourceType: json['source_type'] ?? '',
+      contentType: json['content_type'] ?? '',
       movieUrl: json['movie_url'] ?? '',
       networks: (json['networks'] as List?)
               ?.map((network) => Network.fromJson(network))
@@ -1142,6 +1146,25 @@ class _ProfessionalMoviesHorizontalListState
     if (_isNavigating) return;
     _isNavigating = true;
 
+
+
+    try {
+      print('Updating user history for: ${movie.name}');
+      int? currentUserId = SessionManager.userId;
+    int contentTypeId = movie.contentType as int ;
+
+      await HistoryService.updateUserHistory(
+        userId: currentUserId!, // 1. User ID
+        contentType: contentTypeId, // 2. Content Type (Movie के लिए 4)
+        eventId: movie.id, // 3. Event ID (Movie की ID)
+        eventTitle: movie.name, // 4. Event Title (Movie का नाम)
+        url: movie.movieUrl, // 5. URL (Movie का URL)
+        categoryId: 0, // 6. Category ID (डिफ़ॉल्ट 1)
+      );
+    } catch (e) {
+      print("History update failed, but proceeding to play. Error: $e");
+    }
+
     bool dialogShown = false;
 
     if (mounted) {
@@ -1207,7 +1230,7 @@ class _ProfessionalMoviesHorizontalListState
                   banner: movie.banner ?? movie.poster ?? '',
                   url: movie.movieUrl,
                   unUpdatedUrl: movie.movieUrl,
-                  contentType: '1', // Movie type
+                  contentType: movie.contentType, // Movie type
                   // streamType: movie.streamType ,
                   sourceType: movie.sourceType,
                   liveStatus: false,
@@ -3116,9 +3139,30 @@ class _ProfessionalMoviesGridViewState extends State<ProfessionalMoviesGridView>
   Future<void> _handleGridMovieTap(Movie movie) async {
     if (_isLoading || !mounted) return; // 🆕 Check main loading state
 
+
+
     setState(() {
       _isLoading = true;
     });
+
+
+    
+    try {
+      print('Updating user history for: ${movie.name}');
+      int? currentUserId = SessionManager.userId;
+    int contentTypeId = movie.contentType as int ;
+
+      await HistoryService.updateUserHistory(
+        userId: currentUserId!, // 1. User ID
+        contentType: contentTypeId, // 2. Content Type (Movie के लिए 4)
+        eventId: movie.id, // 3. Event ID (Movie की ID)
+        eventTitle: movie.name, // 4. Event Title (Movie का नाम)
+        url: movie.movieUrl, // 5. URL (Movie का URL)
+        categoryId: 0, // 6. Category ID (डिफ़ॉल्ट 1)
+      );
+    } catch (e) {
+      print("History update failed, but proceeding to play. Error: $e");
+    }
 
     bool dialogShown = false;
     try {

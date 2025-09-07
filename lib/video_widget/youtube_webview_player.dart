@@ -1417,6 +1417,14 @@
 //   }
 //  }
 
+
+
+
+
+
+
+
+
 import 'dart:async';
 import 'dart:ui'; // ImageFilter के लिए यह import ज़रूरी है
 import 'package:flutter/material.dart';
@@ -1973,172 +1981,383 @@ class _YoutubeWebviewPlayerState extends State<YoutubeWebviewPlayer>
     );
   }
 
+
+
+
   Widget _buildTopControlsOverlay() {
-    double progress = (_totalDuration.inSeconds == 0)
-        ? 0
-        : _currentPosition.inSeconds / _totalDuration.inSeconds;
-    double seekProgress = (_totalDuration.inSeconds == 0)
-        ? 0
-        : _targetSeekPosition.inSeconds / _totalDuration.inSeconds;
+  // इन वेरिएबल्स की गणना पहले की तरह ही रहेगी
+  final screenhgt = MediaQuery.of(context).size.height;
+  final screenwdt = MediaQuery.of(context).size.width;
+  double progress = (_totalDuration.inSeconds == 0)
+      ? 0
+      : _currentPosition.inSeconds / _totalDuration.inSeconds;
+  double seekProgress = (_totalDuration.inSeconds == 0)
+      ? 0
+      : _targetSeekPosition.inSeconds / _totalDuration.inSeconds;
 
-    return Stack(
-      children: [
-        Positioned(
-          top: 0,
-          left: 0,
-          right: 0,
-          height: screenhgt * 0.12,
-          child: Container(
-            color: Colors.black,
-            padding: const EdgeInsets.only(top: 16.0, bottom: 4.0),
-            child: Column(
-              children: [
-                Text(
-                  widget.name?.toUpperCase() ?? '',
-                  style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold),
-                ),
-                // SizedBox(height: MediaQuery.of(context).size.height * 0.01),
-                // Padding(
-                //   padding: EdgeInsets.symmetric(
-                //       horizontal: MediaQuery.of(context).size.width * 0.03),
-                //   child: Row(
-                //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                //     children: [
-                //       Text(DateFormat('MM/dd/yyyy').format(DateTime.now()),
-                //           style:
-                //               const TextStyle(color: Colors.white, fontSize: 16)),
-                //       Text(DateFormat('HH:mm:ss').format(DateTime.now()),
-                //           style:
-                //               const TextStyle(color: Colors.white, fontSize: 16)),
-                //     ],
-                //   ),
-                // ),
-              ],
-            ),
-          ),
-        ),
-        Positioned(
-          bottom: 0,
-          left: screenwdt * 0.65,
-          right: 0,
-          height: screenhgt * 0.12,
-          // width: screenwdt * 0.35,
-          child: Container(
-            color: Colors.black,
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  _isSeeking
-                      ? _formatDuration(_targetSeekPosition)
-                      : _formatDuration(_currentPosition),
-                  style: TextStyle(
-                    color: _isSeeking ? Colors.yellow : Colors.white,
-                    fontSize: 14,
-                    fontWeight:
-                        _isSeeking ? FontWeight.bold : FontWeight.normal,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(4),
-                    child: Stack(
-                      alignment: Alignment.centerLeft,
-                      children: [
-                        Container(
-                            height: 6, color: Colors.white.withOpacity(0.3)),
-                        if (_isSeeking)
-                          FractionallySizedBox(
-                              widthFactor: seekProgress,
-                              child: Container(
-                                  height: 6,
-                                  color: Colors.yellow.withOpacity(0.8))),
-                        FractionallySizedBox(
-                            widthFactor: progress,
-                            child: Container(height: 6, color: Colors.red)),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Text(
-                  _formatDuration(Duration(
-                      seconds:
-                          (_totalDuration.inSeconds - 12).clamp(0, 999999))),
-                  style: const TextStyle(color: Colors.white, fontSize: 14),
-                ),
-              ],
-            ),
-          ),
-        )
-      ],
-    );
-  }
-
-  Widget _buildBottomProgressBar(double barHeight) {
-    double progress = (_totalDuration.inSeconds == 0)
-        ? 0
-        : _currentPosition.inSeconds / _totalDuration.inSeconds;
-    double seekProgress = (_totalDuration.inSeconds == 0)
-        ? 0
-        : _targetSeekPosition.inSeconds / _totalDuration.inSeconds;
-
-    return Positioned(
-      bottom: 0,
-      left: 0,
-      right: 0,
-      height: barHeight,
-      child: Container(
-        color: Colors.black.withOpacity(0.8),
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-              _isSeeking
-                  ? _formatDuration(_targetSeekPosition)
-                  : _formatDuration(_currentPosition),
-              style: TextStyle(
-                color: _isSeeking ? Colors.yellow : Colors.white,
-                fontSize: 14,
-                fontWeight: _isSeeking ? FontWeight.bold : FontWeight.normal,
+  return Stack(
+    children: [
+      Positioned(
+        top: 0,
+        left: 0,
+        right: 0,
+        height: screenhgt * 0.12,
+        child: Container(
+          color: Colors.black,
+          padding: const EdgeInsets.only(top: 16.0, bottom: 4.0),
+          child: Column(
+            children: [
+              Text(
+                widget.name?.toUpperCase() ?? '',
+                style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold),
               ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(4),
-                child: Stack(
-                  alignment: Alignment.centerLeft,
-                  children: [
-                    Container(height: 6, color: Colors.white.withOpacity(0.3)),
-                    if (_isSeeking)
-                      FractionallySizedBox(
-                          widthFactor: seekProgress,
-                          child: Container(
-                              height: 6,
-                              color: Colors.yellow.withOpacity(0.8))),
-                    FractionallySizedBox(
-                        widthFactor: progress,
-                        child: Container(height: 6, color: Colors.red)),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Text(
-              _formatDuration(Duration(
-                  seconds: (_totalDuration.inSeconds - 12).clamp(0, 999999))),
-              style: const TextStyle(color: Colors.white, fontSize: 14),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
-    );
-  }
+      Positioned(
+        bottom: 0,
+        left: screenwdt * 0.65,
+        right: 0,
+        height: screenhgt * 0.12,
+        child: Container(
+          color: Colors.black,
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                _isSeeking
+                    ? _formatDuration(_targetSeekPosition)
+                    : _formatDuration(_currentPosition),
+                style: TextStyle(
+                  color: _isSeeking ? Colors.yellow : Colors.white,
+                  fontSize: 14,
+                  fontWeight:
+                      _isSeeking ? FontWeight.bold : FontWeight.normal,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(4),
+                  child: Stack(
+                    alignment: Alignment.centerLeft,
+                    children: [
+                      // 1. बैकग्राउंड बार
+                      Container(
+                          height: 6, color: Colors.white.withOpacity(0.3)),
+                      
+                      // --- START: यहाँ बदलाव किया गया है ---
+                      if (_isSeeking && _targetSeekPosition < _currentPosition) ...[
+                        // BACKWARD SEEK: पहले लाल बार, फिर उसके ऊपर पीला बार
+                        FractionallySizedBox(
+                          widthFactor: progress.clamp(0.0, 1.0),
+                          child: Container(height: 6, color: Colors.red),
+                        ),
+                        FractionallySizedBox(
+                          widthFactor: seekProgress.clamp(0.0, 1.0),
+                          child: Container(
+                            height: 6,
+                            color: Colors.yellow.withOpacity(0.8),
+                          ),
+                        ),
+                      ] else ...[
+                        // FORWARD SEEK or NO SEEK: पहले पीला बार, फिर उसके ऊपर लाल बार
+                        if (_isSeeking)
+                          FractionallySizedBox(
+                            widthFactor: seekProgress.clamp(0.0, 1.0),
+                            child: Container(
+                              height: 6,
+                              color: Colors.yellow.withOpacity(0.8),
+                            ),
+                          ),
+                        FractionallySizedBox(
+                          widthFactor: progress.clamp(0.0, 1.0),
+                          child: Container(height: 6, color: Colors.red),
+                        ),
+                      ],
+                      // --- END: बदलाव यहाँ समाप्त होता है ---
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Text(
+                _formatDuration(Duration(
+                    seconds: (_totalDuration.inSeconds - 12).clamp(0, 999999))),
+                style: const TextStyle(color: Colors.white, fontSize: 14),
+              ),
+            ],
+          ),
+        ),
+      )
+    ],
+  );
+}
+
+
+
+
+  // Widget _buildTopControlsOverlay() {
+  //   double progress = (_totalDuration.inSeconds == 0)
+  //       ? 0
+  //       : _currentPosition.inSeconds / _totalDuration.inSeconds;
+  //   double seekProgress = (_totalDuration.inSeconds == 0)
+  //       ? 0
+  //       : _targetSeekPosition.inSeconds / _totalDuration.inSeconds;
+
+  //   return Stack(
+  //     children: [
+  //       Positioned(
+  //         top: 0,
+  //         left: 0,
+  //         right: 0,
+  //         height: screenhgt * 0.12,
+  //         child: Container(
+  //           color: Colors.black,
+  //           padding: const EdgeInsets.only(top: 16.0, bottom: 4.0),
+  //           child: Column(
+  //             children: [
+  //               Text(
+  //                 widget.name?.toUpperCase() ?? '',
+  //                 style: const TextStyle(
+  //                     color: Colors.white,
+  //                     fontSize: 18,
+  //                     fontWeight: FontWeight.bold),
+  //               ),
+  //               // SizedBox(height: MediaQuery.of(context).size.height * 0.01),
+  //               // Padding(
+  //               //   padding: EdgeInsets.symmetric(
+  //               //       horizontal: MediaQuery.of(context).size.width * 0.03),
+  //               //   child: Row(
+  //               //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //               //     children: [
+  //               //       Text(DateFormat('MM/dd/yyyy').format(DateTime.now()),
+  //               //           style:
+  //               //               const TextStyle(color: Colors.white, fontSize: 16)),
+  //               //       Text(DateFormat('HH:mm:ss').format(DateTime.now()),
+  //               //           style:
+  //               //               const TextStyle(color: Colors.white, fontSize: 16)),
+  //               //     ],
+  //               //   ),
+  //               // ),
+  //             ],
+  //           ),
+  //         ),
+  //       ),
+  //       Positioned(
+  //         bottom: 0,
+  //         left: screenwdt * 0.65,
+  //         right: 0,
+  //         height: screenhgt * 0.12,
+  //         // width: screenwdt * 0.35,
+  //         child: Container(
+  //           color: Colors.black,
+  //           padding: const EdgeInsets.symmetric(horizontal: 16.0),
+  //           child: Row(
+  //             crossAxisAlignment: CrossAxisAlignment.center,
+  //             children: [
+  //               Text(
+  //                 _isSeeking
+  //                     ? _formatDuration(_targetSeekPosition)
+  //                     : _formatDuration(_currentPosition),
+  //                 style: TextStyle(
+  //                   color: _isSeeking ? Colors.yellow : Colors.white,
+  //                   fontSize: 14,
+  //                   fontWeight:
+  //                       _isSeeking ? FontWeight.bold : FontWeight.normal,
+  //                 ),
+  //               ),
+  //               const SizedBox(width: 12),
+  //               Expanded(
+  //                 child: ClipRRect(
+  //                   borderRadius: BorderRadius.circular(4),
+  //                   child: Stack(
+  //                     alignment: Alignment.centerLeft,
+  //                     children: [
+  //                       Container(
+  //                           height: 6, color: Colors.white.withOpacity(0.3)),
+  //                       if (_isSeeking)
+  //                         FractionallySizedBox(
+  //                             widthFactor: seekProgress,
+  //                             child: Container(
+  //                                 height: 6,
+  //                                 color: Colors.yellow.withOpacity(0.8))),
+  //                       FractionallySizedBox(
+  //                           widthFactor: progress,
+  //                           child: Container(height: 6, color: Colors.red)),
+  //                     ],
+  //                   ),
+  //                 ),
+  //               ),
+  //               const SizedBox(width: 12),
+  //               Text(
+  //                 _formatDuration(Duration(
+  //                     seconds:
+  //                         (_totalDuration.inSeconds - 12).clamp(0, 999999))),
+  //                 style: const TextStyle(color: Colors.white, fontSize: 14),
+  //               ),
+  //             ],
+  //           ),
+  //         ),
+  //       )
+  //     ],
+  //   );
+  // }
+
+
+
+
+
+  Widget _buildBottomProgressBar(double barHeight) {
+  // इन वेरिएबल्स की गणना पहले की तरह ही रहेगी
+  double progress = (_totalDuration.inSeconds == 0)
+      ? 0
+      : _currentPosition.inSeconds / _totalDuration.inSeconds;
+  double seekProgress = (_totalDuration.inSeconds == 0)
+      ? 0
+      : _targetSeekPosition.inSeconds / _totalDuration.inSeconds;
+
+  return Positioned(
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: barHeight,
+    child: Container(
+      color: Colors.black.withOpacity(0.8),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(
+            _isSeeking
+                ? _formatDuration(_targetSeekPosition)
+                : _formatDuration(_currentPosition),
+            style: TextStyle(
+              color: _isSeeking ? Colors.yellow : Colors.white,
+              fontSize: 14,
+              fontWeight: _isSeeking ? FontWeight.bold : FontWeight.normal,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(4),
+              child: Stack(
+                alignment: Alignment.centerLeft,
+                children: [
+                  // 1. बैकग्राउंड बार
+                  Container(height: 6, color: Colors.white.withOpacity(0.3)),
+                  
+                  // --- START: यहाँ भी वही बदलाव किया गया है ---
+                  if (_isSeeking && _targetSeekPosition < _currentPosition) ...[
+                    // BACKWARD SEEK: पहले लाल बार, फिर उसके ऊपर पीला बार
+                    FractionallySizedBox(
+                      widthFactor: progress.clamp(0.0, 1.0),
+                      child: Container(height: 6, color: Colors.red),
+                    ),
+                    FractionallySizedBox(
+                      widthFactor: seekProgress.clamp(0.0, 1.0),
+                      child: Container(
+                        height: 6,
+                        color: Colors.yellow.withOpacity(0.8),
+                      ),
+                    ),
+                  ] else ...[
+                    // FORWARD SEEK or NO SEEK: पहले पीला बार, फिर उसके ऊपर लाल बार
+                    if (_isSeeking)
+                      FractionallySizedBox(
+                        widthFactor: seekProgress.clamp(0.0, 1.0),
+                        child: Container(
+                          height: 6,
+                          color: Colors.yellow.withOpacity(0.8),
+                        ),
+                      ),
+                    FractionallySizedBox(
+                      widthFactor: progress.clamp(0.0, 1.0),
+                      child: Container(height: 6, color: Colors.red),
+                    ),
+                  ],
+                  // --- END: बदलाव यहाँ समाप्त होता है ---
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Text(
+            _formatDuration(Duration(
+                seconds: (_totalDuration.inSeconds - 12).clamp(0, 999999))),
+            style: const TextStyle(color: Colors.white, fontSize: 14),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+  // Widget _buildBottomProgressBar(double barHeight) {
+  //   double progress = (_totalDuration.inSeconds == 0)
+  //       ? 0
+  //       : _currentPosition.inSeconds / _totalDuration.inSeconds;
+  //   double seekProgress = (_totalDuration.inSeconds == 0)
+  //       ? 0
+  //       : _targetSeekPosition.inSeconds / _totalDuration.inSeconds;
+
+  //   return Positioned(
+  //     bottom: 0,
+  //     left: 0,
+  //     right: 0,
+  //     height: barHeight,
+  //     child: Container(
+  //       color: Colors.black.withOpacity(0.8),
+  //       padding: const EdgeInsets.symmetric(horizontal: 16.0),
+  //       child: Row(
+  //         crossAxisAlignment: CrossAxisAlignment.center,
+  //         children: [
+  //           Text(
+  //             _isSeeking
+  //                 ? _formatDuration(_targetSeekPosition)
+  //                 : _formatDuration(_currentPosition),
+  //             style: TextStyle(
+  //               color: _isSeeking ? Colors.yellow : Colors.white,
+  //               fontSize: 14,
+  //               fontWeight: _isSeeking ? FontWeight.bold : FontWeight.normal,
+  //             ),
+  //           ),
+  //           const SizedBox(width: 12),
+  //           Expanded(
+  //             child: ClipRRect(
+  //               borderRadius: BorderRadius.circular(4),
+  //               child: Stack(
+  //                 alignment: Alignment.centerLeft,
+  //                 children: [
+  //                   Container(height: 6, color: Colors.white.withOpacity(0.3)),
+  //                   if (_isSeeking)
+  //                     FractionallySizedBox(
+  //                         widthFactor: seekProgress,
+  //                         child: Container(
+  //                             height: 6,
+  //                             color: Colors.yellow.withOpacity(0.8))),
+  //                   FractionallySizedBox(
+  //                       widthFactor: progress,
+  //                       child: Container(height: 6, color: Colors.red)),
+  //                 ],
+  //               ),
+  //             ),
+  //           ),
+  //           const SizedBox(width: 12),
+  //           Text(
+  //             _formatDuration(Duration(
+  //                 seconds: (_totalDuration.inSeconds - 12).clamp(0, 999999))),
+  //             style: const TextStyle(color: Colors.white, fontSize: 14),
+  //           ),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
 }

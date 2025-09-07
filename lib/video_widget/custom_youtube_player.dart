@@ -3768,47 +3768,147 @@ class _CustomYoutubePlayerState extends State<CustomYoutubePlayer> {
     );
   }
 
+// // ✅ MODIFIED _buildBottomProgressBar() WIDGET
+//   Widget _buildBottomProgressBar(double height, double margin) {
+//     // STEP 4: विजेट को नीचे से ऊपर ले जाने के लिए margin का उपयोग करें
+//     return Positioned(
+//       bottom: margin, // इसे 0 से बदलकर 'margin' कर दिया गया है
+//       left: 20, // किनारों से भी थोड़ा गैप दे सकते हैं
+//       right: 20, // किनारों से भी थोड़ा गैप दे सकते हैं
+//       height: height,
+//       child: Container(
+//         // बढ़ी हुई ऊंचाई में कंटेंट को बेहतर दिखाने के लिए पैडिंग एडजस्ट करें
+//         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+//         decoration: BoxDecoration(
+//           color: Colors.black.withOpacity(0.8), // थोड़ी पारदर्शिता
+//           borderRadius: BorderRadius.circular(10), // गोल किनारे
+//         ),
+//         child: Row(
+//           crossAxisAlignment:
+//               CrossAxisAlignment.center, // कंटेंट को वर्टिकली सेंटर करें
+//           children: [
+//             Text(
+//               _isSeeking
+//                   ? _formatDuration(_targetSeekPosition)
+//                   : _formatDuration(_currentPosition),
+//               style: TextStyle(
+//                 color: _isSeeking ? Colors.yellow : Colors.white,
+//                 fontSize: 14, // फॉन्ट साइज थोड़ा बढ़ा दिया
+//                 fontWeight: _isSeeking ? FontWeight.bold : FontWeight.normal,
+//               ),
+//             ),
+//             const SizedBox(width: 12), // थोड़ा और स्पेस
+//             Expanded(
+//               child: ClipRRect(
+//                 borderRadius: BorderRadius.circular(4),
+//                 child: Stack(
+//                   alignment: Alignment.centerLeft,
+//                   children: [
+//                     Container(
+//                       width: double.infinity,
+//                       height: 6, // प्रोग्रेस बार की मोटाई बढ़ाई
+//                       color: Colors.white.withOpacity(0.3),
+//                     ),
+//                     if (_isSeeking && _totalDuration.inSeconds > 0)
+//                       FractionallySizedBox(
+//                         widthFactor: _targetSeekPosition.inSeconds /
+//                             _totalDuration.inSeconds,
+//                         child: Container(
+//                             height: 6, color: Colors.yellow.withOpacity(0.8)),
+//                       ),
+//                     if (_totalDuration.inSeconds > 0)
+//                       FractionallySizedBox(
+//                         widthFactor: _currentPosition.inSeconds /
+//                             _totalDuration.inSeconds,
+//                         child: Container(height: 6, color: Colors.red),
+//                       ),
+//                     const SizedBox(width: 12), // थोड़ा और स्पेस
+//                   ],
+//                 ),
+//               ),
+//             ),
+//             const SizedBox(width: 12), // थोड़ा और स्पेस
+//             Text(
+//               _formatDuration(Duration(
+//                   seconds: (_totalDuration.inSeconds - 12)
+//                       .clamp(0, double.infinity)
+//                       .toInt())),
+//               style: const TextStyle(
+//                   color: Colors.white,
+//                   fontSize: 14), // फॉन्ट साइज थोड़ा बढ़ा दिया
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+
+
+
 // ✅ MODIFIED _buildBottomProgressBar() WIDGET
-  Widget _buildBottomProgressBar(double height, double margin) {
-    // STEP 4: विजेट को नीचे से ऊपर ले जाने के लिए margin का उपयोग करें
-    return Positioned(
-      bottom: margin, // इसे 0 से बदलकर 'margin' कर दिया गया है
-      left: 20, // किनारों से भी थोड़ा गैप दे सकते हैं
-      right: 20, // किनारों से भी थोड़ा गैप दे सकते हैं
-      height: height,
-      child: Container(
-        // बढ़ी हुई ऊंचाई में कंटेंट को बेहतर दिखाने के लिए पैडिंग एडजस्ट करें
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-        decoration: BoxDecoration(
-          color: Colors.black.withOpacity(0.8), // थोड़ी पारदर्शिता
-          borderRadius: BorderRadius.circular(10), // गोल किनारे
-        ),
-        child: Row(
-          crossAxisAlignment:
-              CrossAxisAlignment.center, // कंटेंट को वर्टिकली सेंटर करें
-          children: [
-            Text(
-              _isSeeking
-                  ? _formatDuration(_targetSeekPosition)
-                  : _formatDuration(_currentPosition),
-              style: TextStyle(
-                color: _isSeeking ? Colors.yellow : Colors.white,
-                fontSize: 14, // फॉन्ट साइज थोड़ा बढ़ा दिया
-                fontWeight: _isSeeking ? FontWeight.bold : FontWeight.normal,
-              ),
+Widget _buildBottomProgressBar(double height, double margin) {
+  // STEP 4: विजेट को नीचे से ऊपर ले जाने के लिए margin का उपयोग करें
+  return Positioned(
+    bottom: margin, // इसे 0 से बदलकर 'margin' कर दिया गया है
+    left: 20, // किनारों से भी थोड़ा गैप दे सकते हैं
+    right: 20, // किनारों से भी थोड़ा गैप दे सकते हैं
+    height: height,
+    child: Container(
+      // बढ़ी हुई ऊंचाई में कंटेंट को बेहतर दिखाने के लिए पैडिंग एडजस्ट करें
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      decoration: BoxDecoration(
+        color: Colors.black.withOpacity(0.8), // थोड़ी पारदर्शिता
+        borderRadius: BorderRadius.circular(10), // गोल किनारे
+      ),
+      child: Row(
+        crossAxisAlignment:
+            CrossAxisAlignment.center, // कंटेंट को वर्टिकली सेंटर करें
+        children: [
+          Text(
+            _isSeeking
+                ? _formatDuration(_targetSeekPosition)
+                : _formatDuration(_currentPosition),
+            style: TextStyle(
+              color: _isSeeking ? Colors.yellow : Colors.white,
+              fontSize: 14, // फॉन्ट साइज थोड़ा बढ़ा दिया
+              fontWeight: _isSeeking ? FontWeight.bold : FontWeight.normal,
             ),
-            const SizedBox(width: 12), // थोड़ा और स्पेस
-            Expanded(
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(4),
-                child: Stack(
-                  alignment: Alignment.centerLeft,
-                  children: [
-                    Container(
-                      width: double.infinity,
-                      height: 6, // प्रोग्रेस बार की मोटाई बढ़ाई
-                      color: Colors.white.withOpacity(0.3),
-                    ),
+          ),
+          const SizedBox(width: 12), // थोड़ा और स्पेस
+          Expanded(
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(4),
+              child: Stack(
+                alignment: Alignment.centerLeft,
+                children: [
+                  // 1. Background Bar (हमेशा दिखाई देगा)
+                  Container(
+                    width: double.infinity,
+                    height: 6, // प्रोग्रेस बार की मोटाई बढ़ाई
+                    color: Colors.white.withOpacity(0.3),
+                  ),
+
+                  // -- START: यहाँ बदलाव किया गया है --
+                  // 2. सीक की दिशा के आधार पर लेयर्स को दिखाएं
+                  if (_isSeeking && _targetSeekPosition < _currentPosition) ...[
+                    // BACKWARD SEEK: पहले लाल बार, फिर उसके ऊपर पीला बार
+                    // इससे पीला बार लाल बार के उस हिस्से को ढक लेगा जहाँ तक सीक करना है।
+                    if (_totalDuration.inSeconds > 0)
+                      FractionallySizedBox(
+                        widthFactor: _currentPosition.inSeconds /
+                            _totalDuration.inSeconds,
+                        child: Container(height: 6, color: Colors.red),
+                      ),
+                    if (_totalDuration.inSeconds > 0)
+                      FractionallySizedBox(
+                        widthFactor: _targetSeekPosition.inSeconds /
+                            _totalDuration.inSeconds,
+                        child: Container(
+                            height: 6, color: Colors.yellow.withOpacity(0.8)),
+                      ),
+                  ] else ...[
+                    // FORWARD SEEK or NO SEEK: पहले पीला बार, फिर उसके ऊपर लाल बार
+                    // यह पहले जैसा ही काम करेगा।
                     if (_isSeeking && _totalDuration.inSeconds > 0)
                       FractionallySizedBox(
                         widthFactor: _targetSeekPosition.inSeconds /
@@ -3822,26 +3922,27 @@ class _CustomYoutubePlayerState extends State<CustomYoutubePlayer> {
                             _totalDuration.inSeconds,
                         child: Container(height: 6, color: Colors.red),
                       ),
-                    const SizedBox(width: 12), // थोड़ा और स्पेस
                   ],
-                ),
+                  // -- END: बदलाव यहाँ समाप्त होता है --
+                ],
               ),
             ),
-            const SizedBox(width: 12), // थोड़ा और स्पेस
-            Text(
-              _formatDuration(Duration(
-                  seconds: (_totalDuration.inSeconds - 12)
-                      .clamp(0, double.infinity)
-                      .toInt())),
-              style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 14), // फॉन्ट साइज थोड़ा बढ़ा दिया
-            ),
-          ],
-        ),
+          ),
+          const SizedBox(width: 12), // थोड़ा और स्पेस
+          Text(
+            _formatDuration(Duration(
+                seconds: (_totalDuration.inSeconds - 12)
+                    .clamp(0, double.infinity)
+                    .toInt())),
+            style: const TextStyle(
+                color: Colors.white,
+                fontSize: 14), // फॉन्ट साइज थोड़ा बढ़ा दिया
+          ),
+        ],
       ),
-    );
-  }
+    ),
+  );
+}
 
 
 

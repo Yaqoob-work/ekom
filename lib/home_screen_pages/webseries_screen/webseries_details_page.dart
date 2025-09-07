@@ -750,7 +750,9 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
       if (mounted) {
         dynamic result;
 
-        if ( episode.source == "youtube" || isYoutubeUrl(episode.url)) {
+        if ( 
+          episode.source == 'youtube' || 
+        isYoutubeUrl(episode.url)) {
           print('isYoutube');
 
           final deviceInfo = context.read<DeviceInfoProvider>();

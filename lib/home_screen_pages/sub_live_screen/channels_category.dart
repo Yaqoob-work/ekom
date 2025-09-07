@@ -1226,8 +1226,9 @@ import 'dart:math' as math;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:http/http.dart' as http;
+import 'package:http/http.dart' as https;
 import 'package:mobi_tv_entertainment/main.dart';
+import 'package:mobi_tv_entertainment/services/history_service.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -1349,6 +1350,26 @@ class _GenreAllChannelsPageState extends State<GenreAllChannelsPage> {
   Future<void> _handleContentTap(NewsItemModel channel) async {
     if (_isVideoLoading || !mounted) return;
     setState(() => _isVideoLoading = true);
+
+    try{
+          print('Updating user history for: ${channel.name}');
+      int? currentUserId = SessionManager.userId;
+    final int? parsedContentType = int.tryParse(channel.contentType ?? '');
+    final int? parsedId = int.tryParse(channel.id ?? '');
+
+      await HistoryService.updateUserHistory(
+        userId: currentUserId!, // 1. User ID
+        contentType: parsedContentType!, // 2. Content Type (channel के लिए 4)
+        eventId: parsedId!, // 3. Event ID (channel की ID)
+        eventTitle: channel.name, // 4. Event Title (channel का नाम)
+        url: channel.url, // 5. URL (channel का URL)
+        categoryId: 0, // 6. Category ID (डिफ़ॉल्ट 1)
+      );
+    } catch (e) {
+      print("History update failed, but proceeding to play. Error: $e");
+    }
+
+
     try {
       if (channel.url.isEmpty) throw Exception('No video URL found');
       if (channel.streamType == 'YoutubeLive') {
@@ -1539,7 +1560,7 @@ class _ChannelsCategoryState extends State<ChannelsCategory>
       final prefs = await SharedPreferences.getInstance();
       String authKey = prefs.getString('auth_key') ?? '';
       if (authKey.isEmpty) throw Exception('Authentication key not found.');
-      final response = await http.post(
+      final response = await https.post(
         Uri.parse('https://acomtv.coretechinfo.com/api/v2/getAllLiveTV'),
         headers: {'auth-key': authKey, 'domain': 'coretechinfo.com', 'Content-Type': 'application/json'},
         body: json.encode({"genere": "", "languageId": ""}),
@@ -1603,6 +1624,27 @@ class _ChannelsCategoryState extends State<ChannelsCategory>
   Future<void> _handleContentTap(NewsItemModel channel) async {
     if (_isVideoLoading || !mounted) return;
     setState(() => _isVideoLoading = true);
+
+
+    try{
+          print('Updating user history for: ${channel.name}');
+      int? currentUserId = SessionManager.userId;
+    final int? parsedContentType = int.tryParse(channel.contentType ?? '');
+    final int? parsedId = int.tryParse(channel.id ?? '');
+
+      await HistoryService.updateUserHistory(
+        userId: currentUserId!, // 1. User ID
+        contentType: parsedContentType!, // 2. Content Type (channel के लिए 4)
+        eventId: parsedId!, // 3. Event ID (channel की ID)
+        eventTitle: channel.name, // 4. Event Title (channel का नाम)
+        url: channel.url, // 5. URL (channel का URL)
+        categoryId: 0, // 6. Category ID (डिफ़ॉल्ट 1)
+      );
+    } catch (e) {
+      print("History update failed, but proceeding to play. Error: $e");
+    }
+
+
     try {
       if (channel.url.isEmpty) throw Exception('No video URL found');
 
@@ -2108,7 +2150,7 @@ void _handleKeyNavigation(RawKeyEvent event) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 160,
+        width: bannerwdt,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(15),
           gradient: LinearGradient(
@@ -2122,7 +2164,7 @@ void _handleKeyNavigation(RawKeyEvent event) {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              padding: const EdgeInsets.all(12),
+              // padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: isFocused ? ProfessionalColors.accentGreen.withOpacity(0.3) : ProfessionalColors.cardDark.withOpacity(0.5),
@@ -2130,7 +2172,7 @@ void _handleKeyNavigation(RawKeyEvent event) {
               ),
               child: Icon(Icons.grid_view_rounded, size: 25, color: isFocused ? ProfessionalColors.accentGreen : ProfessionalColors.textSecondary),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 2),
             Text('VIEW ALL', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, letterSpacing: 1.0, color: isFocused ? ProfessionalColors.accentGreen : ProfessionalColors.textPrimary)),
             const SizedBox(height: 4),
             Text('$totalCount items', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: isFocused ? ProfessionalColors.accentGreen : ProfessionalColors.textSecondary)),

@@ -604,16 +604,292 @@
 
 
 
+// import 'dart:math';
+// import 'package:flutter/material.dart';
+// import 'package:flutter/services.dart';
+// import 'package:mobi_tv_entertainment/provider/color_provider.dart';
+// import 'package:mobi_tv_entertainment/provider/focus_provider.dart';
+// import 'package:provider/provider.dart';
+// import '../main.dart';
+// // Make sure to import your ProfessionalColors class
+// // import '../path/to/your/app_colors.dart'; 
+
+
+// // NEW: Professional Color Palette for consistent styling
+// class ProfessionalColors {
+//   static const accentBlue = Color(0xFF3B82F6);
+//   static const accentPurple = Color(0xFF8B5CF6);
+//   static const accentGreen = Color(0xFF10B981);
+//   static const accentRed = Color(0xFFEF4444);
+//   static const accentOrange = Color(0xFFF59E0B);
+//   static const accentPink = Color(0xFFEC4899);
+
+//   static List<Color> gradientColors = [
+//     accentBlue, accentPurple, accentGreen, accentRed, accentOrange, accentPink,
+//   ];
+// }
+
+// class MiddleNavigationBar extends StatefulWidget {
+//   final int selectedPage;
+//   final ValueChanged<int> onPageSelected;
+//   final FocusNode focusNode;
+//   final int? maxPageIndex;
+//   final int? totalNavItems;
+
+//   const MiddleNavigationBar({
+//     Key? key,
+//     required this.selectedPage,
+//     required this.onPageSelected,
+//     required this.focusNode,
+//     this.maxPageIndex,
+//     this.totalNavItems,
+//   }) : super(key: key);
+
+//   @override
+//   _MiddleNavigationBarState createState() => _MiddleNavigationBarState();
+// }
+
+
+
+
+// class _MiddleNavigationBarState extends State<MiddleNavigationBar> {
+//   late List<FocusNode> _focusNodes;
+
+//   static const List<String> navItems = [
+//     'Live',
+//     'Entertainment',
+//     'Music',
+//     'Movie',
+//     'News',
+//     'Sports',
+//     'Religious',
+//     'More'
+//   ];
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     _focusNodes = List.generate(navItems.length, (index) => FocusNode());
+
+//     WidgetsBinding.instance.addPostFrameCallback((_) {
+//       if (_focusNodes.isNotEmpty) {
+//         try {
+//           final focusProvider = context.read<FocusProvider>();
+//           focusProvider.setMiddleNavigationFocusNodes(_focusNodes);
+//           print('✅ Middle navigation focus nodes registered: ${_focusNodes.length}');
+//         } catch (e) {
+//           print('❌ Focus provider registration error: $e');
+//         }
+//       }
+//     });
+//   }
+
+//   @override
+//   void dispose() {
+//     for (var node in _focusNodes) {
+//       node.dispose();
+//     }
+//     super.dispose();
+//   }
+
+//   // ✅ NEW: Method to get a random color from your professional palette
+//   Color _getRandomProfessionalColor() {
+//     final random = Random();
+//     return ProfessionalColors.gradientColors[
+//         random.nextInt(ProfessionalColors.gradientColors.length)];
+//   }
+
+//   void _scrollToMiddleNavigation() {
+//     try {
+//       final focusProvider = context.read<FocusProvider>();
+//       final scrollController = focusProvider.scrollController;
+      
+//       if (scrollController.hasClients) {
+//         final targetPosition = screenhgt * 0.5 - 10;
+//         scrollController.animateTo(
+//           targetPosition,
+//           duration: const Duration(milliseconds: 800),
+//           curve: Curves.easeInOut,
+//         );
+//         print('📜 Scrolled to middle navigation bar');
+//       }
+//     } catch (e) {
+//       print('❌ Scroll to navigation error: $e');
+//     }
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     WidgetsBinding.instance.addPostFrameCallback((_) {
+//       try {
+//         context.read<FocusProvider>().setCurrentSelectedNavIndex(widget.selectedPage);
+//       } catch (e) {
+//         print('❌ Error setting current nav index: $e');
+//       }
+//     });
+
+//     return PopScope(
+//         canPop: false,
+//         onPopInvoked: (didPop) {
+//           if (!didPop) {
+//             try {
+//               context.read<FocusProvider>().requestWatchNowFocus();
+//             } catch (e) {
+//               print('Back navigation error: $e');
+//             }
+//           }
+//         },
+//         child: Consumer<ColorProvider>(builder: (context, colorProvider, child) {
+//           Color backgroundColor = colorProvider.isItemFocused
+//               ? colorProvider.dominantColor.withOpacity(0.8)
+//               : cardColor;
+
+//           return Container(
+//             color: backgroundColor,
+//             child: Container(
+//               padding: EdgeInsets.symmetric(
+//                   vertical: screenhgt * 0.01, horizontal: screenwdt * 0.04),
+//               color: cardColor.withOpacity(0.8),
+//               child: Row(
+//                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+//                 children: List.generate(navItems.length, (i) {
+//                   return _buildNavigationItem(navItems[i], i, _focusNodes[i]);
+//                 }),
+//               ),
+//             ),
+//           );
+//         }));
+//   }
+
+//   // ✅ MODIFIED: This widget is now rewritten to use the provider for color
+//   // and no longer depends on RandomLightColorWidget.
+//   Widget _buildNavigationItem(String title, int index, FocusNode focusNode) {
+//     return Padding(
+//       padding: EdgeInsets.only(
+//         top: screenwdt * 0.007,
+//         left: screenwdt * 0.013,
+//         right: screenwdt * 0.013,
+//       ),
+//       child: IntrinsicWidth(
+//         child: Focus(
+//           focusNode: focusNode,
+//           onFocusChange: (hasFocus) {
+//             // We only need to call setState to trigger a rebuild so focusNode.hasFocus is updated.
+//             setState(() {
+//               if (hasFocus) {
+//                 print('🎯 Focused: $title (index: $index)');
+//                 _scrollToMiddleNavigation();
+                
+//                 // Get a new professional color and update the provider
+//                 final newColor = _getRandomProfessionalColor();
+//                 context.read<ColorProvider>().updateColor(newColor, true);
+//                 context.read<FocusProvider>().setCurrentSelectedNavIndex(index);
+//               } else {
+//                 // Reset color when no item in this bar is focused
+//                 context.read<ColorProvider>().resetColor();
+//               }
+//             });
+//           },
+//           onKeyEvent: (node, event) {
+//             if (event is KeyDownEvent) {
+//               if (event.logicalKey == LogicalKeyboardKey.arrowDown ||
+//                   event.logicalKey == LogicalKeyboardKey.enter ||
+//                   event.logicalKey == LogicalKeyboardKey.select) {
+//                 print('⬇️ Action key on: $title (index: $index)');
+//                 if (index >= 0 && index < navItems.length) {
+//                   context.read<FocusProvider>().setCurrentSelectedNavIndex(index);
+//                   widget.onPageSelected(index);
+//                 }
+//                 return KeyEventResult.handled;
+//               } else if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
+//                 int nextIndex = (index + 1) % _focusNodes.length;
+//                 _focusNodes[nextIndex].requestFocus();
+//                 return KeyEventResult.handled;
+//               } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+//                 int prevIndex = (index - 1 + _focusNodes.length) % _focusNodes.length;
+//                 _focusNodes[prevIndex].requestFocus();
+//                 return KeyEventResult.handled;
+//               }
+//             }
+//             return KeyEventResult.ignored;
+//           },
+//           child: GestureDetector(
+//             onTap: () {
+//               print('🖱️ Tapped: $title (index: $index)');
+//               if (index >= 0 && index < navItems.length) {
+//                 context.read<FocusProvider>().setCurrentSelectedNavIndex(index);
+//                 widget.onPageSelected(index);
+//                 focusNode.requestFocus();
+//               }
+//             },
+//             // Use a Consumer to get the latest color from the provider
+//             child: Consumer<ColorProvider>(
+//               builder: (context, colorProvider, child) {
+//                 final bool hasFocus = focusNode.hasFocus;
+//                 // Use the color from the provider when focused
+//                 final Color focusColor =
+//                     hasFocus ? colorProvider.dominantColor : hintColor;
+                
+//                 return Container(
+//                   margin: EdgeInsets.all(screenwdt * 0.001),
+//                   decoration: BoxDecoration(
+//                     color: hasFocus
+//                         ? const Color.fromARGB(255, 5, 3, 3)
+//                         : Colors.transparent,
+//                     borderRadius: BorderRadius.circular(8),
+//                     border: Border.all(
+//                       color: hasFocus ? focusColor : Colors.transparent,
+//                       width: 2,
+//                     ),
+//                     boxShadow: hasFocus
+//                         ? [
+//                             BoxShadow(
+//                               color: focusColor,
+//                               blurRadius: 15.0,
+//                               spreadRadius: 5.0,
+//                             ),
+//                           ]
+//                         : [],
+//                   ),
+//                   padding: EdgeInsets.symmetric(
+//                     vertical: screenhgt * 0.01,
+//                     horizontal: screenwdt * 0.005,
+//                   ),
+//                   child: Text(
+//                     title,
+//                     style: TextStyle(
+//                       color: widget.selectedPage == index
+//                           ? Colors.red
+//                           : focusColor,
+//                       fontSize: menutextsz,
+//                       fontWeight: hasFocus
+//                           ? FontWeight.bold
+//                           : FontWeight.normal,
+//                     ),
+//                   ),
+//                 );
+//               },
+//             ),
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+
+
+
+import 'dart:convert';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
 import 'package:mobi_tv_entertainment/provider/color_provider.dart';
 import 'package:mobi_tv_entertainment/provider/focus_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../main.dart';
-// Make sure to import your ProfessionalColors class
-// import '../path/to/your/app_colors.dart'; 
-
 
 // NEW: Professional Color Palette for consistent styling
 class ProfessionalColors {
@@ -648,38 +924,87 @@ class MiddleNavigationBar extends StatefulWidget {
   @override
   _MiddleNavigationBarState createState() => _MiddleNavigationBarState();
 }
-
 class _MiddleNavigationBarState extends State<MiddleNavigationBar> {
-  late List<FocusNode> _focusNodes;
-
-  static const List<String> navItems = [
-    'Live',
-    'Entertainment',
-    'Music',
-    'Movie',
-    'News',
-    'Sports',
-    'Religious',
-    'More'
-  ];
+  // State variables to hold dynamic data and loading state.
+  List<String> _navItems = [];
+  List<FocusNode> _focusNodes = [];
+  bool _isLoading = true; // To show a loader while fetching data
 
   @override
   void initState() {
     super.initState();
-    _focusNodes = List.generate(navItems.length, (index) => FocusNode());
+    // Fetch genres from the API when the widget is first created.
+    _fetchLiveTvGenres();
+  }
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_focusNodes.isNotEmpty) {
-        try {
-          final focusProvider = context.read<FocusProvider>();
-          focusProvider.setMiddleNavigationFocusNodes(_focusNodes);
-          print('✅ Middle navigation focus nodes registered: ${_focusNodes.length}');
-        } catch (e) {
-          print('❌ Focus provider registration error: $e');
+  // Asynchronous function to fetch genres from the API.
+  Future<void> _fetchLiveTvGenres() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      String authKey = prefs.getString('auth_key') ?? '';
+
+      final response = await http.get(
+        Uri.parse('https://acomtv.coretechinfo.com/api/v2/getLiveTvGenreList'),
+        headers: {'auth-key': authKey},
+      );
+
+      if (response.statusCode == 200) {
+        final decodedData = json.decode(response.body);
+        if (decodedData['status'] == true && decodedData['data'] is List) {
+          final List<dynamic> genreData = decodedData['data'];
+          final List<String> fetchedGenres =
+              genreData.map((item) => item['genre'].toString()).toList();
+
+          // ✅✅✅ YAHAN BADLAAV KIYA GAYA HAI ✅✅✅
+          // API se mili list mein 'More' button ko aakhir mein add kar dein.
+          fetchedGenres.add('More');
+
+          // Update the state with the new data.
+          if (mounted) {
+            setState(() {
+              _navItems = fetchedGenres;
+              _focusNodes =
+                  List.generate(_navItems.length, (index) => FocusNode());
+              _isLoading = false; // Data fetching is complete.
+            });
+          }
+          
+          // Register the newly created focus nodes with the provider.
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+             if (_focusNodes.isNotEmpty && mounted) {
+               try {
+                 final focusProvider = context.read<FocusProvider>();
+                 focusProvider.setMiddleNavigationFocusNodes(_focusNodes);
+                 print('✅ Middle navigation focus nodes registered from API: ${_focusNodes.length}');
+               } catch (e) {
+                 print('❌ Focus provider registration error: $e');
+               }
+             }
+           });
+
+        } else {
+           print('❌ API Error: Status is not true or data is not a list.');
+           if(mounted) {
+             setState(() { _isLoading = false; });
+           }
+        }
+      } else {
+        print('❌ API Error: Failed to load genres. Status code: ${response.statusCode}');
+        if(mounted) {
+          setState(() { _isLoading = false; });
         }
       }
-    });
+    } catch (e) {
+      print('❌ Exception while fetching genres: $e');
+      if(mounted) {
+        setState(() { _isLoading = false; });
+      }
+    }
   }
+
+  // ... (Baaki saara code [dispose, _getRandomProfessionalColor, etc.] pehle jaisa hi rahega) ...
+  // Aapko sirf upar wala _fetchLiveTvGenres function update karna hai.
+  // Main neeche poora class de raha hoon taaki koi confusion na ho.
 
   @override
   void dispose() {
@@ -689,11 +1014,10 @@ class _MiddleNavigationBarState extends State<MiddleNavigationBar> {
     super.dispose();
   }
 
-  // ✅ NEW: Method to get a random color from your professional palette
   Color _getRandomProfessionalColor() {
     final random = Random();
-    return ProfessionalColors.gradientColors[
-        random.nextInt(ProfessionalColors.gradientColors.length)];
+    return ProfessionalColors
+        .gradientColors[random.nextInt(ProfessionalColors.gradientColors.length)];
   }
 
   void _scrollToMiddleNavigation() {
@@ -718,12 +1042,34 @@ class _MiddleNavigationBarState extends State<MiddleNavigationBar> {
   @override
   Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      try {
-        context.read<FocusProvider>().setCurrentSelectedNavIndex(widget.selectedPage);
-      } catch (e) {
-        print('❌ Error setting current nav index: $e');
+      if(mounted) {
+         try {
+           context.read<FocusProvider>().setCurrentSelectedNavIndex(widget.selectedPage);
+         } catch (e) {
+           print('❌ Error setting current nav index: $e');
+         }
       }
     });
+    
+    if (_isLoading) {
+      return Container(
+        height: 80, 
+        color: cardColor.withOpacity(0.8),
+        child: const Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+    
+    if (_navItems.isEmpty) {
+        return Container(
+        height: 80,
+        color: cardColor.withOpacity(0.8),
+        child: const Center(
+          child: Text('No Genres Found', style: TextStyle(color: Colors.white)),
+        ),
+      );
+    }
 
     return PopScope(
         canPop: false,
@@ -749,8 +1095,8 @@ class _MiddleNavigationBarState extends State<MiddleNavigationBar> {
               color: cardColor.withOpacity(0.8),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: List.generate(navItems.length, (i) {
-                  return _buildNavigationItem(navItems[i], i, _focusNodes[i]);
+                children: List.generate(_navItems.length, (i) {
+                  return _buildNavigationItem(_navItems[i], i, _focusNodes[i]);
                 }),
               ),
             ),
@@ -758,8 +1104,6 @@ class _MiddleNavigationBarState extends State<MiddleNavigationBar> {
         }));
   }
 
-  // ✅ MODIFIED: This widget is now rewritten to use the provider for color
-  // and no longer depends on RandomLightColorWidget.
   Widget _buildNavigationItem(String title, int index, FocusNode focusNode) {
     return Padding(
       padding: EdgeInsets.only(
@@ -771,21 +1115,20 @@ class _MiddleNavigationBarState extends State<MiddleNavigationBar> {
         child: Focus(
           focusNode: focusNode,
           onFocusChange: (hasFocus) {
-            // We only need to call setState to trigger a rebuild so focusNode.hasFocus is updated.
-            setState(() {
-              if (hasFocus) {
-                print('🎯 Focused: $title (index: $index)');
-                _scrollToMiddleNavigation();
-                
-                // Get a new professional color and update the provider
-                final newColor = _getRandomProfessionalColor();
-                context.read<ColorProvider>().updateColor(newColor, true);
-                context.read<FocusProvider>().setCurrentSelectedNavIndex(index);
-              } else {
-                // Reset color when no item in this bar is focused
-                context.read<ColorProvider>().resetColor();
-              }
-            });
+            if(mounted){
+               setState(() {
+                  if (hasFocus) {
+                    print('🎯 Focused: $title (index: $index)');
+                    _scrollToMiddleNavigation();
+                    
+                    final newColor = _getRandomProfessionalColor();
+                    context.read<ColorProvider>().updateColor(newColor, true);
+                    context.read<FocusProvider>().setCurrentSelectedNavIndex(index);
+                  } else {
+                    context.read<ColorProvider>().resetColor();
+                  }
+                });
+            }
           },
           onKeyEvent: (node, event) {
             if (event is KeyDownEvent) {
@@ -793,7 +1136,7 @@ class _MiddleNavigationBarState extends State<MiddleNavigationBar> {
                   event.logicalKey == LogicalKeyboardKey.enter ||
                   event.logicalKey == LogicalKeyboardKey.select) {
                 print('⬇️ Action key on: $title (index: $index)');
-                if (index >= 0 && index < navItems.length) {
+                if (index >= 0 && index < _navItems.length) { 
                   context.read<FocusProvider>().setCurrentSelectedNavIndex(index);
                   widget.onPageSelected(index);
                 }
@@ -813,17 +1156,15 @@ class _MiddleNavigationBarState extends State<MiddleNavigationBar> {
           child: GestureDetector(
             onTap: () {
               print('🖱️ Tapped: $title (index: $index)');
-              if (index >= 0 && index < navItems.length) {
+              if (index >= 0 && index < _navItems.length) {
                 context.read<FocusProvider>().setCurrentSelectedNavIndex(index);
                 widget.onPageSelected(index);
                 focusNode.requestFocus();
               }
             },
-            // Use a Consumer to get the latest color from the provider
             child: Consumer<ColorProvider>(
               builder: (context, colorProvider, child) {
                 final bool hasFocus = focusNode.hasFocus;
-                // Use the color from the provider when focused
                 final Color focusColor =
                     hasFocus ? colorProvider.dominantColor : hintColor;
                 

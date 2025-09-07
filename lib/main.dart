@@ -3281,6 +3281,161 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 
 
+// class SessionManager {
+//   static bool _isInitialized = false;
+
+//   // --- Session Data ---
+//   static String _authKey = '';
+//   static String _imageBaseUrl = '';
+//   static Map<String, dynamic>? _userData;
+//   static String _logoUrl = '';
+//   static String _savedDomain = ''; // API se mile domain ko store karne ke liye variable
+
+//   // --- Feature flags (No changes here) ---
+//   static bool _showMovies = false;
+//   static bool _showWebseries = false;
+//   static bool _showTvShow = false;
+//   static bool _showTvShowPak = false;
+//   static bool _showKidsShow = false;
+//   static bool _showReligious = false;
+//   static bool _showSports = false;
+//   static bool _showStageShows = false;
+//   static bool _showLaughterShows = false;
+//   static bool _showContentNetwork = false;
+//   static bool _showSearch = false;
+
+//   // --- Public Getters ---
+//   static String get authKey => _authKey;
+//   static String get imageBaseUrl => _imageBaseUrl;
+//   static Map<String, dynamic>? get userData => _userData;
+//   static String get logoUrl => _logoUrl;
+//   static String get savedDomain => _savedDomain; // Domain ke liye public getter
+//   static bool get isLoggedIn => _authKey.isNotEmpty && _userData != null;
+
+//   // --- Feature flag getters (No changes here) ---
+//   static bool get showMovies => _showMovies;
+//   static bool get showWebseries => _showWebseries;
+//   static bool get showTvShow => _showTvShow;
+//   static bool get showTvShowPak => _showTvShowPak;
+//   static bool get showKidsShow => _showKidsShow;
+//   static bool get showReligious => _showReligious;
+//   static bool get showSports => _showSports;
+//   static bool get showStageShows => _showStageShows;
+//   static bool get showLaughterShows => _showLaughterShows;
+//   static bool get showContentNetwork => _showContentNetwork;
+//   static bool get showSearch => _showSearch;
+  
+//   // --- Methods ---
+//   static Future<void> initialize() async {
+//     if (!_isInitialized) {
+//       await _loadSession();
+//       _isInitialized = true;
+//     }
+//   }
+
+//   static Future<void> _loadSession() async {
+//     try {
+//       SharedPreferences prefs = await SharedPreferences.getInstance();
+//       _authKey = prefs.getString('auth_key') ?? '';
+//       _imageBaseUrl = prefs.getString('image_base_url') ?? '';
+//       _logoUrl = prefs.getString('logo_url') ?? '';
+//       _savedDomain = prefs.getString('saved_domain') ?? ''; // Saved domain ko load karein
+
+//       String? userDataString = prefs.getString('user_data');
+//       if (userDataString != null) {
+//         _userData = jsonDecode(userDataString);
+//       }
+      
+//       _showMovies = prefs.getBool('show_movies') ?? false;
+//       _showWebseries = prefs.getBool('show_webseries') ?? false;
+//       _showTvShow = prefs.getBool('show_tvshow') ?? false;
+//       _showTvShowPak = prefs.getBool('show_tvshow_pak') ?? false;
+//       _showKidsShow = prefs.getBool('show_kids_show') ?? false;
+//       _showReligious = prefs.getBool('show_religious') ?? false;
+//       _showSports = prefs.getBool('show_sports') ?? false;
+//       _showStageShows = prefs.getBool('show_stage_shows') ?? false;
+//       _showLaughterShows = prefs.getBool('show_laughter_shows') ?? false;
+//       _showContentNetwork = prefs.getBool('show_content_network') ?? false;
+//       _showSearch = prefs.getBool('show_search') ?? false;
+
+//     } catch (e) {
+//       await clearSession();
+//     }
+//   }
+
+//   static Future<void> saveSession(Map<String, dynamic> apiResponse) async {
+//     SharedPreferences prefs = await SharedPreferences.getInstance();
+
+//     _authKey = apiResponse['result_auth_key'] ?? '';
+//     _imageBaseUrl = apiResponse['imageBaseUrl'] ?? '';
+//     _userData = apiResponse['data'] as Map<String, dynamic>?;
+
+//     // ✅ API response se domain nikalein aur save karein
+//     // Note: Yahan hum maan rahe hain ki domain `data` object ke andar 'domain' key se aa raha hai.
+//     // Agar API response mein key ka naam alag hai to use yahan badal dein.
+//     if (_userData != null && _userData!['domain'] != null) {
+//       _savedDomain = _userData!['domain'];
+//       await prefs.setString('saved_domain', _savedDomain);
+//     }
+    
+//     if (_userData != null && _userData!['domain_content'] != null) {
+//       final domainContent = _userData!['domain_content'];
+//       _logoUrl = domainContent['logo'] ?? '';
+//       _showMovies = (domainContent['movies'] ?? 0) == 1;
+//       _showWebseries = (domainContent['webseries'] ?? 0) == 1;
+//       _showTvShow = (domainContent['tvshow'] ?? 0) == 1;
+//       _showTvShowPak = (domainContent['tvshow_pak'] ?? 0) == 1;
+//       _showKidsShow = (domainContent['kids_show'] ?? 0) == 1;
+//       _showReligious = (domainContent['religious'] ?? 0) == 1;
+//       _showSports = (domainContent['sports'] ?? 0) == 1;
+//       _showStageShows = (domainContent['stage_shows'] ?? 0) == 1;
+//       _showLaughterShows = (domainContent['laughter_shows'] ?? 0) == 1;
+//       _showContentNetwork = (domainContent['content_network'] ?? 0) == 1;
+//       _showSearch = (domainContent['search'] ?? 0) == 1;
+//     }
+
+//     await prefs.setString('auth_key', _authKey);
+//     await prefs.setString('image_base_url', _imageBaseUrl);
+//     await prefs.setString('logo_url', _logoUrl);
+//     if (_userData != null) {
+//       await prefs.setString('user_data', jsonEncode(_userData));
+//     }
+//     await prefs.setBool('is_logged_in', true);
+
+//     await prefs.setBool('show_movies', _showMovies);
+//     await prefs.setBool('show_webseries', _showWebseries);
+//     await prefs.setBool('show_tvshow', _showTvShow);
+//     await prefs.setBool('show_tvshow_pak', _showTvShowPak);
+//     await prefs.setBool('show_kids_show', _showKidsShow);
+//     await prefs.setBool('show_religious', _showReligious);
+//     await prefs.setBool('show_sports', _showSports);
+//     await prefs.setBool('show_stage_shows', _showStageShows);
+//     await prefs.setBool('show_laughter_shows', _showLaughterShows);
+//     await prefs.setBool('show_content_network', _showContentNetwork);
+//     await prefs.setBool('show_search', _showSearch);
+//   }
+
+//   static Future<void> clearSession() async {
+//     SharedPreferences prefs = await SharedPreferences.getInstance();
+    
+//     // Sirf session related data clear karein, domain ko chhod dein
+//     await prefs.remove('auth_key');
+//     await prefs.remove('user_data');
+//     await prefs.remove('is_logged_in');
+
+//     // Variables reset karein
+//     _authKey = '';
+//     _userData = null;
+//     _logoUrl = '';
+//   }
+// }
+
+
+
+
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
+
 class SessionManager {
   static bool _isInitialized = false;
 
@@ -3289,7 +3444,8 @@ class SessionManager {
   static String _imageBaseUrl = '';
   static Map<String, dynamic>? _userData;
   static String _logoUrl = '';
-  static String _savedDomain = ''; // API se mile domain ko store karne ke liye variable
+  static String _savedDomain = '';
+  static int? _userId; // ✅ 1. User ID ke liye naya variable
 
   // --- Feature flags (No changes here) ---
   static bool _showMovies = false;
@@ -3309,7 +3465,8 @@ class SessionManager {
   static String get imageBaseUrl => _imageBaseUrl;
   static Map<String, dynamic>? get userData => _userData;
   static String get logoUrl => _logoUrl;
-  static String get savedDomain => _savedDomain; // Domain ke liye public getter
+  static String get savedDomain => _savedDomain;
+  static int? get userId => _userId; // ✅ 2. User ID ke liye public getter
   static bool get isLoggedIn => _authKey.isNotEmpty && _userData != null;
 
   // --- Feature flag getters (No changes here) ---
@@ -3324,7 +3481,7 @@ class SessionManager {
   static bool get showLaughterShows => _showLaughterShows;
   static bool get showContentNetwork => _showContentNetwork;
   static bool get showSearch => _showSearch;
-  
+
   // --- Methods ---
   static Future<void> initialize() async {
     if (!_isInitialized) {
@@ -3339,7 +3496,8 @@ class SessionManager {
       _authKey = prefs.getString('auth_key') ?? '';
       _imageBaseUrl = prefs.getString('image_base_url') ?? '';
       _logoUrl = prefs.getString('logo_url') ?? '';
-      _savedDomain = prefs.getString('saved_domain') ?? ''; // Saved domain ko load karein
+      _savedDomain = prefs.getString('saved_domain') ?? '';
+      _userId = prefs.getInt('user_id'); // ✅ 3. Saved ID ko load karein
 
       String? userDataString = prefs.getString('user_data');
       if (userDataString != null) {
@@ -3370,9 +3528,12 @@ class SessionManager {
     _imageBaseUrl = apiResponse['imageBaseUrl'] ?? '';
     _userData = apiResponse['data'] as Map<String, dynamic>?;
 
-    // ✅ API response se domain nikalein aur save karein
-    // Note: Yahan hum maan rahe hain ki domain `data` object ke andar 'domain' key se aa raha hai.
-    // Agar API response mein key ka naam alag hai to use yahan badal dein.
+    // ✅ 4. API response se 'id' nikalein aur save karein
+    if (_userData != null && _userData!['id'] != null) {
+        _userId = _userData!['id'];
+        await prefs.setInt('user_id', _userId!);
+    }
+
     if (_userData != null && _userData!['domain'] != null) {
       _savedDomain = _userData!['domain'];
       await prefs.setString('saved_domain', _savedDomain);
@@ -3418,15 +3579,16 @@ class SessionManager {
   static Future<void> clearSession() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     
-    // Sirf session related data clear karein, domain ko chhod dein
     await prefs.remove('auth_key');
     await prefs.remove('user_data');
     await prefs.remove('is_logged_in');
+    await prefs.remove('user_id'); // ✅ 5. Logout par ID ko remove karein
 
     // Variables reset karein
     _authKey = '';
     _userData = null;
     _logoUrl = '';
+    _userId = null; // ✅ 6. Variable ko bhi reset karein
   }
 }
 
@@ -3778,12 +3940,28 @@ class _LoginScreenState extends State<LoginScreen>
               ? _domainController
               : _pinController;
 
-      if (value == 'DEL') {
-        if (activeController.text.isNotEmpty) {
-          activeController.text = activeController.text
-              .substring(0, activeController.text.length - 1);
-        }
-      } else if (_currentFocus == InputFocus.pin) {
+      // if (value == 'DEL') {
+      //   if (activeController.text.isNotEmpty) {
+      //     activeController.text = activeController.text
+      //         .substring(0, activeController.text.length - 1);
+      //   }
+      // } 
+      // This is the new, updated code
+if (value == 'DEL') {
+  // If the active text field has text in it, delete one character.
+  if (activeController.text.isNotEmpty) {
+    activeController.text = activeController.text
+        .substring(0, activeController.text.length - 1);
+  } 
+  // NEW LOGIC: If the active field is the PIN field AND it's empty,
+  // pressing 'DEL' will move the focus back to the domain field.
+  else if (_currentFocus == InputFocus.pin) {
+    setState(() {
+      _currentFocus = InputFocus.domain;
+    });
+  }
+}
+      else if (_currentFocus == InputFocus.pin) {
         if (RegExp(r'^[0-9]$').hasMatch(value) &&
             activeController.text.length < 10) {
           activeController.text += value;
@@ -3986,7 +4164,7 @@ class _LoginScreenState extends State<LoginScreen>
     final row2 = "qwertyuiop".split('');
     final row3 = "asdfghjkl,".split('');
     final row4 = ["SHIFT", ..."zxcvbnm".split(''), "DEL"];
-    final row5 = ["@", ".", " ", ".com", "OK"];
+    final row5 = ["coretechinfo.com","@", ".", " ", ".com", "OK"];
 
     return Column(
       children: [

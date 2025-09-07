@@ -16,6 +16,7 @@ import 'package:http/http.dart' as https;
 import 'package:mobi_tv_entertainment/home_screen_pages/webseries_screen/webseries_details_page.dart';
 import 'package:mobi_tv_entertainment/main.dart';
 import 'package:mobi_tv_entertainment/provider/device_info_provider.dart';
+import 'package:mobi_tv_entertainment/services/history_service.dart';
 import 'package:mobi_tv_entertainment/video_widget/custom_video_player.dart';
 import 'package:mobi_tv_entertainment/video_widget/custom_youtube_player.dart';
 import 'package:mobi_tv_entertainment/video_widget/socket_service.dart';
@@ -633,6 +634,30 @@ class _GenreNetworkWidgetState extends State<GenreNetworkWidget>
       _isVideoLoading = true;
     });
 
+
+      String? playableUrl = content.getPlayableUrl();
+
+
+
+    try{
+          print('Updating user history for: ${content.name}');
+      int? currentUserId = SessionManager.userId;
+    final int? parsedContentType = content.contentType ;
+    final int? parsedId = content.id ;
+
+      await HistoryService.updateUserHistory(
+        userId: currentUserId!, // 1. User ID
+        contentType: parsedContentType!, // 2. Content Type (channel के लिए 4)
+        eventId: parsedId!, // 3. Event ID (channel की ID)
+        eventTitle: content.name, // 4. Event Title (channel का नाम)
+        url: playableUrl??'', // 5. URL (channel का URL)
+        categoryId: 0, // 6. Category ID (डिफ़ॉल्ट 1)
+      );
+    } catch (e) {
+      print("History update failed, but proceeding to play. Error: $e");
+    }
+    
+
     try {
       // Special handling for Web Series - Navigate to WebSeriesDetailsPage
       if (content.contentType == 2) {
@@ -653,7 +678,7 @@ class _GenreNetworkWidgetState extends State<GenreNetworkWidget>
       }
 
       // Handle Movies and other content types
-      String? playableUrl = content.getPlayableUrl();
+      // String? playableUrl = content.getPlayableUrl();
 
       if (playableUrl == null || playableUrl.isEmpty) {
         throw Exception('No video URL found for this content');

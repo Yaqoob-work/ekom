@@ -504,7 +504,7 @@ class NewsItemModel {
       image: safeToString(json['image']??json['channel_logo']),
       // poster: safeToString(json['poster']),
       // json['url']?? json['movie_url']??
-      url: safeToString(json['channel_link'] ),
+      url: safeToString(json['channel_link']??json['url'] ),
       videoId: safeToString(json['videoId']),
       streamType: safeToString(json['stream_type']),
       sourceType: safeToString(json['source_type']),
