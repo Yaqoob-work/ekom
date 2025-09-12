@@ -7817,6 +7817,11 @@
 // }
 // }
 
+
+
+
+
+
 import 'dart:async';
 
 import 'package:mobi_tv_entertainment/main.dart';
@@ -8329,7 +8334,7 @@ class _GenericLiveChannelsState extends State<GenericLiveChannels>
         status: channel.status.toString(),
         index: displayChannelsList.indexOf(channel).toString(),
         image: channel.banner,
-        unUpdatedUrl: channel.url,
+        unUpdatedUrl: channel.url, updatedAt: '',
       );
 
       // ✅ GUARANTEED: Get complete channels list
@@ -8347,32 +8352,21 @@ class _GenericLiveChannelsState extends State<GenericLiveChannels>
         MaterialPageRoute(
           builder: (context) => VideoScreen(
             videoUrl: currentChannel.url,
-
             bannerImageUrl: currentChannel.banner,
-
-            startAtPosition: Duration.zero,
-
-            videoType: currentChannel.streamType,
-
+            source: 'isLive',
+            // startAtPosition: Duration.zero,
+            // videoType: currentChannel.streamType,
             channelList: allChannels, // ✅ Complete channel list guaranteed
-
-            isLive: true,
-
-            isVOD: false,
-
-            isBannerSlider: false,
-
-            source: 'isLiveScreen',
-
-            isSearch: false,
-
+            // isLive: true,
+            // isVOD: false,
+            // isBannerSlider: false,
+            // source: 'isLiveScreen',
+            // isSearch: false,
             videoId: int.tryParse(currentChannel.id),
-
-            unUpdatedUrl: currentChannel.url,
-
+            // unUpdatedUrl: currentChannel.url,
             name: currentChannel.name,
-
-            liveStatus: liveStatus,
+            liveStatus: true, 
+            updatedAt: currentChannel.updatedAt,
           ),
         ),
       );
@@ -9168,7 +9162,7 @@ class _GenericLiveChannelsState extends State<GenericLiveChannels>
         status: channel.status.toString(),
         index: displayChannelsList.indexOf(channel).toString(),
         image: channel.banner,
-        unUpdatedUrl: channel.url,
+        unUpdatedUrl: channel.url, updatedAt: '',
       );
     }).toList();
   }
@@ -9198,7 +9192,7 @@ class _GenericLiveChannelsState extends State<GenericLiveChannels>
         status: channel.status.toString(),
         index: fullChannelsList.indexOf(channel).toString(),
         image: channel.banner,
-        unUpdatedUrl: channel.url,
+        unUpdatedUrl: channel.url, updatedAt: '',
       );
     }).toList();
   }
@@ -9539,34 +9533,34 @@ class _GenericLiveChannelsState extends State<GenericLiveChannels>
               ),
             ),
 
-            // ✅ OPTIMIZED: Show total ACTIVE channels count
+            // // ✅ OPTIMIZED: Show total ACTIVE channels count
 
-            if (totalActiveChannelsCount > 0)
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      ProfessionalColors.accentBlue.withOpacity(0.2),
-                      ProfessionalColors.accentPurple.withOpacity(0.2),
-                    ],
-                  ),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color: ProfessionalColors.accentBlue.withOpacity(0.3),
-                    width: 1,
-                  ),
-                ),
-                child: Text(
-                  '${totalActiveChannelsCount} Live Channels',
-                  style: const TextStyle(
-                    color: ProfessionalColors.textSecondary,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
+            // if (totalActiveChannelsCount > 0)
+            //   Container(
+            //     padding:
+            //         const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            //     decoration: BoxDecoration(
+            //       gradient: LinearGradient(
+            //         colors: [
+            //           ProfessionalColors.accentBlue.withOpacity(0.2),
+            //           ProfessionalColors.accentPurple.withOpacity(0.2),
+            //         ],
+            //       ),
+            //       borderRadius: BorderRadius.circular(20),
+            //       border: Border.all(
+            //         color: ProfessionalColors.accentBlue.withOpacity(0.3),
+            //         width: 1,
+            //       ),
+            //     ),
+            //     child: Text(
+            //       '${totalActiveChannelsCount} Live Channels',
+            //       style: const TextStyle(
+            //         color: ProfessionalColors.textSecondary,
+            //         fontSize: 12,
+            //         fontWeight: FontWeight.w500,
+            //       ),
+            //     ),
+            //   ),
           ],
         ),
       ),
@@ -9893,17 +9887,37 @@ class _GenericLiveChannelsState extends State<GenericLiveChannels>
 
               return KeyEventResult.handled;
             }
-          } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
-            if (index > 0) {
-              String prevChannelId =
-                  displayChannelsList[index - 1].id.toString();
+          } 
+          
+          // else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+          //   if (index > 0) {
+          //     String prevChannelId =
+          //         displayChannelsList[index - 1].id.toString();
 
-              FocusScope.of(context)
-                  .requestFocus(channelFocusNodes[prevChannelId]);
+          //     FocusScope.of(context)
+          //         .requestFocus(channelFocusNodes[prevChannelId]);
 
-              return KeyEventResult.handled;
-            }
-          } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+          //     return KeyEventResult.handled;
+          //   }
+          // } 
+
+
+          else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+      // 🎯 MODIFIED LOGIC HERE
+      // If the item is not the first one, move focus to the previous item.
+      if (index > 0) {
+        String prevChannelId =
+            displayChannelsList[index - 1].id.toString();
+        FocusScope.of(context)
+            .requestFocus(channelFocusNodes[prevChannelId]);
+      }
+      // **Crucially, handle the event in BOTH cases (index > 0 and index == 0).**
+      // This prevents the focus from escaping the list when on the first item.
+      return KeyEventResult.handled;
+
+    }
+          
+          else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
             // ✅ GENERIC: Navigate to corresponding navigation button
 
             try {
@@ -10593,22 +10607,22 @@ class _ProfessionalViewAllButtonState extends State<ProfessionalViewAllButton>
                   ),
                 ),
                 const SizedBox(height: 6),
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.25),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    '${widget.totalChannels}',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 11,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
+                // Container(
+                //   padding:
+                //       const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+                //   decoration: BoxDecoration(
+                //     color: Colors.white.withOpacity(0.25),
+                //     borderRadius: BorderRadius.circular(12),
+                //   ),
+                //   child: Text(
+                //     '${widget.totalChannels}',
+                //     style: const TextStyle(
+                //       color: Colors.white,
+                //       fontSize: 11,
+                //       fontWeight: FontWeight.w700,
+                //     ),
+                //   ),
+                // ),
               ],
             ),
           ),
@@ -11624,7 +11638,7 @@ class _ProfessionalChannelsGridViewState
         status: channel.status.toString(),
         index: activeChannels.indexOf(channel).toString(),
         image: channel.banner,
-        unUpdatedUrl: channel.url,
+        unUpdatedUrl: channel.url, updatedAt: '',
       );
 
       // ✅ Convert all active channels
@@ -11651,7 +11665,7 @@ class _ProfessionalChannelsGridViewState
           status: ch.status.toString(),
           index: activeChannels.indexOf(ch).toString(),
           image: ch.banner,
-          unUpdatedUrl: ch.url,
+          unUpdatedUrl: ch.url, updatedAt: '',
         );
       }).toList();
 
@@ -11667,28 +11681,28 @@ class _ProfessionalChannelsGridViewState
           MaterialPageRoute(
             builder: (context) => VideoScreen(
               videoUrl: currentChannel.url,
-
+source: 'isLive',
               bannerImageUrl: currentChannel.banner,
 
-              startAtPosition: Duration.zero,
+              // startAtPosition: Duration.zero,
 
-              videoType: currentChannel.streamType,
+              // videoType: currentChannel.streamType,
 
               channelList: allChannels,
 
-              isLive: true,
+              // isLive: true,
 
-              isVOD: false,
+              // isVOD: false,
 
-              isBannerSlider: false,
+              // isBannerSlider: false,
 
-              source: 'isLiveScreen',
+              // source: 'isLiveScreen',
 
-              isSearch: false,
+              // isSearch: false,
 
               videoId: int.tryParse(currentChannel.id),
 
-              unUpdatedUrl: currentChannel.url,
+              // unUpdatedUrl: currentChannel.url,
 
               name: currentChannel.name,
 
@@ -11696,7 +11710,8 @@ class _ProfessionalChannelsGridViewState
 
               // isLastPlayedStored: false,
 
-              liveStatus: true,
+              liveStatus: true, 
+              updatedAt: currentChannel.updatedAt,
             ),
           ),
         );
@@ -12004,59 +12019,59 @@ class _ProfessionalChannelsGridViewState
                         ),
                       ),
 
-                      // ✅ Count badge with Live theme colors and elevation
+                      // // ✅ Count badge with Live theme colors and elevation
 
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              ProfessionalColors.accentGreen
-                                  .withOpacity(0.3), // Live theme
+                      // Container(
+                      //   padding: const EdgeInsets.symmetric(
+                      //       horizontal: 12, vertical: 6),
+                      //   decoration: BoxDecoration(
+                      //     gradient: LinearGradient(
+                      //       colors: [
+                      //         ProfessionalColors.accentGreen
+                      //             .withOpacity(0.3), // Live theme
 
-                              ProfessionalColors.accentBlue.withOpacity(0.2),
-                            ],
-                          ),
+                      //         ProfessionalColors.accentBlue.withOpacity(0.2),
+                      //       ],
+                      //     ),
 
-                          borderRadius: BorderRadius.circular(15),
+                      //     borderRadius: BorderRadius.circular(15),
 
-                          border: Border.all(
-                            color:
-                                ProfessionalColors.accentGreen.withOpacity(0.4),
-                            width: 1,
-                          ),
+                      //     border: Border.all(
+                      //       color:
+                      //           ProfessionalColors.accentGreen.withOpacity(0.4),
+                      //       width: 1,
+                      //     ),
 
-                          // ✅ Add elevation to count badge
+                      //     // ✅ Add elevation to count badge
 
-                          boxShadow: [
-                            BoxShadow(
-                              color: ProfessionalColors.accentGreen
-                                  .withOpacity(0.2),
-                              blurRadius: 6,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: Text(
-                          '${activeChannels.length} Live Channels Available',
-                          style: const TextStyle(
-                            color: ProfessionalColors.accentGreen, // Live theme
+                      //     boxShadow: [
+                      //       BoxShadow(
+                      //         color: ProfessionalColors.accentGreen
+                      //             .withOpacity(0.2),
+                      //         blurRadius: 6,
+                      //         offset: const Offset(0, 2),
+                      //       ),
+                      //     ],
+                      //   ),
+                      //   child: Text(
+                      //     '${activeChannels.length} Live Channels Available',
+                      //     style: const TextStyle(
+                      //       color: ProfessionalColors.accentGreen, // Live theme
 
-                            fontSize: 12,
+                      //       fontSize: 12,
 
-                            fontWeight: FontWeight.w600,
+                      //       fontWeight: FontWeight.w600,
 
-                            shadows: [
-                              Shadow(
-                                color: Colors.black54,
-                                blurRadius: 2,
-                                offset: Offset(0, 1),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
+                      //       shadows: [
+                      //         Shadow(
+                      //           color: Colors.black54,
+                      //           blurRadius: 2,
+                      //           offset: Offset(0, 1),
+                      //         ),
+                      //       ],
+                      //     ),
+                      //   ),
+                      // ),
                     ],
                   ),
                 ),

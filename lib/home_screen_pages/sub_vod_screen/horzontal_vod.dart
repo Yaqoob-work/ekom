@@ -1,10 +1,8 @@
-
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:http/http.dart' as http;
+import 'package:http/http.dart' as https;
 import 'package:mobi_tv_entertainment/home_screen_pages/sub_vod_screen/horizontal_list_details_page.dart';
 import 'package:mobi_tv_entertainment/home_screen_pages/sub_vod_screen/sub_vod.dart';
 import 'dart:math' as math;
@@ -12,6 +10,7 @@ import 'package:mobi_tv_entertainment/home_screen_pages/tv_show/tv_show_second_p
 import 'package:mobi_tv_entertainment/main.dart';
 import 'package:mobi_tv_entertainment/provider/color_provider.dart';
 import 'package:mobi_tv_entertainment/provider/focus_provider.dart';
+import 'package:mobi_tv_entertainment/services/history_service.dart';
 import 'package:provider/provider.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -41,9 +40,6 @@ class ProfessionalColors {
     accentPink,
   ];
 }
-
-
-
 
 // ✅ Professional Animation Durations
 class AnimationTiming {
@@ -94,9 +90,6 @@ class AnimationTiming {
 //   }
 // }
 
-
-
-
 // ✅ TV Show Model (same structure)
 class HorizontalVodModel {
   final int id;
@@ -134,7 +127,8 @@ class HorizontalVodModel {
       rating: json['rating'],
       language: json['language'],
       status: json['status'] ?? 0,
-      networks_order: json['networks_order'] ?? 999, // ✅ PARSE THE FIELD (use a high default)
+      networks_order: json['networks_order'] ??
+          999, // ✅ PARSE THE FIELD (use a high default)
     );
   }
 }
@@ -147,12 +141,40 @@ Widget displayImage(
   BoxFit fit = BoxFit.fill,
 }) {
   if (imageUrl.isEmpty || imageUrl == 'localImage') {
-    return Image.asset(localImage);
+    return   Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  ProfessionalColors.accentGreen,
+                  ProfessionalColors.accentBlue,
+                ],
+              ),
+            ),
+            child: const Icon(
+              Icons.broken_image,
+              color: Colors.white,
+              size: 24,
+            ),
+          );
   }
 
   // Handle localhost URLs - replace with fallback
   if (imageUrl.contains('localhost')) {
-    return Image.asset(localImage);
+    return   Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  ProfessionalColors.accentGreen,
+                  ProfessionalColors.accentBlue,
+                ],
+              ),
+            ),
+            child: const Icon(
+              Icons.broken_image,
+              color: Colors.white,
+              size: 24,
+            ),
+          );
   }
 
   if (imageUrl.startsWith('data:image')) {
@@ -185,30 +207,50 @@ Widget displayImage(
       );
     } else {
       // Handle regular URL images (PNG, JPG, etc.)
-      return CachedNetworkImage(
-        imageUrl: imageUrl,
-        placeholder: (context, url) {
-          return _buildLoadingWidget(width, height);
-        },
-        errorWidget: (context, url, error) {
-          return _buildErrorWidget(width, height);
-        },
-        fit: fit,
+      return Image.network(
+        imageUrl,
         width: width,
         height: height,
-        // Add timeout
-        httpHeaders: {
+        fit: fit,
+        headers: const {
           'User-Agent': 'Flutter App',
         },
+        loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+          // If the image is fully loaded, display it
+          if (loadingProgress == null) {
+            return child;
+          }
+          // Otherwise, show your loading widget
+          return _buildLoadingWidget(width, height);
+        },
+        errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
+          // If an error occurs, display your error widget
+          return _buildErrorWidget(width, height);
+        },
       );
+
+      // CachedNetworkImage(
+      //   imageUrl: imageUrl,
+      //   placeholder: (context, url) {
+      //     return _buildLoadingWidget(width, height);
+      //   },
+      //   errorWidget: (context, url, error) {
+      //     return _buildErrorWidget(width, height);
+      //   },
+      //   fit: fit,
+      //   width: width,
+      //   height: height,
+      //   // Add timeout
+      //   httpHeaders: {
+      //     'User-Agent': 'Flutter App',
+      //   },
+      // );
     }
   } else {
     // Fallback for invalid image data
     return _buildErrorWidget(width, height);
   }
 }
-
-
 
 // Helper widget for loading state
 Widget _buildLoadingWidget(double? width, double? height) {
@@ -224,11 +266,23 @@ Widget _buildLoadingWidget(double? width, double? height) {
   );
 }
 
-
-
 // Helper widget for error state
 Widget _buildErrorWidget(double? width, double? height) {
-  return Image.asset(localImage);
+  return   Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  ProfessionalColors.accentGreen,
+                  ProfessionalColors.accentBlue,
+                ],
+              ),
+            ),
+            child: const Icon(
+              Icons.broken_image,
+              color: Colors.white,
+              size: 24,
+            ),
+          );
 }
 
 // Helper function to decode base64 images
@@ -242,36 +296,37 @@ class HorizontalVodService {
   static const String _cacheKeyHorizontalVod = 'cached_horizontal_vod';
   static const String _cacheKeyTimestamp = 'cached_horizontal_vod_timestamp';
   static const String _cacheKeyAuthKey = 'auth_key';
-  
+
   // Cache duration (in milliseconds) - 1 hour
   static const int _cacheDurationMs = 60 * 60 * 1000; // 1 hour
-  
+
   /// Main method to get all Vod with caching
-  static Future<List<HorizontalVodModel>> getAllHorizontalVod({bool forceRefresh = false}) async {
+  static Future<List<HorizontalVodModel>> getAllHorizontalVod(
+      {bool forceRefresh = false}) async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      
+
       // Check if we should use cache
       if (!forceRefresh && await _shouldUseCache(prefs)) {
         print('📦 Loading Vod from cache...');
         final cachedHorizontalVod = await _getCachedHorizontalVod(prefs);
         if (cachedHorizontalVod.isNotEmpty) {
-          print('✅ Successfully loaded ${cachedHorizontalVod.length} Vod from cache');
-          
+          print(
+              '✅ Successfully loaded ${cachedHorizontalVod.length} Vod from cache');
+
           // Load fresh data in background (without waiting)
           _loadFreshDataInBackground();
-          
+
           return cachedHorizontalVod;
         }
       }
-      
+
       // Load fresh data if no cache or force refresh
       print('🌐 Loading fresh Vod from API...');
       return await _fetchFreshHorizontalVod(prefs);
-      
     } catch (e) {
       print('❌ Error in getAllHorizontalVod: $e');
-      
+
       // Try to return cached data as fallback
       try {
         final prefs = await SharedPreferences.getInstance();
@@ -283,25 +338,25 @@ class HorizontalVodService {
       } catch (cacheError) {
         print('❌ Cache fallback also failed: $cacheError');
       }
-      
+
       throw Exception('Failed to load Vod: $e');
     }
   }
-  
+
   /// Check if cached data is still valid
   static Future<bool> _shouldUseCache(SharedPreferences prefs) async {
     try {
       final timestampStr = prefs.getString(_cacheKeyTimestamp);
       if (timestampStr == null) return false;
-      
+
       final cachedTimestamp = int.tryParse(timestampStr);
       if (cachedTimestamp == null) return false;
-      
+
       final currentTimestamp = DateTime.now().millisecondsSinceEpoch;
       final cacheAge = currentTimestamp - cachedTimestamp;
-      
+
       final isValid = cacheAge < _cacheDurationMs;
-      
+
       if (isValid) {
         final ageMinutes = (cacheAge / (1000 * 60)).round();
         print('📦 Vod Cache is valid (${ageMinutes} minutes old)');
@@ -309,14 +364,14 @@ class HorizontalVodService {
         final ageMinutes = (cacheAge / (1000 * 60)).round();
         print('⏰ Vod Cache expired (${ageMinutes} minutes old)');
       }
-      
+
       return isValid;
     } catch (e) {
       print('❌ Error checking Vod cache validity: $e');
       return false;
     }
   }
-  
+
   // /// Get Vod from cache
   // static Future<List<HorizontalVodModel>> _getCachedHorizontalVod(SharedPreferences prefs) async {
   //   try {
@@ -325,13 +380,13 @@ class HorizontalVodService {
   //       print('📦 No cached Vod data found');
   //       return [];
   //     }
-      
+
   //     final List<dynamic> jsonData = json.decode(cachedData);
   //     final HorizontalVod = jsonData
   //         .map((json) => HorizontalVodModel.fromJson(json as Map<String, dynamic>))
   //         .where((show) => show.status == 1) // Filter active shows
   //         .toList();
-      
+
   //     print('📦 Successfully loaded ${HorizontalVod.length} Vod from cache');
   //     return HorizontalVod;
   //   } catch (e) {
@@ -340,44 +395,41 @@ class HorizontalVodService {
   //   }
   // }
 
-
-
-
-
   /// Get Vod from cache
-  static Future<List<HorizontalVodModel>> _getCachedHorizontalVod(SharedPreferences prefs) async {
+  static Future<List<HorizontalVodModel>> _getCachedHorizontalVod(
+      SharedPreferences prefs) async {
     try {
       final cachedData = prefs.getString(_cacheKeyHorizontalVod);
       if (cachedData == null || cachedData.isEmpty) {
         print('📦 No cached Vod data found');
         return [];
       }
-      
+
       final List<dynamic> jsonData = json.decode(cachedData);
-      
+
       // Filter and sort the cached data
       final HorizontalVod = jsonData
-          .map((json) => HorizontalVodModel.fromJson(json as Map<String, dynamic>))
+          .map((json) =>
+              HorizontalVodModel.fromJson(json as Map<String, dynamic>))
           .where((show) => show.status == 1) // First, filter by status
           .toList()
-        ..sort((a, b) => a.networks_order.compareTo(b.networks_order)); // ✅ THEN, SORT THE LIST
-      
-      print('📦 Successfully loaded and sorted ${HorizontalVod.length} Vod from cache');
+        ..sort((a, b) => a.networks_order
+            .compareTo(b.networks_order)); // ✅ THEN, SORT THE LIST
+
+      print(
+          '📦 Successfully loaded and sorted ${HorizontalVod.length} Vod from cache');
       return HorizontalVod;
     } catch (e) {
       print('❌ Error loading cached Vod: $e');
       return [];
     }
   }
-  
-
-
 
   // /// Fetch fresh Vod from API and cache them
   // static Future<List<HorizontalVodModel>> _fetchFreshHorizontalVod(SharedPreferences prefs) async {
   //   try {
   //     String authKey = prefs.getString(_cacheKeyAuthKey) ?? '';
-      
+
   //     final response = await http.get(
   //       // Uri.parse('https://acomtv.coretechinfo.com/public/api/getNetworks'),
   //       Uri.parse('https://acomtv.coretechinfo.com/api/v2/getNetworks'),
@@ -393,23 +445,23 @@ class HorizontalVodService {
   //         throw Exception('Request timeout');
   //       },
   //     );
-      
+
   //     if (response.statusCode == 200) {
   //       final List<dynamic> jsonData = json.decode(response.body);
-        
+
   //       final allHorizontalVod = jsonData
   //           .map((json) => HorizontalVodModel.fromJson(json as Map<String, dynamic>))
   //           .toList();
-            
+
   //       // Filter only active shows (status = 1)
   //       final activeHorizontalVod = allHorizontalVod.where((show) => show.status == 1).toList();
-        
+
   //       // Cache the fresh data (save all shows, but return only active ones)
   //       await _cacheHorizontalVod(prefs, jsonData);
-        
+
   //       print('✅ Successfully loaded ${activeHorizontalVod.length} active Vod from API (from ${allHorizontalVod.length} total)');
   //       return activeHorizontalVod;
-        
+
   //     } else {
   //       throw Exception('API Error: ${response.statusCode} - ${response.reasonPhrase}');
   //     }
@@ -419,20 +471,19 @@ class HorizontalVodService {
   //   }
   // }
 
-
-
   /// Fetch fresh Vod from API and cache them
-  static Future<List<HorizontalVodModel>> _fetchFreshHorizontalVod(SharedPreferences prefs) async {
+  static Future<List<HorizontalVodModel>> _fetchFreshHorizontalVod(
+      SharedPreferences prefs) async {
     try {
       String authKey = prefs.getString(_cacheKeyAuthKey) ?? '';
-      
-      final response = await http.get(
+
+      final response = await https.get(
         Uri.parse('https://acomtv.coretechinfo.com/api/v2/getNetworks'),
         headers: {
           'auth-key': authKey,
           'Content-Type': 'application/json',
           'Accept': 'application/json',
-          'domain':'coretechinfo.com'
+          'domain': 'coretechinfo.com'
         },
       ).timeout(
         const Duration(seconds: 30),
@@ -440,50 +491,54 @@ class HorizontalVodService {
           throw Exception('Request timeout');
         },
       );
-      
+
       if (response.statusCode == 200) {
         final List<dynamic> jsonData = json.decode(response.body);
-        
+
         // Filter and Sort in one go
         final activeHorizontalVod = jsonData
-            .map((json) => HorizontalVodModel.fromJson(json as Map<String, dynamic>))
+            .map((json) =>
+                HorizontalVodModel.fromJson(json as Map<String, dynamic>))
             .where((show) => show.status == 1) // First, filter by status
             .toList()
-          ..sort((a, b) => a.networks_order.compareTo(b.networks_order)); // ✅ THEN, SORT THE LIST
+          ..sort((a, b) => a.networks_order
+              .compareTo(b.networks_order)); // ✅ THEN, SORT THE LIST
 
         // Cache the fresh data (save all shows, but return only active ones)
         await _cacheHorizontalVod(prefs, jsonData);
-        
-        print('✅ Successfully loaded and sorted ${activeHorizontalVod.length} active Vod from API');
+
+        print(
+            '✅ Successfully loaded and sorted ${activeHorizontalVod.length} active Vod from API');
         return activeHorizontalVod;
-        
       } else {
-        throw Exception('API Error: ${response.statusCode} - ${response.reasonPhrase}');
+        throw Exception(
+            'API Error: ${response.statusCode} - ${response.reasonPhrase}');
       }
     } catch (e) {
       print('❌ Error fetching fresh Vod: $e');
       rethrow;
     }
   }
-  
+
   /// Cache Vod data
-  static Future<void> _cacheHorizontalVod(SharedPreferences prefs, List<dynamic> HorizontalVodData) async {
+  static Future<void> _cacheHorizontalVod(
+      SharedPreferences prefs, List<dynamic> HorizontalVodData) async {
     try {
       final jsonString = json.encode(HorizontalVodData);
       final currentTimestamp = DateTime.now().millisecondsSinceEpoch.toString();
-      
+
       // Save Vod data and timestamp
       await Future.wait([
         prefs.setString(_cacheKeyHorizontalVod, jsonString),
         prefs.setString(_cacheKeyTimestamp, currentTimestamp),
       ]);
-      
+
       print('💾 Successfully cached ${HorizontalVodData.length} Vod');
     } catch (e) {
       print('❌ Error caching Vod: $e');
     }
   }
-  
+
   /// Load fresh data in background without blocking UI
   static void _loadFreshDataInBackground() {
     Future.delayed(const Duration(milliseconds: 500), () async {
@@ -497,7 +552,7 @@ class HorizontalVodService {
       }
     });
   }
-  
+
   /// Clear all cached data
   static Future<void> clearCache() async {
     try {
@@ -511,14 +566,14 @@ class HorizontalVodService {
       print('❌ Error clearing Vod cache: $e');
     }
   }
-  
+
   /// Get cache info for debugging
   static Future<Map<String, dynamic>> getCacheInfo() async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final timestampStr = prefs.getString(_cacheKeyTimestamp);
       final cachedData = prefs.getString(_cacheKeyHorizontalVod);
-      
+
       if (timestampStr == null || cachedData == null) {
         return {
           'hasCachedData': false,
@@ -527,15 +582,15 @@ class HorizontalVodService {
           'cacheSize': 0,
         };
       }
-      
+
       final cachedTimestamp = int.tryParse(timestampStr) ?? 0;
       final currentTimestamp = DateTime.now().millisecondsSinceEpoch;
       final cacheAge = currentTimestamp - cachedTimestamp;
       final cacheAgeMinutes = (cacheAge / (1000 * 60)).round();
-      
+
       final List<dynamic> jsonData = json.decode(cachedData);
       final cacheSizeKB = (cachedData.length / 1024).round();
-      
+
       return {
         'hasCachedData': true,
         'cacheAge': cacheAgeMinutes,
@@ -554,7 +609,7 @@ class HorizontalVodService {
       };
     }
   }
-  
+
   /// Force refresh data (bypass cache)
   static Future<List<HorizontalVodModel>> forceRefresh() async {
     print('🔄 Force refreshing Vod data...');
@@ -564,14 +619,12 @@ class HorizontalVodService {
 
 // 🚀 Enhanced HorzontalVod with Caching (WebSeries Style)
 class HorzontalVod extends StatefulWidget {
-   const HorzontalVod({super.key});
+  const HorzontalVod({super.key});
   @override
-  _HorzontalVodState createState() =>
-      _HorzontalVodState();
+  _HorzontalVodState createState() => _HorzontalVodState();
 }
 
-class _HorzontalVodState
-    extends State<HorzontalVod>
+class _HorzontalVodState extends State<HorzontalVod>
     with AutomaticKeepAliveClientMixin, TickerProviderStateMixin {
   @override
   bool get wantKeepAlive => true;
@@ -602,7 +655,7 @@ class _HorzontalVodState
     _scrollController = ScrollController();
     _initializeAnimations();
     _initializeFocusNodes();
-    
+
     // 🚀 Use enhanced caching service
     fetchHorizontalVodWithCache();
   }
@@ -645,7 +698,7 @@ class _HorzontalVodState
   //     String HorizontalVodId = HorizontalVodList[index].id.toString();
   //     if (HorizontalVodFocusNodes.containsKey(HorizontalVodId)) {
   //       final focusNode = HorizontalVodFocusNodes[HorizontalVodId]!;
-        
+
   //       Scrollable.ensureVisible(
   //         focusNode.context!,
   //         duration: AnimationTiming.scroll,
@@ -653,7 +706,7 @@ class _HorzontalVodState
   //         alignment: 0.03,
   //         alignmentPolicy: ScrollPositionAlignmentPolicy.explicit,
   //       );
-        
+
   //       print('🎯 Scrollable.ensureVisible for index $index: ${HorizontalVodList[index].name}');
   //     }
   //   } else if (index == maxHorizontalItems && _viewAllFocusNode != null) {
@@ -664,81 +717,81 @@ class _HorzontalVodState
   //       alignment: 0.2,
   //       alignmentPolicy: ScrollPositionAlignmentPolicy.explicit,
   //     );
-      
+
   //     print('🎯 Scrollable.ensureVisible for ViewAll button');
   //   }
   // }
 
-
-
   // File: sub_vod.dart
 // Inside the _HorzontalVodState class
 
-void _scrollToPosition(int index) {
-  // Ensure the controller has clients before using it
-  if (!_scrollController.hasClients) return;
+  void _scrollToPosition(int index) {
+    // Ensure the controller has clients before using it
+    if (!_scrollController.hasClients) return;
 
-  // The item's width (156) + horizontal margin (6 + 6 = 12)
-  final double itemTotalWidth = _itemWidth ; 
-  final double targetOffset = index * itemTotalWidth;
+    // The item's width (156) + horizontal margin (6 + 6 = 12)
+    final double itemTotalWidth = _itemWidth;
+    final double targetOffset = index * itemTotalWidth;
 
-  _scrollController.animateTo(
-    // Clamp the value to ensure it doesn't go beyond the max scroll extent
-    targetOffset.clamp(0.0, _scrollController.position.maxScrollExtent),
-    duration: AnimationTiming.scroll,
-    curve: Curves.easeOutCubic, // A smoother curve than linear
-  );
-  
-  print('🎯 Horizontal scroll to index $index: ${HorizontalVodList[index].name}');
-}
+    _scrollController.animateTo(
+      // Clamp the value to ensure it doesn't go beyond the max scroll extent
+      targetOffset.clamp(0.0, _scrollController.position.maxScrollExtent),
+      duration: AnimationTiming.scroll,
+      curve: Curves.easeOutCubic, // A smoother curve than linear
+    );
 
-
+    print(
+        '🎯 Horizontal scroll to index $index: ${HorizontalVodList[index].name}');
+  }
 
 // void _scrollToPosition(int index) {
 //   if (index < HorizontalVodList.length && index < maxHorizontalItems) {
 //     // Calculate horizontal offset for the focused item
 //     final double targetOffset = index * (_itemWidth + 40); // item width + margin
-    
+
 //     // Animate to specific horizontal position
 //     _scrollController.animateTo(
 //       targetOffset,
 //       duration: AnimationTiming.scroll,
 //       curve: Curves.linear,
 //     );
-    
+
 //     print('🎯 Horizontal scroll to index $index: ${HorizontalVodList[index].name}');
 //   } else if (index == maxHorizontalItems && _viewAllFocusNode != null) {
 //     // Scroll to ViewAll button position
 //     final double viewAllOffset = maxHorizontalItems * (_itemWidth + 40);
-    
+
 //     _scrollController.animateTo(
 //       viewAllOffset,
 //       duration: AnimationTiming.scroll,
 //       curve: Curves.linear,
 //     );
-    
+
 //     print('🎯 Horizontal scroll to ViewAll button');
 //   }
 // }
-
 
   void _setupHorizontalVodFocusProvider() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted && HorizontalVodList.isNotEmpty) {
         try {
-          final focusProvider = Provider.of<FocusProvider>(context, listen: false);
+          final focusProvider =
+              Provider.of<FocusProvider>(context, listen: false);
 
           final firstHorizontalVodId = HorizontalVodList[0].id.toString();
 
           if (!HorizontalVodFocusNodes.containsKey(firstHorizontalVodId)) {
             HorizontalVodFocusNodes[firstHorizontalVodId] = FocusNode();
-            print('✅ Created focus node for first TV show: $firstHorizontalVodId');
+            print(
+                '✅ Created focus node for first TV show: $firstHorizontalVodId');
           }
 
-          _firstHorizontalVodFocusNode = HorizontalVodFocusNodes[firstHorizontalVodId];
+          _firstHorizontalVodFocusNode =
+              HorizontalVodFocusNodes[firstHorizontalVodId];
 
           _firstHorizontalVodFocusNode!.addListener(() {
-            if (_firstHorizontalVodFocusNode!.hasFocus && !_hasReceivedFocusFromWebSeries) {
+            if (_firstHorizontalVodFocusNode!.hasFocus &&
+                !_hasReceivedFocusFromWebSeries) {
               _hasReceivedFocusFromWebSeries = true;
               setState(() {
                 focusedIndex = 0;
@@ -748,18 +801,16 @@ void _scrollToPosition(int index) {
             }
           });
 
-          focusProvider.setFirstHorizontalListNetworksFocusNode(_firstHorizontalVodFocusNode!);
-          print('✅ Vod first focus node registered: ${HorizontalVodList[0].name}');
-
+          focusProvider.setFirstHorizontalListNetworksFocusNode(
+              _firstHorizontalVodFocusNode!);
+          print(
+              '✅ Vod first focus node registered: ${HorizontalVodList[0].name}');
         } catch (e) {
           print('❌ Vod focus provider setup failed: $e');
         }
       }
     });
   }
-
-
-
 
   // 🚀 Enhanced fetch method with caching
   Future<void> fetchHorizontalVodWithCache() async {
@@ -771,7 +822,8 @@ void _scrollToPosition(int index) {
 
     try {
       // Use cached data first, then fresh data
-      final fetchedHorizontalVod = await HorizontalVodService.getAllHorizontalVod();
+      final fetchedHorizontalVod =
+          await HorizontalVodService.getAllHorizontalVod();
 
       if (fetchedHorizontalVod.isNotEmpty) {
         if (mounted) {
@@ -782,11 +834,11 @@ void _scrollToPosition(int index) {
 
           _createFocusNodesForItems();
           _setupHorizontalVodFocusProvider();
-          
+
           // Start animations after data loads
           _headerAnimationController.forward();
           _listAnimationController.forward();
-          
+
           // Debug cache info
           _debugCacheInfo();
         }
@@ -838,10 +890,10 @@ void _scrollToPosition(int index) {
 
           _createFocusNodesForItems();
           _setupHorizontalVodFocusProvider();
-          
+
           _headerAnimationController.forward();
           _listAnimationController.forward();
-          
+
           // // Show success message
           // ScaffoldMessenger.of(context).showSnackBar(
           //   SnackBar(
@@ -880,7 +932,9 @@ void _scrollToPosition(int index) {
     }
     HorizontalVodFocusNodes.clear();
 
-    for (int i = 0; i < HorizontalVodList.length && i < maxHorizontalItems; i++) {
+    for (int i = 0;
+        i < HorizontalVodList.length && i < maxHorizontalItems;
+        i++) {
       String HorizontalVodId = HorizontalVodList[i].id.toString();
       if (!HorizontalVodFocusNodes.containsKey(HorizontalVodId)) {
         HorizontalVodFocusNodes[HorizontalVodId] = FocusNode();
@@ -892,16 +946,36 @@ void _scrollToPosition(int index) {
               _hasReceivedFocusFromWebSeries = true;
             });
             _scrollToPosition(i);
-            print('✅ TV Show $i focused and scrolled: ${HorizontalVodList[i].name}');
+            print(
+                '✅ TV Show $i focused and scrolled: ${HorizontalVodList[i].name}');
           }
         });
       }
     }
-    print('✅ Created ${HorizontalVodFocusNodes.length} TV show focus nodes with auto-scroll');
+    print(
+        '✅ Created ${HorizontalVodFocusNodes.length} TV show focus nodes with auto-scroll');
   }
 
-  void _navigateToHorizontalVodDetails(HorizontalVodModel HorizontalVod) {
+  void _navigateToHorizontalVodDetails(HorizontalVodModel HorizontalVod) async {
     print('🎬 Navigating to TV Show Details: ${HorizontalVod.name}');
+
+    try {
+      print('Updating user history for: ${HorizontalVod.name}');
+      int? currentUserId = SessionManager.userId;
+      // final int? parsedContentType = episode.contentType;
+      final int? parsedId = HorizontalVod.id;
+
+      await HistoryService.updateUserHistory(
+        userId: currentUserId!, // 1. User ID
+        contentType: 0, // 2. Content Type (episode के लिए 4)
+        eventId: parsedId!, // 3. Event ID (episode की ID)
+        eventTitle: HorizontalVod.name, // 4. Event Title (episode का नाम)
+        url: '', // 5. URL (episode का URL)
+        categoryId: 0, // 6. Category ID (डिफ़ॉल्ट 1)
+      );
+    } catch (e) {
+      print("History update failed, but proceeding to play. Error: $e");
+    }
 
     Navigator.push(
       context,
@@ -921,7 +995,8 @@ void _scrollToPosition(int index) {
       print('🔙 Returned from TV Show Details');
       Future.delayed(Duration(milliseconds: 300), () {
         if (mounted) {
-          int currentIndex = HorizontalVodList.indexWhere((show) => show.id == HorizontalVod.id);
+          int currentIndex = HorizontalVodList.indexWhere(
+              (show) => show.id == HorizontalVod.id);
           if (currentIndex != -1 && currentIndex < maxHorizontalItems) {
             String HorizontalVodId = HorizontalVod.id.toString();
             if (HorizontalVodFocusNodes.containsKey(HorizontalVodId)) {
@@ -997,50 +1072,48 @@ void _scrollToPosition(int index) {
   //   );
   // }
 
-
-
   @override
-Widget build(BuildContext context) {
-  super.build(context);
-  final screenWidth = MediaQuery.of(context).size.width;
-  final screenHeight = MediaQuery.of(context).size.height;
+  Widget build(BuildContext context) {
+    super.build(context);
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
 
-  // ✅ ADD: Consumer to listen to color changes (Same as WebSeries)
-  return Consumer<ColorProvider>(
-    builder: (context, colorProvider, child) {
-      final bgColor = colorProvider.isItemFocused
-          ? colorProvider.dominantColor.withOpacity(0.1)
-          // : const Color.fromARGB(255, 175, 180, 196);
-          :ProfessionalColors.primaryDark;
+    // ✅ ADD: Consumer to listen to color changes (Same as WebSeries)
+    return Consumer<ColorProvider>(
+      builder: (context, colorProvider, child) {
+        final bgColor = colorProvider.isItemFocused
+            ? colorProvider.dominantColor.withOpacity(0.1)
+            // : const Color.fromARGB(255, 175, 180, 196);
+            : ProfessionalColors.primaryDark;
 
-      return Scaffold(
-        backgroundColor: Colors.transparent,
-        body: Container(
-          // ✅ ENHANCED: Dynamic background gradient based on focused item
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                bgColor,
-                bgColor.withOpacity(0.8),
-                ProfessionalColors.primaryDark,
+        return Scaffold(
+          backgroundColor: Colors.transparent,
+          body: Container(
+            // ✅ ENHANCED: Dynamic background gradient based on focused item
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  bgColor,
+                  bgColor.withOpacity(0.8),
+                  ProfessionalColors.primaryDark,
+                ],
+              ),
+            ),
+            child: Column(
+              children: [
+                SizedBox(height: screenHeight * 0.02),
+                _buildProfessionalTitle(screenWidth),
+                SizedBox(height: screenHeight * 0.01),
+                Expanded(child: _buildBody(screenWidth, screenHeight)),
               ],
             ),
           ),
-          child: Column(
-            children: [
-              SizedBox(height: screenHeight * 0.02),
-              _buildProfessionalTitle(screenWidth),
-              SizedBox(height: screenHeight * 0.01),
-              Expanded(child: _buildBody(screenWidth, screenHeight)),
-            ],
-          ),
-        ),
-      );
-    },
-  );
-}
+        );
+      },
+    );
+  }
 
   // 🚀 Enhanced Title with Cache Status and Refresh Button
   Widget _buildProfessionalTitle(double screenWidth) {
@@ -1068,68 +1141,68 @@ Widget build(BuildContext context) {
                 ),
               ),
             ),
-            Row(
-              children: [
-                // // 🆕 Refresh Button
-                // GestureDetector(
-                //   onTap: isLoading ? null : _forceRefreshHorizontalVod,
-                //   child: Container(
-                //     padding: const EdgeInsets.all(8),
-                //     decoration: BoxDecoration(
-                //       color: ProfessionalColors.accentGreen.withOpacity(0.2),
-                //       borderRadius: BorderRadius.circular(8),
-                //       border: Border.all(
-                //         color: ProfessionalColors.accentGreen.withOpacity(0.3),
-                //         width: 1,
-                //       ),
-                //     ),
-                //     child: isLoading
-                //         ? SizedBox(
-                //             width: 16,
-                //             height: 16,
-                //             child: CircularProgressIndicator(
-                //               strokeWidth: 2,
-                //               valueColor: AlwaysStoppedAnimation<Color>(
-                //                 ProfessionalColors.accentGreen,
-                //               ),
-                //             ),
-                //           )
-                //         : Icon(
-                //             Icons.refresh,
-                //             size: 16,
-                //             color: ProfessionalColors.accentGreen,
-                //           ),
-                //   ),
-                // ),
-                // const SizedBox(width: 12),
-                // Vod Count
-                if (HorizontalVodList.length > 0)
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          ProfessionalColors.accentGreen.withOpacity(0.2),
-                          ProfessionalColors.accentBlue.withOpacity(0.2),
-                        ],
-                      ),
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                        color: ProfessionalColors.accentGreen.withOpacity(0.3),
-                        width: 1,
-                      ),
-                    ),
-                    child: Text(
-                      '${HorizontalVodList.length} Shows Available',
-                      style: const TextStyle(
-                        color: ProfessionalColors.textSecondary,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-              ],
-            ),
+            // Row(
+            //   children: [
+            //     // // 🆕 Refresh Button
+            //     // GestureDetector(
+            //     //   onTap: isLoading ? null : _forceRefreshHorizontalVod,
+            //     //   child: Container(
+            //     //     padding: const EdgeInsets.all(8),
+            //     //     decoration: BoxDecoration(
+            //     //       color: ProfessionalColors.accentGreen.withOpacity(0.2),
+            //     //       borderRadius: BorderRadius.circular(8),
+            //     //       border: Border.all(
+            //     //         color: ProfessionalColors.accentGreen.withOpacity(0.3),
+            //     //         width: 1,
+            //     //       ),
+            //     //     ),
+            //     //     child: isLoading
+            //     //         ? SizedBox(
+            //     //             width: 16,
+            //     //             height: 16,
+            //     //             child: CircularProgressIndicator(
+            //     //               strokeWidth: 2,
+            //     //               valueColor: AlwaysStoppedAnimation<Color>(
+            //     //                 ProfessionalColors.accentGreen,
+            //     //               ),
+            //     //             ),
+            //     //           )
+            //     //         : Icon(
+            //     //             Icons.refresh,
+            //     //             size: 16,
+            //     //             color: ProfessionalColors.accentGreen,
+            //     //           ),
+            //     //   ),
+            //     // ),
+            //     // const SizedBox(width: 12),
+            //     // Vod Count
+            //     if (HorizontalVodList.length > 0)
+            //       Container(
+            //         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            //         decoration: BoxDecoration(
+            //           gradient: LinearGradient(
+            //             colors: [
+            //               ProfessionalColors.accentGreen.withOpacity(0.2),
+            //               ProfessionalColors.accentBlue.withOpacity(0.2),
+            //             ],
+            //           ),
+            //           borderRadius: BorderRadius.circular(20),
+            //           border: Border.all(
+            //             color: ProfessionalColors.accentGreen.withOpacity(0.3),
+            //             width: 1,
+            //           ),
+            //         ),
+            //         child: Text(
+            //           '${HorizontalVodList.length} Shows Available',
+            //           style: const TextStyle(
+            //             color: ProfessionalColors.textSecondary,
+            //             fontSize: 12,
+            //             fontWeight: FontWeight.w500,
+            //           ),
+            //         ),
+            //       ),
+            //   ],
+            // ),
           ],
         ),
       ),
@@ -1221,68 +1294,76 @@ Widget build(BuildContext context) {
                 //   }
                 // },
                 onFocusChange: (hasFocus) {
-  if (hasFocus && mounted) {
-    Color viewAllColor = ProfessionalColors.gradientColors[
-        math.Random().nextInt(ProfessionalColors.gradientColors.length)];
+                  if (hasFocus && mounted) {
+                    Color viewAllColor = ProfessionalColors.gradientColors[
+                        math.Random()
+                            .nextInt(ProfessionalColors.gradientColors.length)];
 
-    setState(() {
-      _currentAccentColor = viewAllColor;
-    });
+                    setState(() {
+                      _currentAccentColor = viewAllColor;
+                    });
 
-    // ✅ ADD: Update color provider for ViewAll button
-    context.read<ColorProvider>().updateColor(viewAllColor, true);
-  } else if (mounted) {
-    // ✅ ADD: Reset color when ViewAll loses focus
-    context.read<ColorProvider>().resetColor();
-  }
-},
+                    // ✅ ADD: Update color provider for ViewAll button
+                    context
+                        .read<ColorProvider>()
+                        .updateColor(viewAllColor, true);
+                  } else if (mounted) {
+                    // ✅ ADD: Reset color when ViewAll loses focus
+                    context.read<ColorProvider>().resetColor();
+                  }
+                },
                 onKey: (FocusNode node, RawKeyEvent event) {
                   if (event is RawKeyDownEvent) {
                     if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
                       return KeyEventResult.handled;
-                    }
-                    
-                    
-                    
-                     else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
-                      if (HorizontalVodList.isNotEmpty && HorizontalVodList.length > 6) {
-                        String HorizontalVodId = HorizontalVodList[6].id.toString();
-                        FocusScope.of(context).requestFocus(HorizontalVodFocusNodes[HorizontalVodId]);
+                    } else if (event.logicalKey ==
+                        LogicalKeyboardKey.arrowLeft) {
+                      if (HorizontalVodList.isNotEmpty &&
+                          HorizontalVodList.length > 6) {
+                        String HorizontalVodId =
+                            HorizontalVodList[6].id.toString();
+                        FocusScope.of(context).requestFocus(
+                            HorizontalVodFocusNodes[HorizontalVodId]);
                         return KeyEventResult.handled;
                       }
-                    } 
-                    else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
-                    setState(() {
-                      focusedIndex = -1;
-                      _hasReceivedFocusFromWebSeries = false;
-                    });
-                      context.read<ColorProvider>().resetColor();
-                    FocusScope.of(context).unfocus();
-                    Future.delayed(const Duration(milliseconds: 100), () {
-                      if (mounted) {
-                        try {
-                          // ✅ NEW: Go to current selected navigation's first channel
-                          context.read<FocusProvider>().requestCurrentNavFirstChannelFocus();
-                          print('✅ Navigating from HorizontalVod ViewAll to current selected nav first channel');
-                        } catch (e) {
-                          print('❌ Failed to navigate to current nav first channel from ViewAll: $e');
-                        }
-                      }
-                    });
-                    return KeyEventResult.handled;
-                  } 
-                    else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+                    } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
                       setState(() {
                         focusedIndex = -1;
                         _hasReceivedFocusFromWebSeries = false;
                       });
-                        context.read<ColorProvider>().resetColor();
+                      context.read<ColorProvider>().resetColor();
+                      FocusScope.of(context).unfocus();
+                      Future.delayed(const Duration(milliseconds: 100), () {
+                        if (mounted) {
+                          try {
+                            // ✅ NEW: Go to current selected navigation's first channel
+                            context
+                                .read<FocusProvider>()
+                                .requestCurrentNavFirstChannelFocus();
+                            print(
+                                '✅ Navigating from HorizontalVod ViewAll to current selected nav first channel');
+                          } catch (e) {
+                            print(
+                                '❌ Failed to navigate to current nav first channel from ViewAll: $e');
+                          }
+                        }
+                      });
+                      return KeyEventResult.handled;
+                    } else if (event.logicalKey ==
+                        LogicalKeyboardKey.arrowDown) {
+                      setState(() {
+                        focusedIndex = -1;
+                        _hasReceivedFocusFromWebSeries = false;
+                      });
+                      context.read<ColorProvider>().resetColor();
                       FocusScope.of(context).unfocus();
                       Future.delayed(const Duration(milliseconds: 100), () {
                         if (mounted) {
                           try {
                             // Navigate to next section after Vod
-                            context.read<FocusProvider>().requestFirstMoviesFocus();
+                            context
+                                .read<FocusProvider>()
+                                .requestFirstMoviesFocus();
                             print('✅ Navigating down from Vod ViewAll');
                           } catch (e) {
                             print('❌ Failed to navigate down: $e');
@@ -1291,7 +1372,7 @@ Widget build(BuildContext context) {
                       });
                       return KeyEventResult.handled;
                     } else if (event.logicalKey == LogicalKeyboardKey.enter ||
-                               event.logicalKey == LogicalKeyboardKey.select) {
+                        event.logicalKey == LogicalKeyboardKey.select) {
                       print('🎬 ViewAll button pressed - Opening Grid Page...');
                       _navigateToGridPage();
                       return KeyEventResult.handled;
@@ -1312,14 +1393,16 @@ Widget build(BuildContext context) {
             }
 
             var HorizontalVod = HorizontalVodList[index];
-            return _buildHorizontalVodItem(HorizontalVod, index, screenWidth, screenHeight);
+            return _buildHorizontalVodItem(
+                HorizontalVod, index, screenWidth, screenHeight);
           },
         ),
       ),
     );
   }
 
-  Widget _buildHorizontalVodItem(HorizontalVodModel HorizontalVod, int index, double screenWidth, double screenHeight) {
+  Widget _buildHorizontalVodItem(HorizontalVodModel HorizontalVod, int index,
+      double screenWidth, double screenHeight) {
     String HorizontalVodId = HorizontalVod.id.toString();
 
     HorizontalVodFocusNodes.putIfAbsent(
@@ -1351,27 +1434,28 @@ Widget build(BuildContext context) {
       //   }
       // },
       onFocusChange: (hasFocus) async {
-  if (hasFocus && mounted) {
-    try {
-      Color dominantColor = ProfessionalColors.gradientColors[
-          math.Random().nextInt(ProfessionalColors.gradientColors.length)];
+        if (hasFocus && mounted) {
+          try {
+            Color dominantColor = ProfessionalColors.gradientColors[
+                math.Random()
+                    .nextInt(ProfessionalColors.gradientColors.length)];
 
-      setState(() {
-        _currentAccentColor = dominantColor;
-        focusedIndex = index;
-        _hasReceivedFocusFromWebSeries = true;
-      });
+            setState(() {
+              _currentAccentColor = dominantColor;
+              focusedIndex = index;
+              _hasReceivedFocusFromWebSeries = true;
+            });
 
-      // ✅ ADD: Update color provider
-      context.read<ColorProvider>().updateColor(dominantColor, true);
-    } catch (e) {
-      print('Focus change handling failed: $e');
-    }
-  } else if (mounted) {
-    // ✅ ADD: Reset color when focus lost
-    context.read<ColorProvider>().resetColor();
-  }
-},
+            // ✅ ADD: Update color provider
+            context.read<ColorProvider>().updateColor(dominantColor, true);
+          } catch (e) {
+            print('Focus change handling failed: $e');
+          }
+        } else if (mounted) {
+          // ✅ ADD: Reset color when focus lost
+          context.read<ColorProvider>().resetColor();
+        }
+      },
       onKey: (FocusNode node, RawKeyEvent event) {
         if (event is RawKeyDownEvent) {
           // if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
@@ -1383,61 +1467,66 @@ Widget build(BuildContext context) {
           //     FocusScope.of(context).requestFocus(_viewAllFocusNode);
           //     return KeyEventResult.handled;
           //   }
-          // } 
+          // }
 
           // File: sub_vod.dart
 // Inside the onKey handler in _buildHorizontalVodItem
 
-if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
-  bool showViewAll = HorizontalVodList.length > maxHorizontalItems;
+          if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
+            bool showViewAll = HorizontalVodList.length > maxHorizontalItems;
 
-  // If this is not the last visible logo...
-  if (index < maxHorizontalItems - 1 && index < HorizontalVodList.length - 1) {
-    String nextHorizontalVodId = HorizontalVodList[index + 1].id.toString();
-    FocusScope.of(context).requestFocus(HorizontalVodFocusNodes[nextHorizontalVodId]);
-    return KeyEventResult.handled;
-  }
-  // If this is the last logo and the "View All" button exists, move to it.
-  else if (showViewAll && index == maxHorizontalItems - 1) {
-      FocusScope.of(context).requestFocus(_viewAllFocusNode);
-      return KeyEventResult.handled;
-  }
-}
-          
-          else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
-            if (index > 0) {
-              String prevHorizontalVodId = HorizontalVodList[index - 1].id.toString();
-              FocusScope.of(context).requestFocus(HorizontalVodFocusNodes[prevHorizontalVodId]);
+            // If this is not the last visible logo...
+            if (index < maxHorizontalItems - 1 &&
+                index < HorizontalVodList.length - 1) {
+              String nextHorizontalVodId =
+                  HorizontalVodList[index + 1].id.toString();
+              FocusScope.of(context)
+                  .requestFocus(HorizontalVodFocusNodes[nextHorizontalVodId]);
               return KeyEventResult.handled;
             }
-          } 
-        else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
-          setState(() {
-            focusedIndex = -1;
-            _hasReceivedFocusFromWebSeries = false;
-          });
-          
-            context.read<ColorProvider>().resetColor();
-          FocusScope.of(context).unfocus();
-          Future.delayed(const Duration(milliseconds: 100), () {
-            if (mounted) {
-              try {
-                // ✅ NEW: Go to current selected navigation's first channel instead of webseries
-                context.read<FocusProvider>().requestCurrentNavFirstChannelFocus();
-                print('✅ Navigating from HorizontalVod to current selected nav first channel');
-              } catch (e) {
-                print('❌ Failed to navigate to current nav first channel: $e');
-              }
+            // If this is the last logo and the "View All" button exists, move to it.
+            else if (showViewAll && index == maxHorizontalItems - 1) {
+              FocusScope.of(context).requestFocus(_viewAllFocusNode);
+              return KeyEventResult.handled;
             }
-          });
-          return KeyEventResult.handled;
-        } 
-          else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+          } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+            if (index > 0) {
+              String prevHorizontalVodId =
+                  HorizontalVodList[index - 1].id.toString();
+              FocusScope.of(context)
+                  .requestFocus(HorizontalVodFocusNodes[prevHorizontalVodId]);
+            }
+            return KeyEventResult.handled;
+          } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
             setState(() {
               focusedIndex = -1;
               _hasReceivedFocusFromWebSeries = false;
             });
-              context.read<ColorProvider>().resetColor();
+
+            context.read<ColorProvider>().resetColor();
+            FocusScope.of(context).unfocus();
+            Future.delayed(const Duration(milliseconds: 100), () {
+              if (mounted) {
+                try {
+                  // ✅ NEW: Go to current selected navigation's first channel instead of webseries
+                  context
+                      .read<FocusProvider>()
+                      .requestCurrentNavFirstChannelFocus();
+                  print(
+                      '✅ Navigating from HorizontalVod to current selected nav first channel');
+                } catch (e) {
+                  print(
+                      '❌ Failed to navigate to current nav first channel: $e');
+                }
+              }
+            });
+            return KeyEventResult.handled;
+          } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+            setState(() {
+              focusedIndex = -1;
+              _hasReceivedFocusFromWebSeries = false;
+            });
+            context.read<ColorProvider>().resetColor();
             FocusScope.of(context).unfocus();
             Future.delayed(const Duration(milliseconds: 100), () {
               if (mounted) {
@@ -1452,8 +1541,9 @@ if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
             });
             return KeyEventResult.handled;
           } else if (event.logicalKey == LogicalKeyboardKey.enter ||
-                     event.logicalKey == LogicalKeyboardKey.select) {
-            print('🎬 Enter pressed on ${HorizontalVod.name} - Opening Details Page...');
+              event.logicalKey == LogicalKeyboardKey.select) {
+            print(
+                '🎬 Enter pressed on ${HorizontalVod.name} - Opening Details Page...');
             _navigateToHorizontalVodDetails(HorizontalVod);
             return KeyEventResult.handled;
           }
@@ -1472,12 +1562,12 @@ if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
           //   });
           // },
           onColorChange: (color) {
-  setState(() {
-    _currentAccentColor = color;
-  });
-  // ✅ ADD: Update color provider when card changes color
-  context.read<ColorProvider>().updateColor(color, true);
-},
+            setState(() {
+              _currentAccentColor = color;
+            });
+            // ✅ ADD: Update color provider when card changes color
+            context.read<ColorProvider>().updateColor(color, true);
+          },
           index: index,
           categoryTitle: 'CONTENTS',
         ),
@@ -1601,11 +1691,12 @@ class ProfessionalHorizontalVodCard extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _ProfessionalHorizontalVodCardState createState() => _ProfessionalHorizontalVodCardState();
+  _ProfessionalHorizontalVodCardState createState() =>
+      _ProfessionalHorizontalVodCardState();
 }
 
-class _ProfessionalHorizontalVodCardState extends State<ProfessionalHorizontalVodCard>
-    with TickerProviderStateMixin {
+class _ProfessionalHorizontalVodCardState
+    extends State<ProfessionalHorizontalVodCard> with TickerProviderStateMixin {
   late AnimationController _scaleController;
   late AnimationController _glowController;
   late AnimationController _shimmerController;
@@ -1770,8 +1861,9 @@ class _ProfessionalHorizontalVodCardState extends State<ProfessionalHorizontalVo
     return Container(
       width: double.infinity,
       height: posterHeight,
-      child: widget.HorizontalVod.logo != null && widget.HorizontalVod.logo!.isNotEmpty
-          ? 
+      child: widget.HorizontalVod.logo != null &&
+              widget.HorizontalVod.logo!.isNotEmpty
+          ?
           // Image.network(
           //     widget.HorizontalVod.logo!,
           //     fit: BoxFit.cover,
@@ -1782,10 +1874,10 @@ class _ProfessionalHorizontalVodCardState extends State<ProfessionalHorizontalVo
           //     errorBuilder: (context, error, stackTrace) =>
           //         _buildImagePlaceholder(posterHeight),
           //   )
-             displayImage(
-        widget.HorizontalVod.logo!,
-        fit: BoxFit.cover,
-      )
+          displayImage(
+              widget.HorizontalVod.logo!,
+              fit: BoxFit.cover,
+            )
           : _buildImagePlaceholder(posterHeight),
     );
   }
@@ -1888,13 +1980,19 @@ class _ProfessionalHorizontalVodCardState extends State<ProfessionalHorizontalVo
       if (widget.HorizontalVod.genres!.toLowerCase().contains('news')) {
         genre = 'NEWS';
         badgeColor = ProfessionalColors.accentRed;
-      } else if (widget.HorizontalVod.genres!.toLowerCase().contains('sports')) {
+      } else if (widget.HorizontalVod.genres!
+          .toLowerCase()
+          .contains('sports')) {
         genre = 'SPORTS';
         badgeColor = ProfessionalColors.accentOrange;
-      } else if (widget.HorizontalVod.genres!.toLowerCase().contains('entertainment')) {
+      } else if (widget.HorizontalVod.genres!
+          .toLowerCase()
+          .contains('entertainment')) {
         genre = 'ENTERTAINMENT';
         badgeColor = ProfessionalColors.accentPink;
-      } else if (widget.HorizontalVod.genres!.toLowerCase().contains('documentary')) {
+      } else if (widget.HorizontalVod.genres!
+          .toLowerCase()
+          .contains('documentary')) {
         genre = 'DOCUMENTARY';
         badgeColor = ProfessionalColors.accentBlue;
       }
@@ -1986,9 +2084,6 @@ class _ProfessionalHorizontalVodCardState extends State<ProfessionalHorizontalVo
   }
 }
 
-
-
-
 // ✅ Professional View All Button (same as WebSeries)
 class ProfessionalHorizontalVodViewAllButton extends StatefulWidget {
   final FocusNode focusNode;
@@ -2009,7 +2104,8 @@ class ProfessionalHorizontalVodViewAllButton extends StatefulWidget {
       _ProfessionalHorizontalVodViewAllButtonState();
 }
 
-class _ProfessionalHorizontalVodViewAllButtonState extends State<ProfessionalHorizontalVodViewAllButton>
+class _ProfessionalHorizontalVodViewAllButtonState
+    extends State<ProfessionalHorizontalVodViewAllButton>
     with TickerProviderStateMixin {
   late AnimationController _pulseController;
   late AnimationController _rotateController;
@@ -2169,21 +2265,21 @@ class _ProfessionalHorizontalVodViewAllButtonState extends State<ProfessionalHor
                   ),
                 ),
                 const SizedBox(height: 6),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.25),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    '${widget.totalItems}',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 11,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
+                // Container(
+                //   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+                //   decoration: BoxDecoration(
+                //     color: Colors.white.withOpacity(0.25),
+                //     borderRadius: BorderRadius.circular(12),
+                //   ),
+                //   child: Text(
+                //     '${widget.totalItems}',
+                //     style: const TextStyle(
+                //       color: Colors.white,
+                //       fontSize: 11,
+                //       fontWeight: FontWeight.w700,
+                //     ),
+                //   ),
+                // ),
               ],
             ),
           ),
@@ -2234,7 +2330,8 @@ class ProfessionalHorizontalVodLoadingIndicator extends StatefulWidget {
       _ProfessionalHorizontalVodLoadingIndicatorState();
 }
 
-class _ProfessionalHorizontalVodLoadingIndicatorState extends State<ProfessionalHorizontalVodLoadingIndicator>
+class _ProfessionalHorizontalVodLoadingIndicatorState
+    extends State<ProfessionalHorizontalVodLoadingIndicator>
     with TickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
@@ -2335,9 +2432,6 @@ class _ProfessionalHorizontalVodLoadingIndicatorState extends State<Professional
   }
 }
 
-
-
-
 // // ✅ Professional Vod Grid Page
 // class ProfessionalHorizontalVodGridPage extends StatefulWidget {
 //   final List<HorizontalVodModel> HorizontalVodList;
@@ -2437,7 +2531,6 @@ class _ProfessionalHorizontalVodLoadingIndicatorState extends State<Professional
 //   //   }
 //   // }
 
-
 // // ✅ SOLUTION: Smooth और responsive scrolling
 // void _ensureItemVisible(int index) {
 //   if (_scrollController.hasClients) {
@@ -2446,15 +2539,15 @@ class _ProfessionalHorizontalVodLoadingIndicatorState extends State<Professional
 //     final double currentOffset = _scrollController.offset;
 //     final double screenHeight = MediaQuery.of(context).size.height;
 //     final double visibleArea = screenHeight - bannerhgt; // Account for header/padding
-    
+
 //     // Calculate target position
 //     final double itemTopPosition = row * itemHeight;
 //     final double itemBottomPosition = itemTopPosition + itemHeight;
-    
+
 //     // Only scroll if item is not fully visible
 //     if (itemTopPosition < currentOffset || itemBottomPosition > currentOffset + visibleArea) {
 //       double targetOffset;
-      
+
 //       // Determine scroll direction and target
 //       if (itemTopPosition < currentOffset) {
 //         // Scroll up - align item to top with small margin
@@ -2463,10 +2556,10 @@ class _ProfessionalHorizontalVodLoadingIndicatorState extends State<Professional
 //         // Scroll down - align item to bottom of visible area
 //         targetOffset = itemBottomPosition - visibleArea + 20;
 //       }
-      
+
 //       // Ensure target is within bounds
 //       targetOffset = targetOffset.clamp(0.0, _scrollController.position.maxScrollExtent);
-      
+
 //       // Smooth animation with better curve
 //       _scrollController.animateTo(
 //         targetOffset,
@@ -2476,7 +2569,6 @@ class _ProfessionalHorizontalVodLoadingIndicatorState extends State<Professional
 //     }
 //   }
 // }
-
 
 //   void _navigateGrid(LogicalKeyboardKey key) {
 //     int newIndex = gridFocusedIndex;
@@ -2519,8 +2611,6 @@ class _ProfessionalHorizontalVodLoadingIndicatorState extends State<Professional
 //       gridFocusNodes[newIndex]!.requestFocus();
 //     }
 //   }
-
-
 
 //     void _navigateToHorizontalVodDetails(HorizontalVodModel HorizontalVod, int index) {
 //     print('🎬 Grid: Navigating to TV Show Details: ${HorizontalVod.name}');
@@ -2841,7 +2931,6 @@ class _ProfessionalHorizontalVodLoadingIndicatorState extends State<Professional
 //   }
 // }
 
-
 // ✅ ENHANCED: Professional Vod Grid Page with Smooth Scrolling
 
 class ProfessionalHorizontalVodGridPage extends StatefulWidget {
@@ -2855,16 +2944,18 @@ class ProfessionalHorizontalVodGridPage extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _ProfessionalHorizontalVodGridPageState createState() => _ProfessionalHorizontalVodGridPageState();
+  _ProfessionalHorizontalVodGridPageState createState() =>
+      _ProfessionalHorizontalVodGridPageState();
 }
 
-class _ProfessionalHorizontalVodGridPageState extends State<ProfessionalHorizontalVodGridPage>
+class _ProfessionalHorizontalVodGridPageState
+    extends State<ProfessionalHorizontalVodGridPage>
     with TickerProviderStateMixin {
-  
   // ✅ Enhanced Focus Management - Similar to ListDetailsPage
   int gridFocusedIndex = 0;
   final int columnsCount = 6;
-  Map<String, FocusNode> gridFocusNodes = {}; // Changed to String keys like ListDetailsPage
+  Map<String, FocusNode> gridFocusNodes =
+      {}; // Changed to String keys like ListDetailsPage
   late ScrollController _scrollController;
   bool _isLoading = false; // Added loading state
 
@@ -2961,8 +3052,6 @@ class _ProfessionalHorizontalVodGridPageState extends State<ProfessionalHorizont
     }
   }
 
-
-  
   // ✅ Fixed scroll to focused item
   void _scrollToFocusedItem(String itemId) {
     if (!mounted) return;
@@ -2984,7 +3073,6 @@ class _ProfessionalHorizontalVodGridPageState extends State<ProfessionalHorizont
     }
   }
 
-
   // // ✅ ENHANCED: Smooth Scrolling - Same as ListDetailsPage
   // void _scrollToFocusedItem(int index) {
   //   if (!mounted || !_scrollController.hasClients) return;
@@ -2995,15 +3083,15 @@ class _ProfessionalHorizontalVodGridPageState extends State<ProfessionalHorizont
   //     final double currentOffset = _scrollController.offset;
   //     final double screenHeight = MediaQuery.of(context).size.height;
   //     final double visibleArea = screenHeight - 150; // Account for header/padding
-      
+
   //     // Calculate target position
   //     final double itemTopPosition = row * itemHeight;
   //     final double itemBottomPosition = itemTopPosition + itemHeight;
-      
+
   //     // Only scroll if item is not fully visible
   //     if (itemTopPosition < currentOffset || itemBottomPosition > currentOffset + visibleArea) {
   //       double targetOffset;
-        
+
   //       // Determine scroll direction and target
   //       if (itemTopPosition < currentOffset) {
   //         // Scroll up - align item to top with small margin
@@ -3012,17 +3100,17 @@ class _ProfessionalHorizontalVodGridPageState extends State<ProfessionalHorizont
   //         // Scroll down - align item to bottom of visible area
   //         targetOffset = itemBottomPosition - visibleArea + 20;
   //       }
-        
+
   //       // Ensure target is within bounds
   //       targetOffset = targetOffset.clamp(0.0, _scrollController.position.maxScrollExtent);
-        
+
   //       // ✅ Smooth animation with better curve - Same as ListDetailsPage
   //       _scrollController.animateTo(
   //         targetOffset,
   //         duration: AnimationTiming.scroll, // 800ms
   //         curve: Curves.easeInOutCubic, // ✅ Smooth curve
   //       );
-        
+
   //       print('🎯 Smooth scroll to row $row (item $index)');
   //     }
   //   } catch (e) {
@@ -3058,7 +3146,8 @@ class _ProfessionalHorizontalVodGridPageState extends State<ProfessionalHorizont
           newIndex = nextRowIndex;
         } else {
           // ✅ If next row doesn't exist, go to last item in the last row
-          final int lastRowStartIndex = ((totalItems - 1) ~/ columnsCount) * columnsCount;
+          final int lastRowStartIndex =
+              ((totalItems - 1) ~/ columnsCount) * columnsCount;
           final int targetIndex = lastRowStartIndex + currentCol;
           if (targetIndex < totalItems) {
             newIndex = targetIndex;
@@ -3076,24 +3165,27 @@ class _ProfessionalHorizontalVodGridPageState extends State<ProfessionalHorizont
         break;
     }
 
-    if (newIndex != gridFocusedIndex && newIndex >= 0 && newIndex < totalItems) {
+    if (newIndex != gridFocusedIndex &&
+        newIndex >= 0 &&
+        newIndex < totalItems) {
       final newVodId = widget.HorizontalVodList[newIndex].id.toString();
       if (gridFocusNodes.containsKey(newVodId)) {
         setState(() {
           gridFocusedIndex = newIndex;
         });
         FocusScope.of(context).requestFocus(gridFocusNodes[newVodId]);
-        
+
         // ✅ Add haptic feedback for better UX
         HapticFeedback.lightImpact();
-        
+
         print('🎯 Navigated to grid item $newIndex');
       }
     }
   }
 
   // ✅ ENHANCED: Professional Vod Selection with Loading Handling - Similar to ListDetailsPage
-  Future<void> _navigateToHorizontalVodDetails(HorizontalVodModel HorizontalVod, int index) async {
+  Future<void> _navigateToHorizontalVodDetails(
+      HorizontalVodModel HorizontalVod, int index) async {
     if (_isLoading || !mounted) return;
 
     setState(() {
@@ -3107,7 +3199,8 @@ class _ProfessionalHorizontalVodGridPageState extends State<ProfessionalHorizont
         context,
         PageRouteBuilder(
           // ✅ Smooth page transition
-          pageBuilder: (context, animation, secondaryAnimation) => GenreNetworkWidget(
+          pageBuilder: (context, animation, secondaryAnimation) =>
+              GenreNetworkWidget(
             tvChannelId: HorizontalVod.id,
             channelName: HorizontalVod.name,
             channelLogo: HorizontalVod.logo,
@@ -3151,7 +3244,7 @@ class _ProfessionalHorizontalVodGridPageState extends State<ProfessionalHorizont
         setState(() {
           _isLoading = false;
         });
-        
+
         // ✅ Restore focus to the same item after returning - Similar to ListDetailsPage
         Future.delayed(const Duration(milliseconds: 300), () {
           if (mounted && index < widget.HorizontalVodList.length) {
@@ -3195,7 +3288,8 @@ class _ProfessionalHorizontalVodGridPageState extends State<ProfessionalHorizont
                 children: [
                   // ✅ AppBar height placeholder to push content down
                   SizedBox(
-                    height: MediaQuery.of(context).padding.top + 80, // AppBar total height
+                    height: MediaQuery.of(context).padding.top +
+                        80, // AppBar total height
                   ),
                   Expanded(
                     child: _buildGridView(),
@@ -3218,7 +3312,8 @@ class _ProfessionalHorizontalVodGridPageState extends State<ProfessionalHorizont
                 child: Container(
                   color: Colors.black.withOpacity(0.7),
                   child: const Center(
-                    child: ProfessionalHorizontalVodLoadingIndicator(message: 'Opening TV Show...'),
+                    child: ProfessionalHorizontalVodLoadingIndicator(
+                        message: 'Opening TV Show...'),
                   ),
                 ),
               ),
@@ -3328,46 +3423,46 @@ class _ProfessionalHorizontalVodGridPageState extends State<ProfessionalHorizont
                           ),
                         ),
                       ),
-                      // ✅ Enhanced count badge
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              ProfessionalColors.accentGreen.withOpacity(0.3),
-                              ProfessionalColors.accentBlue.withOpacity(0.2),
-                            ],
-                          ),
-                          borderRadius: BorderRadius.circular(15),
-                          border: Border.all(
-                            color: ProfessionalColors.accentGreen.withOpacity(0.4),
-                            width: 1,
-                          ),
-                          // ✅ Add elevation to count badge
-                          boxShadow: [
-                            BoxShadow(
-                              color: ProfessionalColors.accentGreen.withOpacity(0.2),
-                              blurRadius: 6,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: Text(
-                          '${widget.HorizontalVodList.length} Shows Available',
-                          style: const TextStyle(
-                            color: ProfessionalColors.accentGreen,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            shadows: [
-                              Shadow(
-                                color: Colors.black54,
-                                blurRadius: 2,
-                                offset: Offset(0, 1),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
+                      // // ✅ Enhanced count badge
+                      // Container(
+                      //   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      //   decoration: BoxDecoration(
+                      //     gradient: LinearGradient(
+                      //       colors: [
+                      //         ProfessionalColors.accentGreen.withOpacity(0.3),
+                      //         ProfessionalColors.accentBlue.withOpacity(0.2),
+                      //       ],
+                      //     ),
+                      //     borderRadius: BorderRadius.circular(15),
+                      //     border: Border.all(
+                      //       color: ProfessionalColors.accentGreen.withOpacity(0.4),
+                      //       width: 1,
+                      //     ),
+                      //     // ✅ Add elevation to count badge
+                      //     boxShadow: [
+                      //       BoxShadow(
+                      //         color: ProfessionalColors.accentGreen.withOpacity(0.2),
+                      //         blurRadius: 6,
+                      //         offset: const Offset(0, 2),
+                      //       ),
+                      //     ],
+                      //   ),
+                      //   child: Text(
+                      //     '${widget.HorizontalVodList.length} Shows Available',
+                      //     style: const TextStyle(
+                      //       color: ProfessionalColors.accentGreen,
+                      //       fontSize: 12,
+                      //       fontWeight: FontWeight.w600,
+                      //       shadows: [
+                      //         Shadow(
+                      //           color: Colors.black54,
+                      //           blurRadius: 2,
+                      //           offset: Offset(0, 1),
+                      //         ),
+                      //       ],
+                      //     ),
+                      //   ),
+                      // ),
                     ],
                   ),
                 ),
@@ -3438,7 +3533,7 @@ class _ProfessionalHorizontalVodGridPageState extends State<ProfessionalHorizont
             _navigateGrid(event.logicalKey);
             return KeyEventResult.handled;
           } else if (event.logicalKey == LogicalKeyboardKey.enter ||
-                     event.logicalKey == LogicalKeyboardKey.select) {
+              event.logicalKey == LogicalKeyboardKey.select) {
             if (gridFocusedIndex < widget.HorizontalVodList.length) {
               _navigateToHorizontalVodDetails(
                 widget.HorizontalVodList[gridFocusedIndex],
@@ -3508,7 +3603,7 @@ class _ProfessionalHorizontalVodGridPageState extends State<ProfessionalHorizont
     _fadeController.dispose();
     _staggerController.dispose();
     _scrollController.dispose();
-    
+
     // ✅ ENHANCED: Safely dispose all focus nodes - Similar to ListDetailsPage
     for (var entry in gridFocusNodes.entries) {
       try {
@@ -3520,7 +3615,7 @@ class _ProfessionalHorizontalVodGridPageState extends State<ProfessionalHorizont
       }
     }
     gridFocusNodes.clear();
-    
+
     super.dispose();
   }
 }
@@ -3543,10 +3638,12 @@ class ProfessionalGridHorizontalVodCard extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _ProfessionalGridHorizontalVodCardState createState() => _ProfessionalGridHorizontalVodCardState();
+  _ProfessionalGridHorizontalVodCardState createState() =>
+      _ProfessionalGridHorizontalVodCardState();
 }
 
-class _ProfessionalGridHorizontalVodCardState extends State<ProfessionalGridHorizontalVodCard>
+class _ProfessionalGridHorizontalVodCardState
+    extends State<ProfessionalGridHorizontalVodCard>
     with TickerProviderStateMixin {
   late AnimationController _hoverController;
   late AnimationController _glowController;
@@ -3690,8 +3787,9 @@ class _ProfessionalGridHorizontalVodCardState extends State<ProfessionalGridHori
     return Container(
       width: double.infinity,
       height: double.infinity,
-      child: widget.HorizontalVod.logo != null && widget.HorizontalVod.logo!.isNotEmpty
-          ? 
+      child: widget.HorizontalVod.logo != null &&
+              widget.HorizontalVod.logo!.isNotEmpty
+          ?
           // Image.network(
           //     widget.HorizontalVod.logo!,
           //     fit: BoxFit.cover,
@@ -3702,9 +3800,9 @@ class _ProfessionalGridHorizontalVodCardState extends State<ProfessionalGridHori
           //     errorBuilder: (context, error, stackTrace) => _buildImagePlaceholder(),
           //   )
           displayImage(
-        widget.HorizontalVod.logo!,
-        fit: BoxFit.cover,
-      )
+              widget.HorizontalVod.logo!,
+              fit: BoxFit.cover,
+            )
           : _buildImagePlaceholder(),
     );
   }
@@ -3831,7 +3929,8 @@ class _ProfessionalGridHorizontalVodCardState extends State<ProfessionalGridHori
               Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                     decoration: BoxDecoration(
                       color: ProfessionalColors.accentGreen.withOpacity(0.3),
                       borderRadius: BorderRadius.circular(8),
@@ -3851,7 +3950,8 @@ class _ProfessionalGridHorizontalVodCardState extends State<ProfessionalGridHori
                   ),
                   const SizedBox(width: 8),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                     decoration: BoxDecoration(
                       color: _dominantColor.withOpacity(0.2),
                       borderRadius: BorderRadius.circular(8),
@@ -3877,9 +3977,6 @@ class _ProfessionalGridHorizontalVodCardState extends State<ProfessionalGridHori
       ),
     );
   }
-
-
-  
 
   Widget _buildPlayButton() {
     return Positioned(

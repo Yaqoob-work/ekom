@@ -719,7 +719,7 @@ class _ProfessionalReligiousChannelsHorizontalListState
           id: channel.id,
           banner: channel.logo ?? '', // Use logo as banner if available
           poster: channel.logo ?? '', // Use logo as poster if available
-          name: channel.name,
+          name: channel.name, updatedAt: channel.updatedAt,
         ),
       ),
     );
@@ -840,37 +840,37 @@ class _ProfessionalReligiousChannelsHorizontalListState
                 ),
               ),
             ),
-            Row(
-              children: [
-                // Channels Count
-                if (channelsList.length > 0)
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          ProfessionalColors.accentOrange.withOpacity(0.2),
-                          ProfessionalColors.accentRed.withOpacity(0.2),
-                        ],
-                      ),
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                        color: ProfessionalColors.accentOrange.withOpacity(0.3),
-                        width: 1,
-                      ),
-                    ),
-                    child: Text(
-                      '${channelsList.length} Channels Available',
-                      style: const TextStyle(
-                        color: ProfessionalColors.textSecondary,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-              ],
-            ),
+            // Row(
+            //   children: [
+            //     // Channels Count
+            //     if (channelsList.length > 0)
+            //       Container(
+            //         padding:
+            //             const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            //         decoration: BoxDecoration(
+            //           gradient: LinearGradient(
+            //             colors: [
+            //               ProfessionalColors.accentOrange.withOpacity(0.2),
+            //               ProfessionalColors.accentRed.withOpacity(0.2),
+            //             ],
+            //           ),
+            //           borderRadius: BorderRadius.circular(20),
+            //           border: Border.all(
+            //             color: ProfessionalColors.accentOrange.withOpacity(0.3),
+            //             width: 1,
+            //           ),
+            //         ),
+            //         child: Text(
+            //           '${channelsList.length} Channels Available',
+            //           style: const TextStyle(
+            //             color: ProfessionalColors.textSecondary,
+            //             fontSize: 12,
+            //             fontWeight: FontWeight.w500,
+            //           ),
+            //         ),
+            //       ),
+            //   ],
+            // ),
           ],
         ),
       ),
@@ -972,8 +972,9 @@ class _ProfessionalReligiousChannelsHorizontalListState
                         String channelId = channelsList[6].id.toString();
                         FocusScope.of(context)
                             .requestFocus(channelsFocusNodes[channelId]);
-                        return KeyEventResult.handled;
                       }
+                        return KeyEventResult.handled;
+
                     } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
                       setState(() {
                         focusedIndex = -1;
@@ -1101,8 +1102,9 @@ class _ProfessionalReligiousChannelsHorizontalListState
               String prevChannelId = channelsList[index - 1].id.toString();
               FocusScope.of(context)
                   .requestFocus(channelsFocusNodes[prevChannelId]);
-              return KeyEventResult.handled;
             }
+              return KeyEventResult.handled;
+
           } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
             setState(() {
               focusedIndex = -1;
@@ -2102,7 +2104,7 @@ class _ProfessionalReligiousChannelsGridPageState
           id: channel.id,
           banner: channel.logo ?? '', // Use logo as banner if available
           poster: channel.logo ?? '', // Use logo as poster if available
-          name: channel.name,
+          name: channel.name, updatedAt: channel.updatedAt,
         ),
       ),
     );
@@ -2222,31 +2224,31 @@ class _ProfessionalReligiousChannelsGridPageState
                   ),
                 ),
                 const SizedBox(height: 4),
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        ProfessionalColors.accentOrange.withOpacity(0.2),
-                        ProfessionalColors.accentRed.withOpacity(0.1),
-                      ],
-                    ),
-                    borderRadius: BorderRadius.circular(15),
-                    border: Border.all(
-                      color: ProfessionalColors.accentOrange.withOpacity(0.3),
-                      width: 1,
-                    ),
-                  ),
-                  child: Text(
-                    '${widget.channelsList.length} Channels Available',
-                    style: const TextStyle(
-                      color: ProfessionalColors.accentOrange,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
+                // Container(
+                //   padding:
+                //       const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                //   decoration: BoxDecoration(
+                //     gradient: LinearGradient(
+                //       colors: [
+                //         ProfessionalColors.accentOrange.withOpacity(0.2),
+                //         ProfessionalColors.accentRed.withOpacity(0.1),
+                //       ],
+                //     ),
+                //     borderRadius: BorderRadius.circular(15),
+                //     border: Border.all(
+                //       color: ProfessionalColors.accentOrange.withOpacity(0.3),
+                //       width: 1,
+                //     ),
+                //   ),
+                //   child: Text(
+                //     '${widget.channelsList.length} Channels Available',
+                //     style: const TextStyle(
+                //       color: ProfessionalColors.accentOrange,
+                //       fontSize: 12,
+                //       fontWeight: FontWeight.w500,
+                //     ),
+                //   ),
+                // ),
               ],
             ),
           ),

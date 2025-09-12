@@ -1425,6 +1425,949 @@
 
 
 
+// import 'dart:async';
+// import 'dart:ui'; // ImageFilter के लिए यह import ज़रूरी है
+// import 'package:flutter/material.dart';
+// import 'package:flutter/services.dart';
+// import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+// import 'package:flutter_spinkit/flutter_spinkit.dart';
+// import 'package:intl/intl.dart';
+// import 'package:keep_screen_on/keep_screen_on.dart';
+// import 'package:mobi_tv_entertainment/main.dart';
+
+// /// तारीख और समय को दिखाने के लिए एक अलग विजेट।
+// class DateTimeWidget extends StatefulWidget {
+//   const DateTimeWidget({Key? key}) : super(key: key);
+
+//   @override
+//   _DateTimeWidgetState createState() => _DateTimeWidgetState();
+// }
+
+// class _DateTimeWidgetState extends State<DateTimeWidget> {
+//   late Timer _dateTimeTimer;
+//   String _currentDate = '';
+//   String _currentTime = '';
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     _updateDateTime();
+//     _startDateTimeTimer();
+//   }
+
+//   void _updateDateTime() {
+//     final now = DateTime.now();
+//     _currentDate = DateFormat('MM/dd/yyyy').format(now);
+//     _currentTime = DateFormat('HH:mm:ss').format(now);
+//   }
+
+//   void _startDateTimeTimer() {
+//     _dateTimeTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+//       if (mounted) {
+//         setState(() {
+//           _updateDateTime();
+//         });
+//       }
+//     });
+//   }
+
+//   @override
+//   void dispose() {
+//     _dateTimeTimer.cancel();
+//     super.dispose();
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final screenhgt = MediaQuery.of(context).size.height;
+//     final screenwdt = MediaQuery.of(context).size.width;
+//     return Positioned(
+//       top: screenhgt * 0.07,
+//       left: 0,
+//       right: 0,
+//       child: Padding(
+//         padding: EdgeInsets.symmetric(horizontal: screenwdt * 0.03),
+//         child: Row(
+//           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//           children: [
+//             Container(
+//               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+//               decoration: BoxDecoration(
+//                   color: Colors.black, borderRadius: BorderRadius.circular(5)),
+//               child: Text(_currentDate,
+//                   style: const TextStyle(
+//                       color: Colors.white,
+//                       fontSize: 16,
+//                       fontWeight: FontWeight.bold)),
+//             ),
+//             Container(
+//               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+//               decoration: BoxDecoration(
+//                   color: Colors.black, borderRadius: BorderRadius.circular(5)),
+//               child: Text(_currentTime,
+//                   style: const TextStyle(
+//                       color: Colors.white,
+//                       fontSize: 16,
+//                       fontWeight: FontWeight.bold)),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+// /// कस्टम UI और टीवी रिमोट कंट्रोल के साथ InAppWebView पर आधारित YouTube प्लेयर।
+// class YoutubeWebviewPlayer extends StatefulWidget {
+//   final String videoUrl;
+//   final String? name;
+
+//   const YoutubeWebviewPlayer({
+//     Key? key,
+//     required this.videoUrl,
+//     required this.name,
+//   }) : super(key: key);
+
+//   @override
+//   _YoutubeWebviewPlayerState createState() => _YoutubeWebviewPlayerState();
+// }
+
+// class _YoutubeWebviewPlayerState extends State<YoutubeWebviewPlayer>
+//     with WidgetsBindingObserver {
+//   InAppWebViewController? _webViewController;
+//   String? _videoId;
+//   final FocusNode _focusNode = FocusNode();
+
+//   // State Management
+//   bool _isPageLoading = true;
+//   bool _showSplashScreen = true;
+//   Timer? _splashTimer;
+//   bool _showControls = false;
+//   Timer? _hideControlsTimer;
+//   bool _isPlaying = false;
+//   Duration _currentPosition = Duration.zero;
+//   Duration _totalDuration = Duration.zero;
+//   bool _showEndBlur = false; // <-- बदलाव 1: नया वेरिएबल जोड़ा गया
+//   bool _isBufferingMidStream = false;
+//   // Progressive Seeking
+//   Timer? _seekTimer;
+//   int _pendingSeekSeconds = 0;
+//   Duration _targetSeekPosition = Duration.zero;
+//   bool _isSeeking = false;
+
+//   final List<ContentBlocker> adBlockers = [
+//     ContentBlocker(
+//         trigger: ContentBlockerTrigger(urlFilter: ".*doubleclick\\.net/.*"),
+//         action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+//     ContentBlocker(
+//         trigger:
+//             ContentBlockerTrigger(urlFilter: ".*googlesyndication\\.com/.*"),
+//         action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+//     ContentBlocker(
+//         trigger:
+//             ContentBlockerTrigger(urlFilter: ".*googleadservices\\.com/.*"),
+//         action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+//     ContentBlocker(
+//         trigger:
+//             ContentBlockerTrigger(urlFilter: ".*google-analytics\\.com/.*"),
+//         action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+//     ContentBlocker(
+//         trigger:
+//             ContentBlockerTrigger(urlFilter: ".*adservice\\.google\\.com/.*"),
+//         action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+//     ContentBlocker(
+//         trigger:
+//             ContentBlockerTrigger(urlFilter: ".*youtube\\.com/api/stats/ads.*"),
+//         action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+//     ContentBlocker(
+//         trigger:
+//             ContentBlockerTrigger(urlFilter: ".*youtube\\.com/get_ad_break.*"),
+//         action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+//     ContentBlocker(
+//         trigger: ContentBlockerTrigger(urlFilter: ".*youtube\\.com/pagead/.*"),
+//         action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+//     ContentBlocker(
+//         trigger: ContentBlockerTrigger(
+//             urlFilter: ".*googlevideo\\.com/videoplayback.*adformat.*"),
+//         action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+//     ContentBlocker(
+//         trigger: ContentBlockerTrigger(
+//             urlFilter: ".*googlevideo\\.com/videoplayback.*ctier.*"),
+//         action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+//     ContentBlocker(
+//         trigger:
+//             ContentBlockerTrigger(urlFilter: ".*youtube\\.com/ptracking.*"),
+//         action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+//     ContentBlocker(
+//         trigger:
+//             ContentBlockerTrigger(urlFilter: ".*youtube\\.com/api/stats/qoe.*"),
+//         action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+//     ContentBlocker(
+//         trigger: ContentBlockerTrigger(urlFilter: ".*youtube\\.com/ad_data.*"),
+//         action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+//     ContentBlocker(
+//         trigger:
+//             ContentBlockerTrigger(urlFilter: ".*youtube\\.com/api/stats/atr.*"),
+//         action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+//     ContentBlocker(
+//         trigger: ContentBlockerTrigger(
+//             urlFilter: ".*stats\\.g\\.doubleclick\\.net/.*"),
+//         action: ContentBlockerAction(type: ContentBlockerActionType.BLOCK)),
+//   ];
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     KeepScreenOn.turnOn();
+//     WidgetsBinding.instance.addObserver(this);
+
+//     _videoId = _extractVideoId(widget.videoUrl);
+
+//     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+//     SystemChrome.setPreferredOrientations(
+//         [DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
+
+//     _startSplashTimer();
+//   }
+
+//   @override
+//   void dispose() {
+//     _focusNode.dispose();
+//     WidgetsBinding.instance.removeObserver(this);
+//     KeepScreenOn.turnOff();
+
+//     _splashTimer?.cancel();
+//     _hideControlsTimer?.cancel();
+//     _seekTimer?.cancel();
+
+//     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+//         overlays: SystemUiOverlay.values);
+//     SystemChrome.setPreferredOrientations([]);
+//     super.dispose();
+//   }
+
+//   String? _extractVideoId(String url) {
+//     if (url.length == 11 && !url.contains('/') && !url.contains('?')) {
+//       return url;
+//     }
+//     RegExp regExp = RegExp(
+//         r'.*(?:youtu\.be\/|v\/|vi\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*');
+//     final match = regExp.firstMatch(url);
+//     return (match != null && match.group(1)!.length == 11)
+//         ? match.group(1)
+//         : null;
+//   }
+
+//   void _startSplashTimer() {
+//     _splashTimer = Timer(const Duration(seconds: 12), () {
+//       if (mounted) {
+//         setState(() => _showSplashScreen = false);
+//       }
+//     });
+//   }
+
+//   void _showControlsTemporarily() {
+//     if (mounted) {
+//       if (!_showControls) {
+//         setState(() => _showControls = true);
+//       }
+//       _hideControlsTimer?.cancel();
+//       _hideControlsTimer = Timer(const Duration(seconds: 5), () {
+//         if (mounted) {
+//           setState(() => _showControls = false);
+//         }
+//       });
+//     }
+//   }
+
+//   @override
+//   void didChangeAppLifecycleState(AppLifecycleState state) {
+//     super.didChangeAppLifecycleState(state);
+//     switch (state) {
+//       case AppLifecycleState.resumed:
+//         _webViewController?.evaluateJavascript(source: "player.playVideo();");
+//         break;
+//       case AppLifecycleState.paused:
+//       case AppLifecycleState.inactive:
+//       case AppLifecycleState.detached:
+//       case AppLifecycleState.hidden:
+//         _webViewController?.evaluateJavascript(source: "player.pauseVideo();");
+//         break;
+//     }
+//   }
+
+//   String _formatDuration(Duration duration) {
+//     String twoDigits(int n) => n.toString().padLeft(2, '0');
+//     String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
+//     String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
+//     return "${twoDigits(duration.inHours)}:$twoDigitMinutes:$twoDigitSeconds";
+//   }
+
+//   void _seekVideo(bool forward) {
+//     if (_totalDuration.inSeconds > 24) {
+//       _showControlsTemporarily();
+//       final seekAmount = (_totalDuration.inSeconds / 200).round().clamp(5, 30);
+//       _seekTimer?.cancel();
+//       _pendingSeekSeconds += forward ? seekAmount : -seekAmount;
+//       final currentSeconds = _currentPosition.inSeconds;
+//       final targetSeconds = (currentSeconds + _pendingSeekSeconds)
+//           .clamp(0, _totalDuration.inSeconds - 12);
+//       if (mounted) {
+//         setState(() {
+//           _isSeeking = true;
+//           _targetSeekPosition = Duration(seconds: targetSeconds);
+//         });
+//       }
+//       _seekTimer = Timer(const Duration(milliseconds: 1000), _executeSeek);
+//     }
+//   }
+
+//   void _executeSeek() {
+//     if (_pendingSeekSeconds != 0) {
+//       final newPosition = _targetSeekPosition.inSeconds;
+//       _webViewController?.evaluateJavascript(source: "seekTo($newPosition);");
+//       _pendingSeekSeconds = 0;
+//       if (mounted) {
+//         setState(() => _isSeeking = false);
+//       }
+//     }
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final String livePlayerUrl =
+//         "https://yaqoob-work.github.io/my-player/player.html";
+//     final screenHeight = MediaQuery.of(context).size.height;
+//     final bottomBarHeight = screenHeight * 0.06;
+//     // final bool isBuffering = _isPageLoading || (_currentPosition.inSeconds < 2 && _isPlaying);
+//     final bool isBuffering = _isPageLoading ||
+//         (_currentPosition.inSeconds < 2 && _isPlaying) ||
+//         _isBufferingMidStream;
+
+//     return Focus(
+//       focusNode: _focusNode,
+//       autofocus: true,
+//       onKey: (node, event) {
+//         if (event is RawKeyDownEvent) {
+//           _showControlsTemporarily();
+          
+//           if (event.logicalKey == LogicalKeyboardKey.select ||
+//               event.logicalKey == LogicalKeyboardKey.enter ||
+//               event.logicalKey == LogicalKeyboardKey.mediaPlayPause) {
+//             _webViewController?.evaluateJavascript(
+//                 source: "togglePlayPause();");
+//             return KeyEventResult.handled;
+//           } else if (event.logicalKey == LogicalKeyboardKey.arrowRight ||
+//               event.logicalKey == LogicalKeyboardKey.mediaFastForward) {
+//             _seekVideo(true);
+//             return KeyEventResult.handled;
+//           } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft ||
+//               event.logicalKey == LogicalKeyboardKey.mediaRewind) {
+//             _seekVideo(false);
+//             return KeyEventResult.handled;
+//           }
+//         }
+//         return KeyEventResult.ignored;
+//       },
+//       child: Scaffold(
+//         backgroundColor: Colors.black,
+//         body: _videoId == null
+//             ? const Center(
+//                 child: Text('Invalid Video URL',
+//                     style: TextStyle(color: Colors.white)))
+//             : Stack(
+//                 alignment: Alignment.center,
+//                 children: [
+//                   AnimatedPadding(
+//                     duration: const Duration(milliseconds: 250),
+//                     padding: EdgeInsets.only(
+//                         // bottom: _showControls ? bottomBarHeight : 0.0),
+//                         bottom: 0.0),
+//                     child: Center(
+//                       child: AspectRatio(
+//                         aspectRatio: 16 / 9,
+//                         child: InAppWebView(
+//                           initialSettings: InAppWebViewSettings(
+//                             contentBlockers: adBlockers,
+//                             useHybridComposition: false,
+//                             userAgent:
+//                                 "Mozilla/5.0 (Linux; Android 10; SM-G975F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.106 Mobile Safari/537.36",
+//                             allowsInlineMediaPlayback: true,
+//                             mediaPlaybackRequiresUserGesture: false,
+//                           ),
+//                           onWebViewCreated: (controller) {
+//                             _webViewController = controller;
+
+//                             // <-- बदलाव 2: timeUpdate हैंडलर को पूरी तरह से बदल दिया गया है
+//                             controller.addJavaScriptHandler(
+//                               handlerName: 'timeUpdate',
+//                               callback: (args) {
+//                                 if (args.length == 2 &&
+//                                     args[0] is num &&
+//                                     args[1] is num &&
+//                                     mounted) {
+//                                   final currentTime =
+//                                       (args[0] as num).toDouble();
+//                                   final totalTime = (args[1] as num).toDouble();
+
+//                                   bool shouldShowBlurAndMute = totalTime > 25 &&
+//                                       currentTime >= (totalTime - 25);
+
+//                                   if (shouldShowBlurAndMute && !_showEndBlur) {
+//                                     _webViewController?.evaluateJavascript(
+//                                         source: "mutePlayer();");
+//                                   } else if (!shouldShowBlurAndMute &&
+//                                       _showEndBlur) {
+//                                     _webViewController?.evaluateJavascript(
+//                                         source: "unMutePlayer();");
+//                                   }
+
+//                                   setState(() {
+//                                     _currentPosition =
+//                                         Duration(seconds: currentTime.toInt());
+//                                     _totalDuration =
+//                                         Duration(seconds: totalTime.toInt());
+//                                     _showEndBlur = shouldShowBlurAndMute;
+//                                   });
+//                                 }
+//                               },
+//                             );
+
+//                             // controller.addJavaScriptHandler(
+//                             //   handlerName: 'playerStateChange',
+//                             //   callback: (args) {
+//                             //     if (args.isNotEmpty &&
+//                             //         args[0] is int &&
+//                             //         mounted) {
+//                             //       setState(() =>
+//                             //           _isPlaying = (args[0] as int) == 1);
+//                             //     }
+//                             //   },
+//                             // );
+
+//                             // onWebViewCreated के अंदर...
+
+//                             controller.addJavaScriptHandler(
+//                               handlerName: 'playerStateChange',
+//                               callback: (args) {
+//                                 if (args.isNotEmpty &&
+//                                     args[0] is int &&
+//                                     mounted) {
+//                                   final playerState = args[0] as int;
+//                                   setState(() {
+//                                     // playerState 1 का मतलब है 'playing'
+//                                     _isPlaying = (playerState == 1);
+//                                     // playerState 3 का मतलब है 'buffering'
+//                                     _isBufferingMidStream = (playerState == 3);
+//                                   });
+//                                 }
+//                               },
+//                             );
+
+//                             final urlToLoad =
+//                                 WebUri("$livePlayerUrl?id=$_videoId");
+//                             _webViewController?.loadUrl(
+//                                 urlRequest: URLRequest(url: urlToLoad));
+//                           },
+//                           onLoadStop: (controller, url) {
+//                             setState(() => _isPageLoading = false);
+//                             _focusNode.requestFocus();
+//                           },
+//                         ),
+//                       ),
+//                     ),
+//                   ),
+
+//                   // <-- बदलाव 3: ब्लर इफ़ेक्ट विजेट जोड़ा गया
+//                   if (_showEndBlur)
+//                     BackdropFilter(
+//                       filter: ImageFilter.blur(sigmaX: 25.0, sigmaY: 25.0),
+//                       child: Container(
+//                         color: Colors.black.withOpacity(0.1),
+//                       ),
+//                     ),
+
+//                   if (_showSplashScreen) _buildSplashScreenOverlay(),
+//                   if (!_isPlaying && !_showControls && !_showSplashScreen)
+//                     _buildPauseOverlay(),
+
+//                   AnimatedOpacity(
+//                     // opacity: isBuffering ? 1.0 : 0.0,
+//                     opacity: 1.0,
+//                     duration: const Duration(milliseconds: 300),
+//                     child: _buildTopControlsOverlay(),
+//                   ),
+//                   // AnimatedOpacity(
+//                   //   // opacity: isBuffering ? 1.0 : 0.0,
+//                   //   opacity: 1.0 ,
+//                   //   duration: const Duration(milliseconds: 300),
+//                   //   child: _buildProgressBar(),
+//                   // ),
+//                   if (_showControls) _buildBottomProgressBar(bottomBarHeight),
+//                   if (_isPageLoading ||
+//                       (_currentPosition.inSeconds < 2 && _isPlaying))
+//                     Container(
+//                         color: Colors.black,
+//                         child: const Center(
+//                           child: SpinKitFadingCircle(
+//                             color: Colors.red,
+//                             size: 50.0,
+//                           ),
+//                         )),
+//                 ],
+//               ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildSplashScreenOverlay() {
+//     final screenhgt = MediaQuery.of(context).size.height;
+//     return Stack(
+//       children: [
+//         Positioned(
+//           top: 0,
+//           left: 0,
+//           right: 0,
+//           child: Container(
+//             height: screenhgt * 0.12,
+//             color: Colors.black,
+//             alignment: Alignment.center,
+//             child: Text(
+//               widget.name?.toUpperCase() ?? '',
+//               style: const TextStyle(
+//                   color: Colors.white,
+//                   fontSize: 18,
+//                   fontWeight: FontWeight.bold),
+//             ),
+//           ),
+//         ),
+//         Positioned(
+//           bottom: 0,
+//           left: 0,
+//           right: 0,
+//           child: Container(height: screenhgt * 0.12, color: Colors.black),
+//         ),
+//       ],
+//     );
+//   }
+
+//   Widget _buildPauseOverlay() {
+//     final screenhgt = MediaQuery.of(context).size.height;
+//     return Stack(
+//       children: [
+//         Positioned(
+//           top: 0,
+//           left: 0,
+//           right: 0,
+//           child: Container(
+//             height: screenhgt * 0.12,
+//             color: Colors.black,
+//             alignment: Alignment.center,
+//             child: Text(
+//               widget.name?.toUpperCase() ?? '',
+//               style: const TextStyle(
+//                   color: Colors.white,
+//                   fontSize: 18,
+//                   fontWeight: FontWeight.bold),
+//             ),
+//           ),
+//         ),
+//         Positioned(
+//           bottom: 0,
+//           left: 0,
+//           right: 0,
+//           child: Container(height: screenhgt * 0.12, color: Colors.black),
+//         ),
+//       ],
+//     );
+//   }
+
+
+
+
+//   Widget _buildTopControlsOverlay() {
+//   // इन वेरिएबल्स की गणना पहले की तरह ही रहेगी
+//   final screenhgt = MediaQuery.of(context).size.height;
+//   final screenwdt = MediaQuery.of(context).size.width;
+//   double progress = (_totalDuration.inSeconds == 0)
+//       ? 0
+//       : _currentPosition.inSeconds / _totalDuration.inSeconds;
+//   double seekProgress = (_totalDuration.inSeconds == 0)
+//       ? 0
+//       : _targetSeekPosition.inSeconds / _totalDuration.inSeconds;
+
+//   return Stack(
+//     children: [
+//       Positioned(
+//         top: 0,
+//         left: 0,
+//         right: 0,
+//         height: screenhgt * 0.12,
+//         child: Container(
+//           color: Colors.black,
+//           padding: const EdgeInsets.only(top: 16.0, bottom: 4.0),
+//           child: Column(
+//             children: [
+//               Text(
+//                 widget.name?.toUpperCase() ?? '',
+//                 style: const TextStyle(
+//                     color: Colors.white,
+//                     fontSize: 18,
+//                     fontWeight: FontWeight.bold),
+//               ),
+//             ],
+//           ),
+//         ),
+//       ),
+//       Positioned(
+//         bottom: 0,
+//         left: screenwdt * 0.65,
+//         right: 0,
+//         height: screenhgt * 0.12,
+//         child: Container(
+//           color: Colors.black,
+//           // padding: const EdgeInsets.symmetric(horizontal: 16.0),
+//           // child: 
+//           // Row(
+//           //   crossAxisAlignment: CrossAxisAlignment.center,
+//           //   children: [
+//           //     Text(
+//           //       _isSeeking
+//           //           ? _formatDuration(_targetSeekPosition)
+//           //           : _formatDuration(_currentPosition),
+//           //       style: TextStyle(
+//           //         color: _isSeeking ? Colors.yellow : Colors.white,
+//           //         fontSize: 14,
+//           //         fontWeight:
+//           //             _isSeeking ? FontWeight.bold : FontWeight.normal,
+//           //       ),
+//           //     ),
+//           //     const SizedBox(width: 12),
+//           //     Expanded(
+//           //       child: ClipRRect(
+//           //         borderRadius: BorderRadius.circular(4),
+//           //         child: Stack(
+//           //           alignment: Alignment.centerLeft,
+//           //           children: [
+//           //             // 1. बैकग्राउंड बार
+//           //             Container(
+//           //                 height: 6, color: Colors.white.withOpacity(0.3)),
+                      
+//           //             // --- START: यहाँ बदलाव किया गया है ---
+//           //             if (_isSeeking && _targetSeekPosition < _currentPosition) ...[
+//           //               // BACKWARD SEEK: पहले लाल बार, फिर उसके ऊपर पीला बार
+//           //               FractionallySizedBox(
+//           //                 widthFactor: progress.clamp(0.0, 1.0),
+//           //                 child: Container(height: 6, color: Colors.red),
+//           //               ),
+//           //               FractionallySizedBox(
+//           //                 widthFactor: seekProgress.clamp(0.0, 1.0),
+//           //                 child: Container(
+//           //                   height: 6,
+//           //                   color: Colors.yellow.withOpacity(0.8),
+//           //                 ),
+//           //               ),
+//           //             ] else ...[
+//           //               // FORWARD SEEK or NO SEEK: पहले पीला बार, फिर उसके ऊपर लाल बार
+//           //               if (_isSeeking)
+//           //                 FractionallySizedBox(
+//           //                   widthFactor: seekProgress.clamp(0.0, 1.0),
+//           //                   child: Container(
+//           //                     height: 6,
+//           //                     color: Colors.yellow.withOpacity(0.8),
+//           //                   ),
+//           //                 ),
+//           //               FractionallySizedBox(
+//           //                 widthFactor: progress.clamp(0.0, 1.0),
+//           //                 child: Container(height: 6, color: Colors.red),
+//           //               ),
+//           //             ],
+//           //             // --- END: बदलाव यहाँ समाप्त होता है ---
+//           //           ],
+//           //         ),
+//           //       ),
+//           //     ),
+//           //     const SizedBox(width: 12),
+//           //     Text(
+//           //       _formatDuration(Duration(
+//           //           seconds: (_totalDuration.inSeconds - 12).clamp(0, 999999))),
+//           //       style: const TextStyle(color: Colors.white, fontSize: 14),
+//           //     ),
+//           //   ],
+//           // ),
+//         ),
+//       )
+//     ],
+//   );
+// }
+
+
+
+
+//   // Widget _buildTopControlsOverlay() {
+//   //   double progress = (_totalDuration.inSeconds == 0)
+//   //       ? 0
+//   //       : _currentPosition.inSeconds / _totalDuration.inSeconds;
+//   //   double seekProgress = (_totalDuration.inSeconds == 0)
+//   //       ? 0
+//   //       : _targetSeekPosition.inSeconds / _totalDuration.inSeconds;
+
+//   //   return Stack(
+//   //     children: [
+//   //       Positioned(
+//   //         top: 0,
+//   //         left: 0,
+//   //         right: 0,
+//   //         height: screenhgt * 0.12,
+//   //         child: Container(
+//   //           color: Colors.black,
+//   //           padding: const EdgeInsets.only(top: 16.0, bottom: 4.0),
+//   //           child: Column(
+//   //             children: [
+//   //               Text(
+//   //                 widget.name?.toUpperCase() ?? '',
+//   //                 style: const TextStyle(
+//   //                     color: Colors.white,
+//   //                     fontSize: 18,
+//   //                     fontWeight: FontWeight.bold),
+//   //               ),
+//   //               // SizedBox(height: MediaQuery.of(context).size.height * 0.01),
+//   //               // Padding(
+//   //               //   padding: EdgeInsets.symmetric(
+//   //               //       horizontal: MediaQuery.of(context).size.width * 0.03),
+//   //               //   child: Row(
+//   //               //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//   //               //     children: [
+//   //               //       Text(DateFormat('MM/dd/yyyy').format(DateTime.now()),
+//   //               //           style:
+//   //               //               const TextStyle(color: Colors.white, fontSize: 16)),
+//   //               //       Text(DateFormat('HH:mm:ss').format(DateTime.now()),
+//   //               //           style:
+//   //               //               const TextStyle(color: Colors.white, fontSize: 16)),
+//   //               //     ],
+//   //               //   ),
+//   //               // ),
+//   //             ],
+//   //           ),
+//   //         ),
+//   //       ),
+//   //       Positioned(
+//   //         bottom: 0,
+//   //         left: screenwdt * 0.65,
+//   //         right: 0,
+//   //         height: screenhgt * 0.12,
+//   //         // width: screenwdt * 0.35,
+//   //         child: Container(
+//   //           color: Colors.black,
+//   //           padding: const EdgeInsets.symmetric(horizontal: 16.0),
+//   //           child: Row(
+//   //             crossAxisAlignment: CrossAxisAlignment.center,
+//   //             children: [
+//   //               Text(
+//   //                 _isSeeking
+//   //                     ? _formatDuration(_targetSeekPosition)
+//   //                     : _formatDuration(_currentPosition),
+//   //                 style: TextStyle(
+//   //                   color: _isSeeking ? Colors.yellow : Colors.white,
+//   //                   fontSize: 14,
+//   //                   fontWeight:
+//   //                       _isSeeking ? FontWeight.bold : FontWeight.normal,
+//   //                 ),
+//   //               ),
+//   //               const SizedBox(width: 12),
+//   //               Expanded(
+//   //                 child: ClipRRect(
+//   //                   borderRadius: BorderRadius.circular(4),
+//   //                   child: Stack(
+//   //                     alignment: Alignment.centerLeft,
+//   //                     children: [
+//   //                       Container(
+//   //                           height: 6, color: Colors.white.withOpacity(0.3)),
+//   //                       if (_isSeeking)
+//   //                         FractionallySizedBox(
+//   //                             widthFactor: seekProgress,
+//   //                             child: Container(
+//   //                                 height: 6,
+//   //                                 color: Colors.yellow.withOpacity(0.8))),
+//   //                       FractionallySizedBox(
+//   //                           widthFactor: progress,
+//   //                           child: Container(height: 6, color: Colors.red)),
+//   //                     ],
+//   //                   ),
+//   //                 ),
+//   //               ),
+//   //               const SizedBox(width: 12),
+//   //               Text(
+//   //                 _formatDuration(Duration(
+//   //                     seconds:
+//   //                         (_totalDuration.inSeconds - 12).clamp(0, 999999))),
+//   //                 style: const TextStyle(color: Colors.white, fontSize: 14),
+//   //               ),
+//   //             ],
+//   //           ),
+//   //         ),
+//   //       )
+//   //     ],
+//   //   );
+//   // }
+
+
+
+
+
+//   Widget _buildBottomProgressBar(double barHeight) {
+//   // इन वेरिएबल्स की गणना पहले की तरह ही रहेगी
+//   double progress = (_totalDuration.inSeconds == 0)
+//       ? 0
+//       : _currentPosition.inSeconds / _totalDuration.inSeconds;
+//   double seekProgress = (_totalDuration.inSeconds == 0)
+//       ? 0
+//       : _targetSeekPosition.inSeconds / _totalDuration.inSeconds;
+
+//   return Positioned(
+//     bottom: 0,
+//     left: 0,
+//     right: 0,
+//     height: barHeight,
+//     child: Container(
+//       color: Colors.black.withOpacity(0.8),
+//       padding: const EdgeInsets.symmetric(horizontal: 16.0),
+//       child: Row(
+//         crossAxisAlignment: CrossAxisAlignment.center,
+//         children: [
+//           Text(
+//             _isSeeking
+//                 ? _formatDuration(_targetSeekPosition)
+//                 : _formatDuration(_currentPosition),
+//             style: TextStyle(
+//               color: _isSeeking ? Colors.yellow : Colors.white,
+//               fontSize: 14,
+//               fontWeight: _isSeeking ? FontWeight.bold : FontWeight.normal,
+//             ),
+//           ),
+//           const SizedBox(width: 12),
+//           Expanded(
+//             child: ClipRRect(
+//               borderRadius: BorderRadius.circular(4),
+//               child: Stack(
+//                 alignment: Alignment.centerLeft,
+//                 children: [
+//                   // 1. बैकग्राउंड बार
+//                   Container(height: 6, color: Colors.white.withOpacity(0.3)),
+                  
+//                   // --- START: यहाँ भी वही बदलाव किया गया है ---
+//                   if (_isSeeking && _targetSeekPosition < _currentPosition) ...[
+//                     // BACKWARD SEEK: पहले लाल बार, फिर उसके ऊपर पीला बार
+//                     FractionallySizedBox(
+//                       widthFactor: progress.clamp(0.0, 1.0),
+//                       child: Container(height: 6, color: Colors.red),
+//                     ),
+//                     FractionallySizedBox(
+//                       widthFactor: seekProgress.clamp(0.0, 1.0),
+//                       child: Container(
+//                         height: 6,
+//                         color: Colors.yellow.withOpacity(0.8),
+//                       ),
+//                     ),
+//                   ] else ...[
+//                     // FORWARD SEEK or NO SEEK: पहले पीला बार, फिर उसके ऊपर लाल बार
+//                     if (_isSeeking)
+//                       FractionallySizedBox(
+//                         widthFactor: seekProgress.clamp(0.0, 1.0),
+//                         child: Container(
+//                           height: 6,
+//                           color: Colors.yellow.withOpacity(0.8),
+//                         ),
+//                       ),
+//                     FractionallySizedBox(
+//                       widthFactor: progress.clamp(0.0, 1.0),
+//                       child: Container(height: 6, color: Colors.red),
+//                     ),
+//                   ],
+//                   // --- END: बदलाव यहाँ समाप्त होता है ---
+//                 ],
+//               ),
+//             ),
+//           ),
+//           const SizedBox(width: 12),
+//           Text(
+//             _formatDuration(Duration(
+//                 seconds: (_totalDuration.inSeconds - 12).clamp(0, 999999))),
+//             style: const TextStyle(color: Colors.white, fontSize: 14),
+//           ),
+//         ],
+//       ),
+//     ),
+//   );
+// }
+
+//   // Widget _buildBottomProgressBar(double barHeight) {
+//   //   double progress = (_totalDuration.inSeconds == 0)
+//   //       ? 0
+//   //       : _currentPosition.inSeconds / _totalDuration.inSeconds;
+//   //   double seekProgress = (_totalDuration.inSeconds == 0)
+//   //       ? 0
+//   //       : _targetSeekPosition.inSeconds / _totalDuration.inSeconds;
+
+//   //   return Positioned(
+//   //     bottom: 0,
+//   //     left: 0,
+//   //     right: 0,
+//   //     height: barHeight,
+//   //     child: Container(
+//   //       color: Colors.black.withOpacity(0.8),
+//   //       padding: const EdgeInsets.symmetric(horizontal: 16.0),
+//   //       child: Row(
+//   //         crossAxisAlignment: CrossAxisAlignment.center,
+//   //         children: [
+//   //           Text(
+//   //             _isSeeking
+//   //                 ? _formatDuration(_targetSeekPosition)
+//   //                 : _formatDuration(_currentPosition),
+//   //             style: TextStyle(
+//   //               color: _isSeeking ? Colors.yellow : Colors.white,
+//   //               fontSize: 14,
+//   //               fontWeight: _isSeeking ? FontWeight.bold : FontWeight.normal,
+//   //             ),
+//   //           ),
+//   //           const SizedBox(width: 12),
+//   //           Expanded(
+//   //             child: ClipRRect(
+//   //               borderRadius: BorderRadius.circular(4),
+//   //               child: Stack(
+//   //                 alignment: Alignment.centerLeft,
+//   //                 children: [
+//   //                   Container(height: 6, color: Colors.white.withOpacity(0.3)),
+//   //                   if (_isSeeking)
+//   //                     FractionallySizedBox(
+//   //                         widthFactor: seekProgress,
+//   //                         child: Container(
+//   //                             height: 6,
+//   //                             color: Colors.yellow.withOpacity(0.8))),
+//   //                   FractionallySizedBox(
+//   //                       widthFactor: progress,
+//   //                       child: Container(height: 6, color: Colors.red)),
+//   //                 ],
+//   //               ),
+//   //             ),
+//   //           ),
+//   //           const SizedBox(width: 12),
+//   //           Text(
+//   //             _formatDuration(Duration(
+//   //                 seconds: (_totalDuration.inSeconds - 12).clamp(0, 999999))),
+//   //             style: const TextStyle(color: Colors.white, fontSize: 14),
+//   //           ),
+//   //         ],
+//   //       ),
+//   //     ),
+//   //   );
+//   // }
+// }
+
+
+
+
+
 import 'dart:async';
 import 'dart:ui'; // ImageFilter के लिए यह import ज़रूरी है
 import 'package:flutter/material.dart';
@@ -1433,7 +2376,7 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:intl/intl.dart';
 import 'package:keep_screen_on/keep_screen_on.dart';
-import 'package:mobi_tv_entertainment/main.dart';
+// import 'package:mobi_tv_entertainment/main.dart'; // आप अपनी main.dart फ़ाइल का पाथ यहाँ दे सकते हैं
 
 /// तारीख और समय को दिखाने के लिए एक अलग विजेट।
 class DateTimeWidget extends StatefulWidget {
@@ -1517,6 +2460,7 @@ class _DateTimeWidgetState extends State<DateTimeWidget> {
   }
 }
 
+
 /// कस्टम UI और टीवी रिमोट कंट्रोल के साथ InAppWebView पर आधारित YouTube प्लेयर।
 class YoutubeWebviewPlayer extends StatefulWidget {
   final String videoUrl;
@@ -1547,7 +2491,7 @@ class _YoutubeWebviewPlayerState extends State<YoutubeWebviewPlayer>
   bool _isPlaying = false;
   Duration _currentPosition = Duration.zero;
   Duration _totalDuration = Duration.zero;
-  bool _showEndBlur = false; // <-- बदलाव 1: नया वेरिएबल जोड़ा गया
+  bool _showEndBlur = false;
   bool _isBufferingMidStream = false;
   // Progressive Seeking
   Timer? _seekTimer;
@@ -1737,9 +2681,8 @@ class _YoutubeWebviewPlayerState extends State<YoutubeWebviewPlayer>
   Widget build(BuildContext context) {
     final String livePlayerUrl =
         "https://yaqoob-work.github.io/my-player/player.html";
-    // final screenHeight = MediaQuery.of(context).size.height;
-    // final bottomBarHeight = screenHeight * 0.06;
-    // final bool isBuffering = _isPageLoading || (_currentPosition.inSeconds < 2 && _isPlaying);
+    final screenHeight = MediaQuery.of(context).size.height;
+    final bottomBarHeight = screenHeight * 0.06;
     final bool isBuffering = _isPageLoading ||
         (_currentPosition.inSeconds < 2 && _isPlaying) ||
         _isBufferingMidStream;
@@ -1750,6 +2693,7 @@ class _YoutubeWebviewPlayerState extends State<YoutubeWebviewPlayer>
       onKey: (node, event) {
         if (event is RawKeyDownEvent) {
           _showControlsTemporarily();
+
           if (event.logicalKey == LogicalKeyboardKey.select ||
               event.logicalKey == LogicalKeyboardKey.enter ||
               event.logicalKey == LogicalKeyboardKey.mediaPlayPause) {
@@ -1780,8 +2724,7 @@ class _YoutubeWebviewPlayerState extends State<YoutubeWebviewPlayer>
                   AnimatedPadding(
                     duration: const Duration(milliseconds: 250),
                     padding: EdgeInsets.only(
-                        // bottom: _showControls ? bottomBarHeight : 0.0),
-                        bottom: 0.0),
+                        bottom: _showControls ? bottomBarHeight : 0.0),
                     child: Center(
                       child: AspectRatio(
                         aspectRatio: 16 / 9,
@@ -1797,7 +2740,6 @@ class _YoutubeWebviewPlayerState extends State<YoutubeWebviewPlayer>
                           onWebViewCreated: (controller) {
                             _webViewController = controller;
 
-                            // <-- बदलाव 2: timeUpdate हैंडलर को पूरी तरह से बदल दिया गया है
                             controller.addJavaScriptHandler(
                               handlerName: 'timeUpdate',
                               callback: (args) {
@@ -1832,20 +2774,6 @@ class _YoutubeWebviewPlayerState extends State<YoutubeWebviewPlayer>
                               },
                             );
 
-                            // controller.addJavaScriptHandler(
-                            //   handlerName: 'playerStateChange',
-                            //   callback: (args) {
-                            //     if (args.isNotEmpty &&
-                            //         args[0] is int &&
-                            //         mounted) {
-                            //       setState(() =>
-                            //           _isPlaying = (args[0] as int) == 1);
-                            //     }
-                            //   },
-                            // );
-
-                            // onWebViewCreated के अंदर...
-
                             controller.addJavaScriptHandler(
                               handlerName: 'playerStateChange',
                               callback: (args) {
@@ -1854,9 +2782,7 @@ class _YoutubeWebviewPlayerState extends State<YoutubeWebviewPlayer>
                                     mounted) {
                                   final playerState = args[0] as int;
                                   setState(() {
-                                    // playerState 1 का मतलब है 'playing'
                                     _isPlaying = (playerState == 1);
-                                    // playerState 3 का मतलब है 'buffering'
                                     _isBufferingMidStream = (playerState == 3);
                                   });
                                 }
@@ -1877,7 +2803,6 @@ class _YoutubeWebviewPlayerState extends State<YoutubeWebviewPlayer>
                     ),
                   ),
 
-                  // <-- बदलाव 3: ब्लर इफ़ेक्ट विजेट जोड़ा गया
                   if (_showEndBlur)
                     BackdropFilter(
                       filter: ImageFilter.blur(sigmaX: 25.0, sigmaY: 25.0),
@@ -1902,7 +2827,7 @@ class _YoutubeWebviewPlayerState extends State<YoutubeWebviewPlayer>
                   //   duration: const Duration(milliseconds: 300),
                   //   child: _buildProgressBar(),
                   // ),
-                  // if (_showControls) _buildBottomProgressBar(bottomBarHeight),
+                  if (_showControls) _buildBottomProgressBar(bottomBarHeight),
                   if (_isPageLoading ||
                       (_currentPosition.inSeconds < 2 && _isPlaying))
                     Container(
@@ -1913,6 +2838,7 @@ class _YoutubeWebviewPlayerState extends State<YoutubeWebviewPlayer>
                             size: 50.0,
                           ),
                         )),
+
                 ],
               ),
       ),
@@ -2025,74 +2951,75 @@ class _YoutubeWebviewPlayerState extends State<YoutubeWebviewPlayer>
         height: screenhgt * 0.12,
         child: Container(
           color: Colors.black,
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text(
-                _isSeeking
-                    ? _formatDuration(_targetSeekPosition)
-                    : _formatDuration(_currentPosition),
-                style: TextStyle(
-                  color: _isSeeking ? Colors.yellow : Colors.white,
-                  fontSize: 14,
-                  fontWeight:
-                      _isSeeking ? FontWeight.bold : FontWeight.normal,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(4),
-                  child: Stack(
-                    alignment: Alignment.centerLeft,
-                    children: [
-                      // 1. बैकग्राउंड बार
-                      Container(
-                          height: 6, color: Colors.white.withOpacity(0.3)),
+          // padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          // child: 
+          // Row(
+          //   crossAxisAlignment: CrossAxisAlignment.center,
+          //   children: [
+          //     Text(
+          //       _isSeeking
+          //           ? _formatDuration(_targetSeekPosition)
+          //           : _formatDuration(_currentPosition),
+          //       style: TextStyle(
+          //         color: _isSeeking ? Colors.yellow : Colors.white,
+          //         fontSize: 14,
+          //         fontWeight:
+          //             _isSeeking ? FontWeight.bold : FontWeight.normal,
+          //       ),
+          //     ),
+          //     const SizedBox(width: 12),
+          //     Expanded(
+          //       child: ClipRRect(
+          //         borderRadius: BorderRadius.circular(4),
+          //         child: Stack(
+          //           alignment: Alignment.centerLeft,
+          //           children: [
+          //             // 1. बैकग्राउंड बार
+          //             Container(
+          //                 height: 6, color: Colors.white.withOpacity(0.3)),
                       
-                      // --- START: यहाँ बदलाव किया गया है ---
-                      if (_isSeeking && _targetSeekPosition < _currentPosition) ...[
-                        // BACKWARD SEEK: पहले लाल बार, फिर उसके ऊपर पीला बार
-                        FractionallySizedBox(
-                          widthFactor: progress.clamp(0.0, 1.0),
-                          child: Container(height: 6, color: Colors.red),
-                        ),
-                        FractionallySizedBox(
-                          widthFactor: seekProgress.clamp(0.0, 1.0),
-                          child: Container(
-                            height: 6,
-                            color: Colors.yellow.withOpacity(0.8),
-                          ),
-                        ),
-                      ] else ...[
-                        // FORWARD SEEK or NO SEEK: पहले पीला बार, फिर उसके ऊपर लाल बार
-                        if (_isSeeking)
-                          FractionallySizedBox(
-                            widthFactor: seekProgress.clamp(0.0, 1.0),
-                            child: Container(
-                              height: 6,
-                              color: Colors.yellow.withOpacity(0.8),
-                            ),
-                          ),
-                        FractionallySizedBox(
-                          widthFactor: progress.clamp(0.0, 1.0),
-                          child: Container(height: 6, color: Colors.red),
-                        ),
-                      ],
-                      // --- END: बदलाव यहाँ समाप्त होता है ---
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Text(
-                _formatDuration(Duration(
-                    seconds: (_totalDuration.inSeconds - 12).clamp(0, 999999))),
-                style: const TextStyle(color: Colors.white, fontSize: 14),
-              ),
-            ],
-          ),
+          //             // --- START: यहाँ बदलाव किया गया है ---
+          //             if (_isSeeking && _targetSeekPosition < _currentPosition) ...[
+          //               // BACKWARD SEEK: पहले लाल बार, फिर उसके ऊपर पीला बार
+          //               FractionallySizedBox(
+          //                 widthFactor: progress.clamp(0.0, 1.0),
+          //                 child: Container(height: 6, color: Colors.red),
+          //               ),
+          //               FractionallySizedBox(
+          //                 widthFactor: seekProgress.clamp(0.0, 1.0),
+          //                 child: Container(
+          //                   height: 6,
+          //                   color: Colors.yellow.withOpacity(0.8),
+          //                 ),
+          //               ),
+          //             ] else ...[
+          //               // FORWARD SEEK or NO SEEK: पहले पीला बार, फिर उसके ऊपर लाल बार
+          //               if (_isSeeking)
+          //                 FractionallySizedBox(
+          //                   widthFactor: seekProgress.clamp(0.0, 1.0),
+          //                   child: Container(
+          //                     height: 6,
+          //                     color: Colors.yellow.withOpacity(0.8),
+          //                   ),
+          //                 ),
+          //               FractionallySizedBox(
+          //                 widthFactor: progress.clamp(0.0, 1.0),
+          //                 child: Container(height: 6, color: Colors.red),
+          //               ),
+          //             ],
+          //             // --- END: बदलाव यहाँ समाप्त होता है ---
+          //           ],
+          //         ),
+          //       ),
+          //     ),
+          //     const SizedBox(width: 12),
+          //     Text(
+          //       _formatDuration(Duration(
+          //           seconds: (_totalDuration.inSeconds - 12).clamp(0, 999999))),
+          //       style: const TextStyle(color: Colors.white, fontSize: 14),
+          //     ),
+          //   ],
+          // ),
         ),
       )
     ],
@@ -2361,3 +3288,4 @@ class _YoutubeWebviewPlayerState extends State<YoutubeWebviewPlayer>
   //   );
   // }
 }
+

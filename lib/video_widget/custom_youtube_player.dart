@@ -3110,17 +3110,14 @@
 //   }
 // }
 
-
-
-
-
-
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:keep_screen_on/keep_screen_on.dart';
+import 'package:mobi_tv_entertainment/provider/device_info_provider.dart';
+import 'package:provider/provider.dart';
 // import 'package:mobi_tv_entertainment/main.dart'; // Make sure this import is correct
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import 'dart:async';
@@ -3165,7 +3162,6 @@ class _CustomYoutubePlayerState extends State<CustomYoutubePlayer> {
   String? _error;
   bool _isLoading = true; // Start with loading indicator visible
   bool _isDisposed = false;
-
 
   // Splash screen control
   bool _showSplashScreen = true;
@@ -3269,8 +3265,6 @@ class _CustomYoutubePlayerState extends State<CustomYoutubePlayer> {
   void _initializePlayer() {
     if (_isDisposed) return;
 
-
-
     try {
       String? videoId = YoutubePlayer.convertUrlToId(currentVideo.youtubeUrl);
       print('🔧 TV Mode: Initializing player for: $videoId');
@@ -3278,7 +3272,7 @@ class _CustomYoutubePlayerState extends State<CustomYoutubePlayer> {
       if (videoId == null || videoId.isEmpty) {
         if (mounted && !_isDisposed) {
           setState(() {
-            _error = 'Invalid YouTube URL: ${currentVideo.youtubeUrl}';
+            _error = 'Invalid URL: ${currentVideo.youtubeUrl}';
             _isLoading = false;
           });
         }
@@ -3346,22 +3340,22 @@ class _CustomYoutubePlayerState extends State<CustomYoutubePlayer> {
       }
 
       if (mounted) {
+        // ✅ STEP 1: जांचें कि ब्लर और म्यूट की स्थिति क्या होनी चाहिए
+        bool shouldShowBlurAndMute = _totalDuration.inSeconds > 20 &&
+            _controller!.value.position.inSeconds >=
+                _totalDuration.inSeconds - 20;
 
-                    // ✅ STEP 1: जांचें कि ब्लर और म्यूट की स्थिति क्या होनी चाहिए
-      bool shouldShowBlurAndMute = _totalDuration.inSeconds > 20 &&
-          _controller!.value.position.inSeconds >= _totalDuration.inSeconds - 20;
-
-      // ✅ STEP 2: स्थिति बदलने पर ही एक्शन लें
-      // अगर वीडियो अभी-अभी आखिरी 10 सेकंड में आया है, तो म्यूट करें
-      if (shouldShowBlurAndMute && !_showEndBlur) {
-        print('🔇 Muting video for the last 10 seconds.');
-        _controller?.mute();
-      }
-      // अगर यूजर पीछे चला गया है, तो अनम्यूट करें
-      else if (!shouldShowBlurAndMute && _showEndBlur) {
-        print('🔊 Unmuting video.');
-        _controller?.unMute();
-      }
+        // ✅ STEP 2: स्थिति बदलने पर ही एक्शन लें
+        // अगर वीडियो अभी-अभी आखिरी 10 सेकंड में आया है, तो म्यूट करें
+        if (shouldShowBlurAndMute && !_showEndBlur) {
+          print('🔇 Muting video for the last 10 seconds.');
+          _controller?.mute();
+        }
+        // अगर यूजर पीछे चला गया है, तो अनम्यूट करें
+        else if (!shouldShowBlurAndMute && _showEndBlur) {
+          print('🔊 Unmuting video.');
+          _controller?.unMute();
+        }
         setState(() {
           _currentPosition = _controller!.value.position;
           _totalDuration = _controller!.value.metaData.duration;
@@ -3394,9 +3388,6 @@ class _CustomYoutubePlayerState extends State<CustomYoutubePlayer> {
           _isPlaying = newIsPlaying;
         });
       }
-
-
-  
     }
   }
 
@@ -3735,13 +3726,13 @@ class _CustomYoutubePlayerState extends State<CustomYoutubePlayer> {
                   child: _buildVideoPlayer(),
                 ),
 
-              if (_showEndBlur)
-                BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 25.0, sigmaY: 25.0),
-                  child: Container(
-                    color: Colors.black.withOpacity(0.5),
+                if (_showEndBlur)
+                  BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 25.0, sigmaY: 25.0),
+                    child: Container(
+                      color: Colors.black.withOpacity(0.5),
+                    ),
                   ),
-                ),
 
                 if (_showSplashScreen) _buildTopBottomBlackBars(),
 
@@ -3843,110 +3834,126 @@ class _CustomYoutubePlayerState extends State<CustomYoutubePlayer> {
 //     );
 //   }
 
-
-
 // ✅ MODIFIED _buildBottomProgressBar() WIDGET
-Widget _buildBottomProgressBar(double height, double margin) {
-  // STEP 4: विजेट को नीचे से ऊपर ले जाने के लिए margin का उपयोग करें
-  return Positioned(
-    bottom: margin, // इसे 0 से बदलकर 'margin' कर दिया गया है
-    left: 20, // किनारों से भी थोड़ा गैप दे सकते हैं
-    right: 20, // किनारों से भी थोड़ा गैप दे सकते हैं
-    height: height,
-    child: Container(
-      // बढ़ी हुई ऊंचाई में कंटेंट को बेहतर दिखाने के लिए पैडिंग एडजस्ट करें
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-      decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.8), // थोड़ी पारदर्शिता
-        borderRadius: BorderRadius.circular(10), // गोल किनारे
-      ),
-      child: Row(
-        crossAxisAlignment:
-            CrossAxisAlignment.center, // कंटेंट को वर्टिकली सेंटर करें
-        children: [
-          Text(
-            _isSeeking
-                ? _formatDuration(_targetSeekPosition)
-                : _formatDuration(_currentPosition),
-            style: TextStyle(
-              color: _isSeeking ? Colors.yellow : Colors.white,
-              fontSize: 14, // फॉन्ट साइज थोड़ा बढ़ा दिया
-              fontWeight: _isSeeking ? FontWeight.bold : FontWeight.normal,
-            ),
-          ),
-          const SizedBox(width: 12), // थोड़ा और स्पेस
-          Expanded(
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(4),
-              child: Stack(
-                alignment: Alignment.centerLeft,
-                children: [
-                  // 1. Background Bar (हमेशा दिखाई देगा)
-                  Container(
-                    width: double.infinity,
-                    height: 6, // प्रोग्रेस बार की मोटाई बढ़ाई
-                    color: Colors.white.withOpacity(0.3),
-                  ),
-
-                  // -- START: यहाँ बदलाव किया गया है --
-                  // 2. सीक की दिशा के आधार पर लेयर्स को दिखाएं
-                  if (_isSeeking && _targetSeekPosition < _currentPosition) ...[
-                    // BACKWARD SEEK: पहले लाल बार, फिर उसके ऊपर पीला बार
-                    // इससे पीला बार लाल बार के उस हिस्से को ढक लेगा जहाँ तक सीक करना है।
-                    if (_totalDuration.inSeconds > 0)
-                      FractionallySizedBox(
-                        widthFactor: _currentPosition.inSeconds /
-                            _totalDuration.inSeconds,
-                        child: Container(height: 6, color: Colors.red),
-                      ),
-                    if (_totalDuration.inSeconds > 0)
-                      FractionallySizedBox(
-                        widthFactor: _targetSeekPosition.inSeconds /
-                            _totalDuration.inSeconds,
-                        child: Container(
-                            height: 6, color: Colors.yellow.withOpacity(0.8)),
-                      ),
-                  ] else ...[
-                    // FORWARD SEEK or NO SEEK: पहले पीला बार, फिर उसके ऊपर लाल बार
-                    // यह पहले जैसा ही काम करेगा।
-                    if (_isSeeking && _totalDuration.inSeconds > 0)
-                      FractionallySizedBox(
-                        widthFactor: _targetSeekPosition.inSeconds /
-                            _totalDuration.inSeconds,
-                        child: Container(
-                            height: 6, color: Colors.yellow.withOpacity(0.8)),
-                      ),
-                    if (_totalDuration.inSeconds > 0)
-                      FractionallySizedBox(
-                        widthFactor: _currentPosition.inSeconds /
-                            _totalDuration.inSeconds,
-                        child: Container(height: 6, color: Colors.red),
-                      ),
-                  ],
-                  // -- END: बदलाव यहाँ समाप्त होता है --
-                ],
+  Widget _buildBottomProgressBar(double height, double margin) {
+    // STEP 4: विजेट को नीचे से ऊपर ले जाने के लिए margin का उपयोग करें
+    return Positioned(
+      bottom: margin, // इसे 0 से बदलकर 'margin' कर दिया गया है
+      left: 20, // किनारों से भी थोड़ा गैप दे सकते हैं
+      right: 20, // किनारों से भी थोड़ा गैप दे सकते हैं
+      height: height,
+      child: Container(
+        // बढ़ी हुई ऊंचाई में कंटेंट को बेहतर दिखाने के लिए पैडिंग एडजस्ट करें
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+        decoration: BoxDecoration(
+          color: Colors.black.withOpacity(0.8), // थोड़ी पारदर्शिता
+          borderRadius: BorderRadius.circular(10), // गोल किनारे
+        ),
+        child: Row(
+          crossAxisAlignment:
+              CrossAxisAlignment.center, // कंटेंट को वर्टिकली सेंटर करें
+          children: [
+            Text(
+              _isSeeking
+                  ? _formatDuration(_targetSeekPosition)
+                  : _formatDuration(_currentPosition),
+              style: TextStyle(
+                color: _isSeeking ? Colors.yellow : Colors.white,
+                fontSize: 14, // फॉन्ट साइज थोड़ा बढ़ा दिया
+                fontWeight: _isSeeking ? FontWeight.bold : FontWeight.normal,
               ),
             ),
-          ),
-          const SizedBox(width: 12), // थोड़ा और स्पेस
-          Text(
-            _formatDuration(Duration(
-                seconds: (_totalDuration.inSeconds - 12)
-                    .clamp(0, double.infinity)
-                    .toInt())),
-            style: const TextStyle(
-                color: Colors.white,
-                fontSize: 14), // फॉन्ट साइज थोड़ा बढ़ा दिया
-          ),
-        ],
+            const SizedBox(width: 12), // थोड़ा और स्पेस
+            Expanded(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(4),
+                child: Stack(
+                  alignment: Alignment.centerLeft,
+                  children: [
+                    // 1. Background Bar (हमेशा दिखाई देगा)
+                    Container(
+                      width: double.infinity,
+                      height: 6, // प्रोग्रेस बार की मोटाई बढ़ाई
+                      color: Colors.white.withOpacity(0.3),
+                    ),
+
+                    // -- START: यहाँ बदलाव किया गया है --
+                    // 2. सीक की दिशा के आधार पर लेयर्स को दिखाएं
+                    if (_isSeeking &&
+                        _targetSeekPosition < _currentPosition) ...[
+                      // BACKWARD SEEK: पहले लाल बार, फिर उसके ऊपर पीला बार
+                      // इससे पीला बार लाल बार के उस हिस्से को ढक लेगा जहाँ तक सीक करना है।
+                      if (_totalDuration.inSeconds > 0)
+                        FractionallySizedBox(
+                          widthFactor: _currentPosition.inSeconds /
+                              _totalDuration.inSeconds,
+                          child: Container(height: 6, color: Colors.red),
+                        ),
+                      if (_totalDuration.inSeconds > 0)
+                        FractionallySizedBox(
+                          widthFactor: _targetSeekPosition.inSeconds /
+                              _totalDuration.inSeconds,
+                          child: Container(
+                              height: 6, color: Colors.yellow.withOpacity(0.8)),
+                        ),
+                    ] else ...[
+                      // FORWARD SEEK or NO SEEK: पहले पीला बार, फिर उसके ऊपर लाल बार
+                      // यह पहले जैसा ही काम करेगा।
+                      if (_isSeeking && _totalDuration.inSeconds > 0)
+                        FractionallySizedBox(
+                          widthFactor: _targetSeekPosition.inSeconds /
+                              _totalDuration.inSeconds,
+                          child: Container(
+                              height: 6, color: Colors.yellow.withOpacity(0.8)),
+                        ),
+                      if (_totalDuration.inSeconds > 0)
+                        FractionallySizedBox(
+                          widthFactor: _currentPosition.inSeconds /
+                              _totalDuration.inSeconds,
+                          child: Container(height: 6, color: Colors.red),
+                        ),
+                    ],
+                    // -- END: बदलाव यहाँ समाप्त होता है --
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(width: 12), // थोड़ा और स्पेस
+            Text(
+              _formatDuration(Duration(
+                  seconds: (_totalDuration.inSeconds - 12)
+                      .clamp(0, double.infinity)
+                      .toInt())),
+              style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 14), // फॉन्ट साइज थोड़ा बढ़ा दिया
+            ),
+          ],
+        ),
       ),
-    ),
-  );
-}
-
-
+    );
+  }
 
   Widget _buildVideoPlayer() {
+    final deviceInfo = context.read<DeviceInfoProvider>();
+    bool isGoogletv = false;
+    // if (deviceInfo.deviceName == 'AFTSS : Amazon Fire Stick HD')
+    if (deviceInfo.deviceName == 'sabrina : Chromecast with Google TV (4K)' ||
+        deviceInfo.deviceName == 'boreal : Chromecast with Google TV (HD)' ||
+        deviceInfo.deviceName == 'Google TV Device') {
+      if (mounted) {
+        setState(() {
+          isGoogletv = true;
+        });
+      }
+    } else {
+            if (mounted) {
+        setState(() {
+          isGoogletv = false;
+        });
+      }
+    }
+
     if (_error != null) {
       return Container(
         color: Colors.black,
@@ -3985,28 +3992,29 @@ Widget _buildBottomProgressBar(double height, double margin) {
       width: double.infinity,
       height: double.infinity,
       color: Colors.black,
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: YoutubePlayer(
-          controller: _controller!,
-          showVideoProgressIndicator: false,
-          bufferIndicator: Container(
-            color: Colors.black.withOpacity(0.5),
-            child:
-                const Center(child: CircularProgressIndicator(color: Colors.red)),
-          ),
-          onReady: () {
-            print('📺 TV Player Ready');
-            if (!_isPlayerReady && !_isDisposed) {
-              if (mounted) {
-                setState(() => _isPlayerReady = true);
+      child: Center(
+        child: Padding(
+          padding:  EdgeInsets.all(isGoogletv ? 8.0 : 0),
+          child: YoutubePlayer(
+            controller: _controller!,
+            showVideoProgressIndicator: false,
+            bufferIndicator: Container(
+              color: Colors.black.withOpacity(0.5),
+              child: const Center(
+                  child: CircularProgressIndicator(color: Colors.red)),
+            ),
+            onReady: () {
+              print('📺 TV Player Ready');
+              if (!_isPlayerReady && !_isDisposed) {
+                if (mounted) {
+                  setState(() => _isPlayerReady = true);
+                }
               }
-            }
-          },
-          onEnded: (_) {
-            print('🎬 Video ended');
-        
-          },
+            },
+            onEnded: (_) {
+              print('🎬 Video ended');
+            },
+          ),
         ),
       ),
     );
@@ -4304,7 +4312,3 @@ Widget _buildBottomProgressBar(double height, double margin) {
     );
   }
 }
-
-
-
-

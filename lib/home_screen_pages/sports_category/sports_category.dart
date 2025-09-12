@@ -819,8 +819,9 @@ void _scrollToPosition(int index) {
             if (index > 0) {
               String prevCategoryId = categoriesList[index - 1].id.toString();
               FocusScope.of(context).requestFocus(categoriesFocusNodes[prevCategoryId]);
-              return KeyEventResult.handled;
             }
+              return KeyEventResult.handled;
+
           } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
             setState(() {
               focusedIndex = -1;
@@ -1038,36 +1039,36 @@ void _scrollToPosition(int index) {
                 ),
               ),
             ),
-            Row(
-              children: [
-                // Sports Categories Count
-                if (categoriesList.length > 0)
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          ProfessionalColors.accentOrange.withOpacity(0.2),
-                          ProfessionalColors.accentRed.withOpacity(0.2),
-                        ],
-                      ),
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                        color: ProfessionalColors.accentOrange.withOpacity(0.3),
-                        width: 1,
-                      ),
-                    ),
-                    child: Text(
-                      '${categoriesList.length} Categories Available',
-                      style: const TextStyle(
-                        color: ProfessionalColors.textSecondary,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-              ],
-            ),
+            // Row(
+            //   children: [
+            //     // Sports Categories Count
+            //     if (categoriesList.length > 0)
+            //       Container(
+            //         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            //         decoration: BoxDecoration(
+            //           gradient: LinearGradient(
+            //             colors: [
+            //               ProfessionalColors.accentOrange.withOpacity(0.2),
+            //               ProfessionalColors.accentRed.withOpacity(0.2),
+            //             ],
+            //           ),
+            //           borderRadius: BorderRadius.circular(20),
+            //           border: Border.all(
+            //             color: ProfessionalColors.accentOrange.withOpacity(0.3),
+            //             width: 1,
+            //           ),
+            //         ),
+            //         child: Text(
+            //           '${categoriesList.length} Categories Available',
+            //           style: const TextStyle(
+            //             color: ProfessionalColors.textSecondary,
+            //             fontSize: 12,
+            //             fontWeight: FontWeight.w500,
+            //           ),
+            //         ),
+            //       ),
+            //   ],
+            // ),
           ],
         ),
       ),
@@ -2289,30 +2290,30 @@ class _ProfessionalSportsCategoriesGridPageState extends State<ProfessionalSport
                   ),
                 ),
                 const SizedBox(height: 4),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        ProfessionalColors.accentOrange.withOpacity(0.2),
-                        ProfessionalColors.accentRed.withOpacity(0.1),
-                      ],
-                    ),
-                    borderRadius: BorderRadius.circular(15),
-                    border: Border.all(
-                      color: ProfessionalColors.accentOrange.withOpacity(0.3),
-                      width: 1,
-                    ),
-                  ),
-                  child: Text(
-                    '${widget.categoriesList.length} Categories Available',
-                    style: const TextStyle(
-                      color: ProfessionalColors.accentOrange,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
+                // Container(
+                //   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                //   decoration: BoxDecoration(
+                //     gradient: LinearGradient(
+                //       colors: [
+                //         ProfessionalColors.accentOrange.withOpacity(0.2),
+                //         ProfessionalColors.accentRed.withOpacity(0.1),
+                //       ],
+                //     ),
+                //     borderRadius: BorderRadius.circular(15),
+                //     border: Border.all(
+                //       color: ProfessionalColors.accentOrange.withOpacity(0.3),
+                //       width: 1,
+                //     ),
+                //   ),
+                //   child: Text(
+                //     '${widget.categoriesList.length} Categories Available',
+                //     style: const TextStyle(
+                //       color: ProfessionalColors.accentOrange,
+                //       fontSize: 12,
+                //       fontWeight: FontWeight.w500,
+                //     ),
+                //   ),
+                // ),
               ],
             ),
           ),

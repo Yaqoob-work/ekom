@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:mobi_tv_entertainment/home_screen_pages/movies_screen/movies.dart';
 import 'package:mobi_tv_entertainment/home_screen_pages/sub_vod_screen/horizontal_list_details_page.dart';
+import 'package:mobi_tv_entertainment/services/history_service.dart';
 import 'package:mobi_tv_entertainment/video_widget/custom_video_player.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
@@ -72,12 +73,14 @@ String safeParseString(dynamic value, {String defaultValue = ''}) {
 // Updated NetworkApi model with proper int handling
 class NetworkApi {
   final int id; // Now properly int
+  final int updatedAt; // Now properly int
   final String name;
   final String logo;
   final int networksOrder; // Changed to int
 
   NetworkApi({
     required this.id,
+    required this.updatedAt,
     required this.name,
     required this.logo,
     required this.networksOrder,
@@ -86,6 +89,7 @@ class NetworkApi {
   factory NetworkApi.fromJson(Map<String, dynamic> json) {
     return NetworkApi(
       id: safeParseInt(json['id']), // Safe int parsing
+      updatedAt: safeParseInt(json['updated_at']), // Safe int parsing
       name: safeParseString(json['name'], defaultValue: 'No Name'),
       logo: safeParseString(json['logo'], defaultValue: 'localImage'),
       networksOrder: safeParseInt(json['networks_order']), // Now int
@@ -418,7 +422,8 @@ Widget displayImage(
   String imageUrl, {
   double? width,
   double? height,
-  BoxFit fit = BoxFit.fill,
+  BoxFit fit = BoxFit.fill, 
+  // required String cachedKey,
 }) {
   if (imageUrl.isEmpty || imageUrl == 'localImage') {
     return Image.asset(localImage);
@@ -459,22 +464,46 @@ Widget displayImage(
       );
     } else {
       // Handle regular URL images (PNG, JPG, etc.)
-      return CachedNetworkImage(
-        imageUrl: imageUrl,
-        placeholder: (context, url) {
-          return _buildLoadingWidget(width, height);
-        },
-        errorWidget: (context, url, error) {
-          return _buildErrorWidget(width, height);
-        },
-        fit: fit,
+      // return CachedNetworkImage(
+      //   imageUrl: imageUrl,
+      //   cacheKey: cachedKey,
+      //   placeholder: (context, url) {
+      //     return _buildLoadingWidget(width, height);
+      //   },
+      //   errorWidget: (context, url, error) {
+      //     return _buildErrorWidget(width, height);
+      //   },
+      //   fit: fit,
+      //   width: width,
+      //   height: height,
+      //   // Add timeout
+      //   httpHeaders: {
+      //     'User-Agent': 'Flutter App',
+      //   },
+      // );
+
+ return Image.network(
+        imageUrl,
         width: width,
         height: height,
-        // Add timeout
-        httpHeaders: {
+        fit: fit,
+        headers: const {
           'User-Agent': 'Flutter App',
         },
+        loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+          // If the image is fully loaded, display it
+          if (loadingProgress == null) {
+            return child;
+          }
+          // Otherwise, show your loading widget
+          return _buildLoadingWidget(width, height);
+        },
+        errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
+          // If an error occurs, display your error widget
+          return _buildErrorWidget(width, height);
+        },
       );
+      
     }
   } else {
     // Fallback for invalid image data
@@ -771,6 +800,7 @@ class _ProfessionalNetworkCardState extends State<ProfessionalNetworkCard>
       height: double.infinity,
       child: displayImage(
         widget.network.logo,
+        // cachedKey: "${widget.network.id}_${widget.network.updatedAt}",
         fit: BoxFit.cover,
       ),
     );
@@ -1491,6 +1521,23 @@ class _VODState extends State<VOD> with TickerProviderStateMixin {
 // 4. Update VOD Grid Navigation as well
 // In _VODState class, update the _navigateToNetwork method:
   void _navigateToNetwork(NetworkApi network) async {
+                    try{
+          print('Updating user history for: ${network.name}');
+      int? currentUserId = SessionManager.userId;
+    // final int? parsedContentType = episode.contentType;
+    final int? parsedId = network.id;
+
+      await HistoryService.updateUserHistory(
+        userId: currentUserId!, // 1. User ID
+        contentType: 0, // 2. Content Type (episode के लिए 4)
+        eventId: parsedId!, // 3. Event ID (episode की ID)
+        eventTitle: network.name, // 4. Event Title (episode का नाम)
+        url: '', // 5. URL (episode का URL)
+        categoryId: 0, // 6. Category ID (डिफ़ॉल्ट 1)
+      );
+    } catch (e) {
+      print("History update failed, but proceeding to play. Error: $e");
+    }
     try {
       await Navigator.push(
         context,
@@ -2168,6 +2215,7 @@ class _ProfessionalVODGridCardState extends State<ProfessionalVODGridCard>
       child: displayImage(
         widget.network.logo,
         fit: BoxFit.cover,
+        // cachedKey: "${widget.network.id}_${widget.network.updatedAt}",
       ),
     );
   }

@@ -383,7 +383,7 @@ class _SportsCategorySecondPageState extends State<SportsCategorySecondPage>
           id: tournament.id,
           banner: tournament.logo ?? '',
           poster: tournament.logo ?? '',
-          name: tournament.title,
+          name: tournament.title, updatedAt: tournament.updatedAt??'',
         ),
       ),
     );
@@ -502,21 +502,21 @@ class _SportsCategorySecondPageState extends State<SportsCategorySecondPage>
                 ),
               ),
             ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-              decoration: BoxDecoration(
-                color: ProfessionalColors.accentGreen.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(15),
-              ),
-              child: Text(
-                '${tournamentsList.length} Tournaments',
-                style: const TextStyle(
-                  color: ProfessionalColors.accentGreen,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
+            // Container(
+            //   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+            //   decoration: BoxDecoration(
+            //     color: ProfessionalColors.accentGreen.withOpacity(0.2),
+            //     borderRadius: BorderRadius.circular(15),
+            //   ),
+            //   child: Text(
+            //     '${tournamentsList.length} Tournaments',
+            //     style: const TextStyle(
+            //       color: ProfessionalColors.accentGreen,
+            //       fontSize: 12,
+            //       fontWeight: FontWeight.w500,
+            //     ),
+            //   ),
+            // ),
           ],
         ),
       ),

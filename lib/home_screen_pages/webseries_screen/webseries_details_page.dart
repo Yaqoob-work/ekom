@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:mobi_tv_entertainment/provider/device_info_provider.dart';
+import 'package:mobi_tv_entertainment/services/history_service.dart';
 import 'package:mobi_tv_entertainment/video_widget/custom_video_player.dart';
 import 'package:mobi_tv_entertainment/video_widget/video_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -213,6 +214,7 @@ class WebSeriesCacheManager {
 class SeasonModel {
   final int id;
   final String sessionName;
+  final String updatedAt;
   final String banner;
   final int seasonOrder;
   final int webSeriesId;
@@ -221,6 +223,7 @@ class SeasonModel {
   SeasonModel({
     required this.id,
     required this.sessionName,
+    required this.updatedAt,
     required this.banner,
     required this.seasonOrder,
     required this.webSeriesId,
@@ -231,6 +234,7 @@ class SeasonModel {
     return SeasonModel(
       id: json['id'] ?? 0,
       sessionName: json['Session_Name'] ?? '',
+      updatedAt: json['updated_at'] ?? '',
       banner: json['banner'] ?? '',
       seasonOrder: json['season_order'] ?? 1,
       webSeriesId: json['web_series_id'] ?? 0,
@@ -245,6 +249,7 @@ class WebSeriesDetailsPage extends StatefulWidget {
   final String poster;
   final String logo;
   final String name;
+  final String updatedAt;
 
   const WebSeriesDetailsPage({
     Key? key,
@@ -253,6 +258,7 @@ class WebSeriesDetailsPage extends StatefulWidget {
     required this.poster,
     required this.logo,
     required this.name,
+    required this.updatedAt,
   }) : super(key: key);
 
   @override
@@ -744,6 +750,26 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
 
     setState(() => _isProcessing = true);
 
+
+
+        try{
+          print('Updating user history for: ${episode.name}');
+      int? currentUserId = SessionManager.userId;
+    final int? parsedContentType = int.tryParse(episode.contentType ?? '');
+    final int? parsedId = int.tryParse(episode.id ?? '');
+
+      await HistoryService.updateUserHistory(
+        userId: currentUserId!, // 1. User ID
+        contentType: parsedContentType!, // 2. Content Type (episode के लिए 4)
+        eventId: parsedId!, // 3. Event ID (episode की ID)
+        eventTitle: episode.name, // 4. Event Title (episode का नाम)
+        url: episode.url, // 5. URL (episode का URL)
+        categoryId: 0, // 6. Category ID (डिफ़ॉल्ट 1)
+      );
+    } catch (e) {
+      print("History update failed, but proceeding to play. Error: $e");
+    }
+
     try {
       String url = episode.url;
 
@@ -802,14 +828,31 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
             );
           }
         } else {
-          result = await Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => CustomVideoPlayer(
-                videoUrl: episode.url,
-              ),
+          // result = await Navigator.push(
+          //   context,
+          //   MaterialPageRoute(
+          //     builder: (context) => CustomVideoPlayer(
+          //       videoUrl: episode.url,
+          //     ),
+          //   ),
+          // );
+          result =  await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => VideoScreen(
+              videoUrl: episode.url,
+              bannerImageUrl: episode.banner,
+              channelList: [],
+              // isLive: false,
+              // isSearch: true,
+              videoId: int.tryParse(episode.id),
+              name: episode.name,
+              liveStatus: false, 
+              updatedAt: episode.updatedAt,
+              source: 'isWebSeries',
             ),
-          );
+          ),
+        );
         }
 
         // Refresh data after returning from video player
@@ -1036,7 +1079,8 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
     required double width,
     required double height,
     BoxFit fit = BoxFit.cover,
-    Widget? fallbackWidget,
+    Widget? fallbackWidget, 
+    required String cachedKey,
   }) {
     return Container(
       width: width,
@@ -1053,6 +1097,7 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
                 width: width,
                 height: height,
                 fit: fit,
+                cacheKey: cachedKey,
                 placeholder: (context, url) => Container(
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
@@ -1301,6 +1346,9 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
 
 
   Widget _buildTopNavigationBar() {
+          final String uniqueImageUrl = "${widget.logo}?v=${widget.updatedAt}";
+  // ✅ Naya unique cache key banayein
+  final String uniqueCacheKey = "${widget.id.toString()}_${widget.updatedAt}";
   return Positioned(
     top: 0,
     left: 0,
@@ -1326,7 +1374,7 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
               const SizedBox(width: 16), // Spacing between image and title
 
 
-              CachedNetworkImage(imageUrl: widget.logo,width: 50,height: 50,fit: BoxFit.contain,),
+              CachedNetworkImage(imageUrl: uniqueImageUrl,width: 50,height: 50,fit: BoxFit.contain,cacheKey: uniqueCacheKey ,),
               // <<< MODIFICATION END
 
               // Series Title
@@ -1613,11 +1661,14 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
   }
 
   Widget _buildSeasonItem(int index) {
+
     final season = _filteredSeasons[index];
     final isSelected = index == _selectedSeasonIndex;
     final isFocused = _currentMode == NavigationMode.seasons && isSelected;
     final episodeCount = _filteredEpisodesMap[season.id]?.length ?? 0;
-
+      final String uniqueImageUrl = "${season.banner}?v=${season.updatedAt}";
+  // ✅ Naya unique cache key banayein
+  final String uniqueCacheKey = "${season.id.toString()}_${season.updatedAt}";
     return GestureDetector(
       onTap: () => _onSeasonTap(index),
       child: Focus(
@@ -1709,9 +1760,10 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
                     ClipRRect(
                       borderRadius: BorderRadius.circular(25),
                       child: _buildEnhancedImage(
-                        imageUrl: season.banner,
+                        imageUrl: uniqueImageUrl,
                         width: 50,
                         height: 50,
+cachedKey:uniqueCacheKey,
                         fit: BoxFit.cover,
                         fallbackWidget:
                             Container(), // Transparent fallback to show background
@@ -1830,7 +1882,10 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
     final isSelected = index == _selectedEpisodeIndex;
     final isFocused = _currentMode == NavigationMode.episodes && isSelected;
     final isProcessing = _isProcessing && isSelected;
-
+  final String uniqueImageUrl = "${episode.banner}?v=${episode.updatedAt}";
+  final String uniquePosterImageUrl = "${episode.poster}?v=${episode.updatedAt}";
+  // ✅ Naya unique cache key banayein
+  final String uniqueCacheKey = "${episode.id.toString()}_${episode.updatedAt}";
     return GestureDetector(
       onTap: () => _onEpisodeTap(index),
       child: Focus(
@@ -1937,9 +1992,10 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
                       ClipRRect(
                         borderRadius: BorderRadius.circular(12),
                         child: CachedNetworkImage(
-                          imageUrl: episode.banner,
+                          imageUrl: uniqueImageUrl,
                           width: 140,
                           height: 90,
+                          cacheKey: uniqueCacheKey,
                           fit: BoxFit.cover,
                           placeholder: (context, url) => Container(
                             decoration: BoxDecoration(
@@ -1961,17 +2017,19 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
                             // Fallback to series banner
                             if (_isValidImageUrl(widget.banner)) {
                               return CachedNetworkImage(
-                                imageUrl: widget.banner,
+                                imageUrl: uniqueImageUrl,
                                 width: 140,
                                 height: 90,
+                                cacheKey: uniqueCacheKey,
                                 fit: BoxFit.cover,
                                 errorWidget: (context, url, error) {
                                   // Fallback to poster
                                   if (_isValidImageUrl(widget.poster)) {
                                     return CachedNetworkImage(
-                                      imageUrl: widget.poster,
+                                      imageUrl: uniquePosterImageUrl,
                                       width: 140,
                                       height: 90,
+                                      cacheKey: uniqueCacheKey,
                                       fit: BoxFit.cover,
                                       errorWidget: (context, url, error) =>
                                           Container(),
@@ -1991,9 +2049,10 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
                       ClipRRect(
                         borderRadius: BorderRadius.circular(12),
                         child: CachedNetworkImage(
-                          imageUrl: widget.banner,
+                          imageUrl: uniqueImageUrl,
                           width: 140,
                           height: 90,
+                          cacheKey: uniqueCacheKey,
                           fit: BoxFit.cover,
                           placeholder: (context, url) => Container(
                             decoration: BoxDecoration(
@@ -2015,9 +2074,10 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
                             // Fallback to poster
                             if (_isValidImageUrl(widget.poster)) {
                               return CachedNetworkImage(
-                                imageUrl: widget.poster,
+                                imageUrl: uniquePosterImageUrl,
                                 width: 140,
                                 height: 90,
+                                cacheKey: uniqueCacheKey,
                                 fit: BoxFit.cover,
                                 errorWidget: (context, url, error) =>
                                     Container(),
@@ -2033,9 +2093,10 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
                       ClipRRect(
                         borderRadius: BorderRadius.circular(12),
                         child: CachedNetworkImage(
-                          imageUrl: widget.poster,
+                          imageUrl: uniquePosterImageUrl,
                           width: 140,
                           height: 90,
+                          cacheKey: uniqueCacheKey,
                           fit: BoxFit.cover,
                           placeholder: (context, url) => Container(
                             decoration: BoxDecoration(

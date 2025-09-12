@@ -467,46 +467,49 @@ import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:mobi_tv_entertainment/provider/focus_provider.dart';
 import 'package:mobi_tv_entertainment/video_widget/video_screen.dart';
+import 'package:mobi_tv_entertainment/widgets/models/news_item_model.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:math' as math;
 
-// Placeholder for NewsItemModel
-class NewsItemModel {
-  String id;
-  String videoId;
-  String name;
-  String description;
-  String banner;
-  String poster;
-  String category;
-  String url;
-  String streamType;
-  String type;
-  String genres;
-  String status;
-  String index;
-  String image;
-  String unUpdatedUrl;
+// // Placeholder for NewsItemModel
+// class NewsItemModel {
+//   String id;
+//   String videoId;
+//   String name;
+//   String description;
+//   String banner;
+//   String poster;
+//   String category;
+//   String url;
+//   String streamType;
+//   String type;
+//   String genres;
+//   String status;
+//   String index;
+//   String image;
+//   // String unUpdatedUrl;
+//   String updatedAt;
 
-  NewsItemModel({
-    required this.id,
-    required this.videoId,
-    required this.name,
-    required this.description,
-    required this.banner,
-    required this.poster,
-    required this.category,
-    required this.url,
-    required this.streamType,
-    required this.type,
-    required this.genres,
-    required this.status,
-    required this.index,
-    required this.image,
-    required this.unUpdatedUrl,
-  });
-}
+//   NewsItemModel({
+//     required this.id,
+//     required this.videoId,
+//     required this.name,
+//     required this.description,
+//     required this.banner,
+//     required this.poster,
+//     required this.category,
+//     required this.url,
+//     required this.streamType,
+//     required this.type,
+//     required this.genres,
+//     required this.status,
+//     required this.index,
+//     required this.image,
+//     // required this.unUpdatedUrl,
+//     required this.updatedAt,
+//   });
+// }
 
 // Professional Color Palette
 class ProfessionalColors {
@@ -539,6 +542,7 @@ class NewsChannel {
   final int id;
   final int channelNumber;
   final String name;
+  final String updatedAt;
   final String? description;
   final String banner;
   final String url;
@@ -550,6 +554,7 @@ class NewsChannel {
     required this.id,
     required this.channelNumber,
     required this.name,
+    required this.updatedAt,
     this.description,
     required this.banner,
     required this.url,
@@ -563,6 +568,7 @@ class NewsChannel {
       id: json['id'] ?? 0,
       channelNumber: json['channel_number'] ?? 0,
       name: json['name'] ?? '',
+      updatedAt: json['updated_at'] ?? '',
       description: json['description'],
       banner: json['banner'] ?? '',
       url: json['url'] ?? '',
@@ -972,6 +978,7 @@ class _LiveScreenState extends State<LiveScreen> with TickerProviderStateMixin {
               id: ch.id.toString(),
               name: ch.name,
               banner: ch.banner,
+              updatedAt: ch.updatedAt,
               url: ch.url,
               streamType: ch.streamType,
               genres: ch.genres,
@@ -980,7 +987,8 @@ class _LiveScreenState extends State<LiveScreen> with TickerProviderStateMixin {
               // Fill other fields as needed
               videoId: '', description: ch.description ?? '', poster: ch.banner,
               category: ch.genres,
-              type: ch.streamType, image: ch.banner, unUpdatedUrl: ch.url,
+              type: ch.streamType, image: ch.banner, 
+              unUpdatedUrl: ch.url,
             ))
         .toList();
 
@@ -996,15 +1004,17 @@ class _LiveScreenState extends State<LiveScreen> with TickerProviderStateMixin {
           channelList: allItems,
           liveStatus: true,
           // --- Pass other required parameters ---
-          startAtPosition: Duration.zero,
-          videoType: channel.streamType,
-          isLive: true,
-          isVOD: false,
-          isBannerSlider: false,
-          source: 'isLiveScreen',
-          isSearch: false,
-          videoId: channel.id,
-          unUpdatedUrl: channel.url,
+          // startAtPosition: Duration.zero,
+          // videoType: channel.streamType,
+          // isLive: true,
+          // isVOD: false,
+          // isBannerSlider: false,
+          // source: 'isLiveScreen',
+          // isSearch: false,
+          videoId: channel.id, 
+          updatedAt: channel.updatedAt ,
+          source: 'isLiveMeenu',
+          // unUpdatedUrl: channel.url,
         ),
       ),
     );

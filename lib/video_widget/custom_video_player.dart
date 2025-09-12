@@ -1680,463 +1680,463 @@
 
 
 
-import 'dart:async';
-import 'dart:io';
-import 'dart:math' as math;
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_vlc_player/flutter_vlc_player.dart';
-import 'package:keep_screen_on/keep_screen_on.dart';
-import 'package:mobi_tv_entertainment/main.dart';
-import 'package:mobi_tv_entertainment/widgets/small_widgets/rainbow_page.dart';
+// import 'dart:async';
+// import 'dart:io';
+// import 'dart:math' as math;
+// import 'package:flutter/material.dart';
+// import 'package:flutter/services.dart';
+// import 'package:flutter_vlc_player/flutter_vlc_player.dart';
+// import 'package:keep_screen_on/keep_screen_on.dart';
+// import 'package:mobi_tv_entertainment/main.dart';
+// import 'package:mobi_tv_entertainment/widgets/small_widgets/rainbow_page.dart';
 
-class CustomVideoPlayer extends StatefulWidget {
-  final String videoUrl;
-  final String? name;
+// class CustomVideoPlayer extends StatefulWidget {
+//   final String videoUrl;
+//   final String? name;
 
-  CustomVideoPlayer({
-    required this.videoUrl,
-    this.name,
-  });
+//   CustomVideoPlayer({
+//     required this.videoUrl,
+//     this.name,
+//   });
 
-  @override
-  _CustomVideoPlayerState createState() => _CustomVideoPlayerState();
-}
+//   @override
+//   _CustomVideoPlayerState createState() => _CustomVideoPlayerState();
+// }
 
-class _CustomVideoPlayerState extends State<CustomVideoPlayer>
-    with WidgetsBindingObserver {
-  VlcPlayerController? _controller;
-  bool _controlsVisible = true;
-  late Timer _hideControlsTimer;
-  bool _isBuffering = true; // Start with buffering true
-  bool _isVideoInitialized = false;
-  Timer? _networkCheckTimer;
-  bool _wasDisconnected = false;
+// class _CustomVideoPlayerState extends State<CustomVideoPlayer>
+//     with WidgetsBindingObserver {
+//   VlcPlayerController? _controller;
+//   bool _controlsVisible = true;
+//   late Timer _hideControlsTimer;
+//   bool _isBuffering = true; // Start with buffering true
+//   bool _isVideoInitialized = false;
+//   Timer? _networkCheckTimer;
+//   bool _wasDisconnected = false;
 
-  final FocusNode screenFocusNode = FocusNode();
+//   final FocusNode screenFocusNode = FocusNode();
 
-  double _progress = 0.0;
-  Duration _lastKnownPosition = Duration.zero;
-  String? _currentModifiedUrl;
-  String? _seekPreviewTime;
+//   double _progress = 0.0;
+//   Duration _lastKnownPosition = Duration.zero;
+//   String? _currentModifiedUrl;
+//   String? _seekPreviewTime;
 
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addObserver(this);
-    KeepScreenOn.turnOn();
-    _initializeVLCController();
-    _startHideControlsTimer();
-    _startNetworkMonitor();
-    _startPositionUpdater();
-  }
+//   @override
+//   void initState() {
+//     super.initState();
+//     WidgetsBinding.instance.addObserver(this);
+//     KeepScreenOn.turnOn();
+//     _initializeVLCController();
+//     _startHideControlsTimer();
+//     _startNetworkMonitor();
+//     _startPositionUpdater();
+//   }
 
-  void _vlcListener() {
-    if (!mounted || _controller == null || !_controller!.value.isInitialized)
-      return;
+//   void _vlcListener() {
+//     if (!mounted || _controller == null || !_controller!.value.isInitialized)
+//       return;
 
-    if (mounted) {
-      setState(() {
-        _isBuffering = _controller!.value.isBuffering;
-      });
-    }
-  }
+//     if (mounted) {
+//       setState(() {
+//         _isBuffering = _controller!.value.isBuffering;
+//       });
+//     }
+//   }
 
-  @override
-  void dispose() {
-    KeepScreenOn.turnOff();
-    _hideControlsTimer.cancel();
-    _networkCheckTimer?.cancel();
-    screenFocusNode.dispose();
-    if (_controller != null) {
-      _controller?.removeListener(_vlcListener);
-      _controller?.stop();
-      _controller?.dispose();
-    }
-    super.dispose();
-  }
+//   @override
+//   void dispose() {
+//     KeepScreenOn.turnOff();
+//     _hideControlsTimer.cancel();
+//     _networkCheckTimer?.cancel();
+//     screenFocusNode.dispose();
+//     if (_controller != null) {
+//       _controller?.removeListener(_vlcListener);
+//       _controller?.stop();
+//       _controller?.dispose();
+//     }
+//     super.dispose();
+//   }
 
-  Future<bool> _handleWillPop() async {
-    if (mounted && _controller != null) {
-      await _controller?.stop();
-      print("Video player stopped before going back.");
-    }
-    return true;
-  }
+//   Future<bool> _handleWillPop() async {
+//     if (mounted && _controller != null) {
+//       await _controller?.stop();
+//       print("Video player stopped before going back.");
+//     }
+//     return true;
+//   }
 
-  Future<void> _onNetworkReconnected() async {
-    if (_controller != null) {
-      print("Network reconnected. Attempting to resume video...");
-      try {
-        if (_currentModifiedUrl != null) {
-          await _retryPlayback(_currentModifiedUrl!, 3);
-        }
-      } catch (e) {
-        print("Error during reconnection: $e");
-      }
-    }
-  }
+//   Future<void> _onNetworkReconnected() async {
+//     if (_controller != null) {
+//       print("Network reconnected. Attempting to resume video...");
+//       try {
+//         if (_currentModifiedUrl != null) {
+//           await _retryPlayback(_currentModifiedUrl!, 3);
+//         }
+//       } catch (e) {
+//         print("Error during reconnection: $e");
+//       }
+//     }
+//   }
 
-  void _startNetworkMonitor() {
-    _networkCheckTimer = Timer.periodic(Duration(seconds: 5), (_) async {
-      bool isConnected = await _isInternetAvailable();
-      if (!isConnected && !_wasDisconnected) {
-        _wasDisconnected = true;
-        print("Network disconnected");
-      } else if (isConnected && _wasDisconnected) {
-        _wasDisconnected = false;
-        if (_controller?.value.isInitialized ?? false) {
-          _onNetworkReconnected();
-        }
-      }
-    });
-  }
+//   void _startNetworkMonitor() {
+//     _networkCheckTimer = Timer.periodic(Duration(seconds: 5), (_) async {
+//       bool isConnected = await _isInternetAvailable();
+//       if (!isConnected && !_wasDisconnected) {
+//         _wasDisconnected = true;
+//         print("Network disconnected");
+//       } else if (isConnected && _wasDisconnected) {
+//         _wasDisconnected = false;
+//         if (_controller?.value.isInitialized ?? false) {
+//           _onNetworkReconnected();
+//         }
+//       }
+//     });
+//   }
 
-  Future<bool> _isInternetAvailable() async {
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      return result.isNotEmpty && result[0].rawAddress.isNotEmpty;
-    } catch (_) {
-      return false;
-    }
-  }
+//   Future<bool> _isInternetAvailable() async {
+//     try {
+//       final result = await InternetAddress.lookup('google.com');
+//       return result.isNotEmpty && result[0].rawAddress.isNotEmpty;
+//     } catch (_) {
+//       return false;
+//     }
+//   }
 
-  void _startPositionUpdater() {
-    Timer.periodic(Duration(seconds: 1), (_) {
-      if (mounted && _controller?.value.isInitialized == true) {
-        setState(() {
-          _lastKnownPosition = _controller!.value.position;
-          if (_controller!.value.duration > Duration.zero) {
-            _progress = _lastKnownPosition.inMilliseconds /
-                _controller!.value.duration.inMilliseconds;
-          }
-        });
-      }
-    });
-  }
+//   void _startPositionUpdater() {
+//     Timer.periodic(Duration(seconds: 1), (_) {
+//       if (mounted && _controller?.value.isInitialized == true) {
+//         setState(() {
+//           _lastKnownPosition = _controller!.value.position;
+//           if (_controller!.value.duration > Duration.zero) {
+//             _progress = _lastKnownPosition.inMilliseconds /
+//                 _controller!.value.duration.inMilliseconds;
+//           }
+//         });
+//       }
+//     });
+//   }
 
-  Future<void> _initializeVLCController() async {
-    setState(() {
-      _isBuffering = true;
-    });
+//   Future<void> _initializeVLCController() async {
+//     setState(() {
+//       _isBuffering = true;
+//     });
 
-    _currentModifiedUrl =
-        '${widget.videoUrl}?network-caching=5000&live-caching=500&rtsp-tcp';
+//     _currentModifiedUrl =
+//         '${widget.videoUrl}?network-caching=5000&live-caching=500&rtsp-tcp';
 
-    _controller = VlcPlayerController.network(
-      _currentModifiedUrl!,
-      hwAcc: HwAcc.full,
-      options: VlcPlayerOptions(
-        video: VlcVideoOptions([
-          VlcVideoOptions.dropLateFrames(true),
-          VlcVideoOptions.skipFrames(true),
-        ]),
-      ),
-    );
+//     _controller = VlcPlayerController.network(
+//       _currentModifiedUrl!,
+//       hwAcc: HwAcc.full,
+//       options: VlcPlayerOptions(
+//         video: VlcVideoOptions([
+//           VlcVideoOptions.dropLateFrames(true),
+//           VlcVideoOptions.skipFrames(true),
+//         ]),
+//       ),
+//     );
 
-     _controller!.initialize();
-    _controller!.addListener(_vlcListener);
+//      _controller!.initialize();
+//     _controller!.addListener(_vlcListener);
     
-    if (mounted) {
-      setState(() {
-        _isVideoInitialized = true;
-      });
-    }
+//     if (mounted) {
+//       setState(() {
+//         _isVideoInitialized = true;
+//       });
+//     }
 
-     _retryPlayback(_currentModifiedUrl!, 5);
+//      _retryPlayback(_currentModifiedUrl!, 5);
 
-    if (_controller!.value.isInitialized) {
-      _controller!.play();
-    } else {
-      print("Controller failed to initialize.");
-    }
-  }
+//     if (_controller!.value.isInitialized) {
+//       _controller!.play();
+//     } else {
+//       print("Controller failed to initialize.");
+//     }
+//   }
 
-  Future<void> _retryPlayback(String url, int retries) async {
-    for (int i = 0; i < retries; i++) {
-      if (!mounted || _controller == null) return;
-      try {
-        await _controller!.setMediaFromNetwork(url, autoPlay: true);
-        return;
-      } catch (e) {
-        print("Playback retry ${i + 1} failed: $e");
-        await Future.delayed(Duration(seconds: 1));
-      }
-    }
-    print("All retries failed for URL: $url");
-  }
+//   Future<void> _retryPlayback(String url, int retries) async {
+//     for (int i = 0; i < retries; i++) {
+//       if (!mounted || _controller == null) return;
+//       try {
+//         await _controller!.setMediaFromNetwork(url, autoPlay: true);
+//         return;
+//       } catch (e) {
+//         print("Playback retry ${i + 1} failed: $e");
+//         await Future.delayed(Duration(seconds: 1));
+//       }
+//     }
+//     print("All retries failed for URL: $url");
+//   }
 
-  void _togglePlayPause() {
-    if (_controller != null && _controller!.value.isInitialized) {
-      _controller!.value.isPlaying ? _controller!.pause() : _controller!.play();
-      setState(() {});
-    }
-    _resetHideControlsTimer();
-  }
+//   void _togglePlayPause() {
+//     if (_controller != null && _controller!.value.isInitialized) {
+//       _controller!.value.isPlaying ? _controller!.pause() : _controller!.play();
+//       setState(() {});
+//     }
+//     _resetHideControlsTimer();
+//   }
 
-  void _resetHideControlsTimer() {
-    _hideControlsTimer.cancel();
-    setState(() {
-      _controlsVisible = true;
-    });
-    _startHideControlsTimer();
-  }
+//   void _resetHideControlsTimer() {
+//     _hideControlsTimer.cancel();
+//     setState(() {
+//       _controlsVisible = true;
+//     });
+//     _startHideControlsTimer();
+//   }
 
-  void _startHideControlsTimer() {
-    _hideControlsTimer = Timer(Duration(seconds: 10), () {
-      if (mounted) {
-        setState(() {
-          _controlsVisible = false;
-        });
-      }
-    });
-  }
+//   void _startHideControlsTimer() {
+//     _hideControlsTimer = Timer(Duration(seconds: 10), () {
+//       if (mounted) {
+//         setState(() {
+//           _controlsVisible = false;
+//         });
+//       }
+//     });
+//   }
 
-  int _accumulatedSeekForward = 0;
-  int _accumulatedSeekBackward = 0;
-  Timer? _seekTimer;
-  Duration _previewPosition = Duration.zero;
-  final _seekDuration = 10;
-  final _seekDelay = 1000;
+//   int _accumulatedSeekForward = 0;
+//   int _accumulatedSeekBackward = 0;
+//   Timer? _seekTimer;
+//   Duration _previewPosition = Duration.zero;
+//   final _seekDuration = 10;
+//   final _seekDelay = 1000;
 
-  void _seekForward() {
-    if (_controller == null || !_controller!.value.isInitialized) return;
+//   void _seekForward() {
+//     if (_controller == null || !_controller!.value.isInitialized) return;
 
-    setState(() {
-      _accumulatedSeekForward += _seekDuration;
-      _previewPosition = _controller!.value.position +
-          Duration(seconds: _accumulatedSeekForward);
-      if (_previewPosition > _controller!.value.duration) {
-        _previewPosition = _controller!.value.duration;
-      }
-      _seekPreviewTime = _formatDuration(_previewPosition);
-    });
+//     setState(() {
+//       _accumulatedSeekForward += _seekDuration;
+//       _previewPosition = _controller!.value.position +
+//           Duration(seconds: _accumulatedSeekForward);
+//       if (_previewPosition > _controller!.value.duration) {
+//         _previewPosition = _controller!.value.duration;
+//       }
+//       _seekPreviewTime = _formatDuration(_previewPosition);
+//     });
 
-    _seekTimer?.cancel();
-    _seekTimer = Timer(Duration(milliseconds: _seekDelay), () {
-      if (_controller != null) {
-        _controller!.seekTo(_previewPosition);
-        setState(() {
-          _accumulatedSeekForward = 0;
-          _seekPreviewTime = null;
-        });
-      }
-    });
-    _resetHideControlsTimer();
-  }
+//     _seekTimer?.cancel();
+//     _seekTimer = Timer(Duration(milliseconds: _seekDelay), () {
+//       if (_controller != null) {
+//         _controller!.seekTo(_previewPosition);
+//         setState(() {
+//           _accumulatedSeekForward = 0;
+//           _seekPreviewTime = null;
+//         });
+//       }
+//     });
+//     _resetHideControlsTimer();
+//   }
 
-  void _seekBackward() {
-    if (_controller == null || !_controller!.value.isInitialized) return;
+//   void _seekBackward() {
+//     if (_controller == null || !_controller!.value.isInitialized) return;
 
-    setState(() {
-      _accumulatedSeekBackward += _seekDuration;
-      final newPosition = _controller!.value.position -
-          Duration(seconds: _accumulatedSeekBackward);
-      _previewPosition =
-          newPosition > Duration.zero ? newPosition : Duration.zero;
-      _seekPreviewTime = _formatDuration(_previewPosition);
-    });
+//     setState(() {
+//       _accumulatedSeekBackward += _seekDuration;
+//       final newPosition = _controller!.value.position -
+//           Duration(seconds: _accumulatedSeekBackward);
+//       _previewPosition =
+//           newPosition > Duration.zero ? newPosition : Duration.zero;
+//       _seekPreviewTime = _formatDuration(_previewPosition);
+//     });
 
-    _seekTimer?.cancel();
-    _seekTimer = Timer(Duration(milliseconds: _seekDelay), () {
-      if (_controller != null) {
-        _controller!.seekTo(_previewPosition);
-        setState(() {
-          _accumulatedSeekBackward = 0;
-          _seekPreviewTime = null;
-        });
-      }
-    });
-    _resetHideControlsTimer();
-  }
+//     _seekTimer?.cancel();
+//     _seekTimer = Timer(Duration(milliseconds: _seekDelay), () {
+//       if (_controller != null) {
+//         _controller!.seekTo(_previewPosition);
+//         setState(() {
+//           _accumulatedSeekBackward = 0;
+//           _seekPreviewTime = null;
+//         });
+//       }
+//     });
+//     _resetHideControlsTimer();
+//   }
 
-  // ## UPDATED KEY HANDLER ##
-  void _handleKeyEvent(RawKeyEvent event) {
-    if (event is RawKeyDownEvent) {
-      _resetHideControlsTimer();
+//   // ## UPDATED KEY HANDLER ##
+//   void _handleKeyEvent(RawKeyEvent event) {
+//     if (event is RawKeyDownEvent) {
+//       _resetHideControlsTimer();
 
-      switch (event.logicalKey) {
-        case LogicalKeyboardKey.arrowRight:
-          _seekForward();
-          break;
+//       switch (event.logicalKey) {
+//         case LogicalKeyboardKey.arrowRight:
+//           _seekForward();
+//           break;
 
-        case LogicalKeyboardKey.arrowLeft:
-          _seekBackward();
-          break;
+//         case LogicalKeyboardKey.arrowLeft:
+//           _seekBackward();
+//           break;
 
-        case LogicalKeyboardKey.arrowUp:
-        case LogicalKeyboardKey.arrowDown:
-          // In keys se ab sirf controls dikhenge, seek nahi hoga
-          break;
+//         case LogicalKeyboardKey.arrowUp:
+//         case LogicalKeyboardKey.arrowDown:
+//           // In keys se ab sirf controls dikhenge, seek nahi hoga
+//           break;
 
-        case LogicalKeyboardKey.select:
-        case LogicalKeyboardKey.enter:
-          _togglePlayPause();
-          break;
-      }
-    }
-  }
+//         case LogicalKeyboardKey.select:
+//         case LogicalKeyboardKey.enter:
+//           _togglePlayPause();
+//           break;
+//       }
+//     }
+//   }
 
-  String _formatDuration(Duration duration) {
-    String twoDigits(int n) => n.toString().padLeft(2, '0');
-    String hours = twoDigits(duration.inHours);
-    String minutes = twoDigits(duration.inMinutes.remainder(60));
-    String seconds = twoDigits(duration.inSeconds.remainder(60));
-    return '$hours:$minutes:$seconds';
-  }
+//   String _formatDuration(Duration duration) {
+//     String twoDigits(int n) => n.toString().padLeft(2, '0');
+//     String hours = twoDigits(duration.inHours);
+//     String minutes = twoDigits(duration.inMinutes.remainder(60));
+//     String seconds = twoDigits(duration.inSeconds.remainder(60));
+//     return '$hours:$minutes:$seconds';
+//   }
 
-  @override
-  Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: _handleWillPop,
-      child: Scaffold(
-        backgroundColor: Colors.black,
-        body: Focus(
-          focusNode: screenFocusNode,
-          autofocus: true,
-          onKey: (node, event) {
-            final handledKeys = <LogicalKeyboardKey>{
-              LogicalKeyboardKey.arrowLeft,
-              LogicalKeyboardKey.arrowRight,
-              LogicalKeyboardKey.arrowUp,
-              LogicalKeyboardKey.arrowDown,
-              LogicalKeyboardKey.select,
-              LogicalKeyboardKey.enter,
-            };
+//   @override
+//   Widget build(BuildContext context) {
+//     return WillPopScope(
+//       onWillPop: _handleWillPop,
+//       child: Scaffold(
+//         backgroundColor: Colors.black,
+//         body: Focus(
+//           focusNode: screenFocusNode,
+//           autofocus: true,
+//           onKey: (node, event) {
+//             final handledKeys = <LogicalKeyboardKey>{
+//               LogicalKeyboardKey.arrowLeft,
+//               LogicalKeyboardKey.arrowRight,
+//               LogicalKeyboardKey.arrowUp,
+//               LogicalKeyboardKey.arrowDown,
+//               LogicalKeyboardKey.select,
+//               LogicalKeyboardKey.enter,
+//             };
 
-            if (event is RawKeyDownEvent &&
-                handledKeys.contains(event.logicalKey)) {
-              _handleKeyEvent(event);
-              return KeyEventResult.handled;
-            }
-            return KeyEventResult.ignored;
-          },
-          child: GestureDetector(
-            onTap: _resetHideControlsTimer,
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                if (_isVideoInitialized && _controller != null)
-                  VlcPlayer(
-                    controller: _controller!,
-                    aspectRatio: 16 / 9,
-                    placeholder: Center(child: CircularProgressIndicator()),
-                  ),
-                if (!_isVideoInitialized || _isBuffering)
-                  Container(
-                    color: Colors.black54,
-                    child: Center(
-                        child: RainbowPage(backgroundColor: Colors.black)),
-                  ),
-                if (_controlsVisible) _buildControls(),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
+//             if (event is RawKeyDownEvent &&
+//                 handledKeys.contains(event.logicalKey)) {
+//               _handleKeyEvent(event);
+//               return KeyEventResult.handled;
+//             }
+//             return KeyEventResult.ignored;
+//           },
+//           child: GestureDetector(
+//             onTap: _resetHideControlsTimer,
+//             child: Stack(
+//               alignment: Alignment.center,
+//               children: [
+//                 if (_isVideoInitialized && _controller != null)
+//                   VlcPlayer(
+//                     controller: _controller!,
+//                     aspectRatio: 16 / 9,
+//                     placeholder: Center(child: CircularProgressIndicator()),
+//                   ),
+//                 if (!_isVideoInitialized || _isBuffering)
+//                   Container(
+//                     color: Colors.black54,
+//                     child: Center(
+//                         child: RainbowPage(backgroundColor: Colors.black)),
+//                   ),
+//                 if (_controlsVisible) _buildControls(),
+//               ],
+//             ),
+//           ),
+//         ),
+//       ),
+//     );
+//   }
 
-  Widget _buildCustomProgressIndicator() {
-    if (_controller == null || !_controller!.value.isInitialized || _controller!.value.duration <= Duration.zero) {
-      return LinearProgressIndicator(value: 0, backgroundColor: Colors.grey.withOpacity(0.5));
-    }
+//   Widget _buildCustomProgressIndicator() {
+//     if (_controller == null || !_controller!.value.isInitialized || _controller!.value.duration <= Duration.zero) {
+//       return LinearProgressIndicator(value: 0, backgroundColor: Colors.grey.withOpacity(0.5));
+//     }
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        double totalWidth = constraints.maxWidth;
-        Duration duration = _controller!.value.duration;
-        Duration position = _controller!.value.position;
+//     return LayoutBuilder(
+//       builder: (context, constraints) {
+//         double totalWidth = constraints.maxWidth;
+//         Duration duration = _controller!.value.duration;
+//         Duration position = _controller!.value.position;
         
-        bool isSeeking = _accumulatedSeekForward > 0 || _accumulatedSeekBackward > 0;
-        Duration finalPreviewPosition = isSeeking ? _previewPosition : position;
+//         bool isSeeking = _accumulatedSeekForward > 0 || _accumulatedSeekBackward > 0;
+//         Duration finalPreviewPosition = isSeeking ? _previewPosition : position;
 
-        double playedPercent = (position.inMilliseconds / duration.inMilliseconds).clamp(0.0, 1.0);
-        double previewPercent = (finalPreviewPosition.inMilliseconds / duration.inMilliseconds).clamp(0.0, 1.0);
+//         double playedPercent = (position.inMilliseconds / duration.inMilliseconds).clamp(0.0, 1.0);
+//         double previewPercent = (finalPreviewPosition.inMilliseconds / duration.inMilliseconds).clamp(0.0, 1.0);
 
-        return Stack(
-          clipBehavior: Clip.none,
-          children: [
-            Container(
-              width: totalWidth,
-              height: 6,
-              decoration: BoxDecoration(
-                color: Colors.grey.withOpacity(0.5),
-                borderRadius: BorderRadius.circular(4),
-              ),
-            ),
-            Container(
-              width: totalWidth * playedPercent,
-              height: 6,
-              decoration: BoxDecoration(
-                color: const Color.fromARGB(211, 155, 40, 248),
-                borderRadius: BorderRadius.circular(4),
-              ),
-            ),
-            if (isSeeking)
-              Positioned(
-                left: totalWidth * (previewPercent > playedPercent ? playedPercent : previewPercent),
-                child: Container(
-                  width: totalWidth * (previewPercent - playedPercent).abs(),
-                  height: 6,
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.4),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ),
-              ),
-            if (_seekPreviewTime != null)
-              Positioned(
-                left: (totalWidth * previewPercent).clamp(20.0, totalWidth - 20.0) - 20,
-                bottom: 15,
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.7),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Text(
-                    _seekPreviewTime!,
-                    style: TextStyle(color: Colors.white, fontSize: 14),
-                  ),
-                ),
-              ),
-          ],
-        );
-      },
-    );
-  }
+//         return Stack(
+//           clipBehavior: Clip.none,
+//           children: [
+//             Container(
+//               width: totalWidth,
+//               height: 6,
+//               decoration: BoxDecoration(
+//                 color: Colors.grey.withOpacity(0.5),
+//                 borderRadius: BorderRadius.circular(4),
+//               ),
+//             ),
+//             Container(
+//               width: totalWidth * playedPercent,
+//               height: 6,
+//               decoration: BoxDecoration(
+//                 color: const Color.fromARGB(211, 155, 40, 248),
+//                 borderRadius: BorderRadius.circular(4),
+//               ),
+//             ),
+//             if (isSeeking)
+//               Positioned(
+//                 left: totalWidth * (previewPercent > playedPercent ? playedPercent : previewPercent),
+//                 child: Container(
+//                   width: totalWidth * (previewPercent - playedPercent).abs(),
+//                   height: 6,
+//                   decoration: BoxDecoration(
+//                     color: Colors.white.withOpacity(0.4),
+//                     borderRadius: BorderRadius.circular(4),
+//                   ),
+//                 ),
+//               ),
+//             if (_seekPreviewTime != null)
+//               Positioned(
+//                 left: (totalWidth * previewPercent).clamp(20.0, totalWidth - 20.0) - 20,
+//                 bottom: 15,
+//                 child: Container(
+//                   padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+//                   decoration: BoxDecoration(
+//                     color: Colors.black.withOpacity(0.7),
+//                     borderRadius: BorderRadius.circular(4),
+//                   ),
+//                   child: Text(
+//                     _seekPreviewTime!,
+//                     style: TextStyle(color: Colors.white, fontSize: 14),
+//                   ),
+//                 ),
+//               ),
+//           ],
+//         );
+//       },
+//     );
+//   }
 
-  Widget _buildControls() {
-    return Positioned(
-      bottom: 0,
-      left: 0,
-      right: 0,
-      child: Container(
-        color: Colors.black.withOpacity(0.6),
-        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-        child: Row(
-          children: [
-            SizedBox(width: 10),
+//   Widget _buildControls() {
+//     return Positioned(
+//       bottom: 0,
+//       left: 0,
+//       right: 0,
+//       child: Container(
+//         color: Colors.black.withOpacity(0.6),
+//         padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+//         child: Row(
+//           children: [
+//             SizedBox(width: 10),
 
-            Text(
-              _formatDuration(_controller?.value.position ?? Duration.zero),
-              style: TextStyle(color: Colors.white, fontSize: 16),
-            ),
-            SizedBox(width: 10),
-            Expanded(
-              child: _buildCustomProgressIndicator(),
-            ),
-            SizedBox(width: 10),
-            Text(
-              _formatDuration(_controller?.value.duration ?? Duration.zero),
-              style: TextStyle(color: Colors.white, fontSize: 16),
-            ),
-            SizedBox(width: 10),
+//             Text(
+//               _formatDuration(_controller?.value.position ?? Duration.zero),
+//               style: TextStyle(color: Colors.white, fontSize: 16),
+//             ),
+//             SizedBox(width: 10),
+//             Expanded(
+//               child: _buildCustomProgressIndicator(),
+//             ),
+//             SizedBox(width: 10),
+//             Text(
+//               _formatDuration(_controller?.value.duration ?? Duration.zero),
+//               style: TextStyle(color: Colors.white, fontSize: 16),
+//             ),
+//             SizedBox(width: 10),
 
-          ],
-        ),
-      ),
-    );
-  }
-}
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }

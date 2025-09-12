@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mobi_tv_entertainment/home_screen_pages/tv_show/tv_show.dart';
 import 'package:mobi_tv_entertainment/home_screen_pages/tv_show/tv_show_final_details_page.dart';
+import 'package:mobi_tv_entertainment/main.dart';
+import 'package:mobi_tv_entertainment/services/history_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 
@@ -198,6 +200,24 @@ void dispose() {
 Future<void> _onTVShowSelected(TVShowDetailsModel tvShow) async {
   print('🎬 Selected TV Show: ${tvShow.name}');
   HapticFeedback.mediumImpact();
+
+
+      try {
+      print('Updating user history for: ${tvShow.name}');
+      int? currentUserId = SessionManager.userId;
+      final int? parsedId = tvShow.id;
+
+      await HistoryService.updateUserHistory(
+        userId: currentUserId!, // 1. User ID
+        contentType: 4, // 2. Content Type (channel के लिए 4)
+        eventId: parsedId!, // 3. Event ID (channel की ID)
+        eventTitle: tvShow.name, // 4. Event Title (channel का नाम)
+        url: '', // 5. URL (channel का URL)
+        categoryId: 0, // 6. Category ID (डिफ़ॉल्ट 1)
+      );
+    } catch (e) {
+      print("History update failed, but proceeding to play. Error: $e");
+    }
   
   // ✅ Navigate and wait for return
   await Navigator.push(
@@ -1099,31 +1119,31 @@ Future<void> _refreshDataInBackground() async {
                 ],
               ),
             ),
-            Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          ProfessionalColors.accentGreen.withOpacity(0.2),
-                          ProfessionalColors.accentBlue.withOpacity(0.1),
-                        ],
-                      ),
-                      borderRadius: BorderRadius.circular(15),
-                      border: Border.all(
-                        color: ProfessionalColors.accentGreen.withOpacity(0.3),
-                        width: 1,
-                      ),
-                    ),
-                    child: Text(
-                      '${tvShowsList.length} Shows Available',
-                      style: const TextStyle(
-                        color: ProfessionalColors.accentGreen,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
+            // Container(
+            //         padding:
+            //             const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+            //         decoration: BoxDecoration(
+            //           gradient: LinearGradient(
+            //             colors: [
+            //               ProfessionalColors.accentGreen.withOpacity(0.2),
+            //               ProfessionalColors.accentBlue.withOpacity(0.1),
+            //             ],
+            //           ),
+            //           borderRadius: BorderRadius.circular(15),
+            //           border: Border.all(
+            //             color: ProfessionalColors.accentGreen.withOpacity(0.3),
+            //             width: 1,
+            //           ),
+            //         ),
+            //         child: Text(
+            //           '${tvShowsList.length} Shows Available',
+            //           style: const TextStyle(
+            //             color: ProfessionalColors.accentGreen,
+            //             fontSize: 12,
+            //             fontWeight: FontWeight.w500,
+            //           ),
+            //         ),
+            //       ),
             if (widget.channelLogo != null)
               Container(
                 width: 50,

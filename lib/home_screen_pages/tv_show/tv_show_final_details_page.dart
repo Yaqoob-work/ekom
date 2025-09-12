@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:mobi_tv_entertainment/provider/device_info_provider.dart';
+import 'package:mobi_tv_entertainment/services/history_service.dart';
 import 'package:mobi_tv_entertainment/video_widget/custom_video_player.dart';
 import 'package:mobi_tv_entertainment/video_widget/video_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -761,6 +762,25 @@ class _TvShowFinalDetailsPageState extends State<TvShowFinalDetailsPage>
 
     setState(() => _isProcessing = true);
 
+
+    
+    try {
+      print('Updating user history for: ${episode.title}');
+      int? currentUserId = SessionManager.userId;
+      final int? parsedId = episode.id;
+
+      await HistoryService.updateUserHistory(
+        userId: currentUserId!, // 1. User ID
+        contentType: 4, // 2. Content Type (channel के लिए 4)
+        eventId: parsedId!, // 3. Event ID (channel की ID)
+        eventTitle: episode.title, // 4. Event Title (channel का नाम)
+        url: episode.videoUrl ?? '', // 5. URL (channel का URL)
+        categoryId: 0, // 6. Category ID (डिफ़ॉल्ट 1)
+      );
+    } catch (e) {
+      print("History update failed, but proceeding to play. Error: $e");
+    }
+
     try {
       String url = episode.videoUrl;
 
@@ -810,14 +830,33 @@ class _TvShowFinalDetailsPageState extends State<TvShowFinalDetailsPage>
             );
           }
         } else {
-          result = await Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => CustomVideoPlayer(
-                videoUrl: episode.videoUrl,
-              ),
+          // result = await Navigator.push(
+          //   context,
+          //   MaterialPageRoute(
+          //     builder: (context) => CustomVideoPlayer(
+          //       videoUrl: episode.videoUrl,
+          //     ),
+          //   ),
+          // );
+
+                    result =  await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => VideoScreen(
+              videoUrl: episode.videoUrl,
+              bannerImageUrl: episode.thumbnail,
+              channelList: [],
+              // isLive: false,
+              // isSearch: false,
+              videoId: episode.id,
+              name: episode.title,
+              liveStatus: false, 
+              updatedAt: episode.updatedAt,
+              source: 'isTvShow',
             ),
-          );
+          ),
+        );
+          
         }
 
         // Refresh data after returning from video player
@@ -1339,6 +1378,9 @@ class _TvShowFinalDetailsPageState extends State<TvShowFinalDetailsPage>
     final isSelected = index == _selectedSeasonIndex;
     final isFocused = _currentMode == NavigationMode.seasons && isSelected;
     final episodeCount = _filteredEpisodesMap[season.id]?.length ?? 0;
+
+
+    
 
     return GestureDetector(
       onTap: () => _onSeasonTap(index),

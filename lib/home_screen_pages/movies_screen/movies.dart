@@ -6,6 +6,7 @@ import 'package:mobi_tv_entertainment/provider/focus_provider.dart';
 import 'package:mobi_tv_entertainment/services/history_service.dart';
 import 'package:mobi_tv_entertainment/video_widget/custom_video_player.dart';
 import 'package:mobi_tv_entertainment/video_widget/custom_youtube_player.dart';
+import 'package:mobi_tv_entertainment/video_widget/video_screen.dart';
 import 'package:mobi_tv_entertainment/video_widget/youtube_webview_player.dart';
 import 'package:mobi_tv_entertainment/widgets/models/news_item_model.dart';
 import 'package:flutter/material.dart';
@@ -130,6 +131,7 @@ class AnimationTiming {
 class Movie {
   final int id;
   final String name;
+  final String updatedAt;
   final String description;
   final String genres;
   final String releaseDate;
@@ -137,7 +139,6 @@ class Movie {
   final String? poster;
   final String? banner;
   final String sourceType;
-  final String contentType;
   final String movieUrl;
   final List<Network> networks;
   final int status;
@@ -146,6 +147,7 @@ class Movie {
   Movie({
     required this.id,
     required this.name,
+    required this.updatedAt,
     required this.description,
     required this.genres,
     required this.releaseDate,
@@ -153,7 +155,6 @@ class Movie {
     this.poster,
     this.banner,
     required this.sourceType,
-    required this.contentType,
     required this.movieUrl,
     required this.networks,
     required this.status,
@@ -164,6 +165,7 @@ class Movie {
     return Movie(
       id: json['id'] ?? 0,
       name: json['name'] ?? '',
+      updatedAt: json['updated_at'] ?? '',
       description: json['description'] ?? '',
       genres: json['genres']?.toString() ?? '',
       releaseDate: json['release_date'] ?? '',
@@ -171,7 +173,6 @@ class Movie {
       poster: json['poster'],
       banner: json['banner'],
       sourceType: json['source_type'] ?? '',
-      contentType: json['content_type'] ?? '',
       movieUrl: json['movie_url'] ?? '',
       networks: (json['networks'] as List?)
               ?.map((network) => Network.fromJson(network))
@@ -1147,18 +1148,18 @@ class _ProfessionalMoviesHorizontalListState
     _isNavigating = true;
 
 
-
-    try {
-      print('Updating user history for: ${movie.name}');
+        try{
+          print('Updating user history for: ${movie.name}');
       int? currentUserId = SessionManager.userId;
-    int contentTypeId = movie.contentType as int ;
+    // final int? parsedContentType = movie.contentType;
+    final int? parsedId = movie.id ;
 
       await HistoryService.updateUserHistory(
         userId: currentUserId!, // 1. User ID
-        contentType: contentTypeId, // 2. Content Type (Movie के लिए 4)
-        eventId: movie.id, // 3. Event ID (Movie की ID)
-        eventTitle: movie.name, // 4. Event Title (Movie का नाम)
-        url: movie.movieUrl, // 5. URL (Movie का URL)
+        contentType: 1, // 2. Content Type (movie के लिए 4)
+        eventId: parsedId!, // 3. Event ID (movie की ID)
+        eventTitle: movie.name, // 4. Event Title (movie का नाम)
+        url: movie.movieUrl , // 5. URL (movie का URL)
         categoryId: 0, // 6. Category ID (डिफ़ॉल्ट 1)
       );
     } catch (e) {
@@ -1230,12 +1231,12 @@ class _ProfessionalMoviesHorizontalListState
                   banner: movie.banner ?? movie.poster ?? '',
                   url: movie.movieUrl,
                   unUpdatedUrl: movie.movieUrl,
-                  contentType: movie.contentType, // Movie type
+                  contentType: '1', // Movie type
                   // streamType: movie.streamType ,
                   sourceType: movie.sourceType,
                   liveStatus: false,
                   poster: movie.poster ?? movie.banner ?? '',
-                  image: movie.banner ?? movie.poster ?? '',
+                  image: movie.banner ?? movie.poster ?? '', updatedAt: movie.updatedAt,
                   // Other required fields...
                 ))
             .toList();
@@ -1328,11 +1329,28 @@ class _ProfessionalMoviesHorizontalListState
           );
         }
       } else {
-        await Navigator.push(
+        // await Navigator.push(
+        //   context,
+        //   MaterialPageRoute(
+        //     builder: (context) => CustomVideoPlayer(
+        //       videoUrl: movie.movieUrl,
+        //     ),
+        //   ),
+        // );
+          await Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => CustomVideoPlayer(
+            builder: (context) => VideoScreen(
               videoUrl: movie.movieUrl,
+              bannerImageUrl: movie.banner??movie.poster??''  ,
+              channelList: [],
+              source: 'isRecentlyAdded',
+              // isLive: false,
+              // isSearch: false,
+              videoId: movie.id,
+              name: movie.name,
+              liveStatus: false, 
+              updatedAt: movie.updatedAt,
             ),
           ),
         );
@@ -1524,8 +1542,9 @@ class _ProfessionalMoviesHorizontalListState
             if (index > 0) {
               String prevMovieId = displayMoviesList[index - 1].id.toString();
               FocusScope.of(context).requestFocus(movieFocusNodes[prevMovieId]);
-              return KeyEventResult.handled;
             }
+              return KeyEventResult.handled;
+
           } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
             // ✅ ADD: Reset color when navigating away
             context.read<ColorProvider>().resetColor();
@@ -1735,37 +1754,37 @@ class _ProfessionalMoviesHorizontalListState
                 ),
               ),
             ),
-            Row(
-              children: [
-                // Movies Count
-                if (totalMoviesCount > 0)
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          ProfessionalColors.accentBlue.withOpacity(0.2),
-                          ProfessionalColors.accentPurple.withOpacity(0.2),
-                        ],
-                      ),
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                        color: ProfessionalColors.accentBlue.withOpacity(0.3),
-                        width: 1,
-                      ),
-                    ),
-                    child: Text(
-                      '${totalMoviesCount} Movies Available',
-                      style: const TextStyle(
-                        color: ProfessionalColors.textSecondary,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-              ],
-            ),
+            // Row(
+            //   children: [
+            //     // Movies Count
+            //     if (totalMoviesCount > 0)
+            //       Container(
+            //         padding:
+            //             const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            //         decoration: BoxDecoration(
+            //           gradient: LinearGradient(
+            //             colors: [
+            //               ProfessionalColors.accentBlue.withOpacity(0.2),
+            //               ProfessionalColors.accentPurple.withOpacity(0.2),
+            //             ],
+            //           ),
+            //           borderRadius: BorderRadius.circular(20),
+            //           border: Border.all(
+            //             color: ProfessionalColors.accentBlue.withOpacity(0.3),
+            //             width: 1,
+            //           ),
+            //         ),
+            //         child: Text(
+            //           '${totalMoviesCount} Movies Available',
+            //           style: const TextStyle(
+            //             color: ProfessionalColors.textSecondary,
+            //             fontSize: 12,
+            //             fontWeight: FontWeight.w500,
+            //           ),
+            //         ),
+            //       ),
+            //   ],
+            // ),
           ],
         ),
       ),
@@ -2264,14 +2283,18 @@ class _ProfessionalMovieCardState extends State<ProfessionalMovieCard>
   }
 
   Widget _buildMovieImage(double screenWidth, double posterHeight) {
+      final String uniqueImageUrl = "${widget.movie.banner}?v=${widget.movie.updatedAt}";
+  // ✅ Naya unique cache key banayein
+  final String uniqueCacheKey = "${widget.movie.id.toString()}_${widget.movie.updatedAt}";
     return Container(
       width: double.infinity,
       height: posterHeight,
       child: widget.movie.banner != null && widget.movie.banner!.isNotEmpty
           ? CachedNetworkImage(
-              imageUrl: widget.movie.banner!,
+              imageUrl: uniqueImageUrl,
               fit: BoxFit.cover,
               memCacheHeight: 300,
+              cacheKey: uniqueCacheKey,
               placeholder: (context, url) =>
                   _buildImagePlaceholder(posterHeight),
               errorWidget: (context, url, error) =>
@@ -3139,25 +3162,24 @@ class _ProfessionalMoviesGridViewState extends State<ProfessionalMoviesGridView>
   Future<void> _handleGridMovieTap(Movie movie) async {
     if (_isLoading || !mounted) return; // 🆕 Check main loading state
 
-
-
     setState(() {
       _isLoading = true;
     });
 
 
-    
-    try {
-      print('Updating user history for: ${movie.name}');
+
+            try{
+          print('Updating user history for: ${movie.name}');
       int? currentUserId = SessionManager.userId;
-    int contentTypeId = movie.contentType as int ;
+    // final int? parsedContentType = movie.contentType;
+    final int? parsedId = movie.id ;
 
       await HistoryService.updateUserHistory(
         userId: currentUserId!, // 1. User ID
-        contentType: contentTypeId, // 2. Content Type (Movie के लिए 4)
-        eventId: movie.id, // 3. Event ID (Movie की ID)
-        eventTitle: movie.name, // 4. Event Title (Movie का नाम)
-        url: movie.movieUrl, // 5. URL (Movie का URL)
+        contentType: 1, // 2. Content Type (movie के लिए 4)
+        eventId: parsedId!, // 3. Event ID (movie की ID)
+        eventTitle: movie.name, // 4. Event Title (movie का नाम)
+        url: movie.movieUrl , // 5. URL (movie का URL)
         categoryId: 0, // 6. Category ID (डिफ़ॉल्ट 1)
       );
     } catch (e) {
@@ -3286,14 +3308,31 @@ class _ProfessionalMoviesGridViewState extends State<ProfessionalMoviesGridView>
             );
           }
         } else {
-          await Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => CustomVideoPlayer(
-                videoUrl: movie.movieUrl,
-              ),
+          // await Navigator.push(
+          //   context,
+          //   MaterialPageRoute(
+          //     builder: (context) => CustomVideoPlayer(
+          //       videoUrl: movie.movieUrl,
+          //     ),
+          //   ),
+          // );
+            await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => VideoScreen(
+              videoUrl: movie.movieUrl,
+              bannerImageUrl: movie.banner??movie.poster??''  ,
+              channelList: [],
+              source: 'isRecentlyAdded',
+              // isLive: false,
+              // isSearch: false,
+              videoId: movie.id,
+              name: movie.name,
+              liveStatus: false, 
+              updatedAt: movie.updatedAt,
             ),
-          );
+          ),
+        );
         }
       }
     } catch (e) {
@@ -3535,48 +3574,48 @@ class _ProfessionalMoviesGridViewState extends State<ProfessionalMoviesGridView>
                           ),
                         ),
                       ),
-                      // ✅ Count badge with dynamic count from full dataset
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              ProfessionalColors.accentBlue.withOpacity(0.3),
-                              ProfessionalColors.accentPurple.withOpacity(0.2),
-                            ],
-                          ),
-                          borderRadius: BorderRadius.circular(15),
-                          border: Border.all(
-                            color:
-                                ProfessionalColors.accentBlue.withOpacity(0.4),
-                            width: 1,
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: ProfessionalColors.accentBlue
-                                  .withOpacity(0.2),
-                              blurRadius: 6,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: Text(
-                          '${_fullMoviesList.length} Movies Available',
-                          style: const TextStyle(
-                            color: ProfessionalColors.accentBlue,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            shadows: [
-                              Shadow(
-                                color: Colors.black54,
-                                blurRadius: 2,
-                                offset: Offset(0, 1),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
+                      // // ✅ Count badge with dynamic count from full dataset
+                      // Container(
+                      //   padding: const EdgeInsets.symmetric(
+                      //       horizontal: 12, vertical: 6),
+                      //   decoration: BoxDecoration(
+                      //     gradient: LinearGradient(
+                      //       colors: [
+                      //         ProfessionalColors.accentBlue.withOpacity(0.3),
+                      //         ProfessionalColors.accentPurple.withOpacity(0.2),
+                      //       ],
+                      //     ),
+                      //     borderRadius: BorderRadius.circular(15),
+                      //     border: Border.all(
+                      //       color:
+                      //           ProfessionalColors.accentBlue.withOpacity(0.4),
+                      //       width: 1,
+                      //     ),
+                      //     boxShadow: [
+                      //       BoxShadow(
+                      //         color: ProfessionalColors.accentBlue
+                      //             .withOpacity(0.2),
+                      //         blurRadius: 6,
+                      //         offset: const Offset(0, 2),
+                      //       ),
+                      //     ],
+                      //   ),
+                      //   child: Text(
+                      //     '${_fullMoviesList.length} Movies Available',
+                      //     style: const TextStyle(
+                      //       color: ProfessionalColors.accentBlue,
+                      //       fontSize: 12,
+                      //       fontWeight: FontWeight.w600,
+                      //       shadows: [
+                      //         Shadow(
+                      //           color: Colors.black54,
+                      //           blurRadius: 2,
+                      //           offset: Offset(0, 1),
+                      //         ),
+                      //       ],
+                      //     ),
+                      //   ),
+                      // ),
                     ],
                   ),
                 ),
@@ -3946,14 +3985,18 @@ class _ProfessionalGridMovieCardState extends State<ProfessionalGridMovieCard>
   }
 
   Widget _buildMovieImage() {
+          final String uniqueImageUrl = "${widget.movie.banner}?v=${widget.movie.updatedAt}";
+  // ✅ Naya unique cache key banayein
+  final String uniqueCacheKey = "${widget.movie.id.toString()}_${widget.movie.updatedAt}";
     return Container(
       width: double.infinity,
       height: double.infinity,
       child: widget.movie.banner != null && widget.movie.banner!.isNotEmpty
           ? CachedNetworkImage(
-              imageUrl: widget.movie.banner!,
+              imageUrl: uniqueImageUrl,
               fit: BoxFit.cover,
               memCacheHeight: 300,
+              cacheKey: uniqueCacheKey,
               placeholder: (context, url) => _buildImagePlaceholder(),
               errorWidget: (context, url, error) => _buildImagePlaceholder(),
             )

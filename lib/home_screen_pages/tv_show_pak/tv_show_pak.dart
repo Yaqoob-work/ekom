@@ -813,8 +813,9 @@ class _TvShowPakState extends State<TvShowPak>
               String prevTVShowId = tvShowsList[index - 1].id.toString();
               FocusScope.of(context)
                   .requestFocus(tvshowsPakFocusNodes[prevTVShowId]);
-              return KeyEventResult.handled;
             }
+              return KeyEventResult.handled;
+
           } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
             setState(() {
               focusedIndex = -1;
@@ -1036,37 +1037,37 @@ class _TvShowPakState extends State<TvShowPak>
                 ),
               ),
             ),
-            Row(
-              children: [
-                // Pakistani TV Shows Count
-                if (tvShowsList.length > 0)
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          ProfessionalColors.accentGreen.withOpacity(0.2),
-                          ProfessionalColors.accentBlue.withOpacity(0.2),
-                        ],
-                      ),
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                        color: ProfessionalColors.accentGreen.withOpacity(0.3),
-                        width: 1,
-                      ),
-                    ),
-                    child: Text(
-                      '${tvShowsList.length} Pakistani Channels',
-                      style: const TextStyle(
-                        color: ProfessionalColors.textSecondary,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-              ],
-            ),
+            // Row(
+            //   children: [
+            //     // Pakistani TV Shows Count
+            //     if (tvShowsList.length > 0)
+            //       Container(
+            //         padding:
+            //             const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            //         decoration: BoxDecoration(
+            //           gradient: LinearGradient(
+            //             colors: [
+            //               ProfessionalColors.accentGreen.withOpacity(0.2),
+            //               ProfessionalColors.accentBlue.withOpacity(0.2),
+            //             ],
+            //           ),
+            //           borderRadius: BorderRadius.circular(20),
+            //           border: Border.all(
+            //             color: ProfessionalColors.accentGreen.withOpacity(0.3),
+            //             width: 1,
+            //           ),
+            //         ),
+            //         child: Text(
+            //           '${tvShowsList.length} Pakistani Channels',
+            //           style: const TextStyle(
+            //             color: ProfessionalColors.textSecondary,
+            //             fontSize: 12,
+            //             fontWeight: FontWeight.w500,
+            //           ),
+            //         ),
+            //       ),
+            //   ],
+            // ),
           ],
         ),
       ),
@@ -2250,31 +2251,31 @@ class _ProfessionalPakistaniTVShowsGridPageState
                   ),
                 ),
                 const SizedBox(height: 4),
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        ProfessionalColors.accentGreen.withOpacity(0.2),
-                        ProfessionalColors.accentBlue.withOpacity(0.1),
-                      ],
-                    ),
-                    borderRadius: BorderRadius.circular(15),
-                    border: Border.all(
-                      color: ProfessionalColors.accentGreen.withOpacity(0.3),
-                      width: 1,
-                    ),
-                  ),
-                  child: Text(
-                    '${widget.tvShowsList.length} Pakistani Channels Available',
-                    style: const TextStyle(
-                      color: ProfessionalColors.accentGreen,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
+                // Container(
+                //   padding:
+                //       const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                //   decoration: BoxDecoration(
+                //     gradient: LinearGradient(
+                //       colors: [
+                //         ProfessionalColors.accentGreen.withOpacity(0.2),
+                //         ProfessionalColors.accentBlue.withOpacity(0.1),
+                //       ],
+                //     ),
+                //     borderRadius: BorderRadius.circular(15),
+                //     border: Border.all(
+                //       color: ProfessionalColors.accentGreen.withOpacity(0.3),
+                //       width: 1,
+                //     ),
+                //   ),
+                //   child: Text(
+                //     '${widget.tvShowsList.length} Pakistani Channels Available',
+                //     style: const TextStyle(
+                //       color: ProfessionalColors.accentGreen,
+                //       fontSize: 12,
+                //       fontWeight: FontWeight.w500,
+                //     ),
+                //   ),
+                // ),
               ],
             ),
           ),

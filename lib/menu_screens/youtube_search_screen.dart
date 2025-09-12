@@ -178,21 +178,23 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
           MaterialPageRoute(
             builder: (context) => VideoScreen(
               videoUrl: updatedUrl,
-              startAtPosition: Duration.zero,
+              // startAtPosition: Duration.zero,
               bannerImageUrl: result.banner,
-              videoType: 'm3u8', // Use updated type
+              // videoType: 'm3u8', // Use updated type
               channelList: searchResults,
               // FIX 3: Correct live/VOD flags
-              isLive: false, // YouTube videos are VOD, not live
-              isVOD: true, // Mark as video-on-demand
-              isBannerSlider: false,
-              source: 'isYoutubeSearchScreen',
-              isSearch: true,
+              // isLive: false, // YouTube videos are VOD, not live
+              // isVOD: true, // Mark as video-on-demand
+              // isBannerSlider: false,
+              // source: 'isYoutubeSearchScreen',
+              // isSearch: true,
               videoId: int.tryParse(result.id),
-              unUpdatedUrl: originalUrl,
+              // unUpdatedUrl: originalUrl,
               name: result.name,
-              liveStatus: false, // Not live content
+              liveStatus: false, source: 'isYoutubeSearch', 
+              updatedAt: result.updatedAt, // Not live content
               // seasonId: null, isLastPlayedStored: false,
+              
             ),
           ),
         );
@@ -234,7 +236,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
             poster: video['thumbnail_high'] ?? '',
             isFocused: false,
             image: '',
-            unUpdatedUrl: '',
+            unUpdatedUrl: '', updatedAt: '',
           );
         }).toList();
       }

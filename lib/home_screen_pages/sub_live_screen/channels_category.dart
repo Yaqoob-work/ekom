@@ -1383,18 +1383,20 @@ class _GenreAllChannelsPageState extends State<GenreAllChannelsPage> {
         await Navigator.push(context, MaterialPageRoute(builder: (c) => VideoScreen(
               videoUrl: channel.url,
               bannerImageUrl: channel.banner,
-              startAtPosition: Duration.zero,
-              videoType: channel.streamType ?? 'M3u8',
+              source: 'isLive',
+              // startAtPosition: Duration.zero,
+              // videoType: channel.streamType ?? 'M3u8',
               channelList: widget.allChannels,
-              isLive: true,
-              isVOD: false,
-              isBannerSlider: false,
-              source: 'isLiveScreen',
-              isSearch: false,
+              // isLive: true,
+              // isVOD: false,
+              // isBannerSlider: false,
+              // source: 'isLiveScreen',
+              // isSearch: false,
               videoId: int.tryParse(channel.id),
-              unUpdatedUrl: channel.url,
+              // unUpdatedUrl: channel.url,
               name: channel.name,
-              liveStatus: true,
+              liveStatus: true, 
+              updatedAt: channel.updatedAt,
             )));
       }
     } catch (e) {
@@ -1670,18 +1672,20 @@ class _ChannelsCategoryState extends State<ChannelsCategory>
                 builder: (c) => VideoScreen(
                     videoUrl: channel.url,
                     bannerImageUrl: channel.banner,
-                    startAtPosition: Duration.zero,
-                    videoType: channel.streamType ?? 'M3u8',
+                    source: 'isLive',
+                    // startAtPosition: Duration.zero,
+                    // videoType: channel.streamType ?? 'M3u8',
                     channelList: filteredChannelList,
-                    isLive: true,
-                    isVOD: false,
-                    isBannerSlider: false,
-                    source: 'isLiveScreen',
-                    isSearch: false,
+                    // isLive: true,
+                    // isVOD: false,
+                    // isBannerSlider: false,
+                    // source: 'isLiveScreen',
+                    // isSearch: false,
                     videoId: int.tryParse(channel.id),
-                    unUpdatedUrl: channel.url,
+                    // unUpdatedUrl: channel.url,
                     name: channel.name,
-                    liveStatus: true,
+                    liveStatus: true, 
+                    updatedAt: channel.updatedAt,
                   )));
       }
     } catch (e) {
@@ -2076,24 +2080,24 @@ void _handleKeyNavigation(RawKeyEvent event) {
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: isFocusedGenre ? ProfessionalColors.accentGreen.withOpacity(0.2) : ProfessionalColors.cardDark.withOpacity(0.5),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                      color: isFocusedGenre ? ProfessionalColors.accentGreen.withOpacity(0.4) : ProfessionalColors.textSecondary.withOpacity(0.3),
-                    ),
-                  ),
-                  child: Text(
-                    '${channelList.length}',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: isFocusedGenre ? ProfessionalColors.accentGreen : ProfessionalColors.textSecondary,
-                    ),
-                  ),
-                ),
+                // Container(
+                //   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                //   decoration: BoxDecoration(
+                //     color: isFocusedGenre ? ProfessionalColors.accentGreen.withOpacity(0.2) : ProfessionalColors.cardDark.withOpacity(0.5),
+                //     borderRadius: BorderRadius.circular(20),
+                //     border: Border.all(
+                //       color: isFocusedGenre ? ProfessionalColors.accentGreen.withOpacity(0.4) : ProfessionalColors.textSecondary.withOpacity(0.3),
+                //     ),
+                //   ),
+                //   child: Text(
+                //     '${channelList.length}',
+                //     style: TextStyle(
+                //       fontSize: 14,
+                //       fontWeight: FontWeight.w600,
+                //       color: isFocusedGenre ? ProfessionalColors.accentGreen : ProfessionalColors.textSecondary,
+                //     ),
+                //   ),
+                // ),
               ],
             ),
           ),
@@ -2175,7 +2179,7 @@ void _handleKeyNavigation(RawKeyEvent event) {
             const SizedBox(height: 2),
             Text('VIEW ALL', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, letterSpacing: 1.0, color: isFocused ? ProfessionalColors.accentGreen : ProfessionalColors.textPrimary)),
             const SizedBox(height: 4),
-            Text('$totalCount items', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: isFocused ? ProfessionalColors.accentGreen : ProfessionalColors.textSecondary)),
+            // Text('$totalCount items', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: isFocused ? ProfessionalColors.accentGreen : ProfessionalColors.textSecondary)),
           ],
         ),
       ),

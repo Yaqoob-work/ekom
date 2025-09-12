@@ -1,11 +1,3 @@
-
-
-
-
-
-
-
-
 import 'dart:convert';
 import 'dart:ui';
 import 'dart:math' as math;
@@ -20,13 +12,10 @@ import 'package:mobi_tv_entertainment/services/history_service.dart';
 import 'package:mobi_tv_entertainment/video_widget/custom_video_player.dart';
 import 'package:mobi_tv_entertainment/video_widget/custom_youtube_player.dart';
 import 'package:mobi_tv_entertainment/video_widget/socket_service.dart';
+import 'package:mobi_tv_entertainment/video_widget/video_screen.dart';
 import 'package:mobi_tv_entertainment/video_widget/youtube_webview_player.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-
-
-
 
 // Optimized Genre Network Widget - Caching Version
 class GenreNetworkWidget extends StatefulWidget {
@@ -93,9 +82,9 @@ class _GenreNetworkWidgetState extends State<GenreNetworkWidget>
     _verticalScrollController.dispose();
     _socketService.dispose();
     for (var controller in _horizontalScrollControllers) {
-      if (controller.hasClients) {
+      // if (controller.hasClients) {
         controller.dispose();
-      }
+      // }
     }
     _horizontalScrollControllers.clear();
     super.dispose();
@@ -285,12 +274,12 @@ class _GenreNetworkWidgetState extends State<GenreNetworkWidget>
       final genresResponse = await https.get(
         Uri.parse(
             'https://acomtv.coretechinfo.com/api/v2/getGenreByContentNetwork/${widget.tvChannelId}'),
-            // 'https://acomtv.coretechinfo.com/public/api/getGenreByContentNetwork/${widget.tvChannelId}'),
+        // 'https://acomtv.coretechinfo.com/public/api/getGenreByContentNetwork/${widget.tvChannelId}'),
         headers: {
           'auth-key': authKey,
           'Content-Type': 'application/json',
           'Accept': 'application/json',
-          'domain':'coretechinfo.com'
+          'domain': 'coretechinfo.com'
         },
       );
 
@@ -427,9 +416,9 @@ class _GenreNetworkWidgetState extends State<GenreNetworkWidget>
   void _initializeScrollControllers() {
     // Clear existing controllers first
     for (var controller in _horizontalScrollControllers) {
-      if (controller.hasClients) {
+      // if (controller.hasClients) {
         controller.dispose();
-      }
+      // }
     }
     _horizontalScrollControllers.clear();
 
@@ -441,22 +430,21 @@ class _GenreNetworkWidgetState extends State<GenreNetworkWidget>
 
   // Process content data in batches to prevent memory overload
   Future<void> _processContentData(List<dynamic> contentData) async {
-      // Sort the data by 'series_order' before processing it
-  contentData.sort((a, b) {
-    // series_order null हो सकता है, इसलिए null-safety का ध्यान रखें
-    // Handle potential nulls for series_order
-    final int? orderA = a['series_order'];
-    final int? orderB = b['series_order'];
+    // Sort the data by 'series_order' before processing it
+    contentData.sort((a, b) {
+      // series_order null हो सकता है, इसलिए null-safety का ध्यान रखें
+      // Handle potential nulls for series_order
+      final int? orderA = a['series_order'];
+      final int? orderB = b['series_order'];
 
-    if (orderA == null && orderB == null) return 0; // दोनों null हैं, तो कोई बदलाव नहीं
-    if (orderA == null) return 1;  // null वाले आइटम्स को अंत में रखें
-    if (orderB == null) return -1; // null वाले आइटम्स को अंत में रखें
+      if (orderA == null && orderB == null)
+        return 0; // दोनों null हैं, तो कोई बदलाव नहीं
+      if (orderA == null) return 1; // null वाले आइटम्स को अंत में रखें
+      if (orderB == null) return -1; // null वाले आइटम्स को अंत में रखें
 
-    return orderA.compareTo(orderB); // बढ़ते क्रम में सॉर्ट करें (ascending)
-  });
+      return orderA.compareTo(orderB); // बढ़ते क्रम में सॉर्ट करें (ascending)
+    });
 
-
-  
     Map<String, List<ContentItem>> tempGenreMap = {};
 
     // Initialize genre map
@@ -556,7 +544,8 @@ class _GenreNetworkWidgetState extends State<GenreNetworkWidget>
           builder: (context) => GenreAllContentPage(
             genreTitle: currentGenre,
             allContent: currentGenreItems,
-            channelName: widget.channelName, channelLogo: widget.channelLogo??'' ,
+            channelName: widget.channelName,
+            channelLogo: widget.channelLogo ?? '',
           ),
         ),
       );
@@ -634,33 +623,34 @@ class _GenreNetworkWidgetState extends State<GenreNetworkWidget>
       _isVideoLoading = true;
     });
 
-
-      String? playableUrl = content.getPlayableUrl();
-
+    String? playableUrl = content.getPlayableUrl();
 
 
-    try{
-          print('Updating user history for: ${content.name}');
+    try {
+      print('Updating user history for: ${content.name}');
       int? currentUserId = SessionManager.userId;
-    final int? parsedContentType = content.contentType ;
-    final int? parsedId = content.id ;
+      final int? parsedContentType = content.contentType;
+      final int? parsedId = content.id;
 
       await HistoryService.updateUserHistory(
         userId: currentUserId!, // 1. User ID
         contentType: parsedContentType!, // 2. Content Type (channel के लिए 4)
         eventId: parsedId!, // 3. Event ID (channel की ID)
         eventTitle: content.name, // 4. Event Title (channel का नाम)
-        url: playableUrl??'', // 5. URL (channel का URL)
+        url: playableUrl ?? '', // 5. URL (channel का URL)
         categoryId: 0, // 6. Category ID (डिफ़ॉल्ट 1)
       );
     } catch (e) {
       print("History update failed, but proceeding to play. Error: $e");
     }
-    
 
     try {
       // Special handling for Web Series - Navigate to WebSeriesDetailsPage
       if (content.contentType == 2) {
+
+
+
+        
         // Navigate to Web Series Details Page instead of playing trailer
         await Navigator.push(
           context,
@@ -670,7 +660,8 @@ class _GenreNetworkWidgetState extends State<GenreNetworkWidget>
               banner: content.banner ?? '',
               poster: content.poster ?? '',
               logo: widget.channelLogo ?? '',
-              name: content.name,
+              name: content.name, 
+              updatedAt: content.updatedAt,
             ),
           ),
         );
@@ -698,7 +689,7 @@ class _GenreNetworkWidgetState extends State<GenreNetworkWidget>
         final deviceInfo = context.read<DeviceInfoProvider>();
 
         if (deviceInfo.deviceName == 'AFTSS : Amazon Fire Stick HD') {
-        print('isAFTSS');
+          print('isAFTSS');
 
           await Navigator.push(
             context,
@@ -735,11 +726,26 @@ class _GenreNetworkWidgetState extends State<GenreNetworkWidget>
         }
       } else {
         // Handle regular video files (M3u8, MP4, etc.)
-        await Navigator.push(
+        // await Navigator.push(
+        //   context,
+        //   MaterialPageRoute(
+        //     builder: (context) => CustomVideoPlayer(
+        //       videoUrl: playableUrl,
+        //     ),
+        //   ),
+        // );
+          await Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => CustomVideoPlayer(
+            builder: (context) => VideoScreen(
               videoUrl: playableUrl,
+              bannerImageUrl: content.poster ?? content.banner ?? '' ,
+              channelList: [],
+              videoId: content.id,
+              name: content.name,
+              liveStatus: false, 
+              updatedAt: content.updatedAt,
+              source: 'isVod',
             ),
           ),
         );
@@ -820,6 +826,7 @@ class _GenreNetworkWidgetState extends State<GenreNetworkWidget>
   }
 
   Widget _buildProfessionalAppBar() {
+    
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -914,32 +921,32 @@ class _GenreNetworkWidgetState extends State<GenreNetworkWidget>
                         ),
                       ),
                       const SizedBox(height: 6),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              ProfessionalColors.accentGreen.withOpacity(0.4),
-                              ProfessionalColors.accentBlue.withOpacity(0.3),
-                            ],
-                          ),
-                          borderRadius: BorderRadius.circular(15),
-                          border: Border.all(
-                            color:
-                                ProfessionalColors.accentGreen.withOpacity(0.6),
-                            width: 1,
-                          ),
-                        ),
-                        child: Text(
-                          '${genreContentMap.length} Genres • ${genreContentMap.values.fold(0, (sum, list) => sum + list.length)} Shows',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
+                      // Container(
+                      //   padding: const EdgeInsets.symmetric(
+                      //       horizontal: 12, vertical: 6),
+                      //   decoration: BoxDecoration(
+                      //     gradient: LinearGradient(
+                      //       colors: [
+                      //         ProfessionalColors.accentGreen.withOpacity(0.4),
+                      //         ProfessionalColors.accentBlue.withOpacity(0.3),
+                      //       ],
+                      //     ),
+                      //     borderRadius: BorderRadius.circular(15),
+                      //     border: Border.all(
+                      //       color:
+                      //           ProfessionalColors.accentGreen.withOpacity(0.6),
+                      //       width: 1,
+                      //     ),
+                      //   ),
+                      //   child: Text(
+                      //     '${genreContentMap.length} Genres • ${genreContentMap.values.fold(0, (sum, list) => sum + list.length)} Shows',
+                      //     style: const TextStyle(
+                      //       color: Colors.white,
+                      //       fontSize: 12,
+                      //       fontWeight: FontWeight.w600,
+                      //     ),
+                      //   ),
+                      // ),
                     ],
                   ),
                 ),
@@ -1051,31 +1058,31 @@ class _GenreNetworkWidgetState extends State<GenreNetworkWidget>
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: isFocusedGenre
-                        ? ProfessionalColors.accentGreen.withOpacity(0.2)
-                        : ProfessionalColors.cardDark.withOpacity(0.5),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                      color: isFocusedGenre
-                          ? ProfessionalColors.accentGreen.withOpacity(0.4)
-                          : ProfessionalColors.textSecondary.withOpacity(0.3),
-                    ),
-                  ),
-                  child: Text(
-                    '${contentList.length}',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: isFocusedGenre
-                          ? ProfessionalColors.accentGreen
-                          : ProfessionalColors.textSecondary,
-                    ),
-                  ),
-                ),
+                // Container(
+                //   padding:
+                //       const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                //   decoration: BoxDecoration(
+                //     color: isFocusedGenre
+                //         ? ProfessionalColors.accentGreen.withOpacity(0.2)
+                //         : ProfessionalColors.cardDark.withOpacity(0.5),
+                //     borderRadius: BorderRadius.circular(20),
+                //     border: Border.all(
+                //       color: isFocusedGenre
+                //           ? ProfessionalColors.accentGreen.withOpacity(0.4)
+                //           : ProfessionalColors.textSecondary.withOpacity(0.3),
+                //     ),
+                //   ),
+                //   child: Text(
+                //     '${contentList.length}',
+                //     style: TextStyle(
+                //       fontSize: 14,
+                //       fontWeight: FontWeight.w600,
+                //       color: isFocusedGenre
+                //           ? ProfessionalColors.accentGreen
+                //           : ProfessionalColors.textSecondary,
+                //     ),
+                //   ),
+                // ),
               ],
             ),
           ),
@@ -1112,7 +1119,8 @@ class _GenreNetworkWidgetState extends State<GenreNetworkWidget>
                           builder: (context) => GenreAllContentPage(
                             genreTitle: genre,
                             allContent: contentList,
-                            channelName: widget.channelName, channelLogo: widget.channelLogo??'',
+                            channelName: widget.channelName,
+                            channelLogo: widget.channelLogo ?? '',
                           ),
                         ),
                       );
@@ -1209,34 +1217,30 @@ class _GenreNetworkWidgetState extends State<GenreNetworkWidget>
               ),
             ),
             const SizedBox(height: 4),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: isFocused
-                    ? ProfessionalColors.accentGreen.withOpacity(0.2)
-                    : ProfessionalColors.cardDark.withOpacity(0.5),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Text(
-                '$totalCount items',
-                style: TextStyle(
-                  fontSize: 10,
-                  fontWeight: FontWeight.w600,
-                  color: isFocused
-                      ? ProfessionalColors.accentGreen
-                      : ProfessionalColors.textSecondary,
-                ),
-              ),
-            ),
+            // Container(
+            //   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            //   decoration: BoxDecoration(
+            //     color: isFocused
+            //         ? ProfessionalColors.accentGreen.withOpacity(0.2)
+            //         : ProfessionalColors.cardDark.withOpacity(0.5),
+            //     borderRadius: BorderRadius.circular(10),
+            //   ),
+            //   child: Text(
+            //     '$totalCount items',
+            //     style: TextStyle(
+            //       fontSize: 10,
+            //       fontWeight: FontWeight.w600,
+            //       color: isFocused
+            //           ? ProfessionalColors.accentGreen
+            //           : ProfessionalColors.textSecondary,
+            //     ),
+            //   ),
+            // ),
           ],
         ),
       ),
     );
   }
-
-
-
-  
 
   // @override
   // Widget build(BuildContext context) {
@@ -1313,124 +1317,121 @@ class _GenreNetworkWidgetState extends State<GenreNetworkWidget>
   //   );
   // }
 
-
-
   // Replace your current build method with this updated version
 
-@override
-Widget build(BuildContext context) {
-  return Scaffold(
-    backgroundColor: ProfessionalColors.primaryDark,
-    body: Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            ProfessionalColors.primaryDark,
-            ProfessionalColors.surfaceDark.withOpacity(0.8),
-            ProfessionalColors.primaryDark,
-          ],
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: ProfessionalColors.primaryDark,
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              ProfessionalColors.primaryDark,
+              ProfessionalColors.surfaceDark.withOpacity(0.8),
+              ProfessionalColors.primaryDark,
+            ],
+          ),
         ),
-      ),
-      child: Stack(
-        children: [
-          // Main content
-          FadeTransition(
-            opacity: _fadeAnimation,
-            child: Column(
-              children: [
-                SizedBox(
-                  height: MediaQuery.of(context).padding.top + 100,
-                ),
-                Expanded(
-                  child: RawKeyboardListener(
-                    focusNode: _widgetFocusNode,
-                    onKey: _handleKeyNavigation,
-                    autofocus: false,
-                    child: RefreshIndicator(
-                      onRefresh: _handleRefresh,
-                      color: ProfessionalColors.accentGreen,
-                      backgroundColor: ProfessionalColors.cardDark,
-                      child: _buildContent(),
+        child: Stack(
+          children: [
+            // Main content
+            FadeTransition(
+              opacity: _fadeAnimation,
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: MediaQuery.of(context).padding.top + 100,
+                  ),
+                  Expanded(
+                    child: RawKeyboardListener(
+                      focusNode: _widgetFocusNode,
+                      onKey: _handleKeyNavigation,
+                      autofocus: false,
+                      child: RefreshIndicator(
+                        onRefresh: _handleRefresh,
+                        color: ProfessionalColors.accentGreen,
+                        backgroundColor: ProfessionalColors.cardDark,
+                        child: _buildContent(),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // App Bar
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: _buildProfessionalAppBar(),
+            ),
+
+            // Video Loading Overlay
+            if (_isVideoLoading)
+              Positioned.fill(
+                child: Container(
+                  color: Colors.black.withOpacity(0.7),
+                  child: const Center(
+                    child: ProfessionalLoadingIndicator(
+                      message: 'Loading Video...',
                     ),
                   ),
                 ),
-              ],
-            ),
-          ),
-          
-          // App Bar
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: _buildProfessionalAppBar(),
-          ),
-          
-          // Video Loading Overlay
-          if (_isVideoLoading)
-            Positioned.fill(
-              child: Container(
-                color: Colors.black.withOpacity(0.7),
-                child: const Center(
-                  child: ProfessionalLoadingIndicator(
-                    message: 'Loading Video...',
+              ),
+
+            // Main Loading Overlay - This is the key fix
+            if (isLoading && genreContentMap.isEmpty)
+              Positioned.fill(
+                child: Container(
+                  color: ProfessionalColors.primaryDark.withOpacity(0.95),
+                  child: const Center(
+                    child: ProfessionalLoadingIndicator(
+                      message: 'Loading Content...',
+                    ),
                   ),
                 ),
               ),
-            ),
-            
-          // Main Loading Overlay - This is the key fix
-          if (isLoading && genreContentMap.isEmpty)
-            Positioned.fill(
-              child: Container(
-                color: ProfessionalColors.primaryDark.withOpacity(0.95),
-                child: const Center(
-                  child: ProfessionalLoadingIndicator(
-                    message: 'Loading Content...',
-                  ),
-                ),
-              ),
-            ),
-        ],
+          ],
+        ),
       ),
-    ),
-  );
-}
-
-// Updated _buildContent method to ensure proper loading state handling
-Widget _buildContent() {
-  // Show empty container when loading for the first time
-  if (isLoading && genreContentMap.isEmpty) {
-    return Container(); // This ensures the loading overlay is visible
-  } 
-  // Error state with no cached data
-  else if (errorMessage != null && genreContentMap.isEmpty) {
-    return _buildErrorWidget();
-  } 
-  // No content found after loading
-  else if (genreContentMap.isEmpty && !isLoading) {
-    return _buildEmptyWidget();
-  } 
-  // Show content (either from cache or fresh data)
-  else {
-    final genres = genreContentMap.keys.toList();
-
-    return ListView.builder(
-      controller: _verticalScrollController,
-      physics: const AlwaysScrollableScrollPhysics(),
-      padding: const EdgeInsets.only(top: 20, bottom: 100),
-      itemCount: genres.length,
-      itemBuilder: (context, index) {
-        final String genreName = genres[index];
-        final List<ContentItem> contentList = genreContentMap[genreName]!;
-        return _buildGenreSection(genreName, contentList, index);
-      },
     );
   }
-}
 
+// Updated _buildContent method to ensure proper loading state handling
+  Widget _buildContent() {
+    // Show empty container when loading for the first time
+    if (isLoading && genreContentMap.isEmpty) {
+      return Container(); // This ensures the loading overlay is visible
+    }
+    // Error state with no cached data
+    else if (errorMessage != null && genreContentMap.isEmpty) {
+      return _buildErrorWidget();
+    }
+    // No content found after loading
+    else if (genreContentMap.isEmpty && !isLoading) {
+      return _buildEmptyWidget();
+    }
+    // Show content (either from cache or fresh data)
+    else {
+      final genres = genreContentMap.keys.toList();
+
+      return ListView.builder(
+        controller: _verticalScrollController,
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.only(top: 20, bottom: 100),
+        itemCount: genres.length,
+        itemBuilder: (context, index) {
+          final String genreName = genres[index];
+          final List<ContentItem> contentList = genreContentMap[genreName]!;
+          return _buildGenreSection(genreName, contentList, index);
+        },
+      );
+    }
+  }
 
   // Widget _buildContent() {
   //   if (isLoading && genreContentMap.isEmpty) {
@@ -1920,10 +1921,12 @@ class ContentItem {
   final String? movieUrl;
   final int? seriesOrder;
   final String? youtubeTrailer;
+  final String updatedAt;
 
   ContentItem({
     required this.id,
     required this.name,
+    required this.updatedAt,
     this.description,
     required this.genres,
     this.releaseDate,
@@ -1954,6 +1957,7 @@ class ContentItem {
     return ContentItem(
       id: json['id'],
       name: json['name'] ?? '',
+      updatedAt: json['updated_at'] ?? '',
       description: json['description'],
       genres: json['genres'] ?? '',
       releaseDate: json['release_date'],
@@ -2165,34 +2169,48 @@ class _GenreAllContentPageState extends State<GenreAllContentPage>
       _isVideoLoading = true;
     });
 
+    String? playableUrl = content.getPlayableUrl();
+    try {
+      print('Updating user history for: ${content.name}');
+      int? currentUserId = SessionManager.userId;
+
+      final int? parsedContentType = content.contentType;
+      final int? parsedId = content.id ;
+
+      await HistoryService.updateUserHistory(
+        userId: currentUserId!, // 1. User ID
+        contentType: parsedContentType!, // 2. Content Type (channel के लिए 4)
+        eventId: parsedId!, // 3. Event ID (channel की ID)
+        eventTitle: content.name, // 4. Event Title (channel का नाम)
+        url: playableUrl!, // 5. URL (channel का URL)
+        categoryId: 0, // 6. Category ID (डिफ़ॉल्ट 1)
+      );
+    } catch (e) {
+      print("History update failed, but proceeding to play. Error: $e");
+    }
+
     try {
       String? playableUrl = content.getPlayableUrl();
 
       if (playableUrl == null || playableUrl.isEmpty) {
         if (content.contentType == 2) {
-
-
-                  await Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => WebSeriesDetailsPage(
-              id: content.id,
-              banner: content.banner ?? '',
-              poster: content.poster ?? '',
-              logo: widget.channelLogo ?? '',
-              name: content.name,
+          await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => WebSeriesDetailsPage(
+                id: content.id,
+                banner: content.banner ?? '',
+                poster: content.poster ?? '',
+                logo: widget.channelLogo ?? '',
+                name: content.name, updatedAt: content.updatedAt,
+              ),
             ),
-          ),
-        );
-        return; // Exit early for web series
-
+          );
+          return; // Exit early for web series
         } else {
           throw Exception('No video URL found for this content');
         }
       }
-
-
-
 
       if (!mounted) return;
 
@@ -2205,7 +2223,7 @@ class _GenreAllContentPageState extends State<GenreAllContentPage>
             ? playableUrl
             : content.youtubeTrailer!;
         if (deviceInfo.deviceName == 'AFTSS : Amazon Fire Stick HD') {
-        print('isAFTSS');
+          print('isAFTSS');
 
           await Navigator.push(
             context,
@@ -2241,11 +2259,26 @@ class _GenreAllContentPageState extends State<GenreAllContentPage>
               ));
         }
       } else {
-        await Navigator.push(
+        // await Navigator.push(
+        //   context,
+        //   MaterialPageRoute(
+        //     builder: (context) => CustomVideoPlayer(
+        //       videoUrl: playableUrl,
+        //     ),
+        //   ),
+        // );
+          await Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => CustomVideoPlayer(
+            builder: (context) => VideoScreen(
               videoUrl: playableUrl,
+              bannerImageUrl: content.poster ?? content.banner ?? '' ,
+              channelList: [],
+              videoId: content.id,
+              name: content.name,
+              liveStatus: false, 
+              updatedAt: content.updatedAt, 
+              source: 'isVod',
             ),
           ),
         );
@@ -2534,10 +2567,6 @@ class ProfessionalColors {
 //   }
 // }
 
-
-
-
-
 // Optional: Enhanced Loading Indicator with better animation
 class ProfessionalLoadingIndicator extends StatefulWidget {
   final String message;
@@ -2557,8 +2586,7 @@ class ProfessionalLoadingIndicator extends StatefulWidget {
 }
 
 class _ProfessionalLoadingIndicatorState
-    extends State<ProfessionalLoadingIndicator>
-    with TickerProviderStateMixin {
+    extends State<ProfessionalLoadingIndicator> with TickerProviderStateMixin {
   late AnimationController _spinController;
   late AnimationController _pulseController;
   late Animation<double> _pulseAnimation;
@@ -2570,12 +2598,12 @@ class _ProfessionalLoadingIndicatorState
       duration: const Duration(milliseconds: 1500),
       vsync: this,
     )..repeat();
-    
+
     _pulseController = AnimationController(
       duration: const Duration(milliseconds: 1000),
       vsync: this,
     );
-    
+
     _pulseAnimation = Tween<double>(
       begin: 0.8,
       end: 1.2,
@@ -2583,7 +2611,7 @@ class _ProfessionalLoadingIndicatorState
       parent: _pulseController,
       curve: Curves.easeInOut,
     ));
-    
+
     _pulseController.repeat(reverse: true);
   }
 
@@ -2598,7 +2626,7 @@ class _ProfessionalLoadingIndicatorState
   Widget build(BuildContext context) {
     final primaryColor = widget.primaryColor ?? ProfessionalColors.accentGreen;
     final textColor = widget.textColor ?? ProfessionalColors.textPrimary;
-    
+
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -2640,9 +2668,9 @@ class _ProfessionalLoadingIndicatorState
               ),
             ),
           ),
-          
+
           const SizedBox(height: 32),
-          
+
           // Loading message
           Text(
             widget.message,
@@ -2654,9 +2682,9 @@ class _ProfessionalLoadingIndicatorState
             ),
             textAlign: TextAlign.center,
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Loading dots animation
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -2666,9 +2694,10 @@ class _ProfessionalLoadingIndicatorState
                 builder: (context, child) {
                   final delay = index * 0.2;
                   final animationValue = (_spinController.value - delay) % 1.0;
-                  final opacity = animationValue < 0.5 ? 
-                      (animationValue * 2) : (2 - animationValue * 2);
-                  
+                  final opacity = animationValue < 0.5
+                      ? (animationValue * 2)
+                      : (2 - animationValue * 2);
+
                   return Container(
                     margin: const EdgeInsets.symmetric(horizontal: 4),
                     width: 8,

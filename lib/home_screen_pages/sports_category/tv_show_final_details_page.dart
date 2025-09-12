@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:mobi_tv_entertainment/provider/device_info_provider.dart';
+import 'package:mobi_tv_entertainment/services/history_service.dart';
 import 'package:mobi_tv_entertainment/video_widget/custom_video_player.dart';
 import 'package:mobi_tv_entertainment/video_widget/video_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -466,6 +467,7 @@ class TournamentFinalDetailsPage extends StatefulWidget {
   final String banner;
   final String poster;
   final String name;
+  final String updatedAt;
 
   const TournamentFinalDetailsPage({
     Key? key,
@@ -473,6 +475,7 @@ class TournamentFinalDetailsPage extends StatefulWidget {
     required this.banner,
     required this.poster,
     required this.name,
+    required this.updatedAt,
   }) : super(key: key);
 
   @override
@@ -1138,6 +1141,25 @@ class _TournamentFinalDetailsPageState extends State<TournamentFinalDetailsPage>
 
     setState(() => _isProcessing = true);
 
+        try{
+          print('Updating user history for: ${match.matchTitle}');
+      int? currentUserId = SessionManager.userId;
+    // final int? parsedContentType = int.tryParse(match.contentType ?? '');
+    final int? parsedId = match.id ;
+
+      await HistoryService.updateUserHistory(
+        userId: currentUserId!, // 1. User ID
+        contentType: 8, // 2. Content Type (match के लिए 4)
+        eventId: parsedId!, // 3. Event ID (match की ID)
+        eventTitle: match.matchTitle, // 4. Event Title (match का नाम)
+        url: match.videoUrl??'', // 5. URL (match का URL)
+        categoryId: 0, // 6. Category ID (डिफ़ॉल्ट 1)
+      );
+    } catch (e) {
+      print("History update failed, but proceeding to play. Error: $e");
+    }
+
+
     try {
       String? url = match.videoUrl;
 
@@ -1196,14 +1218,31 @@ class _TournamentFinalDetailsPageState extends State<TournamentFinalDetailsPage>
             );
           }
         } else {
-          result = await Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => CustomVideoPlayer(
-                videoUrl: url,
-              ),
+          // result = await Navigator.push(
+          //   context,
+          //   MaterialPageRoute(
+          //     builder: (context) => CustomVideoPlayer(
+          //       videoUrl: url,
+          //     ),
+          //   ),
+          // );
+          result =  await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => VideoScreen(
+              videoUrl: url,
+              bannerImageUrl: match.thumbnailUrl ?? '' ,
+              channelList: [],
+              source: 'isSports',
+              // isLive: false,
+              // isSearch: false,
+              videoId: match.id,
+              name: match.matchTitle,
+              liveStatus: false, 
+              updatedAt: match.updatedAt,
             ),
-          );
+          ),
+        );
         }
 
         // Refresh data after returning from video player
@@ -1648,6 +1687,12 @@ class _TournamentFinalDetailsPageState extends State<TournamentFinalDetailsPage>
     final isFocused = _currentMode == NavigationMode.seasons && isSelected;
     final matchCount = _filteredMatchesMap[season.id]?.length ?? 0;
 
+              final String uniqueImageUrl = "${season.logo}?v=${season.updatedAt}";
+  // final String uniqueBannerImageUrl = "${widget.banner}?v=${widget.updatedAt}";
+  // ✅ Naya unique cache key banayein
+  final String uniqueCacheKey = "${season.id.toString()}_${season.updatedAt}";
+
+
     return GestureDetector(
       onTap: () => _onSeasonTap(index),
       child: Focus(
@@ -1738,7 +1783,8 @@ class _TournamentFinalDetailsPageState extends State<TournamentFinalDetailsPage>
                     ClipRRect(
                       borderRadius: BorderRadius.circular(25),
                       child: _buildEnhancedImage(
-                        imageUrl: season.logo!,
+                        imageUrl: uniqueImageUrl,
+cacheKey:uniqueCacheKey,
                         width: 50,
                         height: 50,
                         fit: BoxFit.cover,
@@ -1926,7 +1972,7 @@ class _TournamentFinalDetailsPageState extends State<TournamentFinalDetailsPage>
     required double width,
     required double height,
     BoxFit fit = BoxFit.cover,
-    Widget? fallbackWidget,
+    Widget? fallbackWidget, required String cacheKey,
   }) {
     return Container(
       width: width,
@@ -1942,6 +1988,7 @@ class _TournamentFinalDetailsPageState extends State<TournamentFinalDetailsPage>
                 imageUrl: imageUrl,
                 width: width,
                 height: height,
+                cacheKey: cacheKey,
                 fit: fit,
                 placeholder: (context, url) => Container(
                   decoration: BoxDecoration(
@@ -2206,6 +2253,14 @@ class _TournamentFinalDetailsPageState extends State<TournamentFinalDetailsPage>
     final isFocused = _currentMode == NavigationMode.matches && isSelected;
     final isProcessing = _isProcessing && isSelected;
 
+
+                  final String uniqueImageUrl = "${match.thumbnailUrl}?v=${match.updatedAt}";
+  final String uniqueBannerImageUrl = "${widget.banner}?v=${widget.updatedAt}";
+  final String uniquePosterImageUrl = "${widget.poster}?v=${widget.updatedAt}";
+  // ✅ Naya unique cache key banayein
+  final String uniqueCacheKey = "${match.id.toString()}_${match.updatedAt}";
+
+
     return GestureDetector(
       onTap: () => _onMatchTap(index),
       child: Focus(
@@ -2313,9 +2368,10 @@ class _TournamentFinalDetailsPageState extends State<TournamentFinalDetailsPage>
                       ClipRRect(
                         borderRadius: BorderRadius.circular(12),
                         child: CachedNetworkImage(
-                          imageUrl: match.thumbnailUrl!,
+                          imageUrl: uniqueImageUrl,
                           width: 140,
                           height: 90,
+                          cacheKey: uniqueCacheKey,
                           fit: BoxFit.cover,
                           placeholder: (context, url) => Container(
                             decoration: BoxDecoration(
@@ -2337,17 +2393,19 @@ class _TournamentFinalDetailsPageState extends State<TournamentFinalDetailsPage>
                             // Fallback to tournament banner
                             if (_isValidImageUrl(widget.banner)) {
                               return CachedNetworkImage(
-                                imageUrl: widget.banner,
+                                imageUrl: uniqueBannerImageUrl,
                                 width: 140,
                                 height: 90,
+                                cacheKey: uniqueCacheKey,
                                 fit: BoxFit.cover,
                                 errorWidget: (context, url, error) {
                                   // Fallback to poster
                                   if (_isValidImageUrl(widget.poster)) {
                                     return CachedNetworkImage(
-                                      imageUrl: widget.poster,
+                                      imageUrl: uniquePosterImageUrl,
                                       width: 140,
                                       height: 90,
+                                      cacheKey: uniqueCacheKey,
                                       fit: BoxFit.cover,
                                       errorWidget: (context, url, error) =>
                                           Container(),
@@ -2367,9 +2425,10 @@ class _TournamentFinalDetailsPageState extends State<TournamentFinalDetailsPage>
                       ClipRRect(
                         borderRadius: BorderRadius.circular(12),
                         child: CachedNetworkImage(
-                          imageUrl: widget.banner,
+                          imageUrl: uniqueBannerImageUrl,
                           width: 140,
                           height: 90,
+                          cacheKey: uniqueCacheKey,
                           fit: BoxFit.cover,
                           placeholder: (context, url) => Container(
                             decoration: BoxDecoration(
@@ -2391,9 +2450,10 @@ class _TournamentFinalDetailsPageState extends State<TournamentFinalDetailsPage>
                             // Fallback to poster
                             if (_isValidImageUrl(widget.poster)) {
                               return CachedNetworkImage(
-                                imageUrl: widget.poster,
+                                imageUrl: uniquePosterImageUrl,
                                 width: 140,
                                 height: 90,
+                                cacheKey: uniqueCacheKey,
                                 fit: BoxFit.cover,
                                 errorWidget: (context, url, error) =>
                                     Container(),
@@ -2409,9 +2469,10 @@ class _TournamentFinalDetailsPageState extends State<TournamentFinalDetailsPage>
                       ClipRRect(
                         borderRadius: BorderRadius.circular(12),
                         child: CachedNetworkImage(
-                          imageUrl: widget.poster,
+                          imageUrl: uniquePosterImageUrl,
                           width: 140,
                           height: 90,
+                          cacheKey: uniqueCacheKey,
                           fit: BoxFit.cover,
                           placeholder: (context, url) => Container(
                             decoration: BoxDecoration(

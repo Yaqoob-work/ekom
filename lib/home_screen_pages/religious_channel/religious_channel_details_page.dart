@@ -8,6 +8,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:mobi_tv_entertainment/provider/device_info_provider.dart';
+import 'package:mobi_tv_entertainment/services/history_service.dart';
 import 'package:mobi_tv_entertainment/video_widget/custom_video_player.dart';
 import 'package:mobi_tv_entertainment/video_widget/video_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -39,6 +40,7 @@ class ReligiousShowModel {
   final String genre;
   final String description;
   final String thumbnail;
+  final String updatedAt;
   final int status;
   final int relOrder;
 
@@ -49,6 +51,7 @@ class ReligiousShowModel {
     required this.genre,
     required this.description,
     required this.thumbnail,
+    required this.updatedAt,
     required this.status,
     required this.relOrder,
   });
@@ -61,6 +64,7 @@ class ReligiousShowModel {
       genre: json['genre'] ?? '',
       description: json['description'] ?? '',
       thumbnail: json['thumbnail'] ?? '',
+      updatedAt: json['updated_at'] ?? '',
       status: json['status'] ?? 1,
       relOrder: json['rel_order'] ?? 1,
     );
@@ -75,6 +79,7 @@ class ReligiousEpisodeModel {
   final String title;
   final String episodeImage;
   final String episodeDescription;
+  final String updatedAt;
   final String source;
   final String url;
   final int status;
@@ -86,6 +91,7 @@ class ReligiousEpisodeModel {
     required this.title,
     required this.episodeImage,
     required this.episodeDescription,
+    required this.updatedAt,
     required this.source,
     required this.url,
     required this.status,
@@ -99,6 +105,7 @@ class ReligiousEpisodeModel {
       title: json['title'] ?? '',
       episodeImage: json['episode_image'] ?? '',
       episodeDescription: json['episode_description'] ?? '',
+      updatedAt: json['updated_at'] ?? '',
       source: json['source'] ?? '',
       url: json['url'] ?? '',
       status: json['status'] ?? 1,
@@ -304,6 +311,7 @@ class ReligiousChannelDetailsPage extends StatefulWidget {
   final String banner;
   final String poster;
   final String name;
+  final String updatedAt;
 
   const ReligiousChannelDetailsPage({
     Key? key,
@@ -311,6 +319,7 @@ class ReligiousChannelDetailsPage extends StatefulWidget {
     required this.banner,
     required this.poster,
     required this.name,
+    required this.updatedAt,
   }) : super(key: key);
 
   @override
@@ -708,6 +717,25 @@ class _ReligiousChannelDetailsPageState
 
     setState(() => _isProcessing = true);
 
+
+            try{
+          print('Updating user history for: ${episode.title}');
+      int? currentUserId = SessionManager.userId;
+    // final int? parsedContentType = episode.contentType;
+    final int? parsedId = episode.id;
+
+      await HistoryService.updateUserHistory(
+        userId: currentUserId!, // 1. User ID
+        contentType: 7, // 2. Content Type (episode के लिए 4)
+        eventId: parsedId!, // 3. Event ID (episode की ID)
+        eventTitle: episode.title, // 4. Event Title (episode का नाम)
+        url: episode.url, // 5. URL (episode का URL)
+        categoryId: 0, // 6. Category ID (डिफ़ॉल्ट 1)
+      );
+    } catch (e) {
+      print("History update failed, but proceeding to play. Error: $e");
+    }
+
     try {
       if (mounted) {
         if (episode.source.toLowerCase() == 'youtube'
@@ -751,11 +779,28 @@ class _ReligiousChannelDetailsPageState
           }
         }
       } else {
-        await Navigator.push(
+        // await Navigator.push(
+        //   context,
+        //   MaterialPageRoute(
+        //     builder: (context) => CustomVideoPlayer(
+        //       videoUrl: episode.url,
+        //     ),
+        //   ),
+        // );
+          await Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => CustomVideoPlayer(
+            builder: (context) => VideoScreen(
               videoUrl: episode.url,
+              bannerImageUrl: episode.episodeImage  ,
+              channelList: [],
+              source: 'isReligious',
+              // isLive: false,
+              // isSearch: false,
+              videoId: episode.id,
+              name: episode.title,
+              liveStatus: false, 
+              updatedAt: episode.updatedAt,
             ),
           ),
         );
@@ -1047,14 +1092,20 @@ class _ReligiousChannelDetailsPageState
   }
 
   Widget _buildBackgroundLayer() {
+
+  final String uniqueImageUrl = "${widget.banner}?v=${widget.updatedAt}";
+  // ✅ Naya unique cache key banayein
+  final String uniqueCacheKey = "${widget.id.toString()}_${widget.updatedAt}";
+
     return Stack(
       children: [
         // Background Image
         Positioned.fill(
           child: _isValidImageUrl(widget.banner)
               ? CachedNetworkImage(
-                  imageUrl: widget.banner,
+                  imageUrl: uniqueImageUrl,
                   fit: BoxFit.cover,
+                  cacheKey: uniqueCacheKey,
                   placeholder: (context, url) => Container(
                     decoration: const BoxDecoration(
                       gradient: LinearGradient(
@@ -1374,6 +1425,12 @@ class _ReligiousChannelDetailsPageState
     final isFocused =
         _currentMode == NavigationMode.shows && index == _selectedShowIndex;
 
+
+          final String uniqueImageUrl = "${show.thumbnail}?v=${show.updatedAt}";
+  // final String uniquePosterImageUrl = "${show.thumbnail.poster}?v=${show.updatedAt}";
+  // ✅ Naya unique cache key banayein
+  final String uniqueCacheKey = "${show.id.toString()}_${show.updatedAt}";
+
     return GestureDetector(
       onTap: () => _onShowTap(index),
       child: Focus(
@@ -1411,8 +1468,9 @@ class _ReligiousChannelDetailsPageState
                     ? ClipRRect(
                         borderRadius: BorderRadius.circular(25),
                         child: CachedNetworkImage(
-                          imageUrl: show.thumbnail,
+                          imageUrl: uniqueImageUrl,
                           fit: BoxFit.cover,
+                          cacheKey: uniqueCacheKey,
                           errorWidget: (context, url, error) => Center(
                             child: Text(
                               '${show.relOrder}',
@@ -1507,6 +1565,12 @@ class _ReligiousChannelDetailsPageState
     final isSelected = index == _selectedEpisodeIndex;
     final isFocused = _currentMode == NavigationMode.episodes && isSelected;
     final isProcessing = _isProcessing && isSelected;
+
+          final String uniqueImageUrl = "${episode.episodeImage}?v=${episode.updatedAt}";
+  final String uniqueBannerImageUrl = "${widget.banner}?v=${widget.updatedAt}";
+  // ✅ Naya unique cache key banayein
+  final String uniqueCacheKey = "${episode.id.toString()}_${episode.updatedAt}";
+
 
     return GestureDetector(
       onTap: () => _onEpisodeTap(index),
@@ -1614,9 +1678,10 @@ class _ReligiousChannelDetailsPageState
                       ClipRRect(
                         borderRadius: BorderRadius.circular(12),
                         child: CachedNetworkImage(
-                          imageUrl: episode.episodeImage,
+                          imageUrl: uniqueImageUrl,
                           width: 140,
                           height: 90,
+                          cacheKey: uniqueCacheKey,
                           fit: BoxFit.cover,
                           placeholder: (context, url) => Container(
                             decoration: BoxDecoration(
@@ -1651,9 +1716,10 @@ class _ReligiousChannelDetailsPageState
                                   // Fallback to channel banner
                                   if (_isValidImageUrl(widget.banner)) {
                                     return CachedNetworkImage(
-                                      imageUrl: widget.banner,
+                                      imageUrl: uniqueBannerImageUrl,
                                       width: 140,
                                       height: 90,
+                                      cacheKey: uniqueCacheKey,
                                       fit: BoxFit.cover,
                                       errorWidget: (context, url, error) =>
                                           Container(),

@@ -12,6 +12,7 @@ import 'package:mobi_tv_entertainment/home_screen_pages/webseries_screen/webseri
 import 'package:mobi_tv_entertainment/main.dart';
 import 'package:mobi_tv_entertainment/provider/color_provider.dart';
 import 'package:mobi_tv_entertainment/provider/focus_provider.dart';
+import 'package:mobi_tv_entertainment/services/history_service.dart';
 import 'package:provider/provider.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -69,6 +70,7 @@ class AnimationTiming {
 class WebSeriesModel {
   final int id;
   final String name;
+  final String updatedAt;
   final String? description;
   final String? poster;
   final String? banner;
@@ -79,6 +81,7 @@ class WebSeriesModel {
   WebSeriesModel({
     required this.id,
     required this.name,
+    required this.updatedAt,
     this.description,
     this.poster,
     this.banner,
@@ -91,6 +94,7 @@ class WebSeriesModel {
     return WebSeriesModel(
       id: json['id'] ?? 0,
       name: json['name'] ?? '',
+      updatedAt: json['updated_at'] ?? '',
       description: json['description'],
       poster: json['poster'],
       banner: json['banner'],
@@ -390,7 +394,26 @@ class _ProfessionalWebSeriesHorizontalListState
     }
   }
 
-  void _navigateToWebSeriesDetails(WebSeriesModel webSeries) {
+  void _navigateToWebSeriesDetails(WebSeriesModel webSeries) async{
+                    try{
+          print('Updating user history for: ${webSeries.name}');
+      int? currentUserId = SessionManager.userId;
+    // final int? parsedContentType = episode.contentType;
+    final int? parsedId = webSeries.id;
+
+      await HistoryService.updateUserHistory(
+        userId: currentUserId!, // 1. User ID
+        contentType: 2, // 2. Content Type (episode के लिए 4)
+        eventId: parsedId!, // 3. Event ID (episode की ID)
+        eventTitle: webSeries.name, // 4. Event Title (episode का नाम)
+        url: '', // 5. URL (episode का URL)
+        categoryId: 0, // 6. Category ID (डिफ़ॉल्ट 1)
+      );
+    } catch (e) {
+      print("History update failed, but proceeding to play. Error: $e");
+    }
+
+
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -399,7 +422,7 @@ class _ProfessionalWebSeriesHorizontalListState
           banner: webSeries.banner ?? webSeries.poster ?? '',
           poster: webSeries.poster ?? webSeries.banner ?? '',
           logo: webSeries.poster ?? webSeries.banner ?? '',
-          name: webSeries.name,
+          name: webSeries.name, updatedAt: webSeries.updatedAt ,
         ),
       ),
     ).then((_) {
@@ -507,28 +530,28 @@ class _ProfessionalWebSeriesHorizontalListState
                     letterSpacing: 2.0),
               ),
             ),
-            if (webSeriesList.isNotEmpty)
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(colors: [
-                    ProfessionalColors.accentPurple.withOpacity(0.2),
-                    ProfessionalColors.accentBlue.withOpacity(0.2),
-                  ]),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                      color: ProfessionalColors.accentPurple.withOpacity(0.3),
-                      width: 1),
-                ),
-                child: Text(
-                  '${webSeriesList.length} Series Available',
-                  style: const TextStyle(
-                      color: ProfessionalColors.textSecondary,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500),
-                ),
-              ),
+            // if (webSeriesList.isNotEmpty)
+            //   Container(
+            //     padding:
+            //         const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            //     decoration: BoxDecoration(
+            //       gradient: LinearGradient(colors: [
+            //         ProfessionalColors.accentPurple.withOpacity(0.2),
+            //         ProfessionalColors.accentBlue.withOpacity(0.2),
+            //       ]),
+            //       borderRadius: BorderRadius.circular(20),
+            //       border: Border.all(
+            //           color: ProfessionalColors.accentPurple.withOpacity(0.3),
+            //           width: 1),
+            //     ),
+            //     child: Text(
+            //       '${webSeriesList.length} Series Available',
+            //       style: const TextStyle(
+            //           color: ProfessionalColors.textSecondary,
+            //           fontSize: 12,
+            //           fontWeight: FontWeight.w500),
+            //     ),
+            //   ),
           ],
         ),
       ),
@@ -605,7 +628,12 @@ class _ProfessionalWebSeriesHorizontalListState
             FocusScope.of(context).requestFocus(
                 webseriesFocusNodes[webSeriesList[6].id.toString()]);
             return KeyEventResult.handled;
-          } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+          }
+                   else if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
+           // Right arrow dabane par focus ko yahin roke rakhein
+           return KeyEventResult.handled; 
+         } 
+           else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
             Provider.of<FocusProvider>(context, listen: false)
                 .requestFirstMoviesFocus();
             return KeyEventResult.handled;
@@ -666,10 +694,14 @@ class _ProfessionalWebSeriesHorizontalListState
             }
             return KeyEventResult.handled;
           } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+                        context.read<ColorProvider>().resetColor();
+            FocusScope.of(context).unfocus();
             Provider.of<FocusProvider>(context, listen: false)
                 .requestFirstMoviesFocus();
             return KeyEventResult.handled;
           } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+                        context.read<ColorProvider>().resetColor();
+            FocusScope.of(context).unfocus();
             Provider.of<FocusProvider>(context, listen: false)
                 .requestFirstTVShowsFocus();
             return KeyEventResult.handled;
@@ -1197,6 +1229,26 @@ class _ProfessionalWebSeriesGridPageState
 
     _safeSetState(() => _isVideoLoading = true);
 
+                try{
+          print('Updating user history for: ${webSeries.name}');
+      int? currentUserId = SessionManager.userId;
+    // final int? parsedContentType = episode.contentType;
+    final int? parsedId = webSeries.id;
+
+      await HistoryService.updateUserHistory(
+        userId: currentUserId!, // 1. User ID
+        contentType: 2, // 2. Content Type (episode के लिए 4)
+        eventId: parsedId!, // 3. Event ID (episode की ID)
+        eventTitle: webSeries.name, // 4. Event Title (episode का नाम)
+        url: '', // 5. URL (episode का URL)
+        categoryId: 0, // 6. Category ID (डिफ़ॉल्ट 1)
+      );
+    } catch (e) {
+      print("History update failed, but proceeding to play. Error: $e");
+    }
+
+
+
     await Navigator.push(
       context,
       MaterialPageRoute(
@@ -1205,7 +1257,7 @@ class _ProfessionalWebSeriesGridPageState
           banner: webSeries.banner ?? webSeries.poster ?? '',
           poster: webSeries.poster ?? webSeries.banner ?? '',
           logo: webSeries.poster ?? webSeries.banner ?? '',
-          name: webSeries.name,
+          name: webSeries.name, updatedAt: webSeries.updatedAt,
         ),
       ),
     );
@@ -1336,28 +1388,28 @@ class _ProfessionalWebSeriesGridPageState
                         ),
                       ),
                       const SizedBox(height: 6),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(colors: [
-                            ProfessionalColors.accentPurple.withOpacity(0.4),
-                            ProfessionalColors.accentBlue.withOpacity(0.3),
-                          ]),
-                          borderRadius: BorderRadius.circular(15),
-                          border: Border.all(
-                              color: ProfessionalColors.accentPurple
-                                  .withOpacity(0.6),
-                              width: 1),
-                        ),
-                        child: Text(
-                          '${widget.webSeriesList.length} Web Series Available',
-                          style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600),
-                        ),
-                      ),
+                      // Container(
+                      //   padding: const EdgeInsets.symmetric(
+                      //       horizontal: 12, vertical: 6),
+                      //   decoration: BoxDecoration(
+                      //     gradient: LinearGradient(colors: [
+                      //       ProfessionalColors.accentPurple.withOpacity(0.4),
+                      //       ProfessionalColors.accentBlue.withOpacity(0.3),
+                      //     ]),
+                      //     borderRadius: BorderRadius.circular(15),
+                      //     border: Border.all(
+                      //         color: ProfessionalColors.accentPurple
+                      //             .withOpacity(0.6),
+                      //         width: 1),
+                      //   ),
+                      //   child: Text(
+                      //     '${widget.webSeriesList.length} Web Series Available',
+                      //     style: const TextStyle(
+                      //         color: Colors.white,
+                      //         fontSize: 12,
+                      //         fontWeight: FontWeight.w600),
+                      //   ),
+                      // ),
                     ],
                   ),
                 ),
@@ -1537,15 +1589,19 @@ class _ProfessionalWebSeriesCardState extends State<ProfessionalWebSeriesCard>
   }
 
   Widget _buildWebSeriesImage(double posterHeight) {
+      final String uniqueImageUrl = "${widget.webSeries.banner}?v=${widget.webSeries.updatedAt}";
+  // ✅ Naya unique cache key banayein
+  final String uniqueCacheKey = "${widget.webSeries.id.toString()}_${widget.webSeries.updatedAt}";
     return SizedBox(
       width: double.infinity,
       height: posterHeight,
       child: widget.webSeries.banner != null &&
               widget.webSeries.banner!.isNotEmpty
           ? CachedNetworkImage(
-              imageUrl: widget.webSeries.banner!,
+              imageUrl: uniqueImageUrl,
               fit: BoxFit.cover,
               memCacheHeight: 300,
+              cacheKey: uniqueCacheKey,
               placeholder: (context, url) => _buildImagePlaceholder(),
               errorWidget: (context, url, error) => _buildImagePlaceholder(),
             )
@@ -1678,11 +1734,15 @@ class OptimizedWebSeriesGridCard extends StatelessWidget {
 
   Widget _buildWebSeriesImage() {
     final imageUrl = webSeries.banner ?? webSeries.poster;
+          final String uniqueImageUrl = "${imageUrl}?v=${webSeries.updatedAt}";
+  // ✅ Naya unique cache key banayein
+  final String uniqueCacheKey = "${webSeries.id.toString()}_${webSeries.updatedAt}";
     return imageUrl != null && imageUrl.isNotEmpty
         ? CachedNetworkImage(
-            imageUrl: imageUrl,
+            imageUrl: uniqueImageUrl,
             fit: BoxFit.cover,
             memCacheHeight: 300,
+            cacheKey: uniqueCacheKey,
             placeholder: (context, url) => _buildImagePlaceholder(),
             errorWidget: (context, url, error) => _buildImagePlaceholder(),
           )
@@ -1830,9 +1890,9 @@ class _ProfessionalWebSeriesViewAllButtonState
                         fontWeight: FontWeight.bold,
                         fontSize: 14)),
                 const SizedBox(height: 6),
-                Text('${widget.totalItems}',
-                    style: const TextStyle(
-                        color: ProfessionalColors.textSecondary, fontSize: 12)),
+                // Text('${widget.totalItems}',
+                //     style: const TextStyle(
+                //         color: ProfessionalColors.textSecondary, fontSize: 12)),
               ],
             ),
           ),

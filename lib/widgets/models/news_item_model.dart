@@ -393,6 +393,7 @@ class NewsItemModel {
   final String id;
   final String index;
   final String name;
+  final String updatedAt;
   final String unUpdatedUrl;
   final String description;
   final String thumbnail_high;
@@ -436,6 +437,7 @@ class NewsItemModel {
     required this.id,
     this.index = '',
     required this.name,
+    required this.updatedAt,
     required this.unUpdatedUrl,
     this.description = '',
     this.thumbnail_high = '',
@@ -495,6 +497,7 @@ class NewsItemModel {
       id: safeIntToString(json['id']),  // Convert int to String properly
       index: safeIntToString(json['index']),  // Convert int to String properly
       name: safeToString(json['name'] ?? json['Episoade_Name'] ?? json['session_name']??json['channel_name'] , defaultValue: 'No Name'),
+      updatedAt: safeToString(json['updated_at'] ??''),
       unUpdatedUrl: safeIntToString(json['unUpdatedUrl']),
       description: safeToString(json['description'] ?? json['episoade_description'] ?? json['session_description']),
       thumbnail_high: safeToString(json['thumbnail_high']),
@@ -504,7 +507,7 @@ class NewsItemModel {
       image: safeToString(json['image']??json['channel_logo']),
       // poster: safeToString(json['poster']),
       // json['url']?? json['movie_url']??
-      url: safeToString(json['channel_link']??json['url'] ),
+      url: safeToString(json['channel_link']??json['url']??json['movie_url']??json['video_url']??'' ),
       videoId: safeToString(json['videoId']),
       streamType: safeToString(json['stream_type']),
       sourceType: safeToString(json['source_type']),
@@ -544,6 +547,7 @@ class NewsItemModel {
       'id': id,
       'index': index,
       'name': name,
+      'updatedAt': updatedAt,
       'unUpdatedUrl': unUpdatedUrl,
       'description': description,
       'thumbnail_high': thumbnail_high,
@@ -628,6 +632,7 @@ class NewsItemModel {
       id: id ?? this.id,
       index: index ?? this.index,
       name: name ?? this.name,
+      updatedAt: updatedAt ?? this.updatedAt,
       unUpdatedUrl: unUpdatedUrl ?? this.unUpdatedUrl,
       description: description ?? this.description,
       thumbnail_high: thumbnail_high ?? this.thumbnail_high,

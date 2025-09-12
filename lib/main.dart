@@ -1516,10 +1516,6 @@
 // //   }
 // // }
 
-
-
-
-
 // import 'dart:async';
 // import 'dart:convert';
 // import 'dart:io';
@@ -1618,7 +1614,7 @@
 //     SystemUiMode.immersiveSticky,
 //     overlays: [],
 //   );
-  
+
 //   SystemChrome.setSystemUIOverlayStyle(
 //     const SystemUiOverlayStyle(
 //       statusBarColor: Colors.transparent,
@@ -1628,7 +1624,6 @@
 //       systemNavigationBarIconBrightness: Brightness.light,
 //     ),
 //   );
-
 
 //     // ✅ Provider ko initialize karein
 //   final deviceInfoProvider = DeviceInfoProvider();
@@ -1866,16 +1861,6 @@
 //     );
 //   }
 // }
-
-
-
-
-
-
-
-
-
-
 
 // class LoginScreen extends StatefulWidget {
 //   @override
@@ -2239,9 +2224,6 @@
 //   }
 // }
 
-
-
-
 // // Rest of your existing code (UpdateChecker, MyHome, etc.) remains the same...
 // class UpdateChecker {
 //   static const String LAST_UPDATE_CHECK_KEY = 'last_update_check';
@@ -2557,10 +2539,6 @@
 //   }
 // }
 
-
-
-
-
 // // lib/main.dart
 
 // import 'dart:async';
@@ -2586,7 +2564,6 @@
 
 // import 'home_screen_pages/sub_vod_screen/sub_vod.dart';
 // import 'menu/top_navigation_bar.dart';
-
 
 // // lib/provider/session_manager.dart
 
@@ -2687,7 +2664,7 @@
 //   if (_userData != null && _userData!['domain_content'] != null) {
 //     final domainContent = _userData!['domain_content'];
 //     print("--- 2. domain_content मिला: $domainContent ---"); // मार्कर 2
-    
+
 //     _logoUrl = domainContent['logo'] ?? 'API_SE_URL_NULL_AAYA'; // डीबगिंग के लिए डिफ़ॉल्ट टेक्स्ट
 //     print("--- 3. निकाला गया LogoURLs: $_logoUrl ---"); // मार्कर 3
 //   } else {
@@ -2698,8 +2675,6 @@
 //   // SharedPreferences में डेटा write karein
 //   await prefs.setString('logo_url', _logoUrl);
 //   print("--- 4. SharedPreferences में '$_logoUrl' सेव किया गया। ---"); // मार्कर 4
-  
-
 
 //     // // SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -3252,6 +3227,16 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -3276,10 +3261,6 @@ import 'home_screen_pages/sub_vod_screen/sub_vod.dart';
 import 'menu/top_navigation_bar.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-
-
-
-
 
 // class SessionManager {
 //   static bool _isInitialized = false;
@@ -3324,7 +3305,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 //   static bool get showLaughterShows => _showLaughterShows;
 //   static bool get showContentNetwork => _showContentNetwork;
 //   static bool get showSearch => _showSearch;
-  
+
 //   // --- Methods ---
 //   static Future<void> initialize() async {
 //     if (!_isInitialized) {
@@ -3345,7 +3326,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 //       if (userDataString != null) {
 //         _userData = jsonDecode(userDataString);
 //       }
-      
+
 //       _showMovies = prefs.getBool('show_movies') ?? false;
 //       _showWebseries = prefs.getBool('show_webseries') ?? false;
 //       _showTvShow = prefs.getBool('show_tvshow') ?? false;
@@ -3377,7 +3358,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 //       _savedDomain = _userData!['domain'];
 //       await prefs.setString('saved_domain', _savedDomain);
 //     }
-    
+
 //     if (_userData != null && _userData!['domain_content'] != null) {
 //       final domainContent = _userData!['domain_content'];
 //       _logoUrl = domainContent['logo'] ?? '';
@@ -3417,7 +3398,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 //   static Future<void> clearSession() async {
 //     SharedPreferences prefs = await SharedPreferences.getInstance();
-    
+
 //     // Sirf session related data clear karein, domain ko chhod dein
 //     await prefs.remove('auth_key');
 //     await prefs.remove('user_data');
@@ -3430,11 +3411,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 //   }
 // }
 
-
-
-
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+  // import 'package:video_player_avplay/video_player_avplay.dart'; // <-- Add this import
 
 class SessionManager {
   static bool _isInitialized = false;
@@ -3503,7 +3482,7 @@ class SessionManager {
       if (userDataString != null) {
         _userData = jsonDecode(userDataString);
       }
-      
+
       _showMovies = prefs.getBool('show_movies') ?? false;
       _showWebseries = prefs.getBool('show_webseries') ?? false;
       _showTvShow = prefs.getBool('show_tvshow') ?? false;
@@ -3515,7 +3494,6 @@ class SessionManager {
       _showLaughterShows = prefs.getBool('show_laughter_shows') ?? false;
       _showContentNetwork = prefs.getBool('show_content_network') ?? false;
       _showSearch = prefs.getBool('show_search') ?? false;
-
     } catch (e) {
       await clearSession();
     }
@@ -3530,15 +3508,15 @@ class SessionManager {
 
     // ✅ 4. API response se 'id' nikalein aur save karein
     if (_userData != null && _userData!['id'] != null) {
-        _userId = _userData!['id'];
-        await prefs.setInt('user_id', _userId!);
+      _userId = _userData!['id'];
+      await prefs.setInt('user_id', _userId!);
     }
 
     if (_userData != null && _userData!['domain'] != null) {
       _savedDomain = _userData!['domain'];
       await prefs.setString('saved_domain', _savedDomain);
     }
-    
+
     if (_userData != null && _userData!['domain_content'] != null) {
       final domainContent = _userData!['domain_content'];
       _logoUrl = domainContent['logo'] ?? '';
@@ -3578,7 +3556,7 @@ class SessionManager {
 
   static Future<void> clearSession() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    
+
     await prefs.remove('auth_key');
     await prefs.remove('user_data');
     await prefs.remove('is_logged_in');
@@ -3602,6 +3580,9 @@ class MyHttpOverrides extends HttpOverrides {
 }
 
 void main() async {
+
+
+  // VideoPlayerAvplay.init();
   WidgetsFlutterBinding.ensureInitialized();
   HttpOverrides.global = MyHttpOverrides();
   await initializeDateFormatting(null, null);
@@ -3657,7 +3638,7 @@ var menutextsz;
 var minitextsz;
 var Headingtextsz;
 
-String localImage = 'assets/logo.png';
+String localImage = 'assets/cpPlayer.png';
 String streamImage = 'assets/streamstarting.gif';
 
 class MyApp extends StatelessWidget {
@@ -3945,23 +3926,22 @@ class _LoginScreenState extends State<LoginScreen>
       //     activeController.text = activeController.text
       //         .substring(0, activeController.text.length - 1);
       //   }
-      // } 
+      // }
       // This is the new, updated code
-if (value == 'DEL') {
-  // If the active text field has text in it, delete one character.
-  if (activeController.text.isNotEmpty) {
-    activeController.text = activeController.text
-        .substring(0, activeController.text.length - 1);
-  } 
-  // NEW LOGIC: If the active field is the PIN field AND it's empty,
-  // pressing 'DEL' will move the focus back to the domain field.
-  else if (_currentFocus == InputFocus.pin) {
-    setState(() {
-      _currentFocus = InputFocus.domain;
-    });
-  }
-}
-      else if (_currentFocus == InputFocus.pin) {
+      if (value == 'DEL') {
+        // If the active text field has text in it, delete one character.
+        if (activeController.text.isNotEmpty) {
+          activeController.text = activeController.text
+              .substring(0, activeController.text.length - 1);
+        }
+        // NEW LOGIC: If the active field is the PIN field AND it's empty,
+        // pressing 'DEL' will move the focus back to the domain field.
+        else if (_currentFocus == InputFocus.pin) {
+          setState(() {
+            _currentFocus = InputFocus.domain;
+          });
+        }
+      } else if (_currentFocus == InputFocus.pin) {
         if (RegExp(r'^[0-9]$').hasMatch(value) &&
             activeController.text.length < 10) {
           activeController.text += value;
@@ -3988,27 +3968,31 @@ if (value == 'DEL') {
       displayText = hint;
     }
 
-    return GestureDetector(
-      onTap: () => setState(() => _currentFocus = focus),
-      child: Container(
-        width: double.infinity,
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.05),
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(
-            color: isActive ? borderColor : Colors.white.withOpacity(0.2),
-            width: 2,
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: screenwdt * 0.06),
+      child: GestureDetector(
+        onTap: () => setState(() => _currentFocus = focus),
+        child: Container(
+          width: double.infinity,
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.05),
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(
+              color: isActive ? borderColor : Colors.white.withOpacity(0.2),
+              width: 2,
+            ),
           ),
-        ),
-        child: Text(
-          displayText,
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            color: controller.text.isEmpty ? Colors.white54 : Colors.white,
-            fontSize: nametextsz * (isPin ? 1.2 : 0.9),
-            letterSpacing: isPin ? 5 : 1,
-            fontWeight: FontWeight.w600,
+          child: Text(
+            displayText,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: controller.text.isEmpty ? Colors.white54 : Colors.white,
+              // fontSize: nametextsz * (isPin ? 1.4 : 0.9),
+              fontSize: nametextsz * 1.4,
+              letterSpacing: isPin ? 5 : 1,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ),
       ),
@@ -4054,7 +4038,7 @@ if (value == 'DEL') {
                         ),
                       ),
                     ),
-                    
+
                     // Fields are now in a Row
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -4160,11 +4144,11 @@ if (value == 'DEL') {
   }
 
   Widget _buildQwertyKeyboard() {
-    final row1 = "1234567890".split('');
-    final row2 = "qwertyuiop".split('');
-    final row3 = "asdfghjkl,".split('');
-    final row4 = ["SHIFT", ..."zxcvbnm".split(''), "DEL"];
-    final row5 = ["coretechinfo.com","@", ".", " ", ".com", "OK"];
+    final row1 = "1234567890.".split('');
+    final row2 = "qwertyuiop,".split('');
+    final row3 = "asdfghjkl:/".split('');
+    final row4 = ["DEL",  ..."zxcvbnm".split(''),  "DEL"];
+    final row5 = ["coretechinfo.com", "SHIFT","@",".com", " ",  "OK"];
 
     return Column(
       children: [
@@ -4203,7 +4187,7 @@ if (value == 'DEL') {
     return Container(
       // Adjusted width and height for smaller buttons
       width: width ?? screenwdt * 0.18,
-      height: screenhgt * 0.1 ,
+      height: screenhgt * 0.1,
       // Reduced margin for less padding between keys
       margin: const EdgeInsets.all(2),
       child: ElevatedButton(
@@ -4228,8 +4212,6 @@ if (value == 'DEL') {
     );
   }
 }
-
-
 
 // Rest of your code (UpdateChecker, MyHome, etc.)
 // ...

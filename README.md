@@ -64,12 +64,14 @@ samples, guidance on mobile development, and a full API reference.
 
 
 
+fvm use 3.32.0
+  fvm flutter clean
+  fvm flutter run -d "10.225.71.37:5555"
 
  dart pub global activate fvm
-fvm use 3.32.0
  ls /c/Users/admin/AppData/Local/Pub/Cache/bin
  echo 'export PATH="$PATH":"/c/Users/admin/AppData/Local/Pub/Cache/bin"' >> ~/.bashrc
  source ~/.bashrc
  fvm --version
-  fvm flutter clean
-  fvm flutter run -d "10.225.71.37:5555"
+
+ 

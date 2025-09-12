@@ -215,7 +215,7 @@ Future<void> _onTVShowSelected(TVShowDetailsModel tvShow) async {
         id: tvShow.id,
         banner: tvShow.thumbnail ?? '',
         poster: tvShow.thumbnail ?? '',
-        name: tvShow.name,
+        name: tvShow.name, updatedAt: tvShow.updatedAt??'',
       ),
     ),
   );
