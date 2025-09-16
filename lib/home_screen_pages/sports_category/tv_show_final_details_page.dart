@@ -788,7 +788,7 @@ class _TournamentFinalDetailsPageState extends State<TournamentFinalDetailsPage>
     try {
       final response = await https.get(
         Uri.parse(
-            'https://acomtv.coretechinfo.com/public/api/v2/getTouranamentSeasons/${widget.id}'),
+            'https://dashboard.cpplayers.com/public/api/v2/getTouranamentSeasons/${widget.id}'),
         headers: {
           'auth-key': authKey,
           'Accept': 'application/json',
@@ -977,7 +977,7 @@ class _TournamentFinalDetailsPageState extends State<TournamentFinalDetailsPage>
     try {
       final response = await https.get(
         Uri.parse(
-            'https://acomtv.coretechinfo.com/public/api/v2/getTouranamentSeasonsEvents/$seasonId'),
+            'https://dashboard.cpplayers.com/public/api/v2/getTouranamentSeasonsEvents/$seasonId'),
         headers: {
           'auth-key': authKey,
           'Accept': 'application/json',
@@ -1141,24 +1141,23 @@ class _TournamentFinalDetailsPageState extends State<TournamentFinalDetailsPage>
 
     setState(() => _isProcessing = true);
 
-        try{
-          print('Updating user history for: ${match.matchTitle}');
+    try {
+      print('Updating user history for: ${match.matchTitle}');
       int? currentUserId = SessionManager.userId;
-    // final int? parsedContentType = int.tryParse(match.contentType ?? '');
-    final int? parsedId = match.id ;
+      // final int? parsedContentType = int.tryParse(match.contentType ?? '');
+      final int? parsedId = match.id;
 
       await HistoryService.updateUserHistory(
         userId: currentUserId!, // 1. User ID
         contentType: 8, // 2. Content Type (match के लिए 4)
         eventId: parsedId!, // 3. Event ID (match की ID)
         eventTitle: match.matchTitle, // 4. Event Title (match का नाम)
-        url: match.videoUrl??'', // 5. URL (match का URL)
+        url: match.videoUrl ?? '', // 5. URL (match का URL)
         categoryId: 0, // 6. Category ID (डिफ़ॉल्ट 1)
       );
     } catch (e) {
       print("History update failed, but proceeding to play. Error: $e");
     }
-
 
     try {
       String? url = match.videoUrl;
@@ -1189,7 +1188,7 @@ class _TournamentFinalDetailsPageState extends State<TournamentFinalDetailsPage>
                 context,
                 MaterialPageRoute(
                     builder: (context) => YoutubeWebviewPlayer(
-                          videoUrl: match.videoUrl??'',
+                          videoUrl: match.videoUrl ?? '',
                           name: match.matchTitle,
                         )));
           } else {
@@ -1226,23 +1225,23 @@ class _TournamentFinalDetailsPageState extends State<TournamentFinalDetailsPage>
           //     ),
           //   ),
           // );
-          result =  await Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => VideoScreen(
-              videoUrl: url,
-              bannerImageUrl: match.thumbnailUrl ?? '' ,
-              channelList: [],
-              source: 'isSports',
-              // isLive: false,
-              // isSearch: false,
-              videoId: match.id,
-              name: match.matchTitle,
-              liveStatus: false, 
-              updatedAt: match.updatedAt,
+          result = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => VideoScreen(
+                videoUrl: url,
+                bannerImageUrl: match.thumbnailUrl ?? '',
+                channelList: [],
+                source: 'isSports',
+                // isLive: false,
+                // isSearch: false,
+                videoId: match.id,
+                name: match.matchTitle,
+                liveStatus: false,
+                updatedAt: match.updatedAt,
+              ),
             ),
-          ),
-        );
+          );
         }
 
         // Refresh data after returning from video player
@@ -1687,11 +1686,10 @@ class _TournamentFinalDetailsPageState extends State<TournamentFinalDetailsPage>
     final isFocused = _currentMode == NavigationMode.seasons && isSelected;
     final matchCount = _filteredMatchesMap[season.id]?.length ?? 0;
 
-              final String uniqueImageUrl = "${season.logo}?v=${season.updatedAt}";
-  // final String uniqueBannerImageUrl = "${widget.banner}?v=${widget.updatedAt}";
-  // ✅ Naya unique cache key banayein
-  final String uniqueCacheKey = "${season.id.toString()}_${season.updatedAt}";
-
+    final String uniqueImageUrl = "${season.logo}?v=${season.updatedAt}";
+    // final String uniqueBannerImageUrl = "${widget.banner}?v=${widget.updatedAt}";
+    // ✅ Naya unique cache key banayein
+    final String uniqueCacheKey = "${season.id.toString()}_${season.updatedAt}";
 
     return GestureDetector(
       onTap: () => _onSeasonTap(index),
@@ -1784,7 +1782,7 @@ class _TournamentFinalDetailsPageState extends State<TournamentFinalDetailsPage>
                       borderRadius: BorderRadius.circular(25),
                       child: _buildEnhancedImage(
                         imageUrl: uniqueImageUrl,
-cacheKey:uniqueCacheKey,
+                        cacheKey: uniqueCacheKey,
                         width: 50,
                         height: 50,
                         fit: BoxFit.cover,
@@ -1972,7 +1970,8 @@ cacheKey:uniqueCacheKey,
     required double width,
     required double height,
     BoxFit fit = BoxFit.cover,
-    Widget? fallbackWidget, required String cacheKey,
+    Widget? fallbackWidget,
+    required String cacheKey,
   }) {
     return Container(
       width: width,
@@ -2253,13 +2252,13 @@ cacheKey:uniqueCacheKey,
     final isFocused = _currentMode == NavigationMode.matches && isSelected;
     final isProcessing = _isProcessing && isSelected;
 
-
-                  final String uniqueImageUrl = "${match.thumbnailUrl}?v=${match.updatedAt}";
-  final String uniqueBannerImageUrl = "${widget.banner}?v=${widget.updatedAt}";
-  final String uniquePosterImageUrl = "${widget.poster}?v=${widget.updatedAt}";
-  // ✅ Naya unique cache key banayein
-  final String uniqueCacheKey = "${match.id.toString()}_${match.updatedAt}";
-
+    final String uniqueImageUrl = "${match.thumbnailUrl}?v=${match.updatedAt}";
+    final String uniqueBannerImageUrl =
+        "${widget.banner}?v=${widget.updatedAt}";
+    final String uniquePosterImageUrl =
+        "${widget.poster}?v=${widget.updatedAt}";
+    // ✅ Naya unique cache key banayein
+    final String uniqueCacheKey = "${match.id.toString()}_${match.updatedAt}";
 
     return GestureDetector(
       onTap: () => _onMatchTap(index),

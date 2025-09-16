@@ -1,10 +1,3 @@
-
-
-
-
-
-
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
@@ -96,36 +89,37 @@ class SportsCategoriesService {
   static const String _cacheKeySportsCategories = 'cached_sports_categories';
   static const String _cacheKeyTimestamp = 'cached_sports_categories_timestamp';
   static const String _cacheKeyAuthKey = 'auth_key';
-  
+
   // Cache duration (in milliseconds) - 1 hour
   static const int _cacheDurationMs = 60 * 60 * 1000; // 1 hour
-  
+
   /// Main method to get all sports categories with caching
-  static Future<List<SportsCategoryModel>> getAllSportsCategories({bool forceRefresh = false}) async {
+  static Future<List<SportsCategoryModel>> getAllSportsCategories(
+      {bool forceRefresh = false}) async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      
+
       // Check if we should use cache
       if (!forceRefresh && await _shouldUseCache(prefs)) {
         print('📦 Loading Sports Categories from cache...');
         final cachedCategories = await _getCachedSportsCategories(prefs);
         if (cachedCategories.isNotEmpty) {
-          print('✅ Successfully loaded ${cachedCategories.length} sports categories from cache');
-          
+          print(
+              '✅ Successfully loaded ${cachedCategories.length} sports categories from cache');
+
           // Load fresh data in background (without waiting)
           _loadFreshDataInBackground();
-          
+
           return cachedCategories;
         }
       }
-      
+
       // Load fresh data if no cache or force refresh
       print('🌐 Loading fresh Sports Categories from API...');
       return await _fetchFreshSportsCategories(prefs);
-      
     } catch (e) {
       print('❌ Error in getAllSportsCategories: $e');
-      
+
       // Try to return cached data as fallback
       try {
         final prefs = await SharedPreferences.getInstance();
@@ -137,73 +131,79 @@ class SportsCategoriesService {
       } catch (cacheError) {
         print('❌ Cache fallback also failed: $cacheError');
       }
-      
+
       throw Exception('Failed to load sports categories: $e');
     }
   }
-  
+
   /// Check if cached data is still valid
   static Future<bool> _shouldUseCache(SharedPreferences prefs) async {
     try {
       final timestampStr = prefs.getString(_cacheKeyTimestamp);
       if (timestampStr == null) return false;
-      
+
       final cachedTimestamp = int.tryParse(timestampStr);
       if (cachedTimestamp == null) return false;
-      
+
       final currentTimestamp = DateTime.now().millisecondsSinceEpoch;
       final cacheAge = currentTimestamp - cachedTimestamp;
-      
+
       final isValid = cacheAge < _cacheDurationMs;
-      
+
       if (isValid) {
         final ageMinutes = (cacheAge / (1000 * 60)).round();
-        print('📦 Sports Categories Cache is valid (${ageMinutes} minutes old)');
+        print(
+            '📦 Sports Categories Cache is valid (${ageMinutes} minutes old)');
       } else {
         final ageMinutes = (cacheAge / (1000 * 60)).round();
         print('⏰ Sports Categories Cache expired (${ageMinutes} minutes old)');
       }
-      
+
       return isValid;
     } catch (e) {
       print('❌ Error checking Sports Categories cache validity: $e');
       return false;
     }
   }
-  
+
   /// Get sports categories from cache
-  static Future<List<SportsCategoryModel>> _getCachedSportsCategories(SharedPreferences prefs) async {
+  static Future<List<SportsCategoryModel>> _getCachedSportsCategories(
+      SharedPreferences prefs) async {
     try {
       final cachedData = prefs.getString(_cacheKeySportsCategories);
       if (cachedData == null || cachedData.isEmpty) {
         print('📦 No cached Sports Categories data found');
         return [];
       }
-      
+
       final List<dynamic> jsonData = json.decode(cachedData);
       final categories = jsonData
-          .map((json) => SportsCategoryModel.fromJson(json as Map<String, dynamic>))
+          .map((json) =>
+              SportsCategoryModel.fromJson(json as Map<String, dynamic>))
           .where((category) => category.status == 1) // Filter active categories
           .toList();
-      
+
       // Sort by sports_cat_order
       categories.sort((a, b) => a.sportsCatOrder.compareTo(b.sportsCatOrder));
-      
-      print('📦 Successfully loaded ${categories.length} sports categories from cache');
+
+      print(
+          '📦 Successfully loaded ${categories.length} sports categories from cache');
       return categories;
     } catch (e) {
       print('❌ Error loading cached sports categories: $e');
       return [];
     }
   }
-  
+
   /// Fetch fresh sports categories from API and cache them
-  static Future<List<SportsCategoryModel>> _fetchFreshSportsCategories(SharedPreferences prefs) async {
+  static Future<List<SportsCategoryModel>> _fetchFreshSportsCategories(
+      SharedPreferences prefs) async {
     try {
       String authKey = prefs.getString(_cacheKeyAuthKey) ?? '';
-      
+
       final response = await http.get(
-        Uri.parse('https://acomtv.coretechinfo.com/public/api/v2/getsportCategories'),
+        Uri.parse(
+            'https://dashboard.cpplayers.com/public/api/v2/getsportCategories'),
         headers: {
           'auth-key': authKey,
           'Content-Type': 'application/json',
@@ -216,53 +216,59 @@ class SportsCategoriesService {
           throw Exception('Request timeout');
         },
       );
-      
+
       if (response.statusCode == 200) {
         final List<dynamic> jsonData = json.decode(response.body);
-        
+
         final allCategories = jsonData
-            .map((json) => SportsCategoryModel.fromJson(json as Map<String, dynamic>))
+            .map((json) =>
+                SportsCategoryModel.fromJson(json as Map<String, dynamic>))
             .toList();
-            
+
         // Filter only active categories (status = 1)
-        final activeCategories = allCategories.where((category) => category.status == 1).toList();
-        
+        final activeCategories =
+            allCategories.where((category) => category.status == 1).toList();
+
         // Sort by sports_cat_order
-        activeCategories.sort((a, b) => a.sportsCatOrder.compareTo(b.sportsCatOrder));
-        
+        activeCategories
+            .sort((a, b) => a.sportsCatOrder.compareTo(b.sportsCatOrder));
+
         // Cache the fresh data (save all categories, but return only active ones)
         await _cacheSportsCategories(prefs, jsonData);
-        
-        print('✅ Successfully loaded ${activeCategories.length} active sports categories from API (from ${allCategories.length} total)');
+
+        print(
+            '✅ Successfully loaded ${activeCategories.length} active sports categories from API (from ${allCategories.length} total)');
         return activeCategories;
-        
       } else {
-        throw Exception('API Error: ${response.statusCode} - ${response.reasonPhrase}');
+        throw Exception(
+            'API Error: ${response.statusCode} - ${response.reasonPhrase}');
       }
     } catch (e) {
       print('❌ Error fetching fresh sports categories: $e');
       rethrow;
     }
   }
-  
+
   /// Cache sports categories data
-  static Future<void> _cacheSportsCategories(SharedPreferences prefs, List<dynamic> categoriesData) async {
+  static Future<void> _cacheSportsCategories(
+      SharedPreferences prefs, List<dynamic> categoriesData) async {
     try {
       final jsonString = json.encode(categoriesData);
       final currentTimestamp = DateTime.now().millisecondsSinceEpoch.toString();
-      
+
       // Save categories data and timestamp
       await Future.wait([
         prefs.setString(_cacheKeySportsCategories, jsonString),
         prefs.setString(_cacheKeyTimestamp, currentTimestamp),
       ]);
-      
-      print('💾 Successfully cached ${categoriesData.length} sports categories');
+
+      print(
+          '💾 Successfully cached ${categoriesData.length} sports categories');
     } catch (e) {
       print('❌ Error caching sports categories: $e');
     }
   }
-  
+
   /// Load fresh data in background without blocking UI
   static void _loadFreshDataInBackground() {
     Future.delayed(const Duration(milliseconds: 500), () async {
@@ -276,7 +282,7 @@ class SportsCategoriesService {
       }
     });
   }
-  
+
   /// Clear all cached data
   static Future<void> clearCache() async {
     try {
@@ -290,14 +296,14 @@ class SportsCategoriesService {
       print('❌ Error clearing Sports Categories cache: $e');
     }
   }
-  
+
   /// Get cache info for debugging
   static Future<Map<String, dynamic>> getCacheInfo() async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final timestampStr = prefs.getString(_cacheKeyTimestamp);
       final cachedData = prefs.getString(_cacheKeySportsCategories);
-      
+
       if (timestampStr == null || cachedData == null) {
         return {
           'hasCachedData': false,
@@ -306,15 +312,15 @@ class SportsCategoriesService {
           'cacheSize': 0,
         };
       }
-      
+
       final cachedTimestamp = int.tryParse(timestampStr) ?? 0;
       final currentTimestamp = DateTime.now().millisecondsSinceEpoch;
       final cacheAge = currentTimestamp - cachedTimestamp;
       final cacheAgeMinutes = (cacheAge / (1000 * 60)).round();
-      
+
       final List<dynamic> jsonData = json.decode(cachedData);
       final cacheSizeKB = (cachedData.length / 1024).round();
-      
+
       return {
         'hasCachedData': true,
         'cacheAge': cacheAgeMinutes,
@@ -333,7 +339,7 @@ class SportsCategoriesService {
       };
     }
   }
-  
+
   /// Force refresh data (bypass cache)
   static Future<List<SportsCategoryModel>> forceRefresh() async {
     print('🔄 Force refreshing Sports Categories data...');
@@ -348,7 +354,6 @@ class SportsCategoriesService {
 //       _SportsCategoryState();
 // }
 
-
 // AFTER (Correct)
 class SportsCategory extends StatefulWidget {
   const SportsCategory({super.key}); // <-- ADD THIS LINE
@@ -357,8 +362,7 @@ class SportsCategory extends StatefulWidget {
   _SportsCategoryState createState() => _SportsCategoryState();
 }
 
-class _SportsCategoryState
-    extends State<SportsCategory>
+class _SportsCategoryState extends State<SportsCategory>
     with AutomaticKeepAliveClientMixin, TickerProviderStateMixin {
   @override
   bool get wantKeepAlive => true;
@@ -389,7 +393,7 @@ class _SportsCategoryState
     _scrollController = ScrollController();
     _initializeAnimations();
     _initializeFocusNodes();
-    
+
     // 🚀 Use enhanced caching service
     fetchSportsCategoriesWithCache();
   }
@@ -432,7 +436,7 @@ class _SportsCategoryState
   //     String categoryId = categoriesList[index].id.toString();
   //     if (categoriesFocusNodes.containsKey(categoryId)) {
   //       final focusNode = categoriesFocusNodes[categoryId]!;
-        
+
   //       Scrollable.ensureVisible(
   //         focusNode.context!,
   //         duration: AnimationTiming.scroll,
@@ -440,7 +444,7 @@ class _SportsCategoryState
   //         alignment: 0.03,
   //         alignmentPolicy: ScrollPositionAlignmentPolicy.explicit,
   //       );
-        
+
   //       print('🎯 Scrollable.ensureVisible for index $index: ${categoriesList[index].title}');
   //     }
   //   } else if (index == maxHorizontalItems && _viewAllFocusNode != null) {
@@ -451,70 +455,70 @@ class _SportsCategoryState
   //       alignment: 0.2,
   //       alignmentPolicy: ScrollPositionAlignmentPolicy.explicit,
   //     );
-      
+
   //     print('🎯 Scrollable.ensureVisible for ViewAll button');
   //   }
   // }
 
-
   // ✅ PASTE THIS NEW CODE
-void _scrollToPosition(int index) {
-  if (!mounted || !_scrollController.hasClients) return;
+  void _scrollToPosition(int index) {
+    if (!mounted || !_scrollController.hasClients) return;
 
-  try {
-    // This assumes 'bannerwdt' is available, just like in your TV show file.
-    // It's likely defined in your main.dart file.
-    double bannerwidth = bannerwdt; 
+    try {
+      // This assumes 'bannerwdt' is available, just like in your TV show file.
+      // It's likely defined in your main.dart file.
+      double bannerwidth = bannerwdt;
 
-    if (index != -1) {
-      // Simple and direct scroll calculation
-      double scrollPosition = index * bannerwidth;
+      if (index != -1) {
+        // Simple and direct scroll calculation
+        double scrollPosition = index * bannerwidth;
 
-      _scrollController.animateTo(
-        scrollPosition,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeOut,
-      );
+        _scrollController.animateTo(
+          scrollPosition,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    } catch (e) {
+      // Silent fail is okay, but a print helps with debugging.
+      print('Error scrolling in sports category: $e');
     }
-  } catch (e) {
-    // Silent fail is okay, but a print helps with debugging.
-    print('Error scrolling in sports category: $e');
   }
-}
-
-
-
-
 
   void _setupCategoriesFocusProvider() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted && categoriesList.isNotEmpty) {
         try {
-          final focusProvider = Provider.of<FocusProvider>(context, listen: false);
+          final focusProvider =
+              Provider.of<FocusProvider>(context, listen: false);
 
           final firstCategoryId = categoriesList[0].id.toString();
 
           if (!categoriesFocusNodes.containsKey(firstCategoryId)) {
             categoriesFocusNodes[firstCategoryId] = FocusNode();
-            print('✅ Created focus node for first sports category: $firstCategoryId');
+            print(
+                '✅ Created focus node for first sports category: $firstCategoryId');
           }
 
           _firstCategoryFocusNode = categoriesFocusNodes[firstCategoryId];
 
           _firstCategoryFocusNode!.addListener(() {
-            if (_firstCategoryFocusNode!.hasFocus && !_hasReceivedFocusFromTVShows) {
+            if (_firstCategoryFocusNode!.hasFocus &&
+                !_hasReceivedFocusFromTVShows) {
               _hasReceivedFocusFromTVShows = true;
               setState(() {
                 focusedIndex = 0;
               });
               _scrollToPosition(0);
-              print('✅ Sports Categories received focus from TV shows and scrolled');
+              print(
+                  '✅ Sports Categories received focus from TV shows and scrolled');
             }
           });
 
-          focusProvider.setFirstSportsCategoryFocusNode(_firstCategoryFocusNode!);
-          print('✅ Sports Categories first focus node registered: ${categoriesList[0].title}');
-
+          focusProvider
+              .setFirstSportsCategoryFocusNode(_firstCategoryFocusNode!);
+          print(
+              '✅ Sports Categories first focus node registered: ${categoriesList[0].title}');
         } catch (e) {
           print('❌ Sports Categories focus provider setup failed: $e');
         }
@@ -532,7 +536,8 @@ void _scrollToPosition(int index) {
 
     try {
       // Use cached data first, then fresh data
-      final fetchedCategories = await SportsCategoriesService.getAllSportsCategories();
+      final fetchedCategories =
+          await SportsCategoriesService.getAllSportsCategories();
 
       if (fetchedCategories.isNotEmpty) {
         if (mounted) {
@@ -543,11 +548,11 @@ void _scrollToPosition(int index) {
 
           _createFocusNodesForItems();
           _setupCategoriesFocusProvider();
-          
+
           // Start animations after data loads
           _headerAnimationController.forward();
           _listAnimationController.forward();
-          
+
           // Debug cache info
           _debugCacheInfo();
         }
@@ -599,10 +604,10 @@ void _scrollToPosition(int index) {
 
           _createFocusNodesForItems();
           _setupCategoriesFocusProvider();
-          
+
           _headerAnimationController.forward();
           _listAnimationController.forward();
-          
+
           // Show success message
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -653,12 +658,14 @@ void _scrollToPosition(int index) {
               _hasReceivedFocusFromTVShows = true;
             });
             _scrollToPosition(i);
-            print('✅ Sports Category $i focused and scrolled: ${categoriesList[i].title}');
+            print(
+                '✅ Sports Category $i focused and scrolled: ${categoriesList[i].title}');
           }
         });
       }
     }
-    print('✅ Created ${categoriesFocusNodes.length} sports category focus nodes with auto-scroll');
+    print(
+        '✅ Created ${categoriesFocusNodes.length} sports category focus nodes with auto-scroll');
   }
 
   void _navigateToSportsCategoryDetails(SportsCategoryModel category) {
@@ -669,7 +676,7 @@ void _scrollToPosition(int index) {
       MaterialPageRoute(
         builder: (context) => SportsCategorySecondPage(
           // categoryId: category.id,
-          // categoryTitle: category.title, 
+          // categoryTitle: category.title,
           tvChannelId: category.id,
           channelName: category.title,
           channelLogo: category.thumbnail,
@@ -679,7 +686,8 @@ void _scrollToPosition(int index) {
       print('🔙 Returned from Sports Category Details');
       Future.delayed(Duration(milliseconds: 300), () {
         if (mounted) {
-          int currentIndex = categoriesList.indexWhere((cat) => cat.id == category.id);
+          int currentIndex =
+              categoriesList.indexWhere((cat) => cat.id == category.id);
           if (currentIndex != -1 && currentIndex < maxHorizontalItems) {
             String categoryId = category.id.toString();
             if (categoriesFocusNodes.containsKey(categoryId)) {
@@ -767,7 +775,8 @@ void _scrollToPosition(int index) {
   }
 
   // ✅ ENHANCED: Sports Category item with color provider integration
-  Widget _buildSportsCategoryItem(SportsCategoryModel category, int index, double screenWidth, double screenHeight) {
+  Widget _buildSportsCategoryItem(SportsCategoryModel category, int index,
+      double screenWidth, double screenHeight) {
     String categoryId = category.id.toString();
 
     categoriesFocusNodes.putIfAbsent(
@@ -786,7 +795,8 @@ void _scrollToPosition(int index) {
         if (hasFocus && mounted) {
           try {
             Color dominantColor = ProfessionalColors.gradientColors[
-                math.Random().nextInt(ProfessionalColors.gradientColors.length)];
+                math.Random()
+                    .nextInt(ProfessionalColors.gradientColors.length)];
 
             setState(() {
               _currentAccentColor = dominantColor;
@@ -809,7 +819,8 @@ void _scrollToPosition(int index) {
           if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
             if (index < categoriesList.length - 1 && index != 6) {
               String nextCategoryId = categoriesList[index + 1].id.toString();
-              FocusScope.of(context).requestFocus(categoriesFocusNodes[nextCategoryId]);
+              FocusScope.of(context)
+                  .requestFocus(categoriesFocusNodes[nextCategoryId]);
               return KeyEventResult.handled;
             } else if (index == 6 && categoriesList.length > 7) {
               FocusScope.of(context).requestFocus(_viewAllFocusNode);
@@ -818,10 +829,10 @@ void _scrollToPosition(int index) {
           } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
             if (index > 0) {
               String prevCategoryId = categoriesList[index - 1].id.toString();
-              FocusScope.of(context).requestFocus(categoriesFocusNodes[prevCategoryId]);
+              FocusScope.of(context)
+                  .requestFocus(categoriesFocusNodes[prevCategoryId]);
             }
-              return KeyEventResult.handled;
-
+            return KeyEventResult.handled;
           } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
             setState(() {
               focusedIndex = -1;
@@ -854,7 +865,7 @@ void _scrollToPosition(int index) {
               if (mounted) {
                 try {
                   Provider.of<FocusProvider>(context, listen: false)
-                              .requestFirstReligiousChannelFocus();
+                      .requestFirstReligiousChannelFocus();
                   // Navigate to next section
                   print('✅ Navigating down from sports categories');
                 } catch (e) {
@@ -863,15 +874,10 @@ void _scrollToPosition(int index) {
               }
             });
             return KeyEventResult.handled;
-          } 
-
-          
-          
-          
-          
-          else if (event.logicalKey == LogicalKeyboardKey.enter ||
-                       event.logicalKey == LogicalKeyboardKey.select) {
-            print('🏆 Enter pressed on ${category.title} - Opening Details Page...');
+          } else if (event.logicalKey == LogicalKeyboardKey.enter ||
+              event.logicalKey == LogicalKeyboardKey.select) {
+            print(
+                '🏆 Enter pressed on ${category.title} - Opening Details Page...');
             _navigateToSportsCategoryDetails(category);
             return KeyEventResult.handled;
           }
@@ -920,14 +926,17 @@ void _scrollToPosition(int index) {
                 onFocusChange: (hasFocus) {
                   if (hasFocus && mounted) {
                     Color viewAllColor = ProfessionalColors.gradientColors[
-                        math.Random().nextInt(ProfessionalColors.gradientColors.length)];
+                        math.Random()
+                            .nextInt(ProfessionalColors.gradientColors.length)];
 
                     setState(() {
                       _currentAccentColor = viewAllColor;
                     });
 
                     // ✅ ADD: Update color provider for ViewAll button
-                    context.read<ColorProvider>().updateColor(viewAllColor, true);
+                    context
+                        .read<ColorProvider>()
+                        .updateColor(viewAllColor, true);
                   } else if (mounted) {
                     // ✅ ADD: Reset color when ViewAll loses focus
                     context.read<ColorProvider>().resetColor();
@@ -937,10 +946,13 @@ void _scrollToPosition(int index) {
                   if (event is RawKeyDownEvent) {
                     if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
                       return KeyEventResult.handled;
-                    } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
-                      if (categoriesList.isNotEmpty && categoriesList.length > 6) {
+                    } else if (event.logicalKey ==
+                        LogicalKeyboardKey.arrowLeft) {
+                      if (categoriesList.isNotEmpty &&
+                          categoriesList.length > 6) {
                         String categoryId = categoriesList[6].id.toString();
-                        FocusScope.of(context).requestFocus(categoriesFocusNodes[categoryId]);
+                        FocusScope.of(context)
+                            .requestFocus(categoriesFocusNodes[categoryId]);
                         return KeyEventResult.handled;
                       }
                     } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
@@ -956,14 +968,16 @@ void _scrollToPosition(int index) {
                           try {
                             Provider.of<FocusProvider>(context, listen: false)
                                 .requestFirstTVShowsFocus();
-                            print('✅ Navigating back to TV shows from Sports Categories ViewAll');
+                            print(
+                                '✅ Navigating back to TV shows from Sports Categories ViewAll');
                           } catch (e) {
                             print('❌ Failed to navigate to TV shows: $e');
                           }
                         }
                       });
                       return KeyEventResult.handled;
-                    } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+                    } else if (event.logicalKey ==
+                        LogicalKeyboardKey.arrowDown) {
                       setState(() {
                         focusedIndex = -1;
                         _hasReceivedFocusFromTVShows = false;
@@ -977,7 +991,8 @@ void _scrollToPosition(int index) {
                             Provider.of<FocusProvider>(context, listen: false)
                                 .requestFirstReligiousChannelFocus();
                             // Navigate to next section after Sports Categories
-                            print('✅ Navigating down from Sports Categories ViewAll');
+                            print(
+                                '✅ Navigating down from Sports Categories ViewAll');
                           } catch (e) {
                             print('❌ Failed to navigate down: $e');
                           }
@@ -985,7 +1000,7 @@ void _scrollToPosition(int index) {
                       });
                       return KeyEventResult.handled;
                     } else if (event.logicalKey == LogicalKeyboardKey.enter ||
-                               event.logicalKey == LogicalKeyboardKey.select) {
+                        event.logicalKey == LogicalKeyboardKey.select) {
                       print('🏆 ViewAll button pressed - Opening Grid Page...');
                       _navigateToGridPage();
                       return KeyEventResult.handled;
@@ -1006,7 +1021,8 @@ void _scrollToPosition(int index) {
             }
 
             var category = categoriesList[index];
-            return _buildSportsCategoryItem(category, index, screenWidth, screenHeight);
+            return _buildSportsCategoryItem(
+                category, index, screenWidth, screenHeight);
           },
         ),
       ),
@@ -1247,10 +1263,12 @@ class ProfessionalSportsCategoryCard extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _ProfessionalSportsCategoryCardState createState() => _ProfessionalSportsCategoryCardState();
+  _ProfessionalSportsCategoryCardState createState() =>
+      _ProfessionalSportsCategoryCardState();
 }
 
-class _ProfessionalSportsCategoryCardState extends State<ProfessionalSportsCategoryCard>
+class _ProfessionalSportsCategoryCardState
+    extends State<ProfessionalSportsCategoryCard>
     with TickerProviderStateMixin {
   late AnimationController _scaleController;
   late AnimationController _glowController;
@@ -1415,19 +1433,22 @@ class _ProfessionalSportsCategoryCardState extends State<ProfessionalSportsCateg
   // 👈 THIS METHOD IS UPDATED TO SHOW IMAGES
   Widget _buildSportsCategoryImage(double screenWidth, double posterHeight) {
     // Check if the thumbnail URL is valid and not empty
-    if (widget.category.thumbnail != null && widget.category.thumbnail!.isNotEmpty) {
+    if (widget.category.thumbnail != null &&
+        widget.category.thumbnail!.isNotEmpty) {
       return Image.network(
         widget.category.thumbnail!,
         width: double.infinity,
         height: posterHeight,
         fit: BoxFit.cover,
         // Optional: Show a loading animation
-        loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+        loadingBuilder: (BuildContext context, Widget child,
+            ImageChunkEvent? loadingProgress) {
           if (loadingProgress == null) return child;
           return Center(
             child: CircularProgressIndicator(
               value: loadingProgress.expectedTotalBytes != null
-                  ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                  ? loadingProgress.cumulativeBytesLoaded /
+                      loadingProgress.expectedTotalBytes!
                   : null,
               strokeWidth: 2,
               color: _dominantColor,
@@ -1435,7 +1456,8 @@ class _ProfessionalSportsCategoryCardState extends State<ProfessionalSportsCateg
           );
         },
         // Optional: Show a placeholder if the image fails to load
-        errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace) {
+        errorBuilder:
+            (BuildContext context, Object exception, StackTrace? stackTrace) {
           print('❌ Error loading image: ${widget.category.thumbnail}');
           // Fallback to the original placeholder icon on error
           return _buildImagePlaceholder(posterHeight);
@@ -1446,7 +1468,6 @@ class _ProfessionalSportsCategoryCardState extends State<ProfessionalSportsCateg
       return _buildImagePlaceholder(posterHeight);
     }
   }
-
 
   Widget _buildImagePlaceholder(double height) {
     IconData sportIcon = _getSportIcon(widget.category.title);
@@ -1696,7 +1717,8 @@ class ProfessionalSportsCategoryViewAllButton extends StatefulWidget {
       _ProfessionalSportsCategoryViewAllButtonState();
 }
 
-class _ProfessionalSportsCategoryViewAllButtonState extends State<ProfessionalSportsCategoryViewAllButton>
+class _ProfessionalSportsCategoryViewAllButtonState
+    extends State<ProfessionalSportsCategoryViewAllButton>
     with TickerProviderStateMixin {
   late AnimationController _pulseController;
   late AnimationController _rotateController;
@@ -1857,7 +1879,8 @@ class _ProfessionalSportsCategoryViewAllButtonState extends State<ProfessionalSp
                 ),
                 const SizedBox(height: 6),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.25),
                     borderRadius: BorderRadius.circular(12),
@@ -1921,7 +1944,8 @@ class ProfessionalSportsCategoryLoadingIndicator extends StatefulWidget {
       _ProfessionalSportsCategoryLoadingIndicatorState();
 }
 
-class _ProfessionalSportsCategoryLoadingIndicatorState extends State<ProfessionalSportsCategoryLoadingIndicator>
+class _ProfessionalSportsCategoryLoadingIndicatorState
+    extends State<ProfessionalSportsCategoryLoadingIndicator>
     with TickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
@@ -2034,10 +2058,12 @@ class ProfessionalSportsCategoriesGridPage extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _ProfessionalSportsCategoriesGridPageState createState() => _ProfessionalSportsCategoriesGridPageState();
+  _ProfessionalSportsCategoriesGridPageState createState() =>
+      _ProfessionalSportsCategoriesGridPageState();
 }
 
-class _ProfessionalSportsCategoriesGridPageState extends State<ProfessionalSportsCategoriesGridPage>
+class _ProfessionalSportsCategoriesGridPageState
+    extends State<ProfessionalSportsCategoriesGridPage>
     with TickerProviderStateMixin {
   int gridFocusedIndex = 0;
   final int columnsCount = 5;
@@ -2155,7 +2181,9 @@ class _ProfessionalSportsCategoriesGridPageState extends State<ProfessionalSport
         break;
     }
 
-    if (newIndex != gridFocusedIndex && newIndex >= 0 && newIndex < totalItems) {
+    if (newIndex != gridFocusedIndex &&
+        newIndex >= 0 &&
+        newIndex < totalItems) {
       setState(() {
         gridFocusedIndex = newIndex;
       });
@@ -2163,7 +2191,8 @@ class _ProfessionalSportsCategoriesGridPageState extends State<ProfessionalSport
     }
   }
 
-  void _navigateToSportsCategoryDetails(SportsCategoryModel category, int index) {
+  void _navigateToSportsCategoryDetails(
+      SportsCategoryModel category, int index) {
     print('🏆 Grid: Navigating to Sports Category Details: ${category.title}');
 
     Navigator.push(
@@ -2381,7 +2410,7 @@ class _ProfessionalSportsCategoriesGridPageState extends State<ProfessionalSport
             _navigateGrid(event.logicalKey);
             return KeyEventResult.handled;
           } else if (event.logicalKey == LogicalKeyboardKey.enter ||
-                       event.logicalKey == LogicalKeyboardKey.select) {
+              event.logicalKey == LogicalKeyboardKey.select) {
             if (gridFocusedIndex < widget.categoriesList.length) {
               _navigateToSportsCategoryDetails(
                 widget.categoriesList[gridFocusedIndex],
@@ -2422,7 +2451,8 @@ class _ProfessionalSportsCategoriesGridPageState extends State<ProfessionalSport
                     child: ProfessionalGridSportsCategoryCard(
                       category: widget.categoriesList[index],
                       focusNode: gridFocusNodes[index]!,
-                      onTap: () => _navigateToSportsCategoryDetails(widget.categoriesList[index], index),
+                      onTap: () => _navigateToSportsCategoryDetails(
+                          widget.categoriesList[index], index),
                       index: index,
                       categoryTitle: widget.title,
                     ),
@@ -2468,10 +2498,12 @@ class ProfessionalGridSportsCategoryCard extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _ProfessionalGridSportsCategoryCardState createState() => _ProfessionalGridSportsCategoryCardState();
+  _ProfessionalGridSportsCategoryCardState createState() =>
+      _ProfessionalGridSportsCategoryCardState();
 }
 
-class _ProfessionalGridSportsCategoryCardState extends State<ProfessionalGridSportsCategoryCard>
+class _ProfessionalGridSportsCategoryCardState
+    extends State<ProfessionalGridSportsCategoryCard>
     with TickerProviderStateMixin {
   late AnimationController _hoverController;
   late AnimationController _glowController;
@@ -2634,19 +2666,22 @@ class _ProfessionalGridSportsCategoryCardState extends State<ProfessionalGridSpo
     );
 
     // Check if the thumbnail URL is valid
-    if (widget.category.thumbnail != null && widget.category.thumbnail!.isNotEmpty) {
+    if (widget.category.thumbnail != null &&
+        widget.category.thumbnail!.isNotEmpty) {
       return Image.network(
         widget.category.thumbnail!,
         width: double.infinity,
         height: double.infinity,
         fit: BoxFit.cover,
         // Optional: Show a loading animation
-        loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+        loadingBuilder: (BuildContext context, Widget child,
+            ImageChunkEvent? loadingProgress) {
           if (loadingProgress == null) return child;
           return Center(
             child: CircularProgressIndicator(
               value: loadingProgress.expectedTotalBytes != null
-                  ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                  ? loadingProgress.cumulativeBytesLoaded /
+                      loadingProgress.expectedTotalBytes!
                   : null,
               strokeWidth: 2,
               color: _dominantColor,
@@ -2654,7 +2689,8 @@ class _ProfessionalGridSportsCategoryCardState extends State<ProfessionalGridSpo
           );
         },
         // Optional: Show the placeholder if the image fails to load
-        errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace) {
+        errorBuilder:
+            (BuildContext context, Object exception, StackTrace? stackTrace) {
           print('❌ Error loading grid image: ${widget.category.thumbnail}');
           return placeholder;
         },
@@ -2664,7 +2700,6 @@ class _ProfessionalGridSportsCategoryCardState extends State<ProfessionalGridSpo
       return placeholder;
     }
   }
-
 
   IconData _getSportIcon(String categoryTitle) {
     switch (categoryTitle.toLowerCase()) {

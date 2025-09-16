@@ -1,9 +1,3 @@
-
-
-
-
-
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -100,7 +94,8 @@ class WebSeriesModel {
       banner: json['banner'],
       releaseDate: json['release_date'],
       genres: json['genres'],
-      seriesOrder: json['series_order'] ?? 9999, // ✅ FIX: series_order parse kiya gaya
+      seriesOrder:
+          json['series_order'] ?? 9999, // ✅ FIX: series_order parse kiya gaya
     );
   }
 }
@@ -179,7 +174,7 @@ class WebSeriesService {
     try {
       String authKey = prefs.getString(_cacheKeyAuthKey) ?? '';
       final response = await http.get(
-        Uri.parse('https://acomtv.coretechinfo.com/api/v2/getAllWebSeries'),
+        Uri.parse('https://dashboard.cpplayers.com/api/v2/getAllWebSeries'),
         headers: {
           'auth-key': authKey,
           'Content-Type': 'application/json',
@@ -198,7 +193,7 @@ class WebSeriesService {
 
         // ✅ FIX: API se fetch karne ke baad data ko series_order se sort kiya gaya
         webSeries.sort((a, b) => a.seriesOrder.compareTo(b.seriesOrder));
-        
+
         return webSeries;
       } else {
         throw Exception(
@@ -394,12 +389,12 @@ class _ProfessionalWebSeriesHorizontalListState
     }
   }
 
-  void _navigateToWebSeriesDetails(WebSeriesModel webSeries) async{
-                    try{
-          print('Updating user history for: ${webSeries.name}');
+  void _navigateToWebSeriesDetails(WebSeriesModel webSeries) async {
+    try {
+      print('Updating user history for: ${webSeries.name}');
       int? currentUserId = SessionManager.userId;
-    // final int? parsedContentType = episode.contentType;
-    final int? parsedId = webSeries.id;
+      // final int? parsedContentType = episode.contentType;
+      final int? parsedId = webSeries.id;
 
       await HistoryService.updateUserHistory(
         userId: currentUserId!, // 1. User ID
@@ -413,7 +408,6 @@ class _ProfessionalWebSeriesHorizontalListState
       print("History update failed, but proceeding to play. Error: $e");
     }
 
-
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -422,7 +416,8 @@ class _ProfessionalWebSeriesHorizontalListState
           banner: webSeries.banner ?? webSeries.poster ?? '',
           poster: webSeries.poster ?? webSeries.banner ?? '',
           logo: webSeries.poster ?? webSeries.banner ?? '',
-          name: webSeries.name, updatedAt: webSeries.updatedAt ,
+          name: webSeries.name,
+          updatedAt: webSeries.updatedAt,
         ),
       ),
     ).then((_) {
@@ -628,12 +623,10 @@ class _ProfessionalWebSeriesHorizontalListState
             FocusScope.of(context).requestFocus(
                 webseriesFocusNodes[webSeriesList[6].id.toString()]);
             return KeyEventResult.handled;
-          }
-                   else if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
-           // Right arrow dabane par focus ko yahin roke rakhein
-           return KeyEventResult.handled; 
-         } 
-           else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+          } else if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
+            // Right arrow dabane par focus ko yahin roke rakhein
+            return KeyEventResult.handled;
+          } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
             Provider.of<FocusProvider>(context, listen: false)
                 .requestFirstMoviesFocus();
             return KeyEventResult.handled;
@@ -694,13 +687,13 @@ class _ProfessionalWebSeriesHorizontalListState
             }
             return KeyEventResult.handled;
           } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
-                        context.read<ColorProvider>().resetColor();
+            context.read<ColorProvider>().resetColor();
             FocusScope.of(context).unfocus();
             Provider.of<FocusProvider>(context, listen: false)
                 .requestFirstMoviesFocus();
             return KeyEventResult.handled;
           } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
-                        context.read<ColorProvider>().resetColor();
+            context.read<ColorProvider>().resetColor();
             FocusScope.of(context).unfocus();
             Provider.of<FocusProvider>(context, listen: false)
                 .requestFirstTVShowsFocus();
@@ -919,7 +912,7 @@ class _ProfessionalWebSeriesHorizontalListState
 //                     child: RawKeyboardListener(
 //                       focusNode: _widgetFocusNode,
 //                       onKey: _handleKeyNavigation,
-//                       autofocus: false, 
+//                       autofocus: false,
 //                       child: _buildContent(),
 //                     ),
 //                   ),
@@ -1079,9 +1072,6 @@ class _ProfessionalWebSeriesHorizontalListState
 //   }
 // }
 
-
-
-
 // ... (Your existing code for imports, models, services, etc.)
 
 // =========================================================================
@@ -1119,7 +1109,8 @@ class _ProfessionalWebSeriesGridPageState
   @override
   void initState() {
     super.initState();
-    print("GridPage initState: webSeriesList length = ${widget.webSeriesList.length}");
+    print(
+        "GridPage initState: webSeriesList length = ${widget.webSeriesList.length}");
     _initializeAnimations();
     _startAnimations();
   }
@@ -1132,8 +1123,8 @@ class _ProfessionalWebSeriesGridPageState
       widget.webSeriesList.length,
       (index) => FocusNode(),
     );
-    print("GridPage didChangeDependencies: _itemFocusNodes length = ${_itemFocusNodes.length}");
-
+    print(
+        "GridPage didChangeDependencies: _itemFocusNodes length = ${_itemFocusNodes.length}");
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted && _itemFocusNodes.isNotEmpty) {
@@ -1179,8 +1170,8 @@ class _ProfessionalWebSeriesGridPageState
       }
     } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
       if (focusedIndex < totalItems - _itemsPerRow) {
-        setState(
-            () => focusedIndex = math.min(focusedIndex + _itemsPerRow, totalItems - 1));
+        setState(() => focusedIndex =
+            math.min(focusedIndex + _itemsPerRow, totalItems - 1));
       }
     } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
       if (focusedIndex % _itemsPerRow != 0) {
@@ -1224,16 +1215,17 @@ class _ProfessionalWebSeriesGridPageState
     );
   }
 
-  Future<void> _navigateToWebSeriesDetails(WebSeriesModel webSeries, int index) async {
+  Future<void> _navigateToWebSeriesDetails(
+      WebSeriesModel webSeries, int index) async {
     if (_isVideoLoading) return;
 
     _safeSetState(() => _isVideoLoading = true);
 
-                try{
-          print('Updating user history for: ${webSeries.name}');
+    try {
+      print('Updating user history for: ${webSeries.name}');
       int? currentUserId = SessionManager.userId;
-    // final int? parsedContentType = episode.contentType;
-    final int? parsedId = webSeries.id;
+      // final int? parsedContentType = episode.contentType;
+      final int? parsedId = webSeries.id;
 
       await HistoryService.updateUserHistory(
         userId: currentUserId!, // 1. User ID
@@ -1247,8 +1239,6 @@ class _ProfessionalWebSeriesGridPageState
       print("History update failed, but proceeding to play. Error: $e");
     }
 
-
-
     await Navigator.push(
       context,
       MaterialPageRoute(
@@ -1257,7 +1247,8 @@ class _ProfessionalWebSeriesGridPageState
           banner: webSeries.banner ?? webSeries.poster ?? '',
           poster: webSeries.poster ?? webSeries.banner ?? '',
           logo: webSeries.poster ?? webSeries.banner ?? '',
-          name: webSeries.name, updatedAt: webSeries.updatedAt,
+          name: webSeries.name,
+          updatedAt: webSeries.updatedAt,
         ),
       ),
     );
@@ -1426,7 +1417,8 @@ class _ProfessionalWebSeriesGridPageState
       return const Center(
         child: Text(
           'No Web Series Found',
-          style: TextStyle(color: ProfessionalColors.textSecondary, fontSize: 18),
+          style:
+              TextStyle(color: ProfessionalColors.textSecondary, fontSize: 18),
         ),
       );
     } else {
@@ -1435,7 +1427,8 @@ class _ProfessionalWebSeriesGridPageState
   }
 
   Widget _buildGridView() {
-    print("Building GridView with ${_itemFocusNodes.length} focus nodes and ${widget.webSeriesList.length} items.");
+    print(
+        "Building GridView with ${_itemFocusNodes.length} focus nodes and ${widget.webSeriesList.length} items.");
     return Padding(
       padding: const EdgeInsets.all(20),
       child: GridView.builder(
@@ -1451,7 +1444,8 @@ class _ProfessionalWebSeriesGridPageState
         itemBuilder: (context, index) {
           if (index >= _itemFocusNodes.length) {
             // Safety check
-            print("Error: Index $index is out of bounds for _itemFocusNodes with length ${_itemFocusNodes.length}");
+            print(
+                "Error: Index $index is out of bounds for _itemFocusNodes with length ${_itemFocusNodes.length}");
             return const SizedBox.shrink();
           }
           return Focus(
@@ -1470,7 +1464,6 @@ class _ProfessionalWebSeriesGridPageState
 }
 
 // ... (Rest of your code for supporting widgets)
-
 
 // =========================================================================
 // SUPPORTING WIDGETS (CARDS, BUTTONS, INDICATORS)
@@ -1589,9 +1582,11 @@ class _ProfessionalWebSeriesCardState extends State<ProfessionalWebSeriesCard>
   }
 
   Widget _buildWebSeriesImage(double posterHeight) {
-      final String uniqueImageUrl = "${widget.webSeries.banner}?v=${widget.webSeries.updatedAt}";
-  // ✅ Naya unique cache key banayein
-  final String uniqueCacheKey = "${widget.webSeries.id.toString()}_${widget.webSeries.updatedAt}";
+    final String uniqueImageUrl =
+        "${widget.webSeries.banner}?v=${widget.webSeries.updatedAt}";
+    // ✅ Naya unique cache key banayein
+    final String uniqueCacheKey =
+        "${widget.webSeries.id.toString()}_${widget.webSeries.updatedAt}";
     return SizedBox(
       width: double.infinity,
       height: posterHeight,
@@ -1734,9 +1729,10 @@ class OptimizedWebSeriesGridCard extends StatelessWidget {
 
   Widget _buildWebSeriesImage() {
     final imageUrl = webSeries.banner ?? webSeries.poster;
-          final String uniqueImageUrl = "${imageUrl}?v=${webSeries.updatedAt}";
-  // ✅ Naya unique cache key banayein
-  final String uniqueCacheKey = "${webSeries.id.toString()}_${webSeries.updatedAt}";
+    final String uniqueImageUrl = "${imageUrl}?v=${webSeries.updatedAt}";
+    // ✅ Naya unique cache key banayein
+    final String uniqueCacheKey =
+        "${webSeries.id.toString()}_${webSeries.updatedAt}";
     return imageUrl != null && imageUrl.isNotEmpty
         ? CachedNetworkImage(
             imageUrl: uniqueImageUrl,

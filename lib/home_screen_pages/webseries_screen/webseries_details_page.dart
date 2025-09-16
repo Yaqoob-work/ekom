@@ -577,7 +577,7 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
 
     final response = await https.get(
       Uri.parse(
-          'https://acomtv.coretechinfo.com/api/v2/getSeasons/${widget.id}'),
+          'https://dashboard.cpplayers.com/api/v2/getSeasons/${widget.id}'),
       headers: {
         'auth-key': authKey,
         'Accept': 'application/json',
@@ -709,7 +709,7 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
 
     final response = await https.get(
       Uri.parse(
-          'https://acomtv.coretechinfo.com/api/v2/getEpisodes/$seasonId/0'),
+          'https://dashboard.cpplayers.com/api/v2/getEpisodes/$seasonId/0'),
       headers: {
         'auth-key': authKey,
         'Accept': 'application/json',
@@ -750,13 +750,11 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
 
     setState(() => _isProcessing = true);
 
-
-
-        try{
-          print('Updating user history for: ${episode.name}');
+    try {
+      print('Updating user history for: ${episode.name}');
       int? currentUserId = SessionManager.userId;
-    final int? parsedContentType = int.tryParse(episode.contentType ?? '');
-    final int? parsedId = int.tryParse(episode.id ?? '');
+      final int? parsedContentType = int.tryParse(episode.contentType ?? '');
+      final int? parsedId = int.tryParse(episode.id ?? '');
 
       await HistoryService.updateUserHistory(
         userId: currentUserId!, // 1. User ID
@@ -776,9 +774,7 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
       if (mounted) {
         dynamic result;
 
-        if ( 
-          episode.source == 'youtube' || 
-        isYoutubeUrl(episode.url)) {
+        if (episode.source == 'youtube' || isYoutubeUrl(episode.url)) {
           print('isYoutube');
 
           final deviceInfo = context.read<DeviceInfoProvider>();
@@ -836,23 +832,23 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
           //     ),
           //   ),
           // );
-          result =  await Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => VideoScreen(
-              videoUrl: episode.url,
-              bannerImageUrl: episode.banner,
-              channelList: [],
-              // isLive: false,
-              // isSearch: true,
-              videoId: int.tryParse(episode.id),
-              name: episode.name,
-              liveStatus: false, 
-              updatedAt: episode.updatedAt,
-              source: 'isWebSeries',
+          result = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => VideoScreen(
+                videoUrl: episode.url,
+                bannerImageUrl: episode.banner,
+                channelList: [],
+                // isLive: false,
+                // isSearch: true,
+                videoId: int.tryParse(episode.id),
+                name: episode.name,
+                liveStatus: false,
+                updatedAt: episode.updatedAt,
+                source: 'isWebSeries',
+              ),
             ),
-          ),
-        );
+          );
         }
 
         // Refresh data after returning from video player
@@ -1079,7 +1075,7 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
     required double width,
     required double height,
     BoxFit fit = BoxFit.cover,
-    Widget? fallbackWidget, 
+    Widget? fallbackWidget,
     required String cachedKey,
   }) {
     return Container(
@@ -1343,65 +1339,68 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
   //   );
   // }
 
-
-
   Widget _buildTopNavigationBar() {
-          final String uniqueImageUrl = "${widget.logo}?v=${widget.updatedAt}";
-  // ✅ Naya unique cache key banayein
-  final String uniqueCacheKey = "${widget.id.toString()}_${widget.updatedAt}";
-  return Positioned(
-    top: 0,
-    left: 0,
-    right: 0,
-    child: Container(
-      height: 100,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            Colors.black.withOpacity(0.9),
-            Colors.black.withOpacity(0.7),
-            Colors.transparent,
-          ],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
+    final String uniqueImageUrl = "${widget.logo}?v=${widget.updatedAt}";
+    // ✅ Naya unique cache key banayein
+    final String uniqueCacheKey = "${widget.id.toString()}_${widget.updatedAt}";
+    return Positioned(
+      top: 0,
+      left: 0,
+      right: 0,
+      child: Container(
+        height: 100,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Colors.black.withOpacity(0.9),
+              Colors.black.withOpacity(0.7),
+              Colors.transparent,
+            ],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
         ),
-      ),
-      child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          child: Row(
-            children: [
-              const SizedBox(width: 16), // Spacing between image and title
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            child: Row(
+              children: [
+                const SizedBox(width: 16), // Spacing between image and title
 
+                CachedNetworkImage(
+                  imageUrl: uniqueImageUrl,
+                  width: 50,
+                  height: 50,
+                  fit: BoxFit.contain,
+                  cacheKey: uniqueCacheKey,
+                ),
+                // <<< MODIFICATION END
 
-              CachedNetworkImage(imageUrl: uniqueImageUrl,width: 50,height: 50,fit: BoxFit.contain,cacheKey: uniqueCacheKey ,),
-              // <<< MODIFICATION END
-
-              // Series Title
-              Expanded(
-                flex: 2,
-                child: Center(
-                  child: Text(
-                    widget.name.toUpperCase(),
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
-                      letterSpacing: 1.5,
+                // Series Title
+                Expanded(
+                  flex: 2,
+                  child: Center(
+                    child: Text(
+                      widget.name.toUpperCase(),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                        letterSpacing: 1.5,
+                      ),
+                      textAlign: TextAlign.center,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    textAlign: TextAlign.center,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
-    ),
-  );
-}
+    );
+  }
 
   Widget _buildMainContentWithLayout() {
     return Positioned(
@@ -1661,14 +1660,13 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
   }
 
   Widget _buildSeasonItem(int index) {
-
     final season = _filteredSeasons[index];
     final isSelected = index == _selectedSeasonIndex;
     final isFocused = _currentMode == NavigationMode.seasons && isSelected;
     final episodeCount = _filteredEpisodesMap[season.id]?.length ?? 0;
-      final String uniqueImageUrl = "${season.banner}?v=${season.updatedAt}";
-  // ✅ Naya unique cache key banayein
-  final String uniqueCacheKey = "${season.id.toString()}_${season.updatedAt}";
+    final String uniqueImageUrl = "${season.banner}?v=${season.updatedAt}";
+    // ✅ Naya unique cache key banayein
+    final String uniqueCacheKey = "${season.id.toString()}_${season.updatedAt}";
     return GestureDetector(
       onTap: () => _onSeasonTap(index),
       child: Focus(
@@ -1763,7 +1761,7 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
                         imageUrl: uniqueImageUrl,
                         width: 50,
                         height: 50,
-cachedKey:uniqueCacheKey,
+                        cachedKey: uniqueCacheKey,
                         fit: BoxFit.cover,
                         fallbackWidget:
                             Container(), // Transparent fallback to show background
@@ -1882,10 +1880,12 @@ cachedKey:uniqueCacheKey,
     final isSelected = index == _selectedEpisodeIndex;
     final isFocused = _currentMode == NavigationMode.episodes && isSelected;
     final isProcessing = _isProcessing && isSelected;
-  final String uniqueImageUrl = "${episode.banner}?v=${episode.updatedAt}";
-  final String uniquePosterImageUrl = "${episode.poster}?v=${episode.updatedAt}";
-  // ✅ Naya unique cache key banayein
-  final String uniqueCacheKey = "${episode.id.toString()}_${episode.updatedAt}";
+    final String uniqueImageUrl = "${episode.banner}?v=${episode.updatedAt}";
+    final String uniquePosterImageUrl =
+        "${episode.poster}?v=${episode.updatedAt}";
+    // ✅ Naya unique cache key banayein
+    final String uniqueCacheKey =
+        "${episode.id.toString()}_${episode.updatedAt}";
     return GestureDetector(
       onTap: () => _onEpisodeTap(index),
       child: Focus(

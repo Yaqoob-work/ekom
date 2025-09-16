@@ -1,7 +1,3 @@
-
-
-
-
 // import 'package:mobi_tv_entertainment/home_screen_pages/sub_live_screen/channels_category.dart';
 // import 'package:mobi_tv_entertainment/home_screen_pages/sub_live_screen/live_all.dart';
 // import 'package:mobi_tv_entertainment/home_screen_pages/sub_vod_screen/sub_vod.dart';
@@ -227,7 +223,6 @@
 //       _selectedPage = index;
 //     });
 
-
 //         // ✅ NEW: Update FocusProvider with current selected index
 //     try {
 //       context.read<FocusProvider>().setCurrentSelectedNavIndex(index);
@@ -386,11 +381,6 @@
 //   }
 // }
 
-
-
-
-
-
 // Zaroori imports add karein
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -440,7 +430,7 @@ class _SubLiveScreenState extends State<SubLiveScreen> {
       final prefs = await SharedPreferences.getInstance();
       String authKey = prefs.getString('auth_key') ?? '';
       final response = await https.get(
-        Uri.parse('https://acomtv.coretechinfo.com/api/v2/getLiveTvGenreList'),
+        Uri.parse('https://dashboard.cpplayers.com/api/v2/getLiveTvGenreList'),
         headers: {'auth-key': authKey},
       );
 
@@ -448,7 +438,7 @@ class _SubLiveScreenState extends State<SubLiveScreen> {
         final decodedData = json.decode(response.body);
         if (decodedData['status'] == true && decodedData['data'] is List) {
           final List<dynamic> genreData = decodedData['data'];
-          
+
           // Temporary lists to build before updating state
           List<String> tempNavItems = [];
           List<Widget> tempPages = [];
@@ -488,11 +478,11 @@ class _SubLiveScreenState extends State<SubLiveScreen> {
           _registerFocusNodes();
         }
       } else {
-        if(mounted) setState(() => _isLoading = false);
+        if (mounted) setState(() => _isLoading = false);
         print("API Error: ${response.statusCode}");
       }
     } catch (e) {
-      if(mounted) setState(() => _isLoading = false);
+      if (mounted) setState(() => _isLoading = false);
       print("Exception fetching genres: $e");
     }
   }
@@ -502,7 +492,8 @@ class _SubLiveScreenState extends State<SubLiveScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         try {
-          final focusProvider = Provider.of<FocusProvider>(context, listen: false);
+          final focusProvider =
+              Provider.of<FocusProvider>(context, listen: false);
           for (int i = 0; i < _focusNodes.length; i++) {
             focusProvider.registerGenericChannelFocus(
                 i, ScrollController(), _focusNodes[i]);
@@ -521,14 +512,15 @@ class _SubLiveScreenState extends State<SubLiveScreen> {
         '🎯 Selected: Index $index = ${index < _navItems.length ? _navItems[index] : "Out of range"}');
 
     // Handle 'More' button, its index is now dynamic (_pages.length)
-    if (index == _pages.length) { 
+    if (index == _pages.length) {
       print('📁 Navigating to More page');
       _navigateToMorePage();
       return;
     }
 
     if (index < 0 || index >= _pages.length) {
-      print('❌ Invalid page index: $index (Valid range: 0-${_pages.length - 1})');
+      print(
+          '❌ Invalid page index: $index (Valid range: 0-${_pages.length - 1})');
       return;
     }
 
@@ -551,8 +543,10 @@ class _SubLiveScreenState extends State<SubLiveScreen> {
     Future.delayed(const Duration(milliseconds: 150), () {
       if (mounted) {
         try {
-          Provider.of<FocusProvider>(context, listen: false).requestFirstChannelFocus(index);
-          print('🎯 Auto-focusing ${_navItems[index]} channels (index: $index)');
+          Provider.of<FocusProvider>(context, listen: false)
+              .requestFirstChannelFocus(index);
+          print(
+              '🎯 Auto-focusing ${_navItems[index]} channels (index: $index)');
         } catch (e) {
           print('❌ Auto-focus failed for page $index: $e');
         }
@@ -578,7 +572,7 @@ class _SubLiveScreenState extends State<SubLiveScreen> {
         ),
       );
     }
-    
+
     return SafeArea(
       child: Scaffold(
         body: Container(

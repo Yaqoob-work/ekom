@@ -46,7 +46,7 @@
 //     try{
 //     final response = await https.get(
 //       // Uri.parse('https://api.ekomflix.com/android/getFeaturedLiveTV'),
-//       Uri.parse('https://acomtv.coretechinfo.com/public/api/getFeaturedLiveTV'),
+//       Uri.parse('https://dashboard.cpplayers.com/public/api/getFeaturedLiveTV'),
 //       headers: {'auth-key': 'vLQTuPZUxktl5mVW'},
 //     );
 
@@ -140,7 +140,7 @@
 //   Future<void> _fetchAndCacheEntertainment() async {
 //     final response = await https.get(
 //       // Uri.parse('https://api.ekomflix.com/android/getFeaturedLiveTV'),
-//       Uri.parse('https://acomtv.coretechinfo.com/public/api/getFeaturedLiveTV'),
+//       Uri.parse('https://dashboard.cpplayers.com/public/api/getFeaturedLiveTV'),
 //       headers: {'auth-key': 'vLQTuPZUxktl5mVW'},
 
 //     );
@@ -262,7 +262,7 @@
 //     try{
 //     final response = await https.get(
 //       Uri.parse('https://api.ekomflix.com/android/getFeaturedLiveTV'),
-//       // Uri.parse('https://acomtv.coretechinfo.com/public/api/getFeaturedLiveTV'),
+//       // Uri.parse('https://dashboard.cpplayers.com/public/api/getFeaturedLiveTV'),
 //       headers: {'x-api-key': globalAuthKey},
 //     );
 
@@ -356,7 +356,7 @@
 //   Future<void> _fetchAndCacheEntertainment() async {
 //     final response = await https.get(
 //       Uri.parse('https://api.ekomflix.com/android/getFeaturedLiveTV'),
-//       // Uri.parse('https://acomtv.coretechinfo.com/public/api/getFeaturedLiveTV'),
+//       // Uri.parse('https://dashboard.cpplayers.com/public/api/getFeaturedLiveTV'),
 //       headers: {'x-api-key': globalAuthKey},
 //       // headers: {'auth-key': '${main.authKey}'},
 
@@ -658,7 +658,7 @@
 //     // Strategy 4: Try alternative API base URL with your auth key
 //     try {
 //       String altUrl = url.replaceAll('https://api.ekomflix.com',
-//           'https://acomtv.coretechinfo.com/public/api');
+//           'https://dashboard.cpplayers.com/public/api');
 //       final response4 = await https.get(
 //         Uri.parse(altUrl),
 //         headers: {'x-api-key': authKey},
@@ -675,7 +675,7 @@
 //     // Strategy 5: Try with auth-key on alternative URL
 //     try {
 //       String altUrl = url.replaceAll('https://api.ekomflix.com',
-//           'https://acomtv.coretechinfo.com/public/api');
+//           'https://dashboard.cpplayers.com/public/api');
 //       final response5 = await https.get(
 //         Uri.parse(altUrl),
 //         headers: {'auth-key': authKey},
@@ -976,7 +976,7 @@
 //       String authKey = await _getAuthKeyForFeaturedLiveTV();
 
 //       final response = await https.get(
-//         Uri.parse('https://acomtv.coretechinfo.com/public/api/getFeaturedLiveTV'),
+//         Uri.parse('https://dashboard.cpplayers.com/public/api/getFeaturedLiveTV'),
 //         headers: {
 //           'auth-key': authKey, // Using auth-key instead of x-api-key
 //           'Accept': 'application/json',
@@ -1121,7 +1121,7 @@
 //   // News API - uses original static key
 //   Future<List<NewsItemModel>> fetchNewsData() async {
 //     final response = await https.get(
-//       Uri.parse('https://acomtv.coretechinfo.com/public/api/getNewsData'),
+//       Uri.parse('https://dashboard.cpplayers.com/public/api/getNewsData'),
 //       headers: {'x-api-key': 'vLQTuPZUxktl5mVW'}, // Static key
 //     );
 
@@ -1191,7 +1191,7 @@
 //       String authKey = await _getAuthKeyForFeaturedLiveTV();
 
 //       final response = await https.get(
-//         Uri.parse('https://acomtv.coretechinfo.com/public/api/getFeaturedLiveTV'),
+//         Uri.parse('https://dashboard.cpplayers.com/public/api/getFeaturedLiveTV'),
 //         headers: {
 //           'auth-key': authKey, // Using auth-key with user's login auth key
 //           'Accept': 'application/json',
@@ -1335,9 +1335,6 @@
 //   }
 // }
 
-
-
-
 import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as https;
@@ -1349,7 +1346,7 @@ class ApiService {
   ApiService();
 
   // Base URL for images
-  static const String imageBaseUrl = 'https://acomtv.coretechinfo.com/public/';
+  static const String imageBaseUrl = 'https://dashboard.cpplayers.com/public/';
 
   Future<void> updateCacheOnPageEnter() async {
     await _updateCacheInBackground();
@@ -1369,7 +1366,7 @@ class ApiService {
   Stream<bool> get updateStream => _updateController.stream;
 
   // Future<String> _getAuthKeyForFeaturedLiveTV() async {
-    // try {
+  // try {
   //     await AuthManager.initialize();
 
   //     // if (AuthManager.hasValidAuthKey) {
@@ -1397,14 +1394,14 @@ class ApiService {
   Future<List<NewsItemModel>> fetchMusicData() async {
     try {
       // String authKey = await _getAuthKeyForFeaturedLiveTV();
-            SharedPreferences prefs = await SharedPreferences.getInstance();
+      SharedPreferences prefs = await SharedPreferences.getInstance();
       String? authKey = prefs.getString('auth_key');
 
       final response = await https.get(
         Uri.parse(
-            'https://acomtv.coretechinfo.com/public/api/getFeaturedLiveTV'),
+            'https://dashboard.cpplayers.com/public/api/getFeaturedLiveTV'),
         headers: {
-          'auth-key': authKey??'',
+          'auth-key': authKey ?? '',
           'Accept': 'application/json',
         },
       );
@@ -1559,7 +1556,7 @@ class ApiService {
 
   Future<List<NewsItemModel>> fetchNewsData() async {
     final response = await https.get(
-      Uri.parse('https://acomtv.coretechinfo.com/public/api/getNewsData'),
+      Uri.parse('https://dashboard.cpplayers.com/public/api/getNewsData'),
       headers: {'x-api-key': 'vLQTuPZUxktl5mVW'},
     );
 
@@ -1626,14 +1623,14 @@ class ApiService {
   Future<void> _fetchAndCacheEntertainment() async {
     try {
       // String authKey = await _getAuthKeyForFeaturedLiveTV();
-            SharedPreferences prefs = await SharedPreferences.getInstance();
+      SharedPreferences prefs = await SharedPreferences.getInstance();
       String? authKey = prefs.getString('auth_key');
 
       final response = await https.get(
         Uri.parse(
-            'https://acomtv.coretechinfo.com/public/api/getFeaturedLiveTV'),
+            'https://dashboard.cpplayers.com/public/api/getFeaturedLiveTV'),
         headers: {
-          'auth-key': authKey??'',
+          'auth-key': authKey ?? '',
           'Accept': 'application/json',
         },
       );

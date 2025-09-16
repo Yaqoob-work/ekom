@@ -8,6 +8,8 @@ import 'package:mobi_tv_entertainment/home_screen_pages/sub_vod_screen/sub_vod.d
 import 'dart:math' as math;
 import 'package:mobi_tv_entertainment/home_screen_pages/tv_show/tv_show_second_page.dart';
 import 'package:mobi_tv_entertainment/main.dart';
+import 'package:mobi_tv_entertainment/models/horizontal_vod_cache.dart';
+import 'package:mobi_tv_entertainment/models/horizontal_vod_model.dart';
 import 'package:mobi_tv_entertainment/provider/color_provider.dart';
 import 'package:mobi_tv_entertainment/provider/focus_provider.dart';
 import 'package:mobi_tv_entertainment/services/history_service.dart';
@@ -15,6 +17,133 @@ import 'package:provider/provider.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:ui';
+
+import 'package:hive_flutter/hive_flutter.dart';
+
+import 'dart:convert';
+import 'package:http/http.dart' as https;
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart'; // केवल auth_key के लिए
+
+class HorizontalVodService {
+  static const String _boxName = 'vodCache';
+  static const String _cacheKey = 'all_horizontal_vods';
+  static const Duration _cacheDuration = Duration(hours: 1);
+
+  /// VOD डेटा प्राप्त करने का मुख्य तरीका, अब Hive का उपयोग करता है
+  static Future<List<HorizontalVodModel>> getAllHorizontalVod(
+      {bool forceRefresh = false}) async {
+    final box = Hive.box(_boxName);
+    final HorizontalVodCache? cachedData = box.get(_cacheKey);
+
+    // यदि forceRefresh नहीं है और कैश वैध है, तो कैश से डेटा लौटाएँ
+    if (!forceRefresh &&
+        cachedData != null &&
+        _isCacheValid(cachedData.timestamp)) {
+      print('📦 Loading Vod from Hive cache...');
+      _loadFreshDataInBackground(); // बैकग्राउंड में डेटा रीफ़्रेश करें
+      return _filterAndSort(cachedData.vods);
+    }
+
+    // अन्यथा, नेटवर्क से नया डेटा फ़ेच करें
+    print('🌐 Loading fresh Vod from API...');
+    return await _fetchAndCacheFreshData(box);
+  }
+
+  /// जाँचता है कि कैश की समय-सीमा समाप्त तो नहीं हुई है
+  static bool _isCacheValid(DateTime timestamp) {
+    final now = DateTime.now();
+    return now.difference(timestamp) < _cacheDuration;
+  }
+
+  /// API से नया डेटा फ़ेच करता है और उसे Hive में स्टोर करता है
+  static Future<List<HorizontalVodModel>> _fetchAndCacheFreshData(
+      Box box) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      String authKey = prefs.getString('auth_key') ?? '';
+      if (authKey.isEmpty) throw Exception('Auth key not found');
+
+      final response = await https.get(
+        Uri.parse('https://dashboard.cpplayers.com/api/v2/getNetworks'),
+        headers: {
+          'auth-key': authKey,
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'domain': 'coretechinfo.com'
+        },
+      ).timeout(const Duration(seconds: 20));
+
+      if (response.statusCode == 200) {
+        final List<dynamic> jsonData = json.decode(response.body);
+
+        // JSON को सीधे Dart ऑब्जेक्ट्स की लिस्ट में बदलें
+        final allVods = jsonData
+            .map((item) =>
+                HorizontalVodModel.fromJson(item as Map<String, dynamic>))
+            .toList();
+
+        // Hive में स्टोर करने के लिए एक नया कैश ऑब्जेक्ट बनाएँ
+        final cacheEntry = HorizontalVodCache(
+          vods: allVods,
+          timestamp: DateTime.now(),
+        );
+
+        // पूरे ऑब्जेक्ट को Hive में एक ही बार में सेव करें
+        await box.put(_cacheKey, cacheEntry);
+        print('💾 Successfully cached ${allVods.length} Vod items in Hive.');
+
+        // एक्टिव आइटम को फ़िल्टर और सॉर्ट करके लौटाएँ
+        return _filterAndSort(allVods);
+      } else {
+        throw Exception('API Error: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('❌ Error fetching fresh Vod: $e');
+      // यदि फ़ेचिंग विफल हो जाए, तो अंतिम उपाय के रूप में कैश लौटाने का प्रयास करें
+      final HorizontalVodCache? cachedData = box.get(_cacheKey);
+      if (cachedData != null) {
+        print('🔄 Returning stale cache as fallback due to network error.');
+        return _filterAndSort(cachedData.vods);
+      }
+      rethrow; // यदि कोई कैश नहीं है, तो एरर को आगे भेजें
+    }
+  }
+
+  /// बैकग्राउंड में डेटा को चुपचाप रीफ़्रेश करता है
+  static void _loadFreshDataInBackground() {
+    Future.delayed(const Duration(seconds: 5), () async {
+      try {
+        print('🔄 Performing background refresh for Vod data...');
+        final box = Hive.box(_boxName);
+        await _fetchAndCacheFreshData(box);
+        print('✅ Vod background refresh completed.');
+      } catch (e) {
+        print('⚠️ Vod background refresh failed: $e');
+      }
+    });
+  }
+
+  /// सूची को फ़िल्टर (केवल सक्रिय आइटम) और सॉर्ट करता है
+  static List<HorizontalVodModel> _filterAndSort(
+      List<HorizontalVodModel> vods) {
+    final activeAndSorted = vods.where((show) => show.status == 1).toList()
+      ..sort((a, b) => a.networks_order.compareTo(b.networks_order));
+    return activeAndSorted;
+  }
+
+  /// कैश को साफ़ करने के लिए
+  static Future<void> clearCache() async {
+    final box = Hive.box(_boxName);
+    await box.clear();
+    print('🗑️ Vod Hive cache cleared.');
+  }
+
+  /// डेटा को ज़बरदस्ती रीफ़्रेश करने के लिए
+  static Future<List<HorizontalVodModel>> forceRefresh() async {
+    return await getAllHorizontalVod(forceRefresh: true);
+  }
+}
 
 // ✅ Professional Color Palette (same as WebSeries)
 class ProfessionalColors {
@@ -90,48 +219,48 @@ class AnimationTiming {
 //   }
 // }
 
-// ✅ TV Show Model (same structure)
-class HorizontalVodModel {
-  final int id;
-  final String name;
-  final String? description;
-  final String? logo;
-  final String? releaseDate;
-  final String? genres;
-  final String? rating;
-  final String? language;
-  final int status;
-  final int networks_order; // ✅ ADD THIS FIELD
+// // ✅ TV Show Model (same structure)
+// class HorizontalVodModel {
+//   final int id;
+//   final String name;
+//   final String? description;
+//   final String? logo;
+//   final String? releaseDate;
+//   final String? genres;
+//   final String? rating;
+//   final String? language;
+//   final int status;
+//   final int networks_order; // ✅ ADD THIS FIELD
 
-  HorizontalVodModel({
-    required this.id,
-    required this.name,
-    this.description,
-    this.logo,
-    this.releaseDate,
-    this.genres,
-    this.rating,
-    this.language,
-    required this.status,
-    required this.networks_order, // ✅ ADD THIS TO CONSTRUCTOR
-  });
+//   HorizontalVodModel({
+//     required this.id,
+//     required this.name,
+//     this.description,
+//     this.logo,
+//     this.releaseDate,
+//     this.genres,
+//     this.rating,
+//     this.language,
+//     required this.status,
+//     required this.networks_order, // ✅ ADD THIS TO CONSTRUCTOR
+//   });
 
-  factory HorizontalVodModel.fromJson(Map<String, dynamic> json) {
-    return HorizontalVodModel(
-      id: json['id'] ?? 0,
-      name: json['name'] ?? '',
-      description: json['description'],
-      logo: json['logo'],
-      releaseDate: json['release_date'],
-      genres: json['genres'],
-      rating: json['rating'],
-      language: json['language'],
-      status: json['status'] ?? 0,
-      networks_order: json['networks_order'] ??
-          999, // ✅ PARSE THE FIELD (use a high default)
-    );
-  }
-}
+//   factory HorizontalVodModel.fromJson(Map<String, dynamic> json) {
+//     return HorizontalVodModel(
+//       id: json['id'] ?? 0,
+//       name: json['name'] ?? '',
+//       description: json['description'],
+//       logo: json['logo'],
+//       releaseDate: json['release_date'],
+//       genres: json['genres'],
+//       rating: json['rating'],
+//       language: json['language'],
+//       status: json['status'] ?? 0,
+//       networks_order: json['networks_order'] ??
+//           999, // ✅ PARSE THE FIELD (use a high default)
+//     );
+//   }
+// }
 
 // Updated displayImage function with SVG support and better error handling
 Widget displayImage(
@@ -141,40 +270,40 @@ Widget displayImage(
   BoxFit fit = BoxFit.fill,
 }) {
   if (imageUrl.isEmpty || imageUrl == 'localImage') {
-    return   Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  ProfessionalColors.accentGreen,
-                  ProfessionalColors.accentBlue,
-                ],
-              ),
-            ),
-            child: const Icon(
-              Icons.broken_image,
-              color: Colors.white,
-              size: 24,
-            ),
-          );
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            ProfessionalColors.accentGreen,
+            ProfessionalColors.accentBlue,
+          ],
+        ),
+      ),
+      child: const Icon(
+        Icons.broken_image,
+        color: Colors.white,
+        size: 24,
+      ),
+    );
   }
 
   // Handle localhost URLs - replace with fallback
   if (imageUrl.contains('localhost')) {
-    return   Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  ProfessionalColors.accentGreen,
-                  ProfessionalColors.accentBlue,
-                ],
-              ),
-            ),
-            child: const Icon(
-              Icons.broken_image,
-              color: Colors.white,
-              size: 24,
-            ),
-          );
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            ProfessionalColors.accentGreen,
+            ProfessionalColors.accentBlue,
+          ],
+        ),
+      ),
+      child: const Icon(
+        Icons.broken_image,
+        color: Colors.white,
+        size: 24,
+      ),
+    );
   }
 
   if (imageUrl.startsWith('data:image')) {
@@ -215,7 +344,8 @@ Widget displayImage(
         headers: const {
           'User-Agent': 'Flutter App',
         },
-        loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+        loadingBuilder: (BuildContext context, Widget child,
+            ImageChunkEvent? loadingProgress) {
           // If the image is fully loaded, display it
           if (loadingProgress == null) {
             return child;
@@ -223,7 +353,8 @@ Widget displayImage(
           // Otherwise, show your loading widget
           return _buildLoadingWidget(width, height);
         },
-        errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
+        errorBuilder:
+            (BuildContext context, Object error, StackTrace? stackTrace) {
           // If an error occurs, display your error widget
           return _buildErrorWidget(width, height);
         },
@@ -268,21 +399,21 @@ Widget _buildLoadingWidget(double? width, double? height) {
 
 // Helper widget for error state
 Widget _buildErrorWidget(double? width, double? height) {
-  return   Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  ProfessionalColors.accentGreen,
-                  ProfessionalColors.accentBlue,
-                ],
-              ),
-            ),
-            child: const Icon(
-              Icons.broken_image,
-              color: Colors.white,
-              size: 24,
-            ),
-          );
+  return Container(
+    decoration: const BoxDecoration(
+      gradient: LinearGradient(
+        colors: [
+          ProfessionalColors.accentGreen,
+          ProfessionalColors.accentBlue,
+        ],
+      ),
+    ),
+    child: const Icon(
+      Icons.broken_image,
+      color: Colors.white,
+      size: 24,
+    ),
+  );
 }
 
 // Helper function to decode base64 images
@@ -290,332 +421,332 @@ Uint8List _getImageFromBase64String(String base64String) {
   return base64Decode(base64String.split(',').last);
 }
 
-// 🚀 Enhanced Vod Service with Caching (WebSeries Style)
-class HorizontalVodService {
-  // Cache keys
-  static const String _cacheKeyHorizontalVod = 'cached_horizontal_vod';
-  static const String _cacheKeyTimestamp = 'cached_horizontal_vod_timestamp';
-  static const String _cacheKeyAuthKey = 'auth_key';
+// // 🚀 Enhanced Vod Service with Caching (WebSeries Style)
+// class HorizontalVodService {
+//   // Cache keys
+//   static const String _cacheKeyHorizontalVod = 'cached_horizontal_vod';
+//   static const String _cacheKeyTimestamp = 'cached_horizontal_vod_timestamp';
+//   static const String _cacheKeyAuthKey = 'auth_key';
 
-  // Cache duration (in milliseconds) - 1 hour
-  static const int _cacheDurationMs = 60 * 60 * 1000; // 1 hour
+//   // Cache duration (in milliseconds) - 1 hour
+//   static const int _cacheDurationMs = 60 * 60 * 1000; // 1 hour
 
-  /// Main method to get all Vod with caching
-  static Future<List<HorizontalVodModel>> getAllHorizontalVod(
-      {bool forceRefresh = false}) async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
+//   /// Main method to get all Vod with caching
+//   static Future<List<HorizontalVodModel>> getAllHorizontalVod(
+//       {bool forceRefresh = false}) async {
+//     try {
+//       final prefs = await SharedPreferences.getInstance();
 
-      // Check if we should use cache
-      if (!forceRefresh && await _shouldUseCache(prefs)) {
-        print('📦 Loading Vod from cache...');
-        final cachedHorizontalVod = await _getCachedHorizontalVod(prefs);
-        if (cachedHorizontalVod.isNotEmpty) {
-          print(
-              '✅ Successfully loaded ${cachedHorizontalVod.length} Vod from cache');
+//       // Check if we should use cache
+//       if (!forceRefresh && await _shouldUseCache(prefs)) {
+//         print('📦 Loading Vod from cache...');
+//         final cachedHorizontalVod = await _getCachedHorizontalVod(prefs);
+//         if (cachedHorizontalVod.isNotEmpty) {
+//           print(
+//               '✅ Successfully loaded ${cachedHorizontalVod.length} Vod from cache');
 
-          // Load fresh data in background (without waiting)
-          _loadFreshDataInBackground();
+//           // Load fresh data in background (without waiting)
+//           _loadFreshDataInBackground();
 
-          return cachedHorizontalVod;
-        }
-      }
+//           return cachedHorizontalVod;
+//         }
+//       }
 
-      // Load fresh data if no cache or force refresh
-      print('🌐 Loading fresh Vod from API...');
-      return await _fetchFreshHorizontalVod(prefs);
-    } catch (e) {
-      print('❌ Error in getAllHorizontalVod: $e');
+//       // Load fresh data if no cache or force refresh
+//       print('🌐 Loading fresh Vod from API...');
+//       return await _fetchFreshHorizontalVod(prefs);
+//     } catch (e) {
+//       print('❌ Error in getAllHorizontalVod: $e');
 
-      // Try to return cached data as fallback
-      try {
-        final prefs = await SharedPreferences.getInstance();
-        final cachedHorizontalVod = await _getCachedHorizontalVod(prefs);
-        if (cachedHorizontalVod.isNotEmpty) {
-          print('🔄 Returning cached data as fallback');
-          return cachedHorizontalVod;
-        }
-      } catch (cacheError) {
-        print('❌ Cache fallback also failed: $cacheError');
-      }
+//       // Try to return cached data as fallback
+//       try {
+//         final prefs = await SharedPreferences.getInstance();
+//         final cachedHorizontalVod = await _getCachedHorizontalVod(prefs);
+//         if (cachedHorizontalVod.isNotEmpty) {
+//           print('🔄 Returning cached data as fallback');
+//           return cachedHorizontalVod;
+//         }
+//       } catch (cacheError) {
+//         print('❌ Cache fallback also failed: $cacheError');
+//       }
 
-      throw Exception('Failed to load Vod: $e');
-    }
-  }
+//       throw Exception('Failed to load Vod: $e');
+//     }
+//   }
 
-  /// Check if cached data is still valid
-  static Future<bool> _shouldUseCache(SharedPreferences prefs) async {
-    try {
-      final timestampStr = prefs.getString(_cacheKeyTimestamp);
-      if (timestampStr == null) return false;
+//   /// Check if cached data is still valid
+//   static Future<bool> _shouldUseCache(SharedPreferences prefs) async {
+//     try {
+//       final timestampStr = prefs.getString(_cacheKeyTimestamp);
+//       if (timestampStr == null) return false;
 
-      final cachedTimestamp = int.tryParse(timestampStr);
-      if (cachedTimestamp == null) return false;
+//       final cachedTimestamp = int.tryParse(timestampStr);
+//       if (cachedTimestamp == null) return false;
 
-      final currentTimestamp = DateTime.now().millisecondsSinceEpoch;
-      final cacheAge = currentTimestamp - cachedTimestamp;
+//       final currentTimestamp = DateTime.now().millisecondsSinceEpoch;
+//       final cacheAge = currentTimestamp - cachedTimestamp;
 
-      final isValid = cacheAge < _cacheDurationMs;
+//       final isValid = cacheAge < _cacheDurationMs;
 
-      if (isValid) {
-        final ageMinutes = (cacheAge / (1000 * 60)).round();
-        print('📦 Vod Cache is valid (${ageMinutes} minutes old)');
-      } else {
-        final ageMinutes = (cacheAge / (1000 * 60)).round();
-        print('⏰ Vod Cache expired (${ageMinutes} minutes old)');
-      }
+//       if (isValid) {
+//         final ageMinutes = (cacheAge / (1000 * 60)).round();
+//         print('📦 Vod Cache is valid (${ageMinutes} minutes old)');
+//       } else {
+//         final ageMinutes = (cacheAge / (1000 * 60)).round();
+//         print('⏰ Vod Cache expired (${ageMinutes} minutes old)');
+//       }
 
-      return isValid;
-    } catch (e) {
-      print('❌ Error checking Vod cache validity: $e');
-      return false;
-    }
-  }
+//       return isValid;
+//     } catch (e) {
+//       print('❌ Error checking Vod cache validity: $e');
+//       return false;
+//     }
+//   }
 
-  // /// Get Vod from cache
-  // static Future<List<HorizontalVodModel>> _getCachedHorizontalVod(SharedPreferences prefs) async {
-  //   try {
-  //     final cachedData = prefs.getString(_cacheKeyHorizontalVod);
-  //     if (cachedData == null || cachedData.isEmpty) {
-  //       print('📦 No cached Vod data found');
-  //       return [];
-  //     }
+//   // /// Get Vod from cache
+//   // static Future<List<HorizontalVodModel>> _getCachedHorizontalVod(SharedPreferences prefs) async {
+//   //   try {
+//   //     final cachedData = prefs.getString(_cacheKeyHorizontalVod);
+//   //     if (cachedData == null || cachedData.isEmpty) {
+//   //       print('📦 No cached Vod data found');
+//   //       return [];
+//   //     }
 
-  //     final List<dynamic> jsonData = json.decode(cachedData);
-  //     final HorizontalVod = jsonData
-  //         .map((json) => HorizontalVodModel.fromJson(json as Map<String, dynamic>))
-  //         .where((show) => show.status == 1) // Filter active shows
-  //         .toList();
+//   //     final List<dynamic> jsonData = json.decode(cachedData);
+//   //     final HorizontalVod = jsonData
+//   //         .map((json) => HorizontalVodModel.fromJson(json as Map<String, dynamic>))
+//   //         .where((show) => show.status == 1) // Filter active shows
+//   //         .toList();
 
-  //     print('📦 Successfully loaded ${HorizontalVod.length} Vod from cache');
-  //     return HorizontalVod;
-  //   } catch (e) {
-  //     print('❌ Error loading cached Vod: $e');
-  //     return [];
-  //   }
-  // }
+//   //     print('📦 Successfully loaded ${HorizontalVod.length} Vod from cache');
+//   //     return HorizontalVod;
+//   //   } catch (e) {
+//   //     print('❌ Error loading cached Vod: $e');
+//   //     return [];
+//   //   }
+//   // }
 
-  /// Get Vod from cache
-  static Future<List<HorizontalVodModel>> _getCachedHorizontalVod(
-      SharedPreferences prefs) async {
-    try {
-      final cachedData = prefs.getString(_cacheKeyHorizontalVod);
-      if (cachedData == null || cachedData.isEmpty) {
-        print('📦 No cached Vod data found');
-        return [];
-      }
+//   /// Get Vod from cache
+//   static Future<List<HorizontalVodModel>> _getCachedHorizontalVod(
+//       SharedPreferences prefs) async {
+//     try {
+//       final cachedData = prefs.getString(_cacheKeyHorizontalVod);
+//       if (cachedData == null || cachedData.isEmpty) {
+//         print('📦 No cached Vod data found');
+//         return [];
+//       }
 
-      final List<dynamic> jsonData = json.decode(cachedData);
+//       final List<dynamic> jsonData = json.decode(cachedData);
 
-      // Filter and sort the cached data
-      final HorizontalVod = jsonData
-          .map((json) =>
-              HorizontalVodModel.fromJson(json as Map<String, dynamic>))
-          .where((show) => show.status == 1) // First, filter by status
-          .toList()
-        ..sort((a, b) => a.networks_order
-            .compareTo(b.networks_order)); // ✅ THEN, SORT THE LIST
+//       // Filter and sort the cached data
+//       final HorizontalVod = jsonData
+//           .map((json) =>
+//               HorizontalVodModel.fromJson(json as Map<String, dynamic>))
+//           .where((show) => show.status == 1) // First, filter by status
+//           .toList()
+//         ..sort((a, b) => a.networks_order
+//             .compareTo(b.networks_order)); // ✅ THEN, SORT THE LIST
 
-      print(
-          '📦 Successfully loaded and sorted ${HorizontalVod.length} Vod from cache');
-      return HorizontalVod;
-    } catch (e) {
-      print('❌ Error loading cached Vod: $e');
-      return [];
-    }
-  }
+//       print(
+//           '📦 Successfully loaded and sorted ${HorizontalVod.length} Vod from cache');
+//       return HorizontalVod;
+//     } catch (e) {
+//       print('❌ Error loading cached Vod: $e');
+//       return [];
+//     }
+//   }
 
-  // /// Fetch fresh Vod from API and cache them
-  // static Future<List<HorizontalVodModel>> _fetchFreshHorizontalVod(SharedPreferences prefs) async {
-  //   try {
-  //     String authKey = prefs.getString(_cacheKeyAuthKey) ?? '';
+//   // /// Fetch fresh Vod from API and cache them
+//   // static Future<List<HorizontalVodModel>> _fetchFreshHorizontalVod(SharedPreferences prefs) async {
+//   //   try {
+//   //     String authKey = prefs.getString(_cacheKeyAuthKey) ?? '';
 
-  //     final response = await http.get(
-  //       // Uri.parse('https://acomtv.coretechinfo.com/public/api/getNetworks'),
-  //       Uri.parse('https://acomtv.coretechinfo.com/api/v2/getNetworks'),
-  //       headers: {
-  //         'auth-key': authKey,
-  //         'Content-Type': 'application/json',
-  //         'Accept': 'application/json',
-  //         'domain':'coretechinfo.com'
-  //       },
-  //     ).timeout(
-  //       const Duration(seconds: 30),
-  //       onTimeout: () {
-  //         throw Exception('Request timeout');
-  //       },
-  //     );
+//   //     final response = await http.get(
+//   //       // Uri.parse('https://dashboard.cpplayers.com/public/api/getNetworks'),
+//   //       Uri.parse('https://dashboard.cpplayers.com/api/v2/getNetworks'),
+//   //       headers: {
+//   //         'auth-key': authKey,
+//   //         'Content-Type': 'application/json',
+//   //         'Accept': 'application/json',
+//   //         'domain':'coretechinfo.com'
+//   //       },
+//   //     ).timeout(
+//   //       const Duration(seconds: 30),
+//   //       onTimeout: () {
+//   //         throw Exception('Request timeout');
+//   //       },
+//   //     );
 
-  //     if (response.statusCode == 200) {
-  //       final List<dynamic> jsonData = json.decode(response.body);
+//   //     if (response.statusCode == 200) {
+//   //       final List<dynamic> jsonData = json.decode(response.body);
 
-  //       final allHorizontalVod = jsonData
-  //           .map((json) => HorizontalVodModel.fromJson(json as Map<String, dynamic>))
-  //           .toList();
+//   //       final allHorizontalVod = jsonData
+//   //           .map((json) => HorizontalVodModel.fromJson(json as Map<String, dynamic>))
+//   //           .toList();
 
-  //       // Filter only active shows (status = 1)
-  //       final activeHorizontalVod = allHorizontalVod.where((show) => show.status == 1).toList();
+//   //       // Filter only active shows (status = 1)
+//   //       final activeHorizontalVod = allHorizontalVod.where((show) => show.status == 1).toList();
 
-  //       // Cache the fresh data (save all shows, but return only active ones)
-  //       await _cacheHorizontalVod(prefs, jsonData);
+//   //       // Cache the fresh data (save all shows, but return only active ones)
+//   //       await _cacheHorizontalVod(prefs, jsonData);
 
-  //       print('✅ Successfully loaded ${activeHorizontalVod.length} active Vod from API (from ${allHorizontalVod.length} total)');
-  //       return activeHorizontalVod;
+//   //       print('✅ Successfully loaded ${activeHorizontalVod.length} active Vod from API (from ${allHorizontalVod.length} total)');
+//   //       return activeHorizontalVod;
 
-  //     } else {
-  //       throw Exception('API Error: ${response.statusCode} - ${response.reasonPhrase}');
-  //     }
-  //   } catch (e) {
-  //     print('❌ Error fetching fresh Vod: $e');
-  //     rethrow;
-  //   }
-  // }
+//   //     } else {
+//   //       throw Exception('API Error: ${response.statusCode} - ${response.reasonPhrase}');
+//   //     }
+//   //   } catch (e) {
+//   //     print('❌ Error fetching fresh Vod: $e');
+//   //     rethrow;
+//   //   }
+//   // }
 
-  /// Fetch fresh Vod from API and cache them
-  static Future<List<HorizontalVodModel>> _fetchFreshHorizontalVod(
-      SharedPreferences prefs) async {
-    try {
-      String authKey = prefs.getString(_cacheKeyAuthKey) ?? '';
+//   /// Fetch fresh Vod from API and cache them
+//   static Future<List<HorizontalVodModel>> _fetchFreshHorizontalVod(
+//       SharedPreferences prefs) async {
+//     try {
+//       String authKey = prefs.getString(_cacheKeyAuthKey) ?? '';
 
-      final response = await https.get(
-        Uri.parse('https://acomtv.coretechinfo.com/api/v2/getNetworks'),
-        headers: {
-          'auth-key': authKey,
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'domain': 'coretechinfo.com'
-        },
-      ).timeout(
-        const Duration(seconds: 30),
-        onTimeout: () {
-          throw Exception('Request timeout');
-        },
-      );
+//       final response = await https.get(
+//         Uri.parse('https://dashboard.cpplayers.com/api/v2/getNetworks'),
+//         headers: {
+//           'auth-key': authKey,
+//           'Content-Type': 'application/json',
+//           'Accept': 'application/json',
+//           'domain': 'coretechinfo.com'
+//         },
+//       ).timeout(
+//         const Duration(seconds: 30),
+//         onTimeout: () {
+//           throw Exception('Request timeout');
+//         },
+//       );
 
-      if (response.statusCode == 200) {
-        final List<dynamic> jsonData = json.decode(response.body);
+//       if (response.statusCode == 200) {
+//         final List<dynamic> jsonData = json.decode(response.body);
 
-        // Filter and Sort in one go
-        final activeHorizontalVod = jsonData
-            .map((json) =>
-                HorizontalVodModel.fromJson(json as Map<String, dynamic>))
-            .where((show) => show.status == 1) // First, filter by status
-            .toList()
-          ..sort((a, b) => a.networks_order
-              .compareTo(b.networks_order)); // ✅ THEN, SORT THE LIST
+//         // Filter and Sort in one go
+//         final activeHorizontalVod = jsonData
+//             .map((json) =>
+//                 HorizontalVodModel.fromJson(json as Map<String, dynamic>))
+//             .where((show) => show.status == 1) // First, filter by status
+//             .toList()
+//           ..sort((a, b) => a.networks_order
+//               .compareTo(b.networks_order)); // ✅ THEN, SORT THE LIST
 
-        // Cache the fresh data (save all shows, but return only active ones)
-        await _cacheHorizontalVod(prefs, jsonData);
+//         // Cache the fresh data (save all shows, but return only active ones)
+//         await _cacheHorizontalVod(prefs, jsonData);
 
-        print(
-            '✅ Successfully loaded and sorted ${activeHorizontalVod.length} active Vod from API');
-        return activeHorizontalVod;
-      } else {
-        throw Exception(
-            'API Error: ${response.statusCode} - ${response.reasonPhrase}');
-      }
-    } catch (e) {
-      print('❌ Error fetching fresh Vod: $e');
-      rethrow;
-    }
-  }
+//         print(
+//             '✅ Successfully loaded and sorted ${activeHorizontalVod.length} active Vod from API');
+//         return activeHorizontalVod;
+//       } else {
+//         throw Exception(
+//             'API Error: ${response.statusCode} - ${response.reasonPhrase}');
+//       }
+//     } catch (e) {
+//       print('❌ Error fetching fresh Vod: $e');
+//       rethrow;
+//     }
+//   }
 
-  /// Cache Vod data
-  static Future<void> _cacheHorizontalVod(
-      SharedPreferences prefs, List<dynamic> HorizontalVodData) async {
-    try {
-      final jsonString = json.encode(HorizontalVodData);
-      final currentTimestamp = DateTime.now().millisecondsSinceEpoch.toString();
+//   /// Cache Vod data
+//   static Future<void> _cacheHorizontalVod(
+//       SharedPreferences prefs, List<dynamic> HorizontalVodData) async {
+//     try {
+//       final jsonString = json.encode(HorizontalVodData);
+//       final currentTimestamp = DateTime.now().millisecondsSinceEpoch.toString();
 
-      // Save Vod data and timestamp
-      await Future.wait([
-        prefs.setString(_cacheKeyHorizontalVod, jsonString),
-        prefs.setString(_cacheKeyTimestamp, currentTimestamp),
-      ]);
+//       // Save Vod data and timestamp
+//       await Future.wait([
+//         prefs.setString(_cacheKeyHorizontalVod, jsonString),
+//         prefs.setString(_cacheKeyTimestamp, currentTimestamp),
+//       ]);
 
-      print('💾 Successfully cached ${HorizontalVodData.length} Vod');
-    } catch (e) {
-      print('❌ Error caching Vod: $e');
-    }
-  }
+//       print('💾 Successfully cached ${HorizontalVodData.length} Vod');
+//     } catch (e) {
+//       print('❌ Error caching Vod: $e');
+//     }
+//   }
 
-  /// Load fresh data in background without blocking UI
-  static void _loadFreshDataInBackground() {
-    Future.delayed(const Duration(milliseconds: 500), () async {
-      try {
-        print('🔄 Loading fresh Vod data in background...');
-        final prefs = await SharedPreferences.getInstance();
-        await _fetchFreshHorizontalVod(prefs);
-        print('✅ Vod background refresh completed');
-      } catch (e) {
-        print('⚠️ Vod background refresh failed: $e');
-      }
-    });
-  }
+//   /// Load fresh data in background without blocking UI
+//   static void _loadFreshDataInBackground() {
+//     Future.delayed(const Duration(milliseconds: 500), () async {
+//       try {
+//         print('🔄 Loading fresh Vod data in background...');
+//         final prefs = await SharedPreferences.getInstance();
+//         await _fetchFreshHorizontalVod(prefs);
+//         print('✅ Vod background refresh completed');
+//       } catch (e) {
+//         print('⚠️ Vod background refresh failed: $e');
+//       }
+//     });
+//   }
 
-  /// Clear all cached data
-  static Future<void> clearCache() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      await Future.wait([
-        prefs.remove(_cacheKeyHorizontalVod),
-        prefs.remove(_cacheKeyTimestamp),
-      ]);
-      print('🗑️ Vod cache cleared successfully');
-    } catch (e) {
-      print('❌ Error clearing Vod cache: $e');
-    }
-  }
+//   /// Clear all cached data
+//   static Future<void> clearCache() async {
+//     try {
+//       final prefs = await SharedPreferences.getInstance();
+//       await Future.wait([
+//         prefs.remove(_cacheKeyHorizontalVod),
+//         prefs.remove(_cacheKeyTimestamp),
+//       ]);
+//       print('🗑️ Vod cache cleared successfully');
+//     } catch (e) {
+//       print('❌ Error clearing Vod cache: $e');
+//     }
+//   }
 
-  /// Get cache info for debugging
-  static Future<Map<String, dynamic>> getCacheInfo() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final timestampStr = prefs.getString(_cacheKeyTimestamp);
-      final cachedData = prefs.getString(_cacheKeyHorizontalVod);
+//   /// Get cache info for debugging
+//   static Future<Map<String, dynamic>> getCacheInfo() async {
+//     try {
+//       final prefs = await SharedPreferences.getInstance();
+//       final timestampStr = prefs.getString(_cacheKeyTimestamp);
+//       final cachedData = prefs.getString(_cacheKeyHorizontalVod);
 
-      if (timestampStr == null || cachedData == null) {
-        return {
-          'hasCachedData': false,
-          'cacheAge': 0,
-          'cachedHorizontalVodCount': 0,
-          'cacheSize': 0,
-        };
-      }
+//       if (timestampStr == null || cachedData == null) {
+//         return {
+//           'hasCachedData': false,
+//           'cacheAge': 0,
+//           'cachedHorizontalVodCount': 0,
+//           'cacheSize': 0,
+//         };
+//       }
 
-      final cachedTimestamp = int.tryParse(timestampStr) ?? 0;
-      final currentTimestamp = DateTime.now().millisecondsSinceEpoch;
-      final cacheAge = currentTimestamp - cachedTimestamp;
-      final cacheAgeMinutes = (cacheAge / (1000 * 60)).round();
+//       final cachedTimestamp = int.tryParse(timestampStr) ?? 0;
+//       final currentTimestamp = DateTime.now().millisecondsSinceEpoch;
+//       final cacheAge = currentTimestamp - cachedTimestamp;
+//       final cacheAgeMinutes = (cacheAge / (1000 * 60)).round();
 
-      final List<dynamic> jsonData = json.decode(cachedData);
-      final cacheSizeKB = (cachedData.length / 1024).round();
+//       final List<dynamic> jsonData = json.decode(cachedData);
+//       final cacheSizeKB = (cachedData.length / 1024).round();
 
-      return {
-        'hasCachedData': true,
-        'cacheAge': cacheAgeMinutes,
-        'cachedHorizontalVodCount': jsonData.length,
-        'cacheSize': cacheSizeKB,
-        'isValid': cacheAge < _cacheDurationMs,
-      };
-    } catch (e) {
-      print('❌ Error getting Vod cache info: $e');
-      return {
-        'hasCachedData': false,
-        'cacheAge': 0,
-        'cachedHorizontalVodCount': 0,
-        'cacheSize': 0,
-        'error': e.toString(),
-      };
-    }
-  }
+//       return {
+//         'hasCachedData': true,
+//         'cacheAge': cacheAgeMinutes,
+//         'cachedHorizontalVodCount': jsonData.length,
+//         'cacheSize': cacheSizeKB,
+//         'isValid': cacheAge < _cacheDurationMs,
+//       };
+//     } catch (e) {
+//       print('❌ Error getting Vod cache info: $e');
+//       return {
+//         'hasCachedData': false,
+//         'cacheAge': 0,
+//         'cachedHorizontalVodCount': 0,
+//         'cacheSize': 0,
+//         'error': e.toString(),
+//       };
+//     }
+//   }
 
-  /// Force refresh data (bypass cache)
-  static Future<List<HorizontalVodModel>> forceRefresh() async {
-    print('🔄 Force refreshing Vod data...');
-    return await getAllHorizontalVod(forceRefresh: true);
-  }
-}
+//   /// Force refresh data (bypass cache)
+//   static Future<List<HorizontalVodModel>> forceRefresh() async {
+//     print('🔄 Force refreshing Vod data...');
+//     return await getAllHorizontalVod(forceRefresh: true);
+//   }
+// }
 
 // 🚀 Enhanced HorzontalVod with Caching (WebSeries Style)
 class HorzontalVod extends StatefulWidget {
@@ -838,9 +969,6 @@ class _HorzontalVodState extends State<HorzontalVod>
           // Start animations after data loads
           _headerAnimationController.forward();
           _listAnimationController.forward();
-
-          // Debug cache info
-          _debugCacheInfo();
         }
       } else {
         if (mounted) {
@@ -856,16 +984,6 @@ class _HorzontalVodState extends State<HorzontalVod>
         });
       }
       print('Error fetching Vod with cache: $e');
-    }
-  }
-
-  // 🆕 Debug method to show cache information
-  Future<void> _debugCacheInfo() async {
-    try {
-      final cacheInfo = await HorizontalVodService.getCacheInfo();
-      print('📊 Vod Cache Info: $cacheInfo');
-    } catch (e) {
-      print('❌ Error getting Vod cache info: $e');
     }
   }
 
@@ -1615,33 +1733,6 @@ class CacheManager {
       print('🗑️ All caches cleared successfully');
     } catch (e) {
       print('❌ Error clearing all caches: $e');
-    }
-  }
-
-  /// Get comprehensive cache info for all services
-  static Future<Map<String, dynamic>> getAllCacheInfo() async {
-    try {
-      final HorizontalVodCacheInfo = await HorizontalVodService.getCacheInfo();
-      // Add other service cache info here
-      // final webSeriesCacheInfo = await WebSeriesService.getCacheInfo();
-      // final moviesCacheInfo = await MoviesService.getCacheInfo();
-
-      return {
-        'HorizontalVod': HorizontalVodCacheInfo,
-        // 'webSeries': webSeriesCacheInfo,
-        // 'movies': moviesCacheInfo,
-        'totalCacheSize': _calculateTotalCacheSize([
-          HorizontalVodCacheInfo,
-          // webSeriesCacheInfo,
-          // moviesCacheInfo,
-        ]),
-      };
-    } catch (e) {
-      print('❌ Error getting all cache info: $e');
-      return {
-        'error': e.toString(),
-        'HorizontalVod': {'hasCachedData': false},
-      };
     }
   }
 

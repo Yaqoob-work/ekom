@@ -591,7 +591,7 @@ class _TvShowFinalDetailsPageState extends State<TvShowFinalDetailsPage>
 
     final response = await https.get(
       Uri.parse(
-          'https://acomtv.coretechinfo.com/api/v2/getShowSeasons/${widget.id}'),
+          'https://dashboard.cpplayers.com/api/v2/getShowSeasons/${widget.id}'),
       headers: {
         'auth-key': authKey,
         'Accept': 'application/json',
@@ -721,7 +721,7 @@ class _TvShowFinalDetailsPageState extends State<TvShowFinalDetailsPage>
 
     final response = await https.get(
       Uri.parse(
-          'https://acomtv.coretechinfo.com/api/v2/getShowSeasonsEpisodes/$seasonId'),
+          'https://dashboard.cpplayers.com/api/v2/getShowSeasonsEpisodes/$seasonId'),
       headers: {
         'auth-key': authKey,
         'Accept': 'application/json',
@@ -762,8 +762,6 @@ class _TvShowFinalDetailsPageState extends State<TvShowFinalDetailsPage>
 
     setState(() => _isProcessing = true);
 
-
-    
     try {
       print('Updating user history for: ${episode.title}');
       int? currentUserId = SessionManager.userId;
@@ -839,24 +837,23 @@ class _TvShowFinalDetailsPageState extends State<TvShowFinalDetailsPage>
           //   ),
           // );
 
-                    result =  await Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => VideoScreen(
-              videoUrl: episode.videoUrl,
-              bannerImageUrl: episode.thumbnail,
-              channelList: [],
-              // isLive: false,
-              // isSearch: false,
-              videoId: episode.id,
-              name: episode.title,
-              liveStatus: false, 
-              updatedAt: episode.updatedAt,
-              source: 'isTvShow',
+          result = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => VideoScreen(
+                videoUrl: episode.videoUrl,
+                bannerImageUrl: episode.thumbnail,
+                channelList: [],
+                // isLive: false,
+                // isSearch: false,
+                videoId: episode.id,
+                name: episode.title,
+                liveStatus: false,
+                updatedAt: episode.updatedAt,
+                source: 'isTvShow',
+              ),
             ),
-          ),
-        );
-          
+          );
         }
 
         // Refresh data after returning from video player
@@ -1378,9 +1375,6 @@ class _TvShowFinalDetailsPageState extends State<TvShowFinalDetailsPage>
     final isSelected = index == _selectedSeasonIndex;
     final isFocused = _currentMode == NavigationMode.seasons && isSelected;
     final episodeCount = _filteredEpisodesMap[season.id]?.length ?? 0;
-
-
-    
 
     return GestureDetector(
       onTap: () => _onSeasonTap(index),

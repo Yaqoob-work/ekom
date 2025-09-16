@@ -1,9 +1,3 @@
-
-
-
-
-
-
 // import 'dart:async';
 // import 'dart:convert';
 // import 'dart:io';
@@ -84,9 +78,9 @@
 //       contentId: id.toString(),
 //       type: contentType.toString(),
 //       url: url ?? '',
-//       status: status.toString(), 
-//       unUpdatedUrl: '', 
-//       poster: '', 
+//       status: status.toString(),
+//       unUpdatedUrl: '',
+//       poster: '',
 //       image: '',
 //     );
 //   }
@@ -115,7 +109,7 @@
 //       final prefs = await SharedPreferences.getInstance();
 //       final cachedString = prefs.getString(BANNER_CACHE_KEY);
 //       final cacheTimeString = prefs.getString('${BANNER_CACHE_KEY}_time');
-      
+
 //       if (cachedString != null && cachedString.isNotEmpty) {
 //         if (cacheTimeString != null) {
 //           final cacheTime = DateTime.parse(cacheTimeString);
@@ -137,7 +131,7 @@
 //   static Future<void> saveData(List<dynamic> rawData) async {
 //     _processedCache = _processRawData(rawData);
 //     _cacheTime = DateTime.now();
-    
+
 //     try {
 //       final prefs = await SharedPreferences.getInstance();
 //       await prefs.setString(BANNER_CACHE_KEY, json.encode(rawData));
@@ -204,7 +198,7 @@
 
 // // API Configuration
 // class ApiConfig {
-//   static const String PRIMARY_BASE_URL = 'https://acomtv.coretechinfo.com/public/api/v2';
+//   static const String PRIMARY_BASE_URL = 'https://dashboard.cpplayers.com/public/api/v2';
 //   static const List<String> BANNER_ENDPOINTS = [
 //     '$PRIMARY_BASE_URL/getCustomImageSlider',
 //   ];
@@ -281,8 +275,6 @@
 // class BannerSlider extends StatefulWidget {
 //   final Function(bool)? onFocusChange;
 //   final FocusNode focusNode;
-
-  
 
 //   const BannerSlider({
 //     Key? key,
@@ -461,11 +453,11 @@
 //   Future<void> _loadBannerDataUltraFast() async {
 //     // Step 1: Try instant cache (< 1ms)
 //     final cachedBanners = UltraFastCacheManager.getInstantData();
-    
+
 //     if (cachedBanners != null && cachedBanners.isNotEmpty) {
 //       // ✅ Show instantly
 //       _showBannersInstantly(cachedBanners);
-      
+
 //       // Background refresh (non-blocking)
 //       _refreshDataInBackground();
 //       return;
@@ -474,7 +466,7 @@
 //     // Step 2: Initialize cache and load fresh data
 //     await UltraFastCacheManager.initializeCache();
 //     final initializedCache = UltraFastCacheManager.getInstantData();
-    
+
 //     if (initializedCache != null && initializedCache.isNotEmpty) {
 //       _showBannersInstantly(initializedCache);
 //       _refreshDataInBackground();
@@ -511,7 +503,7 @@
 //       try {
 //         final freshData = await fetchBannersData();
 //         await UltraFastCacheManager.saveData(freshData);
-        
+
 //         final newBanners = UltraFastCacheManager.getInstantData();
 //         if (mounted && newBanners != null && _shouldUpdateUI(newBanners)) {
 //           setState(() {
@@ -530,7 +522,7 @@
 //     try {
 //       final freshData = await fetchBannersData();
 //       await UltraFastCacheManager.saveData(freshData);
-      
+
 //       final banners = UltraFastCacheManager.getInstantData();
 //       if (banners != null && mounted) {
 //         _showBannersInstantly(banners);
@@ -557,7 +549,7 @@
 
 //   bool _shouldUpdateUI(List<BannerDataModel> newBanners) {
 //     if (newBanners.length != bannerList.length) return true;
-    
+
 //     for (int i = 0; i < newBanners.length; i++) {
 //       if (newBanners[i].id != bannerList[i].id) {
 //         return true;
@@ -1134,11 +1126,6 @@
 //   }
 // }
 
-
-
-
-
-
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
@@ -1211,7 +1198,7 @@ class BannerDataModel {
     return NewsItemModel(
       id: id.toString(),
       name: title,
-      updatedAt:updatedAt,
+      updatedAt: updatedAt,
       banner: banner,
       contentId: id.toString(),
       type: contentType.toString(),
@@ -1234,7 +1221,8 @@ class BannerService {
   static const Duration _cacheDuration = Duration(hours: 2);
 
   /// Main method to get banners with "stale-while-revalidate" caching
-  static Future<List<BannerDataModel>> getAllBanners({bool forceRefresh = false}) async {
+  static Future<List<BannerDataModel>> getAllBanners(
+      {bool forceRefresh = false}) async {
     final prefs = await SharedPreferences.getInstance();
 
     if (!forceRefresh && await _shouldUseCache(prefs)) {
@@ -1258,16 +1246,19 @@ class BannerService {
     final cachedTimestamp = DateTime.tryParse(timestampStr);
     if (cachedTimestamp == null) return false;
 
-    final isCacheValid = DateTime.now().difference(cachedTimestamp) < _cacheDuration;
-    print(isCacheValid ? '✅ Banner Cache is valid.' : '⏰ Banner Cache expired.');
+    final isCacheValid =
+        DateTime.now().difference(cachedTimestamp) < _cacheDuration;
+    print(
+        isCacheValid ? '✅ Banner Cache is valid.' : '⏰ Banner Cache expired.');
     return isCacheValid;
   }
 
   /// Get banners from cache
-  static Future<List<BannerDataModel>> _getCachedBanners(SharedPreferences prefs) async {
+  static Future<List<BannerDataModel>> _getCachedBanners(
+      SharedPreferences prefs) async {
     final cachedData = prefs.getString(_cacheKeyBanners);
     if (cachedData == null || cachedData.isEmpty) return [];
-    
+
     try {
       final List<dynamic> jsonData = json.decode(cachedData);
       return jsonData
@@ -1281,7 +1272,8 @@ class BannerService {
   }
 
   /// Fetch fresh banners from API and cache them
-  static Future<List<BannerDataModel>> _fetchFreshBanners(SharedPreferences prefs) async {
+  static Future<List<BannerDataModel>> _fetchFreshBanners(
+      SharedPreferences prefs) async {
     try {
       final List<dynamic> rawData = await _fetchBannersFromApi();
       await _cacheBanners(prefs, rawData);
@@ -1294,15 +1286,16 @@ class BannerService {
       print('❌ Error fetching fresh banners: $e');
       final cachedBanners = await _getCachedBanners(prefs);
       if (cachedBanners.isNotEmpty) {
-         print('🔄 API failed, returning cached data as fallback.');
-         return cachedBanners;
+        print('🔄 API failed, returning cached data as fallback.');
+        return cachedBanners;
       }
       rethrow;
     }
   }
 
   /// Save new data to SharedPreferences
-  static Future<void> _cacheBanners(SharedPreferences prefs, List<dynamic> rawData) async {
+  static Future<void> _cacheBanners(
+      SharedPreferences prefs, List<dynamic> rawData) async {
     await prefs.setString(_cacheKeyBanners, json.encode(rawData));
     await prefs.setString(_cacheKeyTimestamp, DateTime.now().toIso8601String());
     print('💾 Successfully cached ${rawData.length} banners.');
@@ -1321,10 +1314,11 @@ class BannerService {
       }
     });
   }
-  
+
   /// Private method to fetch data from API
   static Future<List<dynamic>> _fetchBannersFromApi() async {
-    const String endpoint = 'https://acomtv.coretechinfo.com/public/api/v2/getCustomImageSlider';
+    const String endpoint =
+        'https://dashboard.cpplayers.com/public/api/v2/getCustomImageSlider';
     final prefs = await SharedPreferences.getInstance();
     final authKey = prefs.getString('auth_key') ?? 'vLQTuPZUxktl5mVW';
 
@@ -1366,7 +1360,8 @@ class BannerSlider extends StatefulWidget {
   _BannerSliderState createState() => _BannerSliderState();
 }
 
-class _BannerSliderState extends State<BannerSlider> with SingleTickerProviderStateMixin {
+class _BannerSliderState extends State<BannerSlider>
+    with SingleTickerProviderStateMixin {
   final SocketService _socketService = SocketService();
   List<BannerDataModel> bannerList = [];
   List<NewsItemModel>? _newsItemListCache;
@@ -1383,8 +1378,10 @@ class _BannerSliderState extends State<BannerSlider> with SingleTickerProviderSt
   late Animation<double> _shimmerAnimation;
 
   List<NewsItemModel> get newsItemList {
-    if (_newsItemListCache == null || _newsItemListCache!.length != bannerList.length) {
-      _newsItemListCache = bannerList.map((banner) => banner.toNewsItemModel()).toList();
+    if (_newsItemListCache == null ||
+        _newsItemListCache!.length != bannerList.length) {
+      _newsItemListCache =
+          bannerList.map((banner) => banner.toNewsItemModel()).toList();
     }
     return _newsItemListCache!;
   }
@@ -1410,7 +1407,7 @@ class _BannerSliderState extends State<BannerSlider> with SingleTickerProviderSt
       curve: Curves.easeInOut,
     ));
   }
-  
+
   @override
   void dispose() {
     if (_pageController.hasClients) {
@@ -1444,7 +1441,7 @@ class _BannerSliderState extends State<BannerSlider> with SingleTickerProviderSt
     // ✅ Naye service se data load karo
     await _fetchBannersWithCache();
   }
-  
+
   // ✅ STEP 3: PURANE DATA LOADING FUNCTIONS KI JAGAH YEH NAYA FUNCTION
   Future<void> _fetchBannersWithCache() async {
     if (!mounted) return;
@@ -1478,7 +1475,8 @@ class _BannerSliderState extends State<BannerSlider> with SingleTickerProviderSt
     if (mounted) {
       setState(() {
         bannerList = banners;
-        selectedContentId = banners.isNotEmpty ? banners[0].id.toString() : null;
+        selectedContentId =
+            banners.isNotEmpty ? banners[0].id.toString() : null;
         errorMessage = '';
         _newsItemListCache = null;
       });
@@ -1511,13 +1509,14 @@ class _BannerSliderState extends State<BannerSlider> with SingleTickerProviderSt
     return Consumer<FocusProvider>(
       builder: (context, focusProvider, child) {
         return Scaffold(
-          backgroundColor: Colors.transparent, // Use transparent for better integration
+          backgroundColor:
+              Colors.transparent, // Use transparent for better integration
           body: _buildBody(focusProvider),
         );
       },
     );
   }
-  
+
   // Baki UI build functions (unchanged)...
 
   Widget _buildBody(FocusProvider focusProvider) {
@@ -1603,124 +1602,129 @@ class _BannerSliderState extends State<BannerSlider> with SingleTickerProviderSt
   //   );
   // }
 
-
-
   Widget _buildBannerSlider(FocusProvider focusProvider) {
-  return Stack(
-    children: [
-      // PageView (Pehle jaisa hi)
-      PageView.builder(
-        controller: _pageController,
-        itemCount: bannerList.length,
-        onPageChanged: (index) {
-          if (mounted) {
-            setState(() {
-              selectedContentId = bannerList[index].id.toString();
-            });
-          }
-        },
-        itemBuilder: (context, index) {
-          final banner = bannerList[index];
-          return _buildSimpleBanner(banner, focusProvider);
-        },
-      ),
+    return Stack(
+      children: [
+        // PageView (Pehle jaisa hi)
+        PageView.builder(
+          controller: _pageController,
+          itemCount: bannerList.length,
+          onPageChanged: (index) {
+            if (mounted) {
+              setState(() {
+                selectedContentId = bannerList[index].id.toString();
+              });
+            }
+          },
+          itemBuilder: (context, index) {
+            final banner = bannerList[index];
+            return _buildSimpleBanner(banner, focusProvider);
+          },
+        ),
 
-      // Navigation Button (Pehle jaisa hi)
-      _buildNavigationButton(focusProvider),
+        // Navigation Button (Pehle jaisa hi)
+        _buildNavigationButton(focusProvider),
 
-      // Page Indicators (Pehle jaisa hi)
-      if (bannerList.length > 1) _buildPageIndicators(),
+        // Page Indicators (Pehle jaisa hi)
+        if (bannerList.length > 1) _buildPageIndicators(),
 
-      // ✅ NEW: Yahan par stationary naam aur gradient add karein
-      _buildStationaryTitle(focusProvider),
-    ],
-  );
-}
-
+        // ✅ NEW: Yahan par stationary naam aur gradient add karein
+        _buildStationaryTitle(focusProvider),
+      ],
+    );
+  }
 
 // ✅ NEW: Yeh poora naya function add karein
-Widget _buildStationaryTitle(FocusProvider focusProvider) {
-  // Maujooda banner ko list se dhoondhein
-  final currentBanner = bannerList.firstWhere(
-    (b) => b.id.toString() == selectedContentId,
-    // Agar banner na mile to fallback
-    orElse: () => bannerList.isNotEmpty ? bannerList.first : BannerDataModel(id: 0, title: '', banner: '', contentType: 0, status: 0, createdAt: '', updatedAt: ''),
-  );
+  Widget _buildStationaryTitle(FocusProvider focusProvider) {
+    // Maujooda banner ko list se dhoondhein
+    final currentBanner = bannerList.firstWhere(
+      (b) => b.id.toString() == selectedContentId,
+      // Agar banner na mile to fallback
+      orElse: () => bannerList.isNotEmpty
+          ? bannerList.first
+          : BannerDataModel(
+              id: 0,
+              title: '',
+              banner: '',
+              contentType: 0,
+              status: 0,
+              createdAt: '',
+              updatedAt: ''),
+    );
 
-  return Stack(
-    children: [
-      // Gradient Overlay
-      Positioned(
-        left: 0,
-        right: 0,
-        bottom: 0,
-        height: screenhgt * 0.15,
-        child: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.bottomCenter,
-              end: Alignment.topCenter,
-              colors: [
-                Colors.black.withOpacity(0.8),
-                Colors.black.withOpacity(0.0),
-              ],
-              stops: const [0.0, 1.0],
+    return Stack(
+      children: [
+        // Gradient Overlay
+        Positioned(
+          left: 0,
+          right: 0,
+          bottom: 0,
+          height: screenhgt * 0.15,
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.bottomCenter,
+                end: Alignment.topCenter,
+                colors: [
+                  Colors.black.withOpacity(0.8),
+                  Colors.black.withOpacity(0.0),
+                ],
+                stops: const [0.0, 1.0],
+              ),
             ),
           ),
         ),
-      ),
 
-      // // Stylish Name (jo slide nahi hoga)
-      // Positioned(
-      //   left: screenwdt * 0.03,
-      //   right: screenwdt * 0.03,
-      //   bottom: screenhgt * 0.03,
-      //   child: AnimatedSwitcher(
-      //     duration: const Duration(milliseconds: 400),
-      //     transitionBuilder: (Widget child, Animation<double> animation) {
-      //       return FadeTransition(opacity: animation, child: child);
-      //     },
-      //     child: ShaderMask(
-      //       // Key dena zaroori hai taaki AnimatedSwitcher ko pata chale ki content badal gaya hai
-      //       key: ValueKey<String>(currentBanner.title),
-      //       shaderCallback: (Rect bounds) {
-      //         return const LinearGradient(
-      //           begin: Alignment.topLeft,
-      //           end: Alignment.bottomRight,
-      //           colors: [
-      //             Colors.deepOrangeAccent,
-      //             Colors.pinkAccent,
-      //             Colors.purpleAccent,
-      //             Colors.blueAccent,
-      //           ],
-      //         ).createShader(bounds);
-      //       },
-      //       child: Text(
-      //         currentBanner.title,
-      //         maxLines: 1,
-      //         overflow: TextOverflow.ellipsis,
-      //         style: TextStyle(
-      //           fontFamily: 'RobotoSlab',
-      //           fontSize: screenhgt * 0.05,
-      //           fontWeight: FontWeight.bold,
-      //           color: Colors.white,
-      //           shadows: [
-      //             Shadow(
-      //               color: Colors.black.withOpacity(0.8),
-      //               offset: const Offset(2, 2),
-      //               blurRadius: 4,
-      //             ),
-      //           ],
-      //           letterSpacing: 1.2,
-      //         ),
-      //       ),
-      //     ),
-      //   ),
-      // ),
-    ],
-  );
-}
-
+        // // Stylish Name (jo slide nahi hoga)
+        // Positioned(
+        //   left: screenwdt * 0.03,
+        //   right: screenwdt * 0.03,
+        //   bottom: screenhgt * 0.03,
+        //   child: AnimatedSwitcher(
+        //     duration: const Duration(milliseconds: 400),
+        //     transitionBuilder: (Widget child, Animation<double> animation) {
+        //       return FadeTransition(opacity: animation, child: child);
+        //     },
+        //     child: ShaderMask(
+        //       // Key dena zaroori hai taaki AnimatedSwitcher ko pata chale ki content badal gaya hai
+        //       key: ValueKey<String>(currentBanner.title),
+        //       shaderCallback: (Rect bounds) {
+        //         return const LinearGradient(
+        //           begin: Alignment.topLeft,
+        //           end: Alignment.bottomRight,
+        //           colors: [
+        //             Colors.deepOrangeAccent,
+        //             Colors.pinkAccent,
+        //             Colors.purpleAccent,
+        //             Colors.blueAccent,
+        //           ],
+        //         ).createShader(bounds);
+        //       },
+        //       child: Text(
+        //         currentBanner.title,
+        //         maxLines: 1,
+        //         overflow: TextOverflow.ellipsis,
+        //         style: TextStyle(
+        //           fontFamily: 'RobotoSlab',
+        //           fontSize: screenhgt * 0.05,
+        //           fontWeight: FontWeight.bold,
+        //           color: Colors.white,
+        //           shadows: [
+        //             Shadow(
+        //               color: Colors.black.withOpacity(0.8),
+        //               offset: const Offset(2, 2),
+        //               blurRadius: 4,
+        //             ),
+        //           ],
+        //           letterSpacing: 1.2,
+        //         ),
+        //       ),
+        //     ),
+        //   ),
+        // ),
+      ],
+    );
+  }
 
   Widget _buildNavigationButton(FocusProvider focusProvider) {
     return Positioned(
@@ -1755,8 +1759,9 @@ Widget _buildStationaryTitle(FocusProvider focusProvider) {
                   boxShadow: focusProvider.isButtonFocused
                       ? [
                           BoxShadow(
-                            color: (focusProvider.currentFocusColor ?? randomColor)
-                                .withOpacity(0.5),
+                            color:
+                                (focusProvider.currentFocusColor ?? randomColor)
+                                    .withOpacity(0.5),
                             blurRadius: 20.0,
                             spreadRadius: 5.0,
                           ),
@@ -1805,16 +1810,15 @@ Widget _buildStationaryTitle(FocusProvider focusProvider) {
         mainAxisAlignment: MainAxisAlignment.center,
         children: bannerList.asMap().entries.map((entry) {
           int index = entry.key;
-          bool isSelected = selectedContentId == bannerList[index].id.toString();
+          bool isSelected =
+              selectedContentId == bannerList[index].id.toString();
           return AnimatedContainer(
             duration: const Duration(milliseconds: 300),
             margin: const EdgeInsets.symmetric(horizontal: 4),
             width: isSelected ? 12 : 8,
             height: isSelected ? 12 : 8,
             decoration: BoxDecoration(
-              color: isSelected
-                  ? Colors.white
-                  : Colors.white.withOpacity(0.5),
+              color: isSelected ? Colors.white : Colors.white.withOpacity(0.5),
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
@@ -1830,12 +1834,13 @@ Widget _buildStationaryTitle(FocusProvider focusProvider) {
     );
   }
 
-  Widget _buildSimpleBanner(BannerDataModel banner, FocusProvider focusProvider) {
+  Widget _buildSimpleBanner(
+      BannerDataModel banner, FocusProvider focusProvider) {
     final String deviceName = context.watch<DeviceInfoProvider>().deviceName;
-      // ✅ Naya unique URL banayein
-  final String uniqueImageUrl = "${banner.banner}?v=${banner.updatedAt}";
-  // ✅ Naya unique cache key banayein
-  final String uniqueCacheKey = "${banner.id.toString()}_${banner.updatedAt}";
+    // ✅ Naya unique URL banayein
+    final String uniqueImageUrl = "${banner.banner}?v=${banner.updatedAt}";
+    // ✅ Naya unique cache key banayein
+    final String uniqueCacheKey = "${banner.id.toString()}_${banner.updatedAt}";
 
     return SizedBox(
       width: screenwdt,
@@ -1845,8 +1850,10 @@ Widget _buildStationaryTitle(FocusProvider focusProvider) {
           CachedNetworkImage(
             imageUrl: uniqueImageUrl,
             fit: BoxFit.fill,
-            placeholder: (context, url) => Image.asset('assets/streamstarting.gif'),
-            errorWidget: (context, url, error) => Image.asset('assets/streamstarting.gif'),
+            placeholder: (context, url) =>
+                Image.asset('assets/streamstarting.gif'),
+            errorWidget: (context, url, error) =>
+                Image.asset('assets/streamstarting.gif'),
             cacheKey: uniqueCacheKey,
             fadeInDuration: const Duration(milliseconds: 100),
             placeholderFadeInDuration: Duration.zero,
@@ -1914,7 +1921,7 @@ Widget _buildStationaryTitle(FocusProvider focusProvider) {
     }
     return KeyEventResult.ignored;
   }
-  
+
   // ✅ STEP 4: VIDEO PLAY LOGIC KO AASAAN BANAYA GAYA
   void _handleWatchNowTap() {
     if (selectedContentId != null && bannerList.isNotEmpty) {
@@ -1968,7 +1975,7 @@ Widget _buildStationaryTitle(FocusProvider focusProvider) {
 
   void _onButtonFocusNode() {
     if (!mounted) return;
-    
+
     if (_buttonFocusNode.hasFocus) {
       final random = Random();
       final color = Color.fromRGBO(
@@ -1984,9 +1991,10 @@ Widget _buildStationaryTitle(FocusProvider focusProvider) {
       context.read<ColorProvider>().resetColor();
     }
   }
-  
+
   // ✅ STEP 5: VIDEO PLAY FUNCTION AB BANNER OBJECT LETA HAI
-  Future<void> fetchAndPlayVideo(BannerDataModel banner, List<NewsItemModel> channelList) async {
+  Future<void> fetchAndPlayVideo(
+      BannerDataModel banner, List<NewsItemModel> channelList) async {
     if (_isNavigating) return;
     _isNavigating = true;
 
@@ -1995,7 +2003,8 @@ Widget _buildStationaryTitle(FocusProvider focusProvider) {
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
-        return const Center(child: CircularProgressIndicator()); // Simple loader
+        return const Center(
+            child: CircularProgressIndicator()); // Simple loader
       },
     );
 
@@ -2009,33 +2018,35 @@ Widget _buildStationaryTitle(FocusProvider focusProvider) {
         'stream_type': banner.sourceType ?? '',
       };
 
-      if (mounted) Navigator.of(context, rootNavigator: true).pop(); // Close loader
+      if (mounted)
+        Navigator.of(context, rootNavigator: true).pop(); // Close loader
 
       if (mounted) {
-      //   Navigator.push(
-      //     context,
-      //     MaterialPageRoute(
-      //       builder: (context) => VideoScreen(
-      //         videoUrl: responseData['url']!,
-      //         channelList: channelList,
-      //         videoId: banner.id,
-      //         // videoType: responseData['type']!,
-      //         isLive: true,
-      //         // isVOD: false,
-      //         bannerImageUrl: responseData['banner']!,
-      //         // startAtPosition: Duration.zero,
-      //         // isBannerSlider: true,
-      //         // source: 'isBannerSlider',
-      //         isSearch: false,
-      //         // unUpdatedUrl: responseData['url']!,
-      //         name: responseData['name']!,
-      //         liveStatus: true, updatedAt: '',
-      //       ),
-      //     ),
-      //   );
+        //   Navigator.push(
+        //     context,
+        //     MaterialPageRoute(
+        //       builder: (context) => VideoScreen(
+        //         videoUrl: responseData['url']!,
+        //         channelList: channelList,
+        //         videoId: banner.id,
+        //         // videoType: responseData['type']!,
+        //         isLive: true,
+        //         // isVOD: false,
+        //         bannerImageUrl: responseData['banner']!,
+        //         // startAtPosition: Duration.zero,
+        //         // isBannerSlider: true,
+        //         // source: 'isBannerSlider',
+        //         isSearch: false,
+        //         // unUpdatedUrl: responseData['url']!,
+        //         name: responseData['name']!,
+        //         liveStatus: true, updatedAt: '',
+        //       ),
+        //     ),
+        //   );
       }
     } catch (e) {
-      if (mounted) Navigator.of(context, rootNavigator: true).pop(); // Close loader
+      if (mounted)
+        Navigator.of(context, rootNavigator: true).pop(); // Close loader
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

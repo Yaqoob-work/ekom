@@ -1,8 +1,3 @@
-
-
-
-
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
@@ -97,36 +92,37 @@ class TVShowsService {
   static const String _cacheKeyTVShows = 'cached_tv_shows';
   static const String _cacheKeyTimestamp = 'cached_tv_shows_timestamp';
   static const String _cacheKeyAuthKey = 'auth_key';
-  
+
   // Cache duration (in milliseconds) - 1 hour
   static const int _cacheDurationMs = 60 * 60 * 1000; // 1 hour
-  
+
   /// Main method to get all TV shows with caching
-  static Future<List<TVShowModel>> getAllTVShows({bool forceRefresh = false}) async {
+  static Future<List<TVShowModel>> getAllTVShows(
+      {bool forceRefresh = false}) async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      
+
       // Check if we should use cache
       if (!forceRefresh && await _shouldUseCache(prefs)) {
         print('📦 Loading TV Shows from cache...');
         final cachedTVShows = await _getCachedTVShows(prefs);
         if (cachedTVShows.isNotEmpty) {
-          print('✅ Successfully loaded ${cachedTVShows.length} TV shows from cache');
-          
+          print(
+              '✅ Successfully loaded ${cachedTVShows.length} TV shows from cache');
+
           // Load fresh data in background (without waiting)
           _loadFreshDataInBackground();
-          
+
           return cachedTVShows;
         }
       }
-      
+
       // Load fresh data if no cache or force refresh
       print('🌐 Loading fresh TV Shows from API...');
       return await _fetchFreshTVShows(prefs);
-      
     } catch (e) {
       print('❌ Error in getAllTVShows: $e');
-      
+
       // Try to return cached data as fallback
       try {
         final prefs = await SharedPreferences.getInstance();
@@ -138,25 +134,25 @@ class TVShowsService {
       } catch (cacheError) {
         print('❌ Cache fallback also failed: $cacheError');
       }
-      
+
       throw Exception('Failed to load TV shows: $e');
     }
   }
-  
+
   /// Check if cached data is still valid
   static Future<bool> _shouldUseCache(SharedPreferences prefs) async {
     try {
       final timestampStr = prefs.getString(_cacheKeyTimestamp);
       if (timestampStr == null) return false;
-      
+
       final cachedTimestamp = int.tryParse(timestampStr);
       if (cachedTimestamp == null) return false;
-      
+
       final currentTimestamp = DateTime.now().millisecondsSinceEpoch;
       final cacheAge = currentTimestamp - cachedTimestamp;
-      
+
       final isValid = cacheAge < _cacheDurationMs;
-      
+
       if (isValid) {
         final ageMinutes = (cacheAge / (1000 * 60)).round();
         print('📦 TV Shows Cache is valid (${ageMinutes} minutes old)');
@@ -164,29 +160,30 @@ class TVShowsService {
         final ageMinutes = (cacheAge / (1000 * 60)).round();
         print('⏰ TV Shows Cache expired (${ageMinutes} minutes old)');
       }
-      
+
       return isValid;
     } catch (e) {
       print('❌ Error checking TV Shows cache validity: $e');
       return false;
     }
   }
-  
+
   /// Get TV shows from cache
-  static Future<List<TVShowModel>> _getCachedTVShows(SharedPreferences prefs) async {
+  static Future<List<TVShowModel>> _getCachedTVShows(
+      SharedPreferences prefs) async {
     try {
       final cachedData = prefs.getString(_cacheKeyTVShows);
       if (cachedData == null || cachedData.isEmpty) {
         print('📦 No cached TV Shows data found');
         return [];
       }
-      
+
       final List<dynamic> jsonData = json.decode(cachedData);
       final tvShows = jsonData
           .map((json) => TVShowModel.fromJson(json as Map<String, dynamic>))
           .where((show) => show.status == 1) // Filter active shows
           .toList();
-      
+
       print('📦 Successfully loaded ${tvShows.length} TV shows from cache');
       return tvShows;
     } catch (e) {
@@ -194,14 +191,15 @@ class TVShowsService {
       return [];
     }
   }
-  
+
   /// Fetch fresh TV shows from API and cache them
-  static Future<List<TVShowModel>> _fetchFreshTVShows(SharedPreferences prefs) async {
+  static Future<List<TVShowModel>> _fetchFreshTVShows(
+      SharedPreferences prefs) async {
     try {
       String authKey = prefs.getString(_cacheKeyAuthKey) ?? '';
-      
+
       final response = await http.get(
-        Uri.parse('https://acomtv.coretechinfo.com/api/v2/getTvChannels'),
+        Uri.parse('https://dashboard.cpplayers.com/api/v2/getTvChannels'),
         headers: {
           'auth-key': authKey,
           'Content-Type': 'application/json',
@@ -214,50 +212,53 @@ class TVShowsService {
           throw Exception('Request timeout');
         },
       );
-      
+
       if (response.statusCode == 200) {
         final List<dynamic> jsonData = json.decode(response.body);
-        
+
         final allTVShows = jsonData
             .map((json) => TVShowModel.fromJson(json as Map<String, dynamic>))
             .toList();
-            
+
         // Filter only active shows (status = 1)
-        final activeTVShows = allTVShows.where((show) => show.status == 1).toList();
-        
+        final activeTVShows =
+            allTVShows.where((show) => show.status == 1).toList();
+
         // Cache the fresh data (save all shows, but return only active ones)
         await _cacheTVShows(prefs, jsonData);
-        
-        print('✅ Successfully loaded ${activeTVShows.length} active TV shows from API (from ${allTVShows.length} total)');
+
+        print(
+            '✅ Successfully loaded ${activeTVShows.length} active TV shows from API (from ${allTVShows.length} total)');
         return activeTVShows;
-        
       } else {
-        throw Exception('API Error: ${response.statusCode} - ${response.reasonPhrase}');
+        throw Exception(
+            'API Error: ${response.statusCode} - ${response.reasonPhrase}');
       }
     } catch (e) {
       print('❌ Error fetching fresh TV shows: $e');
       rethrow;
     }
   }
-  
+
   /// Cache TV shows data
-  static Future<void> _cacheTVShows(SharedPreferences prefs, List<dynamic> tvShowsData) async {
+  static Future<void> _cacheTVShows(
+      SharedPreferences prefs, List<dynamic> tvShowsData) async {
     try {
       final jsonString = json.encode(tvShowsData);
       final currentTimestamp = DateTime.now().millisecondsSinceEpoch.toString();
-      
+
       // Save TV shows data and timestamp
       await Future.wait([
         prefs.setString(_cacheKeyTVShows, jsonString),
         prefs.setString(_cacheKeyTimestamp, currentTimestamp),
       ]);
-      
+
       print('💾 Successfully cached ${tvShowsData.length} TV shows');
     } catch (e) {
       print('❌ Error caching TV shows: $e');
     }
   }
-  
+
   /// Load fresh data in background without blocking UI
   static void _loadFreshDataInBackground() {
     Future.delayed(const Duration(milliseconds: 500), () async {
@@ -271,7 +272,7 @@ class TVShowsService {
       }
     });
   }
-  
+
   /// Clear all cached data
   static Future<void> clearCache() async {
     try {
@@ -285,14 +286,14 @@ class TVShowsService {
       print('❌ Error clearing TV Shows cache: $e');
     }
   }
-  
+
   /// Get cache info for debugging
   static Future<Map<String, dynamic>> getCacheInfo() async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final timestampStr = prefs.getString(_cacheKeyTimestamp);
       final cachedData = prefs.getString(_cacheKeyTVShows);
-      
+
       if (timestampStr == null || cachedData == null) {
         return {
           'hasCachedData': false,
@@ -301,15 +302,15 @@ class TVShowsService {
           'cacheSize': 0,
         };
       }
-      
+
       final cachedTimestamp = int.tryParse(timestampStr) ?? 0;
       final currentTimestamp = DateTime.now().millisecondsSinceEpoch;
       final cacheAge = currentTimestamp - cachedTimestamp;
       final cacheAgeMinutes = (cacheAge / (1000 * 60)).round();
-      
+
       final List<dynamic> jsonData = json.decode(cachedData);
       final cacheSizeKB = (cachedData.length / 1024).round();
-      
+
       return {
         'hasCachedData': true,
         'cacheAge': cacheAgeMinutes,
@@ -328,7 +329,7 @@ class TVShowsService {
       };
     }
   }
-  
+
   /// Force refresh data (bypass cache)
   static Future<List<TVShowModel>> forceRefresh() async {
     print('🔄 Force refreshing TV Shows data...');
@@ -376,7 +377,7 @@ class _ProfessionalTVShowsHorizontalListState
     _scrollController = ScrollController();
     _initializeAnimations();
     _initializeFocusNodes();
-    
+
     // 🚀 Use enhanced caching service
     fetchTVShowsWithCache();
   }
@@ -441,7 +442,8 @@ class _ProfessionalTVShowsHorizontalListState
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted && tvShowsList.isNotEmpty) {
         try {
-          final focusProvider = Provider.of<FocusProvider>(context, listen: false);
+          final focusProvider =
+              Provider.of<FocusProvider>(context, listen: false);
 
           final firstTVShowId = tvShowsList[0].id.toString();
 
@@ -453,7 +455,8 @@ class _ProfessionalTVShowsHorizontalListState
           _firstTVShowFocusNode = tvshowsFocusNodes[firstTVShowId];
 
           _firstTVShowFocusNode!.addListener(() {
-            if (_firstTVShowFocusNode!.hasFocus && !_hasReceivedFocusFromWebSeries) {
+            if (_firstTVShowFocusNode!.hasFocus &&
+                !_hasReceivedFocusFromWebSeries) {
               _hasReceivedFocusFromWebSeries = true;
               setState(() {
                 focusedIndex = 0;
@@ -464,8 +467,8 @@ class _ProfessionalTVShowsHorizontalListState
           });
 
           focusProvider.setFirstTVShowsFocusNode(_firstTVShowFocusNode!);
-          print('✅ TV Shows first focus node registered: ${tvShowsList[0].name}');
-
+          print(
+              '✅ TV Shows first focus node registered: ${tvShowsList[0].name}');
         } catch (e) {
           print('❌ TV Shows focus provider setup failed: $e');
         }
@@ -494,11 +497,11 @@ class _ProfessionalTVShowsHorizontalListState
 
           _createFocusNodesForItems();
           _setupTVShowsFocusProvider();
-          
+
           // Start animations after data loads
           _headerAnimationController.forward();
           _listAnimationController.forward();
-          
+
           // Debug cache info
           _debugCacheInfo();
         }
@@ -550,10 +553,10 @@ class _ProfessionalTVShowsHorizontalListState
 
           _createFocusNodesForItems();
           _setupTVShowsFocusProvider();
-          
+
           _headerAnimationController.forward();
           _listAnimationController.forward();
-          
+
           // Show success message
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -609,14 +612,14 @@ class _ProfessionalTVShowsHorizontalListState
         });
       }
     }
-    print('✅ Created ${tvshowsFocusNodes.length} TV show focus nodes with auto-scroll');
+    print(
+        '✅ Created ${tvshowsFocusNodes.length} TV show focus nodes with auto-scroll');
   }
 
-  void _navigateToTVShowDetails(TVShowModel tvShow) async{
+  void _navigateToTVShowDetails(TVShowModel tvShow) async {
     print('🎬 Navigating to TV Show Details: ${tvShow.name}');
 
-
-        try {
+    try {
       print('Updating user history for: ${tvShow.name}');
       int? currentUserId = SessionManager.userId;
       final int? parsedId = tvShow.id;
@@ -626,7 +629,7 @@ class _ProfessionalTVShowsHorizontalListState
         contentType: 4, // 2. Content Type (channel के लिए 4)
         eventId: parsedId!, // 3. Event ID (channel की ID)
         eventTitle: tvShow.name, // 4. Event Title (channel का नाम)
-        url:  '', // 5. URL (channel का URL)
+        url: '', // 5. URL (channel का URL)
         categoryId: 0, // 6. Category ID (डिफ़ॉल्ट 1)
       );
     } catch (e) {
@@ -646,7 +649,8 @@ class _ProfessionalTVShowsHorizontalListState
       print('🔙 Returned from TV Show Details');
       Future.delayed(Duration(milliseconds: 300), () {
         if (mounted) {
-          int currentIndex = tvShowsList.indexWhere((show) => show.id == tvShow.id);
+          int currentIndex =
+              tvShowsList.indexWhere((show) => show.id == tvShow.id);
           if (currentIndex != -1 && currentIndex < maxHorizontalItems) {
             String tvShowId = tvShow.id.toString();
             if (tvshowsFocusNodes.containsKey(tvShowId)) {
@@ -691,10 +695,7 @@ class _ProfessionalTVShowsHorizontalListState
     });
   }
 
-
-
-
-    @override
+  @override
   Widget build(BuildContext context) {
     super.build(context);
     final screenWidth = MediaQuery.of(context).size.width;
@@ -720,9 +721,8 @@ class _ProfessionalTVShowsHorizontalListState
                   // ProfessionalColors.primaryDark,
                   // ProfessionalColors.surfaceDark.withOpacity(0.5),
 
-bgColor.withOpacity(0.8),
+                  bgColor.withOpacity(0.8),
                   ProfessionalColors.primaryDark,
-                  
                 ],
               ),
             ),
@@ -741,7 +741,8 @@ bgColor.withOpacity(0.8),
   }
 
   // ✅ ENHANCED: TV Show item with color provider integration
-  Widget _buildTVShowItem(TVShowModel tvShow, int index, double screenWidth, double screenHeight) {
+  Widget _buildTVShowItem(
+      TVShowModel tvShow, int index, double screenWidth, double screenHeight) {
     String tvShowId = tvShow.id.toString();
 
     tvshowsFocusNodes.putIfAbsent(
@@ -760,7 +761,8 @@ bgColor.withOpacity(0.8),
         if (hasFocus && mounted) {
           try {
             Color dominantColor = ProfessionalColors.gradientColors[
-                math.Random().nextInt(ProfessionalColors.gradientColors.length)];
+                math.Random()
+                    .nextInt(ProfessionalColors.gradientColors.length)];
 
             setState(() {
               _currentAccentColor = dominantColor;
@@ -783,7 +785,8 @@ bgColor.withOpacity(0.8),
           if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
             if (index < tvShowsList.length - 1 && index != 6) {
               String nextTVShowId = tvShowsList[index + 1].id.toString();
-              FocusScope.of(context).requestFocus(tvshowsFocusNodes[nextTVShowId]);
+              FocusScope.of(context)
+                  .requestFocus(tvshowsFocusNodes[nextTVShowId]);
               return KeyEventResult.handled;
             } else if (index == 6 && tvShowsList.length > 7) {
               FocusScope.of(context).requestFocus(_viewAllFocusNode);
@@ -792,10 +795,10 @@ bgColor.withOpacity(0.8),
           } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
             if (index > 0) {
               String prevTVShowId = tvShowsList[index - 1].id.toString();
-              FocusScope.of(context).requestFocus(tvshowsFocusNodes[prevTVShowId]);
+              FocusScope.of(context)
+                  .requestFocus(tvshowsFocusNodes[prevTVShowId]);
             }
-              return KeyEventResult.handled;
-
+            return KeyEventResult.handled;
           } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
             setState(() {
               focusedIndex = -1;
@@ -828,7 +831,7 @@ bgColor.withOpacity(0.8),
               if (mounted) {
                 try {
                   Provider.of<FocusProvider>(context, listen: false)
-                                      .requestFirstSportsCategoryFocus();
+                      .requestFirstSportsCategoryFocus();
                   // Navigate to next section
                   print('✅ Navigating down from TV shows');
                 } catch (e) {
@@ -839,7 +842,8 @@ bgColor.withOpacity(0.8),
             return KeyEventResult.handled;
           } else if (event.logicalKey == LogicalKeyboardKey.enter ||
               event.logicalKey == LogicalKeyboardKey.select) {
-            print('🎬 Enter pressed on ${tvShow.name} - Opening Details Page...');
+            print(
+                '🎬 Enter pressed on ${tvShow.name} - Opening Details Page...');
             _navigateToTVShowDetails(tvShow);
             return KeyEventResult.handled;
           }
@@ -888,14 +892,17 @@ bgColor.withOpacity(0.8),
                 onFocusChange: (hasFocus) {
                   if (hasFocus && mounted) {
                     Color viewAllColor = ProfessionalColors.gradientColors[
-                        math.Random().nextInt(ProfessionalColors.gradientColors.length)];
+                        math.Random()
+                            .nextInt(ProfessionalColors.gradientColors.length)];
 
                     setState(() {
                       _currentAccentColor = viewAllColor;
                     });
 
                     // ✅ ADD: Update color provider for ViewAll button
-                    context.read<ColorProvider>().updateColor(viewAllColor, true);
+                    context
+                        .read<ColorProvider>()
+                        .updateColor(viewAllColor, true);
                   } else if (mounted) {
                     // ✅ ADD: Reset color when ViewAll loses focus
                     context.read<ColorProvider>().resetColor();
@@ -905,10 +912,12 @@ bgColor.withOpacity(0.8),
                   if (event is RawKeyDownEvent) {
                     if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
                       return KeyEventResult.handled;
-                    } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+                    } else if (event.logicalKey ==
+                        LogicalKeyboardKey.arrowLeft) {
                       if (tvShowsList.isNotEmpty && tvShowsList.length > 6) {
                         String tvShowId = tvShowsList[6].id.toString();
-                        FocusScope.of(context).requestFocus(tvshowsFocusNodes[tvShowId]);
+                        FocusScope.of(context)
+                            .requestFocus(tvshowsFocusNodes[tvShowId]);
                         return KeyEventResult.handled;
                       }
                     } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
@@ -924,14 +933,16 @@ bgColor.withOpacity(0.8),
                           try {
                             Provider.of<FocusProvider>(context, listen: false)
                                 .requestFirstWebseriesFocus();
-                            print('✅ Navigating back to webseries from TV shows ViewAll');
+                            print(
+                                '✅ Navigating back to webseries from TV shows ViewAll');
                           } catch (e) {
                             print('❌ Failed to navigate to webseries: $e');
                           }
                         }
                       });
                       return KeyEventResult.handled;
-                    } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+                    } else if (event.logicalKey ==
+                        LogicalKeyboardKey.arrowDown) {
                       setState(() {
                         focusedIndex = -1;
                         _hasReceivedFocusFromWebSeries = false;
@@ -1077,8 +1088,7 @@ bgColor.withOpacity(0.8),
 
   Widget _buildBody(double screenWidth, double screenHeight) {
     if (isLoading) {
-      return ProfessionalTVShowLoadingIndicator(
-          message: 'Loading TV Shows...');
+      return ProfessionalTVShowLoadingIndicator(message: 'Loading TV Shows...');
     } else if (tvShowsList.isEmpty) {
       return _buildEmptyWidget();
     } else {
@@ -1532,7 +1542,9 @@ class _ProfessionalTVShowCardState extends State<ProfessionalTVShowCard>
       } else if (widget.tvShow.genres!.toLowerCase().contains('sports')) {
         genre = 'SPORTS';
         badgeColor = ProfessionalColors.accentOrange;
-      } else if (widget.tvShow.genres!.toLowerCase().contains('entertainment')) {
+      } else if (widget.tvShow.genres!
+          .toLowerCase()
+          .contains('entertainment')) {
         genre = 'ENTERTAINMENT';
         badgeColor = ProfessionalColors.accentPink;
       } else if (widget.tvShow.genres!.toLowerCase().contains('documentary')) {
@@ -1627,9 +1639,6 @@ class _ProfessionalTVShowCardState extends State<ProfessionalTVShowCard>
   }
 }
 
-
-
-
 // ✅ Professional View All Button (same as WebSeries)
 class ProfessionalTVShowViewAllButton extends StatefulWidget {
   final FocusNode focusNode;
@@ -1650,7 +1659,8 @@ class ProfessionalTVShowViewAllButton extends StatefulWidget {
       _ProfessionalTVShowViewAllButtonState();
 }
 
-class _ProfessionalTVShowViewAllButtonState extends State<ProfessionalTVShowViewAllButton>
+class _ProfessionalTVShowViewAllButtonState
+    extends State<ProfessionalTVShowViewAllButton>
     with TickerProviderStateMixin {
   late AnimationController _pulseController;
   late AnimationController _rotateController;
@@ -1811,7 +1821,8 @@ class _ProfessionalTVShowViewAllButtonState extends State<ProfessionalTVShowView
                 ),
                 const SizedBox(height: 6),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.25),
                     borderRadius: BorderRadius.circular(12),
@@ -1875,7 +1886,8 @@ class ProfessionalTVShowLoadingIndicator extends StatefulWidget {
       _ProfessionalTVShowLoadingIndicatorState();
 }
 
-class _ProfessionalTVShowLoadingIndicatorState extends State<ProfessionalTVShowLoadingIndicator>
+class _ProfessionalTVShowLoadingIndicatorState
+    extends State<ProfessionalTVShowLoadingIndicator>
     with TickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
@@ -1988,11 +2000,12 @@ class ProfessionalTVShowsGridPage extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _ProfessionalTVShowsGridPageState createState() => _ProfessionalTVShowsGridPageState();
+  _ProfessionalTVShowsGridPageState createState() =>
+      _ProfessionalTVShowsGridPageState();
 }
 
-class _ProfessionalTVShowsGridPageState extends State<ProfessionalTVShowsGridPage>
-    with TickerProviderStateMixin {
+class _ProfessionalTVShowsGridPageState
+    extends State<ProfessionalTVShowsGridPage> with TickerProviderStateMixin {
   int gridFocusedIndex = 0;
   final int columnsCount = 5;
   Map<int, FocusNode> gridFocusNodes = {};
@@ -2109,7 +2122,9 @@ class _ProfessionalTVShowsGridPageState extends State<ProfessionalTVShowsGridPag
         break;
     }
 
-    if (newIndex != gridFocusedIndex && newIndex >= 0 && newIndex < totalItems) {
+    if (newIndex != gridFocusedIndex &&
+        newIndex >= 0 &&
+        newIndex < totalItems) {
       setState(() {
         gridFocusedIndex = newIndex;
       });
@@ -2117,11 +2132,10 @@ class _ProfessionalTVShowsGridPageState extends State<ProfessionalTVShowsGridPag
     }
   }
 
-  void _navigateToTVShowDetails(TVShowModel tvShow, int index) async{
+  void _navigateToTVShowDetails(TVShowModel tvShow, int index) async {
     print('🎬 Grid: Navigating to TV Show Details: ${tvShow.name}');
 
-
-            try {
+    try {
       print('Updating user history for: ${tvShow.name}');
       int? currentUserId = SessionManager.userId;
       final int? parsedId = tvShow.id;
@@ -2131,7 +2145,7 @@ class _ProfessionalTVShowsGridPageState extends State<ProfessionalTVShowsGridPag
         contentType: 4, // 2. Content Type (channel के लिए 4)
         eventId: parsedId!, // 3. Event ID (channel की ID)
         eventTitle: tvShow.name, // 4. Event Title (channel का नाम)
-        url:  '', // 5. URL (channel का URL)
+        url: '', // 5. URL (channel का URL)
         categoryId: 0, // 6. Category ID (डिफ़ॉल्ट 1)
       );
     } catch (e) {
@@ -2349,7 +2363,7 @@ class _ProfessionalTVShowsGridPageState extends State<ProfessionalTVShowsGridPag
           //   Navigator.pop(context);
           //   return KeyEventResult.handled;
           // } else
-            if ([
+          if ([
             LogicalKeyboardKey.arrowUp,
             LogicalKeyboardKey.arrowDown,
             LogicalKeyboardKey.arrowLeft,
@@ -2358,7 +2372,7 @@ class _ProfessionalTVShowsGridPageState extends State<ProfessionalTVShowsGridPag
             _navigateGrid(event.logicalKey);
             return KeyEventResult.handled;
           } else if (event.logicalKey == LogicalKeyboardKey.enter ||
-                       event.logicalKey == LogicalKeyboardKey.select) {
+              event.logicalKey == LogicalKeyboardKey.select) {
             if (gridFocusedIndex < widget.tvShowsList.length) {
               _navigateToTVShowDetails(
                 widget.tvShowsList[gridFocusedIndex],
@@ -2400,7 +2414,8 @@ class _ProfessionalTVShowsGridPageState extends State<ProfessionalTVShowsGridPag
                     child: ProfessionalGridTVShowCard(
                       tvShow: widget.tvShowsList[index],
                       focusNode: gridFocusNodes[index]!,
-                      onTap: () => _navigateToTVShowDetails(widget.tvShowsList[index], index),
+                      onTap: () => _navigateToTVShowDetails(
+                          widget.tvShowsList[index], index),
                       index: index,
                       categoryTitle: widget.title,
                     ),
@@ -2446,7 +2461,8 @@ class ProfessionalGridTVShowCard extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _ProfessionalGridTVShowCardState createState() => _ProfessionalGridTVShowCardState();
+  _ProfessionalGridTVShowCardState createState() =>
+      _ProfessionalGridTVShowCardState();
 }
 
 class _ProfessionalGridTVShowCardState extends State<ProfessionalGridTVShowCard>
@@ -2601,7 +2617,8 @@ class _ProfessionalGridTVShowCardState extends State<ProfessionalGridTVShowCard>
                 if (loadingProgress == null) return child;
                 return _buildImagePlaceholder();
               },
-              errorBuilder: (context, error, stackTrace) => _buildImagePlaceholder(),
+              errorBuilder: (context, error, stackTrace) =>
+                  _buildImagePlaceholder(),
             )
           : _buildImagePlaceholder(),
     );
@@ -2729,7 +2746,8 @@ class _ProfessionalGridTVShowCardState extends State<ProfessionalGridTVShowCard>
               Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                     decoration: BoxDecoration(
                       color: ProfessionalColors.accentGreen.withOpacity(0.3),
                       borderRadius: BorderRadius.circular(8),
@@ -2749,7 +2767,8 @@ class _ProfessionalGridTVShowCardState extends State<ProfessionalGridTVShowCard>
                   ),
                   const SizedBox(width: 8),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                     decoration: BoxDecoration(
                       color: _dominantColor.withOpacity(0.2),
                       borderRadius: BorderRadius.circular(8),

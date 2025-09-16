@@ -7,15 +7,19 @@ import 'package:flutter/services.dart';
 import 'package:http/http.dart' as https;
 import 'package:mobi_tv_entertainment/home_screen_pages/webseries_screen/webseries_details_page.dart';
 import 'package:mobi_tv_entertainment/main.dart';
+import 'package:mobi_tv_entertainment/models/channel_data_cache.dart';
+import 'package:mobi_tv_entertainment/models/content_item.dart';
 import 'package:mobi_tv_entertainment/provider/device_info_provider.dart';
 import 'package:mobi_tv_entertainment/services/history_service.dart';
 import 'package:mobi_tv_entertainment/video_widget/custom_video_player.dart';
 import 'package:mobi_tv_entertainment/video_widget/custom_youtube_player.dart';
-import 'package:mobi_tv_entertainment/video_widget/socket_service.dart';
+// import 'package:mobi_tv_entertainment/video_widget/socket_service.dart';
 import 'package:mobi_tv_entertainment/video_widget/video_screen.dart';
 import 'package:mobi_tv_entertainment/video_widget/youtube_webview_player.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'package:hive/hive.dart';
 
 // Optimized Genre Network Widget - Caching Version
 class GenreNetworkWidget extends StatefulWidget {
@@ -50,7 +54,7 @@ class _GenreNetworkWidgetState extends State<GenreNetworkWidget>
   List<ScrollController> _horizontalScrollControllers = [];
 
   // Socket service for video handling
-  final SocketService _socketService = SocketService();
+  // final SocketService _socketService = SocketService();
 
   // Animation Controller
   late AnimationController _fadeController;
@@ -60,7 +64,7 @@ class _GenreNetworkWidgetState extends State<GenreNetworkWidget>
   void initState() {
     super.initState();
     _initializeAnimations();
-    _socketService.initSocket();
+    // _socketService.initSocket();
     // Load data with the new caching strategy
     _loadDataWithCache();
   }
@@ -80,29 +84,19 @@ class _GenreNetworkWidgetState extends State<GenreNetworkWidget>
     _fadeController.dispose();
     _widgetFocusNode.dispose();
     _verticalScrollController.dispose();
-    _socketService.dispose();
+    // _socketService.dispose();
     for (var controller in _horizontalScrollControllers) {
       // if (controller.hasClients) {
-        controller.dispose();
+      controller.dispose();
       // }
     }
     _horizontalScrollControllers.clear();
     super.dispose();
   }
 
-  // =======================================================================
-  // NEW CACHING LOGIC / नया कैशिंग लॉजिक
-  // =======================================================================
-
-  /// Main method to orchestrate data loading with caching.
-  /// यह डेटा लोड करने का मुख्य तरीका है जो कैशिंग का उपयोग करता है।
   Future<void> _loadDataWithCache() async {
-    // Step 1: Try to load from cache and display immediately.
-    // स्टेप 1: कैश से डेटा लोड करके तुरंत दिखाने की कोशिश करें।
-    bool isLoadedFromCache = await _loadFromCache();
+    bool isLoadedFromCache = await _loadFromHiveCache();
 
-    // If cache is empty, show the main loading indicator.
-    // अगर कैश खाली है, तो मुख्य लोडिंग इंडिकेटर दिखाएं।
     if (!isLoadedFromCache && mounted) {
       setState(() {
         isLoading = true;
@@ -110,32 +104,208 @@ class _GenreNetworkWidgetState extends State<GenreNetworkWidget>
       });
     }
 
-    // Step 2: Always fetch fresh data from the network in the background.
-    // This will update the UI and the cache when it arrives.
-    // स्टेप 2: हमेशा बैकग्राउंड में नेटवर्क से नया डेटा फ़ेच करें।
-    // यह आने पर UI और कैश को अपडेट कर देगा।
     try {
-      await _fetchFromNetworkAndCache();
+      await _fetchFromNetworkAndCacheInHive();
     } catch (e) {
-      // If fetching fails and there was no cache, show an error.
-      // अगर फ़ेचिंग विफल हो जाती है और कोई कैश नहीं था, तो एक त्रुटि दिखाएं।
       if (!isLoadedFromCache && mounted) {
         setState(() {
-          errorMessage = e.toString();
+          errorMessage = 'Failed to load data: ${e.toString()}';
         });
       }
-      // If cache was already shown, we can ignore the network error silently
-      // as the user already sees some data.
       print("Background fetch failed: $e");
     } finally {
-      // Hide the main loading indicator once the initial load is done.
-      // प्रारंभिक लोड पूरा हो जाने पर मुख्य लोडिंग इंडिकेटर छिपा दें।
       if (mounted) {
         setState(() {
           isLoading = false;
         });
       }
     }
+  }
+
+  Future<bool> _loadFromHiveCache() async {
+    try {
+      final box = Hive.box('channelCache');
+      // कुंजी के रूप में स्ट्रिंग का उपयोग करें
+      final ChannelDataCache? cachedData =
+          box.get(widget.tvChannelId.toString());
+
+      if (cachedData != null) {
+        print("✅ Data found in Hive cache. Loading...");
+        if (mounted) {
+          setState(() {
+            availableGenres = cachedData.genres;
+          });
+          await _processContentData(cachedData.content);
+        }
+
+        _initializeAndScroll();
+        print("✅ Hive Cache loaded successfully.");
+        return true;
+      }
+    } catch (e) {
+      print("Error loading from Hive cache: $e");
+    }
+    print("ℹ️ No data in Hive cache for key: ${widget.tvChannelId}");
+    return false;
+  }
+
+  Future<void> _fetchFromNetworkAndCacheInHive() async {
+    print("🌐 Fetching fresh data from network for Hive...");
+    final prefs = await SharedPreferences.getInstance();
+    String authKey = prefs.getString('auth_key') ?? '';
+    if (authKey.isEmpty) throw Exception('Auth key not found');
+
+    try {
+      // समानांतर में दोनों API कॉल करें
+      final responses = await Future.wait([
+        https.get(
+          Uri.parse(
+              'https://dashboard.cpplayers.com/api/v2/getGenreByContentNetwork/${widget.tvChannelId}'),
+          headers: {
+            'auth-key': authKey,
+            'domain': 'coretechinfo.com',
+            'Accept': 'application/json'
+          },
+        ),
+        https.post(
+          Uri.parse(
+              'https://dashboard.cpplayers.com/api/v2/getAllContentsOfNetworkNew'),
+          headers: {
+            'auth-key': authKey,
+            'domain': 'coretechinfo.com',
+            'Content-Type': 'application/json'
+          },
+          body: json.encode({"genre": "", "network_id": widget.tvChannelId}),
+        ),
+      ]);
+
+      final genresResponse = responses[0];
+      final contentResponse = responses[1];
+
+      if (genresResponse.statusCode != 200)
+        throw Exception('Failed to fetch genres: ${genresResponse.statusCode}');
+      if (contentResponse.statusCode != 200)
+        throw Exception(
+            'Failed to fetch content: ${contentResponse.statusCode}');
+
+      final genresData = json.decode(genresResponse.body);
+      List<String> fetchedGenres = List<String>.from(genresData['genres']);
+      if (!fetchedGenres.contains('Web Series')) {
+        fetchedGenres.add('Web Series');
+      }
+
+      final contentData = json.decode(contentResponse.body);
+      final List<dynamic> contentListJson = contentData['data'] as List;
+      final List<ContentItem> fetchedContent = contentListJson
+          .map((itemJson) => ContentItem.fromJson(itemJson))
+          .toList();
+
+      final cacheEntry = ChannelDataCache(
+        genres: fetchedGenres,
+        content: fetchedContent,
+        timestamp: DateTime.now(),
+      );
+
+      final box = Hive.box('channelCache');
+      await box.put(widget.tvChannelId.toString(), cacheEntry);
+      print("💾 Fresh data saved to Hive cache for key: ${widget.tvChannelId}");
+
+      if (mounted) {
+        setState(() {
+          errorMessage = null;
+          availableGenres = fetchedGenres;
+        });
+        await _processContentData(fetchedContent);
+      }
+
+      _initializeAndScroll();
+      print("🌐 Network fetch and UI update complete.");
+    } catch (e, stackTrace) {
+      print(
+          '❌ [CRITICAL ERROR] A failure occurred in _fetchFromNetworkAndCacheInHive: $e');
+      print('Stack Trace: $stackTrace');
+      rethrow;
+    }
+  }
+
+  // _processContentData अब List<ContentItem> लेता है
+  Future<void> _processContentData(List<ContentItem> contentData) async {
+    contentData.sort((a, b) {
+      final int? orderA = a.seriesOrder;
+      final int? orderB = b.seriesOrder;
+      if (orderA == null && orderB == null) return 0;
+      if (orderA == null) return 1;
+      if (orderB == null) return -1;
+      return orderA.compareTo(orderB);
+    });
+
+    Map<String, List<ContentItem>> tempGenreMap = {};
+    for (String genre in availableGenres) {
+      tempGenreMap[genre] = [];
+    }
+
+    // अब JSON पार्सिंग की ज़रूरत नहीं
+    for (var content in contentData) {
+      if (content.status != 1) continue;
+
+      List<String> itemGenres =
+          content.genres.split(',').map((g) => g.trim()).toList();
+      bool addedToAnyGenre = false;
+
+      for (String itemGenre in itemGenres) {
+        for (String availableGenre in availableGenres) {
+          if (availableGenre.toLowerCase() == itemGenre.toLowerCase()) {
+            tempGenreMap[availableGenre]?.add(content);
+            addedToAnyGenre = true;
+            break;
+          }
+        }
+      }
+
+      if (!addedToAnyGenre && content.contentType == 2) {
+        if (availableGenres.contains('Web Series')) {
+          tempGenreMap['Web Series']?.add(content);
+        }
+      }
+    }
+
+    tempGenreMap.removeWhere((key, value) => value.isEmpty);
+
+    if (mounted) {
+      setState(() {
+        genreContentMap = tempGenreMap;
+      });
+    }
+  }
+
+  Future<void> _handleRefresh() async {
+    await _fetchFromNetworkAndCacheInHive();
+  }
+
+  // ... बाकी सभी विजेट लॉजिक, UI बिल्डर्स, और नेविगेशन हैंडलर्स यहाँ से आगे ...
+  // (यह कोड आपके मूल प्रश्न से अपरिवर्तित है)
+
+  void _initializeAndScroll() {
+    if (!mounted) return;
+    _initializeScrollControllers();
+    _fadeController.forward();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _widgetFocusNode.requestFocus();
+        _scrollToFocusedGenre();
+      }
+    });
+  }
+
+  void _initializeScrollControllers() {
+    for (var controller in _horizontalScrollControllers) {
+      controller.dispose();
+    }
+    _horizontalScrollControllers.clear();
+    _horizontalScrollControllers = List.generate(
+      genreContentMap.length,
+      (index) => ScrollController(),
+    );
   }
 
   /// Tries to load genres and content from SharedPreferences.
@@ -192,7 +362,7 @@ class _GenreNetworkWidgetState extends State<GenreNetworkWidget>
   //   // 1. Fetch and Cache Genres
   //   final genresResponse = await https.get(
   //     Uri.parse(
-  //         'https://acomtv.coretechinfo.com/public/api/getGenreByContentNetwork/${widget.tvChannelId}'),
+  //         'https://dashboard.cpplayers.com/public/api/getGenreByContentNetwork/${widget.tvChannelId}'),
   //     headers: {
   //       'auth-key': authKey,
   //       'Content-Type': 'application/json',
@@ -209,7 +379,7 @@ class _GenreNetworkWidgetState extends State<GenreNetworkWidget>
   //   // 2. Fetch and Cache Content
   //   final contentResponse = await https.post(
   //     Uri.parse(
-  //         'https://acomtv.coretechinfo.com/public/api/v2/getAllContentsOfNetworkNew'),
+  //         'https://dashboard.cpplayers.com/public/api/v2/getAllContentsOfNetworkNew'),
   //     headers: {
   //       'auth-key': authKey,
   //       'domain': 'coretechinfo.com',
@@ -248,18 +418,18 @@ class _GenreNetworkWidgetState extends State<GenreNetworkWidget>
 
   /// Helper function to initialize controllers and scroll into view.
   /// यह नियंत्रकों को शुरू करने और दृश्य में स्क्रॉल करने के लिए एक सहायक फ़ंक्शन है।
-  void _initializeAndScroll() {
-    if (!mounted) return;
-    _initializeScrollControllers();
-    _fadeController.forward();
+  // void _initializeAndScroll() {
+  //   if (!mounted) return;
+  //   _initializeScrollControllers();
+  //   _fadeController.forward();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        _widgetFocusNode.requestFocus();
-        _scrollToFocusedGenre();
-      }
-    });
-  }
+  //   WidgetsBinding.instance.addPostFrameCallback((_) {
+  //     if (mounted) {
+  //       _widgetFocusNode.requestFocus();
+  //       _scrollToFocusedGenre();
+  //     }
+  //   });
+  // }
 
   /// Fetches data from the network and saves it to the cache.
   /// नेटवर्क से डेटा फ़ेच करता है और उसे कैश में सहेजता है।
@@ -273,8 +443,8 @@ class _GenreNetworkWidgetState extends State<GenreNetworkWidget>
       // 1. Fetch and Cache Genres
       final genresResponse = await https.get(
         Uri.parse(
-            'https://acomtv.coretechinfo.com/api/v2/getGenreByContentNetwork/${widget.tvChannelId}'),
-        // 'https://acomtv.coretechinfo.com/public/api/getGenreByContentNetwork/${widget.tvChannelId}'),
+            'https://dashboard.cpplayers.com/api/v2/getGenreByContentNetwork/${widget.tvChannelId}'),
+        // 'https://dashboard.cpplayers.com/public/api/getGenreByContentNetwork/${widget.tvChannelId}'),
         headers: {
           'auth-key': authKey,
           'Content-Type': 'application/json',
@@ -292,7 +462,7 @@ class _GenreNetworkWidgetState extends State<GenreNetworkWidget>
       // 2. Fetch and Cache Content
       final contentResponse = await https.post(
         Uri.parse(
-            'https://acomtv.coretechinfo.com/api/v2/getAllContentsOfNetworkNew'),
+            'https://dashboard.cpplayers.com/api/v2/getAllContentsOfNetworkNew'),
         headers: {
           'auth-key': authKey,
           'domain': 'coretechinfo.com',
@@ -353,11 +523,11 @@ class _GenreNetworkWidgetState extends State<GenreNetworkWidget>
     }
   }
 
-  /// Pull to refresh functionality
-  Future<void> _handleRefresh() async {
-    // Refresh should always fetch from network, ignoring cache.
-    await _fetchFromNetworkAndCache();
-  }
+  // /// Pull to refresh functionality
+  // Future<void> _handleRefresh() async {
+  //   // Refresh should always fetch from network, ignoring cache.
+  //   await _fetchFromNetworkAndCache();
+  // }
 
   // =======================================================================
   // END OF NEW CACHING LOGIC
@@ -413,102 +583,102 @@ class _GenreNetworkWidgetState extends State<GenreNetworkWidget>
     }
   }
 
-  void _initializeScrollControllers() {
-    // Clear existing controllers first
-    for (var controller in _horizontalScrollControllers) {
-      // if (controller.hasClients) {
-        controller.dispose();
-      // }
-    }
-    _horizontalScrollControllers.clear();
+  // void _initializeScrollControllers() {
+  //   // Clear existing controllers first
+  //   for (var controller in _horizontalScrollControllers) {
+  //     // if (controller.hasClients) {
+  //       controller.dispose();
+  //     // }
+  //   }
+  //   _horizontalScrollControllers.clear();
 
-    // Create new ones
-    for (int i = 0; i < genreContentMap.length; i++) {
-      _horizontalScrollControllers.add(ScrollController());
-    }
-  }
+  //   // Create new ones
+  //   for (int i = 0; i < genreContentMap.length; i++) {
+  //     _horizontalScrollControllers.add(ScrollController());
+  //   }
+  // }
 
-  // Process content data in batches to prevent memory overload
-  Future<void> _processContentData(List<dynamic> contentData) async {
-    // Sort the data by 'series_order' before processing it
-    contentData.sort((a, b) {
-      // series_order null हो सकता है, इसलिए null-safety का ध्यान रखें
-      // Handle potential nulls for series_order
-      final int? orderA = a['series_order'];
-      final int? orderB = b['series_order'];
+  // // Process content data in batches to prevent memory overload
+  // Future<void> _processContentData(List<dynamic> contentData) async {
+  //   // Sort the data by 'series_order' before processing it
+  //   contentData.sort((a, b) {
+  //     // series_order null हो सकता है, इसलिए null-safety का ध्यान रखें
+  //     // Handle potential nulls for series_order
+  //     final int? orderA = a['series_order'];
+  //     final int? orderB = b['series_order'];
 
-      if (orderA == null && orderB == null)
-        return 0; // दोनों null हैं, तो कोई बदलाव नहीं
-      if (orderA == null) return 1; // null वाले आइटम्स को अंत में रखें
-      if (orderB == null) return -1; // null वाले आइटम्स को अंत में रखें
+  //     if (orderA == null && orderB == null)
+  //       return 0; // दोनों null हैं, तो कोई बदलाव नहीं
+  //     if (orderA == null) return 1; // null वाले आइटम्स को अंत में रखें
+  //     if (orderB == null) return -1; // null वाले आइटम्स को अंत में रखें
 
-      return orderA.compareTo(orderB); // बढ़ते क्रम में सॉर्ट करें (ascending)
-    });
+  //     return orderA.compareTo(orderB); // बढ़ते क्रम में सॉर्ट करें (ascending)
+  //   });
 
-    Map<String, List<ContentItem>> tempGenreMap = {};
+  //   Map<String, List<ContentItem>> tempGenreMap = {};
 
-    // Initialize genre map
-    for (String genre in availableGenres) {
-      tempGenreMap[genre] = [];
-    }
+  //   // Initialize genre map
+  //   for (String genre in availableGenres) {
+  //     tempGenreMap[genre] = [];
+  //   }
 
-    const batchSize = 10;
-    for (int i = 0; i < contentData.length; i += batchSize) {
-      if (!mounted) return; // Check if still mounted
+  //   const batchSize = 10;
+  //   for (int i = 0; i < contentData.length; i += batchSize) {
+  //     if (!mounted) return; // Check if still mounted
 
-      final endIndex = math.min(i + batchSize, contentData.length);
-      final batch = contentData.sublist(i, endIndex);
+  //     final endIndex = math.min(i + batchSize, contentData.length);
+  //     final batch = contentData.sublist(i, endIndex);
 
-      // Process batch
-      for (var contentItem in batch) {
-        if (contentItem['status'] != 1) continue;
+  //     // Process batch
+  //     for (var contentItem in batch) {
+  //       if (contentItem['status'] != 1) continue;
 
-        ContentItem content = ContentItem.fromJson(contentItem);
+  //       ContentItem content = ContentItem.fromJson(contentItem);
 
-        // Skip content without playable URLs for movies
-        if (content.contentType == 1 &&
-            (content.movieUrl == null || content.movieUrl!.isEmpty)) {
-          continue;
-        }
+  //       // Skip content without playable URLs for movies
+  //       if (content.contentType == 1 &&
+  //           (content.movieUrl == null || content.movieUrl!.isEmpty)) {
+  //         continue;
+  //       }
 
-        String contentGenres = contentItem['genres'] ?? '';
-        List<String> itemGenres =
-            contentGenres.split(',').map((g) => g.trim()).toList();
+  //       String contentGenres = contentItem['genres'] ?? '';
+  //       List<String> itemGenres =
+  //           contentGenres.split(',').map((g) => g.trim()).toList();
 
-        bool addedToAnyGenre = false;
+  //       bool addedToAnyGenre = false;
 
-        // Add to appropriate genres
-        for (String itemGenre in itemGenres) {
-          for (String availableGenre in availableGenres) {
-            if (availableGenre.toLowerCase() == itemGenre.toLowerCase()) {
-              tempGenreMap[availableGenre]?.add(content);
-              addedToAnyGenre = true;
-              break;
-            }
-          }
-        }
+  //       // Add to appropriate genres
+  //       for (String itemGenre in itemGenres) {
+  //         for (String availableGenre in availableGenres) {
+  //           if (availableGenre.toLowerCase() == itemGenre.toLowerCase()) {
+  //             tempGenreMap[availableGenre]?.add(content);
+  //             addedToAnyGenre = true;
+  //             break;
+  //           }
+  //         }
+  //       }
 
-        // Special handling for Web Series
-        if (!addedToAnyGenre && content.contentType == 2) {
-          if (availableGenres.contains('Web Series')) {
-            tempGenreMap['Web Series']?.add(content);
-          }
-        }
-      }
+  //       // Special handling for Web Series
+  //       if (!addedToAnyGenre && content.contentType == 2) {
+  //         if (availableGenres.contains('Web Series')) {
+  //           tempGenreMap['Web Series']?.add(content);
+  //         }
+  //       }
+  //     }
 
-      // Allow UI to breathe between batches
-      await Future.delayed(Duration.zero);
-    }
+  //     // Allow UI to breathe between batches
+  //     await Future.delayed(Duration.zero);
+  //   }
 
-    // Remove empty genres
-    tempGenreMap.removeWhere((key, value) => value.isEmpty);
+  //   // Remove empty genres
+  //   tempGenreMap.removeWhere((key, value) => value.isEmpty);
 
-    if (mounted) {
-      setState(() {
-        genreContentMap = tempGenreMap;
-      });
-    }
-  }
+  //   if (mounted) {
+  //     setState(() {
+  //       genreContentMap = tempGenreMap;
+  //     });
+  //   }
+  // }
 
   // Key navigation handler
   void _handleKeyNavigation(RawKeyEvent event) {
@@ -625,7 +795,6 @@ class _GenreNetworkWidgetState extends State<GenreNetworkWidget>
 
     String? playableUrl = content.getPlayableUrl();
 
-
     try {
       print('Updating user history for: ${content.name}');
       int? currentUserId = SessionManager.userId;
@@ -647,10 +816,6 @@ class _GenreNetworkWidgetState extends State<GenreNetworkWidget>
     try {
       // Special handling for Web Series - Navigate to WebSeriesDetailsPage
       if (content.contentType == 2) {
-
-
-
-        
         // Navigate to Web Series Details Page instead of playing trailer
         await Navigator.push(
           context,
@@ -660,7 +825,7 @@ class _GenreNetworkWidgetState extends State<GenreNetworkWidget>
               banner: content.banner ?? '',
               poster: content.poster ?? '',
               logo: widget.channelLogo ?? '',
-              name: content.name, 
+              name: content.name,
               updatedAt: content.updatedAt,
             ),
           ),
@@ -734,16 +899,16 @@ class _GenreNetworkWidgetState extends State<GenreNetworkWidget>
         //     ),
         //   ),
         // );
-          await Navigator.push(
+        await Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => VideoScreen(
               videoUrl: playableUrl,
-              bannerImageUrl: content.poster ?? content.banner ?? '' ,
+              bannerImageUrl: content.poster ?? content.banner ?? '',
               channelList: [],
               videoId: content.id,
               name: content.name,
-              liveStatus: false, 
+              liveStatus: false,
               updatedAt: content.updatedAt,
               source: 'isVod',
             ),
@@ -826,7 +991,6 @@ class _GenreNetworkWidgetState extends State<GenreNetworkWidget>
   }
 
   Widget _buildProfessionalAppBar() {
-    
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -1904,132 +2068,132 @@ class OptimizedContentCard extends StatelessWidget {
   }
 }
 
-// All other classes remain the same but simplified
-class ContentItem {
-  final int id;
-  final String name;
-  final String? description;
-  final String genres;
-  final String? releaseDate;
-  final int? runtime;
-  final String? poster;
-  final String? banner;
-  final String? sourceType;
-  final int contentType;
-  final int status;
-  final List<NetworkData> networks;
-  final String? movieUrl;
-  final int? seriesOrder;
-  final String? youtubeTrailer;
-  final String updatedAt;
+// // All other classes remain the same but simplified
+// class ContentItem {
+//   final int id;
+//   final String name;
+//   final String? description;
+//   final String genres;
+//   final String? releaseDate;
+//   final int? runtime;
+//   final String? poster;
+//   final String? banner;
+//   final String? sourceType;
+//   final int contentType;
+//   final int status;
+//   final List<NetworkData> networks;
+//   final String? movieUrl;
+//   final int? seriesOrder;
+//   final String? youtubeTrailer;
+//   final String updatedAt;
 
-  ContentItem({
-    required this.id,
-    required this.name,
-    required this.updatedAt,
-    this.description,
-    required this.genres,
-    this.releaseDate,
-    this.runtime,
-    this.poster,
-    this.banner,
-    this.sourceType,
-    required this.contentType,
-    required this.status,
-    required this.networks,
-    this.movieUrl,
-    this.seriesOrder,
-    this.youtubeTrailer,
-  });
+//   ContentItem({
+//     required this.id,
+//     required this.name,
+//     required this.updatedAt,
+//     this.description,
+//     required this.genres,
+//     this.releaseDate,
+//     this.runtime,
+//     this.poster,
+//     this.banner,
+//     this.sourceType,
+//     required this.contentType,
+//     required this.status,
+//     required this.networks,
+//     this.movieUrl,
+//     this.seriesOrder,
+//     this.youtubeTrailer,
+//   });
 
-  factory ContentItem.fromJson(Map<String, dynamic> json) {
-    List<NetworkData> networksList = [];
-    if (json['networks'] != null) {
-      for (var network in json['networks']) {
-        networksList.add(NetworkData(
-          id: network['id'],
-          name: network['name'],
-          logo: network['logo'],
-        ));
-      }
-    }
+//   factory ContentItem.fromJson(Map<String, dynamic> json) {
+//     List<NetworkData> networksList = [];
+//     if (json['networks'] != null) {
+//       for (var network in json['networks']) {
+//         networksList.add(NetworkData(
+//           id: network['id'],
+//           name: network['name'],
+//           logo: network['logo'],
+//         ));
+//       }
+//     }
 
-    return ContentItem(
-      id: json['id'],
-      name: json['name'] ?? '',
-      updatedAt: json['updated_at'] ?? '',
-      description: json['description'],
-      genres: json['genres'] ?? '',
-      releaseDate: json['release_date'],
-      runtime: json['runtime'],
-      poster: json['poster'],
-      banner: json['banner'],
-      sourceType: json['source_type'],
-      contentType: json['content_type'] ?? 1,
-      status: json['status'] ?? 0,
-      networks: networksList,
-      movieUrl: json['movie_url'],
-      seriesOrder: json['series_order'],
-      youtubeTrailer: json['youtube_trailer'],
-    );
-  }
+//     return ContentItem(
+//       id: json['id'],
+//       name: json['name'] ?? '',
+//       updatedAt: json['updated_at'] ?? '',
+//       description: json['description'],
+//       genres: json['genres'] ?? '',
+//       releaseDate: json['release_date'],
+//       runtime: json['runtime'],
+//       poster: json['poster'],
+//       banner: json['banner'],
+//       sourceType: json['source_type'],
+//       contentType: json['content_type'] ?? 1,
+//       status: json['status'] ?? 0,
+//       networks: networksList,
+//       movieUrl: json['movie_url'],
+//       seriesOrder: json['series_order'],
+//       youtubeTrailer: json['youtube_trailer'],
+//     );
+//   }
 
-  String? getPlayableUrl() {
-    if (contentType == 1 && movieUrl != null && movieUrl!.isNotEmpty) {
-      return movieUrl;
-    }
+//   String? getPlayableUrl() {
+//     if (contentType == 1 && movieUrl != null && movieUrl!.isNotEmpty) {
+//       return movieUrl;
+//     }
 
-    if (contentType == 2) {
-      if (youtubeTrailer != null && youtubeTrailer!.isNotEmpty) {
-        return youtubeTrailer;
-      }
-      return null;
-    }
+//     if (contentType == 2) {
+//       if (youtubeTrailer != null && youtubeTrailer!.isNotEmpty) {
+//         return youtubeTrailer;
+//       }
+//       return null;
+//     }
 
-    return movieUrl;
-  }
+//     return movieUrl;
+//   }
 
-  bool get isPlayable {
-    if (contentType == 2) {
-      return true;
-    }
-    String? url = getPlayableUrl();
-    return url != null && url.isNotEmpty;
-  }
+//   bool get isPlayable {
+//     if (contentType == 2) {
+//       return true;
+//     }
+//     String? url = getPlayableUrl();
+//     return url != null && url.isNotEmpty;
+//   }
 
-  String get contentTypeName {
-    switch (contentType) {
-      case 1:
-        return 'Movie';
-      case 2:
-        return 'Web Series';
-      default:
-        return 'Unknown';
-    }
-  }
-}
+//   String get contentTypeName {
+//     switch (contentType) {
+//       case 1:
+//         return 'Movie';
+//       case 2:
+//         return 'Web Series';
+//       default:
+//         return 'Unknown';
+//     }
+//   }
+// }
 
-class NetworkData {
-  final int id;
-  final String name;
-  final String logo;
+// class NetworkData {
+//   final int id;
+//   final String name;
+//   final String logo;
 
-  NetworkData({
-    required this.id,
-    required this.name,
-    required this.logo,
-  });
+//   NetworkData({
+//     required this.id,
+//     required this.name,
+//     required this.logo,
+//   });
 
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is NetworkData &&
-          runtimeType == other.runtimeType &&
-          id == other.id;
+//   @override
+//   bool operator ==(Object other) =>
+//       identical(this, other) ||
+//       other is NetworkData &&
+//           runtimeType == other.runtimeType &&
+//           id == other.id;
 
-  @override
-  int get hashCode => id.hashCode;
-}
+//   @override
+//   int get hashCode => id.hashCode;
+// }
 
 // OPTIMIZED Genre All Content Page
 class GenreAllContentPage extends StatefulWidget {
@@ -2057,7 +2221,7 @@ class _GenreAllContentPageState extends State<GenreAllContentPage>
 
   int focusedIndex = 0;
   bool _isVideoLoading = false;
-  final SocketService _socketService = SocketService();
+  // final SocketService _socketService = SocketService();
   static const double _gridMainAxisSpacing = 10.0;
 
   late AnimationController _fadeController;
@@ -2067,7 +2231,7 @@ class _GenreAllContentPageState extends State<GenreAllContentPage>
   @override
   void initState() {
     super.initState();
-    _socketService.initSocket();
+    // _socketService.initSocket();
 
     _fadeController = AnimationController(
       duration: const Duration(milliseconds: 600),
@@ -2106,7 +2270,7 @@ class _GenreAllContentPageState extends State<GenreAllContentPage>
       node.dispose();
     }
     _scrollController.dispose();
-    _socketService.dispose();
+    // _socketService.dispose();
     super.dispose();
   }
 
@@ -2175,7 +2339,7 @@ class _GenreAllContentPageState extends State<GenreAllContentPage>
       int? currentUserId = SessionManager.userId;
 
       final int? parsedContentType = content.contentType;
-      final int? parsedId = content.id ;
+      final int? parsedId = content.id;
 
       await HistoryService.updateUserHistory(
         userId: currentUserId!, // 1. User ID
@@ -2202,7 +2366,8 @@ class _GenreAllContentPageState extends State<GenreAllContentPage>
                 banner: content.banner ?? '',
                 poster: content.poster ?? '',
                 logo: widget.channelLogo ?? '',
-                name: content.name, updatedAt: content.updatedAt,
+                name: content.name,
+                updatedAt: content.updatedAt,
               ),
             ),
           );
@@ -2267,17 +2432,17 @@ class _GenreAllContentPageState extends State<GenreAllContentPage>
         //     ),
         //   ),
         // );
-          await Navigator.push(
+        await Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => VideoScreen(
               videoUrl: playableUrl,
-              bannerImageUrl: content.poster ?? content.banner ?? '' ,
+              bannerImageUrl: content.poster ?? content.banner ?? '',
               channelList: [],
               videoId: content.id,
               name: content.name,
-              liveStatus: false, 
-              updatedAt: content.updatedAt, 
+              liveStatus: false,
+              updatedAt: content.updatedAt,
               source: 'isVod',
             ),
           ),

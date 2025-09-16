@@ -392,8 +392,8 @@ class MovieService {
 
   //     final response = await http.get(
   //       Uri.parse(
-  //           'https://acomtv.coretechinfo.com/public/api/getAllMovies?records=8'),
-  //           // 'https://acomtv.coretechinfo.com/public/api/getAllMovies'),
+  //           'https://dashboard.cpplayers.com/public/api/getAllMovies?records=8'),
+  //           // 'https://dashboard.cpplayers.com/public/api/getAllMovies'),
   //       headers: {'auth-key': authKey},
   //     ).timeout(
   //       const Duration(seconds: 30),
@@ -448,8 +448,8 @@ class MovieService {
 
   //     final response = await http.get(
   //       Uri.parse(
-  //           // 'https://acomtv.coretechinfo.com/public/api/getAllMovies?records=50'), // No records parameter for full data
-  //           'https://acomtv.coretechinfo.com/public/api/getAllMovies?records=500'), // No records parameter for full data
+  //           // 'https://dashboard.cpplayers.com/public/api/getAllMovies?records=50'), // No records parameter for full data
+  //           'https://dashboard.cpplayers.com/public/api/getAllMovies?records=500'), // No records parameter for full data
   //       headers: {'auth-key': authKey},
   //     ).timeout(
   //       const Duration(seconds: 30),
@@ -506,7 +506,7 @@ class MovieService {
 
       final response = await https.get(
         Uri.parse(
-            'https://acomtv.coretechinfo.com/api/v2/getAllMovies?records=8'),
+            'https://dashboard.cpplayers.com/api/v2/getAllMovies?records=8'),
         headers: {
           'auth-key': authKey,
           'Content-Type': 'application/json',
@@ -566,7 +566,7 @@ class MovieService {
 
       final response = await https.get(
         Uri.parse(
-            'https://acomtv.coretechinfo.com/api/v2/getAllMovies?records=100'),
+            'https://dashboard.cpplayers.com/api/v2/getAllMovies?records=100'),
         headers: {
           'auth-key': authKey,
           'Content-Type': 'application/json',
@@ -1147,19 +1147,18 @@ class _ProfessionalMoviesHorizontalListState
     if (_isNavigating) return;
     _isNavigating = true;
 
-
-        try{
-          print('Updating user history for: ${movie.name}');
+    try {
+      print('Updating user history for: ${movie.name}');
       int? currentUserId = SessionManager.userId;
-    // final int? parsedContentType = movie.contentType;
-    final int? parsedId = movie.id ;
+      // final int? parsedContentType = movie.contentType;
+      final int? parsedId = movie.id;
 
       await HistoryService.updateUserHistory(
         userId: currentUserId!, // 1. User ID
         contentType: 1, // 2. Content Type (movie के लिए 4)
         eventId: parsedId!, // 3. Event ID (movie की ID)
         eventTitle: movie.name, // 4. Event Title (movie का नाम)
-        url: movie.movieUrl , // 5. URL (movie का URL)
+        url: movie.movieUrl, // 5. URL (movie का URL)
         categoryId: 0, // 6. Category ID (डिफ़ॉल्ट 1)
       );
     } catch (e) {
@@ -1236,7 +1235,8 @@ class _ProfessionalMoviesHorizontalListState
                   sourceType: movie.sourceType,
                   liveStatus: false,
                   poster: movie.poster ?? movie.banner ?? '',
-                  image: movie.banner ?? movie.poster ?? '', updatedAt: movie.updatedAt,
+                  image: movie.banner ?? movie.poster ?? '',
+                  updatedAt: movie.updatedAt,
                   // Other required fields...
                 ))
             .toList();
@@ -1337,19 +1337,19 @@ class _ProfessionalMoviesHorizontalListState
         //     ),
         //   ),
         // );
-          await Navigator.push(
+        await Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => VideoScreen(
               videoUrl: movie.movieUrl,
-              bannerImageUrl: movie.banner??movie.poster??''  ,
+              bannerImageUrl: movie.banner ?? movie.poster ?? '',
               channelList: [],
               source: 'isRecentlyAdded',
               // isLive: false,
               // isSearch: false,
               videoId: movie.id,
               name: movie.name,
-              liveStatus: false, 
+              liveStatus: false,
               updatedAt: movie.updatedAt,
             ),
           ),
@@ -1543,8 +1543,7 @@ class _ProfessionalMoviesHorizontalListState
               String prevMovieId = displayMoviesList[index - 1].id.toString();
               FocusScope.of(context).requestFocus(movieFocusNodes[prevMovieId]);
             }
-              return KeyEventResult.handled;
-
+            return KeyEventResult.handled;
           } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
             // ✅ ADD: Reset color when navigating away
             context.read<ColorProvider>().resetColor();
@@ -2283,9 +2282,11 @@ class _ProfessionalMovieCardState extends State<ProfessionalMovieCard>
   }
 
   Widget _buildMovieImage(double screenWidth, double posterHeight) {
-      final String uniqueImageUrl = "${widget.movie.banner}?v=${widget.movie.updatedAt}";
-  // ✅ Naya unique cache key banayein
-  final String uniqueCacheKey = "${widget.movie.id.toString()}_${widget.movie.updatedAt}";
+    final String uniqueImageUrl =
+        "${widget.movie.banner}?v=${widget.movie.updatedAt}";
+    // ✅ Naya unique cache key banayein
+    final String uniqueCacheKey =
+        "${widget.movie.id.toString()}_${widget.movie.updatedAt}";
     return Container(
       width: double.infinity,
       height: posterHeight,
@@ -3166,20 +3167,18 @@ class _ProfessionalMoviesGridViewState extends State<ProfessionalMoviesGridView>
       _isLoading = true;
     });
 
-
-
-            try{
-          print('Updating user history for: ${movie.name}');
+    try {
+      print('Updating user history for: ${movie.name}');
       int? currentUserId = SessionManager.userId;
-    // final int? parsedContentType = movie.contentType;
-    final int? parsedId = movie.id ;
+      // final int? parsedContentType = movie.contentType;
+      final int? parsedId = movie.id;
 
       await HistoryService.updateUserHistory(
         userId: currentUserId!, // 1. User ID
         contentType: 1, // 2. Content Type (movie के लिए 4)
         eventId: parsedId!, // 3. Event ID (movie की ID)
         eventTitle: movie.name, // 4. Event Title (movie का नाम)
-        url: movie.movieUrl , // 5. URL (movie का URL)
+        url: movie.movieUrl, // 5. URL (movie का URL)
         categoryId: 0, // 6. Category ID (डिफ़ॉल्ट 1)
       );
     } catch (e) {
@@ -3316,23 +3315,23 @@ class _ProfessionalMoviesGridViewState extends State<ProfessionalMoviesGridView>
           //     ),
           //   ),
           // );
-            await Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => VideoScreen(
-              videoUrl: movie.movieUrl,
-              bannerImageUrl: movie.banner??movie.poster??''  ,
-              channelList: [],
-              source: 'isRecentlyAdded',
-              // isLive: false,
-              // isSearch: false,
-              videoId: movie.id,
-              name: movie.name,
-              liveStatus: false, 
-              updatedAt: movie.updatedAt,
+          await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => VideoScreen(
+                videoUrl: movie.movieUrl,
+                bannerImageUrl: movie.banner ?? movie.poster ?? '',
+                channelList: [],
+                source: 'isRecentlyAdded',
+                // isLive: false,
+                // isSearch: false,
+                videoId: movie.id,
+                name: movie.name,
+                liveStatus: false,
+                updatedAt: movie.updatedAt,
+              ),
             ),
-          ),
-        );
+          );
         }
       }
     } catch (e) {
@@ -3985,9 +3984,11 @@ class _ProfessionalGridMovieCardState extends State<ProfessionalGridMovieCard>
   }
 
   Widget _buildMovieImage() {
-          final String uniqueImageUrl = "${widget.movie.banner}?v=${widget.movie.updatedAt}";
-  // ✅ Naya unique cache key banayein
-  final String uniqueCacheKey = "${widget.movie.id.toString()}_${widget.movie.updatedAt}";
+    final String uniqueImageUrl =
+        "${widget.movie.banner}?v=${widget.movie.updatedAt}";
+    // ✅ Naya unique cache key banayein
+    final String uniqueCacheKey =
+        "${widget.movie.id.toString()}_${widget.movie.updatedAt}";
     return Container(
       width: double.infinity,
       height: double.infinity,

@@ -140,7 +140,7 @@
 //                   key: _itemKeys[row * _crossAxisCount + col],
 //                   item: _musicList[index],
 //                   hideDescription: true,
-//                   onTap: () => _navigateToVideoScreen(_musicList[index]),
+//                   onTap: () => _navigateToLiveVideoScreen(_musicList[index]),
 //                   onEnterPress: _handleEnterPress,
 //                   focusNode: _focusNodes[row][col],
 //                   onUpPress: () => _handleUpPress(row, col),
@@ -343,10 +343,10 @@
 
 //   void _handleEnterPress(String itemId) {
 //     final selectedItem = _musicList.firstWhere((item) => item.id == itemId);
-//     _navigateToVideoScreen(selectedItem);
+//     _navigateToLiveVideoScreen(selectedItem);
 //   }
 
-//   Future<void> _navigateToVideoScreen(NewsItemModel newsItem) async {
+//   Future<void> _navigateToLiveVideoScreen(NewsItemModel newsItem) async {
 //     if (_isNavigating) return;
 //     _isNavigating = true;
 
@@ -417,7 +417,7 @@
 //         await Navigator.push(
 //           context,
 //           MaterialPageRoute(
-//             builder: (context) => VideoScreen(
+//             builder: (context) => LiveVideoScreen(
 //               videoUrl: newsItem.url,
 //               bannerImageUrl: newsItem.banner,
 //               startAtPosition: Duration.zero,
@@ -466,6 +466,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:mobi_tv_entertainment/provider/focus_provider.dart';
+import 'package:mobi_tv_entertainment/video_widget/live_video_screen.dart';
 import 'package:mobi_tv_entertainment/video_widget/video_screen.dart';
 import 'package:mobi_tv_entertainment/widgets/models/news_item_model.dart';
 import 'package:provider/provider.dart';
@@ -704,7 +705,7 @@ class _LiveScreenState extends State<LiveScreen> with TickerProviderStateMixin {
       final authKey = prefs.getString('auth_key') ?? '';
       final response = await http.get(
         Uri.parse(
-            'https://acomtv.coretechinfo.com/public/api/getFeaturedLiveTV'),
+            'https://dashboard.cpplayers.com/public/api/getFeaturedLiveTV'),
         headers: {'auth-key': authKey},
       );
 
@@ -987,7 +988,7 @@ class _LiveScreenState extends State<LiveScreen> with TickerProviderStateMixin {
               // Fill other fields as needed
               videoId: '', description: ch.description ?? '', poster: ch.banner,
               category: ch.genres,
-              type: ch.streamType, image: ch.banner, 
+              type: ch.streamType, image: ch.banner,
               unUpdatedUrl: ch.url,
             ))
         .toList();
@@ -997,11 +998,12 @@ class _LiveScreenState extends State<LiveScreen> with TickerProviderStateMixin {
     await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => VideoScreen(
+        builder: (context) => LiveVideoScreen(
           videoUrl: channel.url,
           bannerImageUrl: channel.banner,
           name: channel.name,
           channelList: allItems,
+          // channelList: [],
           liveStatus: true,
           // --- Pass other required parameters ---
           // startAtPosition: Duration.zero,
@@ -1011,8 +1013,8 @@ class _LiveScreenState extends State<LiveScreen> with TickerProviderStateMixin {
           // isBannerSlider: false,
           // source: 'isLiveScreen',
           // isSearch: false,
-          videoId: channel.id, 
-          updatedAt: channel.updatedAt ,
+          videoId: channel.id,
+          updatedAt: channel.updatedAt,
           source: 'isLiveMeenu',
           // unUpdatedUrl: channel.url,
         ),

@@ -35,7 +35,7 @@
 
 // //     final response = await https.get(
 // //       Uri.parse(
-// //           'https://acomtv.coretechinfo.com/api/v2/searchContent/${searchTerm}/0'),
+// //           'https://dashboard.cpplayers.com/api/v2/searchContent/${searchTerm}/0'),
 // //       headers: {
 // //         'auth-key': authKey,
 // //         'Accept': 'application/json',
@@ -113,7 +113,7 @@
 // //               String bannerPath = itemData['banner'].toString();
 // //               // Add base URL for relative paths
 // //               itemData['banner'] =
-// //                   'https://acomtv.coretechinfo.com/public/$bannerPath';
+// //                   'https://dashboard.cpplayers.com/public/$bannerPath';
 // //             }
 
 // //             NewsItemModel item = NewsItemModel.fromJson(itemData);
@@ -155,7 +155,7 @@
 //     }
 
 //     // 1. API URL ko naye endpoint par change karein
-//     final url = Uri.parse('https://acomtv.coretechinfo.com/api/v2/getSearchCategoryList');
+//     final url = Uri.parse('https://dashboard.cpplayers.com/api/v2/getSearchCategoryList');
 
 //     // 2. Request body banayein jismein keywords ho
 //     final body = json.encode({
@@ -243,7 +243,7 @@
 //               String bannerPath = itemData['banner'].toString();
 //               // Add base URL for relative paths
 //               itemData['banner'] =
-//                   'https://acomtv.coretechinfo.com/public/$bannerPath';
+//                   'https://dashboard.cpplayers.com/public/$bannerPath';
 //             }
 
 //             NewsItemModel item = NewsItemModel.fromJson(itemData);
@@ -290,7 +290,7 @@
 //     String authKey = AuthManager.authKey;
 
 //     final response = await https.get(
-//       Uri.parse('https://acomtv.coretechinfo.com/public/api/getSettings'),
+//       Uri.parse('https://dashboard.cpplayers.com/public/api/getSettings'),
 //       headers: {
 //         'auth-key': authKey,
 //         'Accept': 'application/json',
@@ -1096,11 +1096,6 @@
 //   }
 // }
 
-
-
-
-
-
 // import 'dart:async';
 // import 'dart:convert';
 // import 'dart:math' as math;
@@ -1148,7 +1143,7 @@
 //     }
 
 //     final url = Uri.parse(
-//         'https://acomtv.coretechinfo.com/api/v2/getSearchCategoryList');
+//         'https://dashboard.cpplayers.com/api/v2/getSearchCategoryList');
 //     final body = json.encode({'keywords': searchTerm});
 
 //     final response = await https.post(
@@ -1190,7 +1185,7 @@
 //                 !itemData['banner'].toString().startsWith('http')) {
 //               String bannerPath = itemData['banner'].toString();
 //               itemData['banner'] =
-//                   'https://acomtv.coretechinfo.com/public/$bannerPath';
+//                   'https://dashboard.cpplayers.com/public/$bannerPath';
 //             }
 //             newsItems.add(NewsItemModel.fromJson(itemData));
 //           } catch (e) {
@@ -1902,12 +1897,6 @@
 //   }
 // }
 
-
-
-
-
-
-
 // import 'dart:async';
 // import 'dart:convert';
 // import 'dart:typed_data';
@@ -1918,7 +1907,7 @@
 // import 'package:http/http.dart' as https;
 // import 'package:mobi_tv_entertainment/home_screen_pages/webseries_screen/webseries_details_page.dart';
 // // ✅ CHANGE: ColorProvider की अब ज़रूरत नहीं है, इसलिए इसे हटा दिया गया है।
-// // import 'package:mobi_tv_entertainment/provider/color_provider.dart'; 
+// // import 'package:mobi_tv_entertainment/provider/color_provider.dart';
 // import 'package:mobi_tv_entertainment/provider/device_info_provider.dart';
 // import 'package:mobi_tv_entertainment/video_widget/custom_youtube_player.dart';
 // import 'package:mobi_tv_entertainment/video_widget/video_screen.dart';
@@ -1976,7 +1965,7 @@
 //         '';
 
 //     if (bannerUrl.isNotEmpty && !bannerUrl.startsWith('http')) {
-//       bannerUrl = 'https://acomtv.coretechinfo.com/public/$bannerUrl';
+//       bannerUrl = 'https://dashboard.cpplayers.com/public/$bannerUrl';
 //     }
 
 //     return NewsItemModel(
@@ -2001,7 +1990,7 @@
 //     // }
 
 //     final url = Uri.parse(
-//         'https://acomtv.coretechinfo.com/api/v2/getSearchCategoryList');
+//         'https://dashboard.cpplayers.com/api/v2/getSearchCategoryList');
 //     final body = json.encode({'keywords': searchTerm});
 
 //     final response = await https.post(
@@ -2080,11 +2069,11 @@
 //   bool _shouldContinueLoading = true;
 //   String _errorMessage = '';
 //   bool _searchSubmittedWithEnter = false;
-  
-//   final FocusNode _gridFocusNode = FocusNode(); 
-//   int _focusedIndex = 0; 
-//   static const int _itemsPerRow = 6; 
-//   final ScrollController _scrollController = ScrollController(); 
+
+//   final FocusNode _gridFocusNode = FocusNode();
+//   int _focusedIndex = 0;
+//   static const int _itemsPerRow = 6;
+//   final ScrollController _scrollController = ScrollController();
 
 //   // ... initState and other methods remain the same ...
 //   @override
@@ -2157,7 +2146,7 @@
 //       Navigator.of(context, rootNavigator: true).pop();
 //     }
 //   }
-  
+
 //   Future<void> _navigateToVideoScreen(
 //       BuildContext context, List<NewsItemModel> channels, int index) async {
 //     // This function remains unchanged
@@ -2263,7 +2252,6 @@
 //         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
 //             content: Text('This content type is not supported.')));
 //       }
-
 
 //       if(parsedContentType == 3){
 //           await Navigator.push(
@@ -2508,7 +2496,7 @@
 //                           _searchSubmittedWithEnter = true;
 //                           _performSearch(value);
 //                           _searchFieldFocusNode.unfocus();
-//                           _gridFocusNode.requestFocus(); 
+//                           _gridFocusNode.requestFocus();
 //                         } else {
 //                           _toggleSearchField();
 //                         }
@@ -2558,7 +2546,7 @@
 //       ),
 //     );
 //   }
-  
+
 //   Widget _buildBody() {
 //     // This widget remains unchanged
 //     if (_errorMessage.isNotEmpty) {
@@ -2575,7 +2563,7 @@
 //           child:
 //               Text('No results found', style: TextStyle(color: Colors.white)));
 //     }
-    
+
 //     return RawKeyboardListener(
 //       focusNode: _gridFocusNode,
 //       onKey: _handleKeyNavigation,
@@ -2619,7 +2607,7 @@
 //     required this.isFocused,
 //     required this.onTap,
 //   }) : super(key: key);
-  
+
 //   final String localImage = 'assets/placeholder.png';
 
 //   @override
@@ -2671,7 +2659,7 @@
 //     if (imageUrl.isEmpty) {
 //       return Image.asset(localImage, fit: BoxFit.cover);
 //     }
-    
+
 //     if (imageUrl.startsWith('data:image')) {
 //       try {
 //         final imageBytes = _getImageFromBase64String(imageUrl);
@@ -2756,11 +2744,6 @@
 //   }
 // }
 
-
-
-
-
-
 import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
@@ -2772,6 +2755,7 @@ import 'package:http/http.dart' as https;
 import 'package:mobi_tv_entertainment/home_screen_pages/webseries_screen/webseries_details_page.dart';
 import 'package:mobi_tv_entertainment/provider/device_info_provider.dart';
 import 'package:mobi_tv_entertainment/video_widget/custom_youtube_player.dart';
+import 'package:mobi_tv_entertainment/video_widget/live_video_screen.dart';
 import 'package:mobi_tv_entertainment/video_widget/video_screen.dart';
 import 'package:mobi_tv_entertainment/video_widget/youtube_webview_player.dart';
 import 'package:mobi_tv_entertainment/widgets/models/news_item_model.dart';
@@ -2824,7 +2808,7 @@ class ProfessionalVODColors {
 //         '';
 
 //     if (bannerUrl.isNotEmpty && !bannerUrl.startsWith('http')) {
-//       bannerUrl = 'https://acomtv.coretechinfo.com/public/$bannerUrl';
+//       bannerUrl = 'https://dashboard.cpplayers.com/public/$bannerUrl';
 //     }
 
 //     return NewsItemModel(
@@ -2840,15 +2824,12 @@ class ProfessionalVODColors {
 //   }
 // }
 
-
-
-
 // Future<List<NewsItemModel>> fetchFromApi(String searchTerm) async {
 //   try {
 //     SharedPreferences prefs = await SharedPreferences.getInstance();
 //     String? authKey = prefs.getString('auth_key');
 
-//     final url = Uri.parse('https://acomtv.coretechinfo.com/api/v2/getSearchCategoryList');
+//     final url = Uri.parse('https://dashboard.cpplayers.com/api/v2/getSearchCategoryList');
 //     final body = json.encode({'keywords': searchTerm});
 
 //     final response = await https.post(
@@ -2901,14 +2882,13 @@ class ProfessionalVODColors {
 //   }
 // }
 
-
-
 Future<List<NewsItemModel>> fetchFromApi(String searchTerm) async {
   try {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? authKey = prefs.getString('auth_key');
 
-    final url = Uri.parse('https://acomtv.coretechinfo.com/api/v2/getSearchCategoryList');
+    final url = Uri.parse(
+        'https://dashboard.cpplayers.com/api/v2/getSearchCategoryList');
     final body = json.encode({'keywords': searchTerm});
 
     final response = await https.post(
@@ -2940,7 +2920,8 @@ Future<List<NewsItemModel>> fetchFromApi(String searchTerm) async {
         for (var itemDataRaw in dataList) {
           try {
             // --- FIX: Only add items if their status is 1 ---
-            if (itemDataRaw is Map<String, dynamic> && itemDataRaw['status']?.toString() == '1') {
+            if (itemDataRaw is Map<String, dynamic> &&
+                itemDataRaw['status']?.toString() == '1') {
               newsItems.add(NewsItemModel.fromJson(itemDataRaw));
             }
           } catch (e) {
@@ -2978,7 +2959,8 @@ class SearchScreen extends StatefulWidget {
   _SearchScreenState createState() => _SearchScreenState();
 }
 
-class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMixin {
+class _SearchScreenState extends State<SearchScreen>
+    with TickerProviderStateMixin {
   List<NewsItemModel> searchResults = [];
   bool isLoading = false;
   final TextEditingController _searchController = TextEditingController();
@@ -3007,7 +2989,9 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
     super.initState();
     _searchIconFocusNode.addListener(() => setState(() {}));
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<FocusProvider>().setSearchIconFocusNode(_searchIconFocusNode);
+      context
+          .read<FocusProvider>()
+          .setSearchIconFocusNode(_searchIconFocusNode);
     });
   }
 
@@ -3098,10 +3082,6 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
       Navigator.of(context, rootNavigator: true).pop();
     }
   }
-
-
-
-
 
   // Future<void> _navigateToVideoScreen(
   //     BuildContext context, List<NewsItemModel> channels, int index) async {
@@ -3227,113 +3207,118 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
   //   }
   // }
 
-
-
-
-  
-Future<void> _navigateToVideoScreen(
-    BuildContext context, List<NewsItemModel> channels, int index) async {
-  if (index < 0 || index >= channels.length) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Invalid channel index')),
-    );
-    return;
-  }
-
-  final channel = channels[index];
-  final int? parsedContentType = int.tryParse(channel.contentType);
-
-  // --- SOLUTION START ---
-  // Step 1: Pehle un content types ko handle karein jinhe details page chahiye.
-  // Inko video URL ki zaroorat nahi hai.
-  try {
-    if (parsedContentType == 2) { // WebSeries
-      await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => WebSeriesDetailsPage(
-            id: int.tryParse(channel.id) ?? 0,
-            banner: channel.banner,
-            poster: channel.poster,
-            logo: channel.banner,
-            name: channel.name, updatedAt: channel.updatedAt,
-          ),
-        ),
+  Future<void> _navigateToVideoScreen(
+      BuildContext context, List<NewsItemModel> channels, int index) async {
+    if (index < 0 || index >= channels.length) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Invalid channel index')),
       );
-      return; // Navigate hone ke baad function se bahar nikal jayein
-    } else if (parsedContentType == 4) { // TV Show
-      await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => TvShowFinalDetailsPage(
-            id: int.tryParse(channel.id) ?? 0,
-            banner: channel.banner,
-            poster: channel.poster,
-            name: channel.name,
-          ),
-        ),
-      );
-      return; // Navigate hone ke baad function se bahar nikal jayein
-    } else if (parsedContentType == 5) { // TV Show Pak
-      await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => TvShowPakFinalDetailsPage(
-            id: int.tryParse(channel.id) ?? 0,
-            banner: channel.banner,
-            poster: channel.poster,
-            name: channel.name,updatedAt: channel.updatedAt,
-          ),
-        ),
-      );
-      return; // Navigate hone ke baad function se bahar nikal jayein
-    } else if (parsedContentType == 7) { // Religious Channel
-      await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ReligiousChannelDetailsPage(
-            id: int.tryParse(channel.id) ?? 0,
-            banner: channel.banner,
-            poster: channel.poster,
-            name: channel.name,updatedAt: channel.updatedAt,
-          ),
-        ),
-      );
-      return; // Navigate hone ke baad function se bahar nikal jayein
-    } else if (parsedContentType == 8) { // Tournament
-      await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => TournamentFinalDetailsPage(
-            id: int.tryParse(channel.id) ?? 0,
-            banner: channel.banner,
-            poster: channel.poster,
-            name: channel.name,updatedAt: channel.updatedAt,
-          ),
-        ),
-      );
-      return; // Navigate hone ke baad function se bahar nikal jayein
+      return;
     }
-  } catch (e) {
-    // Error handling zaroor karein
-    print('Navigation Error for Details Page: $e');
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Could not open details page.')),
-    );
-    return;
-  }
-  // --- SOLUTION END ---
 
-  // Step 2: Ab video URL aur streamType ki jaanch karein.
-  final String? videoUrl = channel.url;
-  final String? streamType = channel.streamType;
+    final channel = channels[index];
+    final int? parsedContentType = int.tryParse(channel.contentType);
 
-  if (videoUrl == null || videoUrl.isEmpty || streamType == null) {
-    // Agar upar koi type match nahi hua aur yahan URL bhi nahi hai, to kuch na karein.
-    return;
-  }
+    // --- SOLUTION START ---
+    // Step 1: Pehle un content types ko handle karein jinhe details page chahiye.
+    // Inko video URL ki zaroorat nahi hai.
+    try {
+      if (parsedContentType == 2) {
+        // WebSeries
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => WebSeriesDetailsPage(
+              id: int.tryParse(channel.id) ?? 0,
+              banner: channel.banner,
+              poster: channel.poster,
+              logo: channel.banner,
+              name: channel.name,
+              updatedAt: channel.updatedAt,
+            ),
+          ),
+        );
+        return; // Navigate hone ke baad function se bahar nikal jayein
+      } else if (parsedContentType == 4) {
+        // TV Show
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => TvShowFinalDetailsPage(
+              id: int.tryParse(channel.id) ?? 0,
+              banner: channel.banner,
+              poster: channel.poster,
+              name: channel.name,
+            ),
+          ),
+        );
+        return; // Navigate hone ke baad function se bahar nikal jayein
+      } else if (parsedContentType == 5) {
+        // TV Show Pak
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => TvShowPakFinalDetailsPage(
+              id: int.tryParse(channel.id) ?? 0,
+              banner: channel.banner,
+              poster: channel.poster,
+              name: channel.name,
+              updatedAt: channel.updatedAt,
+            ),
+          ),
+        );
+        return; // Navigate hone ke baad function se bahar nikal jayein
+      } else if (parsedContentType == 7) {
+        // Religious Channel
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ReligiousChannelDetailsPage(
+              id: int.tryParse(channel.id) ?? 0,
+              banner: channel.banner,
+              poster: channel.poster,
+              name: channel.name,
+              updatedAt: channel.updatedAt,
+            ),
+          ),
+        );
+        return; // Navigate hone ke baad function se bahar nikal jayein
+      } else if (parsedContentType == 8) {
+        // Tournament
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => TournamentFinalDetailsPage(
+              id: int.tryParse(channel.id) ?? 0,
+              banner: channel.banner,
+              poster: channel.poster,
+              name: channel.name,
+              updatedAt: channel.updatedAt,
+            ),
+          ),
+        );
+        return; // Navigate hone ke baad function se bahar nikal jayein
+      }
+    } catch (e) {
+      // Error handling zaroor karein
+      print('Navigation Error for Details Page: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Could not open details page.')),
+      );
+      return;
+    }
+    // --- SOLUTION END ---
 
-    try{
+    // Step 2: Ab video URL aur streamType ki jaanch karein.
+    final String? videoUrl = channel.url;
+    final String? streamType = channel.streamType;
+
+    if (videoUrl == null || videoUrl.isEmpty || streamType == null) {
+      // Agar upar koi type match nahi hua aur yahan URL bhi nahi hai, to kuch na karein.
+      return;
+    }
+
+    try {
       if (parsedContentType == 3) {
         await Navigator.push(
           context,
@@ -3352,7 +3337,7 @@ Future<void> _navigateToVideoScreen(
               videoId: int.tryParse(channel.id),
               // unUpdatedUrl: videoUrl,
               name: channel.name,
-              liveStatus: true, 
+              liveStatus: true,
               updatedAt: channel.updatedAt,
               source: 'isSearch',
             ),
@@ -3363,81 +3348,78 @@ Future<void> _navigateToVideoScreen(
       ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Error opening content.')));
     }
-  
 
-
-  // Step 3: Ab bache hue content types (jaise type 1) ko handle karein.
-  try {
-    if (parsedContentType == 1) { // Live Channel / Video
-      if (channel.sourceType == 'YoutubeLive' || channel.sourceType == 'youtube') {
-        final deviceInfo = context.read<DeviceInfoProvider>();
-        if (deviceInfo.deviceName == 'AFTSS : Amazon Fire Stick HD') {
-          await Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => YoutubeWebviewPlayer(
-                videoUrl: channel.url,
-                name: channel.name,
-              ),
-            ),
-          );
-        } else {
-          await Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => CustomYoutubePlayer(
-                videoData: VideoData(
-                  id: channel.id,
-                  title: channel.name,
-                  youtubeUrl: channel.url,
-                  thumbnail: channel.banner ?? channel.poster ?? '',
-                  description: channel.description ?? '',
+    // Step 3: Ab bache hue content types (jaise type 1) ko handle karein.
+    try {
+      if (parsedContentType == 1) {
+        // Live Channel / Video
+        if (channel.sourceType == 'YoutubeLive' ||
+            channel.sourceType == 'youtube') {
+          final deviceInfo = context.read<DeviceInfoProvider>();
+          if (deviceInfo.deviceName == 'AFTSS : Amazon Fire Stick HD') {
+            await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => YoutubeWebviewPlayer(
+                  videoUrl: channel.url,
+                  name: channel.name,
                 ),
-                playlist: [
-                  VideoData(
+              ),
+            );
+          } else {
+            await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => CustomYoutubePlayer(
+                  videoData: VideoData(
                     id: channel.id,
                     title: channel.name,
                     youtubeUrl: channel.url,
                     thumbnail: channel.banner ?? channel.poster ?? '',
                     description: channel.description ?? '',
                   ),
-                ],
+                  playlist: [
+                    VideoData(
+                      id: channel.id,
+                      title: channel.name,
+                      youtubeUrl: channel.url,
+                      thumbnail: channel.banner ?? channel.poster ?? '',
+                      description: channel.description ?? '',
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
+        } else {
+          // Handle other stream types for contentType 1 if any (e.g., M3u8)
+          // await Navigator.push(context, MaterialPageRoute(builder: (context) => VideoScreen(...)));
+          await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => LiveVideoScreen(
+                videoUrl: channel.url,
+                bannerImageUrl: channel.banner,
+                channelList: [],
+                // isLive: false,
+                // isSearch: true,
+                videoId: int.tryParse(channel.id),
+                name: channel.name,
+                liveStatus: false,
+                updatedAt: channel.updatedAt,
+                source: 'isSearch',
               ),
             ),
           );
         }
-      } else {
-        // Handle other stream types for contentType 1 if any (e.g., M3u8)
-        // await Navigator.push(context, MaterialPageRoute(builder: (context) => VideoScreen(...)));
-         await Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => VideoScreen(
-              videoUrl: channel.url,
-              bannerImageUrl: channel.banner,
-              channelList: [],
-              // isLive: false,
-              // isSearch: true,
-              videoId: int.tryParse(channel.id),
-              name: channel.name,
-              liveStatus: false, 
-              updatedAt: channel.updatedAt,
-              source: 'isSearch',
-            ),
-          ),
-        );
       }
-
-
-      
+    } catch (e) {
+      print('Navigation Error for Video Player: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Could not play the video.')),
+      );
     }
-  } catch (e) {
-    print('Navigation Error for Video Player: $e');
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Could not play the video.')),
-    );
   }
-}
 
   void _performSearch(String searchTerm) {
     if (_debounce?.isActive ?? false) _debounce!.cancel();
@@ -3521,7 +3503,7 @@ Future<void> _navigateToVideoScreen(
       HapticFeedback.lightImpact();
     }
   }
-  
+
   void _updateAndScrollToFocus() {
     if (!mounted || _focusedIndex >= _itemFocusNodes.length) return;
 
@@ -3555,7 +3537,9 @@ Future<void> _navigateToVideoScreen(
     final row1 = "1234567890".split('');
     final row2 = "qwertyuiop".split('');
     final row3 = "asdfghjkl".split('');
-    final row4 = ["zxcvbnm", "DEL"].expand((e) => e == "DEL" ? [e] : e.split('')).toList();
+    final row4 = ["zxcvbnm", "DEL"]
+        .expand((e) => e == "DEL" ? [e] : e.split(''))
+        .toList();
     final row5 = ["SHIFT", " ", "OK"];
 
     return Container(
@@ -3718,10 +3702,13 @@ Future<void> _navigateToVideoScreen(
                 onKey: (node, event) {
                   if (event is RawKeyDownEvent) {
                     if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
-                      context.read<FocusProvider>().requestSearchNavigationFocus();
+                      context
+                          .read<FocusProvider>()
+                          .requestSearchNavigationFocus();
                       return KeyEventResult.handled;
                     }
-                    if (event.logicalKey == LogicalKeyboardKey.arrowDown && searchResults.isNotEmpty) {
+                    if (event.logicalKey == LogicalKeyboardKey.arrowDown &&
+                        searchResults.isNotEmpty) {
                       _gridFocusNode.requestFocus();
                       setState(() {
                         _focusedIndex = 0;
@@ -3766,21 +3753,22 @@ Future<void> _navigateToVideoScreen(
     if (_errorMessage.isNotEmpty) {
       return SliverFillRemaining(
         child: Center(
-          child: Text(_errorMessage, style: const TextStyle(color: Colors.white)),
+          child:
+              Text(_errorMessage, style: const TextStyle(color: Colors.white)),
         ),
       );
     }
     if (isLoading) {
       return const SliverFillRemaining(
-        child: Center(
-            child: SpinKitFadingCircle(color: Colors.white, size: 50.0)),
+        child:
+            Center(child: SpinKitFadingCircle(color: Colors.white, size: 50.0)),
       );
     }
     if (searchResults.isEmpty && _searchText.isNotEmpty) {
       return const SliverFillRemaining(
         child: Center(
-            child:
-                Text('No results found', style: TextStyle(color: Colors.white))),
+            child: Text('No results found',
+                style: TextStyle(color: Colors.white))),
       );
     }
     if (searchResults.isEmpty) {
@@ -3841,7 +3829,9 @@ class OptimizedSearchCard extends StatelessWidget {
         onTap: onTap,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 250),
-          transform: isFocused ? (Matrix4.identity()..scale(1.05)) : Matrix4.identity(),
+          transform: isFocused
+              ? (Matrix4.identity()..scale(1.05))
+              : Matrix4.identity(),
           transformAlignment: Alignment.center,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(15),
@@ -3897,7 +3887,8 @@ class OptimizedSearchCard extends StatelessWidget {
         fit: BoxFit.cover,
         placeholder: (context, url) =>
             Container(color: ProfessionalVODColors.surfaceDark),
-        errorWidget: (context, url, error) => Image.asset(localImage, fit: BoxFit.cover),
+        errorWidget: (context, url, error) =>
+            Image.asset(localImage, fit: BoxFit.cover),
       );
     }
   }

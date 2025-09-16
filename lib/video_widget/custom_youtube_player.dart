@@ -3110,14 +3110,29 @@
 //   }
 // }
 
-import 'dart:ui';
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:keep_screen_on/keep_screen_on.dart';
-import 'package:mobi_tv_entertainment/provider/device_info_provider.dart';
-import 'package:provider/provider.dart';
+// import 'package:mobi_tv_entertainment/provider/device_info_provider.dart';
+// import 'package:provider/provider.dart';
 // import 'package:mobi_tv_entertainment/main.dart'; // Make sure this import is correct
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import 'dart:async';
@@ -3935,24 +3950,24 @@ class _CustomYoutubePlayerState extends State<CustomYoutubePlayer> {
   }
 
   Widget _buildVideoPlayer() {
-    final deviceInfo = context.read<DeviceInfoProvider>();
-    bool isGoogletv = false;
-    // if (deviceInfo.deviceName == 'AFTSS : Amazon Fire Stick HD')
-    if (deviceInfo.deviceName == 'sabrina : Chromecast with Google TV (4K)' ||
-        deviceInfo.deviceName == 'boreal : Chromecast with Google TV (HD)' ||
-        deviceInfo.deviceName == 'Google TV Device') {
-      if (mounted) {
-        setState(() {
-          isGoogletv = true;
-        });
-      }
-    } else {
-            if (mounted) {
-        setState(() {
-          isGoogletv = false;
-        });
-      }
-    }
+    // final deviceInfo = context.read<DeviceInfoProvider>();
+    // bool isGoogletv = false;
+    // // if (deviceInfo.deviceName == 'AFTSS : Amazon Fire Stick HD')
+    // if (deviceInfo.deviceName == 'sabrina : Chromecast with Google TV (4K)' ||
+    //     deviceInfo.deviceName == 'boreal : Chromecast with Google TV (HD)' ||
+    //     deviceInfo.deviceName == 'Google TV Device') {
+    //   if (mounted) {
+    //     setState(() {
+    //       isGoogletv = true;
+    //     });
+    //   }
+    // } else {
+    //         if (mounted) {
+    //     setState(() {
+    //       isGoogletv = false;
+    //     });
+    //   }
+    // }
 
     if (_error != null) {
       return Container(
@@ -3994,7 +4009,7 @@ class _CustomYoutubePlayerState extends State<CustomYoutubePlayer> {
       color: Colors.black,
       child: Center(
         child: Padding(
-          padding:  EdgeInsets.all(isGoogletv ? 8.0 : 0),
+          padding:  EdgeInsets.all( 1),
           child: YoutubePlayer(
             controller: _controller!,
             showVideoProgressIndicator: false,

@@ -282,7 +282,7 @@
 //  print('🌐 Fetching channels from API for category: ${widget.apiCategory}');
 
 //  final response = await https.get(
-//  Uri.parse('https://acomtv.coretechinfo.com/public/api/getFeaturedLiveTV'),
+//  Uri.parse('https://dashboard.cpplayers.com/public/api/getFeaturedLiveTV'),
 //  headers: {'auth-key': authKey},
 //  );
 
@@ -557,7 +557,7 @@
 
 // //  final response = await https.get(
 // //  Uri.parse(
-// //   'https://acomtv.coretechinfo.com/public/api/getFeaturedLiveTV'),
+// //   'https://dashboard.cpplayers.com/public/api/getFeaturedLiveTV'),
 // //  headers: {'auth-key': authKey},
 // //  );
 
@@ -746,7 +746,7 @@
 // //  String authKey = prefs.getString('auth_key') ?? '';
 
 // //  final response = await https.get(
-// //  Uri.parse('https://acomtv.coretechinfo.com/public/api/getFeaturedLiveTV'),
+// //  Uri.parse('https://dashboard.cpplayers.com/public/api/getFeaturedLiveTV'),
 // //  headers: {'auth-key': authKey},
 // //  );
 
@@ -846,7 +846,7 @@
 
 //  final response = await https.get(
 //   Uri.parse(
-//    'https://acomtv.coretechinfo.com/public/api/getFeaturedLiveTV'),
+//    'https://dashboard.cpplayers.com/public/api/getFeaturedLiveTV'),
 //   headers: {'auth-key': authKey},
 //  );
 
@@ -1157,7 +1157,7 @@
 //  await Navigator.push(
 //   context,
 //   MaterialPageRoute(
-//   builder: (context) => VideoScreen(
+//   builder: (context) => LiveVideoScreen(
 //    videoUrl: currentChannel.url,
 //    bannerImageUrl: currentChannel.banner,
 //    startAtPosition: Duration.zero,
@@ -2628,11 +2628,11 @@
 // //   Navigator.of(context, rootNavigator: true).pop();
 // //   }
 
-// //   // VideoScreen navigate करें with all ACTIVE channels
+// //   // LiveVideoScreen navigate करें with all ACTIVE channels
 // //   await Navigator.push(
 // //   context,
 // //   MaterialPageRoute(
-// //    builder: (context) => VideoScreen(
+// //    builder: (context) => LiveVideoScreen(
 // //    videoUrl: currentChannel.url,
 // //    bannerImageUrl: currentChannel.banner,
 // //    startAtPosition: Duration.zero,
@@ -3722,11 +3722,11 @@
 //   Navigator.of(context, rootNavigator: true).pop();
 //   }
 
-//   // VideoScreen navigate करें with all ACTIVE channels
+//   // LiveVideoScreen navigate करें with all ACTIVE channels
 //   await Navigator.push(
 //   context,
 //   MaterialPageRoute(
-//    builder: (context) => VideoScreen(
+//    builder: (context) => LiveVideoScreen(
 //    videoUrl: currentChannel.url,
 //    bannerImageUrl: currentChannel.banner,
 //    startAtPosition: Duration.zero,
@@ -4558,7 +4558,7 @@
 //  await Navigator.push(
 //  context,
 //  MaterialPageRoute(
-//   builder: (context) => VideoScreen(
+//   builder: (context) => LiveVideoScreen(
 //   videoUrl: currentChannel.url,
 //   bannerImageUrl: currentChannel.banner,
 //   startAtPosition: Duration.zero,
@@ -4757,7 +4757,7 @@
 
 //  final response = await https.get(
 //   Uri.parse(
-//    'https://acomtv.coretechinfo.com/public/api/getFeaturedLiveTV'),
+//    'https://dashboard.cpplayers.com/public/api/getFeaturedLiveTV'),
 //   headers: {'auth-key': authKey},
 //  );
 
@@ -5024,7 +5024,7 @@
 
 //  // final response = await https.get(
 //  // Uri.parse(
-//  //  'https://acomtv.coretechinfo.com/public/api/getFeaturedLiveTV'),
+//  //  'https://dashboard.cpplayers.com/public/api/getFeaturedLiveTV'),
 //  // headers: {'auth-key': authKey},
 //  // );
 
@@ -5032,7 +5032,7 @@
 //  String authKey = prefs.getString('auth_key') ?? '';
 //  if (authKey.isEmpty) throw Exception('Authentication key not found.');
 //  final response = await https.post(
-//   Uri.parse('https://acomtv.coretechinfo.com/api/v2/getAllLiveTV'),
+//   Uri.parse('https://dashboard.cpplayers.com/api/v2/getAllLiveTV'),
 //   headers: {'auth-key': authKey, 'domain': 'coretechinfo.com', 'Content-Type': 'application/json'},
 //   body: json.encode({"genere": "", "languageId": ""}),
 //  );
@@ -5331,7 +5331,7 @@
 // //  await Navigator.push(
 // //  context,
 // //  MaterialPageRoute(
-// //   builder: (context) => VideoScreen(
+// //   builder: (context) => LiveVideoScreen(
 // //   videoUrl: currentChannel.url,
 // //   bannerImageUrl: currentChannel.banner,
 // //   startAtPosition: Duration.zero,
@@ -7368,11 +7368,11 @@
 //   Navigator.of(context, rootNavigator: true).pop();
 //   }
 
-//   // VideoScreen navigate करें with all ACTIVE channels
+//   // LiveVideoScreen navigate करें with all ACTIVE channels
 //   await Navigator.push(
 //   context,
 //   MaterialPageRoute(
-//    builder: (context) => VideoScreen(
+//    builder: (context) => LiveVideoScreen(
 //    videoUrl: currentChannel.url,
 //    bannerImageUrl: currentChannel.banner,
 //    startAtPosition: Duration.zero,
@@ -7817,11 +7817,6 @@
 // }
 // }
 
-
-
-
-
-
 import 'dart:async';
 
 import 'package:mobi_tv_entertainment/main.dart';
@@ -7829,6 +7824,7 @@ import 'package:mobi_tv_entertainment/main.dart';
 import 'package:mobi_tv_entertainment/provider/color_provider.dart';
 
 import 'package:mobi_tv_entertainment/provider/focus_provider.dart';
+import 'package:mobi_tv_entertainment/video_widget/live_video_screen.dart';
 
 import 'package:mobi_tv_entertainment/video_widget/video_screen.dart';
 
@@ -8232,14 +8228,11 @@ class _GenericLiveChannelsState extends State<GenericLiveChannels>
     if (_isNavigating) return;
     _isNavigating = true;
 
-
-
-
-        try{
-          print('Updating user history for: ${channel.name}');
+    try {
+      print('Updating user history for: ${channel.name}');
       int? currentUserId = SessionManager.userId;
-    final int? parsedContentType = int.tryParse(channel.contentType );
-    final int? parsedId = channel.id;
+      final int? parsedContentType = int.tryParse(channel.contentType);
+      final int? parsedId = channel.id;
 
       await HistoryService.updateUserHistory(
         userId: currentUserId!, // 1. User ID
@@ -8334,7 +8327,8 @@ class _GenericLiveChannelsState extends State<GenericLiveChannels>
         status: channel.status.toString(),
         index: displayChannelsList.indexOf(channel).toString(),
         image: channel.banner,
-        unUpdatedUrl: channel.url, updatedAt: '',
+        unUpdatedUrl: channel.url,
+        updatedAt: '',
       );
 
       // ✅ GUARANTEED: Get complete channels list
@@ -8350,13 +8344,14 @@ class _GenericLiveChannelsState extends State<GenericLiveChannels>
       await Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => VideoScreen(
+          builder: (context) => LiveVideoScreen(
             videoUrl: currentChannel.url,
             bannerImageUrl: currentChannel.banner,
             source: 'isLive',
             // startAtPosition: Duration.zero,
             // videoType: currentChannel.streamType,
             channelList: allChannels, // ✅ Complete channel list guaranteed
+            // channelList: [], // ✅ Complete channel list guaranteed
             // isLive: true,
             // isVOD: false,
             // isBannerSlider: false,
@@ -8365,7 +8360,7 @@ class _GenericLiveChannelsState extends State<GenericLiveChannels>
             videoId: int.tryParse(currentChannel.id),
             // unUpdatedUrl: currentChannel.url,
             name: currentChannel.name,
-            liveStatus: true, 
+            liveStatus: true,
             updatedAt: currentChannel.updatedAt,
           ),
         ),
@@ -8619,7 +8614,7 @@ class _GenericLiveChannelsState extends State<GenericLiveChannels>
 
       final response = await https.get(
         Uri.parse(
-            'https://acomtv.coretechinfo.com/public/api/getFeaturedLiveTV'),
+            'https://dashboard.cpplayers.com/public/api/getFeaturedLiveTV'),
         headers: {'auth-key': authKey},
       );
 
@@ -8960,7 +8955,7 @@ class _GenericLiveChannelsState extends State<GenericLiveChannels>
 
       // Uri.parse(
 
-      // 'https://acomtv.coretechinfo.com/public/api/getFeaturedLiveTV'),
+      // 'https://dashboard.cpplayers.com/public/api/getFeaturedLiveTV'),
 
       // headers: {'auth-key': authKey},
 
@@ -8973,7 +8968,7 @@ class _GenericLiveChannelsState extends State<GenericLiveChannels>
       if (authKey.isEmpty) throw Exception('Authentication key not found.');
 
       final response = await https.post(
-        Uri.parse('https://acomtv.coretechinfo.com/api/v2/getAllLiveTV'),
+        Uri.parse('https://dashboard.cpplayers.com/api/v2/getAllLiveTV'),
         headers: {
           'auth-key': authKey,
           'domain': 'coretechinfo.com',
@@ -9162,7 +9157,8 @@ class _GenericLiveChannelsState extends State<GenericLiveChannels>
         status: channel.status.toString(),
         index: displayChannelsList.indexOf(channel).toString(),
         image: channel.banner,
-        unUpdatedUrl: channel.url, updatedAt: '',
+        unUpdatedUrl: channel.url,
+        updatedAt: '',
       );
     }).toList();
   }
@@ -9192,7 +9188,8 @@ class _GenericLiveChannelsState extends State<GenericLiveChannels>
         status: channel.status.toString(),
         index: fullChannelsList.indexOf(channel).toString(),
         image: channel.banner,
-        unUpdatedUrl: channel.url, updatedAt: '',
+        unUpdatedUrl: channel.url,
+        updatedAt: '',
       );
     }).toList();
   }
@@ -9377,7 +9374,7 @@ class _GenericLiveChannelsState extends State<GenericLiveChannels>
 
   // MaterialPageRoute(
 
-  // builder: (context) => VideoScreen(
+  // builder: (context) => LiveVideoScreen(
 
   //  videoUrl: currentChannel.url,
 
@@ -9887,8 +9884,8 @@ class _GenericLiveChannelsState extends State<GenericLiveChannels>
 
               return KeyEventResult.handled;
             }
-          } 
-          
+          }
+
           // else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
           //   if (index > 0) {
           //     String prevChannelId =
@@ -9899,25 +9896,21 @@ class _GenericLiveChannelsState extends State<GenericLiveChannels>
 
           //     return KeyEventResult.handled;
           //   }
-          // } 
-
+          // }
 
           else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
-      // 🎯 MODIFIED LOGIC HERE
-      // If the item is not the first one, move focus to the previous item.
-      if (index > 0) {
-        String prevChannelId =
-            displayChannelsList[index - 1].id.toString();
-        FocusScope.of(context)
-            .requestFocus(channelFocusNodes[prevChannelId]);
-      }
-      // **Crucially, handle the event in BOTH cases (index > 0 and index == 0).**
-      // This prevents the focus from escaping the list when on the first item.
-      return KeyEventResult.handled;
-
-    }
-          
-          else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+            // 🎯 MODIFIED LOGIC HERE
+            // If the item is not the first one, move focus to the previous item.
+            if (index > 0) {
+              String prevChannelId =
+                  displayChannelsList[index - 1].id.toString();
+              FocusScope.of(context)
+                  .requestFocus(channelFocusNodes[prevChannelId]);
+            }
+            // **Crucially, handle the event in BOTH cases (index > 0 and index == 0).**
+            // This prevents the focus from escaping the list when on the first item.
+            return KeyEventResult.handled;
+          } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
             // ✅ GENERIC: Navigate to corresponding navigation button
 
             try {
@@ -11523,13 +11516,11 @@ class _ProfessionalChannelsGridViewState
       _isLoading = true;
     });
 
-
-    
-    try{
-          print('Updating user history for: ${channel.name}');
+    try {
+      print('Updating user history for: ${channel.name}');
       int? currentUserId = SessionManager.userId;
-    final int? parsedContentType = int.tryParse(channel.contentType );
-    final int? parsedId = channel.id;
+      final int? parsedContentType = int.tryParse(channel.contentType);
+      final int? parsedId = channel.id;
 
       await HistoryService.updateUserHistory(
         userId: currentUserId!, // 1. User ID
@@ -11542,8 +11533,6 @@ class _ProfessionalChannelsGridViewState
     } catch (e) {
       print("History update failed, but proceeding to play. Error: $e");
     }
-
-
 
     bool dialogShown = false;
 
@@ -11638,7 +11627,8 @@ class _ProfessionalChannelsGridViewState
         status: channel.status.toString(),
         index: activeChannels.indexOf(channel).toString(),
         image: channel.banner,
-        unUpdatedUrl: channel.url, updatedAt: '',
+        unUpdatedUrl: channel.url,
+        updatedAt: '',
       );
 
       // ✅ Convert all active channels
@@ -11665,7 +11655,8 @@ class _ProfessionalChannelsGridViewState
           status: ch.status.toString(),
           index: activeChannels.indexOf(ch).toString(),
           image: ch.banner,
-          unUpdatedUrl: ch.url, updatedAt: '',
+          unUpdatedUrl: ch.url,
+          updatedAt: '',
         );
       }).toList();
 
@@ -11674,14 +11665,14 @@ class _ProfessionalChannelsGridViewState
           Navigator.of(context, rootNavigator: true).pop();
         }
 
-        // VideoScreen navigate करें with all ACTIVE channels
+        // LiveVideoScreen navigate करें with all ACTIVE channels
 
         await Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => VideoScreen(
+            builder: (context) => LiveVideoScreen(
               videoUrl: currentChannel.url,
-source: 'isLive',
+              source: 'isLive',
               bannerImageUrl: currentChannel.banner,
 
               // startAtPosition: Duration.zero,
@@ -11689,6 +11680,7 @@ source: 'isLive',
               // videoType: currentChannel.streamType,
 
               channelList: allChannels,
+              // channelList: [],
 
               // isLive: true,
 
@@ -11710,7 +11702,7 @@ source: 'isLive',
 
               // isLastPlayedStored: false,
 
-              liveStatus: true, 
+              liveStatus: true,
               updatedAt: currentChannel.updatedAt,
             ),
           ),

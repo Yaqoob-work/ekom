@@ -282,11 +282,6 @@
 // //   }
 // // }
 
-
-
-
-
-
 // import 'dart:math';
 // import 'package:flutter/material.dart';
 // import 'package:flutter/services.dart';
@@ -375,18 +370,18 @@
 //     try {
 //       final focusProvider = context.read<FocusProvider>();
 //       final scrollController = focusProvider.scrollController;
-      
+
 //       if (scrollController.hasClients) {
 //         // Calculate the position of middle navigation bar
 //         // Assuming it's after the banner slider (screenhgt * 0.5)
 //         final targetPosition = screenhgt * 0.5 - 10; // Adjust offset as needed
-        
+
 //         scrollController.animateTo(
 //           targetPosition,
 //           duration: Duration(milliseconds: 800),
 //           curve: Curves.easeInOut,
 //         );
-        
+
 //         print('📜 Scrolled to middle navigation bar');
 //       }
 //     } catch (e) {
@@ -479,7 +474,6 @@
 //                 //   print('Focus provider method error: $e');
 //                 // }
 
-
 //                                 // ✅ ADD: Update current selected index when navigation button gets focus
 //                 try {
 //                   context.read<FocusProvider>().setCurrentSelectedNavIndex(index);
@@ -510,7 +504,6 @@
 //                 } else {
 //                   print('❌ Invalid index for navigation: $index');
 //                 }
-
 
 //                 return KeyEventResult.handled;
 //               } else if (event.logicalKey == LogicalKeyboardKey.enter ||
@@ -602,8 +595,6 @@
 //   }
 // }
 
-
-
 // import 'dart:math';
 // import 'package:flutter/material.dart';
 // import 'package:flutter/services.dart';
@@ -612,8 +603,7 @@
 // import 'package:provider/provider.dart';
 // import '../main.dart';
 // // Make sure to import your ProfessionalColors class
-// // import '../path/to/your/app_colors.dart'; 
-
+// // import '../path/to/your/app_colors.dart';
 
 // // NEW: Professional Color Palette for consistent styling
 // class ProfessionalColors {
@@ -648,9 +638,6 @@
 //   @override
 //   _MiddleNavigationBarState createState() => _MiddleNavigationBarState();
 // }
-
-
-
 
 // class _MiddleNavigationBarState extends State<MiddleNavigationBar> {
 //   late List<FocusNode> _focusNodes;
@@ -703,7 +690,7 @@
 //     try {
 //       final focusProvider = context.read<FocusProvider>();
 //       final scrollController = focusProvider.scrollController;
-      
+
 //       if (scrollController.hasClients) {
 //         final targetPosition = screenhgt * 0.5 - 10;
 //         scrollController.animateTo(
@@ -779,7 +766,7 @@
 //               if (hasFocus) {
 //                 print('🎯 Focused: $title (index: $index)');
 //                 _scrollToMiddleNavigation();
-                
+
 //                 // Get a new professional color and update the provider
 //                 final newColor = _getRandomProfessionalColor();
 //                 context.read<ColorProvider>().updateColor(newColor, true);
@@ -829,7 +816,7 @@
 //                 // Use the color from the provider when focused
 //                 final Color focusColor =
 //                     hasFocus ? colorProvider.dominantColor : hintColor;
-                
+
 //                 return Container(
 //                   margin: EdgeInsets.all(screenwdt * 0.001),
 //                   decoration: BoxDecoration(
@@ -877,9 +864,6 @@
 //   }
 // }
 
-
-
-
 import 'dart:convert';
 import 'dart:math';
 import 'package:flutter/material.dart';
@@ -901,7 +885,12 @@ class ProfessionalColors {
   static const accentPink = Color(0xFFEC4899);
 
   static List<Color> gradientColors = [
-    accentBlue, accentPurple, accentGreen, accentRed, accentOrange, accentPink,
+    accentBlue,
+    accentPurple,
+    accentGreen,
+    accentRed,
+    accentOrange,
+    accentPink,
   ];
 }
 
@@ -924,6 +913,7 @@ class MiddleNavigationBar extends StatefulWidget {
   @override
   _MiddleNavigationBarState createState() => _MiddleNavigationBarState();
 }
+
 class _MiddleNavigationBarState extends State<MiddleNavigationBar> {
   // State variables to hold dynamic data and loading state.
   List<String> _navItems = [];
@@ -944,7 +934,7 @@ class _MiddleNavigationBarState extends State<MiddleNavigationBar> {
       String authKey = prefs.getString('auth_key') ?? '';
 
       final response = await http.get(
-        Uri.parse('https://acomtv.coretechinfo.com/api/v2/getLiveTvGenreList'),
+        Uri.parse('https://dashboard.cpplayers.com/api/v2/getLiveTvGenreList'),
         headers: {'auth-key': authKey},
       );
 
@@ -968,36 +958,43 @@ class _MiddleNavigationBarState extends State<MiddleNavigationBar> {
               _isLoading = false; // Data fetching is complete.
             });
           }
-          
+
           // Register the newly created focus nodes with the provider.
           WidgetsBinding.instance.addPostFrameCallback((_) {
-             if (_focusNodes.isNotEmpty && mounted) {
-               try {
-                 final focusProvider = context.read<FocusProvider>();
-                 focusProvider.setMiddleNavigationFocusNodes(_focusNodes);
-                 print('✅ Middle navigation focus nodes registered from API: ${_focusNodes.length}');
-               } catch (e) {
-                 print('❌ Focus provider registration error: $e');
-               }
-             }
-           });
-
+            if (_focusNodes.isNotEmpty && mounted) {
+              try {
+                final focusProvider = context.read<FocusProvider>();
+                focusProvider.setMiddleNavigationFocusNodes(_focusNodes);
+                print(
+                    '✅ Middle navigation focus nodes registered from API: ${_focusNodes.length}');
+              } catch (e) {
+                print('❌ Focus provider registration error: $e');
+              }
+            }
+          });
         } else {
-           print('❌ API Error: Status is not true or data is not a list.');
-           if(mounted) {
-             setState(() { _isLoading = false; });
-           }
+          print('❌ API Error: Status is not true or data is not a list.');
+          if (mounted) {
+            setState(() {
+              _isLoading = false;
+            });
+          }
         }
       } else {
-        print('❌ API Error: Failed to load genres. Status code: ${response.statusCode}');
-        if(mounted) {
-          setState(() { _isLoading = false; });
+        print(
+            '❌ API Error: Failed to load genres. Status code: ${response.statusCode}');
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
         }
       }
     } catch (e) {
       print('❌ Exception while fetching genres: $e');
-      if(mounted) {
-        setState(() { _isLoading = false; });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
       }
     }
   }
@@ -1016,15 +1013,15 @@ class _MiddleNavigationBarState extends State<MiddleNavigationBar> {
 
   Color _getRandomProfessionalColor() {
     final random = Random();
-    return ProfessionalColors
-        .gradientColors[random.nextInt(ProfessionalColors.gradientColors.length)];
+    return ProfessionalColors.gradientColors[
+        random.nextInt(ProfessionalColors.gradientColors.length)];
   }
 
   void _scrollToMiddleNavigation() {
     try {
       final focusProvider = context.read<FocusProvider>();
       final scrollController = focusProvider.scrollController;
-      
+
       if (scrollController.hasClients) {
         final targetPosition = screenhgt * 0.5 - 10;
         scrollController.animateTo(
@@ -1042,27 +1039,29 @@ class _MiddleNavigationBarState extends State<MiddleNavigationBar> {
   @override
   Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if(mounted) {
-         try {
-           context.read<FocusProvider>().setCurrentSelectedNavIndex(widget.selectedPage);
-         } catch (e) {
-           print('❌ Error setting current nav index: $e');
-         }
+      if (mounted) {
+        try {
+          context
+              .read<FocusProvider>()
+              .setCurrentSelectedNavIndex(widget.selectedPage);
+        } catch (e) {
+          print('❌ Error setting current nav index: $e');
+        }
       }
     });
-    
+
     if (_isLoading) {
       return Container(
-        height: 80, 
+        height: 80,
         color: cardColor.withOpacity(0.8),
         child: const Center(
           child: CircularProgressIndicator(),
         ),
       );
     }
-    
+
     if (_navItems.isEmpty) {
-        return Container(
+      return Container(
         height: 80,
         color: cardColor.withOpacity(0.8),
         child: const Center(
@@ -1082,7 +1081,8 @@ class _MiddleNavigationBarState extends State<MiddleNavigationBar> {
             }
           }
         },
-        child: Consumer<ColorProvider>(builder: (context, colorProvider, child) {
+        child:
+            Consumer<ColorProvider>(builder: (context, colorProvider, child) {
           Color backgroundColor = colorProvider.isItemFocused
               ? colorProvider.dominantColor.withOpacity(0.8)
               : cardColor;
@@ -1115,19 +1115,21 @@ class _MiddleNavigationBarState extends State<MiddleNavigationBar> {
         child: Focus(
           focusNode: focusNode,
           onFocusChange: (hasFocus) {
-            if(mounted){
-               setState(() {
-                  if (hasFocus) {
-                    print('🎯 Focused: $title (index: $index)');
-                    _scrollToMiddleNavigation();
-                    
-                    final newColor = _getRandomProfessionalColor();
-                    context.read<ColorProvider>().updateColor(newColor, true);
-                    context.read<FocusProvider>().setCurrentSelectedNavIndex(index);
-                  } else {
-                    context.read<ColorProvider>().resetColor();
-                  }
-                });
+            if (mounted) {
+              setState(() {
+                if (hasFocus) {
+                  print('🎯 Focused: $title (index: $index)');
+                  _scrollToMiddleNavigation();
+
+                  final newColor = _getRandomProfessionalColor();
+                  context.read<ColorProvider>().updateColor(newColor, true);
+                  context
+                      .read<FocusProvider>()
+                      .setCurrentSelectedNavIndex(index);
+                } else {
+                  context.read<ColorProvider>().resetColor();
+                }
+              });
             }
           },
           onKeyEvent: (node, event) {
@@ -1136,8 +1138,10 @@ class _MiddleNavigationBarState extends State<MiddleNavigationBar> {
                   event.logicalKey == LogicalKeyboardKey.enter ||
                   event.logicalKey == LogicalKeyboardKey.select) {
                 print('⬇️ Action key on: $title (index: $index)');
-                if (index >= 0 && index < _navItems.length) { 
-                  context.read<FocusProvider>().setCurrentSelectedNavIndex(index);
+                if (index >= 0 && index < _navItems.length) {
+                  context
+                      .read<FocusProvider>()
+                      .setCurrentSelectedNavIndex(index);
                   widget.onPageSelected(index);
                 }
                 return KeyEventResult.handled;
@@ -1146,7 +1150,8 @@ class _MiddleNavigationBarState extends State<MiddleNavigationBar> {
                 _focusNodes[nextIndex].requestFocus();
                 return KeyEventResult.handled;
               } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
-                int prevIndex = (index - 1 + _focusNodes.length) % _focusNodes.length;
+                int prevIndex =
+                    (index - 1 + _focusNodes.length) % _focusNodes.length;
                 _focusNodes[prevIndex].requestFocus();
                 return KeyEventResult.handled;
               }
@@ -1167,7 +1172,7 @@ class _MiddleNavigationBarState extends State<MiddleNavigationBar> {
                 final bool hasFocus = focusNode.hasFocus;
                 final Color focusColor =
                     hasFocus ? colorProvider.dominantColor : hintColor;
-                
+
                 return Container(
                   margin: EdgeInsets.all(screenwdt * 0.001),
                   decoration: BoxDecoration(
@@ -1200,9 +1205,8 @@ class _MiddleNavigationBarState extends State<MiddleNavigationBar> {
                           ? Colors.red
                           : focusColor,
                       fontSize: menutextsz,
-                      fontWeight: hasFocus
-                          ? FontWeight.bold
-                          : FontWeight.normal,
+                      fontWeight:
+                          hasFocus ? FontWeight.bold : FontWeight.normal,
                     ),
                   ),
                 );

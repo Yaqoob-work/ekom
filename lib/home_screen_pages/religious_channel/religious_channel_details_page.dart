@@ -1,10 +1,3 @@
-
-
-
-
-
-
-
 import 'dart:async';
 import 'dart:convert';
 import 'package:mobi_tv_entertainment/provider/device_info_provider.dart';
@@ -590,7 +583,7 @@ class _ReligiousChannelDetailsPageState
 
     final response = await https.get(
       Uri.parse(
-          'https://acomtv.coretechinfo.com/public/api/v2/getReligiousShows/${widget.id}'),
+          'https://dashboard.cpplayers.com/public/api/v2/getReligiousShows/${widget.id}'),
       headers: {
         'auth-key': authKey,
         'Accept': 'application/json',
@@ -692,7 +685,7 @@ class _ReligiousChannelDetailsPageState
 
     final response = await https.get(
       Uri.parse(
-          'https://acomtv.coretechinfo.com/public/api/v2/getReligiousShowsEpisodes/$showId'),
+          'https://dashboard.cpplayers.com/public/api/v2/getReligiousShowsEpisodes/$showId'),
       headers: {
         'auth-key': authKey,
         'Accept': 'application/json',
@@ -717,12 +710,11 @@ class _ReligiousChannelDetailsPageState
 
     setState(() => _isProcessing = true);
 
-
-            try{
-          print('Updating user history for: ${episode.title}');
+    try {
+      print('Updating user history for: ${episode.title}');
       int? currentUserId = SessionManager.userId;
-    // final int? parsedContentType = episode.contentType;
-    final int? parsedId = episode.id;
+      // final int? parsedContentType = episode.contentType;
+      final int? parsedId = episode.id;
 
       await HistoryService.updateUserHistory(
         userId: currentUserId!, // 1. User ID
@@ -787,19 +779,19 @@ class _ReligiousChannelDetailsPageState
         //     ),
         //   ),
         // );
-          await Navigator.push(
+        await Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => VideoScreen(
               videoUrl: episode.url,
-              bannerImageUrl: episode.episodeImage  ,
+              bannerImageUrl: episode.episodeImage,
               channelList: [],
               source: 'isReligious',
               // isLive: false,
               // isSearch: false,
               videoId: episode.id,
               name: episode.title,
-              liveStatus: false, 
+              liveStatus: false,
               updatedAt: episode.updatedAt,
             ),
           ),
@@ -1092,10 +1084,9 @@ class _ReligiousChannelDetailsPageState
   }
 
   Widget _buildBackgroundLayer() {
-
-  final String uniqueImageUrl = "${widget.banner}?v=${widget.updatedAt}";
-  // ✅ Naya unique cache key banayein
-  final String uniqueCacheKey = "${widget.id.toString()}_${widget.updatedAt}";
+    final String uniqueImageUrl = "${widget.banner}?v=${widget.updatedAt}";
+    // ✅ Naya unique cache key banayein
+    final String uniqueCacheKey = "${widget.id.toString()}_${widget.updatedAt}";
 
     return Stack(
       children: [
@@ -1425,11 +1416,10 @@ class _ReligiousChannelDetailsPageState
     final isFocused =
         _currentMode == NavigationMode.shows && index == _selectedShowIndex;
 
-
-          final String uniqueImageUrl = "${show.thumbnail}?v=${show.updatedAt}";
-  // final String uniquePosterImageUrl = "${show.thumbnail.poster}?v=${show.updatedAt}";
-  // ✅ Naya unique cache key banayein
-  final String uniqueCacheKey = "${show.id.toString()}_${show.updatedAt}";
+    final String uniqueImageUrl = "${show.thumbnail}?v=${show.updatedAt}";
+    // final String uniquePosterImageUrl = "${show.thumbnail.poster}?v=${show.updatedAt}";
+    // ✅ Naya unique cache key banayein
+    final String uniqueCacheKey = "${show.id.toString()}_${show.updatedAt}";
 
     return GestureDetector(
       onTap: () => _onShowTap(index),
@@ -1566,11 +1556,13 @@ class _ReligiousChannelDetailsPageState
     final isFocused = _currentMode == NavigationMode.episodes && isSelected;
     final isProcessing = _isProcessing && isSelected;
 
-          final String uniqueImageUrl = "${episode.episodeImage}?v=${episode.updatedAt}";
-  final String uniqueBannerImageUrl = "${widget.banner}?v=${widget.updatedAt}";
-  // ✅ Naya unique cache key banayein
-  final String uniqueCacheKey = "${episode.id.toString()}_${episode.updatedAt}";
-
+    final String uniqueImageUrl =
+        "${episode.episodeImage}?v=${episode.updatedAt}";
+    final String uniqueBannerImageUrl =
+        "${widget.banner}?v=${widget.updatedAt}";
+    // ✅ Naya unique cache key banayein
+    final String uniqueCacheKey =
+        "${episode.id.toString()}_${episode.updatedAt}";
 
     return GestureDetector(
       onTap: () => _onEpisodeTap(index),

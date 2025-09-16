@@ -1,8 +1,3 @@
-
-
-
-
-
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -57,8 +52,8 @@ class SportsTournamentCacheManager {
   }
 
   /// Compares two lists of tournaments to see if the data has changed.
-  static bool hasDataChanged(
-      List<SportsTournamentModel> oldList, List<SportsTournamentModel> newList) {
+  static bool hasDataChanged(List<SportsTournamentModel> oldList,
+      List<SportsTournamentModel> newList) {
     if (oldList.length != newList.length) return true;
 
     for (int i = 0; i < oldList.length; i++) {
@@ -206,10 +201,10 @@ class _SportsCategorySecondPageState extends State<SportsCategorySecondPage>
 
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
         CurvedAnimation(parent: _fadeController, curve: Curves.easeInOut));
-    _headerSlideAnimation = Tween<Offset>(
-            begin: const Offset(0, -1), end: Offset.zero)
-        .animate(CurvedAnimation(
-            parent: _headerController, curve: Curves.easeOutCubic));
+    _headerSlideAnimation =
+        Tween<Offset>(begin: const Offset(0, -1), end: Offset.zero).animate(
+            CurvedAnimation(
+                parent: _headerController, curve: Curves.easeOutCubic));
   }
 
   void _startAnimations() {
@@ -218,7 +213,8 @@ class _SportsCategorySecondPageState extends State<SportsCategorySecondPage>
   }
 
   Future<void> _loadDataWithCache() async {
-    print('🔄 Loading data with cache for sports channel ${widget.tvChannelId}');
+    print(
+        '🔄 Loading data with cache for sports channel ${widget.tvChannelId}');
     final cachedData =
         await SportsTournamentCacheManager.loadFromCache(widget.tvChannelId);
 
@@ -246,11 +242,12 @@ class _SportsCategorySecondPageState extends State<SportsCategorySecondPage>
       });
 
       final prefs = await SharedPreferences.getInstance();
-      String authKey = prefs.getString('auth_key') ?? 'YOUR_AUTH_KEY'; // Replace with your auth key
+      String authKey = prefs.getString('auth_key') ??
+          'YOUR_AUTH_KEY'; // Replace with your auth key
 
       final response = await http.get(
         Uri.parse(
-            'https://acomtv.coretechinfo.com/public/api/v2/getsportTournament/${widget.tvChannelId}'),
+            'https://dashboard.cpplayers.com/public/api/v2/getsportTournament/${widget.tvChannelId}'),
         headers: {
           'auth-key': authKey,
           'Content-Type': 'application/json',
@@ -263,9 +260,11 @@ class _SportsCategorySecondPageState extends State<SportsCategorySecondPage>
 
       if (response.statusCode == 200) {
         final List<dynamic> jsonData = json.decode(response.body);
-        final tournaments =
-            jsonData.map((item) => SportsTournamentModel.fromJson(item)).toList();
-        tournaments.sort((a, b) => a.sportsCatOrder.compareTo(b.sportsCatOrder));
+        final tournaments = jsonData
+            .map((item) => SportsTournamentModel.fromJson(item))
+            .toList();
+        tournaments
+            .sort((a, b) => a.sportsCatOrder.compareTo(b.sportsCatOrder));
 
         await SportsTournamentCacheManager.saveToCache(
             widget.tvChannelId, tournaments);
@@ -302,27 +301,30 @@ class _SportsCategorySecondPageState extends State<SportsCategorySecondPage>
 
     try {
       final prefs = await SharedPreferences.getInstance();
-      String authKey = prefs.getString('auth_key') ?? 'YOUR_AUTH_KEY'; // Replace
+      String authKey =
+          prefs.getString('auth_key') ?? 'YOUR_AUTH_KEY'; // Replace
 
       final response = await http.get(
         Uri.parse(
-            'https://acomtv.coretechinfo.com/public/api/v2/getsportTournament/${widget.tvChannelId}'),
+            'https://dashboard.cpplayers.com/public/api/v2/getsportTournament/${widget.tvChannelId}'),
         headers: {'auth-key': authKey, 'domain': 'coretechinfo.com'},
       );
-      
+
       if (!mounted) return;
 
       if (response.statusCode == 200) {
         final List<dynamic> jsonData = json.decode(response.body);
-        final newData =
-            jsonData.map((item) => SportsTournamentModel.fromJson(item)).toList();
+        final newData = jsonData
+            .map((item) => SportsTournamentModel.fromJson(item))
+            .toList();
         newData.sort((a, b) => a.sportsCatOrder.compareTo(b.sportsCatOrder));
 
-        if (SportsTournamentCacheManager.hasDataChanged(tournamentsList, newData)) {
+        if (SportsTournamentCacheManager.hasDataChanged(
+            tournamentsList, newData)) {
           print('📱 Data changed, updating UI and cache');
           await SportsTournamentCacheManager.saveToCache(
               widget.tvChannelId, newData);
-          
+
           final currentFocusedIndex = gridFocusedIndex;
           setState(() => tournamentsList = newData);
           _createGridFocusNodes();
@@ -363,7 +365,8 @@ class _SportsCategorySecondPageState extends State<SportsCategorySecondPage>
     }
 
     if (tournamentsList.isNotEmpty) {
-      WidgetsBinding.instance.addPostFrameCallback((_) => _focusFirstGridItem());
+      WidgetsBinding.instance
+          .addPostFrameCallback((_) => _focusFirstGridItem());
     }
   }
 
@@ -383,7 +386,8 @@ class _SportsCategorySecondPageState extends State<SportsCategorySecondPage>
           id: tournament.id,
           banner: tournament.logo ?? '',
           poster: tournament.logo ?? '',
-          name: tournament.title, updatedAt: tournament.updatedAt??'',
+          name: tournament.title,
+          updatedAt: tournament.updatedAt ?? '',
         ),
       ),
     );
@@ -416,8 +420,10 @@ class _SportsCategorySecondPageState extends State<SportsCategorySecondPage>
   void _ensureItemVisible(int index) {
     if (_scrollController.hasClients) {
       final int row = index ~/ columnsCount;
-      final double itemHeight = (MediaQuery.of(context).size.width / columnsCount) / 1.5;
-      final double targetOffset = row * (itemHeight + 15); // itemHeight + spacing
+      final double itemHeight =
+          (MediaQuery.of(context).size.width / columnsCount) / 1.5;
+      final double targetOffset =
+          row * (itemHeight + 15); // itemHeight + spacing
       _scrollController.animateTo(
         targetOffset,
         duration: const Duration(milliseconds: 300),
@@ -572,7 +578,8 @@ class _SportsCategorySecondPageState extends State<SportsCategorySecondPage>
                     child: SportsTournamentCard(
                       tournament: tournamentsList[index],
                       focusNode: gridFocusNodes[index]!,
-                      onTap: () => _onTournamentSelected(tournamentsList[index]),
+                      onTap: () =>
+                          _onTournamentSelected(tournamentsList[index]),
                       isFocused: gridFocusedIndex == index,
                     ),
                   ),
@@ -584,17 +591,20 @@ class _SportsCategorySecondPageState extends State<SportsCategorySecondPage>
       ),
     );
   }
-  
+
   Widget _buildErrorWidget() {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.error_outline, size: 40, color: ProfessionalColors.accentRed),
+          const Icon(Icons.error_outline,
+              size: 40, color: ProfessionalColors.accentRed),
           const SizedBox(height: 24),
-          const Text('Error Loading Tournaments', style: TextStyle(color: Colors.white, fontSize: 18)),
+          const Text('Error Loading Tournaments',
+              style: TextStyle(color: Colors.white, fontSize: 18)),
           const SizedBox(height: 8),
-          Text(errorMessage ?? 'Unknown error occurred', style: const TextStyle(color: Colors.white70)),
+          Text(errorMessage ?? 'Unknown error occurred',
+              style: const TextStyle(color: Colors.white70)),
           const SizedBox(height: 20),
           ElevatedButton(
             onPressed: fetchSportsTournaments,
@@ -610,16 +620,20 @@ class _SportsCategorySecondPageState extends State<SportsCategorySecondPage>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.sports_outlined, size: 40, color: ProfessionalColors.accentGreen),
+          const Icon(Icons.sports_outlined,
+              size: 40, color: ProfessionalColors.accentGreen),
           const SizedBox(height: 24),
-          Text('No Tournaments Found for ${widget.channelName}', textAlign: TextAlign.center, style: const TextStyle(color: Colors.white, fontSize: 18)),
+          Text('No Tournaments Found for ${widget.channelName}',
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: Colors.white, fontSize: 18)),
           const SizedBox(height: 8),
-          const Text('Check back later for new tournaments', style: TextStyle(color: Colors.white70)),
+          const Text('Check back later for new tournaments',
+              style: TextStyle(color: Colors.white70)),
         ],
       ),
     );
   }
-  
+
   Widget _buildUpdatingIndicator() {
     return Positioned(
       top: MediaQuery.of(context).padding.top + 80,
@@ -635,10 +649,13 @@ class _SportsCategorySecondPageState extends State<SportsCategorySecondPage>
             SizedBox(
               width: 12,
               height: 12,
-              child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation<Color>(Colors.white)),
+              child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white)),
             ),
             SizedBox(width: 6),
-            Text('Updating', style: TextStyle(color: Colors.white, fontSize: 10)),
+            Text('Updating',
+                style: TextStyle(color: Colors.white, fontSize: 10)),
           ],
         ),
       ),
@@ -677,16 +694,16 @@ class _SportsTournamentCardState extends State<SportsTournamentCard>
   @override
   void initState() {
     super.initState();
-    _hoverController = AnimationController(
-        duration: AnimationTiming.medium, vsync: this);
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 1.05)
-        .animate(CurvedAnimation(parent: _hoverController, curve: Curves.easeOut));
-    
+    _hoverController =
+        AnimationController(duration: AnimationTiming.medium, vsync: this);
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 1.05).animate(
+        CurvedAnimation(parent: _hoverController, curve: Curves.easeOut));
+
     widget.focusNode.addListener(_handleFocusChange);
     // Initialize state based on initial focus
     _handleFocusChange();
   }
-  
+
   @override
   void didUpdateWidget(SportsTournamentCard oldWidget) {
     super.didUpdateWidget(oldWidget);
@@ -841,8 +858,6 @@ class _SportsTournamentCardState extends State<SportsTournamentCard>
   }
 }
 
-
-
 /// A custom loading indicator widget.
 class ProfessionalTournamentLoadingIndicator extends StatelessWidget {
   final String message;
@@ -856,7 +871,8 @@ class ProfessionalTournamentLoadingIndicator extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const CircularProgressIndicator(color: ProfessionalColors.accentGreen),
+          const CircularProgressIndicator(
+              color: ProfessionalColors.accentGreen),
           const SizedBox(height: 32),
           Text(
             message,

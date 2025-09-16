@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
@@ -208,7 +206,7 @@ class ReligiousChannelsService {
 
       final response = await http.get(
         Uri.parse(
-            'https://acomtv.coretechinfo.com/public/api/v2/getReligiousChannels'),
+            'https://dashboard.cpplayers.com/public/api/v2/getReligiousChannels'),
         headers: {
           'auth-key': authKey,
           'Content-Type': 'application/json',
@@ -973,8 +971,7 @@ class _ProfessionalReligiousChannelsHorizontalListState
                         FocusScope.of(context)
                             .requestFocus(channelsFocusNodes[channelId]);
                       }
-                        return KeyEventResult.handled;
-
+                      return KeyEventResult.handled;
                     } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
                       setState(() {
                         focusedIndex = -1;
@@ -1103,8 +1100,7 @@ class _ProfessionalReligiousChannelsHorizontalListState
               FocusScope.of(context)
                   .requestFocus(channelsFocusNodes[prevChannelId]);
             }
-              return KeyEventResult.handled;
-
+            return KeyEventResult.handled;
           } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
             setState(() {
               focusedIndex = -1;
@@ -1696,8 +1692,7 @@ class _ProfessionalReligiousChannelsViewAllButtonState
                 child: Transform.rotate(
                   angle: _isFocused ? 0 : _rotateAnimation.value * 2 * math.pi,
                   child: Container(
-                    height:
-                        _isFocused ? focussedBannerhgt : bannerhgt ,
+                    height: _isFocused ? focussedBannerhgt : bannerhgt,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(12),
                       gradient: LinearGradient(

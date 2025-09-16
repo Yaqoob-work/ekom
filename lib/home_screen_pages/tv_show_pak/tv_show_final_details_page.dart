@@ -1,9 +1,3 @@
-
-
-
-
-
-
 import 'dart:async';
 import 'dart:convert';
 import 'package:mobi_tv_entertainment/provider/device_info_provider.dart';
@@ -585,7 +579,7 @@ class _TvShowPakFinalDetailsPageState extends State<TvShowPakFinalDetailsPage>
 
     final response = await https.get(
       Uri.parse(
-          'https://acomtv.coretechinfo.com/api/v2/getShowSeasonsPak/${widget.id}'),
+          'https://dashboard.cpplayers.com/api/v2/getShowSeasonsPak/${widget.id}'),
       headers: {
         'auth-key': authKey,
         'Accept': 'application/json',
@@ -715,7 +709,7 @@ class _TvShowPakFinalDetailsPageState extends State<TvShowPakFinalDetailsPage>
 
     final response = await https.get(
       Uri.parse(
-          'https://acomtv.coretechinfo.com/api/v2/getShowSeasonsEpisodesPak/$seasonId'),
+          'https://dashboard.cpplayers.com/api/v2/getShowSeasonsEpisodesPak/$seasonId'),
       headers: {
         'auth-key': authKey,
         'Accept': 'application/json',
@@ -756,24 +750,23 @@ class _TvShowPakFinalDetailsPageState extends State<TvShowPakFinalDetailsPage>
 
     setState(() => _isProcessing = true);
 
-    try{
-          print('Updating user history for: ${episode.title}');
+    try {
+      print('Updating user history for: ${episode.title}');
       int? currentUserId = SessionManager.userId;
-    // final int? parsedContentType = int.tryParse(episode.contentType ?? '');
-    final int? parsedId = episode.id ;
+      // final int? parsedContentType = int.tryParse(episode.contentType ?? '');
+      final int? parsedId = episode.id;
 
       await HistoryService.updateUserHistory(
         userId: currentUserId!, // 1. User ID
         contentType: 5, // 2. Content Type (episode के लिए 4)
         eventId: parsedId!, // 3. Event ID (episode की ID)
         eventTitle: episode.title, // 4. Event Title (episode का नाम)
-        url: episode.videoUrl , // 5. URL (episode का URL)
+        url: episode.videoUrl, // 5. URL (episode का URL)
         categoryId: 0, // 6. Category ID (डिफ़ॉल्ट 1)
       );
     } catch (e) {
       print("History update failed, but proceeding to play. Error: $e");
     }
-
 
     try {
       String url = episode.videoUrl;
@@ -829,23 +822,23 @@ class _TvShowPakFinalDetailsPageState extends State<TvShowPakFinalDetailsPage>
           //     ),
           //   ),
           // );
-                    result =  await Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => VideoScreen(
-              videoUrl: episode.videoUrl,
-              bannerImageUrl: episode.thumbnail,
-              channelList: [],
-              // isLive: false,
-              // isSearch: false,
-              videoId: episode.id,
-              name: episode.title,
-              liveStatus: false, 
-              updatedAt: episode.updatedAt,
-              source: 'isTvShowPak',
+          result = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => VideoScreen(
+                videoUrl: episode.videoUrl,
+                bannerImageUrl: episode.thumbnail,
+                channelList: [],
+                // isLive: false,
+                // isSearch: false,
+                videoId: episode.id,
+                name: episode.title,
+                liveStatus: false,
+                updatedAt: episode.updatedAt,
+                source: 'isTvShowPak',
+              ),
             ),
-          ),
-        );
+          );
         }
 
         // Refresh data after returning from video player
@@ -1355,8 +1348,8 @@ class _TvShowPakFinalDetailsPageState extends State<TvShowPakFinalDetailsPage>
     final isSelected = index == _selectedSeasonIndex;
     final isFocused = _currentMode == NavigationMode.seasons && isSelected;
     final episodeCount = _filteredEpisodesMap[season.id]?.length ?? 0;
-  final String uniqueImageUrl = "${season.poster}?v=${season.updatedAt}";
-  final String uniqueCacheKey = "${season.id.toString()}_${season.updatedAt}";
+    final String uniqueImageUrl = "${season.poster}?v=${season.updatedAt}";
+    final String uniqueCacheKey = "${season.id.toString()}_${season.updatedAt}";
     return GestureDetector(
       onTap: () => _onSeasonTap(index),
       child: Focus(
@@ -1450,7 +1443,7 @@ class _TvShowPakFinalDetailsPageState extends State<TvShowPakFinalDetailsPage>
                         imageUrl: uniqueImageUrl,
                         width: 50,
                         height: 50,
-                        cacheKey:uniqueCacheKey,
+                        cacheKey: uniqueCacheKey,
                         fit: BoxFit.cover,
                         fallbackWidget: Container(),
                       ),
@@ -1841,7 +1834,8 @@ class _TvShowPakFinalDetailsPageState extends State<TvShowPakFinalDetailsPage>
     required double width,
     required double height,
     BoxFit fit = BoxFit.cover,
-    Widget? fallbackWidget, required String cacheKey,
+    Widget? fallbackWidget,
+    required String cacheKey,
   }) {
     return Container(
       width: width,
@@ -1854,7 +1848,7 @@ class _TvShowPakFinalDetailsPageState extends State<TvShowPakFinalDetailsPage>
         borderRadius: BorderRadius.circular(12),
         child: _isValidImageUrl(imageUrl)
             ? CachedNetworkImage(
-                imageUrl: imageUrl ,
+                imageUrl: imageUrl,
                 width: width,
                 height: height,
                 fit: fit,
@@ -2297,15 +2291,16 @@ class _TvShowPakFinalDetailsPageState extends State<TvShowPakFinalDetailsPage>
     final isFocused = _currentMode == NavigationMode.episodes && isSelected;
     final isProcessing = _isProcessing && isSelected;
 
-      final String uniqueImageUrl = "${episode.thumbnail}?v=${episode.updatedAt}";
-  // ✅ Naya unique cache key banayein
-  final String uniqueCacheKey = "${episode.id.toString()}_${episode.updatedAt}";
+    final String uniqueImageUrl = "${episode.thumbnail}?v=${episode.updatedAt}";
+    // ✅ Naya unique cache key banayein
+    final String uniqueCacheKey =
+        "${episode.id.toString()}_${episode.updatedAt}";
 
-  
-  final String uniqueBannerImageUrl = "${widget.banner}?v=${widget.updatedAt}";
-  final String uniquePosterImageUrl = "${widget.poster}?v=${widget.updatedAt}";
-  // ✅ Naya unique cache key banayein
-
+    final String uniqueBannerImageUrl =
+        "${widget.banner}?v=${widget.updatedAt}";
+    final String uniquePosterImageUrl =
+        "${widget.poster}?v=${widget.updatedAt}";
+    // ✅ Naya unique cache key banayein
 
     return GestureDetector(
       onTap: () => _onEpisodeTap(index),
@@ -2443,8 +2438,7 @@ class _TvShowPakFinalDetailsPageState extends State<TvShowPakFinalDetailsPage>
                                 imageUrl: uniqueBannerImageUrl,
                                 width: 140,
                                 height: 90,
-                          cacheKey: uniqueCacheKey,
-
+                                cacheKey: uniqueCacheKey,
                                 fit: BoxFit.cover,
                                 errorWidget: (context, url, error) {
                                   // Fallback to poster

@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
@@ -222,8 +220,7 @@ class PakistaniTVShowsService {
       String authKey = prefs.getString(_cacheKeyAuthKey) ?? '';
 
       final response = await http.get(
-        Uri.parse(
-            'https://acomtv.coretechinfo.com/api/v2/getTvChannelsPak'),
+        Uri.parse('https://dashboard.cpplayers.com/api/v2/getTvChannelsPak'),
         headers: {
           'auth-key': authKey,
           'Content-Type': 'application/json',
@@ -814,8 +811,7 @@ class _TvShowPakState extends State<TvShowPak>
               FocusScope.of(context)
                   .requestFocus(tvshowsPakFocusNodes[prevTVShowId]);
             }
-              return KeyEventResult.handled;
-
+            return KeyEventResult.handled;
           } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
             setState(() {
               focusedIndex = -1;
@@ -845,18 +841,18 @@ class _TvShowPakState extends State<TvShowPak>
             // ✅ ADD: Reset color when navigating away
             context.read<ColorProvider>().resetColor();
             FocusScope.of(context).unfocus();
-            Future.delayed(const Duration(milliseconds: 100), () {
-              if (mounted) {
-                try {
-                  Provider.of<FocusProvider>(context, listen: false)
-                      .requestFirstSportsCategoryFocus();
-                  // Navigate to next section
-                  print('✅ Navigating down from Pakistani TV shows');
-                } catch (e) {
-                  print('❌ Failed to navigate down: $e');
-                }
-              }
-            });
+            // Future.delayed(const Duration(milliseconds: 100), () {
+            //   if (mounted) {
+            //     try {
+            //       Provider.of<FocusProvider>(context, listen: false)
+            //           .requestFirstSportsCategoryFocus();
+            //       // Navigate to next section
+            //       print('✅ Navigating down from Pakistani TV shows');
+            //     } catch (e) {
+            //       print('❌ Failed to navigate down: $e');
+            //     }
+            //   }
+            // });
             return KeyEventResult.handled;
           } else if (event.logicalKey == LogicalKeyboardKey.enter ||
               event.logicalKey == LogicalKeyboardKey.select) {
@@ -968,19 +964,19 @@ class _TvShowPakState extends State<TvShowPak>
                       // ✅ ADD: Reset color when navigating away from ViewAll
                       context.read<ColorProvider>().resetColor();
                       FocusScope.of(context).unfocus();
-                      Future.delayed(const Duration(milliseconds: 100), () {
-                        if (mounted) {
-                          try {
-                            Provider.of<FocusProvider>(context, listen: false)
-                                .requestFirstSportsCategoryFocus();
-                            // Navigate to next section after Pakistani TV Shows
-                            print(
-                                '✅ Navigating down from Pakistani TV Shows ViewAll');
-                          } catch (e) {
-                            print('❌ Failed to navigate down: $e');
-                          }
-                        }
-                      });
+                      // Future.delayed(const Duration(milliseconds: 100), () {
+                      //   if (mounted) {
+                      //     try {
+                      //       Provider.of<FocusProvider>(context, listen: false)
+                      //           .requestFirstSportsCategoryFocus();
+                      //       // Navigate to next section after Pakistani TV Shows
+                      //       print(
+                      //           '✅ Navigating down from Pakistani TV Shows ViewAll');
+                      //     } catch (e) {
+                      //       print('❌ Failed to navigate down: $e');
+                      //     }
+                      //   }
+                      // });
                       return KeyEventResult.handled;
                     } else if (event.logicalKey == LogicalKeyboardKey.enter ||
                         event.logicalKey == LogicalKeyboardKey.select) {

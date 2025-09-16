@@ -9,7 +9,6 @@ import 'package:mobi_tv_entertainment/main.dart';
 import 'package:mobi_tv_entertainment/services/history_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-
 // ✅ IMPORT करें TvShowFinalDetailsPage
 
 // ✅ ADD: Cache Manager Class
@@ -162,47 +161,44 @@ class _TVShowDetailsPageState extends State<TVShowDetailsPage>
   late Animation<Offset> _headerSlideAnimation;
 
 // 2. CLEAN initState (remove any WidgetsBinding.instance.addObserver)
-@override
-void initState() {
-  super.initState();
-  // ❌ REMOVE this line if present: WidgetsBinding.instance.addObserver(this);
-  _scrollController = ScrollController();
-  _initializeAnimations();
-  _startAnimations();
-  _loadDataWithCache(); // ✅ Use cache loading
+  @override
+  void initState() {
+    super.initState();
+    // ❌ REMOVE this line if present: WidgetsBinding.instance.addObserver(this);
+    _scrollController = ScrollController();
+    _initializeAnimations();
+    _startAnimations();
+    _loadDataWithCache(); // ✅ Use cache loading
 
-  // WidgetsBinding.instance.addPostFrameCallback((_) {
-  //   _focusFirstGridItem();
-  // });
-}
-
-
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   _focusFirstGridItem();
+    // });
+  }
 
 // 3. CLEAN dispose (remove any WidgetsBinding.instance.removeObserver)
-@override
-void dispose() {
-  // ❌ REMOVE this line if present: WidgetsBinding.instance.removeObserver(this);
-  _fadeController.dispose();
-  _staggerController.dispose();
-  _headerController.dispose();
-  _scrollController.dispose();
-  for (var node in gridFocusNodes.values) {
-    try {
-      node.dispose();
-    } catch (e) {}
+  @override
+  void dispose() {
+    // ❌ REMOVE this line if present: WidgetsBinding.instance.removeObserver(this);
+    _fadeController.dispose();
+    _staggerController.dispose();
+    _headerController.dispose();
+    _scrollController.dispose();
+    for (var node in gridFocusNodes.values) {
+      try {
+        node.dispose();
+      } catch (e) {}
+    }
+    super.dispose();
   }
-  super.dispose();
-}
 
 // 4. ❌ REMOVE any didChangeAppLifecycleState method completely
 
 // 5. ✅ ADD: Simple async navigation method
-Future<void> _onTVShowSelected(TVShowDetailsModel tvShow) async {
-  print('🎬 Selected TV Show: ${tvShow.name}');
-  HapticFeedback.mediumImpact();
+  Future<void> _onTVShowSelected(TVShowDetailsModel tvShow) async {
+    print('🎬 Selected TV Show: ${tvShow.name}');
+    HapticFeedback.mediumImpact();
 
-
-      try {
+    try {
       print('Updating user history for: ${tvShow.name}');
       int? currentUserId = SessionManager.userId;
       final int? parsedId = tvShow.id;
@@ -218,242 +214,241 @@ Future<void> _onTVShowSelected(TVShowDetailsModel tvShow) async {
     } catch (e) {
       print("History update failed, but proceeding to play. Error: $e");
     }
-  
-  // ✅ Navigate and wait for return
-  await Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => TvShowFinalDetailsPage(
-        id: tvShow.id,
-        banner: tvShow.thumbnail ?? '',
-        poster: tvShow.thumbnail ?? '',
-        name: tvShow.name,
+
+    // ✅ Navigate and wait for return
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => TvShowFinalDetailsPage(
+          id: tvShow.id,
+          banner: tvShow.thumbnail ?? '',
+          poster: tvShow.thumbnail ?? '',
+          name: tvShow.name,
+        ),
       ),
-    ),
-  );
-  
-  // ✅ Refresh when user returns
-  print('🔄 User returned, refreshing data...');
-  // _loadDataWithCache();
-}
+    );
 
-
+    // ✅ Refresh when user returns
+    print('🔄 User returned, refreshing data...');
+    // _loadDataWithCache();
+  }
 
 // ✅ SOLUTION: Focus पहले banner/card पर आने के लिए ये changes करें
 
 // 1. ✅ UPDATE: _focusFirstGridItem method को improve करें
-void _focusFirstGridItem() {
-  if (tvShowsList.isNotEmpty && gridFocusNodes.containsKey(0)) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      setState(() {
-        gridFocusedIndex = 0;
+  void _focusFirstGridItem() {
+    if (tvShowsList.isNotEmpty && gridFocusNodes.containsKey(0)) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        setState(() {
+          gridFocusedIndex = 0;
+        });
+
+        // Focus को explicitly request करें
+        if (mounted && gridFocusNodes[0] != null) {
+          gridFocusNodes[0]!.requestFocus();
+          print('✅ Focus set to first TV show card');
+        }
       });
-      
-      // Focus को explicitly request करें
-      if (mounted && gridFocusNodes[0] != null) {
-        gridFocusNodes[0]!.requestFocus();
-        print('✅ Focus set to first TV show card');
-      }
-    });
+    }
   }
-}
 
 // 2. ✅ UPDATE: _createGridFocusNodes method में focus callback add करें
-void _createGridFocusNodes() {
-  // Clear existing focus nodes
-  for (var node in gridFocusNodes.values) {
-    try {
-      node.dispose();
-    } catch (e) {}
-  }
-  gridFocusNodes.clear();
+  void _createGridFocusNodes() {
+    // Clear existing focus nodes
+    for (var node in gridFocusNodes.values) {
+      try {
+        node.dispose();
+      } catch (e) {}
+    }
+    gridFocusNodes.clear();
 
-  for (int i = 0; i < tvShowsList.length; i++) {
-    gridFocusNodes[i] = FocusNode();
-    gridFocusNodes[i]!.addListener(() {
-      if (gridFocusNodes[i]!.hasFocus) {
-        setState(() {
-          gridFocusedIndex = i; // ✅ ADD: Update focused index
-        });
-        _ensureItemVisible(i);
-      }
-    });
+    for (int i = 0; i < tvShowsList.length; i++) {
+      gridFocusNodes[i] = FocusNode();
+      gridFocusNodes[i]!.addListener(() {
+        if (gridFocusNodes[i]!.hasFocus) {
+          setState(() {
+            gridFocusedIndex = i; // ✅ ADD: Update focused index
+          });
+          _ensureItemVisible(i);
+        }
+      });
+    }
+
+    // ✅ ADD: First item को focus करें
+    if (tvShowsList.isNotEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _focusFirstGridItem();
+      });
+    }
   }
-  
-  // ✅ ADD: First item को focus करें
-  if (tvShowsList.isNotEmpty) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _focusFirstGridItem();
-    });
-  }
-}
 
 // 3. ✅ UPDATE: _loadDataWithCache method में proper focus timing
-Future<void> _loadDataWithCache() async {
-  print('🔄 Loading data with cache for channel ${widget.tvChannelId}');
-  
-  final cachedData = await TVShowCacheManager.loadFromCache(widget.tvChannelId);
-  
-  if (cachedData != null && cachedData.isNotEmpty) {
-    setState(() {
-      tvShowsList = cachedData;
-      isLoading = false;
-      errorMessage = null;
-    });
-    
-    // ✅ IMPORTANT: पहले focus nodes create करें, फिर focus set करें
-    _createGridFocusNodes();
-    _staggerController.forward();
-    print('✅ Cached data displayed instantly');
-    
-    // Background refresh
-    _refreshDataInBackground();
-  } else {
-    // No cache, load from API
-    fetchTVShowsDetails();
-  }
-}
+  Future<void> _loadDataWithCache() async {
+    print('🔄 Loading data with cache for channel ${widget.tvChannelId}');
 
-// 4. ✅ UPDATE: fetchTVShowsDetails method में भी proper focus
-Future<void> fetchTVShowsDetails() async {
-  try {
-    setState(() {
-      isLoading = true;
-      errorMessage = null;
-    });
+    final cachedData =
+        await TVShowCacheManager.loadFromCache(widget.tvChannelId);
 
-    final prefs = await SharedPreferences.getInstance();
-    String authKey = prefs.getString('auth_key') ?? '';
-
-    final response = await https.get(
-      Uri.parse('https://acomtv.coretechinfo.com/api/v2/getTvShows/${widget.tvChannelId}'),
-      headers: {
-        'auth-key': authKey,
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'domain': 'coretechinfo.com'
-      },
-    );
-
-    print('🔍 API Response Status: ${response.statusCode}');
-
-    if (response.statusCode == 200) {
-      final List<dynamic> jsonData = json.decode(response.body);
-      final shows = jsonData.map((item) => TVShowDetailsModel.fromJson(item)).toList();
-      
-      // ✅ Save to cache
-      await TVShowCacheManager.saveToCache(widget.tvChannelId, shows);
-      
+    if (cachedData != null && cachedData.isNotEmpty) {
       setState(() {
-        tvShowsList = shows;
+        tvShowsList = cachedData;
         isLoading = false;
+        errorMessage = null;
       });
 
-      if (tvShowsList.isNotEmpty) {
-        // ✅ IMPORTANT: Focus nodes create करने के बाद animation start करें
-        _createGridFocusNodes();
-        _staggerController.forward();
-        print('✅ Successfully loaded ${tvShowsList.length} TV shows');
-      } else {
-        setState(() {
-          errorMessage = 'No TV shows found for this channel';
-        });
-      }
+      // ✅ IMPORTANT: पहले focus nodes create करें, फिर focus set करें
+      _createGridFocusNodes();
+      _staggerController.forward();
+      print('✅ Cached data displayed instantly');
+
+      // Background refresh
+      _refreshDataInBackground();
     } else {
-      throw Exception('Failed to load TV shows: ${response.statusCode}');
+      // No cache, load from API
+      fetchTVShowsDetails();
     }
-  } catch (e) {
-    setState(() {
-      isLoading = false;
-      errorMessage = 'Error loading TV shows: $e';
-    });
-    print('❌ Error fetching TV shows: $e');
   }
-}
+
+// 4. ✅ UPDATE: fetchTVShowsDetails method में भी proper focus
+  Future<void> fetchTVShowsDetails() async {
+    try {
+      setState(() {
+        isLoading = true;
+        errorMessage = null;
+      });
+
+      final prefs = await SharedPreferences.getInstance();
+      String authKey = prefs.getString('auth_key') ?? '';
+
+      final response = await https.get(
+        Uri.parse(
+            'https://dashboard.cpplayers.com/api/v2/getTvShows/${widget.tvChannelId}'),
+        headers: {
+          'auth-key': authKey,
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'domain': 'coretechinfo.com'
+        },
+      );
+
+      print('🔍 API Response Status: ${response.statusCode}');
+
+      if (response.statusCode == 200) {
+        final List<dynamic> jsonData = json.decode(response.body);
+        final shows =
+            jsonData.map((item) => TVShowDetailsModel.fromJson(item)).toList();
+
+        // ✅ Save to cache
+        await TVShowCacheManager.saveToCache(widget.tvChannelId, shows);
+
+        setState(() {
+          tvShowsList = shows;
+          isLoading = false;
+        });
+
+        if (tvShowsList.isNotEmpty) {
+          // ✅ IMPORTANT: Focus nodes create करने के बाद animation start करें
+          _createGridFocusNodes();
+          _staggerController.forward();
+          print('✅ Successfully loaded ${tvShowsList.length} TV shows');
+        } else {
+          setState(() {
+            errorMessage = 'No TV shows found for this channel';
+          });
+        }
+      } else {
+        throw Exception('Failed to load TV shows: ${response.statusCode}');
+      }
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+        errorMessage = 'Error loading TV shows: $e';
+      });
+      print('❌ Error fetching TV shows: $e');
+    }
+  }
 
 // 5. ✅ UPDATE: _buildGridView में autofocus को handle करें
-Widget _buildGridView() {
-  return Focus(
-    autofocus: true, // ✅ KEEP: This ensures main focus container gets focus
-    onKey: (node, event) {
-      if (event is RawKeyDownEvent) {
-        if ([
-          LogicalKeyboardKey.arrowUp,
-          LogicalKeyboardKey.arrowDown,
-          LogicalKeyboardKey.arrowLeft,
-          LogicalKeyboardKey.arrowRight,
-        ].contains(event.logicalKey)) {
-          _navigateGrid(event.logicalKey);
-          return KeyEventResult.handled;
-        } else if (event.logicalKey == LogicalKeyboardKey.enter ||
-            event.logicalKey == LogicalKeyboardKey.select) {
-          if (gridFocusedIndex < tvShowsList.length) {
-            _onTVShowSelected(tvShowsList[gridFocusedIndex]);
+  Widget _buildGridView() {
+    return Focus(
+      autofocus: true, // ✅ KEEP: This ensures main focus container gets focus
+      onKey: (node, event) {
+        if (event is RawKeyDownEvent) {
+          if ([
+            LogicalKeyboardKey.arrowUp,
+            LogicalKeyboardKey.arrowDown,
+            LogicalKeyboardKey.arrowLeft,
+            LogicalKeyboardKey.arrowRight,
+          ].contains(event.logicalKey)) {
+            _navigateGrid(event.logicalKey);
+            return KeyEventResult.handled;
+          } else if (event.logicalKey == LogicalKeyboardKey.enter ||
+              event.logicalKey == LogicalKeyboardKey.select) {
+            if (gridFocusedIndex < tvShowsList.length) {
+              _onTVShowSelected(tvShowsList[gridFocusedIndex]);
+            }
+            return KeyEventResult.handled;
           }
-          return KeyEventResult.handled;
         }
-      }
-      return KeyEventResult.ignored;
-    },
-    child: Padding(
-      padding: const EdgeInsets.all(20),
-      child: GridView.builder(
-        controller: _scrollController,
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: columnsCount,
-          crossAxisSpacing: 15,
-          mainAxisSpacing: 15,
-          childAspectRatio: 1.5,
-        ),
-        itemCount: tvShowsList.length,
-        itemBuilder: (context, index) {
-          return AnimatedBuilder(
-            animation: _staggerController,
-            builder: (context, child) {
-              final delay = (index / tvShowsList.length) * 0.5;
-              final animationValue = Interval(
-                delay,
-                delay + 0.5,
-                curve: Curves.easeOutCubic,
-              ).transform(_staggerController.value);
+        return KeyEventResult.ignored;
+      },
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: GridView.builder(
+          controller: _scrollController,
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: columnsCount,
+            crossAxisSpacing: 15,
+            mainAxisSpacing: 15,
+            childAspectRatio: 1.5,
+          ),
+          itemCount: tvShowsList.length,
+          itemBuilder: (context, index) {
+            return AnimatedBuilder(
+              animation: _staggerController,
+              builder: (context, child) {
+                final delay = (index / tvShowsList.length) * 0.5;
+                final animationValue = Interval(
+                  delay,
+                  delay + 0.5,
+                  curve: Curves.easeOutCubic,
+                ).transform(_staggerController.value);
 
-              return Transform.translate(
-                offset: Offset(0, 50 * (1 - animationValue)),
-                child: Opacity(
-                  opacity: animationValue,
-                  child: TVShowDetailsCard(
-                    tvShow: tvShowsList[index],
-                    focusNode: gridFocusNodes[index]!,
-                    onTap: () => _onTVShowSelected(tvShowsList[index]),
-                    index: index,
-                    isFocused: gridFocusedIndex == index,
+                return Transform.translate(
+                  offset: Offset(0, 50 * (1 - animationValue)),
+                  child: Opacity(
+                    opacity: animationValue,
+                    child: TVShowDetailsCard(
+                      tvShow: tvShowsList[index],
+                      focusNode: gridFocusNodes[index]!,
+                      onTap: () => _onTVShowSelected(tvShowsList[index]),
+                      index: index,
+                      isFocused: gridFocusedIndex == index,
+                    ),
                   ),
-                ),
-              );
-            },
-          );
-        },
+                );
+              },
+            );
+          },
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
 
 // 6. ✅ OPTIONAL: Page resume पर भी focus restore करें
-@override
-void didChangeDependencies() {
-  super.didChangeDependencies();
-  
-  // ✅ ADD: जब page visible हो तो focus restore करें
-  WidgetsBinding.instance.addPostFrameCallback((_) {
-    if (mounted && tvShowsList.isNotEmpty && gridFocusNodes.containsKey(0)) {
-      if (!gridFocusNodes.values.any((node) => node.hasFocus)) {
-        _focusFirstGridItem();
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    // ✅ ADD: जब page visible हो तो focus restore करें
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && tvShowsList.isNotEmpty && gridFocusNodes.containsKey(0)) {
+        if (!gridFocusNodes.values.any((node) => node.hasFocus)) {
+          _focusFirstGridItem();
+        }
       }
-    }
-  });
-}
-
-
+    });
+  }
 
 /* 
 ✅ SUMMARY OF CHANGES:
@@ -475,20 +470,20 @@ void didChangeDependencies() {
 // // 6. ✅ ADD: Cache loading method
 // Future<void> _loadDataWithCache() async {
 //   print('🔄 Loading data with cache for channel ${widget.tvChannelId}');
-  
+
 //   final cachedData = await TVShowCacheManager.loadFromCache(widget.tvChannelId);
-  
+
 //   if (cachedData != null && cachedData.isNotEmpty) {
 //     setState(() {
 //       tvShowsList = cachedData;
 //       isLoading = false;
 //       errorMessage = null;
 //     });
-    
+
 //     _createGridFocusNodes();
 //     _staggerController.forward();
 //     print('✅ Cached data displayed instantly');
-    
+
 //     // Background refresh
 //     _refreshDataInBackground();
 //   } else {
@@ -498,74 +493,77 @@ void didChangeDependencies() {
 // }
 
 // 7. ✅ ADD: Background refresh method
-Future<void> _refreshDataInBackground() async {
-  if (isBackgroundRefreshing) return;
-  
-  setState(() {
-    isBackgroundRefreshing = true;
-  });
-  
-  try {
-    final prefs = await SharedPreferences.getInstance();
-    String authKey = prefs.getString('auth_key') ?? '';
+  Future<void> _refreshDataInBackground() async {
+    if (isBackgroundRefreshing) return;
 
-    final response = await https.get(
-      Uri.parse('https://acomtv.coretechinfo.com/api/v2/getTvShows/${widget.tvChannelId}'),
-      headers: {
-        'auth-key': authKey,
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'domain': 'coretechinfo.com'
-      },
-    );
-
-    print('🔍 Background API Response Status: ${response.statusCode}');
-
-    if (response.statusCode == 200) {
-      final List<dynamic> jsonData = json.decode(response.body);
-      final newData = jsonData.map((item) => TVShowDetailsModel.fromJson(item)).toList();
-      
-      final hasChanged = TVShowCacheManager.hasDataChanged(tvShowsList, newData);
-      
-      if (hasChanged) {
-        print('📱 Data changed, updating UI and cache');
-        
-        await TVShowCacheManager.saveToCache(widget.tvChannelId, newData);
-        
-        // Preserve current user focus
-        final currentFocusedIndex = gridFocusedIndex;
-        
-        setState(() {
-          tvShowsList = newData;
-        });
-        
-        _createGridFocusNodes();
-        
-        // Restore focus if possible
-        if (currentFocusedIndex < tvShowsList.length) {
-          setState(() {
-            gridFocusedIndex = currentFocusedIndex;
-          });
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (gridFocusNodes.containsKey(currentFocusedIndex)) {
-              gridFocusNodes[currentFocusedIndex]!.requestFocus();
-            }
-          });
-        }
-        
-        // _showDataUpdatedIndicator();
-      } else {
-        print('✅ No changes detected in background refresh');
-      }
-    }
-  } catch (e) {
-    print('❌ Background refresh failed: $e');
-  } finally {
     setState(() {
-      isBackgroundRefreshing = false;
+      isBackgroundRefreshing = true;
     });
+
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      String authKey = prefs.getString('auth_key') ?? '';
+
+      final response = await https.get(
+        Uri.parse(
+            'https://dashboard.cpplayers.com/api/v2/getTvShows/${widget.tvChannelId}'),
+        headers: {
+          'auth-key': authKey,
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'domain': 'coretechinfo.com'
+        },
+      );
+
+      print('🔍 Background API Response Status: ${response.statusCode}');
+
+      if (response.statusCode == 200) {
+        final List<dynamic> jsonData = json.decode(response.body);
+        final newData =
+            jsonData.map((item) => TVShowDetailsModel.fromJson(item)).toList();
+
+        final hasChanged =
+            TVShowCacheManager.hasDataChanged(tvShowsList, newData);
+
+        if (hasChanged) {
+          print('📱 Data changed, updating UI and cache');
+
+          await TVShowCacheManager.saveToCache(widget.tvChannelId, newData);
+
+          // Preserve current user focus
+          final currentFocusedIndex = gridFocusedIndex;
+
+          setState(() {
+            tvShowsList = newData;
+          });
+
+          _createGridFocusNodes();
+
+          // Restore focus if possible
+          if (currentFocusedIndex < tvShowsList.length) {
+            setState(() {
+              gridFocusedIndex = currentFocusedIndex;
+            });
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (gridFocusNodes.containsKey(currentFocusedIndex)) {
+                gridFocusNodes[currentFocusedIndex]!.requestFocus();
+              }
+            });
+          }
+
+          // _showDataUpdatedIndicator();
+        } else {
+          print('✅ No changes detected in background refresh');
+        }
+      }
+    } catch (e) {
+      print('❌ Background refresh failed: $e');
+    } finally {
+      setState(() {
+        isBackgroundRefreshing = false;
+      });
+    }
   }
-}
 
 // // 8. ✅ REPLACE: Enhanced fetchTVShowsDetails method
 // Future<void> fetchTVShowsDetails() async {
@@ -579,7 +577,7 @@ Future<void> _refreshDataInBackground() async {
 //     String authKey = prefs.getString('auth_key') ?? '';
 
 //     final response = await https.get(
-//       Uri.parse('https://acomtv.coretechinfo.com/public/api/getTvShows/${widget.tvChannelId}'),
+//       Uri.parse('https://dashboard.cpplayers.com/public/api/getTvShows/${widget.tvChannelId}'),
 //       headers: {
 //         'auth-key': authKey,
 //         'Content-Type': 'application/json',
@@ -593,10 +591,10 @@ Future<void> _refreshDataInBackground() async {
 //     if (response.statusCode == 200) {
 //       final List<dynamic> jsonData = json.decode(response.body);
 //       final shows = jsonData.map((item) => TVShowDetailsModel.fromJson(item)).toList();
-      
+
 //       // ✅ Save to cache
 //       await TVShowCacheManager.saveToCache(widget.tvChannelId, shows);
-      
+
 //       setState(() {
 //         tvShowsList = shows;
 //         isLoading = false;
@@ -644,10 +642,6 @@ Future<void> _refreshDataInBackground() async {
 //     );
 //   }
 // }
-
-
-
-
 
   void _initializeAnimations() {
     _fadeController = AnimationController(
@@ -754,7 +748,7 @@ Future<void> _refreshDataInBackground() async {
 
   //     final response = await https.get(
   //       Uri.parse(
-  //           'https://acomtv.coretechinfo.com/public/api/getTvShows/${widget.tvChannelId}'),
+  //           'https://dashboard.cpplayers.com/public/api/getTvShows/${widget.tvChannelId}'),
   //       headers: {
   //         'auth-key': authKey,
   //         'Content-Type': 'application/json',
@@ -924,9 +918,6 @@ Future<void> _refreshDataInBackground() async {
     }
   }
 
-
-  
-
   // void _onTVShowSelected(TVShowDetailsModel tvShow) {
   //   print('🎬 Selected TV Show: ${tvShow.name}');
   //   HapticFeedback.mediumImpact();
@@ -1016,15 +1007,6 @@ Future<void> _refreshDataInBackground() async {
       ),
     );
   }
-
-
-
-
-
-
-
-
-
 
   Widget _buildHeader() {
     return SlideTransition(
@@ -1375,8 +1357,6 @@ Future<void> _refreshDataInBackground() async {
 //       ),
 //     );
 //   }
-
-
 }
 
 // ✅ TV Show Details Card (यह unchanged रहेगा)

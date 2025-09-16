@@ -252,7 +252,7 @@
 //         key: Key(item.id),
 //         item: item,
 //         hideDescription: true,
-//         onTap: () => _navigateToVideoScreen(item),
+//         onTap: () => _navigateToLiveVideoScreen(item),
 //         onEnterPress: _handleEnterPress,
 //       ),
 //     );
@@ -260,10 +260,10 @@
 
 //   void _handleEnterPress(String itemId) {
 //     final selectedItem = _musicList.firstWhere((item) => item.id == itemId);
-//     _navigateToVideoScreen(selectedItem);
+//     _navigateToLiveVideoScreen(selectedItem);
 //   }
 
-//   Future<void> _navigateToVideoScreen(NewsItemModel newsItem) async {
+//   Future<void> _navigateToLiveVideoScreen(NewsItemModel newsItem) async {
 //     if (_isNavigating) return;
 //     _isNavigating = true;
 
@@ -347,7 +347,7 @@
 //         await Navigator.push(
 //           context,
 //           MaterialPageRoute(
-//             builder: (context) => VideoScreen(
+//             builder: (context) => LiveVideoScreen(
 //               videoUrl: newsItem.url,
 //               bannerImageUrl: newsItem.banner,
 //               startAtPosition: Duration.zero,
@@ -402,11 +402,6 @@
 //     super.dispose();
 //   }
 // }
-
-
-
-
-
 
 // // file: lib/home_screen_pages/channels_category.dart
 
@@ -512,7 +507,7 @@
 //           await Navigator.push(context, MaterialPageRoute(builder: (c) => CustomYoutubePlayer(videoData: VideoData(id: channel.id.toString(), title: channel.name, youtubeUrl: channel.url, thumbnail: channel.banner, description: ''), playlist: [])));
 //         }
 //       } else {
-//         await Navigator.push(context, MaterialPageRoute(builder: (c) => VideoScreen(
+//         await Navigator.push(context, MaterialPageRoute(builder: (c) => LiveVideoScreen(
 //               videoUrl: channel.url,
 //               bannerImageUrl: channel.banner,
 //               startAtPosition: Duration.zero,
@@ -650,10 +645,10 @@
 //   List<ScrollController> _horizontalScrollControllers = [];
 //   late AnimationController _fadeController;
 //   late Animation<double> _fadeAnimation;
-  
+
 //   // All your existing methods like _fetchLiveTvData, _processChannelData, build, etc.
 //   // remain the same. The logic here is sound. The key is what it passes
-//   // to VideoScreen in _handleContentTap.
+//   // to LiveVideoScreen in _handleContentTap.
 
 //   @override
 //   void initState() {
@@ -674,7 +669,7 @@
 //     _horizontalScrollControllers.clear();
 //     super.dispose();
 //   }
-  
+
 //   Future<void> _fetchLiveTvData() async {
 //     // ... same as before
 //     if (!mounted) return;
@@ -684,7 +679,7 @@
 //       String authKey = prefs.getString('auth_key') ?? '';
 //       if (authKey.isEmpty) throw Exception('Authentication key not found.');
 //       final response = await http.post(
-//         Uri.parse('https://acomtv.coretechinfo.com/api/v2/getAllLiveTV'),
+//         Uri.parse('https://dashboard.cpplayers.com/api/v2/getAllLiveTV'),
 //         headers: {'auth-key': authKey, 'domain': 'coretechinfo.com', 'Content-Type': 'application/json'},
 //         body: json.encode({"genere": "", "languageId": ""}),
 //       );
@@ -734,7 +729,7 @@
 //       }
 //     });
 //   }
-  
+
 //   Future<void> _handleRefresh() async => await _fetchLiveTvData();
 
 //   Future<void> _handleContentTap(NewsItemModel channel) async {
@@ -751,17 +746,17 @@
 //           await Navigator.push(context, MaterialPageRoute(builder: (c) => CustomYoutubePlayer(videoData: VideoData(id: channel.id.toString(), title: channel.name, youtubeUrl: channel.url, thumbnail: channel.banner, description: 'Live TV'), playlist: [])));
 //         }
 //       } else {
-//         // THE SENDER LOGIC: Prepare and pass the related channels list to VideoScreen
+//         // THE SENDER LOGIC: Prepare and pass the related channels list to LiveVideoScreen
 //         final allChannels = genreChannelMap.values.expand((list) => list).toSet().toList();
 //         final List<String> selectedGenres = channel.genres.split(',').map((genre) => genre.trim()).toList();
-        
+
 //         // This logic correctly creates a List<NewsItemModel>
 //         final List<NewsItemModel> filteredChannelList = allChannels.where((item) {
 //           final List<String> itemGenres = item.genres.split(',').map((genre) => genre.trim()).toList();
 //           return selectedGenres.any((genre) => itemGenres.contains(genre));
 //         }).toList();
 
-//         await Navigator.push(context, MaterialPageRoute(builder: (c) => VideoScreen(
+//         await Navigator.push(context, MaterialPageRoute(builder: (c) => LiveVideoScreen(
 //               videoUrl: channel.url,
 //               bannerImageUrl: channel.banner,
 //               startAtPosition: Duration.zero,
@@ -832,7 +827,7 @@
 //   }
 
 //   double _calculateGenreSectionHeight() => 250.0 + 24.0 + 16.0 + 32.0; // Height of SizedBox + margin + padding
-  
+
 //   void _scrollToFocusedGenre() {
 //     if (!mounted || !_verticalScrollController.hasClients) return;
 //     if (focusedGenreIndex < _horizontalScrollControllers.length) {
@@ -857,7 +852,6 @@
 //       controller.animateTo(newOffset, duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
 //     }
 //   }
-
 
 //   // Keep the rest of your UI-building methods (_buildContent, _buildGenreSection, etc.)
 //   // as they are correct.
@@ -1034,7 +1028,7 @@
 //       ),
 //     );
 //   }
-  
+
 //   Widget _buildViewAllCard({required bool isFocused, required int totalCount, required VoidCallback onTap}) {
 //     return GestureDetector(
 //       onTap: onTap,
@@ -1213,13 +1207,6 @@
 //   }
 // }
 
-
-
-
-
-
-
-
 import 'dart:convert';
 import 'dart:ui';
 import 'dart:math' as math;
@@ -1229,6 +1216,7 @@ import 'package:flutter/services.dart';
 import 'package:http/http.dart' as https;
 import 'package:mobi_tv_entertainment/main.dart';
 import 'package:mobi_tv_entertainment/services/history_service.dart';
+import 'package:mobi_tv_entertainment/video_widget/live_video_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -1335,7 +1323,8 @@ class _GenreAllChannelsPageState extends State<GenreAllChannelsPage> {
       if (focusedIndex < totalItems - itemsPerRow) {
         focusedIndex = math.min(focusedIndex + itemsPerRow, totalItems - 1);
       }
-    } else if (event.logicalKey == LogicalKeyboardKey.select || event.logicalKey == LogicalKeyboardKey.enter) {
+    } else if (event.logicalKey == LogicalKeyboardKey.select ||
+        event.logicalKey == LogicalKeyboardKey.enter) {
       _handleContentTap(widget.allChannels[focusedIndex]);
       return;
     }
@@ -1351,11 +1340,11 @@ class _GenreAllChannelsPageState extends State<GenreAllChannelsPage> {
     if (_isVideoLoading || !mounted) return;
     setState(() => _isVideoLoading = true);
 
-    try{
-          print('Updating user history for: ${channel.name}');
+    try {
+      print('Updating user history for: ${channel.name}');
       int? currentUserId = SessionManager.userId;
-    final int? parsedContentType = int.tryParse(channel.contentType ?? '');
-    final int? parsedId = int.tryParse(channel.id ?? '');
+      final int? parsedContentType = int.tryParse(channel.contentType ?? '');
+      final int? parsedId = int.tryParse(channel.id ?? '');
 
       await HistoryService.updateUserHistory(
         userId: currentUserId!, // 1. User ID
@@ -1369,38 +1358,57 @@ class _GenreAllChannelsPageState extends State<GenreAllChannelsPage> {
       print("History update failed, but proceeding to play. Error: $e");
     }
 
-
     try {
       if (channel.url.isEmpty) throw Exception('No video URL found');
       if (channel.streamType == 'YoutubeLive') {
         final deviceInfo = context.read<DeviceInfoProvider>();
         if (deviceInfo.deviceName == 'AFTSS : Amazon Fire Stick HD') {
-          await Navigator.push(context, MaterialPageRoute(builder: (c) => YoutubeWebviewPlayer(videoUrl: channel.url, name: channel.name)));
+          await Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (c) => YoutubeWebviewPlayer(
+                      videoUrl: channel.url, name: channel.name)));
         } else {
-          await Navigator.push(context, MaterialPageRoute(builder: (c) => CustomYoutubePlayer(videoData: VideoData(id: channel.id.toString(), title: channel.name, youtubeUrl: channel.url, thumbnail: channel.banner, description: ''), playlist: [])));
+          await Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (c) => CustomYoutubePlayer(
+                      videoData: VideoData(
+                          id: channel.id.toString(),
+                          title: channel.name,
+                          youtubeUrl: channel.url,
+                          thumbnail: channel.banner,
+                          description: ''),
+                      playlist: [])));
         }
       } else {
-        await Navigator.push(context, MaterialPageRoute(builder: (c) => VideoScreen(
-              videoUrl: channel.url,
-              bannerImageUrl: channel.banner,
-              source: 'isLive',
-              // startAtPosition: Duration.zero,
-              // videoType: channel.streamType ?? 'M3u8',
-              channelList: widget.allChannels,
-              // isLive: true,
-              // isVOD: false,
-              // isBannerSlider: false,
-              // source: 'isLiveScreen',
-              // isSearch: false,
-              videoId: int.tryParse(channel.id),
-              // unUpdatedUrl: channel.url,
-              name: channel.name,
-              liveStatus: true, 
-              updatedAt: channel.updatedAt,
-            )));
+        await Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (c) => LiveVideoScreen(
+                      videoUrl: channel.url,
+                      bannerImageUrl: channel.banner,
+                      source: 'isLive',
+                      // startAtPosition: Duration.zero,
+                      // videoType: channel.streamType ?? 'M3u8',
+                      channelList: widget.allChannels,
+                      // isLive: true,
+                      // isVOD: false,
+                      // isBannerSlider: false,
+                      // source: 'isLiveScreen',
+                      // isSearch: false,
+                      videoId: int.tryParse(channel.id),
+                      // unUpdatedUrl: channel.url,
+                      name: channel.name,
+                      liveStatus: true,
+                      updatedAt: channel.updatedAt,
+                    )));
       }
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: ${e.toString()}'), backgroundColor: ProfessionalColors.accentRed));
+      if (mounted)
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text('Error: ${e.toString()}'),
+            backgroundColor: ProfessionalColors.accentRed));
     } finally {
       if (mounted) setState(() => _isVideoLoading = false);
     }
@@ -1417,7 +1425,11 @@ class _GenreAllChannelsPageState extends State<GenreAllChannelsPage> {
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [ProfessionalColors.primaryDark, ProfessionalColors.surfaceDark.withOpacity(0.8), ProfessionalColors.primaryDark],
+                colors: [
+                  ProfessionalColors.primaryDark,
+                  ProfessionalColors.surfaceDark.withOpacity(0.8),
+                  ProfessionalColors.primaryDark
+                ],
               ),
             ),
             child: Column(
@@ -1430,7 +1442,8 @@ class _GenreAllChannelsPageState extends State<GenreAllChannelsPage> {
                     child: Padding(
                       padding: const EdgeInsets.all(20.0),
                       child: GridView.builder(
-                        controller: _scrollController, // ⭐️ ATTACH the scroll controller
+                        controller:
+                            _scrollController, // ⭐️ ATTACH the scroll controller
                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 6,
                           childAspectRatio: bannerwdt / bannerhgt,
@@ -1441,7 +1454,8 @@ class _GenreAllChannelsPageState extends State<GenreAllChannelsPage> {
                         itemBuilder: (context, index) {
                           final channel = widget.allChannels[index];
                           final isFocused = focusedIndex == index;
-                          return Focus( // ⭐️ WRAP card with Focus widget
+                          return Focus(
+                            // ⭐️ WRAP card with Focus widget
                             focusNode: _itemFocusNodes[index],
                             child: StyledChannelCard(
                               channel: channel,
@@ -1463,7 +1477,9 @@ class _GenreAllChannelsPageState extends State<GenreAllChannelsPage> {
             Positioned.fill(
               child: Container(
                 color: Colors.black.withOpacity(0.7),
-                child: const Center(child: ProfessionalLoadingIndicator(message: 'Starting Stream...')),
+                child: const Center(
+                    child: ProfessionalLoadingIndicator(
+                        message: 'Starting Stream...')),
               ),
             ),
         ],
@@ -1478,17 +1494,29 @@ class _GenreAllChannelsPageState extends State<GenreAllChannelsPage> {
         child: Row(
           children: [
             Container(
-              decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withOpacity(0.1)),
-              child: IconButton(icon: const Icon(Icons.arrow_back_rounded, color: Colors.white, size: 28), onPressed: () => Navigator.pop(context)),
+              decoration: BoxDecoration(
+                  shape: BoxShape.circle, color: Colors.white.withOpacity(0.1)),
+              child: IconButton(
+                  icon: const Icon(Icons.arrow_back_rounded,
+                      color: Colors.white, size: 28),
+                  onPressed: () => Navigator.pop(context)),
             ),
             const SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(widget.genreTitle.toUpperCase(), style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold, letterSpacing: 1.0)),
+                  Text(widget.genreTitle.toUpperCase(),
+                      style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.0)),
                   const SizedBox(height: 4),
-                  Text('${widget.allChannels.length} Channels', style: const TextStyle(color: ProfessionalColors.textSecondary, fontSize: 14)),
+                  Text('${widget.allChannels.length} Channels',
+                      style: const TextStyle(
+                          color: ProfessionalColors.textSecondary,
+                          fontSize: 14)),
                 ],
               ),
             ),
@@ -1535,8 +1563,8 @@ class _ChannelsCategoryState extends State<ChannelsCategory>
     super.initState();
     _fadeController = AnimationController(
         duration: const Duration(milliseconds: 600), vsync: this);
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0)
-        .animate(CurvedAnimation(parent: _fadeController, curve: Curves.easeInOut));
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+        CurvedAnimation(parent: _fadeController, curve: Curves.easeInOut));
     _fetchLiveTvData();
   }
 
@@ -1563,27 +1591,35 @@ class _ChannelsCategoryState extends State<ChannelsCategory>
       String authKey = prefs.getString('auth_key') ?? '';
       if (authKey.isEmpty) throw Exception('Authentication key not found.');
       final response = await https.post(
-        Uri.parse('https://acomtv.coretechinfo.com/api/v2/getAllLiveTV'),
-        headers: {'auth-key': authKey, 'domain': 'coretechinfo.com', 'Content-Type': 'application/json'},
+        Uri.parse('https://dashboard.cpplayers.com/api/v2/getAllLiveTV'),
+        headers: {
+          'auth-key': authKey,
+          'domain': 'coretechinfo.com',
+          'Content-Type': 'application/json'
+        },
         body: json.encode({"genere": "", "languageId": ""}),
       );
       if (response.statusCode == 200) {
         _processChannelData(json.decode(response.body));
       } else {
-        throw Exception('Failed to load channels: Status Code ${response.statusCode}');
+        throw Exception(
+            'Failed to load channels: Status Code ${response.statusCode}');
       }
     } catch (e) {
-      if (mounted) setState(() => errorMessage = "Failed to load data. Please check your connection.");
+      if (mounted)
+        setState(() => errorMessage =
+            "Failed to load data. Please check your connection.");
     } finally {
       if (mounted) setState(() => isLoading = false);
     }
   }
 
   void _processChannelData(List<dynamic> channelData) {
-      if (!mounted) return;
+    if (!mounted) return;
     Map<String, List<NewsItemModel>> tempGenreMap = {};
-    channelData.sort((a, b) =>
-        (a['channel_name'] ?? '').toLowerCase().compareTo((b['channel_name'] ?? '').toLowerCase()));
+    channelData.sort((a, b) => (a['channel_name'] ?? '')
+        .toLowerCase()
+        .compareTo((b['channel_name'] ?? '').toLowerCase()));
 
     for (var item in channelData) {
       if (item['status'] != 1) continue;
@@ -1627,12 +1663,11 @@ class _ChannelsCategoryState extends State<ChannelsCategory>
     if (_isVideoLoading || !mounted) return;
     setState(() => _isVideoLoading = true);
 
-
-    try{
-          print('Updating user history for: ${channel.name}');
+    try {
+      print('Updating user history for: ${channel.name}');
       int? currentUserId = SessionManager.userId;
-    final int? parsedContentType = int.tryParse(channel.contentType ?? '');
-    final int? parsedId = int.tryParse(channel.id ?? '');
+      final int? parsedContentType = int.tryParse(channel.contentType ?? '');
+      final int? parsedId = int.tryParse(channel.id ?? '');
 
       await HistoryService.updateUserHistory(
         userId: currentUserId!, // 1. User ID
@@ -1646,64 +1681,84 @@ class _ChannelsCategoryState extends State<ChannelsCategory>
       print("History update failed, but proceeding to play. Error: $e");
     }
 
-
     try {
       if (channel.url.isEmpty) throw Exception('No video URL found');
 
       if (channel.streamType == 'YoutubeLive') {
         final deviceInfo = context.read<DeviceInfoProvider>();
         if (deviceInfo.deviceName == 'AFTSS : Amazon Fire Stick HD') {
-          await Navigator.push(context, MaterialPageRoute(builder: (c) => YoutubeWebviewPlayer(videoUrl: channel.url, name: channel.name)));
+          await Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (c) => YoutubeWebviewPlayer(
+                      videoUrl: channel.url, name: channel.name)));
         } else {
-          await Navigator.push(context, MaterialPageRoute(builder: (c) => CustomYoutubePlayer(videoData: VideoData(id: channel.id.toString(), title: channel.name, youtubeUrl: channel.url, thumbnail: channel.banner, description: 'Live TV'), playlist: [])));
+          await Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (c) => CustomYoutubePlayer(
+                      videoData: VideoData(
+                          id: channel.id.toString(),
+                          title: channel.name,
+                          youtubeUrl: channel.url,
+                          thumbnail: channel.banner,
+                          description: 'Live TV'),
+                      playlist: [])));
         }
       } else {
-        final allChannels = genreChannelMap.values.expand((list) => list).toSet().toList();
-        final List<String> selectedGenres = channel.genres.split(',').map((genre) => genre.trim()).toList();
+        final allChannels =
+            genreChannelMap.values.expand((list) => list).toSet().toList();
+        final List<String> selectedGenres =
+            channel.genres.split(',').map((genre) => genre.trim()).toList();
 
-        final List<NewsItemModel> filteredChannelList = allChannels.where((item) {
-          final List<String> itemGenres = item.genres.split(',').map((genre) => genre.trim()).toList();
+        final List<NewsItemModel> filteredChannelList =
+            allChannels.where((item) {
+          final List<String> itemGenres =
+              item.genres.split(',').map((genre) => genre.trim()).toList();
           return selectedGenres.any((genre) => itemGenres.contains(genre));
         }).toList();
 
         await Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (c) => VideoScreen(
-                    videoUrl: channel.url,
-                    bannerImageUrl: channel.banner,
-                    source: 'isLive',
-                    // startAtPosition: Duration.zero,
-                    // videoType: channel.streamType ?? 'M3u8',
-                    channelList: filteredChannelList,
-                    // isLive: true,
-                    // isVOD: false,
-                    // isBannerSlider: false,
-                    // source: 'isLiveScreen',
-                    // isSearch: false,
-                    videoId: int.tryParse(channel.id),
-                    // unUpdatedUrl: channel.url,
-                    name: channel.name,
-                    liveStatus: true, 
-                    updatedAt: channel.updatedAt,
-                  )));
+                builder: (c) => LiveVideoScreen(
+                      videoUrl: channel.url,
+                      bannerImageUrl: channel.banner,
+                      source: 'isLive',
+                      // startAtPosition: Duration.zero,
+                      // videoType: channel.streamType ?? 'M3u8',
+                      channelList: filteredChannelList,
+                      // isLive: true,
+                      // isVOD: false,
+                      // isBannerSlider: false,
+                      // source: 'isLiveScreen',
+                      // isSearch: false,
+                      videoId: int.tryParse(channel.id),
+                      // unUpdatedUrl: channel.url,
+                      name: channel.name,
+                      liveStatus: true,
+                      updatedAt: channel.updatedAt,
+                    )));
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: ${e.toString()}'), backgroundColor: ProfessionalColors.accentRed));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text('Error: ${e.toString()}'),
+            backgroundColor: ProfessionalColors.accentRed));
       }
     } finally {
       if (mounted) setState(() => _isVideoLoading = false);
     }
   }
-  
+
   // =======================================================================
   // ⭐️⭐️ NEW RELIABLE NAVIGATION AND SCROLLING LOGIC ⭐️⭐️
   // =======================================================================
 
   void _initializeScrollControllers() {
     _horizontalScrollControllers.forEach((c) => c.dispose());
-    _horizontalScrollControllers = List.generate(availableGenres.length, (_) => ScrollController());
+    _horizontalScrollControllers =
+        List.generate(availableGenres.length, (_) => ScrollController());
   }
 
   /// Calculates the total height of one genre row for vertical scrolling.
@@ -1724,7 +1779,8 @@ class _ChannelsCategoryState extends State<ChannelsCategory>
     if (!mounted || !_verticalScrollController.hasClients) return;
 
     if (focusedGenreIndex < _horizontalScrollControllers.length) {
-      final horizontalController = _horizontalScrollControllers[focusedGenreIndex];
+      final horizontalController =
+          _horizontalScrollControllers[focusedGenreIndex];
       if (horizontalController.hasClients) {
         horizontalController.animateTo(
           0,
@@ -1751,19 +1807,19 @@ class _ChannelsCategoryState extends State<ChannelsCategory>
 
   /// Scrolls horizontally to the currently focused item within a genre row.
   void _scrollToFocusedItem() {
-    if (!mounted || focusedGenreIndex >= _horizontalScrollControllers.length) return;
+    if (!mounted || focusedGenreIndex >= _horizontalScrollControllers.length)
+      return;
 
     final controller = _horizontalScrollControllers[focusedGenreIndex];
     if (controller.hasClients) {
       double itemWidthWithPadding = bannerwdt + 20.0;
       double targetOffset = focusedItemIndex * itemWidthWithPadding;
 
-      targetOffset -= (controller.position.viewportDimension -(controller.position.viewportDimension )) ;
-      
-      targetOffset = targetOffset.clamp(
-          controller.position.minScrollExtent,
-          controller.position.maxScrollExtent
-      );
+      targetOffset -= (controller.position.viewportDimension -
+          (controller.position.viewportDimension));
+
+      targetOffset = targetOffset.clamp(controller.position.minScrollExtent,
+          controller.position.maxScrollExtent);
 
       controller.animateTo(
         targetOffset,
@@ -1778,7 +1834,7 @@ class _ChannelsCategoryState extends State<ChannelsCategory>
 
   //   final genres = availableGenres;
   //   final currentGenreItems = genreChannelMap[genres[focusedGenreIndex]]!;
-    
+
   //   if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
   //     if (focusedGenreIndex <= 0) return;
   //     setState(() {
@@ -1830,79 +1886,77 @@ class _ChannelsCategoryState extends State<ChannelsCategory>
   //   }
   // }
 
-
-
   // =======================================================================
 // ⭐️⭐️ UPDATED AND FINAL NAVIGATION LOGIC ⭐️⭐️
 // =======================================================================
-void _handleKeyNavigation(RawKeyEvent event) {
-  if (event is! RawKeyDownEvent || genreChannelMap.isEmpty || _isVideoLoading) return;
+  void _handleKeyNavigation(RawKeyEvent event) {
+    if (event is! RawKeyDownEvent || genreChannelMap.isEmpty || _isVideoLoading)
+      return;
 
-  final genres = availableGenres;
-  final currentGenreItems = genreChannelMap[genres[focusedGenreIndex]]!;
-  
-  if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
-    if (focusedGenreIndex <= 0) return;
-    setState(() {
-      focusedGenreIndex--;
-      focusedItemIndex = 0;
-    });
-    // Callback to scroll AND return focus
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _widgetFocusNode.requestFocus(); // ⭐️ FOCUS FIX: Return focus to the listener
-      _scrollToFocusedGenre();
-    });
-    HapticFeedback.lightImpact();
+    final genres = availableGenres;
+    final currentGenreItems = genreChannelMap[genres[focusedGenreIndex]]!;
 
-  } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
-    if (focusedGenreIndex >= genres.length - 1) return;
-    setState(() {
-      focusedGenreIndex++;
-      focusedItemIndex = 0;
-    });
-    // Callback to scroll AND return focus
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _widgetFocusNode.requestFocus(); // ⭐️ FOCUS FIX: Return focus to the listener
-      _scrollToFocusedGenre();
-    });
-    HapticFeedback.lightImpact();
-
-  } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
-    if (focusedItemIndex <= 0) return;
-    setState(() {
-      focusedItemIndex--;
-    });
-    _scrollToFocusedItem();
-    HapticFeedback.lightImpact();
-
-  } else if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
-    final hasMore = currentGenreItems.length > 10;
-    final displayCount = hasMore ? 11 : currentGenreItems.length;
-    if (focusedItemIndex >= displayCount - 1) return;
-    setState(() {
-      focusedItemIndex++;
-    });
-    _scrollToFocusedItem();
-    HapticFeedback.lightImpact();
-
-  } else if (event.logicalKey == LogicalKeyboardKey.select || event.logicalKey == LogicalKeyboardKey.enter) {
+    if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+      if (focusedGenreIndex <= 0) return;
+      setState(() {
+        focusedGenreIndex--;
+        focusedItemIndex = 0;
+      });
+      // Callback to scroll AND return focus
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _widgetFocusNode
+            .requestFocus(); // ⭐️ FOCUS FIX: Return focus to the listener
+        _scrollToFocusedGenre();
+      });
+      HapticFeedback.lightImpact();
+    } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+      if (focusedGenreIndex >= genres.length - 1) return;
+      setState(() {
+        focusedGenreIndex++;
+        focusedItemIndex = 0;
+      });
+      // Callback to scroll AND return focus
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _widgetFocusNode
+            .requestFocus(); // ⭐️ FOCUS FIX: Return focus to the listener
+        _scrollToFocusedGenre();
+      });
+      HapticFeedback.lightImpact();
+    } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+      if (focusedItemIndex <= 0) return;
+      setState(() {
+        focusedItemIndex--;
+      });
+      _scrollToFocusedItem();
+      HapticFeedback.lightImpact();
+    } else if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
+      final hasMore = currentGenreItems.length > 10;
+      final displayCount = hasMore ? 11 : currentGenreItems.length;
+      if (focusedItemIndex >= displayCount - 1) return;
+      setState(() {
+        focusedItemIndex++;
+      });
+      _scrollToFocusedItem();
+      HapticFeedback.lightImpact();
+    } else if (event.logicalKey == LogicalKeyboardKey.select ||
+        event.logicalKey == LogicalKeyboardKey.enter) {
       final hasMore = currentGenreItems.length > 10;
       if (hasMore && focusedItemIndex == 10) {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => GenreAllChannelsPage(
-                      genreTitle: genres[focusedGenreIndex],
-                      allChannels: currentGenreItems,
-                  ),
-              ),
-          );
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => GenreAllChannelsPage(
+              genreTitle: genres[focusedGenreIndex],
+              allChannels: currentGenreItems,
+            ),
+          ),
+        );
       } else if (focusedItemIndex < currentGenreItems.length) {
-          final displayList = currentGenreItems.take(10).toList();
-          _handleContentTap(displayList[focusedItemIndex]);
+        final displayList = currentGenreItems.take(10).toList();
+        _handleContentTap(displayList[focusedItemIndex]);
       }
+    }
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -1915,7 +1969,11 @@ void _handleKeyNavigation(RawKeyEvent event) {
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [ProfessionalColors.primaryDark, ProfessionalColors.surfaceDark.withOpacity(0.8), ProfessionalColors.primaryDark],
+                colors: [
+                  ProfessionalColors.primaryDark,
+                  ProfessionalColors.surfaceDark.withOpacity(0.8),
+                  ProfessionalColors.primaryDark
+                ],
               ),
             ),
             child: FadeTransition(
@@ -1940,19 +1998,24 @@ void _handleKeyNavigation(RawKeyEvent event) {
               ),
             ),
           ),
-          Positioned(top: 0, left: 0, right: 0, child: _buildProfessionalAppBar()),
+          Positioned(
+              top: 0, left: 0, right: 0, child: _buildProfessionalAppBar()),
           if (isLoading)
             Positioned.fill(
               child: Container(
                 color: ProfessionalColors.primaryDark.withOpacity(0.9),
-                child: const Center(child: ProfessionalLoadingIndicator(message: 'Loading Live Channels...')),
+                child: const Center(
+                    child: ProfessionalLoadingIndicator(
+                        message: 'Loading Live Channels...')),
               ),
             ),
           if (_isVideoLoading)
             Positioned.fill(
               child: Container(
                 color: Colors.black.withOpacity(0.7),
-                child: const Center(child: ProfessionalLoadingIndicator(message: 'Starting Stream...')),
+                child: const Center(
+                    child: ProfessionalLoadingIndicator(
+                        message: 'Starting Stream...')),
               ),
             ),
         ],
@@ -1961,7 +2024,8 @@ void _handleKeyNavigation(RawKeyEvent event) {
   }
 
   Widget _buildContent() {
-    if (errorMessage != null && genreChannelMap.isEmpty) return _buildErrorWidget();
+    if (errorMessage != null && genreChannelMap.isEmpty)
+      return _buildErrorWidget();
     if (genreChannelMap.isEmpty && !isLoading) return _buildEmptyWidget();
     return ListView.builder(
       controller: _verticalScrollController,
@@ -1977,11 +2041,15 @@ void _handleKeyNavigation(RawKeyEvent event) {
   }
 
   Widget _buildErrorWidget() {
-    return Center(child: Text(errorMessage ?? 'An unknown error occurred.', style: TextStyle(color: Colors.white70, fontSize: 16)));
+    return Center(
+        child: Text(errorMessage ?? 'An unknown error occurred.',
+            style: TextStyle(color: Colors.white70, fontSize: 16)));
   }
 
   Widget _buildEmptyWidget() {
-    return Center(child: Text('No Live TV Channels Found.', style: TextStyle(color: Colors.white70, fontSize: 16)));
+    return Center(
+        child: Text('No Live TV Channels Found.',
+            style: TextStyle(color: Colors.white70, fontSize: 16)));
   }
 
   Widget _buildProfessionalAppBar() {
@@ -1990,36 +2058,66 @@ void _handleKeyNavigation(RawKeyEvent event) {
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [ProfessionalColors.primaryDark.withOpacity(0.98), ProfessionalColors.surfaceDark.withOpacity(0.95), Colors.transparent],
+          colors: [
+            ProfessionalColors.primaryDark.withOpacity(0.98),
+            ProfessionalColors.surfaceDark.withOpacity(0.95),
+            Colors.transparent
+          ],
         ),
       ),
       child: ClipRRect(
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
           child: Container(
-            padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top + 15, left: 40, right: 40, bottom: 15),
+            padding: EdgeInsets.only(
+                top: MediaQuery.of(context).padding.top + 15,
+                left: 40,
+                right: 40,
+                bottom: 15),
             child: Row(
               children: [
                 Container(
-                  decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withOpacity(0.1)),
-                  child: IconButton(icon: const Icon(Icons.arrow_back_rounded, color: Colors.white, size: 24), onPressed: () => Navigator.pop(context)),
+                  decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.white.withOpacity(0.1)),
+                  child: IconButton(
+                      icon: const Icon(Icons.arrow_back_rounded,
+                          color: Colors.white, size: 24),
+                      onPressed: () => Navigator.pop(context)),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('Live TV', style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w700, letterSpacing: 1.0)),
+                      const Text('Live TV',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 24,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 1.0)),
                       const SizedBox(height: 6),
                       if (genreChannelMap.isNotEmpty)
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 6),
                           decoration: BoxDecoration(
-                            gradient: LinearGradient(colors: [ProfessionalColors.accentGreen.withOpacity(0.4), ProfessionalColors.accentBlue.withOpacity(0.3)]),
+                            gradient: LinearGradient(colors: [
+                              ProfessionalColors.accentGreen.withOpacity(0.4),
+                              ProfessionalColors.accentBlue.withOpacity(0.3)
+                            ]),
                             borderRadius: BorderRadius.circular(15),
-                            border: Border.all(color: ProfessionalColors.accentGreen.withOpacity(0.6), width: 1),
+                            border: Border.all(
+                                color: ProfessionalColors.accentGreen
+                                    .withOpacity(0.6),
+                                width: 1),
                           ),
-                          child: Text('${genreChannelMap.length} Genres • ${genreChannelMap.values.fold(0, (sum, list) => sum + list.length)} Channels', style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600)),
+                          child: Text(
+                              '${genreChannelMap.length} Genres • ${genreChannelMap.values.fold(0, (sum, list) => sum + list.length)} Channels',
+                              style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600)),
                         ),
                     ],
                   ),
@@ -2050,17 +2148,21 @@ void _handleKeyNavigation(RawKeyEvent event) {
             padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: isFocusedGenre ? [
-                  ProfessionalColors.accentGreen.withOpacity(0.3),
-                  ProfessionalColors.accentBlue.withOpacity(0.2),
-                ] : [
-                  ProfessionalColors.cardDark.withOpacity(0.6),
-                  ProfessionalColors.surfaceDark.withOpacity(0.4),
-                ],
+                colors: isFocusedGenre
+                    ? [
+                        ProfessionalColors.accentGreen.withOpacity(0.3),
+                        ProfessionalColors.accentBlue.withOpacity(0.2),
+                      ]
+                    : [
+                        ProfessionalColors.cardDark.withOpacity(0.6),
+                        ProfessionalColors.surfaceDark.withOpacity(0.4),
+                      ],
               ),
               borderRadius: BorderRadius.circular(15),
               border: Border.all(
-                color: isFocusedGenre ? ProfessionalColors.accentGreen.withOpacity(0.5) : ProfessionalColors.cardDark.withOpacity(0.3),
+                color: isFocusedGenre
+                    ? ProfessionalColors.accentGreen.withOpacity(0.5)
+                    : ProfessionalColors.cardDark.withOpacity(0.3),
                 width: 1.5,
               ),
             ),
@@ -2074,7 +2176,9 @@ void _handleKeyNavigation(RawKeyEvent event) {
                       fontSize: isFocusedGenre ? 18 : 16,
                       fontWeight: FontWeight.w700,
                       letterSpacing: 1.2,
-                      color: isFocusedGenre ? ProfessionalColors.accentGreen : ProfessionalColors.textPrimary,
+                      color: isFocusedGenre
+                          ? ProfessionalColors.accentGreen
+                          : ProfessionalColors.textPrimary,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -2160,9 +2264,21 @@ void _handleKeyNavigation(RawKeyEvent event) {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: isFocused ? [ProfessionalColors.accentGreen.withOpacity(0.3), ProfessionalColors.accentBlue.withOpacity(0.3)] : [ProfessionalColors.cardDark.withOpacity(0.8), ProfessionalColors.surfaceDark.withOpacity(0.6)],
+            colors: isFocused
+                ? [
+                    ProfessionalColors.accentGreen.withOpacity(0.3),
+                    ProfessionalColors.accentBlue.withOpacity(0.3)
+                  ]
+                : [
+                    ProfessionalColors.cardDark.withOpacity(0.8),
+                    ProfessionalColors.surfaceDark.withOpacity(0.6)
+                  ],
           ),
-          border: Border.all(color: isFocused ? ProfessionalColors.accentGreen : ProfessionalColors.cardDark.withOpacity(0.5), width: isFocused ? 2 : 1),
+          border: Border.all(
+              color: isFocused
+                  ? ProfessionalColors.accentGreen
+                  : ProfessionalColors.cardDark.withOpacity(0.5),
+              width: isFocused ? 2 : 1),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -2171,13 +2287,30 @@ void _handleKeyNavigation(RawKeyEvent event) {
               // padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: isFocused ? ProfessionalColors.accentGreen.withOpacity(0.3) : ProfessionalColors.cardDark.withOpacity(0.5),
-                border: Border.all(color: isFocused ? ProfessionalColors.accentGreen : ProfessionalColors.textSecondary.withOpacity(0.3), width: 2),
+                color: isFocused
+                    ? ProfessionalColors.accentGreen.withOpacity(0.3)
+                    : ProfessionalColors.cardDark.withOpacity(0.5),
+                border: Border.all(
+                    color: isFocused
+                        ? ProfessionalColors.accentGreen
+                        : ProfessionalColors.textSecondary.withOpacity(0.3),
+                    width: 2),
               ),
-              child: Icon(Icons.grid_view_rounded, size: 25, color: isFocused ? ProfessionalColors.accentGreen : ProfessionalColors.textSecondary),
+              child: Icon(Icons.grid_view_rounded,
+                  size: 25,
+                  color: isFocused
+                      ? ProfessionalColors.accentGreen
+                      : ProfessionalColors.textSecondary),
             ),
             const SizedBox(height: 2),
-            Text('VIEW ALL', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, letterSpacing: 1.0, color: isFocused ? ProfessionalColors.accentGreen : ProfessionalColors.textPrimary)),
+            Text('VIEW ALL',
+                style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 1.0,
+                    color: isFocused
+                        ? ProfessionalColors.accentGreen
+                        : ProfessionalColors.textPrimary)),
             const SizedBox(height: 4),
             // Text('$totalCount items', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: isFocused ? ProfessionalColors.accentGreen : ProfessionalColors.textSecondary)),
           ],
@@ -2215,7 +2348,9 @@ class StyledChannelCard extends StatelessWidget {
         height: height,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(15),
-          border: isFocused ? Border.all(color: ProfessionalColors.accentGreen, width: 3) : null,
+          border: isFocused
+              ? Border.all(color: ProfessionalColors.accentGreen, width: 3)
+              : null,
           boxShadow: [
             if (isFocused)
               BoxShadow(
@@ -2244,15 +2379,23 @@ class StyledChannelCard extends StatelessWidget {
                   imageUrl: channel.banner,
                   fit: BoxFit.cover,
                   memCacheWidth: 480,
-                  placeholder: (context, url) => const Center(child: CircularProgressIndicator(color: ProfessionalColors.accentGreen)),
-                  errorWidget: (context, url, error) => const Icon(Icons.live_tv, color: Colors.white54, size: 50),
+                  placeholder: (context, url) => const Center(
+                      child: CircularProgressIndicator(
+                          color: ProfessionalColors.accentGreen)),
+                  errorWidget: (context, url, error) => const Icon(
+                      Icons.live_tv,
+                      color: Colors.white54,
+                      size: 50),
                 ),
               ),
               Positioned.fill(
                 child: Container(
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      colors: [Colors.transparent, Colors.black.withOpacity(0.9)],
+                      colors: [
+                        Colors.transparent,
+                        Colors.black.withOpacity(0.9)
+                      ],
                       begin: Alignment.center,
                       end: Alignment.bottomCenter,
                       stops: const [0.5, 1.0],
@@ -2270,11 +2413,18 @@ class StyledChannelCard extends StatelessWidget {
                   textAlign: TextAlign.center,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    color: isFocused ? ProfessionalColors.accentGreen : Colors.white,
+                    color: isFocused
+                        ? ProfessionalColors.accentGreen
+                        : Colors.white,
                     fontWeight: FontWeight.bold,
                     fontSize: isFocused ? 15 : 14,
                     letterSpacing: 0.5,
-                    shadows: const [Shadow(blurRadius: 4, color: Colors.black, offset: Offset(0, 2))],
+                    shadows: const [
+                      Shadow(
+                          blurRadius: 4,
+                          color: Colors.black,
+                          offset: Offset(0, 2))
+                    ],
                   ),
                 ),
               ),
@@ -2309,20 +2459,27 @@ class StyledChannelCard extends StatelessWidget {
 // =======================================================================
 class ProfessionalLoadingIndicator extends StatefulWidget {
   final String message;
-  const ProfessionalLoadingIndicator({Key? key, required this.message}) : super(key: key);
+  const ProfessionalLoadingIndicator({Key? key, required this.message})
+      : super(key: key);
   @override
-  _ProfessionalLoadingIndicatorState createState() => _ProfessionalLoadingIndicatorState();
+  _ProfessionalLoadingIndicatorState createState() =>
+      _ProfessionalLoadingIndicatorState();
 }
 
-class _ProfessionalLoadingIndicatorState extends State<ProfessionalLoadingIndicator> with TickerProviderStateMixin {
+class _ProfessionalLoadingIndicatorState
+    extends State<ProfessionalLoadingIndicator> with TickerProviderStateMixin {
   late AnimationController _spinController, _pulseController;
   late Animation<double> _pulseAnimation;
   @override
   void initState() {
     super.initState();
-    _spinController = AnimationController(duration: const Duration(milliseconds: 1500), vsync: this)..repeat();
-    _pulseController = AnimationController(duration: const Duration(milliseconds: 1000), vsync: this);
-    _pulseAnimation = Tween<double>(begin: 0.8, end: 1.2).animate(CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut));
+    _spinController = AnimationController(
+        duration: const Duration(milliseconds: 1500), vsync: this)
+      ..repeat();
+    _pulseController = AnimationController(
+        duration: const Duration(milliseconds: 1000), vsync: this);
+    _pulseAnimation = Tween<double>(begin: 0.8, end: 1.2).animate(
+        CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut));
     _pulseController.repeat(reverse: true);
   }
 
@@ -2348,18 +2505,34 @@ class _ProfessionalLoadingIndicatorState extends State<ProfessionalLoadingIndica
               height: 80,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                gradient: RadialGradient(colors: [primaryColor.withOpacity(0.3), primaryColor.withOpacity(0.1), Colors.transparent]),
+                gradient: RadialGradient(colors: [
+                  primaryColor.withOpacity(0.3),
+                  primaryColor.withOpacity(0.1),
+                  Colors.transparent
+                ]),
                 border: Border.all(color: primaryColor, width: 3),
-                boxShadow: [BoxShadow(color: primaryColor.withOpacity(0.3), blurRadius: 20, spreadRadius: 5)],
+                boxShadow: [
+                  BoxShadow(
+                      color: primaryColor.withOpacity(0.3),
+                      blurRadius: 20,
+                      spreadRadius: 5)
+                ],
               ),
               child: RotationTransition(
                 turns: _spinController,
-                child: Icon(Icons.live_tv_rounded, color: primaryColor, size: 32),
+                child:
+                    Icon(Icons.live_tv_rounded, color: primaryColor, size: 32),
               ),
             ),
           ),
           const SizedBox(height: 32),
-          Text(widget.message, style: TextStyle(color: textColor, fontSize: 18, fontWeight: FontWeight.w600, letterSpacing: 0.5), textAlign: TextAlign.center),
+          Text(widget.message,
+              style: TextStyle(
+                  color: textColor,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 0.5),
+              textAlign: TextAlign.center),
         ],
       ),
     );
