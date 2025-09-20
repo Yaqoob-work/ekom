@@ -140,7 +140,7 @@
 //                   key: _itemKeys[row * _crossAxisCount + col],
 //                   item: _musicList[index],
 //                   hideDescription: true,
-//                   onTap: () => _navigateToLiveVideoScreen(_musicList[index]),
+//                   onTap: () => _navigateToVideoScreen(_musicList[index]),
 //                   onEnterPress: _handleEnterPress,
 //                   focusNode: _focusNodes[row][col],
 //                   onUpPress: () => _handleUpPress(row, col),
@@ -343,10 +343,10 @@
 
 //   void _handleEnterPress(String itemId) {
 //     final selectedItem = _musicList.firstWhere((item) => item.id == itemId);
-//     _navigateToLiveVideoScreen(selectedItem);
+//     _navigateToVideoScreen(selectedItem);
 //   }
 
-//   Future<void> _navigateToLiveVideoScreen(NewsItemModel newsItem) async {
+//   Future<void> _navigateToVideoScreen(NewsItemModel newsItem) async {
 //     if (_isNavigating) return;
 //     _isNavigating = true;
 
@@ -417,7 +417,7 @@
 //         await Navigator.push(
 //           context,
 //           MaterialPageRoute(
-//             builder: (context) => LiveVideoScreen(
+//             builder: (context) => VideoScreen(
 //               videoUrl: newsItem.url,
 //               bannerImageUrl: newsItem.banner,
 //               startAtPosition: Duration.zero,

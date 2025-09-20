@@ -833,28 +833,30 @@ class _TvShowPakState extends State<TvShowPak>
               }
             });
             return KeyEventResult.handled;
-          } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
-            setState(() {
-              focusedIndex = -1;
-              _hasReceivedFocusFromWebSeries = false;
-            });
-            // ✅ ADD: Reset color when navigating away
-            context.read<ColorProvider>().resetColor();
-            FocusScope.of(context).unfocus();
-            // Future.delayed(const Duration(milliseconds: 100), () {
-            //   if (mounted) {
-            //     try {
-            //       Provider.of<FocusProvider>(context, listen: false)
-            //           .requestFirstSportsCategoryFocus();
-            //       // Navigate to next section
-            //       print('✅ Navigating down from Pakistani TV shows');
-            //     } catch (e) {
-            //       print('❌ Failed to navigate down: $e');
-            //     }
-            //   }
-            // });
-            return KeyEventResult.handled;
-          } else if (event.logicalKey == LogicalKeyboardKey.enter ||
+          } 
+          // else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+          //   setState(() {
+          //     focusedIndex = -1;
+          //     _hasReceivedFocusFromWebSeries = false;
+          //   });
+          //   // ✅ ADD: Reset color when navigating away
+          //   context.read<ColorProvider>().resetColor();
+          //   FocusScope.of(context).unfocus();
+          //   // Future.delayed(const Duration(milliseconds: 100), () {
+          //   //   if (mounted) {
+          //   //     try {
+          //   //       Provider.of<FocusProvider>(context, listen: false)
+          //   //           .requestFirstSportsCategoryFocus();
+          //   //       // Navigate to next section
+          //   //       print('✅ Navigating down from Pakistani TV shows');
+          //   //     } catch (e) {
+          //   //       print('❌ Failed to navigate down: $e');
+          //   //     }
+          //   //   }
+          //   // });
+          //   return KeyEventResult.handled;
+          // } 
+          else if (event.logicalKey == LogicalKeyboardKey.enter ||
               event.logicalKey == LogicalKeyboardKey.select) {
             print(
                 '🎬 Enter pressed on ${tvShow.name} - Opening Details Page...');
@@ -955,30 +957,32 @@ class _TvShowPakState extends State<TvShowPak>
                         }
                       });
                       return KeyEventResult.handled;
-                    } else if (event.logicalKey ==
-                        LogicalKeyboardKey.arrowDown) {
-                      setState(() {
-                        focusedIndex = -1;
-                        _hasReceivedFocusFromWebSeries = false;
-                      });
-                      // ✅ ADD: Reset color when navigating away from ViewAll
-                      context.read<ColorProvider>().resetColor();
-                      FocusScope.of(context).unfocus();
-                      // Future.delayed(const Duration(milliseconds: 100), () {
-                      //   if (mounted) {
-                      //     try {
-                      //       Provider.of<FocusProvider>(context, listen: false)
-                      //           .requestFirstSportsCategoryFocus();
-                      //       // Navigate to next section after Pakistani TV Shows
-                      //       print(
-                      //           '✅ Navigating down from Pakistani TV Shows ViewAll');
-                      //     } catch (e) {
-                      //       print('❌ Failed to navigate down: $e');
-                      //     }
-                      //   }
-                      // });
-                      return KeyEventResult.handled;
-                    } else if (event.logicalKey == LogicalKeyboardKey.enter ||
+                    } 
+                    // else if (event.logicalKey ==
+                    //     LogicalKeyboardKey.arrowDown) {
+                    //   setState(() {
+                    //     focusedIndex = -1;
+                    //     _hasReceivedFocusFromWebSeries = false;
+                    //   });
+                    //   // ✅ ADD: Reset color when navigating away from ViewAll
+                    //   context.read<ColorProvider>().resetColor();
+                    //   FocusScope.of(context).unfocus();
+                    //   // Future.delayed(const Duration(milliseconds: 100), () {
+                    //   //   if (mounted) {
+                    //   //     try {
+                    //   //       Provider.of<FocusProvider>(context, listen: false)
+                    //   //           .requestFirstSportsCategoryFocus();
+                    //   //       // Navigate to next section after Pakistani TV Shows
+                    //   //       print(
+                    //   //           '✅ Navigating down from Pakistani TV Shows ViewAll');
+                    //   //     } catch (e) {
+                    //   //       print('❌ Failed to navigate down: $e');
+                    //   //     }
+                    //   //   }
+                    //   // });
+                    //   return KeyEventResult.handled;
+                    // } 
+                    else if (event.logicalKey == LogicalKeyboardKey.enter ||
                         event.logicalKey == LogicalKeyboardKey.select) {
                       print('🎬 ViewAll button pressed - Opening Grid Page...');
                       _navigateToGridPage();

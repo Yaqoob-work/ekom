@@ -3397,7 +3397,7 @@ class _SearchScreenState extends State<SearchScreen>
           await Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => LiveVideoScreen(
+              builder: (context) => VideoScreen(
                 videoUrl: channel.url,
                 bannerImageUrl: channel.banner,
                 channelList: [],

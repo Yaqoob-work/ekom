@@ -512,12 +512,13 @@ class MovieService {
           'Content-Type': 'application/json',
           'domain': 'coretechinfo.com',
         },
-      ).timeout(
-        const Duration(seconds: 30),
-        onTimeout: () {
-          throw Exception('Request timeout');
-        },
       );
+      // .timeout(
+      //   const Duration(seconds: 30),
+      //   onTimeout: () {
+      //     throw Exception('Request timeout');
+      //   },
+      // );
 
       if (response.statusCode == 200) {
         final dynamic responseBody = json.decode(response.body);

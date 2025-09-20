@@ -1330,9 +1330,8 @@ class BannerService {
     };
 
     try {
-      final response = await https
-          .get(Uri.parse(endpoint), headers: headers)
-          .timeout(const Duration(seconds: 15));
+      final response = await https.get(Uri.parse(endpoint), headers: headers);
+      // .timeout(const Duration(seconds: 15));
 
       if (response.statusCode == 200) {
         return json.decode(response.body);

@@ -1,0 +1,103 @@
+// file: services/details_cache_service.dart
+
+import 'dart:convert';
+import 'package:hive/hive.dart';
+import 'package:http/http.dart' as https;
+import 'package:mobi_tv_entertainment/models/channel_data_cache.dart';
+import 'package:mobi_tv_entertainment/models/content_item.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+class DetailsCacheService {
+  static const String _boxName = 'channelCache';
+  // A set to track channels being pre-fetched to avoid duplicate requests.
+  static final Set<int> _prefetchingInProgress = {};
+
+  /// Fetches data for a specific channel, caches it in Hive, and returns it.
+  static Future<ChannelDataCache> _fetchAndCacheData(int channelId) async {
+    print('🌐 [Service] Fetching fresh data for channel ID: $channelId');
+    final prefs = await SharedPreferences.getInstance();
+    String authKey = prefs.getString('auth_key') ?? '';
+    if (authKey.isEmpty) throw Exception('Auth key not found');
+
+    try {
+      final responses = await Future.wait([
+        https.get(
+          Uri.parse('https://dashboard.cpplayers.com/api/v2/getGenreByContentNetwork/$channelId'),
+          headers: {'auth-key': authKey, 'domain': 'coretechinfo.com', 'Accept': 'application/json'},
+        ),
+        https.post(
+          Uri.parse('https://dashboard.cpplayers.com/api/v2/getAllContentsOfNetworkNew'),
+          headers: {'auth-key': authKey, 'domain': 'coretechinfo.com', 'Content-Type': 'application/json'},
+          body: json.encode({"genre": "", "network_id": channelId}),
+        ),
+      ]);
+
+      if (responses[0].statusCode != 200) throw Exception('Failed to fetch genres: ${responses[0].statusCode}');
+      if (responses[1].statusCode != 200) throw Exception('Failed to fetch content: ${responses[1].statusCode}');
+
+      final genresData = json.decode(responses[0].body);
+      List<String> fetchedGenres = List<String>.from(genresData['genres']);
+      if (!fetchedGenres.contains('Web Series')) {
+        fetchedGenres.add('Web Series');
+      }
+
+      final contentData = json.decode(responses[1].body);
+      final List<dynamic> contentListJson = contentData['data'] as List;
+      final List<ContentItem> fetchedContent = contentListJson.map((item) => ContentItem.fromJson(item)).toList();
+
+      final cacheEntry = ChannelDataCache(
+        genres: fetchedGenres,
+        content: fetchedContent,
+        timestamp: DateTime.now(),
+      );
+
+      final box = await Hive.openBox(_boxName);
+      await box.put(channelId.toString(), cacheEntry);
+      print('💾 [Service] Fresh data cached for channel ID: $channelId');
+      return cacheEntry;
+    } catch (e) {
+      print('❌ [Service] Error fetching data for channel ID $channelId: $e');
+      rethrow;
+    }
+  }
+
+  /// Main method to get data. Implements "stale-while-revalidate".
+  static Future<ChannelDataCache?> getDataForChannel(int channelId) async {
+    final box = await Hive.openBox(_boxName);
+    final ChannelDataCache? cachedData = box.get(channelId.toString());
+
+    if (cachedData != null) {
+      print('📦 [Service] Returning cached data for channel ID: $channelId');
+      // Return stale data immediately, then revalidate in the background.
+      _fetchAndCacheData(channelId).catchError((e) {
+        print('⚠️ [Service] Background revalidation failed for $channelId: $e');
+      });
+      return cachedData;
+    } else {
+      print('💨 [Service] No cache found. Fetching fresh data for channel ID: $channelId');
+      // No cache, so fetch, await, and return.
+      return await _fetchAndCacheData(channelId);
+    }
+  }
+
+  /// Pre-fetches data for all other channels in the background.
+  static void prefetchAllChannels(List<int> allChannelIds, int currentChannelId) {
+    print('🚀 [Service] Starting pre-fetch for ${allChannelIds.length - 1} channels.');
+    for (final id in allChannelIds) {
+      if (id == currentChannelId || _prefetchingInProgress.contains(id)) {
+        continue;
+      }
+      
+      _prefetchingInProgress.add(id);
+      print('⏳ [Service] Pre-fetching data for channel ID: $id...');
+      
+      _fetchAndCacheData(id).then((_) {
+        print('✅ [Service] Pre-fetch successful for channel ID: $id');
+      }).catchError((e) {
+        print('⚠️ [Service] Pre-fetch failed for channel ID $id: $e');
+      }).whenComplete(() {
+        _prefetchingInProgress.remove(id);
+      });
+    }
+  }
+}

@@ -5,6 +5,7 @@
 
 
 // Updated HomeScreen with News Channels Integration
+import 'package:mobi_tv_entertainment/exit_confirmation_screen.dart';
 import 'package:mobi_tv_entertainment/home_screen_pages/religious_channel/religious_channel.dart';
 import 'package:mobi_tv_entertainment/home_screen_pages/sports_category/sports_category.dart';
 import 'package:mobi_tv_entertainment/home_screen_pages/sub_vod_screen/horzontal_vod.dart';
@@ -126,12 +127,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
 
 
-  // Handle back button press
-  Future<bool> _onWillPop() async {
-    // Close the app when back button is pressed
-    SystemNavigator.pop();
-    return false; // Return false to prevent default back navigation
-  }
+  // // Handle back button press
+  // Future<bool> _onWillPop() async {
+  //   // Close the app when back button is pressed
+  //   SystemNavigator.pop();
+  //   return false; // Return false to prevent default back navigation
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -144,10 +145,22 @@ class _HomeScreenState extends State<HomeScreen> {
       // final double manageMoviesHeight = _calculateManageMoviesHeight(context);
 
       return PopScope(
-        canPop: false, // Prevent default back navigation
+        canPop: false, // Default back navigation ko rokein
+        
+        // ✅ onPopInvoked KO UPDATE KAREIN
         onPopInvoked: (didPop) {
+          // agar pop nahi hua hai (jo ki nahi hoga kyunki canPop: false hai)...
           if (!didPop) {
-            _onWillPop();
+            // ...to hamari custom exit screen dikhayein
+            Navigator.of(context).push(
+              PageRouteBuilder(
+                opaque: false,
+                pageBuilder: (context, _, __) => const ExitConfirmationScreen(
+                  // Hum true bhej rahe hain kyunki yeh back button se trigger hua hai
+                  isFromBackButton: true,
+                ),
+              ),
+            );
           }
         },
         child: Scaffold(

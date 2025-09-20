@@ -322,12 +322,15 @@ class _LiveVideoScreenState extends State<LiveVideoScreen> {
                         child: Stack(
                           fit: StackFit.expand,
                           children: [
-                            CachedNetworkImage(
-                              imageUrl: channel.banner ?? '',
-                              fit: BoxFit.cover,
-                              errorWidget: (context, url, error) => Container(
-                                color: Colors.grey[800],
-                                child: Icon(Icons.tv, color: Colors.white54),
+                            Opacity(
+                              opacity: 0.7,
+                              child: CachedNetworkImage(
+                                imageUrl: channel.banner ?? '',
+                                fit: BoxFit.cover,
+                                errorWidget: (context, url, error) => Container(
+                                  color: Colors.grey[800],
+                                  child: Icon(Icons.tv, color: Colors.white54),
+                                ),
                               ),
                             ),
                             Container(

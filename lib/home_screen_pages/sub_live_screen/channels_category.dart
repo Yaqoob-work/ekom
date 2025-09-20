@@ -252,7 +252,7 @@
 //         key: Key(item.id),
 //         item: item,
 //         hideDescription: true,
-//         onTap: () => _navigateToLiveVideoScreen(item),
+//         onTap: () => _navigateToVideoScreen(item),
 //         onEnterPress: _handleEnterPress,
 //       ),
 //     );
@@ -260,10 +260,10 @@
 
 //   void _handleEnterPress(String itemId) {
 //     final selectedItem = _musicList.firstWhere((item) => item.id == itemId);
-//     _navigateToLiveVideoScreen(selectedItem);
+//     _navigateToVideoScreen(selectedItem);
 //   }
 
-//   Future<void> _navigateToLiveVideoScreen(NewsItemModel newsItem) async {
+//   Future<void> _navigateToVideoScreen(NewsItemModel newsItem) async {
 //     if (_isNavigating) return;
 //     _isNavigating = true;
 
@@ -347,7 +347,7 @@
 //         await Navigator.push(
 //           context,
 //           MaterialPageRoute(
-//             builder: (context) => LiveVideoScreen(
+//             builder: (context) => VideoScreen(
 //               videoUrl: newsItem.url,
 //               bannerImageUrl: newsItem.banner,
 //               startAtPosition: Duration.zero,
@@ -507,7 +507,7 @@
 //           await Navigator.push(context, MaterialPageRoute(builder: (c) => CustomYoutubePlayer(videoData: VideoData(id: channel.id.toString(), title: channel.name, youtubeUrl: channel.url, thumbnail: channel.banner, description: ''), playlist: [])));
 //         }
 //       } else {
-//         await Navigator.push(context, MaterialPageRoute(builder: (c) => LiveVideoScreen(
+//         await Navigator.push(context, MaterialPageRoute(builder: (c) => VideoScreen(
 //               videoUrl: channel.url,
 //               bannerImageUrl: channel.banner,
 //               startAtPosition: Duration.zero,
@@ -648,7 +648,7 @@
 
 //   // All your existing methods like _fetchLiveTvData, _processChannelData, build, etc.
 //   // remain the same. The logic here is sound. The key is what it passes
-//   // to LiveVideoScreen in _handleContentTap.
+//   // to VideoScreen in _handleContentTap.
 
 //   @override
 //   void initState() {
@@ -746,7 +746,7 @@
 //           await Navigator.push(context, MaterialPageRoute(builder: (c) => CustomYoutubePlayer(videoData: VideoData(id: channel.id.toString(), title: channel.name, youtubeUrl: channel.url, thumbnail: channel.banner, description: 'Live TV'), playlist: [])));
 //         }
 //       } else {
-//         // THE SENDER LOGIC: Prepare and pass the related channels list to LiveVideoScreen
+//         // THE SENDER LOGIC: Prepare and pass the related channels list to VideoScreen
 //         final allChannels = genreChannelMap.values.expand((list) => list).toSet().toList();
 //         final List<String> selectedGenres = channel.genres.split(',').map((genre) => genre.trim()).toList();
 
@@ -756,7 +756,7 @@
 //           return selectedGenres.any((genre) => itemGenres.contains(genre));
 //         }).toList();
 
-//         await Navigator.push(context, MaterialPageRoute(builder: (c) => LiveVideoScreen(
+//         await Navigator.push(context, MaterialPageRoute(builder: (c) => VideoScreen(
 //               videoUrl: channel.url,
 //               bannerImageUrl: channel.banner,
 //               startAtPosition: Duration.zero,

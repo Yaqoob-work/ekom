@@ -1157,7 +1157,7 @@
 //  await Navigator.push(
 //   context,
 //   MaterialPageRoute(
-//   builder: (context) => LiveVideoScreen(
+//   builder: (context) => VideoScreen(
 //    videoUrl: currentChannel.url,
 //    bannerImageUrl: currentChannel.banner,
 //    startAtPosition: Duration.zero,
@@ -2628,11 +2628,11 @@
 // //   Navigator.of(context, rootNavigator: true).pop();
 // //   }
 
-// //   // LiveVideoScreen navigate करें with all ACTIVE channels
+// //   // VideoScreen navigate करें with all ACTIVE channels
 // //   await Navigator.push(
 // //   context,
 // //   MaterialPageRoute(
-// //    builder: (context) => LiveVideoScreen(
+// //    builder: (context) => VideoScreen(
 // //    videoUrl: currentChannel.url,
 // //    bannerImageUrl: currentChannel.banner,
 // //    startAtPosition: Duration.zero,
@@ -3722,11 +3722,11 @@
 //   Navigator.of(context, rootNavigator: true).pop();
 //   }
 
-//   // LiveVideoScreen navigate करें with all ACTIVE channels
+//   // VideoScreen navigate करें with all ACTIVE channels
 //   await Navigator.push(
 //   context,
 //   MaterialPageRoute(
-//    builder: (context) => LiveVideoScreen(
+//    builder: (context) => VideoScreen(
 //    videoUrl: currentChannel.url,
 //    bannerImageUrl: currentChannel.banner,
 //    startAtPosition: Duration.zero,
@@ -4558,7 +4558,7 @@
 //  await Navigator.push(
 //  context,
 //  MaterialPageRoute(
-//   builder: (context) => LiveVideoScreen(
+//   builder: (context) => VideoScreen(
 //   videoUrl: currentChannel.url,
 //   bannerImageUrl: currentChannel.banner,
 //   startAtPosition: Duration.zero,
@@ -5331,7 +5331,7 @@
 // //  await Navigator.push(
 // //  context,
 // //  MaterialPageRoute(
-// //   builder: (context) => LiveVideoScreen(
+// //   builder: (context) => VideoScreen(
 // //   videoUrl: currentChannel.url,
 // //   bannerImageUrl: currentChannel.banner,
 // //   startAtPosition: Duration.zero,
@@ -7368,11 +7368,11 @@
 //   Navigator.of(context, rootNavigator: true).pop();
 //   }
 
-//   // LiveVideoScreen navigate करें with all ACTIVE channels
+//   // VideoScreen navigate करें with all ACTIVE channels
 //   await Navigator.push(
 //   context,
 //   MaterialPageRoute(
-//    builder: (context) => LiveVideoScreen(
+//    builder: (context) => VideoScreen(
 //    videoUrl: currentChannel.url,
 //    bannerImageUrl: currentChannel.banner,
 //    startAtPosition: Duration.zero,
@@ -9374,7 +9374,7 @@ class _GenericLiveChannelsState extends State<GenericLiveChannels>
 
   // MaterialPageRoute(
 
-  // builder: (context) => LiveVideoScreen(
+  // builder: (context) => VideoScreen(
 
   //  videoUrl: currentChannel.url,
 
@@ -10744,7 +10744,7 @@ class _ProfessionalLoadingIndicatorState
               fontWeight: FontWeight.w500,
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 5),
           Container(
             width: 200,
             height: 3,
@@ -11665,7 +11665,7 @@ class _ProfessionalChannelsGridViewState
           Navigator.of(context, rootNavigator: true).pop();
         }
 
-        // LiveVideoScreen navigate करें with all ACTIVE channels
+        // VideoScreen navigate करें with all ACTIVE channels
 
         await Navigator.push(
           context,

@@ -213,12 +213,13 @@ class ReligiousChannelsService {
           'Accept': 'application/json',
           'domain': 'coretechinfo.com',
         },
-      ).timeout(
-        const Duration(seconds: 30),
-        onTimeout: () {
-          throw Exception('Request timeout');
-        },
       );
+      // .timeout(
+        // const Duration(seconds: 30),
+        // onTimeout: () {
+          // throw Exception('Request timeout');
+        // },
+      // );
 
       if (response.statusCode == 200) {
         final List<dynamic> jsonData = json.decode(response.body);

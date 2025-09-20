@@ -181,7 +181,8 @@ class WebSeriesService {
           'Accept': 'application/json',
           'domain': 'coretechinfo.com'
         },
-      ).timeout(const Duration(seconds: 30));
+      );
+      // .timeout(const Duration(seconds: 30));
 
       if (response.statusCode == 200) {
         final List<dynamic> jsonData = json.decode(response.body);

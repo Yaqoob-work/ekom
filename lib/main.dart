@@ -3224,6 +3224,13 @@
 //   }
 // }
 
+
+
+
+
+
+
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -3232,6 +3239,7 @@ import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:http/http.dart' as https;
+import 'package:mobi_tv_entertainment/exit_confirmation_screen.dart';
 import 'package:mobi_tv_entertainment/home_screen_pages/home_screen.dart';
 import 'package:mobi_tv_entertainment/menu_screens/live_screen.dart';
 import 'package:mobi_tv_entertainment/menu_screens/search_screen.dart';
@@ -3506,10 +3514,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     screenhgt = MediaQuery.of(context).size.height;
     screenwdt = MediaQuery.of(context).size.width;
-    bannerwdt = screenwdt * 0.15;
-    bannerhgt = screenhgt * 0.17;
-    focussedBannerwdt = screenwdt * 0.15;
-    focussedBannerhgt = screenhgt * 0.21;
+    bannerwdt = screenwdt * 0.13;
+    bannerhgt = screenhgt * 0.15;
+    focussedBannerwdt = screenwdt * 0.13;
+    focussedBannerhgt = screenhgt * 0.19;
     screensz = MediaQuery.of(context).size;
     nametextsz = MediaQuery.of(context).size.width / 60.0;
     menutextsz = MediaQuery.of(context).size.width / 70;
@@ -4114,8 +4122,8 @@ class UpdateChecker {
           final data = jsonDecode(response.body);
 
           String apiVersion = data['playstore_version'] ?? "";
-          String apkUrl = data['playstore_apkUrl'];
-          String releaseNotes = data['playstore_releaseNotes'];
+          String apkUrl = data['playstore_apkUrl']??'';
+          String releaseNotes = data['playstore_releaseNotes']??'';
 
           int forceUpdateTime =
               DateTime.parse(data['playstore_forceUpdateTime'])
@@ -4233,6 +4241,9 @@ class _MyHomeState extends State<MyHome> {
 
     String? imageUrl = SessionManager.imageBaseUrl;
     print('Base Image URL: $imageUrl');
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+      _showInitialLoadingScreen();
+    });
   }
 
   @override
@@ -4240,6 +4251,21 @@ class _MyHomeState extends State<MyHome> {
     _pageController.dispose();
     _updateChecker.dispose();
     super.dispose();
+  }
+
+
+    // ✅ YEH NAYA FUNCTION ADD KAREIN
+  void _showInitialLoadingScreen() {
+    Navigator.of(context).push(
+      PageRouteBuilder(
+        // opaque: false, screen ko transparent banata hai
+        opaque: false, 
+        pageBuilder: (context, _, __) => const ExitConfirmationScreen(
+          // Hum false bhej rahe hain kyunki yeh app start par call ho raha hai
+          isFromBackButton: false, 
+        ),
+      ),
+    );
   }
 
   void _onPageSelected(int index) {
