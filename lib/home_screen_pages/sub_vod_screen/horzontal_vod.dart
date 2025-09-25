@@ -23,7 +23,7 @@
 // import 'dart:convert';
 // import 'package:http/http.dart' as https;
 // import 'package:hive_flutter/hive_flutter.dart';
-// import 'package:shared_preferences/shared_preferences.dart'; // केवल auth_key के लिए
+// import 'package:shared_preferences/shared_preferences.dart'; // केवल result_auth_key के लिए
 
 // class HorizontalVodService {
 //   static const String _boxName = 'vodCache';
@@ -61,7 +61,7 @@
 //       Box box) async {
 //     try {
 //       final prefs = await SharedPreferences.getInstance();
-//       String authKey = prefs.getString('auth_key') ?? '';
+//       String authKey = prefs.getString('result_auth_key') ?? '';
 //       if (authKey.isEmpty) throw Exception('Auth key not found');
 
 //       final response = await https.get(
@@ -427,7 +427,7 @@
 // //   // Cache keys
 // //   static const String _cacheKeyHorizontalVod = 'cached_horizontal_vod';
 // //   static const String _cacheKeyTimestamp = 'cached_horizontal_vod_timestamp';
-// //   static const String _cacheKeyAuthKey = 'auth_key';
+// //   static const String _cacheKeyAuthKey = 'result_auth_key';
 
 // //   // Cache duration (in milliseconds) - 1 hour
 // //   static const int _cacheDurationMs = 60 * 60 * 1000; // 1 hour
@@ -4102,13 +4102,8 @@
 //   }
 // }
 
-
-
-
-
-
-
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -4126,6 +4121,20 @@ import 'package:provider/provider.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:ui';
+
+// ✅ Place this function outside of any class
+List<HorizontalVodModel> _parseAndSortVod(String jsonString) {
+  final List<dynamic> jsonData = json.decode(jsonString);
+
+  final vodList = jsonData
+      .map((json) => HorizontalVodModel.fromJson(json as Map<String, dynamic>))
+      .where((show) => show.status == 1) // First, filter by status
+      .toList()
+    ..sort((a, b) =>
+        a.networks_order.compareTo(b.networks_order)); // Then, sort the list
+
+  return vodList;
+}
 
 // ✅ Professional Color Palette (same as WebSeries)
 class ProfessionalColors {
@@ -4408,7 +4417,7 @@ class HorizontalVodService {
   // Cache keys
   static const String _cacheKeyHorizontalVod = 'cached_horizontal_vod';
   static const String _cacheKeyTimestamp = 'cached_horizontal_vod_timestamp';
-  static const String _cacheKeyAuthKey = 'auth_key';
+  static const String _cacheKeyAuthKey = 'result_auth_key';
 
   // Cache duration (in milliseconds) - 1 hour
   static const int _cacheDurationMs = 60 * 60 * 1000; // 1 hour
@@ -4508,7 +4517,38 @@ class HorizontalVodService {
   //   }
   // }
 
-  /// Get Vod from cache
+  // /// Get Vod from cache
+  // static Future<List<HorizontalVodModel>> _getCachedHorizontalVod(
+  //     SharedPreferences prefs) async {
+  //   try {
+  //     final cachedData = prefs.getString(_cacheKeyHorizontalVod);
+  //     if (cachedData == null || cachedData.isEmpty) {
+  //       print('📦 No cached Vod data found');
+  //       return [];
+  //     }
+
+  //     final List<dynamic> jsonData = json.decode(cachedData);
+
+  //     // Filter and sort the cached data
+  //     final HorizontalVod = jsonData
+  //         .map((json) =>
+  //             HorizontalVodModel.fromJson(json as Map<String, dynamic>))
+  //         .where((show) => show.status == 1) // First, filter by status
+  //         .toList()
+  //       ..sort((a, b) => a.networks_order
+  //           .compareTo(b.networks_order)); // ✅ THEN, SORT THE LIST
+
+  //     print(
+  //         '📦 Successfully loaded and sorted ${HorizontalVod.length} Vod from cache');
+  //     return HorizontalVod;
+  //   } catch (e) {
+  //     print('❌ Error loading cached Vod: $e');
+  //     return [];
+  //   }
+  // }
+
+  // Inside class HorizontalVodService
+
   static Future<List<HorizontalVodModel>> _getCachedHorizontalVod(
       SharedPreferences prefs) async {
     try {
@@ -4518,20 +4558,13 @@ class HorizontalVodService {
         return [];
       }
 
-      final List<dynamic> jsonData = json.decode(cachedData);
-
-      // Filter and sort the cached data
-      final HorizontalVod = jsonData
-          .map((json) =>
-              HorizontalVodModel.fromJson(json as Map<String, dynamic>))
-          .where((show) => show.status == 1) // First, filter by status
-          .toList()
-        ..sort((a, b) => a.networks_order
-            .compareTo(b.networks_order)); // ✅ THEN, SORT THE LIST
+      // ✅ Use compute to parse and sort cached data in the background
+      final List<HorizontalVodModel> horizontalVod =
+          await compute(_parseAndSortVod, cachedData);
 
       print(
-          '📦 Successfully loaded and sorted ${HorizontalVod.length} Vod from cache');
-      return HorizontalVod;
+          '📦 Successfully loaded and sorted ${horizontalVod.length} Vod from cache');
+      return horizontalVod;
     } catch (e) {
       print('❌ Error loading cached Vod: $e');
       return [];
@@ -4584,7 +4617,57 @@ class HorizontalVodService {
   //   }
   // }
 
-  /// Fetch fresh Vod from API and cache them
+  // /// Fetch fresh Vod from API and cache them
+  // static Future<List<HorizontalVodModel>> _fetchFreshHorizontalVod(
+  //     SharedPreferences prefs) async {
+  //   try {
+  //     String authKey = prefs.getString(_cacheKeyAuthKey) ?? '';
+
+  //     final response = await https.get(
+  //       Uri.parse('https://dashboard.cpplayers.com/api/v2/getNetworks'),
+  //       headers: {
+  //         'auth-key': authKey,
+  //         'Content-Type': 'application/json',
+  //         'Accept': 'application/json',
+  //         'domain': 'coretechinfo.com'
+  //       },
+  //     ).timeout(
+  //       const Duration(seconds: 30),
+  //       onTimeout: () {
+  //         throw Exception('Request timeout');
+  //       },
+  //     );
+
+  //     if (response.statusCode == 200) {
+  //       final List<dynamic> jsonData = json.decode(response.body);
+
+  //       // Filter and Sort in one go
+  //       final activeHorizontalVod = jsonData
+  //           .map((json) =>
+  //               HorizontalVodModel.fromJson(json as Map<String, dynamic>))
+  //           .where((show) => show.status == 1) // First, filter by status
+  //           .toList()
+  //         ..sort((a, b) => a.networks_order
+  //             .compareTo(b.networks_order)); // ✅ THEN, SORT THE LIST
+
+  //       // Cache the fresh data (save all shows, but return only active ones)
+  //       await _cacheHorizontalVod(prefs, jsonData);
+
+  //       print(
+  //           '✅ Successfully loaded and sorted ${activeHorizontalVod.length} active Vod from API');
+  //       return activeHorizontalVod;
+  //     } else {
+  //       throw Exception(
+  //           'API Error: ${response.statusCode} - ${response.reasonPhrase}');
+  //     }
+  //   } catch (e) {
+  //     print('❌ Error fetching fresh Vod: $e');
+  //     rethrow;
+  //   }
+  // }
+
+// Inside class HorizontalVodService
+
   static Future<List<HorizontalVodModel>> _fetchFreshHorizontalVod(
       SharedPreferences prefs) async {
     try {
@@ -4592,33 +4675,23 @@ class HorizontalVodService {
 
       final response = await https.get(
         Uri.parse('https://dashboard.cpplayers.com/api/v2/getNetworks'),
+        // ... your headers ...
         headers: {
           'auth-key': authKey,
           'Content-Type': 'application/json',
           'Accept': 'application/json',
           'domain': 'coretechinfo.com'
         },
-      ).timeout(
-        const Duration(seconds: 30),
-        onTimeout: () {
-          throw Exception('Request timeout');
-        },
-      );
+      ).timeout(const Duration(seconds: 30));
 
       if (response.statusCode == 200) {
-        final List<dynamic> jsonData = json.decode(response.body);
+        // ✅ Use compute to parse and sort in the background
+        final List<HorizontalVodModel> activeHorizontalVod =
+            await compute(_parseAndSortVod, response.body);
 
-        // Filter and Sort in one go
-        final activeHorizontalVod = jsonData
-            .map((json) =>
-                HorizontalVodModel.fromJson(json as Map<String, dynamic>))
-            .where((show) => show.status == 1) // First, filter by status
-            .toList()
-          ..sort((a, b) => a.networks_order
-              .compareTo(b.networks_order)); // ✅ THEN, SORT THE LIST
-
-        // Cache the fresh data (save all shows, but return only active ones)
-        await _cacheHorizontalVod(prefs, jsonData);
+        // Cache the RAW JSON data, not the parsed data
+        final List<dynamic> rawJsonData = json.decode(response.body);
+        await _cacheHorizontalVod(prefs, rawJsonData);
 
         print(
             '✅ Successfully loaded and sorted ${activeHorizontalVod.length} active Vod from API');
@@ -4760,7 +4833,7 @@ class _HorzontalVodState extends State<HorzontalVod>
   bool _hasReceivedFocusFromWebSeries = false;
 
   late ScrollController _scrollController;
-  final double _itemWidth = 156.0;
+  final double _itemWidth = bannerwdt;
 
   @override
   void initState() {
@@ -5100,33 +5173,32 @@ class _HorzontalVodState extends State<HorzontalVod>
         // ),
         builder: (context) => GenreMoviesScreen(
           tvChannelId: (HorizontalVod.id).toString(),
-          logoUrl: HorizontalVod.logo??'', title: HorizontalVod.name,
+          logoUrl: HorizontalVod.logo ?? '', title: HorizontalVod.name,
           // channelName: HorizontalVod.name,
           // channelLogo: HorizontalVod.logo,
         ),
       ),
-    );
-    // .then((_) {
-    //   print('🔙 Returned from TV Show Details');
-    //   Future.delayed(Duration(milliseconds: 300), () {
-    //     if (mounted) {
-    //       int currentIndex = HorizontalVodList.indexWhere(
-    //           (show) => show.id == HorizontalVod.id);
-    //       if (currentIndex != -1 && currentIndex < maxHorizontalItems) {
-    //         String HorizontalVodId = HorizontalVod.id.toString();
-    //         if (HorizontalVodFocusNodes.containsKey(HorizontalVodId)) {
-    //           setState(() {
-    //             focusedIndex = currentIndex;
-    //             _hasReceivedFocusFromWebSeries = true;
-    //           });
-    //           HorizontalVodFocusNodes[HorizontalVodId]!.requestFocus();
-    //           _scrollToPosition(currentIndex);
-    //           print('✅ Restored focus to ${HorizontalVod.name}');
-    //         }
-    //       }
-    //     }
-    //   });
-    // });
+    ).then((_) {
+      print('🔙 Returned from TV Show Details');
+      Future.delayed(Duration(milliseconds: 300), () {
+        if (mounted) {
+          int currentIndex = HorizontalVodList.indexWhere(
+              (show) => show.id == HorizontalVod.id);
+          if (currentIndex != -1 && currentIndex < maxHorizontalItems) {
+            String HorizontalVodId = HorizontalVod.id.toString();
+            if (HorizontalVodFocusNodes.containsKey(HorizontalVodId)) {
+              setState(() {
+                focusedIndex = currentIndex;
+                _hasReceivedFocusFromWebSeries = true;
+              });
+              HorizontalVodFocusNodes[HorizontalVodId]!.requestFocus();
+              _scrollToPosition(currentIndex);
+              print('✅ Restored focus to ${HorizontalVod.name}');
+            }
+          }
+        }
+      });
+    });
   }
 
   void _navigateToGridPage() {
@@ -5140,21 +5212,20 @@ class _HorzontalVodState extends State<HorzontalVod>
           title: 'CONTENTS',
         ),
       ),
-    );
-    // .then((_) {
-    //   print('🔙 Returned from grid page');
-    //   Future.delayed(Duration(milliseconds: 300), () {
-    //     if (mounted && _viewAllFocusNode != null) {
-    //       setState(() {
-    //         focusedIndex = maxHorizontalItems;
-    //         _hasReceivedFocusFromWebSeries = true;
-    //       });
-    //       _viewAllFocusNode!.requestFocus();
-    //       _scrollToPosition(maxHorizontalItems);
-    //       print('✅ Focused back to ViewAll button and scrolled');
-    //     }
-    //   });
-    // });
+    ).then((_) {
+      print('🔙 Returned from grid page');
+      Future.delayed(Duration(milliseconds: 300), () {
+        if (mounted && _viewAllFocusNode != null) {
+          setState(() {
+            focusedIndex = maxHorizontalItems;
+            _hasReceivedFocusFromWebSeries = true;
+          });
+          _viewAllFocusNode!.requestFocus();
+          _scrollToPosition(maxHorizontalItems);
+          print('✅ Focused back to ViewAll button and scrolled');
+        }
+      });
+    });
   }
 
   // @override
@@ -7299,103 +7370,146 @@ class _ProfessionalHorizontalVodGridPageState
     }
   }
 
-  // ✅ ENHANCED: Professional Vod Selection with Loading Handling - Similar to ListDetailsPage
+  // // ✅ ENHANCED: Professional Vod Selection with Loading Handling - Similar to ListDetailsPage
+  // Future<void> _navigateToHorizontalVodDetails(
+  //     HorizontalVodModel HorizontalVod, int index) async {
+  //   if (_isLoading || !mounted) return;
+
+  //   setState(() {
+  //     _isLoading = true;
+  //   });
+
+  //   print('🎬 Grid: Navigating to TV Show Details: ${HorizontalVod.name}');
+
+  //       Navigator.push(
+  //     context,
+  //     MaterialPageRoute(
+  //       // builder: (context) => GenreNetworkWidget(
+  //       //   tvChannelId: HorizontalVod.id,
+  //       //   channelName: HorizontalVod.name,
+  //       //   channelLogo: HorizontalVod.logo,
+  //       // ),
+  //       builder: (context) => GenreMoviesScreen(
+  //         tvChannelId: (HorizontalVod.id).toString(), logoUrl: HorizontalVod.logo??'', title: HorizontalVod.name,
+  //         // channelName: HorizontalVod.name,
+  //         // channelLogo: HorizontalVod.logo,
+  //       ),
+  //     ),
+  //   );
+
+  //   // try {
+
+  //   //   await Navigator.push(
+  //   //     context,
+  //   //     PageRouteBuilder(
+  //   //       // ✅ Smooth page transition
+  //   //       pageBuilder: (context, animation, secondaryAnimation) =>
+  //   //           GenreNetworkWidget(
+  //   //         tvChannelId: HorizontalVod.id,
+  //   //         channelName: HorizontalVod.name,
+  //   //         channelLogo: HorizontalVod.logo,
+  //   //       ),
+  //   //       // pageBuilder: (context, animation, secondaryAnimation) =>
+  //   //       //     HorizontalListDetailsPage(
+  //   //       //   tvChannelId: HorizontalVod.id,
+  //   //       //   channelName: HorizontalVod.name,
+  //   //       //   channelLogo: HorizontalVod.logo,
+  //   //       // ),
+  //   //       transitionsBuilder: (context, animation, secondaryAnimation, child) {
+  //   //         return FadeTransition(
+  //   //           opacity: animation,
+  //   //           child: SlideTransition(
+  //   //             position: Tween<Offset>(
+  //   //               begin: const Offset(0.1, 0),
+  //   //               end: Offset.zero,
+  //   //             ).animate(CurvedAnimation(
+  //   //               parent: animation,
+  //   //               curve: Curves.easeOutCubic,
+  //   //             )),
+  //   //             child: child,
+  //   //           ),
+  //   //         );
+  //   //       },
+  //   //       transitionDuration: const Duration(milliseconds: 300),
+  //   //     ),
+  //   //   );
+  //   // } catch (e) {
+  //   //   print('❌ Error navigating to details: $e');
+  //   //   if (mounted) {
+  //   //     ScaffoldMessenger.of(context).showSnackBar(
+  //   //       SnackBar(
+  //   //         content: Text('Error opening ${HorizontalVod.name}'),
+  //   //         backgroundColor: ProfessionalColors.accentRed,
+  //   //         behavior: SnackBarBehavior.floating,
+  //   //       ),
+  //   //     );
+  //   //   }
+  //   // } finally {
+  //   //   if (mounted) {
+  //   //     setState(() {
+  //   //       _isLoading = false;
+  //   //     });
+
+  //   //     // ✅ Restore focus to the same item after returning - Similar to ListDetailsPage
+  //   //     Future.delayed(const Duration(milliseconds: 300), () {
+  //   //       if (mounted && index < widget.HorizontalVodList.length) {
+  //   //         final vodId = widget.HorizontalVodList[index].id.toString();
+  //   //         if (gridFocusNodes.containsKey(vodId)) {
+  //   //           setState(() {
+  //   //             gridFocusedIndex = index;
+  //   //           });
+  //   //           FocusScope.of(context).requestFocus(gridFocusNodes[vodId]);
+  //   //           print('✅ Restored grid focus to index $index');
+  //   //         }
+  //   //       }
+  //   //     });
+  //   //   }
+  //   // }
+  // }
+
+// ✅ This is the correct way with try/finally
   Future<void> _navigateToHorizontalVodDetails(
       HorizontalVodModel HorizontalVod, int index) async {
     if (_isLoading || !mounted) return;
 
-    setState(() {
-      _isLoading = true;
-    });
+    try {
+      setState(() {
+        _isLoading = true;
+      });
 
-    print('🎬 Grid: Navigating to TV Show Details: ${HorizontalVod.name}');
+      print('🎬 Grid: Navigating to TV Show Details: ${HorizontalVod.name}');
 
-
-        Navigator.push(
-      context,
-      MaterialPageRoute(
-        // builder: (context) => GenreNetworkWidget(
-        //   tvChannelId: HorizontalVod.id,
-        //   channelName: HorizontalVod.name,
-        //   channelLogo: HorizontalVod.logo,
-        // ),
-        builder: (context) => GenreMoviesScreen(
-          tvChannelId: (HorizontalVod.id).toString(), logoUrl: HorizontalVod.logo??'', title: HorizontalVod.name,
-          // channelName: HorizontalVod.name,
-          // channelLogo: HorizontalVod.logo,
+      // Use 'await' to wait for the user to return from the next screen
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => GenreMoviesScreen(
+            tvChannelId: (HorizontalVod.id).toString(),
+            logoUrl: HorizontalVod.logo ?? '',
+            title: HorizontalVod.name,
+          ),
         ),
-      ),
-    );
+      );
+    } finally {
+      // This 'finally' block will ALWAYS run, even if an error occurs
+      // or when the user navigates back.
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+        print('🔙 Returned to Grid. isLoading is now false.');
 
-    // try {
-
-
-    //   await Navigator.push(
-    //     context,
-    //     PageRouteBuilder(
-    //       // ✅ Smooth page transition
-    //       pageBuilder: (context, animation, secondaryAnimation) =>
-    //           GenreNetworkWidget(
-    //         tvChannelId: HorizontalVod.id,
-    //         channelName: HorizontalVod.name,
-    //         channelLogo: HorizontalVod.logo,
-    //       ),
-    //       // pageBuilder: (context, animation, secondaryAnimation) =>
-    //       //     HorizontalListDetailsPage(
-    //       //   tvChannelId: HorizontalVod.id,
-    //       //   channelName: HorizontalVod.name,
-    //       //   channelLogo: HorizontalVod.logo,
-    //       // ),
-    //       transitionsBuilder: (context, animation, secondaryAnimation, child) {
-    //         return FadeTransition(
-    //           opacity: animation,
-    //           child: SlideTransition(
-    //             position: Tween<Offset>(
-    //               begin: const Offset(0.1, 0),
-    //               end: Offset.zero,
-    //             ).animate(CurvedAnimation(
-    //               parent: animation,
-    //               curve: Curves.easeOutCubic,
-    //             )),
-    //             child: child,
-    //           ),
-    //         );
-    //       },
-    //       transitionDuration: const Duration(milliseconds: 300),
-    //     ),
-    //   );
-    // } catch (e) {
-    //   print('❌ Error navigating to details: $e');
-    //   if (mounted) {
-    //     ScaffoldMessenger.of(context).showSnackBar(
-    //       SnackBar(
-    //         content: Text('Error opening ${HorizontalVod.name}'),
-    //         backgroundColor: ProfessionalColors.accentRed,
-    //         behavior: SnackBarBehavior.floating,
-    //       ),
-    //     );
-    //   }
-    // } finally {
-    //   if (mounted) {
-    //     setState(() {
-    //       _isLoading = false;
-    //     });
-
-    //     // ✅ Restore focus to the same item after returning - Similar to ListDetailsPage
-    //     Future.delayed(const Duration(milliseconds: 300), () {
-    //       if (mounted && index < widget.HorizontalVodList.length) {
-    //         final vodId = widget.HorizontalVodList[index].id.toString();
-    //         if (gridFocusNodes.containsKey(vodId)) {
-    //           setState(() {
-    //             gridFocusedIndex = index;
-    //           });
-    //           FocusScope.of(context).requestFocus(gridFocusNodes[vodId]);
-    //           print('✅ Restored grid focus to index $index');
-    //         }
-    //       }
-    //     });
-    //   }
-    // }
+        // Restore focus to the last selected item
+        Future.delayed(const Duration(milliseconds: 100), () {
+          if (mounted) {
+            final vodId = widget.HorizontalVodList[index].id.toString();
+            if (gridFocusNodes.containsKey(vodId)) {
+              FocusScope.of(context).requestFocus(gridFocusNodes[vodId]);
+            }
+          }
+        });
+      }
+    }
   }
 
   @override

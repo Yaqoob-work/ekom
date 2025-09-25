@@ -7817,6 +7817,22 @@
 // }
 // }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 import 'dart:async';
 
 import 'package:mobi_tv_entertainment/main.dart';
@@ -8601,65 +8617,192 @@ class _GenericLiveChannelsState extends State<GenericLiveChannels>
     return true;
   }
 
-// ✅ MODIFIED: API fetch method remains same but with better logging
 
-  Future<List<NewsChannel>> _fetchChannelsFromAPI() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
 
-      String authKey = prefs.getString('auth_key') ?? '';
+
+// // ✅ MODIFIED: API fetch method remains same but with better logging
+
+//   Future<List<NewsChannel>> _fetchChannelsFromAPI() async {
+//     try {
+//       final prefs = await SharedPreferences.getInstance();
+
+//       String authKey = prefs.getString('auth_key') ?? '';
+
+//       print(
+//           '🌐 Fetching channels from API for category: ${widget.apiCategory}');
+
+//       final response = await https.get(
+//         Uri.parse(
+//             'https://dashboard.cpplayers.com/public/api/getFeaturedLiveTV'),
+//         headers: {'auth-key': authKey},
+//       );
+
+//       if (response.statusCode == 200) {
+//         final Map<String, dynamic> data = json.decode(response.body);
+
+//         if (widget.apiCategory == 'All') {
+//           List<NewsChannel> allChannels = [];
+
+//           data.forEach((categoryName, channelsData) {
+//             if (channelsData is List) {
+//               allChannels.addAll(channelsData
+//                   .map((item) => NewsChannel.fromJson(item))
+//                   .toList());
+//             }
+//           });
+
+//           final activeChannels = _filterActiveChannels(allChannels);
+
+//           print(
+//               '✅ API fetched ${activeChannels.length} active channels (All categories)');
+
+//           return activeChannels;
+//         } else if (data.containsKey(widget.apiCategory)) {
+//           final List<dynamic> channelsData = data[widget.apiCategory];
+
+//           final allChannels =
+//               channelsData.map((item) => NewsChannel.fromJson(item)).toList();
+
+//           final activeChannels = _filterActiveChannels(allChannels);
+
+//           print(
+//               '✅ API fetched ${activeChannels.length} active channels (${widget.apiCategory})');
+
+//           return activeChannels;
+//         }
+//       } else {
+//         print('❌ API error: ${response.statusCode}');
+//       }
+//     } catch (e) {
+//       print('❌ API fetch error: $e');
+//     }
+
+//     return [];
+//   }
+
+
+
+
+// // ✅ MODIFIED: API fetch method now uses POST with a dynamic body
+
+//   Future<List<NewsChannel>> _fetchChannelsFromAPI() async {
+//     try {
+//       final prefs = await SharedPreferences.getInstance();
+//       String authKey = prefs.getString('result_auth_key') ?? '';
+//       if (authKey.isEmpty) throw Exception('Authentication key not found.');
+
+//       // ✅ DYNAMIC GENERE: Set "genere" to blank if category is 'All', otherwise use the category name
+//       final String genereValue =
+//           widget.apiCategory == 'All' ? '' : widget.apiCategory;
+
+//       final body = {"genere": genereValue, "languageId": ""};
+
+//       print(
+//           '🌐 Fetching channels via POST for category: ${widget.apiCategory} with body: ${json.encode(body)}');
+
+//       final response = await https.post(
+//         // Using the new POST endpoint
+//         Uri.parse('https://dashboard.cpplayers.com/api/v2/getAllLiveTV'),
+//         headers: {
+//           'auth-key': authKey,
+//           'domain': 'coretechinfo.com', // As seen in your other function
+//           'Content-Type': 'application/json'
+//         },
+//         body: json.encode(body),
+//       );
+
+//       // ✅ PRINT RESPONSE: Log the raw API response to the console
+//       print('API Response for [${widget.apiCategory}]: ${response.body}');
+
+
+//       if (response.statusCode == 200) {
+//         final Map<String, dynamic> data = json.decode(response.body);
+
+//         if (widget.apiCategory == 'All') {
+//           List<NewsChannel> allChannels = [];
+//           // Assuming the response for 'All' contains multiple category keys
+//           if (data.containsKey('data') && data['data'] is List) {
+//             allChannels.addAll((data['data'] as List)
+//                 .map((item) => NewsChannel.fromJson(item))
+//                 .toList());
+//           }
+
+//           final activeChannels = _filterActiveChannels(allChannels);
+//           print(
+//               '✅ API fetched ${activeChannels.length} active channels (All categories)');
+//           return activeChannels;
+//         } else if (data.containsKey('data') && data['data'] is List) {
+//           // Assuming response for a specific category is under the 'data' key
+//           final List<dynamic> channelsData = data['data'];
+//           final allChannels =
+//               channelsData.map((item) => NewsChannel.fromJson(item)).toList();
+//           final activeChannels = _filterActiveChannels(allChannels);
+//           print(
+//               '✅ API fetched ${activeChannels.length} active channels (${widget.apiCategory})');
+//           return activeChannels;
+//         }
+//       } else {
+//         print('❌ API error: ${response.statusCode}');
+//       }
+//     } catch (e) {
+//       print('❌ API fetch error: $e');
+//     }
+//     return [];
+//   }
+
+
+
+
+// ✅ MODIFIED: Now correctly parses the API's List response
+
+Future<List<NewsChannel>> _fetchChannelsFromAPI() async {
+  try {
+    final prefs = await SharedPreferences.getInstance();
+    String authKey = prefs.getString('result_auth_key') ?? '';
+    if (authKey.isEmpty) throw Exception('Authentication key not found.');
+
+    final String genereValue =
+        widget.apiCategory == 'All' ? '' : widget.apiCategory;
+
+    final body = {"genere": genereValue, "languageId": ""};
+
+    print(
+        '🌐 Fetching channels via POST for category: ${widget.apiCategory} with body: ${json.encode(body)}');
+
+    final response = await https.post(
+      Uri.parse('https://dashboard.cpplayers.com/api/v2/getAllLiveTV'),
+      headers: {
+        'auth-key': authKey,
+        'domain': 'coretechinfo.com',
+        'Content-Type': 'application/json'
+      },
+      body: json.encode(body),
+    );
+
+    print('API Response for [${widget.apiCategory}]: ${response.body}');
+
+    if (response.statusCode == 200) {
+      // ✅ FIX: Decode the response as a List, not a Map.
+      final List<dynamic> channelsData = json.decode(response.body);
+
+      // ✅ SIMPLIFIED: Directly map the list to NewsChannel objects.
+      final allChannels =
+          channelsData.map((item) => NewsChannel.fromJson(item)).toList();
+
+      final activeChannels = _filterActiveChannels(allChannels);
 
       print(
-          '🌐 Fetching channels from API for category: ${widget.apiCategory}');
+          '✅ API successfully parsed ${activeChannels.length} active channels (${widget.apiCategory})');
 
-      final response = await https.get(
-        Uri.parse(
-            'https://dashboard.cpplayers.com/public/api/getFeaturedLiveTV'),
-        headers: {'auth-key': authKey},
-      );
-
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> data = json.decode(response.body);
-
-        if (widget.apiCategory == 'All') {
-          List<NewsChannel> allChannels = [];
-
-          data.forEach((categoryName, channelsData) {
-            if (channelsData is List) {
-              allChannels.addAll(channelsData
-                  .map((item) => NewsChannel.fromJson(item))
-                  .toList());
-            }
-          });
-
-          final activeChannels = _filterActiveChannels(allChannels);
-
-          print(
-              '✅ API fetched ${activeChannels.length} active channels (All categories)');
-
-          return activeChannels;
-        } else if (data.containsKey(widget.apiCategory)) {
-          final List<dynamic> channelsData = data[widget.apiCategory];
-
-          final allChannels =
-              channelsData.map((item) => NewsChannel.fromJson(item)).toList();
-
-          final activeChannels = _filterActiveChannels(allChannels);
-
-          print(
-              '✅ API fetched ${activeChannels.length} active channels (${widget.apiCategory})');
-
-          return activeChannels;
-        }
-      } else {
-        print('❌ API error: ${response.statusCode}');
-      }
-    } catch (e) {
-      print('❌ API fetch error: $e');
+      return activeChannels; // Return the result directly.
+    } else {
+      print('❌ API error: ${response.statusCode}');
     }
-
-    return [];
+  } catch (e) {
+    print('❌ API fetch error: $e');
   }
+  return []; // Return empty list on failure
+}
 
 // // ✅ SIMPLIFIED: Display channels fetch now just calls the API method
 
@@ -8861,34 +9004,71 @@ class _GenericLiveChannelsState extends State<GenericLiveChannels>
     }
   }
 
-  void _setupFocusProvider() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        try {
-          final focusProvider =
-              Provider.of<FocusProvider>(context, listen: false);
+  // void _setupFocusProvider() {
+  //   WidgetsBinding.instance.addPostFrameCallback((_) {
+  //     if (mounted) {
+  //       try {
+  //         final focusProvider =
+  //             Provider.of<FocusProvider>(context, listen: false);
 
-          // ✅ Special handling for Live page (index 0)
+  //         // ✅ Special handling for Live page (index 0)
 
-          if (widget.navigationIndex == 0) {
-            focusProvider.setLiveChannelsFocusNode(widget.focusNode);
+  //         if (widget.navigationIndex == 0) {
+  //           focusProvider.setLiveChannelsFocusNode(widget.focusNode);
 
-            print('✅ Live focus node specially registered');
-          }
+  //           print('✅ Live focus node specially registered');
+  //         }
 
-          // ✅ GENERIC: Register with navigation index for all pages
+  //         // ✅ GENERIC: Register with navigation index for all pages
 
-          focusProvider.registerGenericChannelFocus(
-              widget.navigationIndex, _scrollController, widget.focusNode);
+  //         focusProvider.registerGenericChannelFocus(
+  //             widget.navigationIndex, _scrollController, widget.focusNode);
 
-          print(
-              '✅ Generic focus registered for ${widget.displayTitle} (index: ${widget.navigationIndex})');
-        } catch (e) {
-          print('❌ Focus provider setup failed: $e');
+  //         print(
+  //             '✅ Generic focus registered for ${widget.displayTitle} (index: ${widget.navigationIndex})');
+  //       } catch (e) {
+  //         print('❌ Focus provider setup failed: $e');
+  //       }
+  //     }
+  //   });
+  // }
+
+
+
+// In class _GenericLiveChannelsState
+
+void _setupFocusProvider() {
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    if (mounted) {
+      try {
+        final focusProvider =
+            Provider.of<FocusProvider>(context, listen: false);
+
+        // ❌ REMOVED: This special handling was causing the conflict.
+        // The correct focus node (for the first channel) is registered
+        // later in the _registerChannelsFocus method after the data loads.
+        /*
+        if (widget.navigationIndex == 0) {
+          focusProvider.setLiveChannelsFocusNode(widget.focusNode);
+          print('✅ Live focus node specially registered');
         }
+        */
+
+        // ✅ GENERIC: This part might seem redundant now, but we'll leave it
+        // as the main registration happens in _registerChannelsFocus.
+        // For consistency, you could even remove this line too, as it gets overwritten.
+        focusProvider.registerGenericChannelFocus(
+            widget.navigationIndex, _scrollController, widget.focusNode);
+
+        print(
+            '✅ Generic focus registered for ${widget.displayTitle} (index: ${widget.navigationIndex})');
+      } catch (e) {
+        print('❌ Focus provider setup failed: $e');
       }
-    });
-  }
+    }
+  });
+}
+  
 
   void _initializeAnimations() {
     _headerAnimationController = AnimationController(
@@ -8937,102 +9117,243 @@ class _GenericLiveChannelsState extends State<GenericLiveChannels>
     return channels.where((channel) => channel.status == 1).toList();
   }
 
-  // ✅ NEW: Fetch full ACTIVE channels list when needed (for grid view)
+  // // ✅ NEW: Fetch full ACTIVE channels list when needed (for grid view)
 
-  Future<void> _fetchFullChannelsList() async {
-    if (!mounted || _isLoadingFullList || fullChannelsList.isNotEmpty) return;
+  // Future<void> _fetchFullChannelsList() async {
+  //   if (!mounted || _isLoadingFullList || fullChannelsList.isNotEmpty) return;
 
-    setState(() {
-      _isLoadingFullList = true;
-    });
+  //   setState(() {
+  //     _isLoadingFullList = true;
+  //   });
 
-    try {
-      // final prefs = await SharedPreferences.getInstance();
+  //   try {
+  //     // final prefs = await SharedPreferences.getInstance();
 
-      // String authKey = prefs.getString('auth_key') ?? '';
+  //     // String authKey = prefs.getString('auth_key') ?? '';
 
-      // final response = await https.get(
+  //     // final response = await https.get(
 
-      // Uri.parse(
+  //     // Uri.parse(
 
-      // 'https://dashboard.cpplayers.com/public/api/getFeaturedLiveTV'),
+  //     // 'https://dashboard.cpplayers.com/public/api/getFeaturedLiveTV'),
 
-      // headers: {'auth-key': authKey},
+  //     // headers: {'auth-key': authKey},
 
-      // );
+  //     // );
 
-      final prefs = await SharedPreferences.getInstance();
+  //     final prefs = await SharedPreferences.getInstance();
 
-      String authKey = prefs.getString('auth_key') ?? '';
+  //     String authKey = prefs.getString('auth_key') ?? '';
 
-      if (authKey.isEmpty) throw Exception('Authentication key not found.');
+  //     if (authKey.isEmpty) throw Exception('Authentication key not found.');
 
-      final response = await https.post(
-        Uri.parse('https://dashboard.cpplayers.com/api/v2/getAllLiveTV'),
-        headers: {
-          'auth-key': authKey,
-          'domain': 'coretechinfo.com',
-          'Content-Type': 'application/json'
-        },
-        body: json.encode({"genere": "", "languageId": ""}),
-      );
+  //     final response = await https.post(
+  //       Uri.parse('https://dashboard.cpplayers.com/api/v2/getAllLiveTV'),
+  //       headers: {
+  //         'auth-key': authKey,
+  //         'domain': 'coretechinfo.com',
+  //         'Content-Type': 'application/json'
+  //       },
+  //       body: json.encode({"genere": "", "languageId": ""}),
+  //     );
 
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> data = json.decode(response.body);
+  //     if (response.statusCode == 200) {
+  //       final Map<String, dynamic> data = json.decode(response.body);
 
-        if (widget.apiCategory == 'All') {
-          // Combine all channels from all categories
+  //       if (widget.apiCategory == 'All') {
+  //         // Combine all channels from all categories
 
-          List<NewsChannel> allChannels = [];
+  //         List<NewsChannel> allChannels = [];
 
-          data.forEach((categoryName, channelsData) {
-            if (channelsData is List) {
-              List<NewsChannel> categoryChannels = channelsData
-                  .map((item) => NewsChannel.fromJson(item))
-                  .toList();
+  //         data.forEach((categoryName, channelsData) {
+  //           if (channelsData is List) {
+  //             List<NewsChannel> categoryChannels = channelsData
+  //                 .map((item) => NewsChannel.fromJson(item))
+  //                 .toList();
 
-              allChannels.addAll(categoryChannels);
-            }
-          });
+  //             allChannels.addAll(categoryChannels);
+  //           }
+  //         });
 
-          // ✅ FILTER: Only active channels (status = 1)
+  //         // ✅ FILTER: Only active channels (status = 1)
 
-          List<NewsChannel> activeChannels = _filterActiveChannels(allChannels);
+  //         List<NewsChannel> activeChannels = _filterActiveChannels(allChannels);
 
-          if (mounted) {
-            setState(() {
-              fullChannelsList = activeChannels;
+  //         if (mounted) {
+  //           setState(() {
+  //             fullChannelsList = activeChannels;
 
-              _isLoadingFullList = false;
-            });
-          }
-        } else if (data.containsKey(widget.apiCategory)) {
-          final List<dynamic> channelsData = data[widget.apiCategory];
+  //             _isLoadingFullList = false;
+  //           });
+  //         }
+  //       } else if (data.containsKey(widget.apiCategory)) {
+  //         final List<dynamic> channelsData = data[widget.apiCategory];
 
-          List<NewsChannel> allChannels =
-              channelsData.map((item) => NewsChannel.fromJson(item)).toList();
+  //         List<NewsChannel> allChannels =
+  //             channelsData.map((item) => NewsChannel.fromJson(item)).toList();
 
-          // ✅ FILTER: Only active channels (status = 1)
+  //         // ✅ FILTER: Only active channels (status = 1)
 
-          List<NewsChannel> activeChannels = _filterActiveChannels(allChannels);
+  //         List<NewsChannel> activeChannels = _filterActiveChannels(allChannels);
 
-          if (mounted) {
-            setState(() {
-              fullChannelsList = activeChannels;
+  //         if (mounted) {
+  //           setState(() {
+  //             fullChannelsList = activeChannels;
 
-              _isLoadingFullList = false;
-            });
-          }
-        }
-      }
-    } catch (e) {
+  //             _isLoadingFullList = false;
+  //           });
+  //         }
+  //       }
+  //     }
+  //   } catch (e) {
+  //     if (mounted) {
+  //       setState(() {
+  //         _isLoadingFullList = false;
+  //       });
+  //     }
+  //   }
+  // }
+
+
+
+  // // ✅ MODIFIED: Fetch full channels list also uses the dynamic body
+
+  // Future<void> _fetchFullChannelsList() async {
+  //   if (!mounted || _isLoadingFullList || fullChannelsList.isNotEmpty) return;
+
+  //   setState(() {
+  //     _isLoadingFullList = true;
+  //   });
+
+  //   try {
+  //     final prefs = await SharedPreferences.getInstance();
+  //     String authKey = prefs.getString('result_auth_key') ?? '';
+  //     if (authKey.isEmpty) throw Exception('Authentication key not found.');
+
+  //     // ✅ DYNAMIC GENERE: Set "genere" to blank if category is 'All', otherwise use the category name
+  //     final String genereValue =
+  //         widget.apiCategory == 'All' ? '' : widget.apiCategory;
+
+  //     final body = {"genere": genereValue, "languageId": ""};
+
+  //     print(
+  //         '🔄 Fetching FULL channels list via POST for category: ${widget.apiCategory} with body: ${json.encode(body)}');
+
+  //     final response = await https.post(
+  //       Uri.parse('https://dashboard.cpplayers.com/api/v2/getAllLiveTV'),
+  //       headers: {
+  //         'auth-key': authKey,
+  //         'domain': 'coretechinfo.com',
+  //         'Content-Type': 'application/json'
+  //       },
+  //       body: json.encode(body),
+  //     );
+
+  //     // ✅ PRINT RESPONSE: Log the raw API response to the console
+  //     print('Full List API Response for [${widget.apiCategory}]: ${response.body}');
+
+  //     if (response.statusCode == 200) {
+  //       final Map<String, dynamic> data = json.decode(response.body);
+
+  //       // The logic for parsing remains the same, assuming the new API returns data in a similar structure
+  //       if (widget.apiCategory == 'All') {
+  //         List<NewsChannel> allChannels = [];
+  //         if (data.containsKey('data') && data['data'] is List) {
+  //           allChannels.addAll((data['data'] as List)
+  //               .map((item) => NewsChannel.fromJson(item))
+  //               .toList());
+  //         }
+  //         List<NewsChannel> activeChannels = _filterActiveChannels(allChannels);
+  //         if (mounted) {
+  //           setState(() {
+  //             fullChannelsList = activeChannels;
+  //             _isLoadingFullList = false;
+  //           });
+  //         }
+  //       } else if (data.containsKey('data') && data['data'] is List) {
+  //         final List<dynamic> channelsData = data['data'];
+  //         List<NewsChannel> allChannels =
+  //             channelsData.map((item) => NewsChannel.fromJson(item)).toList();
+  //         List<NewsChannel> activeChannels = _filterActiveChannels(allChannels);
+  //         if (mounted) {
+  //           setState(() {
+  //             fullChannelsList = activeChannels;
+  //             _isLoadingFullList = false;
+  //           });
+  //         }
+  //       }
+  //     }
+  //   } catch (e) {
+  //     print('❌ Error fetching full channel list: $e');
+  //     if (mounted) {
+  //       setState(() {
+  //         _isLoadingFullList = false;
+  //       });
+  //     }
+  //   }
+  // }
+
+
+  // ✅ MODIFIED: Now correctly parses the API's List response for the full list
+
+Future<void> _fetchFullChannelsList() async {
+  if (!mounted || _isLoadingFullList || fullChannelsList.isNotEmpty) return;
+
+  setState(() {
+    _isLoadingFullList = true;
+  });
+
+  try {
+    final prefs = await SharedPreferences.getInstance();
+    String authKey = prefs.getString('result_auth_key') ?? '';
+    if (authKey.isEmpty) throw Exception('Authentication key not found.');
+
+    final String genereValue =
+        widget.apiCategory == 'All' ? '' : widget.apiCategory;
+
+    final body = {"genere": genereValue, "languageId": ""};
+
+    print(
+        '🔄 Fetching FULL channels list via POST for category: ${widget.apiCategory} with body: ${json.encode(body)}');
+
+    final response = await https.post(
+      Uri.parse('https://dashboard.cpplayers.com/api/v2/getAllLiveTV'),
+      headers: {
+        'auth-key': authKey,
+        'domain': 'coretechinfo.com',
+        'Content-Type': 'application/json'
+      },
+      body: json.encode(body),
+    );
+
+    print('Full List API Response for [${widget.apiCategory}]: ${response.body}');
+
+    if (response.statusCode == 200) {
+      // ✅ FIX: Decode the response as a List, not a Map.
+      final List<dynamic> channelsData = json.decode(response.body);
+
+      // ✅ SIMPLIFIED: Directly map the list to NewsChannel objects.
+      List<NewsChannel> allChannels =
+          channelsData.map((item) => NewsChannel.fromJson(item)).toList();
+
+      List<NewsChannel> activeChannels = _filterActiveChannels(allChannels);
+
       if (mounted) {
         setState(() {
+          fullChannelsList = activeChannels;
           _isLoadingFullList = false;
         });
       }
     }
+  } catch (e) {
+    print('❌ Error fetching full channel list: $e');
+    if (mounted) {
+      setState(() {
+        _isLoadingFullList = false;
+      });
+    }
   }
+}
 
   void _initializeChannelFocusNodes() {
     // Clear existing focus nodes
@@ -9069,6 +9390,10 @@ class _GenericLiveChannelsState extends State<GenericLiveChannels>
     _registerChannelsFocus();
   }
 
+
+
+
+
   void _registerChannelsFocus() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted && displayChannelsList.isNotEmpty) {
@@ -9078,12 +9403,20 @@ class _GenericLiveChannelsState extends State<GenericLiveChannels>
 
           // Register first channel with focus provider using generic method
 
-          final firstChannelId = displayChannelsList[0].id.toString();
+          // final firstChannelId = displayChannelsList[0].id.toString();
 
-          if (channelFocusNodes.containsKey(firstChannelId)) {
-            focusProvider.registerGenericChannelFocus(widget.navigationIndex,
-                _scrollController, channelFocusNodes[firstChannelId]!);
-          }
+          // if (channelFocusNodes.containsKey(firstChannelId)) {
+          //   focusProvider.registerGenericChannelFocus(widget.navigationIndex,
+          //       _scrollController, channelFocusNodes[firstChannelId]!);
+          // }
+
+
+          // In _registerChannelsFocus method...
+final firstChannelId = displayChannelsList[0].id.toString();
+if (channelFocusNodes.containsKey(firstChannelId)) {
+    focusProvider.registerGenericChannelFocus(widget.navigationIndex,
+        _scrollController, channelFocusNodes[firstChannelId]!); // <-- THIS IS CORRECT
+}
 
           // Register ViewAll focus node
 
@@ -10806,34 +11139,75 @@ class NewsChannel {
     required this.status,
   });
 
-  factory NewsChannel.fromJson(Map<String, dynamic> json) {
+  // factory NewsChannel.fromJson(Map<String, dynamic> json) {
+  //   return NewsChannel(
+  //     id: json['id'] ?? 0,
+  //     channelNumber: json['channel_number'] ?? 0,
+  //     name: json['name'] ?? '',
+  //     description: json['description'],
+  //     banner: json['banner'] ?? '',
+  //     url: json['url'] ?? '',
+  //     streamType: json['stream_type'] ?? '',
+  //     contentType: json['content_type'] ?? '',
+  //     genres: json['genres'] ?? '',
+  //     status: json['status'] ?? 0,
+  //   );
+  // }
+
+
+
+
+
+  
+
+
+
+  // ✅ CORRECTED: Keys now match the API response
+factory NewsChannel.fromJson(Map<String, dynamic> json) {
     return NewsChannel(
       id: json['id'] ?? 0,
       channelNumber: json['channel_number'] ?? 0,
-      name: json['name'] ?? '',
-      description: json['description'],
-      banner: json['banner'] ?? '',
-      url: json['url'] ?? '',
+      name: json['channel_name'] ?? '',      // Was 'name'
+      description: json['channel_description'], // Was 'description'
+      banner: json['channel_logo'] ?? '',      // Was 'banner'
+      url: json['channel_link'] ?? '',        // Was 'url'
       streamType: json['stream_type'] ?? '',
-      contentType: json['content_type'] ?? '',
+      contentType: json['content_type']?.toString() ?? '', // Was not converted to String
       genres: json['genres'] ?? '',
       status: json['status'] ?? 0,
     );
-  }
+}
 
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'channel_number': channelNumber,
-      'name': name,
-      'description': description,
-      'banner': banner,
-      'url': url,
-      'stream_type': streamType,
-      'genres': genres,
-      'status': status,
-    };
-  }
+  // Map<String, dynamic> toJson() {
+  //   return {
+  //     'id': id,
+  //     'channel_number': channelNumber,
+  //     'name': name,
+  //     'description': description,
+  //     'banner': banner,
+  //     'url': url,
+  //     'stream_type': streamType,
+  //     'genres': genres,
+  //     'status': status,
+  //   };
+  // }
+
+
+  // ✅ CORRECTED: Keys now match the fromJson method for proper caching
+Map<String, dynamic> toJson() {
+  return {
+    'id': id,
+    'channel_number': channelNumber,
+    'channel_name': name,          // FIX: Was 'name'
+    'channel_description': description, // FIX: Was 'description'
+    'channel_logo': banner,         // FIX: Was 'banner'
+    'channel_link': url,            // FIX: Was 'url'
+    'stream_type': streamType,
+    'content_type': contentType,  // FIX: Added missing key
+    'genres': genres,
+    'status': status,
+  };
+}
 }
 
 // ✅ PROFESSIONAL GRID CHANNEL CARD WITH STATUS FILTERING

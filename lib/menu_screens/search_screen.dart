@@ -1984,7 +1984,7 @@
 //   try {
 //     // String authKey = AuthManager.authKey;
 //           SharedPreferences prefs = await SharedPreferences.getInstance();
-//       String? authKey = prefs.getString('auth_key');
+//       String? authKey = prefs.getString('result_auth_key');
 //     // if (authKey.isEmpty) {
 //     //   throw Exception('Authentication key is missing');
 //     // }
@@ -2767,7 +2767,6 @@ import '../home_screen_pages/tv_show/tv_show_final_details_page.dart';
 import '../home_screen_pages/tv_show_pak/tv_show_final_details_page.dart';
 import '../main.dart'; // Assuming bannerhgt, screenwdt, etc. are defined here
 import '../provider/focus_provider.dart';
-import '../video_widget/socket_service.dart';
 
 class ProfessionalVODColors {
   static const primaryDark = Color(0xFF0A0E1A);
@@ -2827,7 +2826,7 @@ class ProfessionalVODColors {
 // Future<List<NewsItemModel>> fetchFromApi(String searchTerm) async {
 //   try {
 //     SharedPreferences prefs = await SharedPreferences.getInstance();
-//     String? authKey = prefs.getString('auth_key');
+//     String? authKey = prefs.getString('result_auth_key');
 
 //     final url = Uri.parse('https://dashboard.cpplayers.com/api/v2/getSearchCategoryList');
 //     final body = json.encode({'keywords': searchTerm});
@@ -2885,7 +2884,7 @@ class ProfessionalVODColors {
 Future<List<NewsItemModel>> fetchFromApi(String searchTerm) async {
   try {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? authKey = prefs.getString('auth_key');
+    String? authKey = prefs.getString('result_auth_key');
 
     final url = Uri.parse(
         'https://dashboard.cpplayers.com/api/v2/getSearchCategoryList');

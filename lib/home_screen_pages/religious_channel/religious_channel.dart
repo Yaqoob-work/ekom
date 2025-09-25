@@ -95,7 +95,7 @@ class ReligiousChannelsService {
   static const String _cacheKeyChannels = 'cached_religious_channels';
   static const String _cacheKeyTimestamp =
       'cached_religious_channels_timestamp';
-  static const String _cacheKeyAuthKey = 'auth_key';
+  static const String _cacheKeyAuthKey = 'result_auth_key';
 
   // Cache duration (in milliseconds) - 1 hour
   static const int _cacheDurationMs = 60 * 60 * 1000; // 1 hour
@@ -215,10 +215,10 @@ class ReligiousChannelsService {
         },
       );
       // .timeout(
-        // const Duration(seconds: 30),
-        // onTimeout: () {
-          // throw Exception('Request timeout');
-        // },
+      // const Duration(seconds: 30),
+      // onTimeout: () {
+      // throw Exception('Request timeout');
+      // },
       // );
 
       if (response.statusCode == 200) {

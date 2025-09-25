@@ -16,7 +16,7 @@ class DetailsCacheService {
   static Future<ChannelDataCache> _fetchAndCacheData(int channelId) async {
     print('🌐 [Service] Fetching fresh data for channel ID: $channelId');
     final prefs = await SharedPreferences.getInstance();
-    String authKey = prefs.getString('auth_key') ?? '';
+    String authKey = prefs.getString('result_auth_key') ?? '';
     if (authKey.isEmpty) throw Exception('Auth key not found');
 
     try {

@@ -2,7 +2,7 @@
 // import 'dart:convert';
 // import 'package:flutter/material.dart';
 // import 'package:mobi_tv_entertainment/main.dart';
-// import 'package:mobi_tv_entertainment/video_widget/socket_service.dart';
+//
 // import 'package:mobi_tv_entertainment/video_widget/video_screen.dart';
 // import 'package:mobi_tv_entertainment/home_screen_pages/sub_live_screen/items/more_channel_item.dart';
 // import 'package:mobi_tv_entertainment/video_widget/custom_youtube_player.dart';
@@ -676,7 +676,7 @@
 //     setState(() { isLoading = true; errorMessage = null; });
 //     try {
 //       final prefs = await SharedPreferences.getInstance();
-//       String authKey = prefs.getString('auth_key') ?? '';
+//       String authKey = prefs.getString('result_auth_key') ?? '';
 //       if (authKey.isEmpty) throw Exception('Authentication key not found.');
 //       final response = await http.post(
 //         Uri.parse('https://dashboard.cpplayers.com/api/v2/getAllLiveTV'),
@@ -1588,7 +1588,7 @@ class _ChannelsCategoryState extends State<ChannelsCategory>
     });
     try {
       final prefs = await SharedPreferences.getInstance();
-      String authKey = prefs.getString('auth_key') ?? '';
+      String authKey = prefs.getString('result_auth_key') ?? '';
       if (authKey.isEmpty) throw Exception('Authentication key not found.');
       final response = await https.post(
         Uri.parse('https://dashboard.cpplayers.com/api/v2/getAllLiveTV'),

@@ -216,7 +216,7 @@ class MovieService {
   static const String _cacheKeyMoviesFullTimestamp =
       'cached_movies_full_timestamp';
 
-  static const String _cacheKeyAuthKey = 'auth_key';
+  static const String _cacheKeyAuthKey = 'result_auth_key';
 
   // Cache duration (in milliseconds) - 1 hour
   static const int _cacheDurationMs = 60 * 60 * 1000; // 1 hour
@@ -838,7 +838,11 @@ class _ProfessionalMoviesHorizontalListState
     _initializeAnimations();
     _initializeViewAllFocusNode();
     _setupFocusProvider();
-    _fetchDisplayMovies();
+    _fetchDisplayMovies().then((_) {
+      // प्रारंभिक डेटा लाने के बाद ही फोकस प्रोवाइडर सेट करें
+      _setupFocusProvider();
+    });
+    ;
   }
 
   void _setupFocusProvider() {

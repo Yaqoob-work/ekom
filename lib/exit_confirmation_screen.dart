@@ -272,7 +272,7 @@ class _ExitConfirmationScreenState extends State<ExitConfirmationScreen>
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           // Image.asset('assets/cpPlayer.png', width: 120),
-          Image.network(SessionManager.logoUrl,width: 150,),
+          Image.network(SessionManager.logoUrl,width: 150,)??Image.asset('assets/cpPlayer.png', width: 120),
           const SizedBox(height: 20),
           Text(
             'Leaving so soon?',

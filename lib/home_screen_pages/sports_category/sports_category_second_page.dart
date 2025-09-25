@@ -242,8 +242,8 @@ class _SportsCategorySecondPageState extends State<SportsCategorySecondPage>
       });
 
       final prefs = await SharedPreferences.getInstance();
-      String authKey = prefs.getString('auth_key') ??
-          'YOUR_AUTH_KEY'; // Replace with your auth key
+      String authKey = prefs.getString('result_auth_key') ??
+          'YOUR_result_auth_key'; // Replace with your auth key
 
       final response = await http.get(
         Uri.parse(
@@ -301,8 +301,8 @@ class _SportsCategorySecondPageState extends State<SportsCategorySecondPage>
 
     try {
       final prefs = await SharedPreferences.getInstance();
-      String authKey =
-          prefs.getString('auth_key') ?? 'YOUR_AUTH_KEY'; // Replace
+      String authKey = prefs.getString('result_auth_key') ??
+          'YOUR_result_auth_key'; // Replace
 
       final response = await http.get(
         Uri.parse(

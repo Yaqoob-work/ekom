@@ -104,7 +104,7 @@ class WebSeriesModel {
 class WebSeriesService {
   static const String _cacheKeyWebSeries = 'cached_web_series';
   static const String _cacheKeyTimestamp = 'cached_web_series_timestamp';
-  static const String _cacheKeyAuthKey = 'auth_key';
+  static const String _cacheKeyAuthKey = 'result_auth_key';
   static const int _cacheDurationMs = 60 * 60 * 1000; // 1 hour
 
   static Future<List<WebSeriesModel>> getAllWebSeries(
@@ -172,7 +172,9 @@ class WebSeriesService {
   static Future<List<WebSeriesModel>> _fetchFreshWebSeries(
       SharedPreferences prefs) async {
     try {
-      String authKey = prefs.getString(_cacheKeyAuthKey) ?? '';
+      // String authKey = prefs.getString(_cacheKeyAuthKey) ?? '';
+      final prefs = await SharedPreferences.getInstance();
+      String authKey = prefs.getString('result_auth_key') ?? '';
       final response = await http.get(
         Uri.parse('https://dashboard.cpplayers.com/api/v2/getAllWebSeries'),
         headers: {

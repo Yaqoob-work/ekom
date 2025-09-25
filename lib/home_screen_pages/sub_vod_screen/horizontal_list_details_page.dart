@@ -15,7 +15,7 @@
 // import 'package:mobi_tv_entertainment/services/history_service.dart';
 // import 'package:mobi_tv_entertainment/video_widget/custom_video_player.dart';
 // import 'package:mobi_tv_entertainment/video_widget/custom_youtube_player.dart';
-// // import 'package:mobi_tv_entertainment/video_widget/socket_service.dart';
+// //
 // import 'package:mobi_tv_entertainment/video_widget/video_screen.dart';
 // import 'package:mobi_tv_entertainment/video_widget/youtube_webview_player.dart';
 // import 'package:provider/provider.dart';
@@ -71,7 +71,7 @@
 //   }
 
 //   tempGenreMap.removeWhere((key, value) => value.isEmpty);
-  
+
 //   print("✅ Isolate finished processing. Returning data to main thread.");
 //   return tempGenreMap; // Processed data waapas bhejein
 // }
@@ -116,7 +116,6 @@
 //   // Animation Controller
 //   late AnimationController _fadeController;
 //   late Animation<double> _fadeAnimation;
-  
 
 //   @override
 //   void initState() {
@@ -127,9 +126,6 @@
 //     // _loadDataWithCache();
 //     _loadData();
 //   }
-
-
-
 
 //   // // 🔄 MODIFIED: A single, clean function to load data using the service
 //   // Future<void> _loadData() async {
@@ -179,7 +175,6 @@
 //   //   }
 //   // }
 
-
 // // Yeh function aapke _GenreNetworkWidgetState class ke andar rahega
 
 // Future<void> _loadData() async {
@@ -205,12 +200,12 @@
 
 //       // Step 2: Bhaari data processing ke kaam ko Isolate mein bhejein
 //       print("🚀 Handing over heavy data processing to a separate isolate...");
-      
+
 //       final Map<String, dynamic> isolateArgs = {
 //         'contentData': channelData.content,
 //         'availableGenres': availableGenres,
 //       };
-      
+
 //       // `compute` function naye thread par _parseAndProcessContentInIsolate ko chalayega
 //       final Map<String, List<ContentItem>> processedMap = await compute(_parseAndProcessContentInIsolate, isolateArgs);
 
@@ -220,11 +215,11 @@
 //           genreContentMap = processedMap;
 //         });
 //       }
-      
+
 //       _initializeAndScroll();
-      
+
 //       // <<<<<<<<<<<< SMART PREFETCHING WALA CODE YAHAN SE HATA DIYA GAYA HAI >>>>>>>>>>>>
-      
+
 //     } else if (mounted) {
 //       // Agar koi data nahin mila to error message set karein
 //       setState(() {
@@ -248,7 +243,6 @@
 //     }
 //   }
 // }
-  
 
 //   // 🔄 MODIFIED: The refresh action now simply re-runs the main load function
 //   Future<void> _handleRefresh() async {
@@ -338,7 +332,7 @@
 //   Future<void> _fetchFromNetworkAndCacheInHive() async {
 //     print("🌐 Fetching fresh data from network for Hive...");
 //     final prefs = await SharedPreferences.getInstance();
-//     String authKey = prefs.getString('auth_key') ?? '';
+//     String authKey = prefs.getString('result_auth_key') ?? '';
 //     if (authKey.isEmpty) throw Exception('Auth key not found');
 
 //     try {
@@ -542,7 +536,7 @@
 //   // Future<void> _fetchFromNetworkAndCache() async {
 //   //   print("🌐 Fetching fresh data from network...");
 //   //   final prefs = await SharedPreferences.getInstance();
-//   //   String authKey = prefs.getString('auth_key') ?? '';
+//   //   String authKey = prefs.getString('result_auth_key') ?? '';
 //   //   if (authKey.isEmpty) throw Exception('Auth key not found');
 
 //   //   // 1. Fetch and Cache Genres
@@ -622,7 +616,7 @@
 //   Future<void> _fetchFromNetworkAndCache() async {
 //     print("🌐 Fetching fresh data from network...");
 //     final prefs = await SharedPreferences.getInstance();
-//     String authKey = prefs.getString('auth_key') ?? '';
+//     String authKey = prefs.getString('result_auth_key') ?? '';
 //     if (authKey.isEmpty) throw Exception('Auth key not found');
 
 //     try {
@@ -3068,12 +3062,6 @@
 //   }
 // }
 
-
-
-
-
-
-
 // import 'dart:convert';
 // import 'dart:ui';
 // import 'dart:math' as math;
@@ -3255,7 +3243,7 @@
 //     print("🌐 Fetching fresh paginated data from network...");
 //     final box = await Hive.openBox('channelCache');
 //         SharedPreferences prefs = await SharedPreferences.getInstance();
-//     String? authKey = prefs.getString('auth_key');
+//     String? authKey = prefs.getString('result_auth_key');
 //     // final authKey = await _getAuthKey();
 
 //     // 1. Fetch all available genres for the channel
@@ -3284,13 +3272,13 @@
 //     Map<String, List<dynamic>> rawContentMap = {};
 //     List<Future<void>> contentFetchFutures = [];
 //         // SharedPreferences prefs = await SharedPreferences.getInstance();
-//     // String? authKey = prefs.getString('auth_key');
+//     // String? authKey = prefs.getString('result_auth_key');
 //     for (String genre in fetchedGenres) {
-      
+
 //       contentFetchFutures.add(
 //         https
 //             .post(
-              
+
 //           Uri.parse(
 //               'https://dashboard.cpplayers.com/api/v2/getAllContentsOfNetworkNew?page=1&records=10'), // Pagination here
 //           headers:  {
@@ -3423,7 +3411,7 @@
 //       print('Scroll error: $e');
 //     }
 //   }
-  
+
 //     // Key navigation handler
 //   void _handleKeyNavigation(RawKeyEvent event) {
 //     if (event is! RawKeyDownEvent || genreContentMap.isEmpty || _isVideoLoading) {
@@ -3473,7 +3461,6 @@
 //       }
 //     }
 //   }
-
 
 //   void _moveGenreFocusUp(List<String> genres) {
 //     if (focusedGenreIndex <= 0) return;
@@ -3668,7 +3655,6 @@
 //       );
 //     }
 
-
 //     } catch (e) {
 //          if (mounted) {
 //         String errorMessage = 'Error loading content';
@@ -3707,7 +3693,6 @@
 //       }
 //     }
 //   }
-
 
 //   @override
 //   Widget build(BuildContext context) {
@@ -4616,7 +4601,7 @@
 
 //     try {
 //           SharedPreferences prefs = await SharedPreferences.getInstance();
-//     String? authKey = prefs.getString('auth_key');
+//     String? authKey = prefs.getString('result_auth_key');
 
 //       final contentResponse = await https.post(
 //         Uri.parse(
@@ -4727,7 +4712,7 @@
 //       HapticFeedback.lightImpact();
 //     }
 //   }
-  
+
 //     Future<void> _handleContentTap(ContentItem content) async {
 //       // This function can be copied directly from your original _GenreNetworkWidgetState
 //       // as its logic for handling a tap is identical.
@@ -4845,7 +4830,7 @@
 //       }
 //     }
 //     }
-    
+
 //       @override
 //   Widget build(BuildContext context) {
 //     return Scaffold(
@@ -5024,7 +5009,6 @@
 //     );
 //   }
 
-
 // }
 
 // class ProfessionalColors {
@@ -5043,10 +5027,6 @@
 //   static const focusGlow = Color(0xFF60A5FA);
 
 // }
-
-
-
-
 
 // // Optional: Enhanced Loading Indicator with better animation
 // class ProfessionalLoadingIndicator extends StatefulWidget {
@@ -5197,12 +5177,6 @@
 //     );
 //   }
 // }
-
-
-
-
-
-
 
 import 'dart:convert';
 import 'dart:ui';
@@ -5385,8 +5359,8 @@ class _GenreNetworkWidgetState extends State<GenreNetworkWidget>
     print("🌐 Fetching fresh paginated data from network...");
     final box = await Hive.openBox('channelCache');
     // final authKey = await _getAuthKey();
-        final prefs = await SharedPreferences.getInstance();
-    String authKey = prefs.getString('auth_key') ?? '';
+    final prefs = await SharedPreferences.getInstance();
+    String authKey = prefs.getString('result_auth_key') ?? '';
 
     // 1. Fetch all available genres for the channel
     final genresResponse = await https.get(
@@ -5415,7 +5389,7 @@ class _GenreNetworkWidgetState extends State<GenreNetworkWidget>
             .post(
           Uri.parse(
               'https://dashboard.cpplayers.com/api/v2/getAllContentsOfNetworkNew?page=1&records=5'), // Pagination here
-                    headers: {
+          headers: {
             'auth-key': authKey,
             'domain': 'coretechinfo.com',
             'Accept': 'application/json'
@@ -5443,7 +5417,8 @@ class _GenreNetworkWidgetState extends State<GenreNetworkWidget>
 
     // 3. Cache the fetched raw data in Hive
     await box.put(_hiveCacheKey, json.encode(rawContentMap));
-    print("💾 Fresh paginated data saved to Hive cache for key: $_hiveCacheKey");
+    print(
+        "💾 Fresh paginated data saved to Hive cache for key: $_hiveCacheKey");
 
     // 4. Process the new data and update the UI
     if (mounted) {
@@ -5544,10 +5519,12 @@ class _GenreNetworkWidgetState extends State<GenreNetworkWidget>
       print('Scroll error: $e');
     }
   }
-  
-    // Key navigation handler
+
+  // Key navigation handler
   void _handleKeyNavigation(RawKeyEvent event) {
-    if (event is! RawKeyDownEvent || genreContentMap.isEmpty || _isVideoLoading) {
+    if (event is! RawKeyDownEvent ||
+        genreContentMap.isEmpty ||
+        _isVideoLoading) {
       return;
     }
 
@@ -5567,9 +5544,6 @@ class _GenreNetworkWidgetState extends State<GenreNetworkWidget>
       _handleSelectAction(currentGenreItems, genres[focusedGenreIndex]);
     }
   }
-
-
-  
 
   void _handleSelectAction(
       List<ContentItem> currentGenreItems, String currentGenre) {
@@ -5597,7 +5571,6 @@ class _GenreNetworkWidgetState extends State<GenreNetworkWidget>
       }
     }
   }
-
 
   void _moveGenreFocusUp(List<String> genres) {
     if (focusedGenreIndex <= 0) return;
@@ -5684,9 +5657,6 @@ class _GenreNetworkWidgetState extends State<GenreNetworkWidget>
     }
   }
 
-
-
-
   Future<void> _handleContentTap(ContentItem content) async {
     if (_isVideoLoading || !mounted) return;
 
@@ -5695,109 +5665,108 @@ class _GenreNetworkWidgetState extends State<GenreNetworkWidget>
     });
 
     try {
-        // ... (The rest of your _handleContentTap logic is fine and can remain here)
-    String? playableUrl = content.getPlayableUrl();
+      // ... (The rest of your _handleContentTap logic is fine and can remain here)
+      String? playableUrl = content.getPlayableUrl();
 
-    try {
-      print('Updating user history for: ${content.name}');
-      int? currentUserId = SessionManager.userId;
-      final int? parsedContentType = content.contentType;
-      final int? parsedId = content.id;
+      try {
+        print('Updating user history for: ${content.name}');
+        int? currentUserId = SessionManager.userId;
+        final int? parsedContentType = content.contentType;
+        final int? parsedId = content.id;
 
-      await HistoryService.updateUserHistory(
-        userId: currentUserId!,
-        contentType: parsedContentType!,
-        eventId: parsedId!,
-        eventTitle: content.name,
-        url: playableUrl ?? '',
-        categoryId: 0,
-      );
-    } catch (e) {
-      print("History update failed, but proceeding to play. Error: $e");
-    }
+        await HistoryService.updateUserHistory(
+          userId: currentUserId!,
+          contentType: parsedContentType!,
+          eventId: parsedId!,
+          eventTitle: content.name,
+          url: playableUrl ?? '',
+          categoryId: 0,
+        );
+      } catch (e) {
+        print("History update failed, but proceeding to play. Error: $e");
+      }
 
-    if (content.contentType == 2) {
-      await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => WebSeriesDetailsPage(
-            id: content.id,
-            banner: content.banner ?? '',
-            poster: content.poster ?? '',
-            logo: widget.channelLogo ?? '',
-            name: content.name,
-            updatedAt: content.updatedAt,
-          ),
-        ),
-      );
-      return; // Exit early for web series
-    }
-
-    if (playableUrl == null || playableUrl.isEmpty) {
-      throw Exception('No video URL found for this content');
-    }
-
-    if (!mounted) return;
-
-    if (content.sourceType == 'YoutubeLive' ||
-        (content.youtubeTrailer != null && content.youtubeTrailer!.isNotEmpty)) {
-      String youtubeUrl = content.sourceType == 'YoutubeLive'
-          ? playableUrl
-          : content.youtubeTrailer!;
-      final deviceInfo = context.read<DeviceInfoProvider>();
-
-      if (deviceInfo.deviceName == 'AFTSS : Amazon Fire Stick HD') {
+      if (content.contentType == 2) {
         await Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => YoutubeWebviewPlayer(
-                videoUrl: playableUrl, name: content.name),
+            builder: (context) => WebSeriesDetailsPage(
+              id: content.id,
+              banner: content.banner ?? '',
+              poster: content.poster ?? '',
+              logo: widget.channelLogo ?? '',
+              name: content.name,
+              updatedAt: content.updatedAt,
+            ),
           ),
         );
-      } else {
-        await Navigator.push(
+        return; // Exit early for web series
+      }
+
+      if (playableUrl == null || playableUrl.isEmpty) {
+        throw Exception('No video URL found for this content');
+      }
+
+      if (!mounted) return;
+
+      if (content.sourceType == 'YoutubeLive' ||
+          (content.youtubeTrailer != null &&
+              content.youtubeTrailer!.isNotEmpty)) {
+        String youtubeUrl = content.sourceType == 'YoutubeLive'
+            ? playableUrl
+            : content.youtubeTrailer!;
+        final deviceInfo = context.read<DeviceInfoProvider>();
+
+        if (deviceInfo.deviceName == 'AFTSS : Amazon Fire Stick HD') {
+          await Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => CustomYoutubePlayer(
-                      videoData: VideoData(
-                        id: content.id.toString(),
-                        title: content.name,
-                        youtubeUrl: youtubeUrl,
-                        thumbnail: content.poster ?? content.banner ?? '',
-                        description: content.description ?? '',
-                      ),
-                      playlist: [
-                        VideoData(
+              builder: (context) => YoutubeWebviewPlayer(
+                  videoUrl: playableUrl, name: content.name),
+            ),
+          );
+        } else {
+          await Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => CustomYoutubePlayer(
+                        videoData: VideoData(
                           id: content.id.toString(),
                           title: content.name,
                           youtubeUrl: youtubeUrl,
                           thumbnail: content.poster ?? content.banner ?? '',
                           description: content.description ?? '',
                         ),
-                      ],
-                    )));
-      }
-    } else {
-      await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => VideoScreen(
-            videoUrl: playableUrl,
-            bannerImageUrl: content.poster ?? content.banner ?? '',
-            channelList: [],
-            videoId: content.id,
-            name: content.name,
-            liveStatus: false,
-            updatedAt: content.updatedAt,
-            source: 'isVod',
+                        playlist: [
+                          VideoData(
+                            id: content.id.toString(),
+                            title: content.name,
+                            youtubeUrl: youtubeUrl,
+                            thumbnail: content.poster ?? content.banner ?? '',
+                            description: content.description ?? '',
+                          ),
+                        ],
+                      )));
+        }
+      } else {
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => VideoScreen(
+              videoUrl: playableUrl,
+              bannerImageUrl: content.poster ?? content.banner ?? '',
+              channelList: [],
+              videoId: content.id,
+              name: content.name,
+              liveStatus: false,
+              updatedAt: content.updatedAt,
+              source: 'isVod',
+            ),
           ),
-        ),
-      );
-    }
-
-
+        );
+      }
     } catch (e) {
-         if (mounted) {
+      if (mounted) {
         String errorMessage = 'Error loading content';
         if (e.toString().contains('network') ||
             e.toString().contains('connection')) {
@@ -5834,7 +5803,6 @@ class _GenreNetworkWidgetState extends State<GenreNetworkWidget>
       }
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -5892,8 +5860,8 @@ class _GenreNetworkWidgetState extends State<GenreNetworkWidget>
                 child: Container(
                   color: Colors.black.withOpacity(0.7),
                   child: const Center(
-                    child:
-                        ProfessionalLoadingIndicator(message: 'Loading Video...'),
+                    child: ProfessionalLoadingIndicator(
+                        message: 'Loading Video...'),
                   ),
                 ),
               ),
@@ -6060,7 +6028,8 @@ class _GenreNetworkWidgetState extends State<GenreNetworkWidget>
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: ProfessionalColors.accentGreen.withOpacity(0.4),
+                          color:
+                              ProfessionalColors.accentGreen.withOpacity(0.4),
                           blurRadius: 10,
                           offset: const Offset(0, 3),
                         ),
@@ -6166,8 +6135,7 @@ class _GenreNetworkWidgetState extends State<GenreNetworkWidget>
               padding: const EdgeInsets.symmetric(horizontal: 20),
               addAutomaticKeepAlives: false,
               cacheExtent: 1000,
-              itemCount:
-                  hasMore ? contentList.length + 1 : contentList.length,
+              itemCount: hasMore ? contentList.length + 1 : contentList.length,
               itemBuilder: (context, index) {
                 if (hasMore && index == contentList.length) {
                   final isFocused = focusedGenreIndex == genreIndex &&
@@ -6391,7 +6359,7 @@ class _GenreNetworkWidgetState extends State<GenreNetworkWidget>
 
 class OptimizedContentCard extends StatelessWidget {
   // ... (Your OptimizedContentCard code remains unchanged)
-    final ContentItem content;
+  final ContentItem content;
   final bool isFocused;
   final VoidCallback onTap;
 
@@ -6607,9 +6575,8 @@ class OptimizedContentCard extends StatelessWidget {
             Text(
               content.name.toUpperCase(),
               style: TextStyle(
-                color: isFocused
-                    ? ProfessionalColors.accentGreen
-                    : Colors.white,
+                color:
+                    isFocused ? ProfessionalColors.accentGreen : Colors.white,
                 fontSize: isFocused ? 13 : 12,
                 fontWeight: FontWeight.w600,
                 letterSpacing: 0.5,
@@ -6738,26 +6705,27 @@ class _GenreAllContentPageState extends State<GenreAllContentPage>
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
         CurvedAnimation(parent: _fadeController, curve: Curves.easeInOut));
   }
-    Future<void> _fetchFullGenreContent() async {
+
+  Future<void> _fetchFullGenreContent() async {
     setState(() {
       _isLoading = true;
       _errorMessage = null;
     });
 
     try {
-          final prefs = await SharedPreferences.getInstance();
-    String authKey = prefs.getString('auth_key') ?? '';
-        // final authKey = await _getAuthKey();
+      final prefs = await SharedPreferences.getInstance();
+      String authKey = prefs.getString('result_auth_key') ?? '';
+      // final authKey = await _getAuthKey();
       final contentResponse = await https.post(
         Uri.parse(
             'https://dashboard.cpplayers.com/api/v2/getAllContentsOfNetworkNew'),
-                  headers: {
-            'auth-key': authKey,
-            'domain': 'coretechinfo.com',
-            'Accept': 'application/json'
-          },
-        body: json
-            .encode({"genre": widget.genreTitle, "network_id": widget.tvChannelId}),
+        headers: {
+          'auth-key': authKey,
+          'domain': 'coretechinfo.com',
+          'Accept': 'application/json'
+        },
+        body: json.encode(
+            {"genre": widget.genreTitle, "network_id": widget.tvChannelId}),
       );
 
       if (!mounted) return;
@@ -6796,7 +6764,7 @@ class _GenreAllContentPageState extends State<GenreAllContentPage>
     }
   }
 
-    @override
+  @override
   void dispose() {
     _fadeController.dispose();
     _gridFocusNode.dispose();
@@ -6807,7 +6775,7 @@ class _GenreAllContentPageState extends State<GenreAllContentPage>
     super.dispose();
   }
 
-    void _updateAndScrollToFocus() {
+  void _updateAndScrollToFocus() {
     if (!mounted || focusedIndex >= _itemFocusNodes.length) return;
     final focusNode = _itemFocusNodes[focusedIndex];
     focusNode.requestFocus();
@@ -6820,8 +6788,9 @@ class _GenreAllContentPageState extends State<GenreAllContentPage>
     );
   }
 
-    void _handleKeyNavigation(RawKeyEvent event) {
-    if (event is! RawKeyDownEvent || _isVideoLoading || _contentList.isEmpty) return;
+  void _handleKeyNavigation(RawKeyEvent event) {
+    if (event is! RawKeyDownEvent || _isVideoLoading || _contentList.isEmpty)
+      return;
 
     const itemsPerRow = 6;
     final totalItems = _contentList.length;
@@ -6856,10 +6825,10 @@ class _GenreAllContentPageState extends State<GenreAllContentPage>
       HapticFeedback.lightImpact();
     }
   }
-  
-    Future<void> _handleContentTap(ContentItem content) async {
-      // This function can be copied directly from your original _GenreNetworkWidgetState
-      // as its logic for handling a tap is identical.
+
+  Future<void> _handleContentTap(ContentItem content) async {
+    // This function can be copied directly from your original _GenreNetworkWidgetState
+    // as its logic for handling a tap is identical.
     if (_isVideoLoading || !mounted) return;
     setState(() => _isVideoLoading = true);
 
@@ -6973,9 +6942,9 @@ class _GenreAllContentPageState extends State<GenreAllContentPage>
         setState(() => _isVideoLoading = false);
       }
     }
-    }
-    
-      @override
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ProfessionalColors.primaryDark,
@@ -7046,7 +7015,8 @@ class _GenreAllContentPageState extends State<GenreAllContentPage>
       ),
     );
   }
-   Widget _buildAppBar() {
+
+  Widget _buildAppBar() {
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -7115,48 +7085,50 @@ class _GenreAllContentPageState extends State<GenreAllContentPage>
                     //   ),
                     // ),
                     if (widget.channelLogo != null)
-                  Container(
-                    width: 55,
-                    height: 55,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(27.5),
-                      border: Border.all(
-                        color: ProfessionalColors.accentGreen.withOpacity(0.6),
-                        width: 2,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: ProfessionalColors.accentGreen.withOpacity(0.4),
-                          blurRadius: 10,
-                          offset: const Offset(0, 3),
+                      Container(
+                        width: 55,
+                        height: 55,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(27.5),
+                          border: Border.all(
+                            color:
+                                ProfessionalColors.accentGreen.withOpacity(0.6),
+                            width: 2,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: ProfessionalColors.accentGreen
+                                  .withOpacity(0.4),
+                              blurRadius: 10,
+                              offset: const Offset(0, 3),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(25.5),
-                      child: CachedNetworkImage(
-                        imageUrl: widget.channelLogo!,
-                        fit: BoxFit.cover,
-                        memCacheWidth: 110,
-                        memCacheHeight: 110,
-                        errorWidget: (context, url, error) => Container(
-                          decoration: const BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                ProfessionalColors.accentGreen,
-                                ProfessionalColors.accentBlue,
-                              ],
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(25.5),
+                          child: CachedNetworkImage(
+                            imageUrl: widget.channelLogo!,
+                            fit: BoxFit.cover,
+                            memCacheWidth: 110,
+                            memCacheHeight: 110,
+                            errorWidget: (context, url, error) => Container(
+                              decoration: const BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    ProfessionalColors.accentGreen,
+                                    ProfessionalColors.accentBlue,
+                                  ],
+                                ),
+                              ),
+                              child: const Icon(
+                                Icons.live_tv,
+                                color: Colors.white,
+                                size: 24,
+                              ),
                             ),
                           ),
-                          child: const Icon(
-                            Icons.live_tv,
-                            color: Colors.white,
-                            size: 24,
-                          ),
                         ),
                       ),
-                    ),
-                  ),
                   ],
                 ),
               ),
@@ -7198,13 +7170,11 @@ class _GenreAllContentPageState extends State<GenreAllContentPage>
       ),
     );
   }
-
-
 }
 
 class ProfessionalColors {
-    // ... (Your ProfessionalColors class remains unchanged)
-      static const primaryDark = Color(0xFF0A0E1A);
+  // ... (Your ProfessionalColors class remains unchanged)
+  static const primaryDark = Color(0xFF0A0E1A);
   static const surfaceDark = Color(0xFF1A1D29);
   static const cardDark = Color(0xFF2A2D3A);
   static const accentBlue = Color(0xFF3B82F6);
@@ -7216,12 +7186,11 @@ class ProfessionalColors {
   static const textPrimary = Color(0xFFFFFFFF);
   static const textSecondary = Color(0xFFB3B3B3);
   static const focusGlow = Color(0xFF60A5FA);
-
 }
 
 class ProfessionalLoadingIndicator extends StatefulWidget {
-    // ... (Your ProfessionalLoadingIndicator class remains unchanged)
-      final String message;
+  // ... (Your ProfessionalLoadingIndicator class remains unchanged)
+  final String message;
   final Color? primaryColor;
   final Color? textColor;
 
@@ -7367,15 +7336,14 @@ class _ProfessionalLoadingIndicatorState
       ),
     );
   }
-
 }
 
 /// Helper function to get auth key, reducing code repetition.
 Future<String> _getAuthKey() async {
   // In a real app, this might come from a service locator or provider.
   final prefs = await SharedPreferences.getInstance();
-  return prefs.getString('auth_key') ?? '';
-  //  return 'your_auth_key_here'; // Replace with your actual key management
+  return prefs.getString('result_auth_key') ?? '';
+  //  return 'your_result_auth_key_here'; // Replace with your actual key management
 }
 
 /// Helper function to create API headers, reducing code repetition.

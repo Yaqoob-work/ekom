@@ -15,7 +15,7 @@
 //   }) async {
 //     try {
 //           final prefs = await SharedPreferences.getInstance();
-//     String authKey = '${prefs.getString('auth_key')}' ;
+//     String authKey = '${prefs.getString('result_auth_key')}' ;
 
 //       // यहाँ user_id को हार्डकोड किया गया है, आप इसे अपनी ऐप की state से प्राप्त कर सकते हैं
 //       final int userId = 0;
@@ -73,7 +73,7 @@ class HistoryService {
   }) async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      String authKey = '${prefs.getString('auth_key')}';
+      String authKey = '${prefs.getString('result_auth_key')}';
       final response = await http.post(
         Uri.parse(_apiUrl),
         headers: {

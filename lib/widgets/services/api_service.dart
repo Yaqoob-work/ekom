@@ -550,7 +550,7 @@
 //     // Try to load from SharedPreferences directly
 //     try {
 //       SharedPreferences prefs = await SharedPreferences.getInstance();
-//       String? authKey = prefs.getString('auth_key');
+//       String? authKey = prefs.getString('result_auth_key');
 
 //       if (authKey != null && authKey.isNotEmpty) {
 //         // Set it in AuthManager for future use
@@ -956,7 +956,7 @@
 
 //       // Try to load from SharedPreferences
 //       SharedPreferences prefs = await SharedPreferences.getInstance();
-//       String? authKey = prefs.getString('auth_key');
+//       String? authKey = prefs.getString('result_auth_key');
 
 //       if (authKey != null && authKey.isNotEmpty) {
 //         // Update AuthManager for future use
@@ -1378,7 +1378,7 @@ class ApiService {
   //     }
 
   //     SharedPreferences prefs = await SharedPreferences.getInstance();
-  //     String? authKey = prefs.getString('auth_key');
+  //     String? authKey = prefs.getString('result_auth_key');
 
   //     if (authKey != null && authKey.isNotEmpty) {
   //       await AuthManager.setAuthKey(authKey);
@@ -1395,7 +1395,7 @@ class ApiService {
     try {
       // String authKey = await _getAuthKeyForFeaturedLiveTV();
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      String? authKey = prefs.getString('auth_key');
+      String? authKey = prefs.getString('result_auth_key');
 
       final response = await https.get(
         Uri.parse(
@@ -1624,7 +1624,7 @@ class ApiService {
     try {
       // String authKey = await _getAuthKeyForFeaturedLiveTV();
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      String? authKey = prefs.getString('auth_key');
+      String? authKey = prefs.getString('result_auth_key');
 
       final response = await https.get(
         Uri.parse(

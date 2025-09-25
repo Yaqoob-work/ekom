@@ -1,9 +1,3 @@
-
-
-
-
-
-
 // Updated HomeScreen with News Channels Integration
 import 'package:mobi_tv_entertainment/exit_confirmation_screen.dart';
 import 'package:mobi_tv_entertainment/home_screen_pages/religious_channel/religious_channel.dart';
@@ -17,7 +11,7 @@ import 'package:mobi_tv_entertainment/main.dart';
 import 'package:mobi_tv_entertainment/home_screen_pages/webseries_screen/manage_webseries.dart';
 import 'package:mobi_tv_entertainment/provider/color_provider.dart';
 import 'package:mobi_tv_entertainment/provider/focus_provider.dart';
-import 'package:mobi_tv_entertainment/video_widget/socket_service.dart';
+
 import 'package:mobi_tv_entertainment/widgets/small_widgets/loading_indicator.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/services.dart';
@@ -38,7 +32,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final SocketService _socketService = SocketService();
+  // final SocketService _socketService = SocketService();
   final GlobalKey watchNowKey = GlobalKey();
   final GlobalKey subLiveKey = GlobalKey();
   final GlobalKey subVodKey = GlobalKey();
@@ -83,7 +77,8 @@ class _HomeScreenState extends State<HomeScreen> {
       // Set focus nodes - UPDATED WITH YOUR EXACT METHOD NAMES
       focusProvider.setWatchNowFocusNode(watchNowFocusNode);
       // focusProvider.setFirstMusicItemFocusNode(subLiveFocusNode);
-      focusProvider.setFirstHorizontalListNetworksFocusNode(firstSubVodFocusNode);
+      focusProvider
+          .setFirstHorizontalListNetworksFocusNode(firstSubVodFocusNode);
       focusProvider.setFirstManageMoviesFocusNode(manageMoviesFocusNode);
       focusProvider.setFirstManageWebseriesFocusNode(manageWebseriesFocusNode);
       focusProvider.setFirstTVShowsFocusNode(tvShowsFocusNode);
@@ -96,7 +91,8 @@ class _HomeScreenState extends State<HomeScreen> {
       focusProvider.registerElementKey('manageWebseries', manageWebseriesKey);
       focusProvider.registerElementKey('tvShows', tvShowsKey);
       focusProvider.registerElementKey('sportsCategory', sportsCategoryKey);
-      focusProvider.registerElementKey('religiousChannels', religiousChannelKey);
+      focusProvider.registerElementKey(
+          'religiousChannels', religiousChannelKey);
       focusProvider.registerElementKey('tvShowPak', tvShowsPakKey);
     });
   }
@@ -121,11 +117,9 @@ class _HomeScreenState extends State<HomeScreen> {
     manageWebseriesFocusNode.dispose();
     tvShowsFocusNode.dispose();
     sportsCategoryFocusNode.dispose();
-    _socketService.dispose();
+    // _socketService.dispose();
     super.dispose();
   }
-
-
 
   // // Handle back button press
   // Future<bool> _onWillPop() async {
@@ -146,7 +140,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
       return PopScope(
         canPop: false, // Default back navigation ko rokein
-        
+
         // ✅ onPopInvoked KO UPDATE KAREIN
         onPopInvoked: (didPop) {
           // agar pop nahi hua hai (jo ki nahi hoga kyunki canPop: false hai)...
@@ -168,7 +162,7 @@ class _HomeScreenState extends State<HomeScreen> {
           body: Container(
             width: screenwdt,
             height: screenhgt,
-            color: Colors.transparent ,
+            color: Colors.transparent,
             child: SingleChildScrollView(
               controller: context.read<FocusProvider>().scrollController,
               child: Container(
@@ -195,9 +189,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     SizedBox(
                       height: screenhgt * 0.38,
                       key: subVodKey,
-                      child: HorzontalVod (
-                        // focusNode: firstSubVodFocusNode,
-                      ),
+                      child: HorzontalVod(
+                          // focusNode: firstSubVodFocusNode,
+                          ),
                     ),
                     SizedBox(
                       height: screenhgt * 0.38,
@@ -210,42 +204,35 @@ class _HomeScreenState extends State<HomeScreen> {
                       height: screenhgt * 0.38,
                       key: manageWebseriesKey,
                       child: ProfessionalWebSeriesHorizontalList(
-                        // focusNode: manageWebseriesFocusNode,
-                      ),
+                          // focusNode: manageWebseriesFocusNode,
+                          ),
                     ),
                     SizedBox(
-                      height: screenhgt * 0.38,
-                      key: tvShowsKey,
-                      child: 
-                      // HorizontalChannelList(
-                      //   // focusNode: manageWebseriesFocusNode,
-                      // ),
-                      ProfessionalTVShowsHorizontalList()
-                    ),
+                        height: screenhgt * 0.38,
+                        key: tvShowsKey,
+                        child:
+                            // HorizontalChannelList(
+                            //   // focusNode: manageWebseriesFocusNode,
+                            // ),
+                            ProfessionalTVShowsHorizontalList()),
                     SizedBox(
-                      height: screenhgt * 0.38,
-                      // key: sportsCategoryKey,
-                      child: 
-                      // HorizontalChannelList(
-                      //   // focusNode: manageWebseriesFocusNode,
-                      // ),
-                      SportsCategory (
-                      key: sportsCategoryKey,
-
-                      )
-                    ),
+                        height: screenhgt * 0.38,
+                        // key: sportsCategoryKey,
+                        child:
+                            // HorizontalChannelList(
+                            //   // focusNode: manageWebseriesFocusNode,
+                            // ),
+                            SportsCategory(
+                          key: sportsCategoryKey,
+                        )),
                     SizedBox(
-                      height: screenhgt * 0.38,
-                      key: religiousChannelKey,
-                      child: 
-                      ProfessionalReligiousChannelsHorizontalList ()
-                    ),
+                        height: screenhgt * 0.38,
+                        key: religiousChannelKey,
+                        child: ProfessionalReligiousChannelsHorizontalList()),
                     SizedBox(
-                      height: screenhgt * 0.38,
-                      key: tvShowsPakKey,
-                      child: 
-                      TvShowPak ()
-                    ),
+                        height: screenhgt * 0.38,
+                        key: tvShowsPakKey,
+                        child: TvShowPak()),
                     if (_isLoading) Center(child: LoadingIndicator()),
                   ],
                 ),

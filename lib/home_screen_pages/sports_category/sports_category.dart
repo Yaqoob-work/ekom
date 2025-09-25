@@ -88,7 +88,7 @@ class SportsCategoriesService {
   // Cache keys
   static const String _cacheKeySportsCategories = 'cached_sports_categories';
   static const String _cacheKeyTimestamp = 'cached_sports_categories_timestamp';
-  static const String _cacheKeyAuthKey = 'auth_key';
+  static const String _cacheKeyAuthKey = 'result_auth_key';
 
   // Cache duration (in milliseconds) - 1 hour
   static const int _cacheDurationMs = 60 * 60 * 1000; // 1 hour

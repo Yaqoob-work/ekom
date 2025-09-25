@@ -2,7 +2,7 @@
 // import 'dart:convert';
 // import 'package:mobi_tv_entertainment/main.dart';
 // import 'package:mobi_tv_entertainment/provider/focus_provider.dart';
-// import 'package:mobi_tv_entertainment/video_widget/socket_service.dart';
+//
 // import 'package:mobi_tv_entertainment/video_widget/video_screen.dart';
 // import 'package:mobi_tv_entertainment/home_screen_pages/sub_live_screen/items/live_grid_item.dart';
 // import 'package:mobi_tv_entertainment/widgets/models/news_item_model.dart';
@@ -702,7 +702,7 @@ class _LiveScreenState extends State<LiveScreen> with TickerProviderStateMixin {
 
     try {
       final prefs = await SharedPreferences.getInstance();
-      final authKey = prefs.getString('auth_key') ?? '';
+      final authKey = prefs.getString('result_auth_key') ?? '';
       final response = await http.get(
         Uri.parse(
             'https://dashboard.cpplayers.com/public/api/getFeaturedLiveTV'),

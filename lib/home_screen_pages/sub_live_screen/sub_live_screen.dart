@@ -381,6 +381,12 @@
 //   }
 // }
 
+
+
+
+
+
+
 // Zaroori imports add karein
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -428,7 +434,7 @@ class _SubLiveScreenState extends State<SubLiveScreen> {
   Future<void> _fetchAndSetupPages() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      String authKey = prefs.getString('auth_key') ?? '';
+      String authKey = prefs.getString('result_auth_key') ?? '';
       final response = await https.get(
         Uri.parse('https://dashboard.cpplayers.com/api/v2/getLiveTvGenreList'),
         headers: {'auth-key': authKey},

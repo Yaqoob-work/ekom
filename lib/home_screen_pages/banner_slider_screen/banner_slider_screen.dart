@@ -175,7 +175,7 @@
 //   if (authKey.isEmpty) {
 //     try {
 //       final prefs = await SharedPreferences.getInstance();
-//       authKey = prefs.getString('auth_key') ?? '';
+//       authKey = prefs.getString('result_auth_key') ?? '';
 //       // if (authKey.isNotEmpty) {
 //       //   globalAuthKey = authKey;
 //       // }
@@ -1271,27 +1271,65 @@ class BannerService {
     }
   }
 
+  // In class BannerService...
+
   /// Fetch fresh banners from API and cache them
   static Future<List<BannerDataModel>> _fetchFreshBanners(
       SharedPreferences prefs) async {
     try {
       final List<dynamic> rawData = await _fetchBannersFromApi();
-      await _cacheBanners(prefs, rawData);
 
-      return rawData
+      // 🕵️‍♂️ DEBUG: Print counts before and after filtering
+      print("----------- Data Filtering Check -----------");
+      print("📊 Total banners received from API: ${rawData.length}");
+
+      final activeBanners = rawData
           .map((item) => BannerDataModel.fromJson(item))
           .where((banner) => banner.isActive)
           .toList();
+
+      print("✅ Active banners after filtering: ${activeBanners.length}");
+      print("------------------------------------------");
+
+      // Only cache if we have some data
+      if (rawData.isNotEmpty) {
+        await _cacheBanners(prefs, rawData);
+      }
+
+      return activeBanners;
     } catch (e) {
-      print('❌ Error fetching fresh banners: $e');
+      print('❌ Error in _fetchFreshBanners: $e');
       final cachedBanners = await _getCachedBanners(prefs);
       if (cachedBanners.isNotEmpty) {
-        print('🔄 API failed, returning cached data as fallback.');
+        print(
+            '🔄 API failed, returning ${cachedBanners.length} cached banners as fallback.');
         return cachedBanners;
       }
-      rethrow;
+      rethrow; // Re-throw if cache is also empty
     }
   }
+
+  // /// Fetch fresh banners from API and cache them
+  // static Future<List<BannerDataModel>> _fetchFreshBanners(
+  //     SharedPreferences prefs) async {
+  //   try {
+  //     final List<dynamic> rawData = await _fetchBannersFromApi();
+  //     await _cacheBanners(prefs, rawData);
+
+  //     return rawData
+  //         .map((item) => BannerDataModel.fromJson(item))
+  //         .where((banner) => banner.isActive)
+  //         .toList();
+  //   } catch (e) {
+  //     print('❌ Error fetching fresh banners: $e');
+  //     final cachedBanners = await _getCachedBanners(prefs);
+  //     if (cachedBanners.isNotEmpty) {
+  //       print('🔄 API failed, returning cached data as fallback.');
+  //       return cachedBanners;
+  //     }
+  //     rethrow;
+  //   }
+  // }
 
   /// Save new data to SharedPreferences
   static Future<void> _cacheBanners(
@@ -1315,12 +1353,14 @@ class BannerService {
     });
   }
 
+// In class BannerService...
+
   /// Private method to fetch data from API
   static Future<List<dynamic>> _fetchBannersFromApi() async {
     const String endpoint =
         'https://dashboard.cpplayers.com/public/api/v2/getCustomImageSlider';
     final prefs = await SharedPreferences.getInstance();
-    final authKey = prefs.getString('auth_key') ?? 'vLQTuPZUxktl5mVW';
+    final authKey = prefs.getString('result_auth_key') ?? 'vLQTuPZUxktl5mVW';
 
     final headers = {
       'auth-key': authKey,
@@ -1329,19 +1369,84 @@ class BannerService {
       'domain': 'coretechinfo.com',
     };
 
+    // 🕵️‍♂️ DEBUG: Print request details
+    print("----------- API Request Details -----------");
+    print("🚀 Calling API Endpoint: $endpoint");
+    print("🔑 Headers: $headers");
+    print("-----------------------------------------");
+
     try {
-      final response = await https.get(Uri.parse(endpoint), headers: headers);
-      // .timeout(const Duration(seconds: 15));
+      final response = await https
+          .get(Uri.parse(endpoint), headers: headers)
+          .timeout(const Duration(seconds: 10)); // Added a timeout
+
+      // 🕵️‍♂️ DEBUG: Print response details
+      print("----------- API Response Details -----------");
+      print("✅ Status Code: ${response.statusCode}");
+      print("📦 Response Body: ${response.body}");
+      print("------------------------------------------");
 
       if (response.statusCode == 200) {
-        return json.decode(response.body);
+        // Check if the body is not empty
+        if (response.body.isNotEmpty) {
+          final decodedData = json.decode(response.body);
+
+          // 🕵️‍♂️ DEBUG: Check the type of decoded data
+          if (decodedData is List) {
+            print("👍 Successfully parsed JSON as a List.");
+            return decodedData;
+          } else {
+            // This will catch cases where the API returns a map {'data': [...]} or an error map
+            print(
+                "⚠️ WARNING: API did not return a JSON List. It returned a ${decodedData.runtimeType}.");
+            throw Exception('API response is not a List as expected.');
+          }
+        } else {
+          print("⚠️ WARNING: API returned a 200 OK but with an empty body.");
+          return []; // Return an empty list
+        }
       } else {
-        throw Exception('Failed to load banners: ${response.statusCode}');
+        // If status code is not 200, it's an error
+        throw Exception(
+            'Failed to load banners. Status Code: ${response.statusCode}');
       }
     } catch (e) {
+      // 🕵️‍♂️ DEBUG: Print any exception that occurs
+      print("----------- 🛑 API CALL FAILED 🛑 -----------");
+      print("❌ Error fetching banners: $e");
+      print("-------------------------------------------");
+      // Re-throw the exception so the calling function can handle it
       throw Exception('Failed to load banners: $e');
     }
   }
+
+//   /// Private method to fetch data from API
+//   static Future<List<dynamic>> _fetchBannersFromApi() async {
+//     const String endpoint =
+//         'https://dashboard.cpplayers.com/public/api/v2/getCustomImageSlider';
+//     final prefs = await SharedPreferences.getInstance();
+//     final authKey = prefs.getString('result_auth_key') ?? 'vLQTuPZUxktl5mVW';
+
+//     final headers = {
+//       'auth-key': authKey,
+//       'Accept': 'application/json',
+//       'Content-Type': 'application/json',
+//       'domain': 'coretechinfo.com',
+//     };
+
+//     try {
+//       final response = await https.get(Uri.parse(endpoint), headers: headers);
+//       // .timeout(const Duration(seconds: 15));
+
+//       if (response.statusCode == 200) {
+//         return json.decode(response.body);
+//       } else {
+//         throw Exception('Failed to load banners: ${response.statusCode}');
+//       }
+//     } catch (e) {
+//       throw Exception('Failed to load banners: $e');
+//     }
+//   }
 }
 
 // Ultra Fast Banner Slider Widget
@@ -1361,7 +1466,7 @@ class BannerSlider extends StatefulWidget {
 
 class _BannerSliderState extends State<BannerSlider>
     with SingleTickerProviderStateMixin {
-  final SocketService _socketService = SocketService();
+  // final SocketService _socketService = SocketService();
   List<BannerDataModel> bannerList = [];
   List<NewsItemModel>? _newsItemListCache;
   bool isLoading = true;
@@ -1412,7 +1517,7 @@ class _BannerSliderState extends State<BannerSlider>
     if (_pageController.hasClients) {
       _pageController.dispose();
     }
-    _socketService.dispose();
+    // _socketService.dispose();
     _shimmerController.dispose();
     _timer?.cancel();
     _buttonFocusNode.dispose();
@@ -1420,7 +1525,7 @@ class _BannerSliderState extends State<BannerSlider>
   }
 
   Future<void> _initializeSlider() async {
-    _socketService.initSocket();
+    // _socketService.initSocket();
     _pageController = PageController();
 
     _buttonFocusNode.addListener(() {

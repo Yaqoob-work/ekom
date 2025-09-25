@@ -864,6 +864,11 @@
 //   }
 // }
 
+
+
+
+
+
 import 'dart:convert';
 import 'dart:math';
 import 'package:flutter/material.dart';
@@ -931,11 +936,11 @@ class _MiddleNavigationBarState extends State<MiddleNavigationBar> {
   Future<void> _fetchLiveTvGenres() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      String authKey = prefs.getString('auth_key') ?? '';
+      String authKey = prefs.getString('result_auth_key') ?? '';
 
       final response = await http.get(
         Uri.parse('https://dashboard.cpplayers.com/api/v2/getLiveTvGenreList'),
-        headers: {'auth-key': authKey},
+        headers: {'auth-key': authKey, 'domain': 'coretechinfo'},
       );
 
       if (response.statusCode == 200) {

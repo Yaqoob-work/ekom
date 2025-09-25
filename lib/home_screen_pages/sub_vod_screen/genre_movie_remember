@@ -164,7 +164,7 @@
 // //         }
 // //       }
 // //     }
-
+    
 // //     final Map<String, dynamic> serializableData = {
 // //       'genres': genres,
 // //       'moviesByGenre': moviesByGenre.map((key, value) => MapEntry(key, value.map((m) => m.toMap()).toList())),
@@ -176,6 +176,7 @@
 // //     return '';
 // //   }
 // // }
+
 
 // // class GenreMoviesScreen extends StatefulWidget {
 // //   final String tvChannelId;
@@ -198,7 +199,7 @@
 // //   String? _error;
 // //   List<String> _genres = [];
 // //   final Map<String, List<Movie>> _moviesByGenre = {};
-
+  
 // //   final List<List<FocusNode>> _focusNodes = [];
 // //   final ScrollController _verticalScrollController = ScrollController();
 // //   final Map<int, ScrollController> _horizontalScrollControllers = {};
@@ -216,7 +217,7 @@
 // //     LinearGradient(colors: [Color(0xFF211A29), Color(0xFF160F1E)], begin: Alignment.topCenter, end: Alignment.bottomCenter),
 // //   ];
 // //   bool _isVideoLoading = false;
-
+  
 // //   String _focusedItemName = '';
 
 // //   String get _cacheKey => 'genre_movies_cache_${widget.tvChannelId}';
@@ -227,7 +228,7 @@
 // //     _focusedItemName = ''; // Initialize with the screen's static title.
 // //     _loadInitialData();
 // //   }
-
+  
 // //   @override
 // //   void dispose() {
 // //     for (var row in _focusNodes) {
@@ -239,7 +240,7 @@
 // //     _horizontalScrollControllers.values.forEach((controller) => controller.dispose());
 // //     super.dispose();
 // //   }
-
+  
 // //   Future<void> _loadInitialData() async {
 // //     final prefs = await SharedPreferences.getInstance();
 // //     final cachedData = prefs.getString(_cacheKey);
@@ -252,7 +253,7 @@
 // //       await _fetchDataWithLoading();
 // //     }
 // //   }
-
+  
 // //   Future<void> _refreshDataInBackground() async {
 // //     try {
 // //       final prefs = await SharedPreferences.getInstance();
@@ -271,7 +272,7 @@
 // //       print("Background refresh failed: $e");
 // //     }
 // //   }
-
+  
 // //   Future<void> _fetchDataWithLoading() async {
 // //     setState(() { _isLoading = true; });
 // //     try {
@@ -296,10 +297,12 @@
 // //     }
 // //   }
 
+
+
 // // //   // 1. _parseAndSetState method में changes
 // // // void _parseAndSetState(String jsonData) {
 // // //   final data = json.decode(jsonData) as Map<String, dynamic>;
-
+  
 // // //   _focusNodes.clear();
 // // //   _cardKeys.clear();
 // // //   _rowKeys.clear();
@@ -326,11 +329,11 @@
 // // //     // लेकिन maximum 10 movies + 1 View All = 11 items तक ही
 // // //     int moviesToShow = movies.length > 10 ? 10 : movies.length;
 // // //     int nodeCount = moviesToShow + 1; // हमेशा View All के लिए +1
-
+    
 // // //     var rowNodes = List.generate(nodeCount, (_) => FocusNode());
 // // //     var rowCardKeys = List.generate(nodeCount, (_) => GlobalKey());
 // // //     _cardKeys.add(rowCardKeys);
-
+    
 // // //     _horizontalScrollControllers[i] = ScrollController();
 
 // // //     for (int j = 0; j < nodeCount; j++) {
@@ -352,6 +355,9 @@
 // // //     });
 // // //   }
 // // // }
+
+
+
 
 // // void _parseAndSetState(String jsonData) {
 // //   final data = json.decode(jsonData) as Map<String, dynamic>;
@@ -378,7 +384,7 @@
 // //   _genres = activeGenres;
 // //   _moviesByGenre.clear();
 // //   _moviesByGenre.addAll(allMoviesByGenre);
-
+  
 // //   _rowKeys.addAll(List.generate(_genres.length, (_) => GlobalKey()));
 
 // //   // *** FIX: Loop over the active genres list ***
@@ -393,7 +399,7 @@
 // //     var rowNodes = List.generate(nodeCount, (_) => FocusNode());
 // //     var rowCardKeys = List.generate(nodeCount, (_) => GlobalKey());
 // //     _cardKeys.add(rowCardKeys);
-
+    
 // //     _horizontalScrollControllers[i] = ScrollController();
 
 // //     for (int j = 0; j < nodeCount; j++) {
@@ -421,10 +427,10 @@
 // // void _onItemFocusChange(int genreIndex, int movieIndex) {
 // //   final genre = _genres[genreIndex];
 // //   final movies = _moviesByGenre[genre] ?? [];
-
+  
 // //   // MODIFIED: View All की position check करें
 // //   int moviesToShow = movies.length > 10 ? 10 : movies.length;
-
+  
 // //   if (movieIndex < moviesToShow) {
 // //     final Movie focusedMovie = movies[movieIndex];
 // //     if (mounted) setState(() => _focusedItemName = focusedMovie.name);
@@ -437,10 +443,13 @@
 // //   _scrollToFocusedHorizontal(genreIndex, movieIndex);
 // // }
 
+
+
+
 // // // // 3. _buildGenresList method में ListView.builder का itemBuilder modify करें
 // // // Widget _buildGenresList() {
 // // //   final activeGenres = _genres.where((genre) => _moviesByGenre[genre]?.isNotEmpty ?? false).toList();
-
+  
 // // //   return SliverList(
 // // //     delegate: SliverChildBuilderDelegate(
 // // //       (context, index) {
@@ -494,7 +503,7 @@
 // // //                         onTap: () => _navigateToGridPage(genre),
 // // //                       );
 // // //                     }
-
+                    
 // // //                     final movie = movies[movieIndex];
 // // //                     return MovieCard(
 // // //                       key: _cardKeys[genreIndexInOriginal][movieIndex],
@@ -520,10 +529,12 @@
 // // //   );
 // // // }
 
+
+
 // // Widget _buildGenresList() {
 // //   // *** NOTE: The 'activeGenres' logic is now handled in _parseAndSetState ***
 // //   // We can directly use the state's `_genres` list which is already filtered.
-
+  
 // //   return SliverList(
 // //     delegate: SliverChildBuilderDelegate(
 // //       (context, index) {
@@ -560,7 +571,7 @@
 // //                   ),
 // //                 ),
 // //               ),
-
+              
 // //               SizedBox(
 // //                 height: bannerhgt + 25,
 // //                 child: ListView.builder(
@@ -580,7 +591,7 @@
 // //                         onTap: () => _navigateToGridPage(genre),
 // //                       );
 // //                     }
-
+                    
 // //                     final movie = movies[movieIndex];
 // //                     return MovieCard(
 // //                       // Use the direct 'index'
@@ -609,7 +620,7 @@
 
 // // //   void _parseAndSetState(String jsonData) {
 // // //     final data = json.decode(jsonData) as Map<String, dynamic>;
-
+    
 // // //     _focusNodes.clear();
 // // //     _cardKeys.clear();
 // // //     _rowKeys.clear();
@@ -633,11 +644,11 @@
 // // //       if (movies.isEmpty) continue;
 
 // // //       int nodeCount = movies.length + (movies.length == 7 ? 1 : 0);
-
+      
 // // //       var rowNodes = List.generate(nodeCount, (_) => FocusNode());
 // // //       var rowCardKeys = List.generate(nodeCount, (_) => GlobalKey());
 // // //       _cardKeys.add(rowCardKeys);
-
+      
 // // //       _horizontalScrollControllers[i] = ScrollController();
 
 // // //       for (int j = 0; j < nodeCount; j++) {
@@ -659,7 +670,7 @@
 // // //       });
 // // //     }
 // // //   }
-
+  
 // // // void _onItemFocusChange(int genreIndex, int movieIndex) {
 // // //   final genre = _genres[genreIndex];
 // // //   final movies = _moviesByGenre[genre] ?? [];
@@ -695,24 +706,24 @@
 // // void _scrollToFocusedHorizontal(int genreIndex, int movieIndex) {
 // //   final scrollController = _horizontalScrollControllers[genreIndex];
 // //   if (scrollController == null) return;
-
+  
 // //   final cardContext = _cardKeys[genreIndex][movieIndex].currentContext;
 // //   if (cardContext == null) return;
-
+  
 // //   final renderBox = cardContext.findRenderObject() as RenderBox;
 // //   final cardOffset = renderBox.localToGlobal(Offset.zero, ancestor: scrollController.position.context.storageContext.findRenderObject());
-
+  
 // //   double targetOffset = scrollController.offset + cardOffset.dx - 40;
-
+  
 // //   targetOffset = targetOffset.clamp(0.0, scrollController.position.maxScrollExtent);
-
+  
 // //   scrollController.animateTo(
 // //     targetOffset,
 // //     duration: const Duration(milliseconds: 300),
 // //     curve: Curves.easeOut,
 // //   );
 // // }
-
+  
 // //   Future<void> _playContent(Movie content) async {
 // //     if (_isVideoLoading || !mounted) return;
 // //     setState(() { _isVideoLoading = true; });
@@ -911,7 +922,7 @@
 
 // // //   Widget _buildGenresList() {
 // // //     final activeGenres = _genres.where((genre) => _moviesByGenre[genre]?.isNotEmpty ?? false).toList();
-
+    
 // // //     return SliverList(
 // // //       delegate: SliverChildBuilderDelegate(
 // // //         (context, index) {
@@ -963,7 +974,7 @@
 // // //                           onTap: () => _navigateToGridPage(genre),
 // // //                         );
 // // //                       }
-
+                      
 // // //                       final movie = movies[movieIndex];
 // // //                       return MovieCard(
 // // //                         key: _cardKeys[genreIndexInOriginal][movieIndex],
@@ -1207,7 +1218,7 @@
 // //   @override
 // //   Widget build(BuildContext context) {
 // //     final focusColor = widget.focusColors[widget.uniqueIndex % widget.focusColors.length];
-
+    
 // //     return Focus(
 // //       focusNode: widget.focusNode,
 // //       onKey: _handleKeyEvent,
@@ -1273,7 +1284,7 @@
 // //   List<FocusNode> _focusNodes = [];
 // //   List<GlobalKey> _cardKeys = [];
 // //   bool _isVideoLoading = false;
-
+  
 // //   String _focusedMovieName = '';
 
 // //   final List<Color> _focusColors = [
@@ -1295,7 +1306,7 @@
 // //     }
 // //     super.dispose();
 // //   }
-
+  
 // //   void _onItemFocusChange(int index) {
 // //     if (index >= 0 && index < _movies.length) {
 // //       if (mounted) {
@@ -1578,6 +1589,7 @@
 // //     );
 // //   }
 
+
 // //   Widget _buildContentGrid() {
 // //     return SliverPadding(
 // //       padding: const EdgeInsets.all(30.0),
@@ -1737,6 +1749,11 @@
 // //     ),
 // //   );
 // // }
+
+
+
+
+
 
 // import 'dart:convert';
 // import 'dart:ui';
@@ -1904,7 +1921,7 @@
 //         }
 //       }
 //     }
-
+    
 //     final Map<String, dynamic> serializableData = {
 //       'genres': genres,
 //       'moviesByGenre': moviesByGenre.map((key, value) => MapEntry(key, value.map((m) => m.toMap()).toList())),
@@ -1916,6 +1933,7 @@
 //     return '';
 //   }
 // }
+
 
 // class GenreMoviesScreen extends StatefulWidget {
 //   final String tvChannelId;
@@ -1938,7 +1956,7 @@
 //   String? _error;
 //   List<String> _genres = [];
 //   final Map<String, List<Movie>> _moviesByGenre = {};
-
+  
 //   final List<List<FocusNode>> _focusNodes = [];
 //   final ScrollController _verticalScrollController = ScrollController();
 //   final Map<int, ScrollController> _horizontalScrollControllers = {};
@@ -1956,7 +1974,7 @@
 //     LinearGradient(colors: [Color(0xFF211A29), Color(0xFF160F1E)], begin: Alignment.topCenter, end: Alignment.bottomCenter),
 //   ];
 //   bool _isVideoLoading = false;
-
+  
 //   String _focusedItemName = '';
 
 //   String get _cacheKey => 'genre_movies_cache_${widget.tvChannelId}';
@@ -1964,10 +1982,10 @@
 //   @override
 //   void initState() {
 //     super.initState();
-//     _focusedItemName = '';
+//     _focusedItemName = ''; 
 //     _loadInitialData();
 //   }
-
+  
 //   @override
 //   void dispose() {
 //     for (var row in _focusNodes) {
@@ -1979,7 +1997,7 @@
 //     _horizontalScrollControllers.values.forEach((controller) => controller.dispose());
 //     super.dispose();
 //   }
-
+  
 //   Future<void> _loadInitialData() async {
 //     final prefs = await SharedPreferences.getInstance();
 //     final cachedData = prefs.getString(_cacheKey);
@@ -1991,7 +2009,7 @@
 //       await _fetchDataWithLoading();
 //     }
 //   }
-
+  
 //   Future<void> _refreshDataInBackground() async {
 //     try {
 //       final prefs = await SharedPreferences.getInstance();
@@ -2010,7 +2028,7 @@
 //       print("Background refresh failed: $e");
 //     }
 //   }
-
+  
 //   Future<void> _fetchDataWithLoading() async {
 //     if (mounted) setState(() { _isLoading = true; _error = null; });
 //     try {
@@ -2063,7 +2081,7 @@
 //     _genres = activeGenres;
 //     _moviesByGenre.clear();
 //     _moviesByGenre.addAll(allMoviesByGenre);
-
+    
 //     _rowKeys.addAll(List.generate(_genres.length, (_) => GlobalKey()));
 
 //     for (int i = 0; i < _genres.length; i++) {
@@ -2076,7 +2094,7 @@
 //       var rowNodes = List.generate(nodeCount, (_) => FocusNode());
 //       var rowCardKeys = List.generate(nodeCount, (_) => GlobalKey());
 //       _cardKeys.add(rowCardKeys);
-
+      
 //       _horizontalScrollControllers[i] = ScrollController();
 
 //       for (int j = 0; j < nodeCount; j++) {
@@ -2157,16 +2175,16 @@
 
 //     final scrollController = _horizontalScrollControllers[genreIndex];
 //     if (scrollController == null || !scrollController.hasClients) return;
-
+    
 //     final cardContext = _cardKeys[genreIndex][movieIndex].currentContext;
 //     if (cardContext == null) return;
-
+    
 //     // The rest of the function remains the same...
 //     final renderBox = cardContext.findRenderObject() as RenderBox;
 //     final cardOffset = renderBox.localToGlobal(Offset.zero, ancestor: scrollController.position.context.storageContext.findRenderObject());
 //     double targetOffset = scrollController.offset + cardOffset.dx - 40;
 //     targetOffset = targetOffset.clamp(0.0, scrollController.position.maxScrollExtent);
-
+    
 //     scrollController.animateTo(
 //         targetOffset,
 //         duration: const Duration(milliseconds: 300),
@@ -2174,6 +2192,7 @@
 //     );
 // }
 
+  
 //   Future<void> _playContent(Movie content) async {
 //     if (_isVideoLoading || !mounted) return;
 //     setState(() { _isVideoLoading = true; });
@@ -2408,7 +2427,7 @@
 //                         onTap: () => _navigateToGridPage(genre),
 //                       );
 //                     }
-
+                    
 //                     final movie = movies[movieIndex];
 //                     return MovieCard(
 //                       key: _cardKeys[index][movieIndex],
@@ -2658,7 +2677,7 @@
 //   @override
 //   Widget build(BuildContext context) {
 //     final focusColor = widget.focusColors[widget.uniqueIndex % widget.focusColors.length];
-
+    
 //     return Focus(
 //       focusNode: widget.focusNode,
 //       onKey: _handleKeyEvent,
@@ -2727,7 +2746,7 @@
 //   List<FocusNode> _focusNodes = [];
 //   List<GlobalKey> _cardKeys = [];
 //   bool _isVideoLoading = false;
-
+  
 //   String _focusedMovieName = '';
 
 //   final List<Color> _focusColors = [
@@ -2749,7 +2768,7 @@
 //     }
 //     super.dispose();
 //   }
-
+  
 // void _onItemFocusChange(int index) {
 //     // *** FIX: Add boundary checks for safety ***
 //     if (!mounted || _isLoading || index < 0 || index >= _movies.length || index >= _cardKeys.length) {
@@ -3030,6 +3049,7 @@
 //     );
 //   }
 
+
 //   Widget _buildContentGrid() {
 //     return SliverPadding(
 //       padding: const EdgeInsets.all(30.0),
@@ -3193,11 +3213,6 @@
 
 
 
-
-
-
-
-
 import 'dart:convert';
 import 'dart:typed_data';
 import 'dart:ui';
@@ -3206,21 +3221,27 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:http/http.dart' as http;
-import 'package:mobi_tv_entertainment/home_screen_pages/webseries_screen/webseries_details_page.dart';
 import 'package:mobi_tv_entertainment/main.dart';
-import 'package:mobi_tv_entertainment/provider/device_info_provider.dart';
 import 'package:mobi_tv_entertainment/provider/internal_focus_provider.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:mobi_tv_entertainment/home_screen_pages/webseries_screen/webseries_details_page.dart';
+import 'package:mobi_tv_entertainment/provider/device_info_provider.dart';
 import 'package:mobi_tv_entertainment/video_widget/custom_youtube_player.dart';
 import 'package:mobi_tv_entertainment/video_widget/video_screen.dart';
 import 'package:mobi_tv_entertainment/video_widget/youtube_webview_player.dart';
-import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 // ==========================================================
 // ENUMS AND DATA MODELS
 // ==========================================================
 
-enum LoadingState { initial, loading, rebuilding, loaded, error }
+enum LoadingState {
+  initial,
+  loading,
+  rebuilding,
+  loaded,
+  error
+}
 
 class ParsedData {
   final List<String> genres;
@@ -3235,11 +3256,10 @@ ParsedData _parseJsonAndPrepareData(String jsonData) {
 
   final allGenres = List<String>.from(data['genres']);
   final allMoviesByGenre = (data['moviesByGenre'] as Map<String, dynamic>).map(
-      (key, value) => MapEntry(key,
-          (value as List).map((movieMap) => Movie.fromMap(movieMap)).toList()));
-
-  final activeGenres =
-      allGenres.where((g) => allMoviesByGenre[g]?.isNotEmpty ?? false).toList();
+      (key, value) => MapEntry(
+          key, (value as List).map((movieMap) => Movie.fromMap(movieMap)).toList()));
+          
+  final activeGenres = allGenres.where((g) => allMoviesByGenre[g]?.isNotEmpty ?? false).toList();
 
   return ParsedData(genres: activeGenres, moviesByGenre: allMoviesByGenre);
 }
@@ -3279,8 +3299,7 @@ class MovieResponse {
   final bool status;
   final int total;
   final List<Movie> data;
-  MovieResponse(
-      {required this.status, required this.total, required this.data});
+  MovieResponse({required this.status, required this.total, required this.data});
   factory MovieResponse.fromJson(Map<String, dynamic> json) {
     return MovieResponse(
       status: json['status'] ?? false,
@@ -3335,16 +3354,9 @@ class Movie {
 
   Map<String, dynamic> toMap() {
     return {
-      'id': id,
-      'name': name,
-      'banner': banner,
-      'poster': poster,
-      'description': description,
-      'content_type': contentType,
-      'source_type': sourceType,
-      'youtube_trailer': youtubeTrailer,
-      'updated_at': updatedAt,
-      'movie_url': movieUrl,
+      'id': id, 'name': name, 'banner': banner, 'poster': poster,
+      'description': description, 'content_type': contentType, 'source_type': sourceType,
+      'youtube_trailer': youtubeTrailer, 'updated_at': updatedAt, 'movie_url': movieUrl,
       'status': status,
     };
   }
@@ -3353,8 +3365,7 @@ class Movie {
 
   String getPlayableUrl() {
     if (sourceType == 'YoutubeLive') return movieUrl ?? '';
-    if (youtubeTrailer != null && youtubeTrailer!.isNotEmpty)
-      return youtubeTrailer!;
+    if (youtubeTrailer != null && youtubeTrailer!.isNotEmpty) return youtubeTrailer!;
     return movieUrl ?? '';
   }
 }
@@ -3365,11 +3376,11 @@ class Movie {
 
 class PerformanceMonitor {
   static final Map<String, Stopwatch> _stopwatches = {};
-
+  
   static void startTimer(String operation) {
     _stopwatches[operation] = Stopwatch()..start();
   }
-
+  
   static void endTimer(String operation) {
     final stopwatch = _stopwatches[operation];
     if (stopwatch != null) {
@@ -3378,7 +3389,7 @@ class PerformanceMonitor {
       _stopwatches.remove(operation);
     }
   }
-
+  
   static void logMemoryUsage(String operation) {
     if (kDebugMode) {
       print('🧠 Memory check at $operation');
@@ -3394,71 +3405,67 @@ class SmartCacheManager {
   static const String _cachePrefix = 'genre_movies_cache_';
   static const String _timestampSuffix = '_timestamp';
   static const Duration _cacheValidity = Duration(hours: 2);
-
+  
   static String _getCacheKey(String tvChannelId) => '$_cachePrefix$tvChannelId';
-  static String _getTimestampKey(String tvChannelId) =>
-      '$_cachePrefix$tvChannelId$_timestampSuffix';
-
+  static String _getTimestampKey(String tvChannelId) => '$_cachePrefix$tvChannelId$_timestampSuffix';
+  
   static Future<bool> isCacheValid(String tvChannelId) async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final timestampStr = prefs.getString(_getTimestampKey(tvChannelId));
-
+      
       if (timestampStr == null) return false;
-
+      
       final cacheTime = DateTime.parse(timestampStr);
       final now = DateTime.now();
       final difference = now.difference(cacheTime);
-
+      
       final isValid = difference < _cacheValidity;
-      print(
-          'Cache validity check: ${isValid ? '✅ Valid' : '❌ Expired'} (Age: ${difference.inMinutes}min)');
-
+      print('Cache validity check: ${isValid ? '✅ Valid' : '❌ Expired'} (Age: ${difference.inMinutes}min)');
+      
       return isValid;
     } catch (e) {
       print('Cache validity check failed: $e');
       return false;
     }
   }
-
+  
   static Future<String?> getCachedData(String tvChannelId) async {
     try {
       final isValid = await isCacheValid(tvChannelId);
       if (!isValid) return null;
-
+      
       final prefs = await SharedPreferences.getInstance();
       final cachedData = prefs.getString(_getCacheKey(tvChannelId));
-
+      
       if (cachedData != null && cachedData.isNotEmpty) {
-        print(
-            '📦 Using cached data (${(cachedData.length / 1024).toStringAsFixed(1)}KB)');
+        print('📦 Using cached data (${(cachedData.length / 1024).toStringAsFixed(1)}KB)');
         return cachedData;
       }
-
+      
       return null;
     } catch (e) {
       print('Failed to get cached data: $e');
       return null;
     }
   }
-
+  
   static Future<void> saveToCache(String tvChannelId, String data) async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final now = DateTime.now().toIso8601String();
-
+      
       await Future.wait([
         prefs.setString(_getCacheKey(tvChannelId), data),
         prefs.setString(_getTimestampKey(tvChannelId), now),
       ]);
-
-      print(
-          '💾 Data cached (${(data.length / 1024).toStringAsFixed(1)}KB) at $now');
+      
+      print('💾 Data cached (${(data.length / 1024).toStringAsFixed(1)}KB) at $now');
     } catch (e) {
       print('Failed to save to cache: $e');
     }
   }
-
+  
   static Future<void> clearCache(String tvChannelId) async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -3471,23 +3478,23 @@ class SmartCacheManager {
       print('Failed to clear cache: $e');
     }
   }
-
+  
   static Future<Map<String, dynamic>> getCacheInfo(String tvChannelId) async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final cacheKey = _getCacheKey(tvChannelId);
       final timestampKey = _getTimestampKey(tvChannelId);
-
+      
       final data = prefs.getString(cacheKey);
       final timestamp = prefs.getString(timestampKey);
-
+      
       if (data == null || timestamp == null) {
         return {'exists': false};
       }
-
+      
       final cacheTime = DateTime.parse(timestamp);
       final age = DateTime.now().difference(cacheTime);
-
+      
       return {
         'exists': true,
         'size_kb': (data.length / 1024).toStringAsFixed(1),
@@ -3505,30 +3512,26 @@ class SmartCacheManager {
 // OPTIMIZED API FUNCTIONS
 // ==========================================================
 
-Future<String> _fetchAndCacheDataIsolateOptimized(
-    Map<String, String> params) async {
+Future<String> _fetchAndCacheDataIsolateOptimized(Map<String, String> params) async {
   final String tvChannelId = params['tvChannelId']!;
   final String authKey = params['authKey']!;
-
+  
   final client = http.Client();
-
+  
   try {
     // Step 1: Fetch genres with timeout
     final genresResponse = await client.get(
-      Uri.parse(
-          'https://dashboard.cpplayers.com/api/v2/getGenreByContentNetwork/$tvChannelId'),
-      headers: {
-        'auth-key': authKey,
-        'Accept': 'application/json',
-        'domain': 'coretechinfo.com'
-      },
-    ).timeout(const Duration(seconds: 15),
-        onTimeout: () => throw Exception('Genres request timed out'));
-
+      Uri.parse('https://dashboard.cpplayers.com/api/v2/getGenreByContentNetwork/$tvChannelId'),
+      headers: {'auth-key': authKey, 'Accept': 'application/json', 'domain': 'coretechinfo.com'},
+    ).timeout(
+      const Duration(seconds: 15),
+      onTimeout: () => throw Exception('Genres request timed out')
+    );
+    
     if (genresResponse.statusCode != 200) {
       throw Exception('Failed to load genres: ${genresResponse.statusCode}');
     }
-
+    
     final genreData = GenreResponse.fromJson(json.decode(genresResponse.body));
     if (!genreData.status) return '';
 
@@ -3536,30 +3539,26 @@ Future<String> _fetchAndCacheDataIsolateOptimized(
     print('📝 Found ${genres.length} genres, starting parallel fetch...');
 
     // Step 2: Create parallel futures with individual timeouts
-    final List<Future<MapEntry<String, List<Movie>>>> genreFutures =
-        genres.map((genre) async {
+    final List<Future<MapEntry<String, List<Movie>>>> genreFutures = genres.map((genre) async {
       try {
-        final moviesResponse = await client
-            .post(
-              Uri.parse(
-                  'https://dashboard.cpplayers.com/api/v2/getAllContentsOfNetworkNew?page=1&records=10'),
-              headers: {
-                'auth-key': authKey,
-                'domain': 'coretechinfo.com',
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-              },
-              body: json.encode({"genre": genre, "network_id": tvChannelId}),
-            )
-            .timeout(const Duration(seconds: 10),
-                onTimeout: () => throw Exception('$genre request timed out'));
+        final moviesResponse = await client.post(
+          Uri.parse('https://dashboard.cpplayers.com/api/v2/getAllContentsOfNetworkNew?page=1&records=10'),
+          headers: {
+            'auth-key': authKey,
+            'domain': 'coretechinfo.com',
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          body: json.encode({"genre": genre, "network_id": tvChannelId}),
+        ).timeout(
+          const Duration(seconds: 10),
+          onTimeout: () => throw Exception('$genre request timed out')
+        );
 
         if (moviesResponse.statusCode == 200) {
-          final movieData =
-              MovieResponse.fromJson(json.decode(moviesResponse.body));
+          final movieData = MovieResponse.fromJson(json.decode(moviesResponse.body));
           if (movieData.status && movieData.data.isNotEmpty) {
-            final activeMovies =
-                movieData.data.where((movie) => movie.status == 1).toList();
+            final activeMovies = movieData.data.where((movie) => movie.status == 1).toList();
             if (activeMovies.isNotEmpty) {
               return MapEntry(genre, activeMovies);
             }
@@ -3574,14 +3573,14 @@ Future<String> _fetchAndCacheDataIsolateOptimized(
 
     // Step 3: Wait for all requests with overall timeout
     print('⚡ Executing ${genreFutures.length} parallel API calls...');
-    final results = await Future.wait(genreFutures)
-        .timeout(const Duration(seconds: 30), onTimeout: () {
-      print('⚠️ Overall request timeout, returning partial results');
-      return genreFutures
-          .map((future) => MapEntry('timeout', <Movie>[]))
-          .toList();
-    });
-
+    final results = await Future.wait(genreFutures).timeout(
+      const Duration(seconds: 30),
+      onTimeout: () {
+        print('⚠️ Overall request timeout, returning partial results');
+        return genreFutures.map((future) => MapEntry('timeout', <Movie>[])).toList();
+      }
+    );
+    
     // Step 4: Build the final map
     final Map<String, List<Movie>> moviesByGenre = {};
     int successCount = 0;
@@ -3591,17 +3590,17 @@ Future<String> _fetchAndCacheDataIsolateOptimized(
         successCount++;
       }
     }
-
-    print(
-        '✅ Parallel fetch complete: $successCount/${genres.length} genres loaded');
-
+    
+    print('✅ Parallel fetch complete: $successCount/${genres.length} genres loaded');
+    
     final Map<String, dynamic> serializableData = {
       'genres': genres,
-      'moviesByGenre': moviesByGenre.map(
-          (key, value) => MapEntry(key, value.map((m) => m.toMap()).toList())),
+      'moviesByGenre': moviesByGenre.map((key, value) => 
+        MapEntry(key, value.map((m) => m.toMap()).toList())),
     };
-
+    
     return json.encode(serializableData);
+    
   } catch (e) {
     print("Isolate Error: $e");
     return '';
@@ -3619,7 +3618,7 @@ extension SafeList<T> on List<T> {
     if (index < 0 || index >= length) return null;
     return this[index];
   }
-
+  
   bool isValidIndex(int index) {
     return index >= 0 && index < length;
   }
@@ -3633,11 +3632,7 @@ class GenreMoviesScreen extends StatefulWidget {
   final String tvChannelId;
   final String logoUrl;
   final String title;
-  const GenreMoviesScreen(
-      {super.key,
-      required this.tvChannelId,
-      required this.logoUrl,
-      required this.title});
+  const GenreMoviesScreen({super.key, required this.tvChannelId, required this.logoUrl, required this.title});
   @override
   State<GenreMoviesScreen> createState() => _GenreMoviesScreenState();
 }
@@ -3652,32 +3647,8 @@ class _GenreMoviesScreenState extends State<GenreMoviesScreen> {
   final Map<int, ScrollController> _horizontalScrollControllers = {};
   final List<GlobalKey> _rowKeys = [];
   final List<List<GlobalKey>> _cardKeys = [];
-  final List<Color> _focusColors = [
-    ProfessionalColors.accentBlue,
-    ProfessionalColors.accentPurple,
-    ProfessionalColors.accentGreen,
-    ProfessionalColors.accentOrange,
-    ProfessionalColors.accentPink,
-    ProfessionalColors.accentRed
-  ];
-  final List<Gradient> _genreBackgrounds = const [
-    LinearGradient(
-        colors: [Color(0xFF1A1D29), Color(0xFF0F121E)],
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter),
-    LinearGradient(
-        colors: [Color(0xFF1C1A29), Color(0xFF110F1E)],
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter),
-    LinearGradient(
-        colors: [Color(0xFF1A2129), Color(0xFF0F161E)],
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter),
-    LinearGradient(
-        colors: [Color(0xFF211A29), Color(0xFF160F1E)],
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter)
-  ];
+  final List<Color> _focusColors = [ProfessionalColors.accentBlue, ProfessionalColors.accentPurple, ProfessionalColors.accentGreen, ProfessionalColors.accentOrange, ProfessionalColors.accentPink, ProfessionalColors.accentRed];
+  final List<Gradient> _genreBackgrounds = const [LinearGradient(colors: [Color(0xFF1A1D29), Color(0xFF0F121E)], begin: Alignment.topCenter, end: Alignment.bottomCenter), LinearGradient(colors: [Color(0xFF1C1A29), Color(0xFF110F1E)], begin: Alignment.topCenter, end: Alignment.bottomCenter), LinearGradient(colors: [Color(0xFF1A2129), Color(0xFF0F161E)], begin: Alignment.topCenter, end: Alignment.bottomCenter), LinearGradient(colors: [Color(0xFF211A29), Color(0xFF160F1E)], begin: Alignment.topCenter, end: Alignment.bottomCenter)];
   bool _isVideoLoading = false;
   String get _cacheKey => 'genre_movies_cache_${widget.tvChannelId}';
 
@@ -3686,8 +3657,7 @@ class _GenreMoviesScreenState extends State<GenreMoviesScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
-        Provider.of<InternalFocusProvider>(context, listen: false)
-            .updateName('');
+         Provider.of<InternalFocusProvider>(context, listen: false).updateName('');
       }
     });
     _loadInitialData();
@@ -3733,7 +3703,7 @@ class _GenreMoviesScreenState extends State<GenreMoviesScreen> {
       }
     }
     _focusNodes.clear();
-
+    
     for (var controller in _horizontalScrollControllers.values) {
       controller.dispose();
     }
@@ -3777,28 +3747,25 @@ class _GenreMoviesScreenState extends State<GenreMoviesScreen> {
   }
 
   Future<void> _loadInitialData() async {
-    final cachedData =
-        await SmartCacheManager.getCachedData(widget.tvChannelId);
-
+    final cachedData = await SmartCacheManager.getCachedData(widget.tvChannelId);
+    
     if (cachedData != null) {
       print('🚀 Loading from valid cache...');
       PerformanceMonitor.startTimer('cacheLoad');
-
+      
       _parseAndSetState(cachedData);
-
+      
       PerformanceMonitor.endTimer('cacheLoad');
-
-      final cacheInfo =
-          await SmartCacheManager.getCacheInfo(widget.tvChannelId);
+      
+      final cacheInfo = await SmartCacheManager.getCacheInfo(widget.tvChannelId);
       if (cacheInfo['age_minutes'] > 60) {
-        print(
-            '🔄 Starting background refresh (cache age: ${cacheInfo['age_minutes']}min)');
+        print('🔄 Starting background refresh (cache age: ${cacheInfo['age_minutes']}min)');
         _refreshDataInBackground();
       }
-
+      
       return;
     }
-
+    
     print('📡 No valid cache found, fetching fresh data...');
     await _fetchDataWithLoading();
   }
@@ -3807,10 +3774,12 @@ class _GenreMoviesScreenState extends State<GenreMoviesScreen> {
     try {
       final prefs = await SharedPreferences.getInstance();
       final authKey = prefs.getString('result_auth_key') ?? '56456456456';
-
-      final String freshDataJson = await _fetchAndCacheDataIsolateOptimized(
-          {'tvChannelId': widget.tvChannelId, 'authKey': authKey});
-
+      
+      final String freshDataJson = await _fetchAndCacheDataIsolateOptimized({
+        'tvChannelId': widget.tvChannelId, 
+        'authKey': authKey
+      });
+      
       if (freshDataJson.isNotEmpty) {
         await SmartCacheManager.saveToCache(widget.tvChannelId, freshDataJson);
         print('✅ Background refresh completed and cached');
@@ -3822,33 +3791,34 @@ class _GenreMoviesScreenState extends State<GenreMoviesScreen> {
 
   Future<void> _fetchDataWithLoading() async {
     PerformanceMonitor.startTimer('fetchData');
-
-    if (mounted)
-      setState(() {
-        _loadingState = LoadingState.loading;
-        _error = null;
-      });
-
+    
+    if (mounted) setState(() { 
+      _loadingState = LoadingState.loading; 
+      _error = null; 
+    });
+    
     try {
       final prefs = await SharedPreferences.getInstance();
       final authKey = prefs.getString('result_auth_key') ?? '56456456456';
-
+      
       PerformanceMonitor.startTimer('isolateWork');
-      final String freshDataJson = await _fetchAndCacheDataIsolateOptimized(
-          {'tvChannelId': widget.tvChannelId, 'authKey': authKey});
+      final String freshDataJson = await _fetchAndCacheDataIsolateOptimized({
+        'tvChannelId': widget.tvChannelId, 
+        'authKey': authKey
+      });
       PerformanceMonitor.endTimer('isolateWork');
 
       if (freshDataJson.isNotEmpty) {
         await SmartCacheManager.saveToCache(widget.tvChannelId, freshDataJson);
-
+        
         PerformanceMonitor.startTimer('parseData');
-        final parsedData =
-            await compute(_parseJsonAndPrepareData, freshDataJson);
+        final parsedData = await compute(_parseJsonAndPrepareData, freshDataJson);
         PerformanceMonitor.endTimer('parseData');
 
         PerformanceMonitor.startTimer('applyState');
         _applyDataToState(parsedData);
         PerformanceMonitor.endTimer('applyState');
+
       } else {
         throw Exception('Failed to load data');
       }
@@ -3860,7 +3830,7 @@ class _GenreMoviesScreenState extends State<GenreMoviesScreen> {
         });
       }
     }
-
+    
     PerformanceMonitor.endTimer('fetchData');
     PerformanceMonitor.logMemoryUsage('fetchDataComplete');
   }
@@ -3873,14 +3843,14 @@ class _GenreMoviesScreenState extends State<GenreMoviesScreen> {
     });
 
     final data = json.decode(jsonData) as Map<String, dynamic>;
-
+    
     for (var row in _focusNodes) {
       for (var node in row) {
         node.dispose();
       }
     }
     _focusNodes.clear();
-
+    
     for (var controller in _horizontalScrollControllers.values) {
       controller.dispose();
     }
@@ -3890,15 +3860,8 @@ class _GenreMoviesScreenState extends State<GenreMoviesScreen> {
     _rowKeys.clear();
 
     final allGenres = List<String>.from(data['genres']);
-    final allMoviesByGenre = (data['moviesByGenre'] as Map<String, dynamic>)
-        .map((key, value) => MapEntry(
-            key,
-            (value as List)
-                .map((movieMap) => Movie.fromMap(movieMap))
-                .toList()));
-    final activeGenres = allGenres
-        .where((g) => allMoviesByGenre[g]?.isNotEmpty ?? false)
-        .toList();
+    final allMoviesByGenre = (data['moviesByGenre'] as Map<String, dynamic>).map((key, value) => MapEntry(key, (value as List).map((movieMap) => Movie.fromMap(movieMap)).toList()));
+    final activeGenres = allGenres.where((g) => allMoviesByGenre[g]?.isNotEmpty ?? false).toList();
 
     _genres = activeGenres;
     _moviesByGenre.clear();
@@ -3933,76 +3896,52 @@ class _GenreMoviesScreenState extends State<GenreMoviesScreen> {
   }
 
   void _onItemFocusChange(int genreIndex, int movieIndex) {
-    if (!mounted ||
-        _loadingState == LoadingState.loading ||
-        genreIndex < 0 ||
-        genreIndex >= _genres.length) return;
+    if (!mounted || _loadingState == LoadingState.loading || genreIndex < 0 || genreIndex >= _genres.length) return;
     final genre = _genres[genreIndex];
     final movies = _moviesByGenre[genre] ?? [];
     int moviesToShow = movies.length > 10 ? 10 : movies.length;
     int expectedNodeCount = moviesToShow + 1;
     if (movieIndex < 0 || movieIndex >= expectedNodeCount) return;
 
-    String newName =
-        movieIndex < moviesToShow ? movies[movieIndex].name : "View All";
-    Provider.of<InternalFocusProvider>(context, listen: false)
-        .updateName(newName);
+    String newName = movieIndex < moviesToShow ? movies[movieIndex].name : "View All";
+    Provider.of<InternalFocusProvider>(context, listen: false).updateName(newName);
 
     _scrollToFocusedVertical(genreIndex);
     _scrollToFocusedHorizontal(genreIndex, movieIndex);
   }
 
   void _scrollToFocusedVertical(int genreIndex) {
-    if (_loadingState == LoadingState.loading ||
-        genreIndex < 0 ||
-        genreIndex >= _rowKeys.length) return;
+    if (_loadingState == LoadingState.loading || genreIndex < 0 || genreIndex >= _rowKeys.length) return;
     final rowContext = _rowKeys[genreIndex].currentContext;
     if (rowContext == null) return;
     final renderBox = rowContext.findRenderObject() as RenderBox;
     final rowOffset = renderBox.localToGlobal(Offset.zero);
     final scrollOffset = _verticalScrollController.offset;
     const appBarHeight = 100.0;
-    final rowTop =
-        rowOffset.dy + scrollOffset - (screenhgt * 0.5 - appBarHeight * 0.5);
-    _verticalScrollController.animateTo(
-        rowTop.clamp(0.0, _verticalScrollController.position.maxScrollExtent),
-        duration: const Duration(milliseconds: 350),
-        curve: Curves.easeOut);
+    final rowTop = rowOffset.dy + scrollOffset - (screenhgt * 0.5 - appBarHeight * 0.5);
+    _verticalScrollController.animateTo(rowTop.clamp(0.0, _verticalScrollController.position.maxScrollExtent), duration: const Duration(milliseconds: 350), curve: Curves.easeOut);
   }
 
   void _scrollToFocusedHorizontal(int genreIndex, int movieIndex) {
-    if (_loadingState == LoadingState.loading ||
-        genreIndex < 0 ||
-        genreIndex >= _horizontalScrollControllers.length ||
-        genreIndex >= _cardKeys.length) return;
+    if (_loadingState == LoadingState.loading || genreIndex < 0 || genreIndex >= _horizontalScrollControllers.length || genreIndex >= _cardKeys.length) return;
     if (movieIndex < 0 || movieIndex >= _cardKeys[genreIndex].length) return;
     final scrollController = _horizontalScrollControllers[genreIndex];
     if (scrollController == null || !scrollController.hasClients) return;
     final cardContext = _cardKeys[genreIndex][movieIndex].currentContext;
     if (cardContext == null) return;
     final renderBox = cardContext.findRenderObject() as RenderBox;
-    final cardOffset = renderBox.localToGlobal(Offset.zero,
-        ancestor: scrollController.position.context.storageContext
-            .findRenderObject());
-    double targetOffset = (scrollController.offset + cardOffset.dx - 40)
-        .clamp(0.0, scrollController.position.maxScrollExtent);
-    scrollController.animateTo(targetOffset,
-        duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
+    final cardOffset = renderBox.localToGlobal(Offset.zero, ancestor: scrollController.position.context.storageContext.findRenderObject());
+    double targetOffset = (scrollController.offset + cardOffset.dx - 40).clamp(0.0, scrollController.position.maxScrollExtent);
+    scrollController.animateTo(targetOffset, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
   }
-
-
-
 
   // Future<void> _playContent(Movie content) async {
   //   if (_isVideoLoading || !mounted) return;
   //   setState(() => _isVideoLoading = true);
   //   try {
-  //     ScaffoldMessenger.of(context)
-  //         .showSnackBar(SnackBar(content: Text('Playing: ${content.name}')));
+  //     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Playing: ${content.name}')));
   //   } catch (e) {
-  //     if (mounted)
-  //       ScaffoldMessenger.of(context)
-  //           .showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
+  //     if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
   //   } finally {
   //     if (mounted) setState(() => _isVideoLoading = false);
   //   }
@@ -4056,7 +3995,7 @@ Future<void> _playContent(Movie content) async {
           MaterialPageRoute(
             builder: (context) => CustomYoutubePlayer(
               videoData: VideoData(
-                id: content.id.toString(),
+                id: playableUrl
                 title: content.name,
                 youtubeUrl: playableUrl,
                 thumbnail: content.poster ?? content.banner ?? '',
@@ -4097,13 +4036,7 @@ Future<void> _playContent(Movie content) async {
 }
 
   void _navigateToGridPage(String genre) {
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => GenreGridScreen(
-                genre: genre,
-                tvChannelId: widget.tvChannelId,
-                logoUrl: widget.logoUrl)));
+    Navigator.push(context, MaterialPageRoute(builder: (context) => GenreGridScreen(genre: genre, tvChannelId: widget.tvChannelId, logoUrl: widget.logoUrl)));
   }
 
   @override
@@ -4112,34 +4045,20 @@ Future<void> _playContent(Movie content) async {
       backgroundColor: ProfessionalColors.primaryDark,
       body: Stack(
         children: [
-          Container(
-              decoration: const BoxDecoration(
-                  gradient: LinearGradient(colors: [
-            ProfessionalColors.primaryDark,
-            Color(0xFF06080F)
-          ], begin: Alignment.topCenter, end: Alignment.bottomCenter))),
+          Container(decoration: const BoxDecoration(gradient: LinearGradient(colors: [ProfessionalColors.primaryDark, Color(0xFF06080F)], begin: Alignment.topCenter, end: Alignment.bottomCenter))),
           CustomScrollView(
             controller: _verticalScrollController,
             slivers: [
               const SliverPadding(padding: EdgeInsets.only(top: 100.0)),
-              _loadingState == LoadingState.loading ||
-                      _loadingState == LoadingState.initial
-                  ? const SliverFillRemaining(
-                      child: Center(child: CircularProgressIndicator()))
-                  : _error != null
-                      ? SliverFillRemaining(
-                          child: Center(child: Text('Error: $_error')))
-                      : _buildGenresList(),
+              _loadingState == LoadingState.loading || _loadingState == LoadingState.initial 
+                ? const SliverFillRemaining(child: Center(child: CircularProgressIndicator())) 
+                : _error != null 
+                  ? SliverFillRemaining(child: Center(child: Text('Error: $_error'))) 
+                  : _buildGenresList(),
             ],
           ),
           Positioned(top: 0, left: 0, right: 0, child: _buildBeautifulAppBar()),
-          if (_isVideoLoading)
-            Container(
-                color: Colors.black.withOpacity(0.7),
-                child: const Center(
-                    child: CircularProgressIndicator(
-                        valueColor:
-                            AlwaysStoppedAnimation<Color>(Colors.white)))),
+          if (_isVideoLoading) Container(color: Colors.black.withOpacity(0.7), child: const Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.white)))),
         ],
       ),
     );
@@ -4149,72 +4068,23 @@ Future<void> _playContent(Movie content) async {
     final focusedName = context.watch<InternalFocusProvider>().focusedItemName;
     return Container(
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              ProfessionalColors.primaryDark.withOpacity(0.95),
-              ProfessionalColors.surfaceDark.withOpacity(0.9),
-              ProfessionalColors.surfaceDark.withOpacity(0.8),
-              Colors.transparent
-            ]),
-        border: Border(
-            bottom: BorderSide(
-                color: ProfessionalColors.accentBlue.withOpacity(0.2),
-                width: 1)),
-        boxShadow: [
-          BoxShadow(
-              color: Colors.black.withOpacity(0.3),
-              blurRadius: 10,
-              offset: const Offset(0, 2))
-        ],
+        gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [ProfessionalColors.primaryDark.withOpacity(0.95), ProfessionalColors.surfaceDark.withOpacity(0.9), ProfessionalColors.surfaceDark.withOpacity(0.8), Colors.transparent]),
+        border: Border(bottom: BorderSide(color: ProfessionalColors.accentBlue.withOpacity(0.2), width: 1)),
+        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.3), blurRadius: 10, offset: const Offset(0, 2))],
       ),
       child: ClipRRect(
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
           child: Container(
-            padding: EdgeInsets.only(
-                top: MediaQuery.of(context).padding.top + 10,
-                left: 20,
-                right: 30,
-                bottom: 10),
+            padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top + 10, left: 20, right: 30, bottom: 10),
             child: Row(
               children: [
-                Container(
-                    decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: LinearGradient(colors: [
-                          ProfessionalColors.accentBlue.withOpacity(0.3),
-                          ProfessionalColors.accentPurple.withOpacity(0.3)
-                        ])),
-                    child: IconButton(
-                        icon: const Icon(Icons.arrow_back_rounded,
-                            color: Colors.white, size: 24),
-                        onPressed: () => Navigator.pop(context))),
+                Container(decoration: BoxDecoration(shape: BoxShape.circle, gradient: LinearGradient(colors: [ProfessionalColors.accentBlue.withOpacity(0.3), ProfessionalColors.accentPurple.withOpacity(0.3)])), child: IconButton(icon: const Icon(Icons.arrow_back_rounded, color: Colors.white, size: 24), onPressed: () => Navigator.pop(context))),
                 const SizedBox(width: 16),
-                GradientText(widget.title,
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 22),
-                    gradient: const LinearGradient(colors: [
-                      ProfessionalColors.accentPink,
-                      ProfessionalColors.accentPurple,
-                      ProfessionalColors.accentBlue
-                    ])),
+                GradientText(widget.title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 22), gradient: const LinearGradient(colors: [ProfessionalColors.accentPink, ProfessionalColors.accentPurple, ProfessionalColors.accentBlue])),
                 const SizedBox(width: 40),
-                Expanded(
-                    child: Text(focusedName,
-                        textAlign: TextAlign.left,
-                        style: const TextStyle(
-                            color: ProfessionalColors.textSecondary,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20),
-                        overflow: TextOverflow.ellipsis)),
-                Padding(
-                    padding: const EdgeInsets.only(right: 15.0),
-                    child: CircleAvatar(
-                        backgroundImage: NetworkImage(widget.logoUrl),
-                        radius: 20,
-                        backgroundColor: Colors.white24)),
+                Expanded(child: Text(focusedName, textAlign: TextAlign.left, style: const TextStyle(color: ProfessionalColors.textSecondary, fontWeight: FontWeight.bold, fontSize: 20), overflow: TextOverflow.ellipsis)),
+                Padding(padding: const EdgeInsets.only(right: 15.0), child: CircleAvatar(backgroundImage: NetworkImage(widget.logoUrl), radius: 20, backgroundColor: Colors.white24)),
               ],
             ),
           ),
@@ -4235,100 +4105,73 @@ Future<void> _playContent(Movie content) async {
         final int itemCount = moviesToShow + 1;
         return Container(
           key: _rowKeys[index],
-          decoration: BoxDecoration(
-              gradient: _genreBackgrounds[index % _genreBackgrounds.length]),
+          decoration: BoxDecoration(gradient: _genreBackgrounds[index % _genreBackgrounds.length]),
           padding: const EdgeInsets.symmetric(vertical: 5.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Padding(
-                  padding: const EdgeInsets.only(left: 30.0, bottom: 5.0),
-                  child: GradientText(genre,
-                      style: const TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1.2),
-                      gradient: const LinearGradient(
-                          colors: [
-                            ProfessionalColors.accentGreen,
-                            ProfessionalColors.accentOrange,
-                            ProfessionalColors.accentPink
-                          ],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight))),
+              Padding(padding: const EdgeInsets.only(left: 30.0, bottom: 5.0), child: GradientText(genre, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, letterSpacing: 1.2), gradient: const LinearGradient(colors: [ProfessionalColors.accentGreen, ProfessionalColors.accentOrange, ProfessionalColors.accentPink], begin: Alignment.topLeft, end: Alignment.bottomRight))),
               SizedBox(
                 height: bannerhgt + 25,
                 child: ListView.builder(
-                  controller: _horizontalScrollControllers[index],
-                  scrollDirection: Axis.horizontal,
-                  itemCount: itemCount,
+                  controller: _horizontalScrollControllers[index], 
+                  scrollDirection: Axis.horizontal, 
+                  itemCount: itemCount, 
                   padding: const EdgeInsets.symmetric(horizontal: 30.0),
                   itemBuilder: (context, movieIndex) {
                     try {
                       if (!_genres.isValidIndex(index)) {
-                        print(
-                            'Invalid genre index: $index, genres length: ${_genres.length}');
-                        return Container(
-                            width: bannerwdt,
-                            child: const Text('Invalid genre'));
+                        print('Invalid genre index: $index, genres length: ${_genres.length}');
+                        return Container(width: bannerwdt, child: const Text('Invalid genre'));
                       }
-
-                      if (!_cardKeys.isValidIndex(index) ||
-                          !_cardKeys[index].isValidIndex(movieIndex)) {
-                        print(
-                            'Invalid card key index: genre=$index, movie=$movieIndex');
-                        return Container(
-                            width: bannerwdt,
-                            child: const Text('Invalid card key'));
+                      
+                      if (!_cardKeys.isValidIndex(index) || !_cardKeys[index].isValidIndex(movieIndex)) {
+                        print('Invalid card key index: genre=$index, movie=$movieIndex');
+                        return Container(width: bannerwdt, child: const Text('Invalid card key'));
                       }
-
-                      if (!_focusNodes.isValidIndex(index) ||
-                          !_focusNodes[index].isValidIndex(movieIndex)) {
-                        print(
-                            'Invalid focus node index: genre=$index, movie=$movieIndex');
-                        return Container(
-                            width: bannerwdt,
-                            child: const Text('Invalid focus node'));
+                      
+                      if (!_focusNodes.isValidIndex(index) || !_focusNodes[index].isValidIndex(movieIndex)) {
+                        print('Invalid focus node index: genre=$index, movie=$movieIndex');
+                        return Container(width: bannerwdt, child: const Text('Invalid focus node'));
                       }
 
                       if (movieIndex == moviesToShow) {
                         return ViewAllCard(
-                            key: _cardKeys[index][movieIndex],
-                            focusNode: _focusNodes[index][movieIndex],
-                            focusColors: _focusColors,
-                            uniqueIndex: index * 10 + movieIndex,
-                            onTap: () => _navigateToGridPage(genre));
-                      }
-
-                      final movie = movies.safeElementAt(movieIndex);
-                      if (movie == null) {
-                        print(
-                            'Movie not found at index: $movieIndex, movies length: ${movies.length}');
-                        return Container(
-                            width: bannerwdt,
-                            child: const Text('Movie not found'));
-                      }
-
-                      return MovieCard(
                           key: _cardKeys[index][movieIndex],
-                          movie: movie,
-                          logoUrl: widget.logoUrl,
                           focusNode: _focusNodes[index][movieIndex],
                           focusColors: _focusColors,
                           uniqueIndex: index * 10 + movieIndex,
-                          onTap: () => _playContent(movie));
+                          onTap: () => _navigateToGridPage(genre)
+                        );
+                      }
+                      
+                      final movie = movies.safeElementAt(movieIndex);
+                      if (movie == null) {
+                        print('Movie not found at index: $movieIndex, movies length: ${movies.length}');
+                        return Container(width: bannerwdt, child: const Text('Movie not found'));
+                      }
+                      
+                      return MovieCard(
+                        key: _cardKeys[index][movieIndex],
+                        movie: movie,
+                        logoUrl: widget.logoUrl,
+                        focusNode: _focusNodes[index][movieIndex],
+                        focusColors: _focusColors,
+                        uniqueIndex: index * 10 + movieIndex,
+                        onTap: () => _playContent(movie)
+                      );
+                      
                     } catch (e, stackTrace) {
                       print('🚨 ListView Builder Error 🚨');
                       print('Genre Index: $index, Movie Index: $movieIndex');
                       print('Error: $e');
                       print('StackTrace: $stackTrace');
                       return Container(
-                          width: bannerwdt,
-                          height: 100,
-                          color: Colors.red.withOpacity(0.3),
-                          child: const Center(
-                              child: Text('Error',
-                                  style: TextStyle(color: Colors.white))));
+                        width: bannerwdt, 
+                        height: 100,
+                        color: Colors.red.withOpacity(0.3),
+                        child: const Center(child: Text('Error', style: TextStyle(color: Colors.white)))
+                      );
                     }
                   },
                 ),
@@ -4358,11 +4201,7 @@ class GenreGridScreen extends StatefulWidget {
   final String genre;
   final String tvChannelId;
   final String logoUrl;
-  const GenreGridScreen(
-      {super.key,
-      required this.genre,
-      required this.tvChannelId,
-      required this.logoUrl});
+  const GenreGridScreen({super.key, required this.genre, required this.tvChannelId, required this.logoUrl});
   @override
   State<GenreGridScreen> createState() => _GenreGridScreenState();
 }
@@ -4374,22 +4213,14 @@ class _GenreGridScreenState extends State<GenreGridScreen> {
   List<FocusNode> _focusNodes = [];
   List<GlobalKey> _cardKeys = [];
   bool _isVideoLoading = false;
-  final List<Color> _focusColors = [
-    ProfessionalColors.accentBlue,
-    ProfessionalColors.accentPurple,
-    ProfessionalColors.accentGreen,
-    ProfessionalColors.accentOrange,
-    ProfessionalColors.accentPink,
-    ProfessionalColors.accentRed
-  ];
+  final List<Color> _focusColors = [ProfessionalColors.accentBlue, ProfessionalColors.accentPurple, ProfessionalColors.accentGreen, ProfessionalColors.accentOrange, ProfessionalColors.accentPink, ProfessionalColors.accentRed];
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
-        Provider.of<InternalFocusProvider>(context, listen: false)
-            .updateName(widget.genre);
+        Provider.of<InternalFocusProvider>(context, listen: false).updateName(widget.genre);
       }
     });
     _fetchGridData();
@@ -4397,8 +4228,8 @@ class _GenreGridScreenState extends State<GenreGridScreen> {
 
   @override
   void dispose() {
-    for (var node in _focusNodes) {
-      node.dispose();
+    for (var node in _focusNodes) { 
+      node.dispose(); 
     }
     super.dispose();
   }
@@ -4431,21 +4262,13 @@ class _GenreGridScreenState extends State<GenreGridScreen> {
       final authKey = prefs.getString('result_auth_key') ?? '56456456456';
 
       final moviesResponse = await http.post(
-        Uri.parse(
-            'https://dashboard.cpplayers.com/api/v2/getAllContentsOfNetworkNew'),
-        headers: {
-          'auth-key': authKey,
-          'domain': 'coretechinfo.com',
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: json
-            .encode({"genre": widget.genre, "network_id": widget.tvChannelId}),
+        Uri.parse('https://dashboard.cpplayers.com/api/v2/getAllContentsOfNetworkNew'),
+        headers: {'auth-key': authKey, 'domain': 'coretechinfo.com', 'Accept': 'application/json', 'Content-Type': 'application/json'},
+        body: json.encode({"genre": widget.genre, "network_id": widget.tvChannelId}),
       );
 
       if (moviesResponse.statusCode == 200) {
-        final List<Movie> parsedMovies =
-            await compute(_parseGridData, moviesResponse.body);
+        final List<Movie> parsedMovies = await compute(_parseGridData, moviesResponse.body);
         _applyMoviesToState(parsedMovies);
       } else {
         throw Exception('Failed to load content for ${widget.genre}');
@@ -4463,8 +4286,7 @@ class _GenreGridScreenState extends State<GenreGridScreen> {
   void _onItemFocusChange(int index) {
     if (!mounted || _isLoading || index < 0 || index >= _movies.length) return;
 
-    Provider.of<InternalFocusProvider>(context, listen: false)
-        .updateName(_movies[index].name);
+    Provider.of<InternalFocusProvider>(context, listen: false).updateName(_movies[index].name);
 
     final cardContext = _cardKeys[index].currentContext;
     if (cardContext != null) {
@@ -4479,18 +4301,16 @@ class _GenreGridScreenState extends State<GenreGridScreen> {
   //   if (_isVideoLoading || !mounted) return;
   //   setState(() => _isVideoLoading = true);
   //   try {
-  //     ScaffoldMessenger.of(context)
-  //         .showSnackBar(SnackBar(content: Text('Playing: ${content.name}')));
+  //     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Playing: ${content.name}')));
   //   } catch (e) {
-  //     if (mounted)
-  //       ScaffoldMessenger.of(context)
-  //           .showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
+  //     if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
   //   } finally {
   //     if (mounted) setState(() => _isVideoLoading = false);
   //   }
   // }
 
-//    com.ekomflixtv.cti      
+
+
 
   // // Replace the old _playContent with this complete version
 Future<void> _playContent(Movie content) async {
@@ -4537,7 +4357,7 @@ Future<void> _playContent(Movie content) async {
           MaterialPageRoute(
             builder: (context) => CustomYoutubePlayer(
               videoData: VideoData(
-                id: content.id.toString(),
+                id: playableUrl,
                 title: content.name,
                 youtubeUrl: playableUrl,
                 thumbnail: content.poster ?? content.banner ?? '',
@@ -4583,30 +4403,15 @@ Future<void> _playContent(Movie content) async {
       backgroundColor: ProfessionalColors.primaryDark,
       body: Stack(
         children: [
-          Container(
-              decoration: const BoxDecoration(
-                  gradient: LinearGradient(colors: [
-            ProfessionalColors.primaryDark,
-            Color(0xFF06080F)
-          ], begin: Alignment.topCenter, end: Alignment.bottomCenter))),
-          CustomScrollView(slivers: [
-            const SliverPadding(padding: EdgeInsets.only(top: 100.0)),
-            _isLoading
-                ? const SliverFillRemaining(
-                    child: Center(child: CircularProgressIndicator()))
-                : _error != null
-                    ? SliverFillRemaining(
-                        child: Center(child: Text('Error: $_error')))
-                    : _buildContentGrid(),
-          ]),
+          Container(decoration: const BoxDecoration(gradient: LinearGradient(colors: [ProfessionalColors.primaryDark, Color(0xFF06080F)], begin: Alignment.topCenter, end: Alignment.bottomCenter))),
+          CustomScrollView(
+            slivers: [
+              const SliverPadding(padding: EdgeInsets.only(top: 100.0)),
+              _isLoading ? const SliverFillRemaining(child: Center(child: CircularProgressIndicator())) : _error != null ? SliverFillRemaining(child: Center(child: Text('Error: $_error'))) : _buildContentGrid(),
+            ]
+          ),
           Positioned(top: 0, left: 0, right: 0, child: _buildBeautifulAppBar()),
-          if (_isVideoLoading)
-            Container(
-                color: Colors.black.withOpacity(0.7),
-                child: const Center(
-                    child: CircularProgressIndicator(
-                        valueColor:
-                            AlwaysStoppedAnimation<Color>(Colors.white)))),
+          if (_isVideoLoading) Container(color: Colors.black.withOpacity(0.7), child: const Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.white)))),
         ],
       ),
     );
@@ -4616,72 +4421,23 @@ Future<void> _playContent(Movie content) async {
     final focusedName = context.watch<InternalFocusProvider>().focusedItemName;
     return Container(
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              ProfessionalColors.primaryDark.withOpacity(0.95),
-              ProfessionalColors.surfaceDark.withOpacity(0.9),
-              ProfessionalColors.surfaceDark.withOpacity(0.8),
-              Colors.transparent
-            ]),
-        border: Border(
-            bottom: BorderSide(
-                color: ProfessionalColors.accentBlue.withOpacity(0.2),
-                width: 1)),
-        boxShadow: [
-          BoxShadow(
-              color: Colors.black.withOpacity(0.3),
-              blurRadius: 10,
-              offset: const Offset(0, 2))
-        ],
+        gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [ProfessionalColors.primaryDark.withOpacity(0.95), ProfessionalColors.surfaceDark.withOpacity(0.9), ProfessionalColors.surfaceDark.withOpacity(0.8), Colors.transparent]),
+        border: Border(bottom: BorderSide(color: ProfessionalColors.accentBlue.withOpacity(0.2), width: 1)),
+        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.3), blurRadius: 10, offset: const Offset(0, 2))],
       ),
       child: ClipRRect(
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
           child: Container(
-            padding: EdgeInsets.only(
-                top: MediaQuery.of(context).padding.top + 10,
-                left: 20,
-                right: 30,
-                bottom: 10),
+            padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top + 10, left: 20, right: 30, bottom: 10),
             child: Row(
               children: [
-                Container(
-                    decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: LinearGradient(colors: [
-                          ProfessionalColors.accentBlue.withOpacity(0.3),
-                          ProfessionalColors.accentPurple.withOpacity(0.3)
-                        ])),
-                    child: IconButton(
-                        icon: const Icon(Icons.arrow_back_rounded,
-                            color: Colors.white, size: 24),
-                        onPressed: () => Navigator.pop(context))),
+                Container(decoration: BoxDecoration(shape: BoxShape.circle, gradient: LinearGradient(colors: [ProfessionalColors.accentBlue.withOpacity(0.3), ProfessionalColors.accentPurple.withOpacity(0.3)])), child: IconButton(icon: const Icon(Icons.arrow_back_rounded, color: Colors.white, size: 24), onPressed: () => Navigator.pop(context))),
                 const SizedBox(width: 16),
-                GradientText(widget.genre,
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 22),
-                    gradient: const LinearGradient(colors: [
-                      ProfessionalColors.accentPink,
-                      ProfessionalColors.accentPurple,
-                      ProfessionalColors.accentBlue
-                    ])),
+                GradientText(widget.genre, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 22), gradient: const LinearGradient(colors: [ProfessionalColors.accentPink, ProfessionalColors.accentPurple, ProfessionalColors.accentBlue])),
                 const SizedBox(width: 40),
-                Expanded(
-                    child: Text(focusedName,
-                        textAlign: TextAlign.left,
-                        style: const TextStyle(
-                            color: ProfessionalColors.textSecondary,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20),
-                        overflow: TextOverflow.ellipsis)),
-                Padding(
-                    padding: const EdgeInsets.only(right: 15.0),
-                    child: CircleAvatar(
-                        backgroundImage: NetworkImage(widget.logoUrl),
-                        radius: 20,
-                        backgroundColor: Colors.white24)),
+                Expanded(child: Text(focusedName, textAlign: TextAlign.left, style: const TextStyle(color: ProfessionalColors.textSecondary, fontWeight: FontWeight.bold, fontSize: 20), overflow: TextOverflow.ellipsis)),
+                Padding(padding: const EdgeInsets.only(right: 15.0), child: CircleAvatar(backgroundImage: NetworkImage(widget.logoUrl), radius: 20, backgroundColor: Colors.white24)),
               ],
             ),
           ),
@@ -4694,21 +4450,10 @@ Future<void> _playContent(Movie content) async {
     return SliverPadding(
       padding: const EdgeInsets.all(30.0),
       sliver: SliverGrid(
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 6,
-            childAspectRatio: 1.5,
-            mainAxisSpacing: 5,
-            crossAxisSpacing: 5),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 6, childAspectRatio: 1.5, mainAxisSpacing: 5, crossAxisSpacing: 5),
         delegate: SliverChildBuilderDelegate((context, index) {
           final movie = _movies[index];
-          return MovieCard(
-              key: _cardKeys[index],
-              movie: movie,
-              logoUrl: widget.logoUrl,
-              focusNode: _focusNodes[index],
-              focusColors: _focusColors,
-              uniqueIndex: index,
-              onTap: () => _playContent(movie));
+          return MovieCard(key: _cardKeys[index], movie: movie, logoUrl: widget.logoUrl, focusNode: _focusNodes[index], focusColors: _focusColors, uniqueIndex: index, onTap: () => _playContent(movie));
         }, childCount: _movies.length),
       ),
     );
@@ -4720,43 +4465,34 @@ Future<void> _playContent(Movie content) async {
 // ==========================================================
 
 class MovieCard extends StatefulWidget {
-  final Movie movie;
-  final String logoUrl;
-  final FocusNode focusNode;
-  final List<Color> focusColors;
-  final int uniqueIndex;
-  final VoidCallback onTap;
-  final bool isFirst;
+  final Movie movie; 
+  final String logoUrl; 
+  final FocusNode focusNode; 
+  final List<Color> focusColors; 
+  final int uniqueIndex; 
+  final VoidCallback onTap; 
+  final bool isFirst; 
   final bool isLast;
-
-  const MovieCard(
-      {super.key,
-      required this.movie,
-      required this.logoUrl,
-      required this.focusNode,
-      required this.focusColors,
-      required this.uniqueIndex,
-      required this.onTap,
-      this.isFirst = false,
-      this.isLast = false});
-
+  
+  const MovieCard({super.key, required this.movie, required this.logoUrl, required this.focusNode, required this.focusColors, required this.uniqueIndex, required this.onTap, this.isFirst = false, this.isLast = false});
+  
   @override
   State<MovieCard> createState() => _MovieCardState();
 }
 
 class _MovieCardState extends State<MovieCard> {
   bool _hasFocus = false;
-
+  
   @override
-  void initState() {
-    super.initState();
-    widget.focusNode.addListener(_onFocusChange);
+  void initState() { 
+    super.initState(); 
+    widget.focusNode.addListener(_onFocusChange); 
   }
-
+  
   @override
-  void dispose() {
-    widget.focusNode.removeListener(_onFocusChange);
-    super.dispose();
+  void dispose() { 
+    widget.focusNode.removeListener(_onFocusChange); 
+    super.dispose(); 
   }
 
   void _onFocusChange() {
@@ -4770,33 +4506,29 @@ class _MovieCardState extends State<MovieCard> {
       });
     }
   }
-
+  
   KeyEventResult _handleKeyEvent(FocusNode node, RawKeyEvent event) {
     if (event is RawKeyDownEvent) {
-      if (event.logicalKey == LogicalKeyboardKey.select ||
-          event.logicalKey == LogicalKeyboardKey.enter) {
-        widget.onTap();
-        return KeyEventResult.handled;
+      if (event.logicalKey == LogicalKeyboardKey.select || event.logicalKey == LogicalKeyboardKey.enter) { 
+        widget.onTap(); 
+        return KeyEventResult.handled; 
       }
-      if (widget.isFirst && event.logicalKey == LogicalKeyboardKey.arrowLeft)
-        return KeyEventResult.handled;
-      if (widget.isLast && event.logicalKey == LogicalKeyboardKey.arrowRight)
-        return KeyEventResult.handled;
+      if (widget.isFirst && event.logicalKey == LogicalKeyboardKey.arrowLeft) return KeyEventResult.handled;
+      if (widget.isLast && event.logicalKey == LogicalKeyboardKey.arrowRight) return KeyEventResult.handled;
     }
     return KeyEventResult.ignored;
   }
 
   @override
   Widget build(BuildContext context) {
-    final focusColor =
-        widget.focusColors[widget.uniqueIndex % widget.focusColors.length];
+    final focusColor = widget.focusColors[widget.uniqueIndex % widget.focusColors.length];
     return Focus(
-      focusNode: widget.focusNode,
+      focusNode: widget.focusNode, 
       onKey: _handleKeyEvent,
       child: GestureDetector(
         onTap: widget.onTap,
         child: Container(
-          width: bannerwdt,
+          width: bannerwdt, 
           margin: const EdgeInsets.only(right: 12.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -4804,72 +4536,25 @@ class _MovieCardState extends State<MovieCard> {
               Expanded(
                 child: Container(
                   decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8.0),
-                      border: _hasFocus
-                          ? Border.all(color: focusColor, width: 3)
-                          : Border.all(color: Colors.transparent, width: 3),
-                      boxShadow: _hasFocus
-                          ? [
-                              BoxShadow(
-                                  color: focusColor.withOpacity(0.5),
-                                  blurRadius: 12,
-                                  spreadRadius: 1)
-                            ]
-                          : []),
+                    borderRadius: BorderRadius.circular(8.0), 
+                    border: _hasFocus ? Border.all(color: focusColor, width: 3) : Border.all(color: Colors.transparent, width: 3), 
+                    boxShadow: _hasFocus ? [BoxShadow(color: focusColor.withOpacity(0.5), blurRadius: 12, spreadRadius: 1)] : []
+                  ),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(6.0),
                     child: Stack(
                       fit: StackFit.expand,
                       children: [
-                        displayImage(widget.movie.banner ?? '',
-                            fit: BoxFit.cover),
-                        if (widget.movie.contentType == 2)
-                          Positioned(
-                              bottom: 8,
-                              left: 8,
-                              child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 8, vertical: 4),
-                                  decoration: BoxDecoration(
-                                      color: ProfessionalColors.accentPurple
-                                          .withOpacity(0.9),
-                                      borderRadius: BorderRadius.circular(4.0)),
-                                  child: const Text('Web Series',
-                                      style: TextStyle(
-                                          color: ProfessionalColors.textPrimary,
-                                          fontSize: 10,
-                                          fontWeight: FontWeight.bold)))),
-                        if (_hasFocus)
-                          Positioned(
-                              left: 5,
-                              top: 5,
-                              child: Container(
-                                  color: Colors.black.withOpacity(0.4),
-                                  child: Icon(Icons.play_circle_filled_outlined,
-                                      color: focusColor, size: 40))),
-                        Positioned(
-                            top: 5,
-                            right: 5,
-                            child: CircleAvatar(
-                                radius: 12,
-                                backgroundImage: NetworkImage(widget.logoUrl),
-                                backgroundColor: Colors.black54)),
+                        displayImage(widget.movie.banner ?? '', fit: BoxFit.cover),
+                        if (widget.movie.contentType == 2) Positioned(bottom: 8, left: 8, child: Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4), decoration: BoxDecoration(color: ProfessionalColors.accentPurple.withOpacity(0.9), borderRadius: BorderRadius.circular(4.0)), child: const Text('Web Series', style: TextStyle(color: ProfessionalColors.textPrimary, fontSize: 10, fontWeight: FontWeight.bold)))),
+                        if (_hasFocus) Positioned(left: 5, top: 5, child: Container(color: Colors.black.withOpacity(0.4), child: Icon(Icons.play_circle_filled_outlined, color: focusColor, size: 40))),
+                        Positioned(top: 5, right: 5, child: CircleAvatar(radius: 12, backgroundImage: NetworkImage(widget.logoUrl), backgroundColor: Colors.black54)),
                       ],
                     ),
                   ),
                 ),
               ),
-              Padding(
-                  padding:
-                      const EdgeInsets.only(top: 2.0, left: 2.0, right: 2.0),
-                  child: Text(widget.movie.name,
-                      style: TextStyle(
-                          color: _hasFocus
-                              ? focusColor
-                              : ProfessionalColors.textSecondary,
-                          fontSize: 14),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis)),
+              Padding(padding: const EdgeInsets.only(top: 2.0, left: 2.0, right: 2.0), child: Text(widget.movie.name, style: TextStyle(color: _hasFocus ? focusColor : ProfessionalColors.textSecondary, fontSize: 14), maxLines: 1, overflow: TextOverflow.ellipsis)),
             ],
           ),
         ),
@@ -4879,35 +4564,30 @@ class _MovieCardState extends State<MovieCard> {
 }
 
 class ViewAllCard extends StatefulWidget {
-  final FocusNode focusNode;
-  final List<Color> focusColors;
-  final int uniqueIndex;
+  final FocusNode focusNode; 
+  final List<Color> focusColors; 
+  final int uniqueIndex; 
   final VoidCallback onTap;
-
-  const ViewAllCard(
-      {super.key,
-      required this.focusNode,
-      required this.focusColors,
-      required this.uniqueIndex,
-      required this.onTap});
-
+  
+  const ViewAllCard({super.key, required this.focusNode, required this.focusColors, required this.uniqueIndex, required this.onTap});
+  
   @override
   State<ViewAllCard> createState() => _ViewAllCardState();
 }
 
 class _ViewAllCardState extends State<ViewAllCard> {
   bool _hasFocus = false;
-
+  
   @override
-  void initState() {
-    super.initState();
-    widget.focusNode.addListener(_onFocusChange);
+  void initState() { 
+    super.initState(); 
+    widget.focusNode.addListener(_onFocusChange); 
   }
-
+  
   @override
-  void dispose() {
-    widget.focusNode.removeListener(_onFocusChange);
-    super.dispose();
+  void dispose() { 
+    widget.focusNode.removeListener(_onFocusChange); 
+    super.dispose(); 
   }
 
   void _onFocusChange() {
@@ -4924,42 +4604,31 @@ class _ViewAllCardState extends State<ViewAllCard> {
 
   KeyEventResult _handleKeyEvent(FocusNode node, RawKeyEvent event) {
     if (event is RawKeyDownEvent) {
-      if (event.logicalKey == LogicalKeyboardKey.select ||
-          event.logicalKey == LogicalKeyboardKey.enter) {
-        widget.onTap();
-        return KeyEventResult.handled;
+      if (event.logicalKey == LogicalKeyboardKey.select || event.logicalKey == LogicalKeyboardKey.enter) { 
+        widget.onTap(); 
+        return KeyEventResult.handled; 
       }
-      if (event.logicalKey == LogicalKeyboardKey.arrowRight)
-        return KeyEventResult.handled;
+      if (event.logicalKey == LogicalKeyboardKey.arrowRight) return KeyEventResult.handled;
     }
     return KeyEventResult.ignored;
   }
 
   @override
   Widget build(BuildContext context) {
-    final focusColor =
-        widget.focusColors[widget.uniqueIndex % widget.focusColors.length];
+    final focusColor = widget.focusColors[widget.uniqueIndex % widget.focusColors.length];
     return Focus(
-      focusNode: widget.focusNode,
+      focusNode: widget.focusNode, 
       onKey: _handleKeyEvent,
       child: GestureDetector(
         onTap: widget.onTap,
         child: Container(
-          width: bannerwdt,
+          width: bannerwdt, 
           margin: const EdgeInsets.only(right: 12.0),
           decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10.0),
-              border: _hasFocus
-                  ? Border.all(color: focusColor, width: 3)
-                  : Border.all(color: Colors.transparent, width: 3),
-              boxShadow: _hasFocus
-                  ? [
-                      BoxShadow(
-                          color: ProfessionalColors.focusGlow.withOpacity(0.7),
-                          blurRadius: 12,
-                          spreadRadius: 1)
-                    ]
-                  : []),
+            borderRadius: BorderRadius.circular(10.0), 
+            border: _hasFocus ? Border.all(color: focusColor, width: 3) : Border.all(color: Colors.transparent, width: 3), 
+            boxShadow: _hasFocus ? [BoxShadow(color: ProfessionalColors.focusGlow.withOpacity(0.7), blurRadius: 12, spreadRadius: 1)] : []
+          ),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(8.0),
             child: Container(
@@ -4968,14 +4637,9 @@ class _ViewAllCardState extends State<ViewAllCard> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.arrow_forward,
-                        color: _hasFocus ? focusColor : Colors.white70,
-                        size: 32),
+                    Icon(Icons.arrow_forward, color: _hasFocus ? focusColor : Colors.white70, size: 32),
                     const SizedBox(height: 8),
-                    Text("View All",
-                        style: TextStyle(
-                            color: _hasFocus ? focusColor : Colors.white70,
-                            fontWeight: FontWeight.bold)),
+                    Text("View All", style: TextStyle(color: _hasFocus ? focusColor : Colors.white70, fontWeight: FontWeight.bold)),
                   ],
                 ),
               ),
@@ -4988,18 +4652,16 @@ class _ViewAllCardState extends State<ViewAllCard> {
 }
 
 class GradientText extends StatelessWidget {
-  const GradientText(this.text,
-      {super.key, required this.gradient, this.style});
-  final String text;
-  final TextStyle? style;
+  const GradientText(this.text, {super.key, required this.gradient, this.style});
+  final String text; 
+  final TextStyle? style; 
   final Gradient gradient;
-
+  
   @override
   Widget build(BuildContext context) {
     return ShaderMask(
       blendMode: BlendMode.srcIn,
-      shaderCallback: (bounds) => gradient
-          .createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
+      shaderCallback: (bounds) => gradient.createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
       child: Text(text, style: style),
     );
   }
@@ -5009,42 +4671,26 @@ class GradientText extends StatelessWidget {
 // HELPER FUNCTIONS
 // ==========================================================
 
-Uint8List _getImageFromBase64String(String base64String) =>
-    base64Decode(base64String.split(',').last);
+Uint8List _getImageFromBase64String(String base64String) => base64Decode(base64String.split(',').last);
 
-Widget displayImage(String imageUrl,
-    {double? width, double? height, BoxFit fit = BoxFit.cover}) {
-  if (imageUrl.isEmpty ||
-      imageUrl == 'localImage' ||
-      imageUrl.contains('localhost')) {
+Widget displayImage(String imageUrl, {double? width, double? height, BoxFit fit = BoxFit.cover}) {
+  if (imageUrl.isEmpty || imageUrl == 'localImage' || imageUrl.contains('localhost')) {
     return _buildErrorWidget(width, height);
   }
   if (imageUrl.startsWith('data:image')) {
     try {
-      return Image.memory(_getImageFromBase64String(imageUrl),
-          fit: fit,
-          width: width,
-          height: height,
-          errorBuilder: (c, e, s) => _buildErrorWidget(width, height));
+      return Image.memory(_getImageFromBase64String(imageUrl), fit: fit, width: width, height: height, errorBuilder: (c, e, s) => _buildErrorWidget(width, height));
     } catch (e) {
       return _buildErrorWidget(width, height);
     }
   } else if (imageUrl.startsWith('http')) {
     if (imageUrl.toLowerCase().endsWith('.svg')) {
-      return SvgPicture.network(imageUrl,
-          width: width,
-          height: height,
-          fit: fit,
-          placeholderBuilder: (c) => _buildLoadingWidget(width, height));
+      return SvgPicture.network(imageUrl, width: width, height: height, fit: fit, placeholderBuilder: (c) => _buildLoadingWidget(width, height));
     } else {
       return Image.network(
-        imageUrl,
-        width: width,
-        height: height,
-        fit: fit,
+        imageUrl, width: width, height: height, fit: fit,
         headers: const {'User-Agent': 'Flutter App'},
-        loadingBuilder: (c, child, progress) =>
-            progress == null ? child : _buildLoadingWidget(width, height),
+        loadingBuilder: (c, child, progress) => progress == null ? child : _buildLoadingWidget(width, height),
         errorBuilder: (c, e, s) => _buildErrorWidget(width, height),
       );
     }
@@ -5055,24 +4701,17 @@ Widget displayImage(String imageUrl,
 
 Widget _buildErrorWidget(double? width, double? height) {
   return Container(
-    width: width,
+    width: width, 
     height: height,
-    decoration: const BoxDecoration(
-        gradient: LinearGradient(colors: [
-      ProfessionalColors.accentGreen,
-      ProfessionalColors.accentBlue
-    ])),
+    decoration: const BoxDecoration(gradient: LinearGradient(colors: [ProfessionalColors.accentGreen, ProfessionalColors.accentBlue])),
     child: const Icon(Icons.broken_image, color: Colors.white, size: 24),
   );
 }
 
 Widget _buildLoadingWidget(double? width, double? height) {
   return SizedBox(
-    width: width,
+    width: width, 
     height: height,
-    child: const Center(
-        child: CircularProgressIndicator(
-            strokeWidth: 2,
-            valueColor: AlwaysStoppedAnimation<Color>(Colors.white))),
+    child: const Center(child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation<Color>(Colors.white))),
   );
 }

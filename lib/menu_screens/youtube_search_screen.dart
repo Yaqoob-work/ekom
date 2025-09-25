@@ -10,7 +10,6 @@ import 'package:provider/provider.dart';
 import '../../main.dart';
 import '../../provider/color_provider.dart';
 import '../../provider/focus_provider.dart';
-import '../../video_widget/socket_service.dart';
 import '../../video_widget/video_screen.dart';
 import '../../widgets/models/news_item_model.dart';
 import '../../widgets/utils/color_service.dart';
@@ -34,7 +33,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
   bool _showSearchField = false;
   Color paletteColor = Colors.grey;
   final PaletteColorService _paletteColorService = PaletteColorService();
-  final SocketService _socketService = SocketService();
+  // final SocketService _socketService = SocketService();
   final int _maxRetries = 3;
   final int _retryDelay = 5;
   bool _shouldContinueLoading = true;
@@ -44,7 +43,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
     super.initState();
     _searchYoutubeFieldFocusNode.addListener(() => setState(() {}));
     _youtubeSearchIconFocusNode.addListener(() => setState(() {}));
-    _socketService.initSocket();
+    // _socketService.initSocket();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context
@@ -62,7 +61,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
     _searchController.dispose();
     _debounce?.cancel();
     _itemFocusNodes.forEach((node) => node.dispose());
-    _socketService.dispose();
+    // _socketService.dispose();
     super.dispose();
   }
 
@@ -169,7 +168,7 @@ class _YoutubeSearchScreenState extends State<YoutubeSearchScreen> {
       String originalUrl = updatedUrl;
 
       if (isYoutubeUrl(updatedUrl)) {
-        updatedUrl = await _socketService.getUpdatedUrl(updatedUrl);
+        // updatedUrl = await _socketService.getUpdatedUrl(updatedUrl);
       }
 
       if (_shouldContinueLoading && mounted) {

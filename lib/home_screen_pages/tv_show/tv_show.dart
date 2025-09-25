@@ -91,7 +91,7 @@ class TVShowsService {
   // Cache keys
   static const String _cacheKeyTVShows = 'cached_tv_shows';
   static const String _cacheKeyTimestamp = 'cached_tv_shows_timestamp';
-  static const String _cacheKeyAuthKey = 'auth_key';
+  static const String _cacheKeyAuthKey = 'result_auth_key';
 
   // Cache duration (in milliseconds) - 1 hour
   static const int _cacheDurationMs = 60 * 60 * 1000; // 1 hour

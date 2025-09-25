@@ -14,7 +14,6 @@ import 'package:mobi_tv_entertainment/video_widget/custom_youtube_player.dart';
 import 'package:mobi_tv_entertainment/video_widget/youtube_webview_player.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../video_widget/socket_service.dart';
 
 // Define highlightColor constant
 const Color highlightColor =
@@ -323,7 +322,7 @@ class ReligiousChannelDetailsPage extends StatefulWidget {
 class _ReligiousChannelDetailsPageState
     extends State<ReligiousChannelDetailsPage>
     with WidgetsBindingObserver, TickerProviderStateMixin {
-  final SocketService _socketService = SocketService();
+  // final SocketService _socketService = SocketService();
   final ScrollController _scrollController = ScrollController();
   final ScrollController _showsScrollController = ScrollController();
   final FocusNode _mainFocusNode = FocusNode();
@@ -375,7 +374,7 @@ class _ReligiousChannelDetailsPageState
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _socketService.initSocket();
+    // _socketService.initSocket();
 
     _initializeAnimations();
     _loadAuthKey();
@@ -389,7 +388,7 @@ class _ReligiousChannelDetailsPageState
     _mainFocusNode.dispose();
     _showsFocusNodes.values.forEach((node) => node.dispose());
     _episodeFocusNodes.values.forEach((node) => node.dispose());
-    _socketService.dispose();
+    // _socketService.dispose();
     _navigationModeController.dispose();
     _pageTransitionController.dispose();
     super.dispose();
@@ -400,7 +399,7 @@ class _ReligiousChannelDetailsPageState
     try {
       final prefs = await SharedPreferences.getInstance();
       setState(() {
-        _authKey = prefs.getString('auth_key') ?? '';
+        _authKey = prefs.getString('result_auth_key') ?? '';
         if (_authKey.isEmpty) {
           _authKey = SessionManager.authKey;
         }
@@ -579,7 +578,7 @@ class _ReligiousChannelDetailsPageState
   // Direct API call for shows
   Future<List<ReligiousShowModel>?> _fetchShowsFromAPIDirectly() async {
     final prefs = await SharedPreferences.getInstance();
-    final authKey = prefs.getString('auth_key') ?? _authKey;
+    final authKey = prefs.getString('result_auth_key') ?? _authKey;
 
     final response = await https.get(
       Uri.parse(
@@ -681,7 +680,7 @@ class _ReligiousChannelDetailsPageState
   Future<List<ReligiousEpisodeModel>?> _fetchEpisodesFromAPIDirectly(
       int showId) async {
     final prefs = await SharedPreferences.getInstance();
-    final authKey = prefs.getString('auth_key') ?? _authKey;
+    final authKey = prefs.getString('result_auth_key') ?? _authKey;
 
     final response = await https.get(
       Uri.parse(

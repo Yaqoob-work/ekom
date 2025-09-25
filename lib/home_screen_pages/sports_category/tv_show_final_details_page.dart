@@ -16,7 +16,6 @@ import 'package:mobi_tv_entertainment/video_widget/youtube_webview_player.dart';
 import 'package:mobi_tv_entertainment/widgets/models/news_item_model.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../video_widget/socket_service.dart';
 
 enum NavigationMode {
   seasons,
@@ -485,7 +484,7 @@ class TournamentFinalDetailsPage extends StatefulWidget {
 
 class _TournamentFinalDetailsPageState extends State<TournamentFinalDetailsPage>
     with WidgetsBindingObserver, TickerProviderStateMixin {
-  final SocketService _socketService = SocketService();
+  // final SocketService _socketService = SocketService();
   final ScrollController _scrollController = ScrollController();
   final ScrollController _seasonsScrollController = ScrollController();
   final FocusNode _mainFocusNode = FocusNode();
@@ -552,7 +551,7 @@ class _TournamentFinalDetailsPageState extends State<TournamentFinalDetailsPage>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _socketService.initSocket();
+    // _socketService.initSocket();
 
     _initializeAnimations();
     _loadAuthKey();
@@ -566,7 +565,7 @@ class _TournamentFinalDetailsPageState extends State<TournamentFinalDetailsPage>
     _mainFocusNode.dispose();
     _seasonsFocusNodes.values.forEach((node) => node.dispose());
     _matchFocusNodes.values.forEach((node) => node.dispose());
-    _socketService.dispose();
+    // _socketService.dispose();
     _navigationModeController.dispose();
     _pageTransitionController.dispose();
     super.dispose();
@@ -577,7 +576,7 @@ class _TournamentFinalDetailsPageState extends State<TournamentFinalDetailsPage>
     try {
       final prefs = await SharedPreferences.getInstance();
       setState(() {
-        _authKey = prefs.getString('auth_key') ?? '';
+        _authKey = prefs.getString('result_auth_key') ?? '';
         if (_authKey.isEmpty) {
           _authKey = SessionManager.authKey;
         }
@@ -780,7 +779,7 @@ class _TournamentFinalDetailsPageState extends State<TournamentFinalDetailsPage>
   // Direct API call for seasons
   Future<List<TournamentSeasonModel>?> _fetchSeasonsFromAPIDirectly() async {
     final prefs = await SharedPreferences.getInstance();
-    final authKey = prefs.getString('auth_key') ?? _authKey;
+    final authKey = prefs.getString('result_auth_key') ?? _authKey;
 
     print('🔍 Fetching seasons for tournament ID: ${widget.id}');
     print('🔍 Using auth key: ${authKey.isNotEmpty ? "Present" : "Missing"}');
@@ -969,7 +968,7 @@ class _TournamentFinalDetailsPageState extends State<TournamentFinalDetailsPage>
   Future<List<TournamentMatchModel>?> _fetchMatchesFromAPIDirectly(
       int seasonId) async {
     final prefs = await SharedPreferences.getInstance();
-    final authKey = prefs.getString('auth_key') ?? _authKey;
+    final authKey = prefs.getString('result_auth_key') ?? _authKey;
 
     print('🔍 Fetching matches for season ID: $seasonId');
     print('🔍 Using auth key: ${authKey.isNotEmpty ? "Present" : "Missing"}');

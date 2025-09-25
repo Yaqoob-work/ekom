@@ -746,7 +746,7 @@
 
 // //     SharedPreferences prefs = await SharedPreferences.getInstance();
 // //     bool isLoggedIn = prefs.getBool('is_logged_in') ?? false;
-// //     String? authKey = prefs.getString('auth_key');
+// //     String? authKey = prefs.getString('result_auth_key');
 // //     String? userData = prefs.getString('user_data');
 
 // //     if (isLoggedIn && authKey != null && userData != null) {
@@ -849,7 +849,7 @@
 // // //   // Global auth key ko properly load karne ke liye yeh function replace karein
 // // // Future<void> _loadGlobalAuthKey() async {
 // // //   SharedPreferences prefs = await SharedPreferences.getInstance();
-// // //   String? authKey = prefs.getString('auth_key');
+// // //   String? authKey = prefs.getString('result_auth_key');
 
 // // //   print('🔑 Checking auth key in SharedPreferences...');
 // // //   print('🔑 Found auth key: $authKey');
@@ -865,13 +865,13 @@
 // // //     print('🔍 All SharedPreferences keys: $allKeys');
 
 // // //     // Check for alternative key names
-// // //     String? altKey1 = prefs.getString('result_auth_key');
-// // //     String? altKey2 = prefs.getString('user_auth_key');
+// // //     String? altKey1 = prefs.getString('result_result_auth_key');
+// // //     String? altKey2 = prefs.getString('user_result_auth_key');
 // // //     String? altKey3 = prefs.getString('api_key');
 
 // // //     print('🔍 Alternative keys:');
-// // //     print('  result_auth_key: $altKey1');
-// // //     print('  user_auth_key: $altKey2');
+// // //     print('  result_result_auth_key: $altKey1');
+// // //     print('  user_result_auth_key: $altKey2');
 // // //     print('  api_key: $altKey3');
 
 // // //     if (altKey1 != null) {
@@ -914,12 +914,12 @@
 // //     final data = jsonDecode(response.body);
 
 // //     if (data['status'] == true) {
-// //       String authKey = data['result_auth_key'];
+// //       String authKey = data['result_result_auth_key'];
 // //       print('✅ Login successful, received auth key: $authKey');
 
 // //       // Save auth data
 // //       SharedPreferences prefs = await SharedPreferences.getInstance();
-// //       await prefs.setString('auth_key', authKey);
+// //       await prefs.setString('result_auth_key', authKey);
 // //       await prefs.setString('user_data', jsonEncode(data['data']));
 // //       await prefs.setString('user_pin', _pinController.text);
 // //       await prefs.setString('device_serial', serialNumber);
@@ -931,7 +931,7 @@
 // //       print('✅ Global auth key set: $globalAuthKey');
 
 // //       // Verify that it's saved correctly
-// //       String? savedKey = prefs.getString('auth_key');
+// //       String? savedKey = prefs.getString('result_auth_key');
 // //       print('✅ Verified saved auth key: $savedKey');
 
 // //       Navigator.pushReplacement(
@@ -989,10 +989,10 @@
 
 // //   //     if (data['status'] == true) {
 
-// //   //       globalAuthKey = data['result_auth_key'];
+// //   //       globalAuthKey = data['result_result_auth_key'];
 // //   //       // Login successful, save auth data and navigate to main app
 // //   //       SharedPreferences prefs = await SharedPreferences.getInstance();
-// //   //       await prefs.setString('auth_key', data['result_auth_key']);
+// //   //       await prefs.setString('result_auth_key', data['result_result_auth_key']);
 // //   //       await prefs.setString('user_data', jsonEncode(data['data']));
 // //   //       await prefs.setString('user_pin', _pinController.text); // Save PIN for future use
 // //   //       await prefs.setString('device_serial', serialNumber); // Save device serial
@@ -1565,7 +1565,7 @@
 //   static Future<void> _loadAuthKey() async {
 //     try {
 //       SharedPreferences prefs = await SharedPreferences.getInstance();
-//       String? authKey = prefs.getString('auth_key');
+//       String? authKey = prefs.getString('result_auth_key');
 
 //       if (authKey != null && authKey.isNotEmpty) {
 //         _authKey = authKey;
@@ -1581,7 +1581,7 @@
 
 //     // Save to SharedPreferences
 //     SharedPreferences prefs = await SharedPreferences.getInstance();
-//     await prefs.setString('auth_key', authKey);
+//     await prefs.setString('result_auth_key', authKey);
 //   }
 
 //   static Future<void> clearAuthKey() async {
@@ -1589,7 +1589,7 @@
 //     globalAuthKey = '';
 
 //     SharedPreferences prefs = await SharedPreferences.getInstance();
-//     await prefs.remove('auth_key');
+//     await prefs.remove('result_auth_key');
 //   }
 
 //   static bool get hasValidAuthKey => _authKey.isNotEmpty;
@@ -1817,7 +1817,7 @@
 
 //     SharedPreferences prefs = await SharedPreferences.getInstance();
 //     bool isLoggedIn = prefs.getBool('is_logged_in') ?? false;
-//     String? authKey = prefs.getString('auth_key');
+//     String? authKey = prefs.getString('result_auth_key');
 //     String? userData = prefs.getString('user_data');
 
 //     if (isLoggedIn && authKey != null && userData != null) {
@@ -2000,8 +2000,8 @@
 //             final data = jsonDecode(response.body);
 
 //             if (data['status'] == true || data['success'] == true) {
-//               authKey = data['result_auth_key'] ??
-//                   data['auth_key'] ??
+//               authKey = data['result_result_auth_key'] ??
+//                   data['result_auth_key'] ??
 //                   data['token'] ??
 //                   '';
 //               userData = data['data'] ?? data['user'] ?? {};
@@ -2018,7 +2018,7 @@
 //       if (loginSuccess && authKey.isNotEmpty) {
 //         SharedPreferences prefs = await SharedPreferences.getInstance();
 //         await Future.wait([
-//           prefs.setString('auth_key', authKey),
+//           prefs.setString('result_auth_key', authKey),
 //           prefs.setString('user_data', jsonEncode(userData ?? {})),
 //           prefs.setString('user_pin', _pinController.text.trim()),
 //           prefs.setString('device_serial', serialNumber),
@@ -2624,7 +2624,7 @@
 //   static Future<void> _loadSession() async {
 //     try {
 //       SharedPreferences prefs = await SharedPreferences.getInstance();
-//       _authKey = prefs.getString('auth_key') ?? '';
+//       _authKey = prefs.getString('result_auth_key') ?? '';
 //       _imageBaseUrl = prefs.getString('image_base_url') ?? '';
 //       _logoUrl = prefs.getString('logo_url') ?? '';
 
@@ -2657,7 +2657,7 @@
 //   print("--- 1. saveSession के अंदर ---"); // मार्कर 1
 //   SharedPreferences prefs = await SharedPreferences.getInstance();
 
-//   _authKey = apiResponse['result_auth_key'] ?? '';
+//   _authKey = apiResponse['result_result_auth_key'] ?? '';
 //   _imageBaseUrl = apiResponse['imageBaseUrl'] ?? '';
 //   _userData = apiResponse['data'] as Map<String, dynamic>?;
 
@@ -2679,7 +2679,7 @@
 //     // // SharedPreferences prefs = await SharedPreferences.getInstance();
 
 //     // // Basic info save karein
-//     // _authKey = apiResponse['result_auth_key'] ?? '';
+//     // _authKey = apiResponse['result_result_auth_key'] ?? '';
 //     // _imageBaseUrl = apiResponse['imageBaseUrl'] ?? '';
 //     // _userData = apiResponse['data'] as Map<String, dynamic>?;
 
@@ -2703,7 +2703,7 @@
 //     }
 
 //     // SharedPreferences mein data write karein
-//     await prefs.setString('auth_key', _authKey);
+//     await prefs.setString('result_auth_key', _authKey);
 //     await prefs.setString('image_base_url', _imageBaseUrl);
 //     await prefs.setString('logo_url', _logoUrl);
 //     if (_userData != null) {
@@ -3224,20 +3224,13 @@
 //   }
 // }
 
-
-
-
-
-
-
-
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+// import 'package:hive_flutter/hive_flutter.dart';
 import 'package:http/http.dart' as https;
 import 'package:mobi_tv_entertainment/exit_confirmation_screen.dart';
 import 'package:mobi_tv_entertainment/home_screen_pages/home_screen.dart';
@@ -3251,6 +3244,7 @@ import 'package:mobi_tv_entertainment/models/horizontal_vod_model.dart';
 import 'package:mobi_tv_entertainment/provider/color_provider.dart';
 import 'package:mobi_tv_entertainment/provider/device_info_provider.dart';
 import 'package:mobi_tv_entertainment/provider/focus_provider.dart';
+import 'package:mobi_tv_entertainment/provider/internal_focus_provider.dart';
 import 'package:mobi_tv_entertainment/widgets/small_widgets/loading_indicator.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
@@ -3266,10 +3260,8 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 // import 'package:video_player_avplay/video_player_avplay.dart'; // <-- Add this import
 import 'package:flutter/material.dart';
-import 'package:media_kit/media_kit.dart';                      // Provides [Player], [Media], [Playlist] etc.
-import 'package:media_kit_video/media_kit_video.dart';          // Provides [VideoController] & [Video] etc.
-
-
+import 'package:media_kit/media_kit.dart'; // Provides [Player], [Media], [Playlist] etc.
+import 'package:media_kit_video/media_kit_video.dart'; // Provides [VideoController] & [Video] etc.
 
 class SessionManager {
   static bool _isInitialized = false;
@@ -3328,7 +3320,7 @@ class SessionManager {
   static Future<void> _loadSession() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      _authKey = prefs.getString('auth_key') ?? '';
+      _authKey = prefs.getString('result_auth_key') ?? '';
       _imageBaseUrl = prefs.getString('image_base_url') ?? '';
       _logoUrl = prefs.getString('logo_url') ?? '';
       _savedDomain = prefs.getString('saved_domain') ?? '';
@@ -3389,7 +3381,7 @@ class SessionManager {
       _showSearch = (domainContent['search'] ?? 0) == 1;
     }
 
-    await prefs.setString('auth_key', _authKey);
+    await prefs.setString('result_auth_key', _authKey);
     await prefs.setString('image_base_url', _imageBaseUrl);
     await prefs.setString('logo_url', _logoUrl);
     if (_userData != null) {
@@ -3413,7 +3405,7 @@ class SessionManager {
   static Future<void> clearSession() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    await prefs.remove('auth_key');
+    await prefs.remove('result_auth_key');
     await prefs.remove('user_data');
     await prefs.remove('is_logged_in');
     await prefs.remove('user_id'); // ✅ 5. Logout par ID ko remove karein
@@ -3458,20 +3450,20 @@ void main() async {
     ),
   );
 
-  // Hive को Flutter के लिए इनिशियलाइज़ करें
-  await Hive.initFlutter();
+  // // Hive को Flutter के लिए इनिशियलाइज़ करें
+  // // await Hive.initFlutter();
 
-  // TypeAdapters को रजिस्टर करें
-  // महत्वपूर्ण: सुनिश्चित करें कि typeId आपके मॉडल में दिए गए आईडी से मेल खाता है
-  Hive.registerAdapter(ChannelDataCacheAdapter()); // typeId: 0
-  Hive.registerAdapter(ContentItemAdapter()); // typeId: 1
-  Hive.registerAdapter(NetworkDataAdapter()); // typeId: 2
-  Hive.registerAdapter(HorizontalVodModelAdapter()); // typeId: 3
-  Hive.registerAdapter(HorizontalVodCacheAdapter()); // typeId: 4
+  // // TypeAdapters को रजिस्टर करें
+  // // महत्वपूर्ण: सुनिश्चित करें कि typeId आपके मॉडल में दिए गए आईडी से मेल खाता है
+  // Hive.registerAdapter(ChannelDataCacheAdapter()); // typeId: 0
+  // Hive.registerAdapter(ContentItemAdapter()); // typeId: 1
+  // Hive.registerAdapter(NetworkDataAdapter()); // typeId: 2
+  // Hive.registerAdapter(HorizontalVodModelAdapter()); // typeId: 3
+  // Hive.registerAdapter(HorizontalVodCacheAdapter()); // typeId: 4
 
-  // Hive बॉक्स खोलें जिसे आप ऐप में इस्तेमाल करेंगे
-  await Hive.openBox('channelCache');
-  await Hive.openBox('vodCache');
+  // // Hive बॉक्स खोलें जिसे आप ऐप में इस्तेमाल करेंगे
+  // await Hive.openBox('channelCache');
+  // await Hive.openBox('vodCache');
   final deviceInfoProvider = DeviceInfoProvider();
   await deviceInfoProvider.loadDeviceInfo();
 
@@ -3481,6 +3473,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => ColorProvider()),
         ChangeNotifierProvider(create: (_) => FocusProvider()),
         ChangeNotifierProvider.value(value: deviceInfoProvider),
+        ChangeNotifierProvider(create: (_) => InternalFocusProvider()),
       ],
       child: MyApp(),
     ),
@@ -4122,8 +4115,8 @@ class UpdateChecker {
           final data = jsonDecode(response.body);
 
           String apiVersion = data['playstore_version'] ?? "";
-          String apkUrl = data['playstore_apkUrl']??'';
-          String releaseNotes = data['playstore_releaseNotes']??'';
+          String apkUrl = data['playstore_apkUrl'] ?? '';
+          String releaseNotes = data['playstore_releaseNotes'] ?? '';
 
           int forceUpdateTime =
               DateTime.parse(data['playstore_forceUpdateTime'])
@@ -4241,7 +4234,7 @@ class _MyHomeState extends State<MyHome> {
 
     String? imageUrl = SessionManager.imageBaseUrl;
     print('Base Image URL: $imageUrl');
-        WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       _showInitialLoadingScreen();
     });
   }
@@ -4253,16 +4246,15 @@ class _MyHomeState extends State<MyHome> {
     super.dispose();
   }
 
-
-    // ✅ YEH NAYA FUNCTION ADD KAREIN
+  // ✅ YEH NAYA FUNCTION ADD KAREIN
   void _showInitialLoadingScreen() {
     Navigator.of(context).push(
       PageRouteBuilder(
         // opaque: false, screen ko transparent banata hai
-        opaque: false, 
+        opaque: false,
         pageBuilder: (context, _, __) => const ExitConfirmationScreen(
           // Hum false bhej rahe hain kyunki yeh app start par call ho raha hai
-          isFromBackButton: false, 
+          isFromBackButton: false,
         ),
       ),
     );

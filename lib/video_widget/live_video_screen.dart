@@ -52,7 +52,15 @@ class _LiveVideoScreenState extends State<LiveVideoScreen> {
     super.initState();
 
     // 1. Player aur Controller initialize karein
-    player = Player();
+    // player = Player();
+      // 1. Player aur Controller initialize karein (YAHAN BADLAV KAREIN)
+  player = Player(
+    configuration: PlayerConfiguration(
+      // Buffer size badhayein. Default se zyada rakhein.
+      // 10 seconds ka buffer kaafi smooth experience de sakta hai.
+      bufferSize: 8 * 1024 * 1024, 
+    ),
+  );
     controller = VideoController(player);
     player.open(Media(widget.videoUrl), play: true);
 
@@ -217,7 +225,7 @@ class _LiveVideoScreenState extends State<LiveVideoScreen> {
 
     // Ek item ki anumanit height
     final double itemHeight =
-        (MediaQuery.of(context).size.height * 0.12) + 16.0;
+        (MediaQuery.of(context).size.height * 0.13) + 8.0;
 
     // Target position jahan tak scroll karna hai
     final double targetOffset = itemHeight * _focusedIndex;
@@ -323,7 +331,7 @@ class _LiveVideoScreenState extends State<LiveVideoScreen> {
                           fit: StackFit.expand,
                           children: [
                             Opacity(
-                              opacity: 0.7,
+                              opacity: 0.4,
                               child: CachedNetworkImage(
                                 imageUrl: channel.banner ?? '',
                                 fit: BoxFit.cover,

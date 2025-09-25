@@ -31,7 +31,7 @@
 //     // String authKey = AuthManager.authKey;
 
 //     SharedPreferences prefs = await SharedPreferences.getInstance();
-//     String? authKey = prefs.getString('auth_key');
+//     String? authKey = prefs.getString('result_auth_key');
 
 //     // if (authKey.isEmpty) {
 //     //   throw Exception('Auth key not found. Please login again.');
@@ -2373,13 +2373,10 @@
 //   }
 // }
 
-
-
-
-
 import 'dart:async';
 import 'dart:convert';
 import 'package:mobi_tv_entertainment/home_screen_pages/movies_screen/movies.dart';
+import 'package:mobi_tv_entertainment/home_screen_pages/sub_vod_screen/genre_movies_screen.dart';
 import 'package:mobi_tv_entertainment/home_screen_pages/sub_vod_screen/horizontal_list_details_page.dart';
 import 'package:mobi_tv_entertainment/services/history_service.dart';
 import 'package:mobi_tv_entertainment/video_widget/custom_video_player.dart';
@@ -2395,7 +2392,6 @@ import 'package:mobi_tv_entertainment/provider/focus_provider.dart';
 import 'package:mobi_tv_entertainment/video_widget/custom_youtube_player.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../video_widget/socket_service.dart';
 import '../../video_widget/video_screen.dart';
 import '../../widgets/models/news_item_model.dart';
 import '../../widgets/small_widgets/loading_indicator.dart';
@@ -2403,22 +2399,21 @@ import '../../widgets/utils/color_service.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mobi_tv_entertainment/main.dart';
 
-
 // API Service class for consistent header management
 class ApiService {
   static Future<Map<String, String>> getHeaders() async {
     // await AuthManager.initialize();
     // String authKey = AuthManager.authKey;
 
-          SharedPreferences prefs = await SharedPreferences.getInstance();
-      String? authKey = prefs.getString('auth_key');
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? authKey = prefs.getString('result_auth_key');
 
     // if (authKey.isEmpty) {
     //   throw Exception('Auth key not found. Please login again.');
     // }
 
     return {
-      'auth-key': authKey??'', // Updated header name
+      'auth-key': authKey ?? '', // Updated header name
       'Accept': 'application/json',
       'Content-Type': 'application/json',
       'domain': 'coretechinfo.com'
@@ -2801,7 +2796,7 @@ Widget displayImage(
   String imageUrl, {
   double? width,
   double? height,
-  BoxFit fit = BoxFit.fill, 
+  BoxFit fit = BoxFit.fill,
   // required String cachedKey,
 }) {
   if (imageUrl.isEmpty || imageUrl == 'localImage') {
@@ -2861,7 +2856,7 @@ Widget displayImage(
       //   },
       // );
 
- return Image.network(
+      return Image.network(
         imageUrl,
         width: width,
         height: height,
@@ -2869,7 +2864,8 @@ Widget displayImage(
         headers: const {
           'User-Agent': 'Flutter App',
         },
-        loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+        loadingBuilder: (BuildContext context, Widget child,
+            ImageChunkEvent? loadingProgress) {
           // If the image is fully loaded, display it
           if (loadingProgress == null) {
             return child;
@@ -2877,12 +2873,12 @@ Widget displayImage(
           // Otherwise, show your loading widget
           return _buildLoadingWidget(width, height);
         },
-        errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
+        errorBuilder:
+            (BuildContext context, Object error, StackTrace? stackTrace) {
           // If an error occurs, display your error widget
           return _buildErrorWidget(width, height);
         },
       );
-      
     }
   } else {
     // Fallback for invalid image data
@@ -2977,8 +2973,6 @@ class VODAnimationTiming {
   static const Duration focus = Duration(milliseconds: 700);
   static const Duration scroll = Duration(milliseconds: 800);
 }
-
-
 
 // 🎯 FIXED ProfessionalNetworkCard - Handle enter key properly
 class ProfessionalNetworkCard extends StatefulWidget {
@@ -3325,10 +3319,6 @@ class _ProfessionalNetworkCardState extends State<ProfessionalNetworkCard>
     );
   }
 }
-
-
-
-
 
 // Updated Movie model for getAllMovies API
 class MovieItem {
@@ -3900,11 +3890,11 @@ class _VODState extends State<VOD> with TickerProviderStateMixin {
 // 4. Update VOD Grid Navigation as well
 // In _VODState class, update the _navigateToNetwork method:
   void _navigateToNetwork(NetworkApi network) async {
-                    try{
-          print('Updating user history for: ${network.name}');
+    try {
+      print('Updating user history for: ${network.name}');
       int? currentUserId = SessionManager.userId;
-    // final int? parsedContentType = episode.contentType;
-    final int? parsedId = network.id;
+      // final int? parsedContentType = episode.contentType;
+      final int? parsedId = network.id;
 
       await HistoryService.updateUserHistory(
         userId: currentUserId!, // 1. User ID
@@ -3921,14 +3911,15 @@ class _VODState extends State<VOD> with TickerProviderStateMixin {
       await Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => GenreNetworkWidget(
-            tvChannelId: network.id,
-            channelName: network.name, 
-          ),
-          // builder: (context) => HorizontalListDetailsPage(
+          // builder: (context) => GenreNetworkWidget(
           //   tvChannelId: network.id,
-          //   channelName: network.name, 
+          //   channelName: network.name,
           // ),
+          builder: (context) => GenreMoviesScreen(
+            tvChannelId: (network.id).toString(),
+            logoUrl: network.logo,
+            title: network.name,
+          ),
         ),
       );
 
@@ -4079,9 +4070,6 @@ class _VODState extends State<VOD> with TickerProviderStateMixin {
                 if (_networks.isNotEmpty)
                   Row(
                     children: [
-
-
-                      
                       Container(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 16, vertical: 8),
@@ -4431,7 +4419,6 @@ class _VODState extends State<VOD> with TickerProviderStateMixin {
   }
 }
 
-
 class ProfessionalVODGridCard extends StatefulWidget {
   final NetworkApi network;
   final FocusNode? focusNode;
@@ -4761,5 +4748,3 @@ class _ProfessionalVODGridCardState extends State<ProfessionalVODGridCard>
     );
   }
 }
-
-

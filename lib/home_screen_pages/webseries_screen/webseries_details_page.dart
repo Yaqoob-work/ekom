@@ -16,7 +16,7 @@ import 'package:mobi_tv_entertainment/video_widget/youtube_webview_player.dart';
 import 'package:mobi_tv_entertainment/widgets/models/news_item_model.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../video_widget/socket_service.dart';
+// import '../../video_widget/socket_service.dart';
 
 enum NavigationMode {
   seasons,
@@ -267,7 +267,7 @@ class WebSeriesDetailsPage extends StatefulWidget {
 
 class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
     with WidgetsBindingObserver, TickerProviderStateMixin {
-  final SocketService _socketService = SocketService();
+  // final SocketService _socketService = SocketService();
   final ScrollController _scrollController = ScrollController();
   final ScrollController _seasonsScrollController = ScrollController();
   final FocusNode _mainFocusNode = FocusNode();
@@ -335,7 +335,7 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _socketService.initSocket();
+    // _socketService.initSocket();
 
     _initializeAnimations();
     _loadAuthKey();
@@ -349,7 +349,7 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
     _mainFocusNode.dispose();
     _seasonsFocusNodes.values.forEach((node) => node.dispose());
     _episodeFocusNodes.values.forEach((node) => node.dispose());
-    _socketService.dispose();
+    // _socketService.dispose();
     _navigationModeController.dispose();
     _instructionController.dispose();
     _pageTransitionController.dispose();
@@ -362,7 +362,7 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
     try {
       final prefs = await SharedPreferences.getInstance();
       setState(() {
-        _authKey = prefs.getString('auth_key') ?? '';
+        _authKey = prefs.getString('result_auth_key') ?? '';
         if (_authKey.isEmpty) {
           _authKey = SessionManager.authKey;
         }
@@ -573,7 +573,7 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
   // Direct API call for seasons
   Future<List<SeasonModel>?> _fetchSeasonsFromAPIDirectly() async {
     final prefs = await SharedPreferences.getInstance();
-    final authKey = prefs.getString('auth_key') ?? _authKey;
+    final authKey = prefs.getString('result_auth_key') ?? _authKey;
 
     final response = await https.get(
       Uri.parse(
@@ -705,7 +705,7 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
   Future<List<NewsItemModel>?> _fetchEpisodesFromAPIDirectly(
       int seasonId) async {
     final prefs = await SharedPreferences.getInstance();
-    final authKey = prefs.getString('auth_key') ?? _authKey;
+    final authKey = prefs.getString('result_auth_key') ?? _authKey;
 
     final response = await https.get(
       Uri.parse(

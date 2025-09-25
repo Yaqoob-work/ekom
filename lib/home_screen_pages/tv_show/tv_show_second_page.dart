@@ -318,7 +318,7 @@ class _TVShowDetailsPageState extends State<TVShowDetailsPage>
       });
 
       final prefs = await SharedPreferences.getInstance();
-      String authKey = prefs.getString('auth_key') ?? '';
+      String authKey = prefs.getString('result_auth_key') ?? '';
 
       final response = await https.get(
         Uri.parse(
@@ -502,7 +502,7 @@ class _TVShowDetailsPageState extends State<TVShowDetailsPage>
 
     try {
       final prefs = await SharedPreferences.getInstance();
-      String authKey = prefs.getString('auth_key') ?? '';
+      String authKey = prefs.getString('result_auth_key') ?? '';
 
       final response = await https.get(
         Uri.parse(
@@ -574,7 +574,7 @@ class _TVShowDetailsPageState extends State<TVShowDetailsPage>
 //     });
 
 //     final prefs = await SharedPreferences.getInstance();
-//     String authKey = prefs.getString('auth_key') ?? '';
+//     String authKey = prefs.getString('result_auth_key') ?? '';
 
 //     final response = await https.get(
 //       Uri.parse('https://dashboard.cpplayers.com/public/api/getTvShows/${widget.tvChannelId}'),
@@ -744,7 +744,7 @@ class _TVShowDetailsPageState extends State<TVShowDetailsPage>
   // Future<List<TVShowDetailsModel>?> _fetchTVShowsFromAPI() async {
   //   try {
   //     final prefs = await SharedPreferences.getInstance();
-  //     String authKey = prefs.getString('auth_key') ?? '';
+  //     String authKey = prefs.getString('result_auth_key') ?? '';
 
   //     final response = await https.get(
   //       Uri.parse(
