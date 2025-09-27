@@ -9,16 +9,16 @@
 
 
 
-import 'package:media_kit/media_kit.dart';
+// import 'package:media_kit/media_kit.dart';
 
-class VideoPlayerService {
-  // ✅ Player configuration with the correct parameter name
-  static final Player player = Player(
-    configuration: const PlayerConfiguration(
-      // The correct parameter is 'vo' (Video Output)
-      // Set to 'gpu' to enable hardware acceleration
-      vo: 'gpu',
-      bufferSize: 15 * 1024 * 1024,
-    ),
-  );
-}
+// class VideoPlayerService {
+//   // ✅ Player configuration with the correct parameter name
+//   static final Player player = Player(
+//     configuration: const PlayerConfiguration(
+//       // The correct parameter is 'vo' (Video Output)
+//       // Set to 'gpu' to enable hardware acceleration
+//       vo: 'gpu',
+//       bufferSize: 15 * 1024 * 1024,
+//     ),
+//   );
+// }

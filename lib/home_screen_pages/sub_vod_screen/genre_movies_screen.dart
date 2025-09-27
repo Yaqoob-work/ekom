@@ -3190,6 +3190,1878 @@
 //   );
 // }
 
+// import 'dart:convert';
+// import 'dart:typed_data';
+// import 'dart:ui';
+// import 'package:flutter/foundation.dart';
+// import 'package:flutter/material.dart';
+// import 'package:flutter/services.dart';
+// import 'package:flutter_svg/svg.dart';
+// import 'package:http/http.dart' as http;
+// import 'package:mobi_tv_entertainment/home_screen_pages/webseries_screen/webseries_details_page.dart';
+// import 'package:mobi_tv_entertainment/main.dart';
+// import 'package:mobi_tv_entertainment/provider/device_info_provider.dart';
+// import 'package:mobi_tv_entertainment/provider/internal_focus_provider.dart';
+// import 'package:mobi_tv_entertainment/video_widget/custom_youtube_player.dart';
+// import 'package:mobi_tv_entertainment/video_widget/video_screen.dart';
+// import 'package:mobi_tv_entertainment/video_widget/youtube_webview_player.dart';
+// import 'package:provider/provider.dart';
+// import 'package:shared_preferences/shared_preferences.dart';
+
+// // ==========================================================
+// // ENUMS AND DATA MODELS
+// // ==========================================================
+
+// enum LoadingState { initial, loading, rebuilding, loaded, error }
+
+// class ParsedData {
+//   final List<String> genres;
+//   final Map<String, List<Movie>> moviesByGenre;
+
+//   ParsedData({required this.genres, required this.moviesByGenre});
+// }
+
+// // This function will run in the background isolate
+// ParsedData _parseJsonAndPrepareData(String jsonData) {
+//   final data = json.decode(jsonData) as Map<String, dynamic>;
+
+//   final allGenres = List<String>.from(data['genres']);
+//   final allMoviesByGenre = (data['moviesByGenre'] as Map<String, dynamic>).map(
+//       (key, value) => MapEntry(key,
+//           (value as List).map((movieMap) => Movie.fromMap(movieMap)).toList()));
+
+//   final activeGenres =
+//       allGenres.where((g) => allMoviesByGenre[g]?.isNotEmpty ?? false).toList();
+
+//   return ParsedData(genres: activeGenres, moviesByGenre: allMoviesByGenre);
+// }
+
+// // ==========================================================
+// // PROFESSIONAL COLORS & DATA MODELS
+// // ==========================================================
+
+// class ProfessionalColors {
+//   static const primaryDark = Color(0xFF0A0E1A);
+//   static const surfaceDark = Color(0xFF1A1D29);
+//   static const cardDark = Color(0xFF2A2D3A);
+//   static const accentBlue = Color(0xFF3B82F6);
+//   static const accentPurple = Color(0xFF8B5CF6);
+//   static const accentGreen = Color(0xFF10B981);
+//   static const accentRed = Color(0xFFEF4444);
+//   static const accentOrange = Color(0xFFF59E0B);
+//   static const accentPink = Color(0xFFEC4899);
+//   static const textPrimary = Color(0xFFFFFFFF);
+//   static const textSecondary = Color(0xFFB3B3B3);
+//   static const focusGlow = Color(0xFF60A5FA);
+// }
+
+// class GenreResponse {
+//   final bool status;
+//   final List<String> genres;
+//   GenreResponse({required this.status, required this.genres});
+//   factory GenreResponse.fromJson(Map<String, dynamic> json) {
+//     return GenreResponse(
+//       status: json['status'],
+//       genres: List<String>.from(json['genres']),
+//     );
+//   }
+// }
+
+// class MovieResponse {
+//   final bool status;
+//   final int total;
+//   final List<Movie> data;
+//   MovieResponse(
+//       {required this.status, required this.total, required this.data});
+//   factory MovieResponse.fromJson(Map<String, dynamic> json) {
+//     return MovieResponse(
+//       status: json['status'] ?? false,
+//       total: json['total'] ?? 0,
+//       data: (json['data'] as List).map((i) => Movie.fromJson(i)).toList(),
+//     );
+//   }
+// }
+
+// class Movie {
+//   final int id;
+//   final String name;
+//   final String? banner;
+//   final String? poster;
+//   final String? description;
+//   final int? contentType;
+//   final String? sourceType;
+//   final String? youtubeTrailer;
+//   final String? updatedAt;
+//   final String? movieUrl;
+//   final int? status;
+
+//   Movie({
+//     required this.id,
+//     required this.name,
+//     this.banner,
+//     this.poster,
+//     this.description,
+//     this.contentType,
+//     this.sourceType,
+//     this.youtubeTrailer,
+//     this.updatedAt,
+//     this.movieUrl,
+//     this.status,
+//   });
+
+//   factory Movie.fromJson(Map<String, dynamic> json) {
+//     return Movie(
+//       id: json['id'] ?? 0,
+//       name: json['name'] ?? 'No Name',
+//       banner: json['banner'],
+//       poster: json['poster'],
+//       description: json['description'],
+//       contentType: json['content_type'],
+//       sourceType: json['source_type'],
+//       youtubeTrailer: json['youtube_trailer'],
+//       updatedAt: json['updated_at'],
+//       movieUrl: json['movie_url'],
+//       status: json['status'],
+//     );
+//   }
+
+//   Map<String, dynamic> toMap() {
+//     return {
+//       'id': id,
+//       'name': name,
+//       'banner': banner,
+//       'poster': poster,
+//       'description': description,
+//       'content_type': contentType,
+//       'source_type': sourceType,
+//       'youtube_trailer': youtubeTrailer,
+//       'updated_at': updatedAt,
+//       'movie_url': movieUrl,
+//       'status': status,
+//     };
+//   }
+
+//   factory Movie.fromMap(Map<String, dynamic> map) => Movie.fromJson(map);
+
+//   String getPlayableUrl() {
+//     if (sourceType == 'YoutubeLive') return movieUrl ?? '';
+//     if (youtubeTrailer != null && youtubeTrailer!.isNotEmpty)
+//       return youtubeTrailer!;
+//     return movieUrl ?? '';
+//   }
+// }
+
+// // ==========================================================
+// // PERFORMANCE MONITORING
+// // ==========================================================
+
+// class PerformanceMonitor {
+//   static final Map<String, Stopwatch> _stopwatches = {};
+
+//   static void startTimer(String operation) {
+//     _stopwatches[operation] = Stopwatch()..start();
+//   }
+
+//   static void endTimer(String operation) {
+//     final stopwatch = _stopwatches[operation];
+//     if (stopwatch != null) {
+//       stopwatch.stop();
+//       print('⏱️ $operation took: ${stopwatch.elapsedMilliseconds}ms');
+//       _stopwatches.remove(operation);
+//     }
+//   }
+
+//   static void logMemoryUsage(String operation) {
+//     if (kDebugMode) {
+//       print('🧠 Memory check at $operation');
+//     }
+//   }
+// }
+
+// // ==========================================================
+// // SMART CACHE MANAGER
+// // ==========================================================
+
+// class SmartCacheManager {
+//   static const String _cachePrefix = 'genre_movies_cache_';
+//   static const String _timestampSuffix = '_timestamp';
+//   static const Duration _cacheValidity = Duration(hours: 2);
+
+//   static String _getCacheKey(String tvChannelId) => '$_cachePrefix$tvChannelId';
+//   static String _getTimestampKey(String tvChannelId) =>
+//       '$_cachePrefix$tvChannelId$_timestampSuffix';
+
+//   static Future<bool> isCacheValid(String tvChannelId) async {
+//     try {
+//       final prefs = await SharedPreferences.getInstance();
+//       final timestampStr = prefs.getString(_getTimestampKey(tvChannelId));
+
+//       if (timestampStr == null) return false;
+
+//       final cacheTime = DateTime.parse(timestampStr);
+//       final now = DateTime.now();
+//       final difference = now.difference(cacheTime);
+
+//       final isValid = difference < _cacheValidity;
+//       print(
+//           'Cache validity check: ${isValid ? '✅ Valid' : '❌ Expired'} (Age: ${difference.inMinutes}min)');
+
+//       return isValid;
+//     } catch (e) {
+//       print('Cache validity check failed: $e');
+//       return false;
+//     }
+//   }
+
+//   static Future<String?> getCachedData(String tvChannelId) async {
+//     try {
+//       final isValid = await isCacheValid(tvChannelId);
+//       if (!isValid) return null;
+
+//       final prefs = await SharedPreferences.getInstance();
+//       final cachedData = prefs.getString(_getCacheKey(tvChannelId));
+
+//       if (cachedData != null && cachedData.isNotEmpty) {
+//         print(
+//             '📦 Using cached data (${(cachedData.length / 1024).toStringAsFixed(1)}KB)');
+//         return cachedData;
+//       }
+
+//       return null;
+//     } catch (e) {
+//       print('Failed to get cached data: $e');
+//       return null;
+//     }
+//   }
+
+//   static Future<void> saveToCache(String tvChannelId, String data) async {
+//     try {
+//       final prefs = await SharedPreferences.getInstance();
+//       final now = DateTime.now().toIso8601String();
+
+//       await Future.wait([
+//         prefs.setString(_getCacheKey(tvChannelId), data),
+//         prefs.setString(_getTimestampKey(tvChannelId), now),
+//       ]);
+
+//       print(
+//           '💾 Data cached (${(data.length / 1024).toStringAsFixed(1)}KB) at $now');
+//     } catch (e) {
+//       print('Failed to save to cache: $e');
+//     }
+//   }
+
+//   static Future<void> clearCache(String tvChannelId) async {
+//     try {
+//       final prefs = await SharedPreferences.getInstance();
+//       await Future.wait([
+//         prefs.remove(_getCacheKey(tvChannelId)),
+//         prefs.remove(_getTimestampKey(tvChannelId)),
+//       ]);
+//       print('🗑️ Cache cleared for channel: $tvChannelId');
+//     } catch (e) {
+//       print('Failed to clear cache: $e');
+//     }
+//   }
+
+//   static Future<Map<String, dynamic>> getCacheInfo(String tvChannelId) async {
+//     try {
+//       final prefs = await SharedPreferences.getInstance();
+//       final cacheKey = _getCacheKey(tvChannelId);
+//       final timestampKey = _getTimestampKey(tvChannelId);
+
+//       final data = prefs.getString(cacheKey);
+//       final timestamp = prefs.getString(timestampKey);
+
+//       if (data == null || timestamp == null) {
+//         return {'exists': false};
+//       }
+
+//       final cacheTime = DateTime.parse(timestamp);
+//       final age = DateTime.now().difference(cacheTime);
+
+//       return {
+//         'exists': true,
+//         'size_kb': (data.length / 1024).toStringAsFixed(1),
+//         'timestamp': timestamp,
+//         'age_minutes': age.inMinutes,
+//         'is_valid': age < _cacheValidity,
+//       };
+//     } catch (e) {
+//       return {'exists': false, 'error': e.toString()};
+//     }
+//   }
+// }
+
+// // ==========================================================
+// // OPTIMIZED API FUNCTIONS
+// // ==========================================================
+
+// Future<String> _fetchAndCacheDataIsolateOptimized(
+//     Map<String, String> params) async {
+//   final String tvChannelId = params['tvChannelId']!;
+//   final String authKey = params['authKey']!;
+
+//   final client = http.Client();
+
+//   try {
+//     // Step 1: Fetch genres with timeout
+//     final genresResponse = await client.get(
+//       Uri.parse(
+//           'https://dashboard.cpplayers.com/api/v2/getGenreByContentNetwork/$tvChannelId'),
+//       headers: {
+//         'auth-key': authKey,
+//         'Accept': 'application/json',
+//         'domain': 'coretechinfo.com'
+//       },
+//     ).timeout(const Duration(seconds: 15),
+//         onTimeout: () => throw Exception('Genres request timed out'));
+
+//     if (genresResponse.statusCode != 200) {
+//       throw Exception('Failed to load genres: ${genresResponse.statusCode}');
+//     }
+
+//     final genreData = GenreResponse.fromJson(json.decode(genresResponse.body));
+//     if (!genreData.status) return '';
+
+//     final genres = genreData.genres;
+//     print('📝 Found ${genres.length} genres, starting parallel fetch...');
+
+//     // Step 2: Create parallel futures with individual timeouts
+//     final List<Future<MapEntry<String, List<Movie>>>> genreFutures =
+//         genres.map((genre) async {
+//       try {
+//         final moviesResponse = await client
+//             .post(
+//               Uri.parse(
+//                   'https://dashboard.cpplayers.com/api/v2/getAllContentsOfNetworkNew?page=1&records=10'),
+//               headers: {
+//                 'auth-key': authKey,
+//                 'domain': 'coretechinfo.com',
+//                 'Accept': 'application/json',
+//                 'Content-Type': 'application/json'
+//               },
+//               body: json.encode({"genre": genre, "network_id": tvChannelId}),
+//             )
+//             .timeout(const Duration(seconds: 10),
+//                 onTimeout: () => throw Exception('$genre request timed out'));
+
+//         if (moviesResponse.statusCode == 200) {
+//           final movieData =
+//               MovieResponse.fromJson(json.decode(moviesResponse.body));
+//           if (movieData.status && movieData.data.isNotEmpty) {
+//             final activeMovies =
+//                 movieData.data.where((movie) => movie.status == 1).toList();
+//             if (activeMovies.isNotEmpty) {
+//               return MapEntry(genre, activeMovies);
+//             }
+//           }
+//         }
+//         return MapEntry(genre, <Movie>[]);
+//       } catch (e) {
+//         print('Error fetching $genre: $e');
+//         return MapEntry(genre, <Movie>[]);
+//       }
+//     }).toList();
+
+//     // Step 3: Wait for all requests with overall timeout
+//     print('⚡ Executing ${genreFutures.length} parallel API calls...');
+//     final results = await Future.wait(genreFutures)
+//         .timeout(const Duration(seconds: 30), onTimeout: () {
+//       print('⚠️ Overall request timeout, returning partial results');
+//       return genreFutures
+//           .map((future) => MapEntry('timeout', <Movie>[]))
+//           .toList();
+//     });
+
+//     // Step 4: Build the final map
+//     final Map<String, List<Movie>> moviesByGenre = {};
+//     int successCount = 0;
+//     for (final result in results) {
+//       if (result.key != 'timeout' && result.value.isNotEmpty) {
+//         moviesByGenre[result.key] = result.value;
+//         successCount++;
+//       }
+//     }
+
+//     print(
+//         '✅ Parallel fetch complete: $successCount/${genres.length} genres loaded');
+
+//     final Map<String, dynamic> serializableData = {
+//       'genres': genres,
+//       'moviesByGenre': moviesByGenre.map(
+//           (key, value) => MapEntry(key, value.map((m) => m.toMap()).toList())),
+//     };
+
+//     return json.encode(serializableData);
+//   } catch (e) {
+//     print("Isolate Error: $e");
+//     return '';
+//   } finally {
+//     client.close();
+//   }
+// }
+
+// // ==========================================================
+// // SAFE LIST EXTENSION
+// // ==========================================================
+
+// extension SafeList<T> on List<T> {
+//   T? safeElementAt(int index) {
+//     if (index < 0 || index >= length) return null;
+//     return this[index];
+//   }
+
+//   bool isValidIndex(int index) {
+//     return index >= 0 && index < length;
+//   }
+// }
+
+// // ==========================================================
+// // GENRE MOVIES SCREEN (MAIN SCREEN)
+// // ==========================================================
+
+// class GenreMoviesScreen extends StatefulWidget {
+//   final String tvChannelId;
+//   final String logoUrl;
+//   final String title;
+//   const GenreMoviesScreen(
+//       {super.key,
+//       required this.tvChannelId,
+//       required this.logoUrl,
+//       required this.title});
+//   @override
+//   State<GenreMoviesScreen> createState() => _GenreMoviesScreenState();
+// }
+
+// class _GenreMoviesScreenState extends State<GenreMoviesScreen> {
+//   LoadingState _loadingState = LoadingState.initial;
+//   String? _error;
+//   List<String> _genres = [];
+//   final Map<String, List<Movie>> _moviesByGenre = {};
+//   final List<List<FocusNode>> _focusNodes = [];
+//   final ScrollController _verticalScrollController = ScrollController();
+//   final Map<int, ScrollController> _horizontalScrollControllers = {};
+//   final List<GlobalKey> _rowKeys = [];
+//   final List<List<GlobalKey>> _cardKeys = [];
+//   final List<Color> _focusColors = [
+//     ProfessionalColors.accentBlue,
+//     ProfessionalColors.accentPurple,
+//     ProfessionalColors.accentGreen,
+//     ProfessionalColors.accentOrange,
+//     ProfessionalColors.accentPink,
+//     ProfessionalColors.accentRed
+//   ];
+//   final List<Gradient> _genreBackgrounds = const [
+//     LinearGradient(
+//         colors: [Color(0xFF1A1D29), Color(0xFF0F121E)],
+//         begin: Alignment.topCenter,
+//         end: Alignment.bottomCenter),
+//     LinearGradient(
+//         colors: [Color(0xFF1C1A29), Color(0xFF110F1E)],
+//         begin: Alignment.topCenter,
+//         end: Alignment.bottomCenter),
+//     LinearGradient(
+//         colors: [Color(0xFF1A2129), Color(0xFF0F161E)],
+//         begin: Alignment.topCenter,
+//         end: Alignment.bottomCenter),
+//     LinearGradient(
+//         colors: [Color(0xFF211A29), Color(0xFF160F1E)],
+//         begin: Alignment.topCenter,
+//         end: Alignment.bottomCenter)
+//   ];
+//   bool _isVideoLoading = false;
+//   String get _cacheKey => 'genre_movies_cache_${widget.tvChannelId}';
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     WidgetsBinding.instance.addPostFrameCallback((_) {
+//       if (mounted) {
+//         Provider.of<InternalFocusProvider>(context, listen: false)
+//             .updateName('');
+//       }
+//     });
+//     _loadInitialData();
+//   }
+
+//   @override
+//   void dispose() {
+//     _cleanupResources();
+//     super.dispose();
+//   }
+
+//   void _cleanupResources() {
+//     for (var row in _focusNodes) {
+//       for (var node in row) {
+//         node.dispose();
+//       }
+//     }
+//     _focusNodes.clear();
+
+//     _verticalScrollController.dispose();
+//     for (var controller in _horizontalScrollControllers.values) {
+//       controller.dispose();
+//     }
+//     _horizontalScrollControllers.clear();
+
+//     _cardKeys.clear();
+//     _rowKeys.clear();
+//     _moviesByGenre.clear();
+//     _genres.clear();
+//   }
+
+//   void _applyDataToState(ParsedData parsedData) {
+//     if (!mounted) return;
+
+//     setState(() {
+//       _loadingState = LoadingState.rebuilding;
+//     });
+
+//     // Clean up existing resources before creating new ones
+//     for (var row in _focusNodes) {
+//       for (var node in row) {
+//         node.dispose();
+//       }
+//     }
+//     _focusNodes.clear();
+
+//     for (var controller in _horizontalScrollControllers.values) {
+//       controller.dispose();
+//     }
+//     _horizontalScrollControllers.clear();
+
+//     _cardKeys.clear();
+//     _rowKeys.clear();
+
+//     // Apply new data
+//     _genres = parsedData.genres;
+//     _moviesByGenre.clear();
+//     _moviesByGenre.addAll(parsedData.moviesByGenre);
+
+//     // Create new keys and nodes
+//     _rowKeys.addAll(List.generate(_genres.length, (_) => GlobalKey()));
+//     for (int i = 0; i < _genres.length; i++) {
+//       final movies = _moviesByGenre[_genres[i]] ?? [];
+//       int moviesToShow = movies.length > 10 ? 10 : movies.length;
+//       int nodeCount = moviesToShow + 1;
+//       var rowNodes = List.generate(nodeCount, (_) => FocusNode());
+//       var rowCardKeys = List.generate(nodeCount, (_) => GlobalKey());
+//       _cardKeys.add(rowCardKeys);
+//       _horizontalScrollControllers[i] = ScrollController();
+//       for (int j = 0; j < nodeCount; j++) {
+//         rowNodes[j].addListener(() {
+//           if (rowNodes[j].hasFocus) _onItemFocusChange(i, j);
+//         });
+//       }
+//       _focusNodes.add(rowNodes);
+//     }
+
+//     setState(() {
+//       _loadingState = LoadingState.loaded;
+//     });
+
+//     Future.delayed(const Duration(milliseconds: 200), () {
+//       if (mounted && _focusNodes.isNotEmpty && _focusNodes.first.isNotEmpty) {
+//         _focusNodes.first.first.requestFocus();
+//       }
+//     });
+//   }
+
+//   Future<void> _loadInitialData() async {
+//     final cachedData =
+//         await SmartCacheManager.getCachedData(widget.tvChannelId);
+
+//     if (cachedData != null) {
+//       print('🚀 Loading from valid cache...');
+//       PerformanceMonitor.startTimer('cacheLoad');
+
+//       _parseAndSetState(cachedData);
+
+//       PerformanceMonitor.endTimer('cacheLoad');
+
+//       final cacheInfo =
+//           await SmartCacheManager.getCacheInfo(widget.tvChannelId);
+//       if (cacheInfo['age_minutes'] > 60) {
+//         print(
+//             '🔄 Starting background refresh (cache age: ${cacheInfo['age_minutes']}min)');
+//         _refreshDataInBackground();
+//       }
+
+//       return;
+//     }
+
+//     print('📡 No valid cache found, fetching fresh data...');
+//     await _fetchDataWithLoading();
+//   }
+
+//   Future<void> _refreshDataInBackground() async {
+//     try {
+//       final prefs = await SharedPreferences.getInstance();
+//       final authKey = prefs.getString('result_auth_key') ?? '56456456456';
+
+//       final String freshDataJson = await _fetchAndCacheDataIsolateOptimized(
+//           {'tvChannelId': widget.tvChannelId, 'authKey': authKey});
+
+//       if (freshDataJson.isNotEmpty) {
+//         await SmartCacheManager.saveToCache(widget.tvChannelId, freshDataJson);
+//         print('✅ Background refresh completed and cached');
+//       }
+//     } catch (e) {
+//       print('Background refresh failed: $e');
+//     }
+//   }
+
+//   Future<void> _fetchDataWithLoading() async {
+//     PerformanceMonitor.startTimer('fetchData');
+
+//     if (mounted)
+//       setState(() {
+//         _loadingState = LoadingState.loading;
+//         _error = null;
+//       });
+
+//     try {
+//       final prefs = await SharedPreferences.getInstance();
+//       final authKey = prefs.getString('result_auth_key') ?? '56456456456';
+
+//       PerformanceMonitor.startTimer('isolateWork');
+//       final String freshDataJson = await _fetchAndCacheDataIsolateOptimized(
+//           {'tvChannelId': widget.tvChannelId, 'authKey': authKey});
+//       PerformanceMonitor.endTimer('isolateWork');
+
+//       if (freshDataJson.isNotEmpty) {
+//         await SmartCacheManager.saveToCache(widget.tvChannelId, freshDataJson);
+
+//         PerformanceMonitor.startTimer('parseData');
+//         final parsedData =
+//             await compute(_parseJsonAndPrepareData, freshDataJson);
+//         PerformanceMonitor.endTimer('parseData');
+
+//         PerformanceMonitor.startTimer('applyState');
+//         _applyDataToState(parsedData);
+//         PerformanceMonitor.endTimer('applyState');
+//       } else {
+//         throw Exception('Failed to load data');
+//       }
+//     } catch (e) {
+//       if (mounted) {
+//         setState(() {
+//           _error = e.toString();
+//           _loadingState = LoadingState.error;
+//         });
+//       }
+//     }
+
+//     PerformanceMonitor.endTimer('fetchData');
+//     PerformanceMonitor.logMemoryUsage('fetchDataComplete');
+//   }
+
+//   void _parseAndSetState(String jsonData) {
+//     if (!mounted) return;
+
+//     setState(() {
+//       _loadingState = LoadingState.rebuilding;
+//     });
+
+//     final data = json.decode(jsonData) as Map<String, dynamic>;
+
+//     for (var row in _focusNodes) {
+//       for (var node in row) {
+//         node.dispose();
+//       }
+//     }
+//     _focusNodes.clear();
+
+//     for (var controller in _horizontalScrollControllers.values) {
+//       controller.dispose();
+//     }
+//     _horizontalScrollControllers.clear();
+
+//     _cardKeys.clear();
+//     _rowKeys.clear();
+
+//     final allGenres = List<String>.from(data['genres']);
+//     final allMoviesByGenre = (data['moviesByGenre'] as Map<String, dynamic>)
+//         .map((key, value) => MapEntry(
+//             key,
+//             (value as List)
+//                 .map((movieMap) => Movie.fromMap(movieMap))
+//                 .toList()));
+//     final activeGenres = allGenres
+//         .where((g) => allMoviesByGenre[g]?.isNotEmpty ?? false)
+//         .toList();
+
+//     _genres = activeGenres;
+//     _moviesByGenre.clear();
+//     _moviesByGenre.addAll(allMoviesByGenre);
+
+//     _rowKeys.addAll(List.generate(_genres.length, (_) => GlobalKey()));
+//     for (int i = 0; i < _genres.length; i++) {
+//       final movies = _moviesByGenre[_genres[i]] ?? [];
+//       int moviesToShow = movies.length > 10 ? 10 : movies.length;
+//       int nodeCount = moviesToShow + 1;
+//       var rowNodes = List.generate(nodeCount, (_) => FocusNode());
+//       var rowCardKeys = List.generate(nodeCount, (_) => GlobalKey());
+//       _cardKeys.add(rowCardKeys);
+//       _horizontalScrollControllers[i] = ScrollController();
+//       for (int j = 0; j < nodeCount; j++) {
+//         rowNodes[j].addListener(() {
+//           if (rowNodes[j].hasFocus) _onItemFocusChange(i, j);
+//         });
+//       }
+//       _focusNodes.add(rowNodes);
+//     }
+
+//     setState(() {
+//       _loadingState = LoadingState.loaded;
+//     });
+
+//     Future.delayed(const Duration(milliseconds: 200), () {
+//       if (mounted && _focusNodes.isNotEmpty && _focusNodes.first.isNotEmpty) {
+//         _focusNodes.first.first.requestFocus();
+//       }
+//     });
+//   }
+
+//   void _onItemFocusChange(int genreIndex, int movieIndex) {
+//     if (!mounted ||
+//         _loadingState == LoadingState.loading ||
+//         genreIndex < 0 ||
+//         genreIndex >= _genres.length) return;
+//     final genre = _genres[genreIndex];
+//     final movies = _moviesByGenre[genre] ?? [];
+//     int moviesToShow = movies.length > 10 ? 10 : movies.length;
+//     int expectedNodeCount = moviesToShow + 1;
+//     if (movieIndex < 0 || movieIndex >= expectedNodeCount) return;
+
+//     String newName =
+//         movieIndex < moviesToShow ? movies[movieIndex].name : "View All";
+//     Provider.of<InternalFocusProvider>(context, listen: false)
+//         .updateName(newName);
+
+//     _scrollToFocusedVertical(genreIndex);
+//     _scrollToFocusedHorizontal(genreIndex, movieIndex);
+//   }
+
+//   void _scrollToFocusedVertical(int genreIndex) {
+//     if (_loadingState == LoadingState.loading ||
+//         genreIndex < 0 ||
+//         genreIndex >= _rowKeys.length) return;
+//     final rowContext = _rowKeys[genreIndex].currentContext;
+//     if (rowContext == null) return;
+//     final renderBox = rowContext.findRenderObject() as RenderBox;
+//     final rowOffset = renderBox.localToGlobal(Offset.zero);
+//     final scrollOffset = _verticalScrollController.offset;
+//     const appBarHeight = 100.0;
+//     final rowTop =
+//         rowOffset.dy + scrollOffset - (screenhgt * 0.5 - appBarHeight * 0.5);
+//     _verticalScrollController.animateTo(
+//         rowTop.clamp(0.0, _verticalScrollController.position.maxScrollExtent),
+//         duration: const Duration(milliseconds: 350),
+//         curve: Curves.easeOut);
+//   }
+
+//   void _scrollToFocusedHorizontal(int genreIndex, int movieIndex) {
+//     if (_loadingState == LoadingState.loading ||
+//         genreIndex < 0 ||
+//         genreIndex >= _horizontalScrollControllers.length ||
+//         genreIndex >= _cardKeys.length) return;
+//     if (movieIndex < 0 || movieIndex >= _cardKeys[genreIndex].length) return;
+//     final scrollController = _horizontalScrollControllers[genreIndex];
+//     if (scrollController == null || !scrollController.hasClients) return;
+//     final cardContext = _cardKeys[genreIndex][movieIndex].currentContext;
+//     if (cardContext == null) return;
+//     final renderBox = cardContext.findRenderObject() as RenderBox;
+//     final cardOffset = renderBox.localToGlobal(Offset.zero,
+//         ancestor: scrollController.position.context.storageContext
+//             .findRenderObject());
+//     double targetOffset = (scrollController.offset + cardOffset.dx - 40)
+//         .clamp(0.0, scrollController.position.maxScrollExtent);
+//     scrollController.animateTo(targetOffset,
+//         duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
+//   }
+
+//   // Future<void> _playContent(Movie content) async {
+//   //   if (_isVideoLoading || !mounted) return;
+//   //   setState(() => _isVideoLoading = true);
+//   //   try {
+//   //     ScaffoldMessenger.of(context)
+//   //         .showSnackBar(SnackBar(content: Text('Playing: ${content.name}')));
+//   //   } catch (e) {
+//   //     if (mounted)
+//   //       ScaffoldMessenger.of(context)
+//   //           .showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
+//   //   } finally {
+//   //     if (mounted) setState(() => _isVideoLoading = false);
+//   //   }
+//   // }
+
+//   // // Replace the old _playContent with this complete version
+// Future<void> _playContent(Movie content) async {
+//   if (_isVideoLoading || !mounted) return;
+//   setState(() { _isVideoLoading = true; });
+
+//   try {
+//     String playableUrl = content.getPlayableUrl();
+
+//     // Navigate to Web Series details page if content type is 2
+//     if (content.contentType == 2) {
+//       await Navigator.push(
+//         context,
+//         MaterialPageRoute(
+//           builder: (context) => WebSeriesDetailsPage(
+//             id: content.id,
+//             banner: content.banner ?? '',
+//             poster: content.poster ?? '',
+//             logo: widget.logoUrl,
+//             name: content.name,
+//             updatedAt: content.updatedAt ?? '',
+//           ),
+//         ),
+//       );
+//       return; // Stop execution after navigation
+//     }
+
+//     if (playableUrl.isEmpty) {
+//       throw Exception('No video URL found');
+//     }
+
+//     if (!mounted) return;
+
+//     // Handle YouTube links
+//     if (content.sourceType == 'YoutubeLive' || (content.youtubeTrailer != null && content.youtubeTrailer!.isNotEmpty)) {
+//       final deviceInfo = context.read<DeviceInfoProvider>();
+//       if (deviceInfo.deviceName == 'AFTSS : Amazon Fire Stick HD') {
+//         // Use WebView for specific devices like Fire Stick
+//         await Navigator.push(context, MaterialPageRoute(builder: (context) => YoutubeWebviewPlayer(videoUrl: playableUrl, name: content.name)));
+//       } else {
+//         // Use the custom YouTube player for other devices
+//         await Navigator.push(
+//           context,
+//           MaterialPageRoute(
+//             builder: (context) => CustomYoutubePlayer(
+//               videoData: VideoData(
+//                 id: content.id.toString(),
+//                 title: content.name,
+//                 youtubeUrl: playableUrl,
+//                 thumbnail: content.poster ?? content.banner ?? '',
+//                 description: content.description ?? '',
+//               ),
+//               playlist: [],
+//             ),
+//           ),
+//         );
+//       }
+//     } else {
+//       // Handle other video URLs
+//       await Navigator.push(
+//         context,
+//         MaterialPageRoute(
+//           builder: (context) => VideoScreen(
+//             videoUrl: playableUrl,
+//             bannerImageUrl: content.poster ?? content.banner ?? '',
+//             videoId: content.id,
+//             name: content.name,
+//             updatedAt: content.updatedAt ?? '',
+//             source: 'isVod',
+//             channelList: [],
+//             liveStatus: false,
+//           ),
+//         ),
+//       );
+//     }
+//   } catch (e) {
+//     if (mounted) {
+//       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
+//     }
+//   } finally {
+//     if (mounted) {
+//       setState(() { _isVideoLoading = false; });
+//     }
+//   }
+// }
+
+//   void _navigateToGridPage(String genre) {
+//     Navigator.push(
+//         context,
+//         MaterialPageRoute(
+//             builder: (context) => GenreGridScreen(
+//                 genre: genre,
+//                 tvChannelId: widget.tvChannelId,
+//                 logoUrl: widget.logoUrl)));
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       backgroundColor: ProfessionalColors.primaryDark,
+//       body: Stack(
+//         children: [
+//           Container(
+//               decoration: const BoxDecoration(
+//                   gradient: LinearGradient(colors: [
+//             ProfessionalColors.primaryDark,
+//             Color(0xFF06080F)
+//           ], begin: Alignment.topCenter, end: Alignment.bottomCenter))),
+//           CustomScrollView(
+//             controller: _verticalScrollController,
+//             slivers: [
+//               const SliverPadding(padding: EdgeInsets.only(top: 100.0)),
+//               _loadingState == LoadingState.loading ||
+//                       _loadingState == LoadingState.initial
+//                   ? const SliverFillRemaining(
+//                       child: Center(child: CircularProgressIndicator()))
+//                   : _error != null
+//                       ? SliverFillRemaining(
+//                           child: Center(child: Text('Error: $_error')))
+//                       : _buildGenresList(),
+//             ],
+//           ),
+//           Positioned(top: 0, left: 0, right: 0, child: _buildBeautifulAppBar()),
+//           if (_isVideoLoading)
+//             Container(
+//                 color: Colors.black.withOpacity(0.7),
+//                 child: const Center(
+//                     child: CircularProgressIndicator(
+//                         valueColor:
+//                             AlwaysStoppedAnimation<Color>(Colors.white)))),
+//         ],
+//       ),
+//     );
+//   }
+
+//   Widget _buildBeautifulAppBar() {
+//     final focusedName = context.watch<InternalFocusProvider>().focusedItemName;
+//     return Container(
+//       decoration: BoxDecoration(
+//         gradient: LinearGradient(
+//             begin: Alignment.topCenter,
+//             end: Alignment.bottomCenter,
+//             colors: [
+//               ProfessionalColors.primaryDark.withOpacity(0.95),
+//               ProfessionalColors.surfaceDark.withOpacity(0.9),
+//               ProfessionalColors.surfaceDark.withOpacity(0.8),
+//               Colors.transparent
+//             ]),
+//         border: Border(
+//             bottom: BorderSide(
+//                 color: ProfessionalColors.accentBlue.withOpacity(0.2),
+//                 width: 1)),
+//         boxShadow: [
+//           BoxShadow(
+//               color: Colors.black.withOpacity(0.3),
+//               blurRadius: 10,
+//               offset: const Offset(0, 2))
+//         ],
+//       ),
+//       child: ClipRRect(
+//         child: BackdropFilter(
+//           filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
+//           child: Container(
+//             padding: EdgeInsets.only(
+//                 top: MediaQuery.of(context).padding.top + 10,
+//                 left: 20,
+//                 right: 30,
+//                 bottom: 10),
+//             child: Row(
+//               children: [
+//                 Container(
+//                     decoration: BoxDecoration(
+//                         shape: BoxShape.circle,
+//                         gradient: LinearGradient(colors: [
+//                           ProfessionalColors.accentBlue.withOpacity(0.3),
+//                           ProfessionalColors.accentPurple.withOpacity(0.3)
+//                         ])),
+//                     child: IconButton(
+//                         icon: const Icon(Icons.arrow_back_rounded,
+//                             color: Colors.white, size: 24),
+//                         onPressed: () => Navigator.pop(context))),
+//                 const SizedBox(width: 16),
+//                 GradientText(widget.title,
+//                     style: const TextStyle(
+//                         fontWeight: FontWeight.bold, fontSize: 22),
+//                     gradient: const LinearGradient(colors: [
+//                       ProfessionalColors.accentPink,
+//                       ProfessionalColors.accentPurple,
+//                       ProfessionalColors.accentBlue
+//                     ])),
+//                 const SizedBox(width: 40),
+//                 Expanded(
+//                     child: Text(focusedName,
+//                         textAlign: TextAlign.left,
+//                         style: const TextStyle(
+//                             color: ProfessionalColors.textSecondary,
+//                             fontWeight: FontWeight.bold,
+//                             fontSize: 20),
+//                         overflow: TextOverflow.ellipsis)),
+//                 Padding(
+//                     padding: const EdgeInsets.only(right: 15.0),
+//                     child: CircleAvatar(
+//                         backgroundImage: NetworkImage(widget.logoUrl),
+//                         radius: 20,
+//                         backgroundColor: Colors.white24)),
+//               ],
+//             ),
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildGenresList() {
+//     if (_loadingState == LoadingState.rebuilding || _genres.isEmpty) {
+//       return const SliverToBoxAdapter(child: SizedBox.shrink());
+//     }
+//     return SliverList(
+//       delegate: SliverChildBuilderDelegate((context, index) {
+//         final genre = _genres[index];
+//         final movies = _moviesByGenre[genre] ?? [];
+//         final int moviesToShow = movies.length > 10 ? 10 : movies.length;
+//         final int itemCount = moviesToShow + 1;
+//         return Container(
+//           key: _rowKeys[index],
+//           decoration: BoxDecoration(
+//               gradient: _genreBackgrounds[index % _genreBackgrounds.length]),
+//           padding: const EdgeInsets.symmetric(vertical: 5.0),
+//           child: Column(
+//             crossAxisAlignment: CrossAxisAlignment.start,
+//             children: [
+//               Padding(
+//                   padding: const EdgeInsets.only(left: 30.0, bottom: 5.0),
+//                   child: GradientText(genre,
+//                       style: const TextStyle(
+//                           fontSize: 22,
+//                           fontWeight: FontWeight.bold,
+//                           letterSpacing: 1.2),
+//                       gradient: const LinearGradient(
+//                           colors: [
+//                             ProfessionalColors.accentGreen,
+//                             ProfessionalColors.accentOrange,
+//                             ProfessionalColors.accentPink
+//                           ],
+//                           begin: Alignment.topLeft,
+//                           end: Alignment.bottomRight))),
+//               SizedBox(
+//                 height: bannerhgt + 25,
+//                 child: ListView.builder(
+//                   controller: _horizontalScrollControllers[index],
+//                   scrollDirection: Axis.horizontal,
+//                   itemCount: itemCount,
+//                   padding: const EdgeInsets.symmetric(horizontal: 30.0),
+//                   itemBuilder: (context, movieIndex) {
+//                     try {
+//                       if (!_genres.isValidIndex(index)) {
+//                         print(
+//                             'Invalid genre index: $index, genres length: ${_genres.length}');
+//                         return Container(
+//                             width: bannerwdt,
+//                             child: const Text('Invalid genre'));
+//                       }
+
+//                       if (!_cardKeys.isValidIndex(index) ||
+//                           !_cardKeys[index].isValidIndex(movieIndex)) {
+//                         print(
+//                             'Invalid card key index: genre=$index, movie=$movieIndex');
+//                         return Container(
+//                             width: bannerwdt,
+//                             child: const Text('Invalid card key'));
+//                       }
+
+//                       if (!_focusNodes.isValidIndex(index) ||
+//                           !_focusNodes[index].isValidIndex(movieIndex)) {
+//                         print(
+//                             'Invalid focus node index: genre=$index, movie=$movieIndex');
+//                         return Container(
+//                             width: bannerwdt,
+//                             child: const Text('Invalid focus node'));
+//                       }
+
+//                       if (movieIndex == moviesToShow) {
+//                         return ViewAllCard(
+//                             key: _cardKeys[index][movieIndex],
+//                             focusNode: _focusNodes[index][movieIndex],
+//                             focusColors: _focusColors,
+//                             uniqueIndex: index * 10 + movieIndex,
+//                             onTap: () => _navigateToGridPage(genre));
+//                       }
+
+//                       final movie = movies.safeElementAt(movieIndex);
+//                       if (movie == null) {
+//                         print(
+//                             'Movie not found at index: $movieIndex, movies length: ${movies.length}');
+//                         return Container(
+//                             width: bannerwdt,
+//                             child: const Text('Movie not found'));
+//                       }
+
+//                       return MovieCard(
+//                           key: _cardKeys[index][movieIndex],
+//                           movie: movie,
+//                           logoUrl: widget.logoUrl,
+//                           focusNode: _focusNodes[index][movieIndex],
+//                           focusColors: _focusColors,
+//                           uniqueIndex: index * 10 + movieIndex,
+//                           onTap: () => _playContent(movie));
+//                     } catch (e, stackTrace) {
+//                       print('🚨 ListView Builder Error 🚨');
+//                       print('Genre Index: $index, Movie Index: $movieIndex');
+//                       print('Error: $e');
+//                       print('StackTrace: $stackTrace');
+//                       return Container(
+//                           width: bannerwdt,
+//                           height: 100,
+//                           color: Colors.red.withOpacity(0.3),
+//                           child: const Center(
+//                               child: Text('Error',
+//                                   style: TextStyle(color: Colors.white))));
+//                     }
+//                   },
+//                 ),
+//               ),
+//             ],
+//           ),
+//         );
+//       }, childCount: _genres.length),
+//     );
+//   }
+// }
+
+// // ==========================================================
+// // GENRE GRID SCREEN
+// // ==========================================================
+
+// List<Movie> _parseGridData(String responseBody) {
+//   final movieData = MovieResponse.fromJson(json.decode(responseBody));
+//   if (movieData.status) {
+//     return movieData.data.where((movie) => movie.status == 1).toList();
+//   } else {
+//     return [];
+//   }
+// }
+
+// class GenreGridScreen extends StatefulWidget {
+//   final String genre;
+//   final String tvChannelId;
+//   final String logoUrl;
+//   const GenreGridScreen(
+//       {super.key,
+//       required this.genre,
+//       required this.tvChannelId,
+//       required this.logoUrl});
+//   @override
+//   State<GenreGridScreen> createState() => _GenreGridScreenState();
+// }
+
+// class _GenreGridScreenState extends State<GenreGridScreen> {
+//   bool _isLoading = true;
+//   String? _error;
+//   List<Movie> _movies = [];
+//   List<FocusNode> _focusNodes = [];
+//   List<GlobalKey> _cardKeys = [];
+//   bool _isVideoLoading = false;
+//   final List<Color> _focusColors = [
+//     ProfessionalColors.accentBlue,
+//     ProfessionalColors.accentPurple,
+//     ProfessionalColors.accentGreen,
+//     ProfessionalColors.accentOrange,
+//     ProfessionalColors.accentPink,
+//     ProfessionalColors.accentRed
+//   ];
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     WidgetsBinding.instance.addPostFrameCallback((_) {
+//       if (mounted) {
+//         Provider.of<InternalFocusProvider>(context, listen: false)
+//             .updateName(widget.genre);
+//       }
+//     });
+//     _fetchGridData();
+//   }
+
+//   @override
+//   void dispose() {
+//     for (var node in _focusNodes) {
+//       node.dispose();
+//     }
+//     super.dispose();
+//   }
+
+//   void _applyMoviesToState(List<Movie> movies) {
+//     if (!mounted) return;
+
+//     setState(() {
+//       _movies = movies;
+//       _focusNodes = List.generate(_movies.length, (index) => FocusNode());
+//       _cardKeys = List.generate(_movies.length, (index) => GlobalKey());
+
+//       for (int i = 0; i < _focusNodes.length; i++) {
+//         _focusNodes[i].addListener(() {
+//           if (_focusNodes[i].hasFocus) _onItemFocusChange(i);
+//         });
+//       }
+
+//       _isLoading = false;
+//     });
+
+//     Future.delayed(const Duration(milliseconds: 200), () {
+//       if (mounted && _focusNodes.isNotEmpty) _focusNodes.first.requestFocus();
+//     });
+//   }
+
+//   Future<void> _fetchGridData() async {
+//     try {
+//       final prefs = await SharedPreferences.getInstance();
+//       final authKey = prefs.getString('result_auth_key') ?? '56456456456';
+
+//       final moviesResponse = await http.post(
+//         Uri.parse(
+//             'https://dashboard.cpplayers.com/api/v2/getAllContentsOfNetworkNew'),
+//         headers: {
+//           'auth-key': authKey,
+//           'domain': 'coretechinfo.com',
+//           'Accept': 'application/json',
+//           'Content-Type': 'application/json'
+//         },
+//         body: json
+//             .encode({"genre": widget.genre, "network_id": widget.tvChannelId}),
+//       );
+
+//       if (moviesResponse.statusCode == 200) {
+//         final List<Movie> parsedMovies =
+//             await compute(_parseGridData, moviesResponse.body);
+//         _applyMoviesToState(parsedMovies);
+//       } else {
+//         throw Exception('Failed to load content for ${widget.genre}');
+//       }
+//     } catch (e) {
+//       if (mounted) {
+//         setState(() {
+//           _error = e.toString();
+//           _isLoading = false;
+//         });
+//       }
+//     }
+//   }
+
+//   void _onItemFocusChange(int index) {
+//     if (!mounted || _isLoading || index < 0 || index >= _movies.length) return;
+
+//     Provider.of<InternalFocusProvider>(context, listen: false)
+//         .updateName(_movies[index].name);
+
+//     final cardContext = _cardKeys[index].currentContext;
+//     if (cardContext != null) {
+//       Scrollable.ensureVisible(cardContext,
+//           duration: const Duration(milliseconds: 350),
+//           curve: Curves.easeOut,
+//           alignment: 0.15);
+//     }
+//   }
+
+//   // Future<void> _playContent(Movie content) async {
+//   //   if (_isVideoLoading || !mounted) return;
+//   //   setState(() => _isVideoLoading = true);
+//   //   try {
+//   //     ScaffoldMessenger.of(context)
+//   //         .showSnackBar(SnackBar(content: Text('Playing: ${content.name}')));
+//   //   } catch (e) {
+//   //     if (mounted)
+//   //       ScaffoldMessenger.of(context)
+//   //           .showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
+//   //   } finally {
+//   //     if (mounted) setState(() => _isVideoLoading = false);
+//   //   }
+//   // }
+
+// //    com.ekomflixtv.cti
+
+//   // // Replace the old _playContent with this complete version
+// Future<void> _playContent(Movie content) async {
+//   if (_isVideoLoading || !mounted) return;
+//   setState(() { _isVideoLoading = true; });
+
+//   try {
+//     String playableUrl = content.getPlayableUrl();
+
+//     // Navigate to Web Series details page if content type is 2
+//     if (content.contentType == 2) {
+//       await Navigator.push(
+//         context,
+//         MaterialPageRoute(
+//           builder: (context) => WebSeriesDetailsPage(
+//             id: content.id,
+//             banner: content.banner ?? '',
+//             poster: content.poster ?? '',
+//             logo: widget.logoUrl,
+//             name: content.name,
+//             updatedAt: content.updatedAt ?? '',
+//           ),
+//         ),
+//       );
+//       return; // Stop execution after navigation
+//     }
+
+//     if (playableUrl.isEmpty) {
+//       throw Exception('No video URL found');
+//     }
+
+//     if (!mounted) return;
+
+//     // Handle YouTube links
+//     if (content.sourceType == 'YoutubeLive' || (content.youtubeTrailer != null && content.youtubeTrailer!.isNotEmpty)) {
+//       final deviceInfo = context.read<DeviceInfoProvider>();
+//       if (deviceInfo.deviceName == 'AFTSS : Amazon Fire Stick HD') {
+//         // Use WebView for specific devices like Fire Stick
+//         await Navigator.push(context, MaterialPageRoute(builder: (context) => YoutubeWebviewPlayer(videoUrl: playableUrl, name: content.name)));
+//       } else {
+//         // Use the custom YouTube player for other devices
+//         await Navigator.push(
+//           context,
+//           MaterialPageRoute(
+//             builder: (context) => CustomYoutubePlayer(
+//               videoData: VideoData(
+//                 id: content.id.toString(),
+//                 title: content.name,
+//                 youtubeUrl: playableUrl,
+//                 thumbnail: content.poster ?? content.banner ?? '',
+//                 description: content.description ?? '',
+//               ),
+//               playlist: [],
+//             ),
+//           ),
+//         );
+//       }
+//     } else {
+//       // Handle other video URLs
+//       await Navigator.push(
+//         context,
+//         MaterialPageRoute(
+//           builder: (context) => VideoScreen(
+//             videoUrl: playableUrl,
+//             bannerImageUrl: content.poster ?? content.banner ?? '',
+//             videoId: content.id,
+//             name: content.name,
+//             updatedAt: content.updatedAt ?? '',
+//             source: 'isVod',
+//             channelList: [],
+//             liveStatus: false,
+//           ),
+//         ),
+//       );
+//     }
+//   } catch (e) {
+//     if (mounted) {
+//       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
+//     }
+//   } finally {
+//     if (mounted) {
+//       setState(() { _isVideoLoading = false; });
+//     }
+//   }
+// }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       backgroundColor: ProfessionalColors.primaryDark,
+//       body: Stack(
+//         children: [
+//           Container(
+//               decoration: const BoxDecoration(
+//                   gradient: LinearGradient(colors: [
+//             ProfessionalColors.primaryDark,
+//             Color(0xFF06080F)
+//           ], begin: Alignment.topCenter, end: Alignment.bottomCenter))),
+//           CustomScrollView(slivers: [
+//             const SliverPadding(padding: EdgeInsets.only(top: 100.0)),
+//             _isLoading
+//                 ? const SliverFillRemaining(
+//                     child: Center(child: CircularProgressIndicator()))
+//                 : _error != null
+//                     ? SliverFillRemaining(
+//                         child: Center(child: Text('Error: $_error')))
+//                     : _buildContentGrid(),
+//           ]),
+//           Positioned(top: 0, left: 0, right: 0, child: _buildBeautifulAppBar()),
+//           if (_isVideoLoading)
+//             Container(
+//                 color: Colors.black.withOpacity(0.7),
+//                 child: const Center(
+//                     child: CircularProgressIndicator(
+//                         valueColor:
+//                             AlwaysStoppedAnimation<Color>(Colors.white)))),
+//         ],
+//       ),
+//     );
+//   }
+
+//   Widget _buildBeautifulAppBar() {
+//     final focusedName = context.watch<InternalFocusProvider>().focusedItemName;
+//     return Container(
+//       decoration: BoxDecoration(
+//         gradient: LinearGradient(
+//             begin: Alignment.topCenter,
+//             end: Alignment.bottomCenter,
+//             colors: [
+//               ProfessionalColors.primaryDark.withOpacity(0.95),
+//               ProfessionalColors.surfaceDark.withOpacity(0.9),
+//               ProfessionalColors.surfaceDark.withOpacity(0.8),
+//               Colors.transparent
+//             ]),
+//         border: Border(
+//             bottom: BorderSide(
+//                 color: ProfessionalColors.accentBlue.withOpacity(0.2),
+//                 width: 1)),
+//         boxShadow: [
+//           BoxShadow(
+//               color: Colors.black.withOpacity(0.3),
+//               blurRadius: 10,
+//               offset: const Offset(0, 2))
+//         ],
+//       ),
+//       child: ClipRRect(
+//         child: BackdropFilter(
+//           filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
+//           child: Container(
+//             padding: EdgeInsets.only(
+//                 top: MediaQuery.of(context).padding.top + 10,
+//                 left: 20,
+//                 right: 30,
+//                 bottom: 10),
+//             child: Row(
+//               children: [
+//                 Container(
+//                     decoration: BoxDecoration(
+//                         shape: BoxShape.circle,
+//                         gradient: LinearGradient(colors: [
+//                           ProfessionalColors.accentBlue.withOpacity(0.3),
+//                           ProfessionalColors.accentPurple.withOpacity(0.3)
+//                         ])),
+//                     child: IconButton(
+//                         icon: const Icon(Icons.arrow_back_rounded,
+//                             color: Colors.white, size: 24),
+//                         onPressed: () => Navigator.pop(context))),
+//                 const SizedBox(width: 16),
+//                 GradientText(widget.genre,
+//                     style: const TextStyle(
+//                         fontWeight: FontWeight.bold, fontSize: 22),
+//                     gradient: const LinearGradient(colors: [
+//                       ProfessionalColors.accentPink,
+//                       ProfessionalColors.accentPurple,
+//                       ProfessionalColors.accentBlue
+//                     ])),
+//                 const SizedBox(width: 40),
+//                 Expanded(
+//                     child: Text(focusedName,
+//                         textAlign: TextAlign.left,
+//                         style: const TextStyle(
+//                             color: ProfessionalColors.textSecondary,
+//                             fontWeight: FontWeight.bold,
+//                             fontSize: 20),
+//                         overflow: TextOverflow.ellipsis)),
+//                 Padding(
+//                     padding: const EdgeInsets.only(right: 15.0),
+//                     child: CircleAvatar(
+//                         backgroundImage: NetworkImage(widget.logoUrl),
+//                         radius: 20,
+//                         backgroundColor: Colors.white24)),
+//               ],
+//             ),
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildContentGrid() {
+//     return SliverPadding(
+//       padding: const EdgeInsets.all(30.0),
+//       sliver: SliverGrid(
+//         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+//             crossAxisCount: 6,
+//             childAspectRatio: 1.5,
+//             mainAxisSpacing: 5,
+//             crossAxisSpacing: 5),
+//         delegate: SliverChildBuilderDelegate((context, index) {
+//           final movie = _movies[index];
+//           return MovieCard(
+//               key: _cardKeys[index],
+//               movie: movie,
+//               logoUrl: widget.logoUrl,
+//               focusNode: _focusNodes[index],
+//               focusColors: _focusColors,
+//               uniqueIndex: index,
+//               onTap: () => _playContent(movie));
+//         }, childCount: _movies.length),
+//       ),
+//     );
+//   }
+// }
+
+// // ==========================================================
+// // REUSABLE WIDGETS
+// // ==========================================================
+
+// class MovieCard extends StatefulWidget {
+//   final Movie movie;
+//   final String logoUrl;
+//   final FocusNode focusNode;
+//   final List<Color> focusColors;
+//   final int uniqueIndex;
+//   final VoidCallback onTap;
+//   final bool isFirst;
+//   final bool isLast;
+
+//   const MovieCard(
+//       {super.key,
+//       required this.movie,
+//       required this.logoUrl,
+//       required this.focusNode,
+//       required this.focusColors,
+//       required this.uniqueIndex,
+//       required this.onTap,
+//       this.isFirst = false,
+//       this.isLast = false});
+
+//   @override
+//   State<MovieCard> createState() => _MovieCardState();
+// }
+
+// class _MovieCardState extends State<MovieCard> {
+//   bool _hasFocus = false;
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     widget.focusNode.addListener(_onFocusChange);
+//   }
+
+//   @override
+//   void dispose() {
+//     widget.focusNode.removeListener(_onFocusChange);
+//     super.dispose();
+//   }
+
+//   void _onFocusChange() {
+//     if (mounted && widget.focusNode.hasFocus != _hasFocus) {
+//       WidgetsBinding.instance.addPostFrameCallback((_) {
+//         if (mounted) {
+//           setState(() {
+//             _hasFocus = widget.focusNode.hasFocus;
+//           });
+//         }
+//       });
+//     }
+//   }
+
+//   KeyEventResult _handleKeyEvent(FocusNode node, RawKeyEvent event) {
+//     if (event is RawKeyDownEvent) {
+//       if (event.logicalKey == LogicalKeyboardKey.select ||
+//           event.logicalKey == LogicalKeyboardKey.enter) {
+//         widget.onTap();
+//         return KeyEventResult.handled;
+//       }
+//       if (widget.isFirst && event.logicalKey == LogicalKeyboardKey.arrowLeft)
+//         return KeyEventResult.handled;
+//       if (widget.isLast && event.logicalKey == LogicalKeyboardKey.arrowRight)
+//         return KeyEventResult.handled;
+//     }
+//     return KeyEventResult.ignored;
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final focusColor =
+//         widget.focusColors[widget.uniqueIndex % widget.focusColors.length];
+//     return Focus(
+//       focusNode: widget.focusNode,
+//       onKey: _handleKeyEvent,
+//       child: GestureDetector(
+//         onTap: widget.onTap,
+//         child: Container(
+//           width: bannerwdt,
+//           margin: const EdgeInsets.only(right: 12.0),
+//           child: Column(
+//             crossAxisAlignment: CrossAxisAlignment.start,
+//             children: [
+//               Expanded(
+//                 child: Container(
+//                   decoration: BoxDecoration(
+//                       borderRadius: BorderRadius.circular(8.0),
+//                       border: _hasFocus
+//                           ? Border.all(color: focusColor, width: 3)
+//                           : Border.all(color: Colors.transparent, width: 3),
+//                       boxShadow: _hasFocus
+//                           ? [
+//                               BoxShadow(
+//                                   color: focusColor.withOpacity(0.5),
+//                                   blurRadius: 12,
+//                                   spreadRadius: 1)
+//                             ]
+//                           : []),
+//                   child: ClipRRect(
+//                     borderRadius: BorderRadius.circular(6.0),
+//                     child: Stack(
+//                       fit: StackFit.expand,
+//                       children: [
+//                         displayImage(widget.movie.banner ?? '',
+//                             fit: BoxFit.cover),
+//                         if (widget.movie.contentType == 2)
+//                           Positioned(
+//                               bottom: 8,
+//                               left: 8,
+//                               child: Container(
+//                                   padding: const EdgeInsets.symmetric(
+//                                       horizontal: 8, vertical: 4),
+//                                   decoration: BoxDecoration(
+//                                       color: ProfessionalColors.accentPurple
+//                                           .withOpacity(0.9),
+//                                       borderRadius: BorderRadius.circular(4.0)),
+//                                   child: const Text('Web Series',
+//                                       style: TextStyle(
+//                                           color: ProfessionalColors.textPrimary,
+//                                           fontSize: 10,
+//                                           fontWeight: FontWeight.bold)))),
+//                         if (_hasFocus)
+//                           Positioned(
+//                               left: 5,
+//                               top: 5,
+//                               child: Container(
+//                                   color: Colors.black.withOpacity(0.4),
+//                                   child: Icon(Icons.play_circle_filled_outlined,
+//                                       color: focusColor, size: 40))),
+//                         Positioned(
+//                             top: 5,
+//                             right: 5,
+//                             child: CircleAvatar(
+//                                 radius: 12,
+//                                 backgroundImage: NetworkImage(widget.logoUrl),
+//                                 backgroundColor: Colors.black54)),
+//                       ],
+//                     ),
+//                   ),
+//                 ),
+//               ),
+//               Padding(
+//                   padding:
+//                       const EdgeInsets.only(top: 2.0, left: 2.0, right: 2.0),
+//                   child: Text(widget.movie.name,
+//                       style: TextStyle(
+//                           color: _hasFocus
+//                               ? focusColor
+//                               : ProfessionalColors.textSecondary,
+//                           fontSize: 14),
+//                       maxLines: 1,
+//                       overflow: TextOverflow.ellipsis)),
+//             ],
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+// class ViewAllCard extends StatefulWidget {
+//   final FocusNode focusNode;
+//   final List<Color> focusColors;
+//   final int uniqueIndex;
+//   final VoidCallback onTap;
+
+//   const ViewAllCard(
+//       {super.key,
+//       required this.focusNode,
+//       required this.focusColors,
+//       required this.uniqueIndex,
+//       required this.onTap});
+
+//   @override
+//   State<ViewAllCard> createState() => _ViewAllCardState();
+// }
+
+// class _ViewAllCardState extends State<ViewAllCard> {
+//   bool _hasFocus = false;
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     widget.focusNode.addListener(_onFocusChange);
+//   }
+
+//   @override
+//   void dispose() {
+//     widget.focusNode.removeListener(_onFocusChange);
+//     super.dispose();
+//   }
+
+//   void _onFocusChange() {
+//     if (mounted && widget.focusNode.hasFocus != _hasFocus) {
+//       WidgetsBinding.instance.addPostFrameCallback((_) {
+//         if (mounted) {
+//           setState(() {
+//             _hasFocus = widget.focusNode.hasFocus;
+//           });
+//         }
+//       });
+//     }
+//   }
+
+//   KeyEventResult _handleKeyEvent(FocusNode node, RawKeyEvent event) {
+//     if (event is RawKeyDownEvent) {
+//       if (event.logicalKey == LogicalKeyboardKey.select ||
+//           event.logicalKey == LogicalKeyboardKey.enter) {
+//         widget.onTap();
+//         return KeyEventResult.handled;
+//       }
+//       if (event.logicalKey == LogicalKeyboardKey.arrowRight)
+//         return KeyEventResult.handled;
+//     }
+//     return KeyEventResult.ignored;
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final focusColor =
+//         widget.focusColors[widget.uniqueIndex % widget.focusColors.length];
+//     return Focus(
+//       focusNode: widget.focusNode,
+//       onKey: _handleKeyEvent,
+//       child: GestureDetector(
+//         onTap: widget.onTap,
+//         child: Container(
+//           width: bannerwdt,
+//           margin: const EdgeInsets.only(right: 12.0),
+//           decoration: BoxDecoration(
+//               borderRadius: BorderRadius.circular(10.0),
+//               border: _hasFocus
+//                   ? Border.all(color: focusColor, width: 3)
+//                   : Border.all(color: Colors.transparent, width: 3),
+//               boxShadow: _hasFocus
+//                   ? [
+//                       BoxShadow(
+//                           color: ProfessionalColors.focusGlow.withOpacity(0.7),
+//                           blurRadius: 12,
+//                           spreadRadius: 1)
+//                     ]
+//                   : []),
+//           child: ClipRRect(
+//             borderRadius: BorderRadius.circular(8.0),
+//             child: Container(
+//               color: ProfessionalColors.cardDark,
+//               child: Center(
+//                 child: Column(
+//                   mainAxisAlignment: MainAxisAlignment.center,
+//                   children: [
+//                     Icon(Icons.arrow_forward,
+//                         color: _hasFocus ? focusColor : Colors.white70,
+//                         size: 32),
+//                     const SizedBox(height: 8),
+//                     Text("View All",
+//                         style: TextStyle(
+//                             color: _hasFocus ? focusColor : Colors.white70,
+//                             fontWeight: FontWeight.bold)),
+//                   ],
+//                 ),
+//               ),
+//             ),
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+// class GradientText extends StatelessWidget {
+//   const GradientText(this.text,
+//       {super.key, required this.gradient, this.style});
+//   final String text;
+//   final TextStyle? style;
+//   final Gradient gradient;
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return ShaderMask(
+//       blendMode: BlendMode.srcIn,
+//       shaderCallback: (bounds) => gradient
+//           .createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
+//       child: Text(text, style: style),
+//     );
+//   }
+// }
+
+// // ==========================================================
+// // HELPER FUNCTIONS
+// // ==========================================================
+
+// Uint8List _getImageFromBase64String(String base64String) =>
+//     base64Decode(base64String.split(',').last);
+
+// Widget displayImage(String imageUrl,
+//     {double? width, double? height, BoxFit fit = BoxFit.cover}) {
+//   if (imageUrl.isEmpty ||
+//       imageUrl == 'localImage' ||
+//       imageUrl.contains('localhost')) {
+//     return _buildErrorWidget(width, height);
+//   }
+//   if (imageUrl.startsWith('data:image')) {
+//     try {
+//       return Image.memory(_getImageFromBase64String(imageUrl),
+//           fit: fit,
+//           width: width,
+//           height: height,
+//           errorBuilder: (c, e, s) => _buildErrorWidget(width, height));
+//     } catch (e) {
+//       return _buildErrorWidget(width, height);
+//     }
+//   } else if (imageUrl.startsWith('http')) {
+//     if (imageUrl.toLowerCase().endsWith('.svg')) {
+//       return SvgPicture.network(imageUrl,
+//           width: width,
+//           height: height,
+//           fit: fit,
+//           placeholderBuilder: (c) => _buildLoadingWidget(width, height));
+//     } else {
+//       return Image.network(
+//         imageUrl,
+//         width: width,
+//         height: height,
+//         fit: fit,
+//         headers: const {'User-Agent': 'Flutter App'},
+//         loadingBuilder: (c, child, progress) =>
+//             progress == null ? child : _buildLoadingWidget(width, height),
+//         errorBuilder: (c, e, s) => _buildErrorWidget(width, height),
+//       );
+//     }
+//   } else {
+//     return _buildErrorWidget(width, height);
+//   }
+// }
+
+// Widget _buildErrorWidget(double? width, double? height) {
+//   return Container(
+//     width: width,
+//     height: height,
+//     decoration: const BoxDecoration(
+//         gradient: LinearGradient(colors: [
+//       ProfessionalColors.accentGreen,
+//       ProfessionalColors.accentBlue
+//     ])),
+//     child: const Icon(Icons.broken_image, color: Colors.white, size: 24),
+//   );
+// }
+
+// Widget _buildLoadingWidget(double? width, double? height) {
+//   return SizedBox(
+//     width: width,
+//     height: height,
+//     child: const Center(
+//         child: CircularProgressIndicator(
+//             strokeWidth: 2,
+//             valueColor: AlwaysStoppedAnimation<Color>(Colors.white))),
+//   );
+// }
 
 
 
@@ -3198,8 +5070,1177 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+// import 'dart:convert';
+// import 'dart:math';
+// import 'dart:typed_data';
+// import 'dart:ui';
+// import 'package:flutter/foundation.dart';
+// import 'package:flutter/material.dart';
+// import 'package:flutter/services.dart';
+// import 'package:flutter_svg/svg.dart';
+// import 'package:http/http.dart' as http;
+// import 'package:mobi_tv_entertainment/home_screen_pages/webseries_screen/webseries_details_page.dart';
+// import 'package:mobi_tv_entertainment/main.dart';
+// import 'package:mobi_tv_entertainment/provider/device_info_provider.dart';
+// import 'package:mobi_tv_entertainment/provider/internal_focus_provider.dart';
+// import 'package:mobi_tv_entertainment/video_widget/custom_youtube_player.dart';
+// import 'package:mobi_tv_entertainment/video_widget/video_screen.dart';
+// import 'package:mobi_tv_entertainment/video_widget/youtube_webview_player.dart';
+// import 'package:provider/provider.dart';
+// import 'package:shared_preferences/shared_preferences.dart';
+
+// // ==========================================================
+// // ENUMS AND DATA MODELS
+// // ==========================================================
+
+// enum LoadingState { initial, loading, rebuilding, loaded, error }
+
+// class ParsedData {
+//   final List<String> genres;
+//   final Map<String, List<Movie>> moviesByGenre;
+
+//   ParsedData({required this.genres, required this.moviesByGenre});
+// }
+
+// // This function will run in the background isolate
+// ParsedData _parseJsonAndPrepareData(String jsonData) {
+//   final data = json.decode(jsonData) as Map<String, dynamic>;
+
+//   final allGenres = List<String>.from(data['genres']);
+//   final allMoviesByGenre = (data['moviesByGenre'] as Map<String, dynamic>).map(
+//       (key, value) => MapEntry(key,
+//           (value as List).map((movieMap) => Movie.fromMap(movieMap)).toList()));
+
+//   final activeGenres =
+//       allGenres.where((g) => allMoviesByGenre[g]?.isNotEmpty ?? false).toList();
+
+//   return ParsedData(genres: activeGenres, moviesByGenre: allMoviesByGenre);
+// }
+
+// // ==========================================================
+// // PROFESSIONAL COLORS & DATA MODELS
+// // ==========================================================
+
+// class ProfessionalColors {
+//   static const primaryDark = Color(0xFF0A0E1A);
+//   static const surfaceDark = Color(0xFF1A1D29);
+//   static const cardDark = Color(0xFF2A2D3A);
+//   static const accentBlue = Color(0xFF3B82F6);
+//   static const accentPurple = Color(0xFF8B5CF6);
+//   static const accentGreen = Color(0xFF10B981);
+//   static const accentRed = Color(0xFFEF4444);
+//   static const accentOrange = Color(0xFFF59E0B);
+//   static const accentPink = Color(0xFFEC4899);
+//   static const textPrimary = Color(0xFFFFFFFF);
+//   static const textSecondary = Color(0xFFB3B3B3);
+//   static const focusGlow = Color(0xFF60A5FA);
+// }
+
+// class GenreResponse {
+//   final bool status;
+//   final List<String> genres;
+//   GenreResponse({required this.status, required this.genres});
+//   factory GenreResponse.fromJson(Map<String, dynamic> json) {
+//     return GenreResponse(
+//       status: json['status'],
+//       genres: List<String>.from(json['genres']),
+//     );
+//   }
+// }
+
+// class MovieResponse {
+//   final bool status;
+//   final int total;
+//   final List<Movie> data;
+//   MovieResponse(
+//       {required this.status, required this.total, required this.data});
+//   factory MovieResponse.fromJson(Map<String, dynamic> json) {
+//     return MovieResponse(
+//       status: json['status'] ?? false,
+//       total: json['total'] ?? 0,
+//       data: (json['data'] as List).map((i) => Movie.fromJson(i)).toList(),
+//     );
+//   }
+// }
+
+// class Movie {
+//   final int id;
+//   final String name;
+//   final String? banner;
+//   final String? poster;
+//   final String? description;
+//   final int? contentType;
+//   final String? sourceType;
+//   final String? youtubeTrailer;
+//   final String? updatedAt;
+//   final String? movieUrl;
+//   final int? status;
+
+//   Movie({
+//     required this.id,
+//     required this.name,
+//     this.banner,
+//     this.poster,
+//     this.description,
+//     this.contentType,
+//     this.sourceType,
+//     this.youtubeTrailer,
+//     this.updatedAt,
+//     this.movieUrl,
+//     this.status,
+//   });
+
+//   factory Movie.fromJson(Map<String, dynamic> json) {
+//     return Movie(
+//       id: json['id'] ?? 0,
+//       name: json['name'] ?? 'No Name',
+//       banner: json['banner'],
+//       poster: json['poster'],
+//       description: json['description'],
+//       contentType: json['content_type'],
+//       sourceType: json['source_type'],
+//       youtubeTrailer: json['youtube_trailer'],
+//       updatedAt: json['updated_at'],
+//       movieUrl: json['movie_url'],
+//       status: json['status'],
+//     );
+//   }
+
+//   Map<String, dynamic> toMap() {
+//     return {
+//       'id': id,
+//       'name': name,
+//       'banner': banner,
+//       'poster': poster,
+//       'description': description,
+//       'content_type': contentType,
+//       'source_type': sourceType,
+//       'youtube_trailer': youtubeTrailer,
+//       'updated_at': updatedAt,
+//       'movie_url': movieUrl,
+//       'status': status,
+//     };
+//   }
+
+//   factory Movie.fromMap(Map<String, dynamic> map) => Movie.fromJson(map);
+
+//   String getPlayableUrl() {
+//     if (sourceType == 'YoutubeLive') return movieUrl ?? '';
+//     if (youtubeTrailer != null && youtubeTrailer!.isNotEmpty)
+//       return youtubeTrailer!;
+//     return movieUrl ?? '';
+//   }
+// }
+
+// // ==========================================================
+// // PERFORMANCE MONITORING
+// // ==========================================================
+
+// class PerformanceMonitor {
+//   static final Map<String, Stopwatch> _stopwatches = {};
+
+//   static void startTimer(String operation) {
+//     _stopwatches[operation] = Stopwatch()..start();
+//   }
+
+//   static void endTimer(String operation) {
+//     final stopwatch = _stopwatches[operation];
+//     if (stopwatch != null) {
+//       stopwatch.stop();
+//       print('⏱️ $operation took: ${stopwatch.elapsedMilliseconds}ms');
+//       _stopwatches.remove(operation);
+//     }
+//   }
+
+//   static void logMemoryUsage(String operation) {
+//     if (kDebugMode) {
+//       print('🧠 Memory check at $operation');
+//     }
+//   }
+// }
+
+// // ==========================================================
+// // SMART CACHE MANAGER
+// // ==========================================================
+
+// class SmartCacheManager {
+//   static const String _cachePrefix = 'genre_movies_cache_';
+//   static const String _timestampSuffix = '_timestamp';
+//   static const Duration _cacheValidity = Duration(hours: 2);
+
+//   static String _getCacheKey(String tvChannelId) => '$_cachePrefix$tvChannelId';
+//   static String _getTimestampKey(String tvChannelId) =>
+//       '$_cachePrefix$tvChannelId$_timestampSuffix';
+
+//   static Future<bool> isCacheValid(String tvChannelId) async {
+//     try {
+//       final prefs = await SharedPreferences.getInstance();
+//       final timestampStr = prefs.getString(_getTimestampKey(tvChannelId));
+
+//       if (timestampStr == null) return false;
+
+//       final cacheTime = DateTime.parse(timestampStr);
+//       final now = DateTime.now();
+//       final difference = now.difference(cacheTime);
+
+//       final isValid = difference < _cacheValidity;
+//       print(
+//           'Cache validity check: ${isValid ? '✅ Valid' : '❌ Expired'} (Age: ${difference.inMinutes}min)');
+
+//       return isValid;
+//     } catch (e) {
+//       print('Cache validity check failed: $e');
+//       return false;
+//     }
+//   }
+
+//   static Future<String?> getCachedData(String tvChannelId) async {
+//     try {
+//       final isValid = await isCacheValid(tvChannelId);
+//       if (!isValid) return null;
+
+//       final prefs = await SharedPreferences.getInstance();
+//       final cachedData = prefs.getString(_getCacheKey(tvChannelId));
+
+//       if (cachedData != null && cachedData.isNotEmpty) {
+//         print(
+//             '📦 Using cached data (${(cachedData.length / 1024).toStringAsFixed(1)}KB)');
+//         return cachedData;
+//       }
+
+//       return null;
+//     } catch (e) {
+//       print('Failed to get cached data: $e');
+//       return null;
+//     }
+//   }
+
+//   static Future<void> saveToCache(String tvChannelId, String data) async {
+//     try {
+//       final prefs = await SharedPreferences.getInstance();
+//       final now = DateTime.now().toIso8601String();
+
+//       await Future.wait([
+//         prefs.setString(_getCacheKey(tvChannelId), data),
+//         prefs.setString(_getTimestampKey(tvChannelId), now),
+//       ]);
+
+//       print(
+//           '💾 Data cached (${(data.length / 1024).toStringAsFixed(1)}KB) at $now');
+//     } catch (e) {
+//       print('Failed to save to cache: $e');
+//     }
+//   }
+
+//   static Future<void> clearCache(String tvChannelId) async {
+//     try {
+//       final prefs = await SharedPreferences.getInstance();
+//       await Future.wait([
+//         prefs.remove(_getCacheKey(tvChannelId)),
+//         prefs.remove(_getTimestampKey(tvChannelId)),
+//       ]);
+//       print('🗑️ Cache cleared for channel: $tvChannelId');
+//     } catch (e) {
+//       print('Failed to clear cache: $e');
+//     }
+//   }
+
+//   static Future<Map<String, dynamic>> getCacheInfo(String tvChannelId) async {
+//     try {
+//       final prefs = await SharedPreferences.getInstance();
+//       final cacheKey = _getCacheKey(tvChannelId);
+//       final timestampKey = _getTimestampKey(tvChannelId);
+
+//       final data = prefs.getString(cacheKey);
+//       final timestamp = prefs.getString(timestampKey);
+
+//       if (data == null || timestamp == null) {
+//         return {'exists': false};
+//       }
+
+//       final cacheTime = DateTime.parse(timestamp);
+//       final age = DateTime.now().difference(cacheTime);
+
+//       return {
+//         'exists': true,
+//         'size_kb': (data.length / 1024).toStringAsFixed(1),
+//         'timestamp': timestamp,
+//         'age_minutes': age.inMinutes,
+//         'is_valid': age < _cacheValidity,
+//       };
+//     } catch (e) {
+//       return {'exists': false, 'error': e.toString()};
+//     }
+//   }
+// }
+
+// // ==========================================================
+// // OPTIMIZED API FUNCTIONS
+// // ==========================================================
+
+// Future<String> _fetchAndCacheDataIsolateOptimized(
+//     Map<String, String> params) async {
+//   final String tvChannelId = params['tvChannelId']!;
+//   final String authKey = params['authKey']!;
+
+//   final client = http.Client();
+
+//   try {
+//     final genresResponse = await client.get(
+//       Uri.parse(
+//           'https://dashboard.cpplayers.com/api/v2/getGenreByContentNetwork/$tvChannelId'),
+//       headers: {
+//         'auth-key': authKey,
+//         'Accept': 'application/json',
+//         'domain': 'coretechinfo.com'
+//       },
+//     ).timeout(const Duration(seconds: 15),
+//         onTimeout: () => throw Exception('Genres request timed out'));
+
+//     if (genresResponse.statusCode != 200) {
+//       throw Exception('Failed to load genres: ${genresResponse.statusCode}');
+//     }
+
+//     final genreData = GenreResponse.fromJson(json.decode(genresResponse.body));
+//     if (!genreData.status) return '';
+
+//     final genres = genreData.genres;
+//     print('📝 Found ${genres.length} genres, starting parallel fetch...');
+
+//     final List<Future<MapEntry<String, List<Movie>>>> genreFutures =
+//         genres.map((genre) async {
+//       try {
+//         final moviesResponse = await client
+//             .post(
+//               Uri.parse(
+//                   'https://dashboard.cpplayers.com/api/v2/getAllContentsOfNetworkNew'),
+//               headers: {
+//                 'auth-key': authKey,
+//                 'domain': 'coretechinfo.com',
+//                 'Accept': 'application/json',
+//                 'Content-Type': 'application/json'
+//               },
+//               body: json.encode({"genre": genre, "network_id": tvChannelId}),
+//             )
+//             .timeout(const Duration(seconds: 10),
+//                 onTimeout: () => throw Exception('$genre request timed out'));
+
+//         if (moviesResponse.statusCode == 200) {
+//           final movieData =
+//               MovieResponse.fromJson(json.decode(moviesResponse.body));
+//           if (movieData.status && movieData.data.isNotEmpty) {
+//             final activeMovies =
+//                 movieData.data.where((movie) => movie.status == 1).toList();
+//             if (activeMovies.isNotEmpty) {
+//               return MapEntry(genre, activeMovies);
+//             }
+//           }
+//         }
+//         return MapEntry(genre, <Movie>[]);
+//       } catch (e) {
+//         print('Error fetching $genre: $e');
+//         return MapEntry(genre, <Movie>[]);
+//       }
+//     }).toList();
+
+//     print('⚡ Executing ${genreFutures.length} parallel API calls...');
+//     final results = await Future.wait(genreFutures)
+//         .timeout(const Duration(seconds: 30), onTimeout: () {
+//       print('⚠️ Overall request timeout, returning partial results');
+//       return genreFutures
+//           .map((future) => MapEntry('timeout', <Movie>[]))
+//           .toList();
+//     });
+
+//     final Map<String, List<Movie>> moviesByGenre = {};
+//     int successCount = 0;
+//     for (final result in results) {
+//       if (result.key != 'timeout' && result.value.isNotEmpty) {
+//         moviesByGenre[result.key] = result.value;
+//         successCount++;
+//       }
+//     }
+
+//     print(
+//         '✅ Parallel fetch complete: $successCount/${genres.length} genres loaded');
+
+//     final Map<String, dynamic> serializableData = {
+//       'genres': genres,
+//       'moviesByGenre': moviesByGenre.map(
+//           (key, value) => MapEntry(key, value.map((m) => m.toMap()).toList())),
+//     };
+
+//     return json.encode(serializableData);
+//   } catch (e) {
+//     print("Isolate Error: $e");
+//     return '';
+//   } finally {
+//     client.close();
+//   }
+// }
+
+// // ==========================================================
+// // SAFE LIST EXTENSION
+// // ==========================================================
+
+// extension SafeList<T> on List<T> {
+//   T? safeElementAt(int index) {
+//     if (index < 0 || index >= length) return null;
+//     return this[index];
+//   }
+
+//   bool isValidIndex(int index) {
+//     return index >= 0 && index < length;
+//   }
+// }
+
+// // ==========================================================
+// // GENRE MOVIES SCREEN (MAIN SCREEN - REFACTORED)
+// // ==========================================================
+
+// class GenreMoviesScreen extends StatefulWidget {
+//   final String tvChannelId;
+//   final String logoUrl;
+//   final String title;
+//   const GenreMoviesScreen(
+//       {super.key,
+//       required this.tvChannelId,
+//       required this.logoUrl,
+//       required this.title});
+//   @override
+//   State<GenreMoviesScreen> createState() => _GenreMoviesScreenState();
+// }
+
+// class _GenreMoviesScreenState extends State<GenreMoviesScreen> {
+//   LoadingState _loadingState = LoadingState.initial;
+//   String? _error;
+
+//   List<String> _genres = [];
+//   Map<String, List<Movie>> _moviesByGenre = {};
+
+//   int _selectedGenreIndex = 0;
+//   List<FocusNode> _genreFocusNodes = [];
+//   List<FocusNode> _movieFocusNodes = [];
+//   List<GlobalKey> _genreButtonKeys = [];
+//   List<GlobalKey> _movieCardKeys = [];
+//   final ScrollController _genreScrollController = ScrollController();
+//   final ScrollController _movieScrollController = ScrollController();
+
+//   bool _isVideoLoading = false;
+
+//   final List<Color> _focusColors = [
+//     ProfessionalColors.accentBlue,
+//     ProfessionalColors.accentPurple,
+//     ProfessionalColors.accentGreen,
+//     ProfessionalColors.accentOrange,
+//     ProfessionalColors.accentPink,
+//     ProfessionalColors.accentRed
+//   ];
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     WidgetsBinding.instance.addPostFrameCallback((_) {
+//       if (mounted) {
+//         Provider.of<InternalFocusProvider>(context, listen: false)
+//             .updateName('');
+//       }
+//     });
+//     _loadInitialData();
+//   }
+
+//   @override
+//   void dispose() {
+//     _cleanupResources();
+//     super.dispose();
+//   }
+
+//   void _cleanupResources() {
+//     for (var node in _genreFocusNodes) {
+//       node.dispose();
+//     }
+//     for (var node in _movieFocusNodes) {
+//       node.dispose();
+//     }
+//     _genreScrollController.dispose();
+//     _movieScrollController.dispose();
+//   }
+
+//   void _applyDataToState(ParsedData parsedData) {
+//     if (!mounted) return;
+
+//     setState(() {
+//       _loadingState = LoadingState.rebuilding;
+//       _cleanupResources(); 
+
+//       _genres = parsedData.genres.reversed.toList();
+//       _moviesByGenre = parsedData.moviesByGenre;
+//       _selectedGenreIndex = 0;
+
+//       if (_genres.isNotEmpty) {
+//         _genreFocusNodes =
+//             List.generate(_genres.length, (i) => FocusNode());
+//         _genreButtonKeys =
+//             List.generate(_genres.length, (i) => GlobalKey());
+
+//         for (int i = 0; i < _genres.length; i++) {
+//           _genreFocusNodes[i].addListener(() {
+//             if (_genreFocusNodes[i].hasFocus) {
+//               _onGenreFocus(i);
+//             }
+//           });
+//         }
+//         _rebuildMovieNodesForSelectedGenre();
+//       }
+
+//       _loadingState = LoadingState.loaded;
+//     });
+
+//     Future.delayed(const Duration(milliseconds: 200), () {
+//       if (mounted && _genreFocusNodes.isNotEmpty) {
+//         _genreFocusNodes.first.requestFocus();
+//       }
+//     });
+//   }
+
+//   void _rebuildMovieNodesForSelectedGenre() {
+//     for (var node in _movieFocusNodes) {
+//       node.dispose();
+//     }
+
+//     final selectedGenre = _genres[_selectedGenreIndex];
+//     final movies = _moviesByGenre[selectedGenre] ?? [];
+
+//     _movieFocusNodes = List.generate(movies.length, (i) => FocusNode());
+//     _movieCardKeys = List.generate(movies.length, (i) => GlobalKey());
+
+//     for (int i = 0; i < movies.length; i++) {
+//       _movieFocusNodes[i].addListener(() {
+//         if (_movieFocusNodes[i].hasFocus) {
+//           _onMovieFocus(i);
+//         }
+//       });
+//     }
+//   }
+
+//   Future<void> _loadInitialData() async {
+//     final cachedData =
+//         await SmartCacheManager.getCachedData(widget.tvChannelId);
+//     if (cachedData != null) {
+//       final parsedData = await compute(_parseJsonAndPrepareData, cachedData);
+//       _applyDataToState(parsedData);
+//     } else {
+//       await _fetchDataWithLoading();
+//     }
+//   }
+
+//   Future<void> _fetchDataWithLoading() async {
+//     if (mounted) setState(() => _loadingState = LoadingState.loading);
+//     try {
+//       final prefs = await SharedPreferences.getInstance();
+//       final authKey = prefs.getString('result_auth_key') ?? '56456456456';
+//       final String freshDataJson = await _fetchAndCacheDataIsolateOptimized(
+//           {'tvChannelId': widget.tvChannelId, 'authKey': authKey});
+
+//       if (freshDataJson.isNotEmpty) {
+//         await SmartCacheManager.saveToCache(widget.tvChannelId, freshDataJson);
+//         final parsedData =
+//             await compute(_parseJsonAndPrepareData, freshDataJson);
+//         _applyDataToState(parsedData);
+//       } else {
+//         throw Exception('Failed to load data');
+//       }
+//     } catch (e) {
+//       if (mounted) {
+//         setState(() {
+//           _error = e.toString();
+//           _loadingState = LoadingState.error;
+//         });
+//       }
+//     }
+//   }
+  
+//   void _updateMoviesForGenre(int index) {
+//     if (_selectedGenreIndex == index) return;
+//     setState(() {
+//       _selectedGenreIndex = index;
+//       _rebuildMovieNodesForSelectedGenre();
+//     });
+//   }
+
+//   void _onGenreFocus(int index) {
+//     // ADDED SAFETY CHECK
+//     if (!mounted) return;
+//     Provider.of<InternalFocusProvider>(context, listen: false).updateName(_genres[index]);
+
+//     final buttonContext = _genreButtonKeys[index].currentContext;
+//     if (buttonContext != null) {
+//       Scrollable.ensureVisible(buttonContext,
+//           duration: const Duration(milliseconds: 300),
+//           curve: Curves.easeOut,
+//           alignment: 0.5);
+//     }
+//   }
+
+//   void _onMovieFocus(int index) {
+//     // ADDED SAFETY CHECK
+//     if (!mounted) return;
+//     final movies = _moviesByGenre[_genres[_selectedGenreIndex]] ?? [];
+//     if (index < movies.length) {
+//        Provider.of<InternalFocusProvider>(context, listen: false).updateName(movies[index].name);
+//     }
+   
+//     final cardContext = _movieCardKeys[index].currentContext;
+//     if (cardContext != null) {
+//        Scrollable.ensureVisible(cardContext,
+//           duration: const Duration(milliseconds: 300),
+//           curve: Curves.easeOut,
+//           alignment: 0.5);
+//     }
+//   }
+  
+//   Future<void> _playContent(Movie content) async {
+//     if (_isVideoLoading || !mounted) return;
+//     setState(() { _isVideoLoading = true; });
+
+//     try {
+//         String playableUrl = content.getPlayableUrl();
+
+//         if (content.contentType == 2) {
+//           await Navigator.push(context, MaterialPageRoute(builder: (context) => WebSeriesDetailsPage(
+//                     id: content.id, banner: content.banner ?? '', poster: content.poster ?? '',
+//                     logo: widget.logoUrl, name: content.name, updatedAt: content.updatedAt ?? '',
+//             ),),);
+//             return; 
+//         }
+
+//         if (playableUrl.isEmpty) {
+//           throw Exception('No video URL found');
+//         }
+
+//         if (!mounted) return;
+
+//         if (content.sourceType == 'YoutubeLive' || (content.youtubeTrailer != null && content.youtubeTrailer!.isNotEmpty)) {
+//             final deviceInfo = context.read<DeviceInfoProvider>();
+//             if (deviceInfo.deviceName == 'AFTSS : Amazon Fire Stick HD') {
+//               await Navigator.push(context, MaterialPageRoute(builder: (context) => YoutubeWebviewPlayer(videoUrl: playableUrl, name: content.name)));
+//             } else {
+//               await Navigator.push(context, MaterialPageRoute(builder: (context) => CustomYoutubePlayer(
+//                         videoData: VideoData(
+//                           id: content.id.toString(), title: content.name, youtubeUrl: playableUrl,
+//                           thumbnail: content.poster ?? content.banner ?? '', description: content.description ?? '',
+//                         ),
+//                         playlist: [],
+//                 ),),);
+//             }
+//         } else {
+//           await Navigator.push(context, MaterialPageRoute( builder: (context) => VideoScreen(
+//                   videoUrl: playableUrl, bannerImageUrl: content.poster ?? content.banner ?? '',
+//                   videoId: content.id, name: content.name, updatedAt: content.updatedAt ?? '',
+//                   source: 'isVod', channelList: [], liveStatus: false,
+//             ),),);
+//         }
+//     } catch (e) {
+//       if (mounted) {
+//         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
+//       }
+//     } finally {
+//       if (mounted) {
+//         setState(() { _isVideoLoading = false; });
+//       }
+//     }
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final screenSize = MediaQuery.of(context).size;
+
+//     return Scaffold(
+//       backgroundColor: ProfessionalColors.primaryDark,
+//       body: Stack(
+//         children: [
+//           if (_loadingState == LoadingState.loading || _loadingState == LoadingState.initial)
+//             const Center(child: CircularProgressIndicator())
+//           else if (_error != null)
+//             Center(child: Text('Error: $_error'))
+//           else
+//             Column(
+//               children: [
+//                 SizedBox(
+//                   height: screenSize.height * 0.65,
+//                   child: _buildLogoSection(),
+//                 ),
+//                 _buildGenreButtons(),
+//                 SizedBox(
+//                   height: (screenSize.height / 7) + 30,
+//                   child: _buildMoviesList(),
+//                 ),
+//               ],
+//             ),
+//           Positioned(top: 0, left: 0, right: 0, child: _buildBeautifulAppBar()),
+//           if (_isVideoLoading)
+//             Container(
+//               color: Colors.black.withOpacity(0.7),
+//               child: const Center(child: CircularProgressIndicator(
+//                   valueColor: AlwaysStoppedAnimation<Color>(Colors.white))),
+//             ),
+//         ],
+//       ),
+//     );
+//   }
+  
+
+
+
+//   Widget _buildBeautifulAppBar() {
+//     final focusedName = context.watch<InternalFocusProvider>().focusedItemName;
+//     return Container(
+//       decoration: BoxDecoration(
+//         gradient: LinearGradient(
+//             begin: Alignment.topCenter,
+//             end: Alignment.bottomCenter,
+//             colors: [
+//               ProfessionalColors.primaryDark.withOpacity(0.95),
+//               ProfessionalColors.surfaceDark.withOpacity(0.9),
+//               ProfessionalColors.surfaceDark.withOpacity(0.8),
+//               Colors.transparent
+//             ]),
+//       ),
+//       child: ClipRRect(
+//         child: BackdropFilter(
+//           filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
+//           child: Container(
+//             padding: EdgeInsets.only(
+//                 top: MediaQuery.of(context).padding.top + 10,
+//                 left: 20,
+//                 right: 30,
+//                 bottom: 10),
+//             child: Row(
+//               children: [
+//                 Container(
+//                     decoration: BoxDecoration(
+//                         shape: BoxShape.circle,
+//                         gradient: LinearGradient(colors: [
+//                           ProfessionalColors.accentBlue.withOpacity(0.3),
+//                           ProfessionalColors.accentPurple.withOpacity(0.3)
+//                         ])),
+//                     child: IconButton(
+//                         icon: const Icon(Icons.arrow_back_rounded,
+//                             color: Colors.white, size: 24),
+//                         onPressed: () => Navigator.pop(context))),
+//                 const SizedBox(width: 16),
+//                 GradientText(widget.title,
+//                     style: const TextStyle(
+//                         fontWeight: FontWeight.bold, fontSize: 22),
+//                     gradient: const LinearGradient(colors: [
+//                       ProfessionalColors.accentPink,
+//                       ProfessionalColors.accentPurple,
+//                       ProfessionalColors.accentBlue
+//                     ])),
+//                 const SizedBox(width: 40),
+//                 Expanded(
+//                     child: Text(focusedName,
+//                         textAlign: TextAlign.left,
+//                         style: const TextStyle(
+//                             color: ProfessionalColors.textSecondary,
+//                             fontWeight: FontWeight.bold,
+//                             fontSize: 20),
+//                         overflow: TextOverflow.ellipsis)),
+//               ],
+//             ),
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+
+
+//   Widget _buildLogoSection() {
+//     return Container(
+//       width: double.infinity,
+//       decoration: BoxDecoration(
+//         image: DecorationImage(
+//           image: NetworkImage(widget.logoUrl),
+//           fit: BoxFit.fill,
+//         ),
+//         gradient: LinearGradient(
+//           begin: Alignment.topCenter,
+//           end: Alignment.bottomCenter,
+//           colors: [
+//             Colors.transparent,
+//             ProfessionalColors.primaryDark.withOpacity(0.5),
+//             ProfessionalColors.primaryDark,
+//           ],
+//           stops: const [0.0, 0.7, 1.0],
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildGenreButtons() {
+//     return SizedBox(
+//       height: 60,
+//       child: ListView.builder(
+//         controller: _genreScrollController,
+//         scrollDirection: Axis.horizontal,
+//         itemCount: _genres.length,
+//         padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
+//         itemBuilder: (context, index) {
+//           final genre = _genres[index];
+//           final isSelected = _selectedGenreIndex == index; 
+//           return Focus(
+//             focusNode: _genreFocusNodes[index],
+//             onKey: (node, event) {
+//               if (event is RawKeyDownEvent) {
+//                 if (event.logicalKey == LogicalKeyboardKey.enter ||
+//                     event.logicalKey == LogicalKeyboardKey.select) {
+//                   _updateMoviesForGenre(index);
+//                   return KeyEventResult.handled;
+//                 }
+//               }
+//               return KeyEventResult.ignored;
+//             },
+//             child: GestureDetector(
+//               onTap: () => _genreFocusNodes[index].requestFocus(),
+//               child: Container(
+//                 key: _genreButtonKeys[index],
+//                 margin: const EdgeInsets.only(right: 15),
+//                 child: AnimatedContainer(
+//                   duration: const Duration(milliseconds: 200),
+//                   padding:
+//                       const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+//                   decoration: BoxDecoration(
+//                     color: isSelected
+//                         ? _focusColors[index % _focusColors.length]
+//                         : ProfessionalColors.cardDark,
+//                     borderRadius: BorderRadius.circular(30),
+//                     border: Border.all(
+//                       color: _genreFocusNodes[index].hasFocus
+//                           ? Colors.white
+//                           : Colors.transparent,
+//                       width: 2,
+//                     ),
+//                     boxShadow: [
+//                        if (_genreFocusNodes[index].hasFocus)
+//                          BoxShadow(
+//                            color: _focusColors[index % _focusColors.length].withOpacity(0.7),
+//                            blurRadius: 10,
+//                            spreadRadius: 2,
+//                          )
+//                     ]
+//                   ),
+//                   child: Center(
+//                     child: Text(
+//                       genre,
+//                       style: const TextStyle(
+//                         color: Colors.white,
+//                         fontWeight: FontWeight.bold,
+//                         fontSize: 16,
+//                       ),
+//                     ),
+//                   ),
+//                 ),
+//               ),
+//             ),
+//           );
+//         },
+//       ),
+//     );
+//   }
+
+//   Widget _buildMoviesList() {
+//     final movies = _moviesByGenre[_genres[_selectedGenreIndex]] ?? [];
+//     if (movies.isEmpty) {
+//       return const Center(
+//         child: Text(
+//           "No content available for this genre.",
+//           style: TextStyle(color: ProfessionalColors.textSecondary, fontSize: 16),
+//         ),
+//       );
+//     }
+//     return Padding(
+//       padding: const EdgeInsets.only(top: 10.0),
+//       child: ListView.builder(
+//         controller: _movieScrollController,
+//         scrollDirection: Axis.horizontal,
+//         itemCount: movies.length,
+//         padding: const EdgeInsets.symmetric(horizontal: 30.0),
+//         itemBuilder: (context, index) {
+//           final movie = movies[index];
+//           return Focus(
+//             focusNode: _movieFocusNodes[index],
+//             onKey: (node, event) {
+//               if (event is RawKeyDownEvent) {
+//                 if (event.logicalKey == LogicalKeyboardKey.select || 
+//                     event.logicalKey == LogicalKeyboardKey.enter) {
+//                   _playContent(movie);
+//                   return KeyEventResult.handled;
+//                 }
+//               }
+//               return KeyEventResult.ignored;
+//             },
+//             child: MovieCard(
+//                 key: _movieCardKeys[index],
+//                 movie: movie,
+//                 logoUrl: widget.logoUrl,
+//                 focusNode: _movieFocusNodes[index],
+//                 focusColors: _focusColors,
+//                 uniqueIndex: index,
+//                 onTap: () => _playContent(movie)),
+//           );
+//         },
+//       ),
+//     );
+//   }
+// }
+
+// // ==========================================================
+// // REUSABLE WIDGETS
+// // ==========================================================
+
+// class MovieCard extends StatefulWidget {
+//   final Movie movie;
+//   final String logoUrl;
+//   final FocusNode focusNode;
+//   final List<Color> focusColors;
+//   final int uniqueIndex;
+//   final VoidCallback onTap;
+
+//   const MovieCard(
+//       {super.key,
+//       required this.movie,
+//       required this.logoUrl,
+//       required this.focusNode,
+//       required this.focusColors,
+//       required this.uniqueIndex,
+//       required this.onTap});
+
+//   @override
+//   State<MovieCard> createState() => _MovieCardState();
+// }
+
+// class _MovieCardState extends State<MovieCard> {
+//   bool _hasFocus = false;
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     widget.focusNode.addListener(_onFocusChange);
+//   }
+
+//   @override
+//   void dispose() {
+//     widget.focusNode.removeListener(_onFocusChange);
+//     super.dispose();
+//   }
+
+//   void _onFocusChange() {
+//     if (mounted && widget.focusNode.hasFocus != _hasFocus) {
+//       setState(() {
+//         _hasFocus = widget.focusNode.hasFocus;
+//       });
+//     }
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final focusColor =
+//         widget.focusColors[widget.uniqueIndex % widget.focusColors.length];
+    
+//     final screenSize = MediaQuery.of(context).size;
+
+//     return Container(
+//       width: screenSize.width / 6.5,
+//       height: screenSize.height / 7,
+//       margin: const EdgeInsets.only(right: 12.0),
+//       child: GestureDetector(
+//         onTap: widget.onTap,
+//         child: Column(
+//           crossAxisAlignment: CrossAxisAlignment.start,
+//           mainAxisSize: MainAxisSize.min, 
+//           children: [
+//             Expanded(
+//               child: Container(
+//                 decoration: BoxDecoration(
+//                     borderRadius: BorderRadius.circular(8.0),
+//                     border: _hasFocus
+//                         ? Border.all(color: focusColor, width: 3)
+//                         : Border.all(color: Colors.transparent, width: 3),
+//                     boxShadow: _hasFocus
+//                         ? [
+//                             BoxShadow(
+//                                 color: focusColor.withOpacity(0.5),
+//                                 blurRadius: 12,
+//                                 spreadRadius: 1)
+//                           ]
+//                         : []),
+//                 child: ClipRRect(
+//                   borderRadius: BorderRadius.circular(6.0),
+//                   child: Stack(
+//                     fit: StackFit.expand,
+//                     children: [
+//                       displayImage(widget.movie.banner ?? '',
+//                           fit: BoxFit.cover),
+//                       if (widget.movie.contentType == 2)
+//                         Positioned(
+//                             bottom: 8,
+//                             left: 8,
+//                             child: Container(
+//                                 padding: const EdgeInsets.symmetric(
+//                                     horizontal: 8, vertical: 4),
+//                                 decoration: BoxDecoration(
+//                                     color: ProfessionalColors.accentPurple
+//                                         .withOpacity(0.9),
+//                                     borderRadius: BorderRadius.circular(4.0)),
+//                                 child: const Text('Web Series',
+//                                     style: TextStyle(
+//                                         color: ProfessionalColors.textPrimary,
+//                                         fontSize: 10,
+//                                         fontWeight: FontWeight.bold)))),
+//                       if (_hasFocus)
+//                         Positioned(
+//                             left: 5,
+//                             top: 5,
+//                             child: Container(
+//                                 color: Colors.black.withOpacity(0.4),
+//                                 child: Icon(Icons.play_circle_filled_outlined,
+//                                     color: focusColor, size: 40))),
+//                       Positioned(
+//                           top: 5,
+//                           right: 5,
+//                           child: CircleAvatar(
+//                               radius: 12,
+//                               backgroundImage: NetworkImage(widget.logoUrl),
+//                               backgroundColor: Colors.black54)),
+//                     ],
+//                   ),
+//                 ),
+//               ),
+//             ),
+//             Padding(
+//                 padding:
+//                     const EdgeInsets.only(top: 4.0, left: 2.0, right: 2.0),
+//                 child: Text(widget.movie.name,
+//                     style: TextStyle(
+//                         color: _hasFocus
+//                             ? focusColor
+//                             : ProfessionalColors.textSecondary,
+//                         fontSize: 14), 
+//                     maxLines: 1,
+//                     overflow: TextOverflow.ellipsis)),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+// class GradientText extends StatelessWidget {
+//   const GradientText(this.text,
+//       {super.key, required this.gradient, this.style});
+//   final String text;
+//   final TextStyle? style;
+//   final Gradient gradient;
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return ShaderMask(
+//       blendMode: BlendMode.srcIn,
+//       shaderCallback: (bounds) => gradient
+//           .createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
+//       child: Text(text, style: style),
+//     );
+//   }
+// }
+
+// // ==========================================================
+// // HELPER FUNCTIONS
+// // ==========================================================
+
+// Uint8List _getImageFromBase64String(String base64String) =>
+//     base64Decode(base64String.split(',').last);
+
+// Widget displayImage(String imageUrl,
+//     {double? width, double? height, BoxFit fit = BoxFit.cover}) {
+//   if (imageUrl.isEmpty ||
+//       imageUrl == 'localImage' ||
+//       imageUrl.contains('localhost')) {
+//     return _buildErrorWidget(width, height);
+//   }
+//   if (imageUrl.startsWith('data:image')) {
+//     try {
+//       return Image.memory(_getImageFromBase64String(imageUrl),
+//           fit: fit,
+//           width: width,
+//           height: height,
+//           errorBuilder: (c, e, s) => _buildErrorWidget(width, height));
+//     } catch (e) {
+//       return _buildErrorWidget(width, height);
+//     }
+//   } else if (imageUrl.startsWith('http')) {
+//     if (imageUrl.toLowerCase().endsWith('.svg')) {
+//       return SvgPicture.network(imageUrl,
+//           width: width,
+//           height: height,
+//           fit: fit,
+//           placeholderBuilder: (c) => _buildLoadingWidget(width, height));
+//     } else {
+//       return Image.network(
+//         imageUrl,
+//         width: width,
+//         height: height,
+//         fit: fit,
+//         headers: const {'User-Agent': 'Flutter App'},
+//         loadingBuilder: (c, child, progress) =>
+//             progress == null ? child : _buildLoadingWidget(width, height),
+//         errorBuilder: (c, e, s) => _buildErrorWidget(width, height),
+//       );
+//     }
+//   } else {
+//     return _buildErrorWidget(width, height);
+//   }
+// }
+
+// Widget _buildErrorWidget(double? width, double? height) {
+//   return Container(
+//     width: width,
+//     height: height,
+//     decoration: const BoxDecoration(
+//         gradient: LinearGradient(colors: [
+//       ProfessionalColors.accentGreen,
+//       ProfessionalColors.accentBlue
+//     ])),
+//     child: const Icon(Icons.broken_image, color: Colors.white, size: 24),
+//   );
+// }
+
+// Widget _buildLoadingWidget(double? width, double? height) {
+//   return SizedBox(
+//     width: width,
+//     height: height,
+//     child: const Center(
+//         child: CircularProgressIndicator(
+//             strokeWidth: 2,
+//             valueColor: AlwaysStoppedAnimation<Color>(Colors.white))),
+//   );
+// }
+
+
+
+
+import 'dart:async';
 import 'dart:convert';
-import 'dart:typed_data';
 import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -3225,28 +6266,19 @@ enum LoadingState { initial, loading, rebuilding, loaded, error }
 class ParsedData {
   final List<String> genres;
   final Map<String, List<Movie>> moviesByGenre;
-
   ParsedData({required this.genres, required this.moviesByGenre});
 }
 
-// This function will run in the background isolate
 ParsedData _parseJsonAndPrepareData(String jsonData) {
   final data = json.decode(jsonData) as Map<String, dynamic>;
-
   final allGenres = List<String>.from(data['genres']);
   final allMoviesByGenre = (data['moviesByGenre'] as Map<String, dynamic>).map(
       (key, value) => MapEntry(key,
           (value as List).map((movieMap) => Movie.fromMap(movieMap)).toList()));
-
   final activeGenres =
       allGenres.where((g) => allMoviesByGenre[g]?.isNotEmpty ?? false).toList();
-
   return ParsedData(genres: activeGenres, moviesByGenre: allMoviesByGenre);
 }
-
-// ==========================================================
-// PROFESSIONAL COLORS & DATA MODELS
-// ==========================================================
 
 class ProfessionalColors {
   static const primaryDark = Color(0xFF0A0E1A);
@@ -3260,7 +6292,6 @@ class ProfessionalColors {
   static const accentPink = Color(0xFFEC4899);
   static const textPrimary = Color(0xFFFFFFFF);
   static const textSecondary = Color(0xFFB3B3B3);
-  static const focusGlow = Color(0xFF60A5FA);
 }
 
 class GenreResponse {
@@ -3279,8 +6310,7 @@ class MovieResponse {
   final bool status;
   final int total;
   final List<Movie> data;
-  MovieResponse(
-      {required this.status, required this.total, required this.data});
+  MovieResponse({required this.status, required this.total, required this.data});
   factory MovieResponse.fromJson(Map<String, dynamic> json) {
     return MovieResponse(
       status: json['status'] ?? false,
@@ -3353,42 +6383,12 @@ class Movie {
 
   String getPlayableUrl() {
     if (sourceType == 'YoutubeLive') return movieUrl ?? '';
-    if (youtubeTrailer != null && youtubeTrailer!.isNotEmpty)
+    if (youtubeTrailer != null && youtubeTrailer!.isNotEmpty) {
       return youtubeTrailer!;
+    }
     return movieUrl ?? '';
   }
 }
-
-// ==========================================================
-// PERFORMANCE MONITORING
-// ==========================================================
-
-class PerformanceMonitor {
-  static final Map<String, Stopwatch> _stopwatches = {};
-
-  static void startTimer(String operation) {
-    _stopwatches[operation] = Stopwatch()..start();
-  }
-
-  static void endTimer(String operation) {
-    final stopwatch = _stopwatches[operation];
-    if (stopwatch != null) {
-      stopwatch.stop();
-      print('⏱️ $operation took: ${stopwatch.elapsedMilliseconds}ms');
-      _stopwatches.remove(operation);
-    }
-  }
-
-  static void logMemoryUsage(String operation) {
-    if (kDebugMode) {
-      print('🧠 Memory check at $operation');
-    }
-  }
-}
-
-// ==========================================================
-// SMART CACHE MANAGER
-// ==========================================================
 
 class SmartCacheManager {
   static const String _cachePrefix = 'genre_movies_cache_';
@@ -3411,12 +6411,8 @@ class SmartCacheManager {
       final difference = now.difference(cacheTime);
 
       final isValid = difference < _cacheValidity;
-      print(
-          'Cache validity check: ${isValid ? '✅ Valid' : '❌ Expired'} (Age: ${difference.inMinutes}min)');
-
       return isValid;
     } catch (e) {
-      print('Cache validity check failed: $e');
       return false;
     }
   }
@@ -3430,14 +6426,11 @@ class SmartCacheManager {
       final cachedData = prefs.getString(_getCacheKey(tvChannelId));
 
       if (cachedData != null && cachedData.isNotEmpty) {
-        print(
-            '📦 Using cached data (${(cachedData.length / 1024).toStringAsFixed(1)}KB)');
         return cachedData;
       }
 
       return null;
     } catch (e) {
-      print('Failed to get cached data: $e');
       return null;
     }
   }
@@ -3451,59 +6444,11 @@ class SmartCacheManager {
         prefs.setString(_getCacheKey(tvChannelId), data),
         prefs.setString(_getTimestampKey(tvChannelId), now),
       ]);
-
-      print(
-          '💾 Data cached (${(data.length / 1024).toStringAsFixed(1)}KB) at $now');
     } catch (e) {
       print('Failed to save to cache: $e');
     }
   }
-
-  static Future<void> clearCache(String tvChannelId) async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      await Future.wait([
-        prefs.remove(_getCacheKey(tvChannelId)),
-        prefs.remove(_getTimestampKey(tvChannelId)),
-      ]);
-      print('🗑️ Cache cleared for channel: $tvChannelId');
-    } catch (e) {
-      print('Failed to clear cache: $e');
-    }
-  }
-
-  static Future<Map<String, dynamic>> getCacheInfo(String tvChannelId) async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final cacheKey = _getCacheKey(tvChannelId);
-      final timestampKey = _getTimestampKey(tvChannelId);
-
-      final data = prefs.getString(cacheKey);
-      final timestamp = prefs.getString(timestampKey);
-
-      if (data == null || timestamp == null) {
-        return {'exists': false};
-      }
-
-      final cacheTime = DateTime.parse(timestamp);
-      final age = DateTime.now().difference(cacheTime);
-
-      return {
-        'exists': true,
-        'size_kb': (data.length / 1024).toStringAsFixed(1),
-        'timestamp': timestamp,
-        'age_minutes': age.inMinutes,
-        'is_valid': age < _cacheValidity,
-      };
-    } catch (e) {
-      return {'exists': false, 'error': e.toString()};
-    }
-  }
 }
-
-// ==========================================================
-// OPTIMIZED API FUNCTIONS
-// ==========================================================
 
 Future<String> _fetchAndCacheDataIsolateOptimized(
     Map<String, String> params) async {
@@ -3513,7 +6458,6 @@ Future<String> _fetchAndCacheDataIsolateOptimized(
   final client = http.Client();
 
   try {
-    // Step 1: Fetch genres with timeout
     final genresResponse = await client.get(
       Uri.parse(
           'https://dashboard.cpplayers.com/api/v2/getGenreByContentNetwork/$tvChannelId'),
@@ -3533,9 +6477,7 @@ Future<String> _fetchAndCacheDataIsolateOptimized(
     if (!genreData.status) return '';
 
     final genres = genreData.genres;
-    print('📝 Found ${genres.length} genres, starting parallel fetch...');
 
-    // Step 2: Create parallel futures with individual timeouts
     final List<Future<MapEntry<String, List<Movie>>>> genreFutures =
         genres.map((genre) async {
       try {
@@ -3567,33 +6509,18 @@ Future<String> _fetchAndCacheDataIsolateOptimized(
         }
         return MapEntry(genre, <Movie>[]);
       } catch (e) {
-        print('Error fetching $genre: $e');
         return MapEntry(genre, <Movie>[]);
       }
     }).toList();
 
-    // Step 3: Wait for all requests with overall timeout
-    print('⚡ Executing ${genreFutures.length} parallel API calls...');
-    final results = await Future.wait(genreFutures)
-        .timeout(const Duration(seconds: 30), onTimeout: () {
-      print('⚠️ Overall request timeout, returning partial results');
-      return genreFutures
-          .map((future) => MapEntry('timeout', <Movie>[]))
-          .toList();
-    });
+    final results = await Future.wait(genreFutures);
 
-    // Step 4: Build the final map
     final Map<String, List<Movie>> moviesByGenre = {};
-    int successCount = 0;
     for (final result in results) {
-      if (result.key != 'timeout' && result.value.isNotEmpty) {
+      if (result.value.isNotEmpty) {
         moviesByGenre[result.key] = result.value;
-        successCount++;
       }
     }
-
-    print(
-        '✅ Parallel fetch complete: $successCount/${genres.length} genres loaded');
 
     final Map<String, dynamic> serializableData = {
       'genres': genres,
@@ -3603,7 +6530,6 @@ Future<String> _fetchAndCacheDataIsolateOptimized(
 
     return json.encode(serializableData);
   } catch (e) {
-    print("Isolate Error: $e");
     return '';
   } finally {
     client.close();
@@ -3611,22 +6537,7 @@ Future<String> _fetchAndCacheDataIsolateOptimized(
 }
 
 // ==========================================================
-// SAFE LIST EXTENSION
-// ==========================================================
-
-extension SafeList<T> on List<T> {
-  T? safeElementAt(int index) {
-    if (index < 0 || index >= length) return null;
-    return this[index];
-  }
-
-  bool isValidIndex(int index) {
-    return index >= 0 && index < length;
-  }
-}
-
-// ==========================================================
-// GENRE MOVIES SCREEN (MAIN SCREEN)
+// GENRE MOVIES SCREEN (UPDATED)
 // ==========================================================
 
 class GenreMoviesScreen extends StatefulWidget {
@@ -3645,13 +6556,32 @@ class GenreMoviesScreen extends StatefulWidget {
 class _GenreMoviesScreenState extends State<GenreMoviesScreen> {
   LoadingState _loadingState = LoadingState.initial;
   String? _error;
+
+  // Genre browsing state
   List<String> _genres = [];
-  final Map<String, List<Movie>> _moviesByGenre = {};
-  final List<List<FocusNode>> _focusNodes = [];
-  final ScrollController _verticalScrollController = ScrollController();
-  final Map<int, ScrollController> _horizontalScrollControllers = {};
-  final List<GlobalKey> _rowKeys = [];
-  final List<List<GlobalKey>> _cardKeys = [];
+  Map<String, List<Movie>> _moviesByGenre = {};
+  int _selectedGenreIndex = 0;
+
+  // Search state
+  bool _isSearching = false;
+  bool _showKeyboard = false;
+  String _searchText = '';
+  Timer? _debounce;
+  List<Movie> _searchResults = [];
+  bool _isSearchLoading = false;
+  bool _isVideoLoading = false;
+
+  // Focus Nodes
+  late FocusNode _searchButtonFocusNode;
+  List<FocusNode> _genreFocusNodes = [];
+  List<FocusNode> _movieFocusNodes = [];
+
+  // Keys and Controllers
+  List<GlobalKey> _genreButtonKeys = [];
+  List<GlobalKey> _movieCardKeys = [];
+  final ScrollController _genreScrollController = ScrollController();
+  final ScrollController _movieScrollController = ScrollController();
+
   final List<Color> _focusColors = [
     ProfessionalColors.accentBlue,
     ProfessionalColors.accentPurple,
@@ -3660,35 +6590,23 @@ class _GenreMoviesScreenState extends State<GenreMoviesScreen> {
     ProfessionalColors.accentPink,
     ProfessionalColors.accentRed
   ];
-  final List<Gradient> _genreBackgrounds = const [
-    LinearGradient(
-        colors: [Color(0xFF1A1D29), Color(0xFF0F121E)],
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter),
-    LinearGradient(
-        colors: [Color(0xFF1C1A29), Color(0xFF110F1E)],
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter),
-    LinearGradient(
-        colors: [Color(0xFF1A2129), Color(0xFF0F161E)],
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter),
-    LinearGradient(
-        colors: [Color(0xFF211A29), Color(0xFF160F1E)],
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter)
-  ];
-  bool _isVideoLoading = false;
-  String get _cacheKey => 'genre_movies_cache_${widget.tvChannelId}';
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    _searchButtonFocusNode = FocusNode();
+    _searchButtonFocusNode.addListener(() {
       if (mounted) {
-        Provider.of<InternalFocusProvider>(context, listen: false)
-            .updateName('');
+        setState(() {});
+        if (_searchButtonFocusNode.hasFocus) {
+          Provider.of<InternalFocusProvider>(context, listen: false)
+              .updateName("Search");
+        }
       }
+    });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<InternalFocusProvider>(context, listen: false).updateName('');
     });
     _loadInitialData();
   }
@@ -3700,155 +6618,93 @@ class _GenreMoviesScreenState extends State<GenreMoviesScreen> {
   }
 
   void _cleanupResources() {
-    for (var row in _focusNodes) {
-      for (var node in row) {
-        node.dispose();
-      }
+    _searchButtonFocusNode.dispose();
+    for (var node in _genreFocusNodes) {
+      node.dispose();
     }
-    _focusNodes.clear();
-
-    _verticalScrollController.dispose();
-    for (var controller in _horizontalScrollControllers.values) {
-      controller.dispose();
+    for (var node in _movieFocusNodes) {
+      node.dispose();
     }
-    _horizontalScrollControllers.clear();
-
-    _cardKeys.clear();
-    _rowKeys.clear();
-    _moviesByGenre.clear();
-    _genres.clear();
+    _genreScrollController.dispose();
+    _movieScrollController.dispose();
+    _debounce?.cancel();
   }
 
   void _applyDataToState(ParsedData parsedData) {
     if (!mounted) return;
-
     setState(() {
       _loadingState = LoadingState.rebuilding;
-    });
+      _genres = parsedData.genres.reversed.toList();
+      _moviesByGenre = parsedData.moviesByGenre;
+      _selectedGenreIndex = 0;
 
-    // Clean up existing resources before creating new ones
-    for (var row in _focusNodes) {
-      for (var node in row) {
+      for (var node in _genreFocusNodes) {
         node.dispose();
       }
-    }
-    _focusNodes.clear();
+      _genreFocusNodes = List.generate(_genres.length, (i) => FocusNode());
+      _genreButtonKeys = List.generate(_genres.length, (i) => GlobalKey());
 
-    for (var controller in _horizontalScrollControllers.values) {
-      controller.dispose();
-    }
-    _horizontalScrollControllers.clear();
-
-    _cardKeys.clear();
-    _rowKeys.clear();
-
-    // Apply new data
-    _genres = parsedData.genres;
-    _moviesByGenre.clear();
-    _moviesByGenre.addAll(parsedData.moviesByGenre);
-
-    // Create new keys and nodes
-    _rowKeys.addAll(List.generate(_genres.length, (_) => GlobalKey()));
-    for (int i = 0; i < _genres.length; i++) {
-      final movies = _moviesByGenre[_genres[i]] ?? [];
-      int moviesToShow = movies.length > 10 ? 10 : movies.length;
-      int nodeCount = moviesToShow + 1;
-      var rowNodes = List.generate(nodeCount, (_) => FocusNode());
-      var rowCardKeys = List.generate(nodeCount, (_) => GlobalKey());
-      _cardKeys.add(rowCardKeys);
-      _horizontalScrollControllers[i] = ScrollController();
-      for (int j = 0; j < nodeCount; j++) {
-        rowNodes[j].addListener(() {
-          if (rowNodes[j].hasFocus) _onItemFocusChange(i, j);
+      for (int i = 0; i < _genres.length; i++) {
+        _genreFocusNodes[i].addListener(() {
+          if (_genreFocusNodes[i].hasFocus) _onGenreFocus(i);
         });
       }
-      _focusNodes.add(rowNodes);
-    }
 
-    setState(() {
+      _rebuildMovieNodes();
       _loadingState = LoadingState.loaded;
     });
 
     Future.delayed(const Duration(milliseconds: 200), () {
-      if (mounted && _focusNodes.isNotEmpty && _focusNodes.first.isNotEmpty) {
-        _focusNodes.first.first.requestFocus();
+      if (mounted && _searchButtonFocusNode.canRequestFocus) {
+        _searchButtonFocusNode.requestFocus();
       }
     });
+  }
+
+  void _rebuildMovieNodes() {
+    if (!mounted) return;
+    for (var node in _movieFocusNodes) {
+      node.dispose();
+    }
+
+    final currentList = _isSearching
+        ? _searchResults
+        : _moviesByGenre[_genres[_selectedGenreIndex]] ?? [];
+
+    _movieFocusNodes = List.generate(currentList.length, (i) => FocusNode());
+    _movieCardKeys = List.generate(currentList.length, (i) => GlobalKey());
+
+    for (int i = 0; i < currentList.length; i++) {
+      _movieFocusNodes[i].addListener(() {
+        if (_movieFocusNodes[i].hasFocus) _onMovieFocus(i);
+      });
+    }
   }
 
   Future<void> _loadInitialData() async {
     final cachedData =
         await SmartCacheManager.getCachedData(widget.tvChannelId);
-
     if (cachedData != null) {
-      print('🚀 Loading from valid cache...');
-      PerformanceMonitor.startTimer('cacheLoad');
-
-      _parseAndSetState(cachedData);
-
-      PerformanceMonitor.endTimer('cacheLoad');
-
-      final cacheInfo =
-          await SmartCacheManager.getCacheInfo(widget.tvChannelId);
-      if (cacheInfo['age_minutes'] > 60) {
-        print(
-            '🔄 Starting background refresh (cache age: ${cacheInfo['age_minutes']}min)');
-        _refreshDataInBackground();
-      }
-
-      return;
-    }
-
-    print('📡 No valid cache found, fetching fresh data...');
-    await _fetchDataWithLoading();
-  }
-
-  Future<void> _refreshDataInBackground() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final authKey = prefs.getString('result_auth_key') ?? '56456456456';
-
-      final String freshDataJson = await _fetchAndCacheDataIsolateOptimized(
-          {'tvChannelId': widget.tvChannelId, 'authKey': authKey});
-
-      if (freshDataJson.isNotEmpty) {
-        await SmartCacheManager.saveToCache(widget.tvChannelId, freshDataJson);
-        print('✅ Background refresh completed and cached');
-      }
-    } catch (e) {
-      print('Background refresh failed: $e');
+      final parsedData = await compute(_parseJsonAndPrepareData, cachedData);
+      _applyDataToState(parsedData);
+    } else {
+      await _fetchDataWithLoading();
     }
   }
 
   Future<void> _fetchDataWithLoading() async {
-    PerformanceMonitor.startTimer('fetchData');
-
-    if (mounted)
-      setState(() {
-        _loadingState = LoadingState.loading;
-        _error = null;
-      });
-
+    if (mounted) setState(() => _loadingState = LoadingState.loading);
     try {
       final prefs = await SharedPreferences.getInstance();
       final authKey = prefs.getString('result_auth_key') ?? '56456456456';
-
-      PerformanceMonitor.startTimer('isolateWork');
       final String freshDataJson = await _fetchAndCacheDataIsolateOptimized(
           {'tvChannelId': widget.tvChannelId, 'authKey': authKey});
-      PerformanceMonitor.endTimer('isolateWork');
 
       if (freshDataJson.isNotEmpty) {
         await SmartCacheManager.saveToCache(widget.tvChannelId, freshDataJson);
-
-        PerformanceMonitor.startTimer('parseData');
         final parsedData =
             await compute(_parseJsonAndPrepareData, freshDataJson);
-        PerformanceMonitor.endTimer('parseData');
-
-        PerformanceMonitor.startTimer('applyState');
         _applyDataToState(parsedData);
-        PerformanceMonitor.endTimer('applyState');
       } else {
         throw Exception('Failed to load data');
       }
@@ -3860,286 +6716,288 @@ class _GenreMoviesScreenState extends State<GenreMoviesScreen> {
         });
       }
     }
-
-    PerformanceMonitor.endTimer('fetchData');
-    PerformanceMonitor.logMemoryUsage('fetchDataComplete');
   }
 
-  void _parseAndSetState(String jsonData) {
-    if (!mounted) return;
+  Future<List<Movie>> _fetchMoviesBySearch(String searchTerm) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final authKey = prefs.getString('result_auth_key') ?? '56456456456';
 
-    setState(() {
-      _loadingState = LoadingState.rebuilding;
-    });
-
-    final data = json.decode(jsonData) as Map<String, dynamic>;
-
-    for (var row in _focusNodes) {
-      for (var node in row) {
-        node.dispose();
-      }
-    }
-    _focusNodes.clear();
-
-    for (var controller in _horizontalScrollControllers.values) {
-      controller.dispose();
-    }
-    _horizontalScrollControllers.clear();
-
-    _cardKeys.clear();
-    _rowKeys.clear();
-
-    final allGenres = List<String>.from(data['genres']);
-    final allMoviesByGenre = (data['moviesByGenre'] as Map<String, dynamic>)
-        .map((key, value) => MapEntry(
-            key,
-            (value as List)
-                .map((movieMap) => Movie.fromMap(movieMap))
-                .toList()));
-    final activeGenres = allGenres
-        .where((g) => allMoviesByGenre[g]?.isNotEmpty ?? false)
-        .toList();
-
-    _genres = activeGenres;
-    _moviesByGenre.clear();
-    _moviesByGenre.addAll(allMoviesByGenre);
-
-    _rowKeys.addAll(List.generate(_genres.length, (_) => GlobalKey()));
-    for (int i = 0; i < _genres.length; i++) {
-      final movies = _moviesByGenre[_genres[i]] ?? [];
-      int moviesToShow = movies.length > 10 ? 10 : movies.length;
-      int nodeCount = moviesToShow + 1;
-      var rowNodes = List.generate(nodeCount, (_) => FocusNode());
-      var rowCardKeys = List.generate(nodeCount, (_) => GlobalKey());
-      _cardKeys.add(rowCardKeys);
-      _horizontalScrollControllers[i] = ScrollController();
-      for (int j = 0; j < nodeCount; j++) {
-        rowNodes[j].addListener(() {
-          if (rowNodes[j].hasFocus) _onItemFocusChange(i, j);
-        });
-      }
-      _focusNodes.add(rowNodes);
-    }
-
-    setState(() {
-      _loadingState = LoadingState.loaded;
-    });
-
-    Future.delayed(const Duration(milliseconds: 200), () {
-      if (mounted && _focusNodes.isNotEmpty && _focusNodes.first.isNotEmpty) {
-        _focusNodes.first.first.requestFocus();
-      }
-    });
-  }
-
-  void _onItemFocusChange(int genreIndex, int movieIndex) {
-    if (!mounted ||
-        _loadingState == LoadingState.loading ||
-        genreIndex < 0 ||
-        genreIndex >= _genres.length) return;
-    final genre = _genres[genreIndex];
-    final movies = _moviesByGenre[genre] ?? [];
-    int moviesToShow = movies.length > 10 ? 10 : movies.length;
-    int expectedNodeCount = moviesToShow + 1;
-    if (movieIndex < 0 || movieIndex >= expectedNodeCount) return;
-
-    String newName =
-        movieIndex < moviesToShow ? movies[movieIndex].name : "View All";
-    Provider.of<InternalFocusProvider>(context, listen: false)
-        .updateName(newName);
-
-    _scrollToFocusedVertical(genreIndex);
-    _scrollToFocusedHorizontal(genreIndex, movieIndex);
-  }
-
-  void _scrollToFocusedVertical(int genreIndex) {
-    if (_loadingState == LoadingState.loading ||
-        genreIndex < 0 ||
-        genreIndex >= _rowKeys.length) return;
-    final rowContext = _rowKeys[genreIndex].currentContext;
-    if (rowContext == null) return;
-    final renderBox = rowContext.findRenderObject() as RenderBox;
-    final rowOffset = renderBox.localToGlobal(Offset.zero);
-    final scrollOffset = _verticalScrollController.offset;
-    const appBarHeight = 100.0;
-    final rowTop =
-        rowOffset.dy + scrollOffset - (screenhgt * 0.5 - appBarHeight * 0.5);
-    _verticalScrollController.animateTo(
-        rowTop.clamp(0.0, _verticalScrollController.position.maxScrollExtent),
-        duration: const Duration(milliseconds: 350),
-        curve: Curves.easeOut);
-  }
-
-  void _scrollToFocusedHorizontal(int genreIndex, int movieIndex) {
-    if (_loadingState == LoadingState.loading ||
-        genreIndex < 0 ||
-        genreIndex >= _horizontalScrollControllers.length ||
-        genreIndex >= _cardKeys.length) return;
-    if (movieIndex < 0 || movieIndex >= _cardKeys[genreIndex].length) return;
-    final scrollController = _horizontalScrollControllers[genreIndex];
-    if (scrollController == null || !scrollController.hasClients) return;
-    final cardContext = _cardKeys[genreIndex][movieIndex].currentContext;
-    if (cardContext == null) return;
-    final renderBox = cardContext.findRenderObject() as RenderBox;
-    final cardOffset = renderBox.localToGlobal(Offset.zero,
-        ancestor: scrollController.position.context.storageContext
-            .findRenderObject());
-    double targetOffset = (scrollController.offset + cardOffset.dx - 40)
-        .clamp(0.0, scrollController.position.maxScrollExtent);
-    scrollController.animateTo(targetOffset,
-        duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
-  }
-
-
-
-
-  // Future<void> _playContent(Movie content) async {
-  //   if (_isVideoLoading || !mounted) return;
-  //   setState(() => _isVideoLoading = true);
-  //   try {
-  //     ScaffoldMessenger.of(context)
-  //         .showSnackBar(SnackBar(content: Text('Playing: ${content.name}')));
-  //   } catch (e) {
-  //     if (mounted)
-  //       ScaffoldMessenger.of(context)
-  //           .showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
-  //   } finally {
-  //     if (mounted) setState(() => _isVideoLoading = false);
-  //   }
-  // }
-
-
-
-
-  // // Replace the old _playContent with this complete version
-Future<void> _playContent(Movie content) async {
-  if (_isVideoLoading || !mounted) return;
-  setState(() { _isVideoLoading = true; });
-
-  try {
-    String playableUrl = content.getPlayableUrl();
-
-    // Navigate to Web Series details page if content type is 2
-    if (content.contentType == 2) {
-      await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => WebSeriesDetailsPage(
-            id: content.id,
-            banner: content.banner ?? '',
-            poster: content.poster ?? '',
-            logo: widget.logoUrl,
-            name: content.name,
-            updatedAt: content.updatedAt ?? '',
-          ),
-        ),
+      final response = await http.post(
+        Uri.parse(
+            'https://dashboard.cpplayers.com/api/v2/getAllContentsOfNetworkNew'),
+        headers: {
+          'auth-key': authKey,
+          'domain': 'coretechinfo.com',
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: json.encode({
+          "genre": "",
+          "network_id": widget.tvChannelId,
+        }),
       );
-      return; // Stop execution after navigation
+
+      if (response.statusCode == 200) {
+        final movieData = MovieResponse.fromJson(json.decode(response.body));
+        if (movieData.status) {
+          List<Movie> allMovies =
+              movieData.data.where((movie) => movie.status == 1).toList();
+
+          if (searchTerm.isNotEmpty) {
+            return allMovies
+                .where((movie) => movie.name
+                    .toLowerCase()
+                    .contains(searchTerm.toLowerCase()))
+                .toList();
+          }
+          return allMovies;
+        }
+      }
+      return [];
+    } catch (e) {
+      print("Search API Error: $e");
+      return [];
+    }
+  }
+
+  void _performSearch(String searchTerm) {
+    _debounce?.cancel();
+    if (searchTerm.trim().isEmpty) {
+      setState(() {
+        _isSearching = false;
+        _isSearchLoading = false;
+        _searchResults.clear();
+        _rebuildMovieNodes();
+      });
+      return;
     }
 
-    if (playableUrl.isEmpty) {
-      throw Exception('No video URL found');
-    }
+    _debounce = Timer(const Duration(milliseconds: 400), () async {
+      if (!mounted) return;
+      setState(() {
+        _isSearchLoading = true;
+        _isSearching = true;
+        _searchResults.clear();
+      });
 
-    if (!mounted) return;
+      final results = await _fetchMoviesBySearch(searchTerm);
+      if (!mounted) return;
 
-    // Handle YouTube links
-    if (content.sourceType == 'YoutubeLive' || (content.youtubeTrailer != null && content.youtubeTrailer!.isNotEmpty)) {
-      final deviceInfo = context.read<DeviceInfoProvider>();
-      if (deviceInfo.deviceName == 'AFTSS : Amazon Fire Stick HD') {
-        // Use WebView for specific devices like Fire Stick
-        await Navigator.push(context, MaterialPageRoute(builder: (context) => YoutubeWebviewPlayer(videoUrl: playableUrl, name: content.name)));
+      setState(() {
+        _searchResults = results;
+        _isSearchLoading = false;
+        _rebuildMovieNodes();
+      });
+    });
+  }
+
+  void _onKeyPressed(String value) {
+    setState(() {
+      if (value == 'OK') {
+        _showKeyboard = false;
+        if (_movieFocusNodes.isNotEmpty) {
+          _movieFocusNodes.first.requestFocus();
+        } else {
+          _searchButtonFocusNode.requestFocus();
+        }
+        return;
+      }
+
+      if (value == 'DEL') {
+        if (_searchText.isNotEmpty) {
+          _searchText = _searchText.substring(0, _searchText.length - 1);
+        }
+      } else if (value == ' ') {
+        _searchText += ' ';
       } else {
-        // Use the custom YouTube player for other devices
+        _searchText += value;
+      }
+      _performSearch(_searchText);
+    });
+  }
+
+  void _updateMoviesForGenre(int index) {
+    if (_isSearching) {
+      setState(() {
+        _isSearching = false;
+        _searchText = '';
+        _searchResults.clear();
+      });
+    }
+
+    if (_selectedGenreIndex == index) return;
+    setState(() {
+      _selectedGenreIndex = index;
+      _rebuildMovieNodes();
+    });
+  }
+
+  void _onGenreFocus(int index) {
+    if (!mounted) return;
+    Provider.of<InternalFocusProvider>(context, listen: false)
+        .updateName(_genres[index]);
+
+    final buttonContext = _genreButtonKeys[index].currentContext;
+    if (buttonContext != null) {
+      Scrollable.ensureVisible(buttonContext,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+          alignment: 0.5);
+    }
+  }
+
+  void _onMovieFocus(int index) {
+    if (!mounted) return;
+    final currentList = _isSearching
+        ? _searchResults
+        : _moviesByGenre[_genres[_selectedGenreIndex]] ?? [];
+    if (index < currentList.length) {
+      Provider.of<InternalFocusProvider>(context, listen: false)
+          .updateName(currentList[index].name);
+    }
+
+    final cardContext = _movieCardKeys[index].currentContext;
+    if (cardContext != null) {
+      Scrollable.ensureVisible(cardContext,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+          alignment: 0.5);
+    }
+  }
+
+  // ================== FIXED: ADDED PLAY CONTENT FUNCTION ==================
+  Future<void> _playContent(Movie content) async {
+    if (_isVideoLoading || !mounted) return;
+    setState(() {
+      _isVideoLoading = true;
+    });
+
+    try {
+      String playableUrl = content.getPlayableUrl();
+
+      if (content.contentType == 2) {
         await Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => CustomYoutubePlayer(
-              videoData: VideoData(
-                id: content.id.toString(),
-                title: content.name,
-                youtubeUrl: playableUrl,
-                thumbnail: content.poster ?? content.banner ?? '',
-                description: content.description ?? '',
+            builder: (context) => WebSeriesDetailsPage(
+              id: content.id,
+              banner: content.banner ?? '',
+              poster: content.poster ?? '',
+              logo: widget.logoUrl,
+              name: content.name,
+              updatedAt: content.updatedAt ?? '',
+            ),
+          ),
+        );
+        return;
+      }
+
+      if (playableUrl.isEmpty) {
+        throw Exception('No video URL found');
+      }
+
+      if (!mounted) return;
+
+      if (content.sourceType == 'YoutubeLive' ||
+          (content.youtubeTrailer != null &&
+              content.youtubeTrailer!.isNotEmpty)) {
+        final deviceInfo = context.read<DeviceInfoProvider>();
+        if (deviceInfo.deviceName == 'AFTSS : Amazon Fire Stick HD') {
+          await Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => YoutubeWebviewPlayer(
+                      videoUrl: playableUrl, name: content.name)));
+        } else {
+          await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => CustomYoutubePlayer(
+                videoData: VideoData(
+                  id: content.id.toString(),
+                  title: content.name,
+                  youtubeUrl: playableUrl,
+                  thumbnail: content.poster ?? content.banner ?? '',
+                  description: content.description ?? '',
+                ),
+                playlist: [],
               ),
-              playlist: [],
+            ),
+          );
+        }
+      } else {
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => VideoScreen(
+              videoUrl: playableUrl,
+              bannerImageUrl: content.poster ?? content.banner ?? '',
+              videoId: content.id,
+              name: content.name,
+              updatedAt: content.updatedAt ?? '',
+              source: 'isVod',
+              channelList: [],
+              liveStatus: false,
             ),
           ),
         );
       }
-    } else {
-      // Handle other video URLs
-      await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => VideoScreen(
-            videoUrl: playableUrl,
-            bannerImageUrl: content.poster ?? content.banner ?? '',
-            videoId: content.id,
-            name: content.name,
-            updatedAt: content.updatedAt ?? '',
-            source: 'isVod',
-            channelList: [],
-            liveStatus: false,
-          ),
-        ),
-      );
-    }
-  } catch (e) {
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
-    }
-  } finally {
-    if (mounted) {
-      setState(() { _isVideoLoading = false; });
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isVideoLoading = false;
+        });
+      }
     }
   }
-}
-
-  void _navigateToGridPage(String genre) {
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => GenreGridScreen(
-                genre: genre,
-                tvChannelId: widget.tvChannelId,
-                logoUrl: widget.logoUrl)));
-  }
+  // =======================================================================
 
   @override
   Widget build(BuildContext context) {
+    final screenSize = MediaQuery.of(context).size;
+    // ================== FIXED: UNDEFINED VARIABLE ERROR ==================
+    // bannerhgt variable ko define kiya gaya.
+    // final double bannerhgt = screenSize.height * 0.22;
+    // =====================================================================
+    
     return Scaffold(
       backgroundColor: ProfessionalColors.primaryDark,
       body: Stack(
         children: [
-          Container(
-              decoration: const BoxDecoration(
-                  gradient: LinearGradient(colors: [
-            ProfessionalColors.primaryDark,
-            Color(0xFF06080F)
-          ], begin: Alignment.topCenter, end: Alignment.bottomCenter))),
-          CustomScrollView(
-            controller: _verticalScrollController,
-            slivers: [
-              const SliverPadding(padding: EdgeInsets.only(top: 100.0)),
-              _loadingState == LoadingState.loading ||
-                      _loadingState == LoadingState.initial
-                  ? const SliverFillRemaining(
-                      child: Center(child: CircularProgressIndicator()))
-                  : _error != null
-                      ? SliverFillRemaining(
-                          child: Center(child: Text('Error: $_error')))
-                      : _buildGenresList(),
-            ],
-          ),
+          if (_loadingState == LoadingState.loading ||
+              _loadingState == LoadingState.initial)
+            const Center(child: CircularProgressIndicator())
+          else if (_error != null)
+            Center(child: Text('Error: $_error'))
+          else
+            Column(
+              children: [
+                SizedBox(
+                  height: screenSize.height * 0.62,
+                  child:
+                      _showKeyboard ? _buildSearchUI() : _buildLogoSection(),
+                ),
+                _buildGenreButtons(),
+                SizedBox(
+                  height: bannerhgt + 30,
+                  child: _buildMoviesList(),
+                ),
+              ],
+            ),
           Positioned(top: 0, left: 0, right: 0, child: _buildBeautifulAppBar()),
           if (_isVideoLoading)
             Container(
-                color: Colors.black.withOpacity(0.7),
-                child: const Center(
-                    child: CircularProgressIndicator(
-                        valueColor:
-                            AlwaysStoppedAnimation<Color>(Colors.white)))),
+              color: Colors.black.withOpacity(0.7),
+              child: const Center(
+                  child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white))),
+            ),
         ],
       ),
     );
@@ -4158,16 +7016,6 @@ Future<void> _playContent(Movie content) async {
               ProfessionalColors.surfaceDark.withOpacity(0.8),
               Colors.transparent
             ]),
-        border: Border(
-            bottom: BorderSide(
-                color: ProfessionalColors.accentBlue.withOpacity(0.2),
-                width: 1)),
-        boxShadow: [
-          BoxShadow(
-              color: Colors.black.withOpacity(0.3),
-              blurRadius: 10,
-              offset: const Offset(0, 2))
-        ],
       ),
       child: ClipRRect(
         child: BackdropFilter(
@@ -4180,17 +7028,17 @@ Future<void> _playContent(Movie content) async {
                 bottom: 10),
             child: Row(
               children: [
-                Container(
-                    decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: LinearGradient(colors: [
-                          ProfessionalColors.accentBlue.withOpacity(0.3),
-                          ProfessionalColors.accentPurple.withOpacity(0.3)
-                        ])),
-                    child: IconButton(
-                        icon: const Icon(Icons.arrow_back_rounded,
-                            color: Colors.white, size: 24),
-                        onPressed: () => Navigator.pop(context))),
+                // Container(
+                //     decoration: BoxDecoration(
+                //         shape: BoxShape.circle,
+                //         gradient: LinearGradient(colors: [
+                //           ProfessionalColors.accentBlue.withOpacity(0.3),
+                //           ProfessionalColors.accentPurple.withOpacity(0.3)
+                //         ])),
+                //     child: IconButton(
+                //         icon: const Icon(Icons.arrow_back_rounded,
+                //             color: Colors.white, size: 24),
+                //         onPressed: () => Navigator.pop(context))),
                 const SizedBox(width: 16),
                 GradientText(widget.title,
                     style: const TextStyle(
@@ -4209,12 +7057,6 @@ Future<void> _playContent(Movie content) async {
                             fontWeight: FontWeight.bold,
                             fontSize: 20),
                         overflow: TextOverflow.ellipsis)),
-                Padding(
-                    padding: const EdgeInsets.only(right: 15.0),
-                    child: CircleAvatar(
-                        backgroundImage: NetworkImage(widget.logoUrl),
-                        radius: 20,
-                        backgroundColor: Colors.white24)),
               ],
             ),
           ),
@@ -4223,493 +7065,358 @@ Future<void> _playContent(Movie content) async {
     );
   }
 
-  Widget _buildGenresList() {
-    if (_loadingState == LoadingState.rebuilding || _genres.isEmpty) {
-      return const SliverToBoxAdapter(child: SizedBox.shrink());
-    }
-    return SliverList(
-      delegate: SliverChildBuilderDelegate((context, index) {
-        final genre = _genres[index];
-        final movies = _moviesByGenre[genre] ?? [];
-        final int moviesToShow = movies.length > 10 ? 10 : movies.length;
-        final int itemCount = moviesToShow + 1;
+  Widget _buildTopSection() {
+    return SizedBox(
+      height: MediaQuery.of(context).size.height * 0.65,
+      child: _showKeyboard ? _buildSearchUI() : _buildLogoSection(),
+    );
+  }
+
+  Widget _buildSearchUI() {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Expanded(
+          flex: 4,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 40),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const GradientText(
+                  "Search for Content",
+                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                  gradient: LinearGradient(colors: [
+                    ProfessionalColors.accentBlue,
+                    ProfessionalColors.accentPurple
+                  ]),
+                ),
+                const SizedBox(height: 24),
+                Container(
+                  width: double.infinity,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.05),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                        color: ProfessionalColors.accentPurple, width: 2),
+                  ),
+                  child: Text(
+                    _searchText.isEmpty ? 'Start typing...' : _searchText,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color:
+                          _searchText.isEmpty ? Colors.white54 : Colors.white,
+                      fontSize: 22,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        Expanded(
+          flex: 6,
+          child: _buildQwertyKeyboard(),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildQwertyKeyboard() {
+    final row1 = "1234567890".split('');
+    final row2 = "qwertyuiop".split('');
+    final row3 = "asdfghjkl".split('');
+    final row4 = ["zxcvbnm", "DEL"]
+        .expand((e) => e == "DEL" ? [e] : e.split(''))
+        .toList();
+    final row5 = [" ", "OK"];
+
+    return Container(
+      color: Colors.transparent,
+      padding: const EdgeInsets.all(10),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          _buildKeyboardRow(row1),
+          _buildKeyboardRow(row2),
+          _buildKeyboardRow(row3),
+          _buildKeyboardRow(row4),
+          _buildKeyboardRow(row5),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildKeyboardRow(List<String> keys) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: keys.map((key) {
+        final screenWidth = MediaQuery.of(context).size.width;
+        final screenHeight = MediaQuery.of(context).size.height;
+        double width;
+
+        const double keyWidthFactor = 0.045;
+        const double keyHeightFactor = 0.08;
+        const double keyFontSize = 22.0;
+        const double keyMargin = 4.0;
+        const double keyBorderRadius = 12.0;
+
+        if (key == ' ') {
+          width = screenWidth * 0.315;
+        } else if (key == 'OK' || key == 'DEL') {
+          width = screenWidth * 0.09;
+        } else {
+          width = screenWidth * keyWidthFactor;
+        }
+
         return Container(
-          key: _rowKeys[index],
-          decoration: BoxDecoration(
-              gradient: _genreBackgrounds[index % _genreBackgrounds.length]),
-          padding: const EdgeInsets.symmetric(vertical: 5.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                  padding: const EdgeInsets.only(left: 30.0, bottom: 5.0),
-                  child: GradientText(genre,
-                      style: const TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1.2),
-                      gradient: const LinearGradient(
-                          colors: [
-                            ProfessionalColors.accentGreen,
-                            ProfessionalColors.accentOrange,
-                            ProfessionalColors.accentPink
-                          ],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight))),
-              SizedBox(
-                height: bannerhgt + 25,
-                child: ListView.builder(
-                  controller: _horizontalScrollControllers[index],
-                  scrollDirection: Axis.horizontal,
-                  itemCount: itemCount,
-                  padding: const EdgeInsets.symmetric(horizontal: 30.0),
-                  itemBuilder: (context, movieIndex) {
-                    try {
-                      if (!_genres.isValidIndex(index)) {
-                        print(
-                            'Invalid genre index: $index, genres length: ${_genres.length}');
-                        return Container(
-                            width: bannerwdt,
-                            child: const Text('Invalid genre'));
-                      }
+          width: width,
+          height: screenHeight * keyHeightFactor,
+          margin: const EdgeInsets.all(keyMargin),
+          child: ElevatedButton(
+            onPressed: () => _onKeyPressed(key),
+            style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white.withOpacity(0.1),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(keyBorderRadius)),
+                padding: EdgeInsets.zero),
+            child: Text(key,
+                style: const TextStyle(
+                    fontSize: keyFontSize, fontWeight: FontWeight.bold)),
+          ),
+        );
+      }).toList(),
+    );
+  }
 
-                      if (!_cardKeys.isValidIndex(index) ||
-                          !_cardKeys[index].isValidIndex(movieIndex)) {
-                        print(
-                            'Invalid card key index: genre=$index, movie=$movieIndex');
-                        return Container(
-                            width: bannerwdt,
-                            child: const Text('Invalid card key'));
-                      }
+  Widget _buildLogoSection() {
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          image: NetworkImage(widget.logoUrl),
+          fit: BoxFit.fill,
+        ),
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            Colors.transparent,
+            ProfessionalColors.primaryDark.withOpacity(0.5),
+            ProfessionalColors.primaryDark,
+          ],
+          stops: const [0.0, 0.7, 1.0],
+        ),
+      ),
+    );
+  }
 
-                      if (!_focusNodes.isValidIndex(index) ||
-                          !_focusNodes[index].isValidIndex(movieIndex)) {
-                        print(
-                            'Invalid focus node index: genre=$index, movie=$movieIndex');
-                        return Container(
-                            width: bannerwdt,
-                            child: const Text('Invalid focus node'));
-                      }
-
-                      if (movieIndex == moviesToShow) {
-                        return ViewAllCard(
-                            key: _cardKeys[index][movieIndex],
-                            focusNode: _focusNodes[index][movieIndex],
-                            focusColors: _focusColors,
-                            uniqueIndex: index * 10 + movieIndex,
-                            onTap: () => _navigateToGridPage(genre));
-                      }
-
-                      final movie = movies.safeElementAt(movieIndex);
-                      if (movie == null) {
-                        print(
-                            'Movie not found at index: $movieIndex, movies length: ${movies.length}');
-                        return Container(
-                            width: bannerwdt,
-                            child: const Text('Movie not found'));
-                      }
-
-                      return MovieCard(
-                          key: _cardKeys[index][movieIndex],
-                          movie: movie,
-                          logoUrl: widget.logoUrl,
-                          focusNode: _focusNodes[index][movieIndex],
-                          focusColors: _focusColors,
-                          uniqueIndex: index * 10 + movieIndex,
-                          onTap: () => _playContent(movie));
-                    } catch (e, stackTrace) {
-                      print('🚨 ListView Builder Error 🚨');
-                      print('Genre Index: $index, Movie Index: $movieIndex');
-                      print('Error: $e');
-                      print('StackTrace: $stackTrace');
-                      return Container(
-                          width: bannerwdt,
-                          height: 100,
-                          color: Colors.red.withOpacity(0.3),
-                          child: const Center(
-                              child: Text('Error',
-                                  style: TextStyle(color: Colors.white))));
-                    }
-                  },
+  Widget _buildGenreButtons() {
+    return SizedBox(
+      height: 60,
+      child: ListView.builder(
+        controller: _genreScrollController,
+        scrollDirection: Axis.horizontal,
+        itemCount: _genres.length + 1,
+        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
+        itemBuilder: (context, index) {
+          if (index == 0) {
+            return Focus(
+              focusNode: _searchButtonFocusNode,
+              onKey: (node, event) {
+                if (event is RawKeyDownEvent &&
+                    (event.logicalKey == LogicalKeyboardKey.enter ||
+                        event.logicalKey == LogicalKeyboardKey.select)) {
+                  setState(() => _showKeyboard = true);
+                  return KeyEventResult.handled;
+                }
+                if (event is RawKeyDownEvent &&
+                    event.logicalKey == LogicalKeyboardKey.arrowRight) {
+                  if (_genreFocusNodes.isNotEmpty) {
+                    _genreFocusNodes.first.requestFocus();
+                    return KeyEventResult.handled;
+                  }
+                }
+                return KeyEventResult.ignored;
+              },
+              child: GestureDetector(
+                onTap: () {
+                  _searchButtonFocusNode.requestFocus();
+                  setState(() => _showKeyboard = true);
+                },
+                child: Container(
+                  margin: const EdgeInsets.only(right: 15),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 24, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: _searchButtonFocusNode.hasFocus
+                          ? ProfessionalColors.accentOrange
+                          : (_isSearching
+                              ? ProfessionalColors.accentPurple
+                              : ProfessionalColors.cardDark),
+                      borderRadius: BorderRadius.circular(30),
+                      border: Border.all(
+                        color: _searchButtonFocusNode.hasFocus
+                            ? Colors.white
+                            : Colors.transparent,
+                        width: 2,
+                      ),
+                      boxShadow: _searchButtonFocusNode.hasFocus
+                          ? [
+                              BoxShadow(
+                                color: ProfessionalColors.accentOrange
+                                    .withOpacity(0.7),
+                                blurRadius: 10,
+                                spreadRadius: 2,
+                              )
+                            ]
+                          : null,
+                    ),
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.search, color: Colors.white),
+                        SizedBox(width: 8),
+                        Text("Search",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16)),
+                      ],
+                    ),
+                  ),
                 ),
               ),
-            ],
-          ),
-        );
-      }, childCount: _genres.length),
-    );
-  }
-}
+            );
+          }
 
-// ==========================================================
-// GENRE GRID SCREEN
-// ==========================================================
-
-List<Movie> _parseGridData(String responseBody) {
-  final movieData = MovieResponse.fromJson(json.decode(responseBody));
-  if (movieData.status) {
-    return movieData.data.where((movie) => movie.status == 1).toList();
-  } else {
-    return [];
-  }
-}
-
-class GenreGridScreen extends StatefulWidget {
-  final String genre;
-  final String tvChannelId;
-  final String logoUrl;
-  const GenreGridScreen(
-      {super.key,
-      required this.genre,
-      required this.tvChannelId,
-      required this.logoUrl});
-  @override
-  State<GenreGridScreen> createState() => _GenreGridScreenState();
-}
-
-class _GenreGridScreenState extends State<GenreGridScreen> {
-  bool _isLoading = true;
-  String? _error;
-  List<Movie> _movies = [];
-  List<FocusNode> _focusNodes = [];
-  List<GlobalKey> _cardKeys = [];
-  bool _isVideoLoading = false;
-  final List<Color> _focusColors = [
-    ProfessionalColors.accentBlue,
-    ProfessionalColors.accentPurple,
-    ProfessionalColors.accentGreen,
-    ProfessionalColors.accentOrange,
-    ProfessionalColors.accentPink,
-    ProfessionalColors.accentRed
-  ];
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        Provider.of<InternalFocusProvider>(context, listen: false)
-            .updateName(widget.genre);
-      }
-    });
-    _fetchGridData();
-  }
-
-  @override
-  void dispose() {
-    for (var node in _focusNodes) {
-      node.dispose();
-    }
-    super.dispose();
-  }
-
-  void _applyMoviesToState(List<Movie> movies) {
-    if (!mounted) return;
-
-    setState(() {
-      _movies = movies;
-      _focusNodes = List.generate(_movies.length, (index) => FocusNode());
-      _cardKeys = List.generate(_movies.length, (index) => GlobalKey());
-
-      for (int i = 0; i < _focusNodes.length; i++) {
-        _focusNodes[i].addListener(() {
-          if (_focusNodes[i].hasFocus) _onItemFocusChange(i);
-        });
-      }
-
-      _isLoading = false;
-    });
-
-    Future.delayed(const Duration(milliseconds: 200), () {
-      if (mounted && _focusNodes.isNotEmpty) _focusNodes.first.requestFocus();
-    });
-  }
-
-  Future<void> _fetchGridData() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final authKey = prefs.getString('result_auth_key') ?? '56456456456';
-
-      final moviesResponse = await http.post(
-        Uri.parse(
-            'https://dashboard.cpplayers.com/api/v2/getAllContentsOfNetworkNew'),
-        headers: {
-          'auth-key': authKey,
-          'domain': 'coretechinfo.com',
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: json
-            .encode({"genre": widget.genre, "network_id": widget.tvChannelId}),
-      );
-
-      if (moviesResponse.statusCode == 200) {
-        final List<Movie> parsedMovies =
-            await compute(_parseGridData, moviesResponse.body);
-        _applyMoviesToState(parsedMovies);
-      } else {
-        throw Exception('Failed to load content for ${widget.genre}');
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _error = e.toString();
-          _isLoading = false;
-        });
-      }
-    }
-  }
-
-  void _onItemFocusChange(int index) {
-    if (!mounted || _isLoading || index < 0 || index >= _movies.length) return;
-
-    Provider.of<InternalFocusProvider>(context, listen: false)
-        .updateName(_movies[index].name);
-
-    final cardContext = _cardKeys[index].currentContext;
-    if (cardContext != null) {
-      Scrollable.ensureVisible(cardContext,
-          duration: const Duration(milliseconds: 350),
-          curve: Curves.easeOut,
-          alignment: 0.15);
-    }
-  }
-
-  // Future<void> _playContent(Movie content) async {
-  //   if (_isVideoLoading || !mounted) return;
-  //   setState(() => _isVideoLoading = true);
-  //   try {
-  //     ScaffoldMessenger.of(context)
-  //         .showSnackBar(SnackBar(content: Text('Playing: ${content.name}')));
-  //   } catch (e) {
-  //     if (mounted)
-  //       ScaffoldMessenger.of(context)
-  //           .showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
-  //   } finally {
-  //     if (mounted) setState(() => _isVideoLoading = false);
-  //   }
-  // }
-
-//    com.ekomflixtv.cti      
-
-  // // Replace the old _playContent with this complete version
-Future<void> _playContent(Movie content) async {
-  if (_isVideoLoading || !mounted) return;
-  setState(() { _isVideoLoading = true; });
-
-  try {
-    String playableUrl = content.getPlayableUrl();
-
-    // Navigate to Web Series details page if content type is 2
-    if (content.contentType == 2) {
-      await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => WebSeriesDetailsPage(
-            id: content.id,
-            banner: content.banner ?? '',
-            poster: content.poster ?? '',
-            logo: widget.logoUrl,
-            name: content.name,
-            updatedAt: content.updatedAt ?? '',
-          ),
-        ),
-      );
-      return; // Stop execution after navigation
-    }
-
-    if (playableUrl.isEmpty) {
-      throw Exception('No video URL found');
-    }
-
-    if (!mounted) return;
-
-    // Handle YouTube links
-    if (content.sourceType == 'YoutubeLive' || (content.youtubeTrailer != null && content.youtubeTrailer!.isNotEmpty)) {
-      final deviceInfo = context.read<DeviceInfoProvider>();
-      if (deviceInfo.deviceName == 'AFTSS : Amazon Fire Stick HD') {
-        // Use WebView for specific devices like Fire Stick
-        await Navigator.push(context, MaterialPageRoute(builder: (context) => YoutubeWebviewPlayer(videoUrl: playableUrl, name: content.name)));
-      } else {
-        // Use the custom YouTube player for other devices
-        await Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => CustomYoutubePlayer(
-              videoData: VideoData(
-                id: content.id.toString(),
-                title: content.name,
-                youtubeUrl: playableUrl,
-                thumbnail: content.poster ?? content.banner ?? '',
-                description: content.description ?? '',
+          final genreIndex = index - 1;
+          final genre = _genres[genreIndex];
+          final isSelected = !_isSearching && _selectedGenreIndex == genreIndex;
+          return Focus(
+            focusNode: _genreFocusNodes[genreIndex],
+            onKey: (node, event) {
+              if (event is RawKeyDownEvent) {
+                if (event.logicalKey == LogicalKeyboardKey.arrowLeft &&
+                    genreIndex == 0) {
+                  _searchButtonFocusNode.requestFocus();
+                  return KeyEventResult.handled;
+                }
+                if (event.logicalKey == LogicalKeyboardKey.enter ||
+                    event.logicalKey == LogicalKeyboardKey.select) {
+                  _updateMoviesForGenre(genreIndex);
+                  return KeyEventResult.handled;
+                }
+              }
+              return KeyEventResult.ignored;
+            },
+            child: GestureDetector(
+              onTap: () => _genreFocusNodes[genreIndex].requestFocus(),
+              child: Container(
+                key: _genreButtonKeys[genreIndex],
+                margin: const EdgeInsets.only(right: 15),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                  decoration: BoxDecoration(
+                      color: isSelected
+                          ? _focusColors[genreIndex % _focusColors.length]
+                          : ProfessionalColors.cardDark,
+                      borderRadius: BorderRadius.circular(30),
+                      border: Border.all(
+                        color: _genreFocusNodes[genreIndex].hasFocus
+                            ? Colors.white
+                            : Colors.transparent,
+                        width: 2,
+                      ),
+                      boxShadow: [
+                        if (_genreFocusNodes[genreIndex].hasFocus)
+                          BoxShadow(
+                            color: _focusColors[genreIndex % _focusColors.length]
+                                .withOpacity(0.7),
+                            blurRadius: 10,
+                            spreadRadius: 2,
+                          )
+                      ]),
+                  child: Center(
+                    child: Text(
+                      genre,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                ),
               ),
-              playlist: [],
             ),
-          ),
-        );
-      }
-    } else {
-      // Handle other video URLs
-      await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => VideoScreen(
-            videoUrl: playableUrl,
-            bannerImageUrl: content.poster ?? content.banner ?? '',
-            videoId: content.id,
-            name: content.name,
-            updatedAt: content.updatedAt ?? '',
-            source: 'isVod',
-            channelList: [],
-            liveStatus: false,
-          ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildMoviesList() {
+    final currentList = _isSearching
+        ? _searchResults
+        : _moviesByGenre[_genres[_selectedGenreIndex]] ?? [];
+
+    if (_isSearchLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (currentList.isEmpty) {
+      return Center(
+        child: Text(
+          _isSearching && _searchText.isNotEmpty
+              ? "No results found for '$_searchText'"
+              : "No content available for this genre.",
+          style: const TextStyle(
+              color: ProfessionalColors.textSecondary, fontSize: 16),
         ),
       );
     }
-  } catch (e) {
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
-    }
-  } finally {
-    if (mounted) {
-      setState(() { _isVideoLoading = false; });
-    }
-  }
-}
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: ProfessionalColors.primaryDark,
-      body: Stack(
-        children: [
-          Container(
-              decoration: const BoxDecoration(
-                  gradient: LinearGradient(colors: [
-            ProfessionalColors.primaryDark,
-            Color(0xFF06080F)
-          ], begin: Alignment.topCenter, end: Alignment.bottomCenter))),
-          CustomScrollView(slivers: [
-            const SliverPadding(padding: EdgeInsets.only(top: 100.0)),
-            _isLoading
-                ? const SliverFillRemaining(
-                    child: Center(child: CircularProgressIndicator()))
-                : _error != null
-                    ? SliverFillRemaining(
-                        child: Center(child: Text('Error: $_error')))
-                    : _buildContentGrid(),
-          ]),
-          Positioned(top: 0, left: 0, right: 0, child: _buildBeautifulAppBar()),
-          if (_isVideoLoading)
-            Container(
-                color: Colors.black.withOpacity(0.7),
-                child: const Center(
-                    child: CircularProgressIndicator(
-                        valueColor:
-                            AlwaysStoppedAnimation<Color>(Colors.white)))),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBeautifulAppBar() {
-    final focusedName = context.watch<InternalFocusProvider>().focusedItemName;
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              ProfessionalColors.primaryDark.withOpacity(0.95),
-              ProfessionalColors.surfaceDark.withOpacity(0.9),
-              ProfessionalColors.surfaceDark.withOpacity(0.8),
-              Colors.transparent
-            ]),
-        border: Border(
-            bottom: BorderSide(
-                color: ProfessionalColors.accentBlue.withOpacity(0.2),
-                width: 1)),
-        boxShadow: [
-          BoxShadow(
-              color: Colors.black.withOpacity(0.3),
-              blurRadius: 10,
-              offset: const Offset(0, 2))
-        ],
-      ),
-      child: ClipRRect(
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
-          child: Container(
-            padding: EdgeInsets.only(
-                top: MediaQuery.of(context).padding.top + 10,
-                left: 20,
-                right: 30,
-                bottom: 10),
-            child: Row(
-              children: [
-                Container(
-                    decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: LinearGradient(colors: [
-                          ProfessionalColors.accentBlue.withOpacity(0.3),
-                          ProfessionalColors.accentPurple.withOpacity(0.3)
-                        ])),
-                    child: IconButton(
-                        icon: const Icon(Icons.arrow_back_rounded,
-                            color: Colors.white, size: 24),
-                        onPressed: () => Navigator.pop(context))),
-                const SizedBox(width: 16),
-                GradientText(widget.genre,
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 22),
-                    gradient: const LinearGradient(colors: [
-                      ProfessionalColors.accentPink,
-                      ProfessionalColors.accentPurple,
-                      ProfessionalColors.accentBlue
-                    ])),
-                const SizedBox(width: 40),
-                Expanded(
-                    child: Text(focusedName,
-                        textAlign: TextAlign.left,
-                        style: const TextStyle(
-                            color: ProfessionalColors.textSecondary,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20),
-                        overflow: TextOverflow.ellipsis)),
-                Padding(
-                    padding: const EdgeInsets.only(right: 15.0),
-                    child: CircleAvatar(
-                        backgroundImage: NetworkImage(widget.logoUrl),
-                        radius: 20,
-                        backgroundColor: Colors.white24)),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildContentGrid() {
-    return SliverPadding(
-      padding: const EdgeInsets.all(30.0),
-      sliver: SliverGrid(
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 6,
-            childAspectRatio: 1.5,
-            mainAxisSpacing: 5,
-            crossAxisSpacing: 5),
-        delegate: SliverChildBuilderDelegate((context, index) {
-          final movie = _movies[index];
-          return MovieCard(
-              key: _cardKeys[index],
-              movie: movie,
-              logoUrl: widget.logoUrl,
-              focusNode: _focusNodes[index],
-              focusColors: _focusColors,
-              uniqueIndex: index,
-              onTap: () => _playContent(movie));
-        }, childCount: _movies.length),
+    return Padding(
+      padding: const EdgeInsets.only(top: 10.0),
+      child: ListView.builder(
+        controller: _movieScrollController,
+        scrollDirection: Axis.horizontal,
+        itemCount: currentList.length,
+        padding: const EdgeInsets.symmetric(horizontal: 30.0),
+        itemBuilder: (context, index) {
+          final movie = currentList[index];
+          return Focus(
+            focusNode: _movieFocusNodes[index],
+            onKey: (node, event) {
+              if (event is RawKeyDownEvent) {
+                if (event.logicalKey == LogicalKeyboardKey.select ||
+                    event.logicalKey == LogicalKeyboardKey.enter) {
+                  _playContent(movie);
+                  return KeyEventResult.handled;
+                }
+              }
+              return KeyEventResult.ignored;
+            },
+            child: MovieCard(
+                key: _movieCardKeys[index],
+                movie: movie,
+                logoUrl: widget.logoUrl,
+                focusNode: _movieFocusNodes[index],
+                focusColors: _focusColors,
+                uniqueIndex: index,
+                onTap: () => _playContent(movie)),
+          );
+        },
       ),
     );
   }
@@ -4726,8 +7433,6 @@ class MovieCard extends StatefulWidget {
   final List<Color> focusColors;
   final int uniqueIndex;
   final VoidCallback onTap;
-  final bool isFirst;
-  final bool isLast;
 
   const MovieCard(
       {super.key,
@@ -4736,9 +7441,7 @@ class MovieCard extends StatefulWidget {
       required this.focusNode,
       required this.focusColors,
       required this.uniqueIndex,
-      required this.onTap,
-      this.isFirst = false,
-      this.isLast = false});
+      required this.onTap});
 
   @override
   State<MovieCard> createState() => _MovieCardState();
@@ -4761,226 +7464,98 @@ class _MovieCardState extends State<MovieCard> {
 
   void _onFocusChange() {
     if (mounted && widget.focusNode.hasFocus != _hasFocus) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) {
-          setState(() {
-            _hasFocus = widget.focusNode.hasFocus;
-          });
-        }
+      setState(() {
+        _hasFocus = widget.focusNode.hasFocus;
       });
     }
-  }
-
-  KeyEventResult _handleKeyEvent(FocusNode node, RawKeyEvent event) {
-    if (event is RawKeyDownEvent) {
-      if (event.logicalKey == LogicalKeyboardKey.select ||
-          event.logicalKey == LogicalKeyboardKey.enter) {
-        widget.onTap();
-        return KeyEventResult.handled;
-      }
-      if (widget.isFirst && event.logicalKey == LogicalKeyboardKey.arrowLeft)
-        return KeyEventResult.handled;
-      if (widget.isLast && event.logicalKey == LogicalKeyboardKey.arrowRight)
-        return KeyEventResult.handled;
-    }
-    return KeyEventResult.ignored;
   }
 
   @override
   Widget build(BuildContext context) {
     final focusColor =
         widget.focusColors[widget.uniqueIndex % widget.focusColors.length];
-    return Focus(
-      focusNode: widget.focusNode,
-      onKey: _handleKeyEvent,
+
+    final screenSize = MediaQuery.of(context).size;
+
+    return Container(
+      width: screenSize.width / 6.5,
+      margin: const EdgeInsets.only(right: 12.0),
       child: GestureDetector(
         onTap: widget.onTap,
-        child: Container(
-          width: bannerwdt,
-          margin: const EdgeInsets.only(right: 12.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Container(
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8.0),
-                      border: _hasFocus
-                          ? Border.all(color: focusColor, width: 3)
-                          : Border.all(color: Colors.transparent, width: 3),
-                      boxShadow: _hasFocus
-                          ? [
-                              BoxShadow(
-                                  color: focusColor.withOpacity(0.5),
-                                  blurRadius: 12,
-                                  spreadRadius: 1)
-                            ]
-                          : []),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(6.0),
-                    child: Stack(
-                      fit: StackFit.expand,
-                      children: [
-                        displayImage(widget.movie.banner ?? '',
-                            fit: BoxFit.cover),
-                        if (widget.movie.contentType == 2)
-                          Positioned(
-                              bottom: 8,
-                              left: 8,
-                              child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 8, vertical: 4),
-                                  decoration: BoxDecoration(
-                                      color: ProfessionalColors.accentPurple
-                                          .withOpacity(0.9),
-                                      borderRadius: BorderRadius.circular(4.0)),
-                                  child: const Text('Web Series',
-                                      style: TextStyle(
-                                          color: ProfessionalColors.textPrimary,
-                                          fontSize: 10,
-                                          fontWeight: FontWeight.bold)))),
-                        if (_hasFocus)
-                          Positioned(
-                              left: 5,
-                              top: 5,
-                              child: Container(
-                                  color: Colors.black.withOpacity(0.4),
-                                  child: Icon(Icons.play_circle_filled_outlined,
-                                      color: focusColor, size: 40))),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Expanded(
+              child: Container(
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8.0),
+                    border: _hasFocus
+                        ? Border.all(color: focusColor, width: 3)
+                        : Border.all(color: Colors.transparent, width: 3),
+                    boxShadow: _hasFocus
+                        ? [
+                            BoxShadow(
+                                color: focusColor.withOpacity(0.5),
+                                blurRadius: 12,
+                                spreadRadius: 1)
+                          ]
+                        : []),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(6.0),
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      displayImage(widget.movie.banner ?? '',
+                          fit: BoxFit.cover),
+                      if (widget.movie.contentType == 2)
                         Positioned(
+                            bottom: 8,
+                            left: 8,
+                            child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 4),
+                                decoration: BoxDecoration(
+                                    color: ProfessionalColors.accentPurple
+                                        .withOpacity(0.9),
+                                    borderRadius: BorderRadius.circular(4.0)),
+                                child: const Text('Web Series',
+                                    style: TextStyle(
+                                        color: ProfessionalColors.textPrimary,
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.bold)))),
+                      if (_hasFocus)
+                        Positioned(
+                            left: 5,
                             top: 5,
-                            right: 5,
-                            child: CircleAvatar(
-                                radius: 12,
-                                backgroundImage: NetworkImage(widget.logoUrl),
-                                backgroundColor: Colors.black54)),
-                      ],
-                    ),
+                            child: Container(
+                                color: Colors.black.withOpacity(0.4),
+                                child: Icon(Icons.play_circle_filled_outlined,
+                                    color: focusColor, size: 40))),
+                      Positioned(
+                          top: 5,
+                          right: 5,
+                          child: CircleAvatar(
+                              radius: 12,
+                              backgroundImage: NetworkImage(widget.logoUrl),
+                              backgroundColor: Colors.black54)),
+                    ],
                   ),
                 ),
               ),
-              Padding(
-                  padding:
-                      const EdgeInsets.only(top: 2.0, left: 2.0, right: 2.0),
-                  child: Text(widget.movie.name,
-                      style: TextStyle(
-                          color: _hasFocus
-                              ? focusColor
-                              : ProfessionalColors.textSecondary,
-                          fontSize: 14),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis)),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class ViewAllCard extends StatefulWidget {
-  final FocusNode focusNode;
-  final List<Color> focusColors;
-  final int uniqueIndex;
-  final VoidCallback onTap;
-
-  const ViewAllCard(
-      {super.key,
-      required this.focusNode,
-      required this.focusColors,
-      required this.uniqueIndex,
-      required this.onTap});
-
-  @override
-  State<ViewAllCard> createState() => _ViewAllCardState();
-}
-
-class _ViewAllCardState extends State<ViewAllCard> {
-  bool _hasFocus = false;
-
-  @override
-  void initState() {
-    super.initState();
-    widget.focusNode.addListener(_onFocusChange);
-  }
-
-  @override
-  void dispose() {
-    widget.focusNode.removeListener(_onFocusChange);
-    super.dispose();
-  }
-
-  void _onFocusChange() {
-    if (mounted && widget.focusNode.hasFocus != _hasFocus) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) {
-          setState(() {
-            _hasFocus = widget.focusNode.hasFocus;
-          });
-        }
-      });
-    }
-  }
-
-  KeyEventResult _handleKeyEvent(FocusNode node, RawKeyEvent event) {
-    if (event is RawKeyDownEvent) {
-      if (event.logicalKey == LogicalKeyboardKey.select ||
-          event.logicalKey == LogicalKeyboardKey.enter) {
-        widget.onTap();
-        return KeyEventResult.handled;
-      }
-      if (event.logicalKey == LogicalKeyboardKey.arrowRight)
-        return KeyEventResult.handled;
-    }
-    return KeyEventResult.ignored;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final focusColor =
-        widget.focusColors[widget.uniqueIndex % widget.focusColors.length];
-    return Focus(
-      focusNode: widget.focusNode,
-      onKey: _handleKeyEvent,
-      child: GestureDetector(
-        onTap: widget.onTap,
-        child: Container(
-          width: bannerwdt,
-          margin: const EdgeInsets.only(right: 12.0),
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10.0),
-              border: _hasFocus
-                  ? Border.all(color: focusColor, width: 3)
-                  : Border.all(color: Colors.transparent, width: 3),
-              boxShadow: _hasFocus
-                  ? [
-                      BoxShadow(
-                          color: ProfessionalColors.focusGlow.withOpacity(0.7),
-                          blurRadius: 12,
-                          spreadRadius: 1)
-                    ]
-                  : []),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(8.0),
-            child: Container(
-              color: ProfessionalColors.cardDark,
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.arrow_forward,
-                        color: _hasFocus ? focusColor : Colors.white70,
-                        size: 32),
-                    const SizedBox(height: 8),
-                    Text("View All",
-                        style: TextStyle(
-                            color: _hasFocus ? focusColor : Colors.white70,
-                            fontWeight: FontWeight.bold)),
-                  ],
-                ),
-              ),
             ),
-          ),
+            Padding(
+                padding:
+                    const EdgeInsets.only(top: 4.0, left: 2.0, right: 2.0),
+                child: Text(widget.movie.name,
+                    style: TextStyle(
+                        color: _hasFocus
+                            ? focusColor
+                            : ProfessionalColors.textSecondary,
+                        fontSize: 14),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis)),
+          ],
         ),
       ),
     );
@@ -5009,9 +7584,6 @@ class GradientText extends StatelessWidget {
 // HELPER FUNCTIONS
 // ==========================================================
 
-Uint8List _getImageFromBase64String(String base64String) =>
-    base64Decode(base64String.split(',').last);
-
 Widget displayImage(String imageUrl,
     {double? width, double? height, BoxFit fit = BoxFit.cover}) {
   if (imageUrl.isEmpty ||
@@ -5021,7 +7593,8 @@ Widget displayImage(String imageUrl,
   }
   if (imageUrl.startsWith('data:image')) {
     try {
-      return Image.memory(_getImageFromBase64String(imageUrl),
+      final imageBytes = base64Decode(imageUrl.split(',').last);
+      return Image.memory(imageBytes,
           fit: fit,
           width: width,
           height: height,

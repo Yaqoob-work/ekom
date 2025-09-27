@@ -58,7 +58,7 @@ class _LiveVideoScreenState extends State<LiveVideoScreen> {
     configuration: PlayerConfiguration(
       // Buffer size badhayein. Default se zyada rakhein.
       // 10 seconds ka buffer kaafi smooth experience de sakta hai.
-      bufferSize: 8 * 1024 * 1024, 
+      bufferSize: 8 * 1024 * 1024,
     ),
   );
     controller = VideoController(player);

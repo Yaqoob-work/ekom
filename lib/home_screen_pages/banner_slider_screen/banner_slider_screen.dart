@@ -13,7 +13,7 @@
 // import 'package:mobi_tv_entertainment/provider/color_provider.dart';
 // import 'package:mobi_tv_entertainment/provider/device_info_provider.dart';
 // import 'package:mobi_tv_entertainment/provider/focus_provider.dart';
-// import 'package:mobi_tv_entertainment/video_widget/socket_service.dart';
+//  
 // import 'package:mobi_tv_entertainment/video_widget/video_screen.dart';
 // import 'package:mobi_tv_entertainment/widgets/models/news_item_model.dart';
 // import 'package:mobi_tv_entertainment/widgets/small_widgets/loading_indicator.dart';
@@ -1126,6 +1126,12 @@
 //   }
 // }
 
+
+
+
+
+
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
@@ -1138,7 +1144,6 @@ import 'package:mobi_tv_entertainment/main.dart';
 import 'package:mobi_tv_entertainment/provider/color_provider.dart';
 import 'package:mobi_tv_entertainment/provider/device_info_provider.dart';
 import 'package:mobi_tv_entertainment/provider/focus_provider.dart';
-import 'package:mobi_tv_entertainment/video_widget/socket_service.dart';
 import 'package:mobi_tv_entertainment/video_widget/video_screen.dart';
 import 'package:mobi_tv_entertainment/widgets/models/news_item_model.dart';
 import 'package:mobi_tv_entertainment/widgets/utils/random_light_color_widget.dart';
@@ -1357,31 +1362,47 @@ class BannerService {
 
   /// Private method to fetch data from API
   static Future<List<dynamic>> _fetchBannersFromApi() async {
-    const String endpoint =
-        'https://dashboard.cpplayers.com/public/api/v2/getCustomImageSlider';
-    final prefs = await SharedPreferences.getInstance();
-    final authKey = prefs.getString('result_auth_key') ?? 'vLQTuPZUxktl5mVW';
+    // const String endpoint =
+    //     'https://dashboard.cpplayers.com/public/api/v2/getCustomImageSlider';
+    // final prefs = await SharedPreferences.getInstance();
+    // final authKey = prefs.getString('result_auth_key') ?? 'vLQTuPZUxktl5mVW';
 
-    final headers = {
-      'auth-key': authKey,
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-      'domain': 'coretechinfo.com',
-    };
+    // final headers = {
+    //   'auth-key': authKey,
+    //   'Accept': 'application/json',
+    //   'Content-Type': 'application/json',
+    //   'domain': 'coretechinfo.com',
+    // };
 
-    // 🕵️‍♂️ DEBUG: Print request details
-    print("----------- API Request Details -----------");
-    print("🚀 Calling API Endpoint: $endpoint");
-    print("🔑 Headers: $headers");
-    print("-----------------------------------------");
+    // // 🕵️‍♂️ DEBUG: Print request details
+    // print("----------- API Request Details -----------");
+    // print("🚀 Calling API Endpoint: $endpoint");
+    // print("🔑 Headers: $headers");
+    // print("-----------------------------------------");
 
     try {
-      final response = await https
-          .get(Uri.parse(endpoint), headers: headers)
-          .timeout(const Duration(seconds: 10)); // Added a timeout
+      // final response = await https
+      //     .get(Uri.parse(endpoint), headers: headers)
+      //     .timeout(const Duration(seconds: 10)); // Added a timeout
+
+    final prefs = await SharedPreferences.getInstance();
+    final authKey = prefs.getString('result_auth_key') ?? '';
+
+    final response = await https.get(
+      Uri.parse('https://dashboard.cpplayers.com/api/v2/getCustomImageSlider'),
+      headers: {
+        'auth-key': authKey,
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'domain': 'coretechinfo.com'
+      },
+    ).timeout(const Duration(seconds: 30));
+
+
 
       // 🕵️‍♂️ DEBUG: Print response details
       print("----------- API Response Details -----------");
+      print("✅ slider authKey: ${authKey}");
       print("✅ Status Code: ${response.statusCode}");
       print("📦 Response Body: ${response.body}");
       print("------------------------------------------");
