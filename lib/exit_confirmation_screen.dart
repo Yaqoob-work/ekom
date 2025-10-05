@@ -317,7 +317,7 @@ class _ExitConfirmationScreenState extends State<ExitConfirmationScreen>
       return Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Image.asset('assets/cpPlayer.png', width: 150),
+          Image.network(SessionManager.logoUrl,width: 150),
           const SizedBox(height: 40),
           const CircularProgressIndicator(color: Colors.white),
           const SizedBox(height: 20),

@@ -2,6 +2,11 @@
 import 'package:flutter/material.dart';
 
 class FocusProvider extends ChangeNotifier {
+
+
+
+
+  
   // =================================================================
   // REFRESH STATE MANAGEMENT
   // =================================================================
@@ -653,13 +658,36 @@ int _currentSelectedNavIndex = 0;
   Map<int, ScrollController> _channelScrollControllers = {};
   Map<int, FocusNode> _viewAllFocusNodes = {};
 
-  // ✅ 1. Set middle navigation focus nodes
+
+
+  // List<FocusNode>? _middleNavigationFocusNodes;
+  // Map<int, FocusNode> _channelFirstFocusNodes = {};
+  // Map<int, ScrollController> _channelScrollControllers = {};
+  // Map<int, FocusNode> _viewAllFocusNodes = {};
+
+  // ✅ ADD THIS VARIABLE: Yeh last active genre ka index yaad rakhega.
+  int _lastFocusedLiveGenreIndex = 0;
+
+  // ✅ ADD THIS METHOD: Yeh last active genre ka index set karega.
+  void setLastFocusedLiveGenreIndex(int index) {
+    _lastFocusedLiveGenreIndex = index;
+    print('🟢 Last focused live genre index set to: $index');
+  }
+
+  // ✅ ADD THIS METHOD: Yeh 'HorzontalVod' se call hoga.
+  void requestFocusOnActiveLiveGenre() {
+    print('🔼 Requesting focus for last active live genre index: $_lastFocusedLiveGenreIndex');
+    // Ab hum generic method ko last saved index ke saath call karenge.
+    requestFirstChannelFocus(_lastFocusedLiveGenreIndex);
+  }
+
+  // ✅ 1. Set middle navigation focus nodes (Existing)
   void setMiddleNavigationFocusNodes(List<FocusNode> nodes) {
     _middleNavigationFocusNodes = nodes;
     notifyListeners();
   }
 
-  // ✅ 2. GENERIC: Register any page's channel focus
+  // ✅ 2. GENERIC: Register any page's channel focus (Existing)
   void registerGenericChannelFocus(int navIndex,
       ScrollController scrollController, FocusNode firstChannelNode) {
     _channelScrollControllers[navIndex] = scrollController;
@@ -667,6 +695,21 @@ int _currentSelectedNavIndex = 0;
     notifyListeners();
     print('✅ Registered generic focus for index: $navIndex');
   }
+
+  // // ✅ 1. Set middle navigation focus nodes
+  // void setMiddleNavigationFocusNodes(List<FocusNode> nodes) {
+  //   _middleNavigationFocusNodes = nodes;
+  //   notifyListeners();
+  // }
+
+  // // ✅ 2. GENERIC: Register any page's channel focus
+  // void registerGenericChannelFocus(int navIndex,
+  //     ScrollController scrollController, FocusNode firstChannelNode) {
+  //   _channelScrollControllers[navIndex] = scrollController;
+  //   _channelFirstFocusNodes[navIndex] = firstChannelNode;
+  //   notifyListeners();
+  //   print('✅ Registered generic focus for index: $navIndex');
+  // }
 
   // ✅ 3. GENERIC: Register ViewAll focus node
   void registerViewAllFocusNode(int navIndex, FocusNode viewAllNode) {
@@ -724,6 +767,11 @@ int _currentSelectedNavIndex = 0;
 
     }
   }
+
+
+
+
+  
 
   // =================================================================
   // DISPOSE METHOD

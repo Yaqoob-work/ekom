@@ -3435,20 +3435,20 @@ void main() async {
   await initializeDateFormatting(null, null);
   await SessionManager.initialize();
 
-  SystemChrome.setEnabledSystemUIMode(
-    SystemUiMode.immersiveSticky,
-    overlays: [],
-  );
+  // SystemChrome.setEnabledSystemUIMode(
+  //   SystemUiMode.immersiveSticky,
+  //   overlays: [],
+  // );
 
-  SystemChrome.setSystemUIOverlayStyle(
-    const SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-      systemNavigationBarColor: Colors.transparent,
-      statusBarBrightness: Brightness.dark,
-      statusBarIconBrightness: Brightness.light,
-      systemNavigationBarIconBrightness: Brightness.light,
-    ),
-  );
+  // SystemChrome.setSystemUIOverlayStyle(
+  //   const SystemUiOverlayStyle(
+  //     statusBarColor: Colors.transparent,
+  //     systemNavigationBarColor: Colors.transparent,
+  //     statusBarBrightness: Brightness.dark,
+  //     statusBarIconBrightness: Brightness.light,
+  //     systemNavigationBarIconBrightness: Brightness.light,
+  //   ),
+  // );
 
   // // Hive को Flutter के लिए इनिशियलाइज़ करें
   // // await Hive.initFlutter();

@@ -6239,6 +6239,1435 @@
 
 
 
+// import 'dart:async';
+// import 'dart:convert';
+// import 'dart:ui';
+// import 'package:flutter/foundation.dart';
+// import 'package:flutter/material.dart';
+// import 'package:flutter/services.dart';
+// import 'package:flutter_svg/svg.dart';
+// import 'package:http/http.dart' as http;
+// import 'package:mobi_tv_entertainment/home_screen_pages/webseries_screen/webseries_details_page.dart';
+// import 'package:mobi_tv_entertainment/main.dart';
+// import 'package:mobi_tv_entertainment/provider/device_info_provider.dart';
+// import 'package:mobi_tv_entertainment/provider/internal_focus_provider.dart';
+// import 'package:mobi_tv_entertainment/video_widget/custom_youtube_player.dart';
+// import 'package:mobi_tv_entertainment/video_widget/video_screen.dart';
+// import 'package:mobi_tv_entertainment/video_widget/youtube_webview_player.dart';
+// import 'package:provider/provider.dart';
+// import 'package:shared_preferences/shared_preferences.dart';
+
+// // ==========================================================
+// // ENUMS AND DATA MODELS
+// // ==========================================================
+
+// enum LoadingState { initial, loading, rebuilding, loaded, error }
+
+// class ParsedData {
+//   final List<String> genres;
+//   final Map<String, List<Movie>> moviesByGenre;
+//   ParsedData({required this.genres, required this.moviesByGenre});
+// }
+
+// ParsedData _parseJsonAndPrepareData(String jsonData) {
+//   final data = json.decode(jsonData) as Map<String, dynamic>;
+//   final allGenres = List<String>.from(data['genres']);
+//   final allMoviesByGenre = (data['moviesByGenre'] as Map<String, dynamic>).map(
+//       (key, value) => MapEntry(key,
+//           (value as List).map((movieMap) => Movie.fromMap(movieMap)).toList()));
+//   final activeGenres =
+//       allGenres.where((g) => allMoviesByGenre[g]?.isNotEmpty ?? false).toList();
+//   return ParsedData(genres: activeGenres, moviesByGenre: allMoviesByGenre);
+// }
+
+// class ProfessionalColors {
+//   static const primaryDark = Color(0xFF0A0E1A);
+//   static const surfaceDark = Color(0xFF1A1D29);
+//   static const cardDark = Color(0xFF2A2D3A);
+//   static const accentBlue = Color(0xFF3B82F6);
+//   static const accentPurple = Color(0xFF8B5CF6);
+//   static const accentGreen = Color(0xFF10B981);
+//   static const accentRed = Color(0xFFEF4444);
+//   static const accentOrange = Color(0xFFF59E0B);
+//   static const accentPink = Color(0xFFEC4899);
+//   static const textPrimary = Color(0xFFFFFFFF);
+//   static const textSecondary = Color(0xFFB3B3B3);
+// }
+
+// class GenreResponse {
+//   final bool status;
+//   final List<String> genres;
+//   GenreResponse({required this.status, required this.genres});
+//   factory GenreResponse.fromJson(Map<String, dynamic> json) {
+//     return GenreResponse(
+//       status: json['status'],
+//       genres: List<String>.from(json['genres']),
+//     );
+//   }
+// }
+
+// class MovieResponse {
+//   final bool status;
+//   final int total;
+//   final List<Movie> data;
+//   MovieResponse({required this.status, required this.total, required this.data});
+//   factory MovieResponse.fromJson(Map<String, dynamic> json) {
+//     return MovieResponse(
+//       status: json['status'] ?? false,
+//       total: json['total'] ?? 0,
+//       data: (json['data'] as List).map((i) => Movie.fromJson(i)).toList(),
+//     );
+//   }
+// }
+
+// class Movie {
+//   final int id;
+//   final String name;
+//   final String? banner;
+//   final String? poster;
+//   final String? description;
+//   final int? contentType;
+//   final String? sourceType;
+//   final String? youtubeTrailer;
+//   final String? updatedAt;
+//   final String? movieUrl;
+//   final int? status;
+
+//   Movie({
+//     required this.id,
+//     required this.name,
+//     this.banner,
+//     this.poster,
+//     this.description,
+//     this.contentType,
+//     this.sourceType,
+//     this.youtubeTrailer,
+//     this.updatedAt,
+//     this.movieUrl,
+//     this.status,
+//   });
+
+//   factory Movie.fromJson(Map<String, dynamic> json) {
+//     return Movie(
+//       id: json['id'] ?? 0,
+//       name: json['name'] ?? 'No Name',
+//       banner: json['banner'],
+//       poster: json['poster'],
+//       description: json['description'],
+//       contentType: json['content_type'],
+//       sourceType: json['source_type'],
+//       youtubeTrailer: json['youtube_trailer'],
+//       updatedAt: json['updated_at'],
+//       movieUrl: json['movie_url'],
+//       status: json['status'],
+//     );
+//   }
+
+//   Map<String, dynamic> toMap() {
+//     return {
+//       'id': id,
+//       'name': name,
+//       'banner': banner,
+//       'poster': poster,
+//       'description': description,
+//       'content_type': contentType,
+//       'source_type': sourceType,
+//       'youtube_trailer': youtubeTrailer,
+//       'updated_at': updatedAt,
+//       'movie_url': movieUrl,
+//       'status': status,
+//     };
+//   }
+
+//   factory Movie.fromMap(Map<String, dynamic> map) => Movie.fromJson(map);
+
+//   String getPlayableUrl() {
+//     if (sourceType == 'YoutubeLive') return movieUrl ?? '';
+//     if (youtubeTrailer != null && youtubeTrailer!.isNotEmpty) {
+//       return youtubeTrailer!;
+//     }
+//     return movieUrl ?? '';
+//   }
+// }
+
+// class SmartCacheManager {
+//   static const String _cachePrefix = 'genre_movies_cache_';
+//   static const String _timestampSuffix = '_timestamp';
+//   static const Duration _cacheValidity = Duration(hours: 2);
+
+//   static String _getCacheKey(String tvChannelId) => '$_cachePrefix$tvChannelId';
+//   static String _getTimestampKey(String tvChannelId) =>
+//       '$_cachePrefix$tvChannelId$_timestampSuffix';
+
+//   static Future<bool> isCacheValid(String tvChannelId) async {
+//     try {
+//       final prefs = await SharedPreferences.getInstance();
+//       final timestampStr = prefs.getString(_getTimestampKey(tvChannelId));
+
+//       if (timestampStr == null) return false;
+
+//       final cacheTime = DateTime.parse(timestampStr);
+//       final now = DateTime.now();
+//       final difference = now.difference(cacheTime);
+
+//       final isValid = difference < _cacheValidity;
+//       return isValid;
+//     } catch (e) {
+//       return false;
+//     }
+//   }
+
+//   static Future<String?> getCachedData(String tvChannelId) async {
+//     try {
+//       final isValid = await isCacheValid(tvChannelId);
+//       if (!isValid) return null;
+
+//       final prefs = await SharedPreferences.getInstance();
+//       final cachedData = prefs.getString(_getCacheKey(tvChannelId));
+
+//       if (cachedData != null && cachedData.isNotEmpty) {
+//         return cachedData;
+//       }
+
+//       return null;
+//     } catch (e) {
+//       return null;
+//     }
+//   }
+
+//   static Future<void> saveToCache(String tvChannelId, String data) async {
+//     try {
+//       final prefs = await SharedPreferences.getInstance();
+//       final now = DateTime.now().toIso8601String();
+
+//       await Future.wait([
+//         prefs.setString(_getCacheKey(tvChannelId), data),
+//         prefs.setString(_getTimestampKey(tvChannelId), now),
+//       ]);
+//     } catch (e) {
+//       print('Failed to save to cache: $e');
+//     }
+//   }
+// }
+
+// Future<String> _fetchAndCacheDataIsolateOptimized(
+//     Map<String, String> params) async {
+//   final String tvChannelId = params['tvChannelId']!;
+//   final String authKey = params['authKey']!;
+
+//   final client = http.Client();
+
+//   try {
+//     final genresResponse = await client.get(
+//       Uri.parse(
+//           'https://dashboard.cpplayers.com/api/v2/getGenreByContentNetwork/$tvChannelId'),
+//       headers: {
+//         'auth-key': authKey,
+//         'Accept': 'application/json',
+//         'domain': 'coretechinfo.com'
+//       },
+//     ).timeout(const Duration(seconds: 15),
+//         onTimeout: () => throw Exception('Genres request timed out'));
+
+//     if (genresResponse.statusCode != 200) {
+//       throw Exception('Failed to load genres: ${genresResponse.statusCode}');
+//     }
+
+//     final genreData = GenreResponse.fromJson(json.decode(genresResponse.body));
+//     if (!genreData.status) return '';
+
+//     final genres = genreData.genres;
+
+//     final List<Future<MapEntry<String, List<Movie>>>> genreFutures =
+//         genres.map((genre) async {
+//       try {
+//         final moviesResponse = await client
+//             .post(
+//               Uri.parse(
+//                   'https://dashboard.cpplayers.com/api/v2/getAllContentsOfNetworkNew'),
+//               headers: {
+//                 'auth-key': authKey,
+//                 'domain': 'coretechinfo.com',
+//                 'Accept': 'application/json',
+//                 'Content-Type': 'application/json'
+//               },
+//               body: json.encode({"genre": genre, "network_id": tvChannelId}),
+//             )
+//             .timeout(const Duration(seconds: 10),
+//                 onTimeout: () => throw Exception('$genre request timed out'));
+
+//         if (moviesResponse.statusCode == 200) {
+//           final movieData =
+//               MovieResponse.fromJson(json.decode(moviesResponse.body));
+//           if (movieData.status && movieData.data.isNotEmpty) {
+//             final activeMovies =
+//                 movieData.data.where((movie) => movie.status == 1).toList();
+//             if (activeMovies.isNotEmpty) {
+//               return MapEntry(genre, activeMovies);
+//             }
+//           }
+//         }
+//         return MapEntry(genre, <Movie>[]);
+//       } catch (e) {
+//         return MapEntry(genre, <Movie>[]);
+//       }
+//     }).toList();
+
+//     final results = await Future.wait(genreFutures);
+
+//     final Map<String, List<Movie>> moviesByGenre = {};
+//     for (final result in results) {
+//       if (result.value.isNotEmpty) {
+//         moviesByGenre[result.key] = result.value;
+//       }
+//     }
+
+//     final Map<String, dynamic> serializableData = {
+//       'genres': genres,
+//       'moviesByGenre': moviesByGenre.map(
+//           (key, value) => MapEntry(key, value.map((m) => m.toMap()).toList())),
+//     };
+
+//     return json.encode(serializableData);
+//   } catch (e) {
+//     return '';
+//   } finally {
+//     client.close();
+//   }
+// }
+
+// // ==========================================================
+// // GENRE MOVIES SCREEN (UPDATED)
+// // ==========================================================
+
+// class GenreMoviesScreen extends StatefulWidget {
+//   final String tvChannelId;
+//   final String logoUrl;
+//   final String title;
+//   const GenreMoviesScreen(
+//       {super.key,
+//       required this.tvChannelId,
+//       required this.logoUrl,
+//       required this.title});
+//   @override
+//   State<GenreMoviesScreen> createState() => _GenreMoviesScreenState();
+// }
+
+// class _GenreMoviesScreenState extends State<GenreMoviesScreen> {
+//   LoadingState _loadingState = LoadingState.initial;
+//   String? _error;
+
+//   // Genre browsing state
+//   List<String> _genres = [];
+//   Map<String, List<Movie>> _moviesByGenre = {};
+//   int _selectedGenreIndex = 0;
+
+//   // Search state
+//   bool _isSearching = false;
+//   bool _showKeyboard = false;
+//   String _searchText = '';
+//   Timer? _debounce;
+//   List<Movie> _searchResults = [];
+//   bool _isSearchLoading = false;
+//   bool _isVideoLoading = false;
+
+//   // Focus Nodes
+//   late FocusNode _searchButtonFocusNode;
+//   List<FocusNode> _genreFocusNodes = [];
+//   List<FocusNode> _movieFocusNodes = [];
+
+//   // Keys and Controllers
+//   List<GlobalKey> _genreButtonKeys = [];
+//   List<GlobalKey> _movieCardKeys = [];
+//   final ScrollController _genreScrollController = ScrollController();
+//   final ScrollController _movieScrollController = ScrollController();
+
+//   final List<Color> _focusColors = [
+//     ProfessionalColors.accentBlue,
+//     ProfessionalColors.accentPurple,
+//     ProfessionalColors.accentGreen,
+//     ProfessionalColors.accentOrange,
+//     ProfessionalColors.accentPink,
+//     ProfessionalColors.accentRed
+//   ];
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     _searchButtonFocusNode = FocusNode();
+//     _searchButtonFocusNode.addListener(() {
+//       if (mounted) {
+//         setState(() {});
+//         if (_searchButtonFocusNode.hasFocus) {
+//           Provider.of<InternalFocusProvider>(context, listen: false)
+//               .updateName("Search");
+//         }
+//       }
+//     });
+
+//     WidgetsBinding.instance.addPostFrameCallback((_) {
+//       Provider.of<InternalFocusProvider>(context, listen: false).updateName('');
+//     });
+//     _loadInitialData();
+//   }
+
+//   @override
+//   void dispose() {
+//     _cleanupResources();
+//     super.dispose();
+//   }
+
+//   void _cleanupResources() {
+//     _searchButtonFocusNode.dispose();
+//     for (var node in _genreFocusNodes) {
+//       node.dispose();
+//     }
+//     for (var node in _movieFocusNodes) {
+//       node.dispose();
+//     }
+//     _genreScrollController.dispose();
+//     _movieScrollController.dispose();
+//     _debounce?.cancel();
+//   }
+
+//   void _applyDataToState(ParsedData parsedData) {
+//     if (!mounted) return;
+//     setState(() {
+//       _loadingState = LoadingState.rebuilding;
+//       _genres = parsedData.genres.reversed.toList();
+//       _moviesByGenre = parsedData.moviesByGenre;
+//       _selectedGenreIndex = 0;
+
+//       for (var node in _genreFocusNodes) {
+//         node.dispose();
+//       }
+//       _genreFocusNodes = List.generate(_genres.length, (i) => FocusNode());
+//       _genreButtonKeys = List.generate(_genres.length, (i) => GlobalKey());
+
+//       for (int i = 0; i < _genres.length; i++) {
+//         _genreFocusNodes[i].addListener(() {
+//           if (_genreFocusNodes[i].hasFocus) _onGenreFocus(i);
+//         });
+//       }
+
+//       _rebuildMovieNodes();
+//       _loadingState = LoadingState.loaded;
+//     });
+
+//     Future.delayed(const Duration(milliseconds: 200), () {
+//       if (mounted && _searchButtonFocusNode.canRequestFocus) {
+//         _searchButtonFocusNode.requestFocus();
+//       }
+//     });
+//   }
+
+//   void _rebuildMovieNodes() {
+//     if (!mounted) return;
+//     for (var node in _movieFocusNodes) {
+//       node.dispose();
+//     }
+
+//     final currentList = _isSearching
+//         ? _searchResults
+//         : _moviesByGenre[_genres[_selectedGenreIndex]] ?? [];
+
+//     _movieFocusNodes = List.generate(currentList.length, (i) => FocusNode());
+//     _movieCardKeys = List.generate(currentList.length, (i) => GlobalKey());
+
+//     for (int i = 0; i < currentList.length; i++) {
+//       _movieFocusNodes[i].addListener(() {
+//         if (_movieFocusNodes[i].hasFocus) _onMovieFocus(i);
+//       });
+//     }
+//   }
+
+//   Future<void> _loadInitialData() async {
+//     final cachedData =
+//         await SmartCacheManager.getCachedData(widget.tvChannelId);
+//     if (cachedData != null) {
+//       final parsedData = await compute(_parseJsonAndPrepareData, cachedData);
+//       _applyDataToState(parsedData);
+//     } else {
+//       await _fetchDataWithLoading();
+//     }
+//   }
+
+//   Future<void> _fetchDataWithLoading() async {
+//     if (mounted) setState(() => _loadingState = LoadingState.loading);
+//     try {
+//       final prefs = await SharedPreferences.getInstance();
+//       final authKey = prefs.getString('result_auth_key') ?? '56456456456';
+//       final String freshDataJson = await _fetchAndCacheDataIsolateOptimized(
+//           {'tvChannelId': widget.tvChannelId, 'authKey': authKey});
+
+//       if (freshDataJson.isNotEmpty) {
+//         await SmartCacheManager.saveToCache(widget.tvChannelId, freshDataJson);
+//         final parsedData =
+//             await compute(_parseJsonAndPrepareData, freshDataJson);
+//         _applyDataToState(parsedData);
+//       } else {
+//         throw Exception('Failed to load data');
+//       }
+//     } catch (e) {
+//       if (mounted) {
+//         setState(() {
+//           _error = e.toString();
+//           _loadingState = LoadingState.error;
+//         });
+//       }
+//     }
+//   }
+
+//   Future<List<Movie>> _fetchMoviesBySearch(String searchTerm) async {
+//     try {
+//       final prefs = await SharedPreferences.getInstance();
+//       final authKey = prefs.getString('result_auth_key') ?? '56456456456';
+
+//       final response = await http.post(
+//         Uri.parse(
+//             'https://dashboard.cpplayers.com/api/v2/getAllContentsOfNetworkNew'),
+//         headers: {
+//           'auth-key': authKey,
+//           'domain': 'coretechinfo.com',
+//           'Accept': 'application/json',
+//           'Content-Type': 'application/json'
+//         },
+//         body: json.encode({
+//           "genre": "",
+//           "network_id": widget.tvChannelId,
+//         }),
+//       );
+
+//       if (response.statusCode == 200) {
+//         final movieData = MovieResponse.fromJson(json.decode(response.body));
+//         if (movieData.status) {
+//           List<Movie> allMovies =
+//               movieData.data.where((movie) => movie.status == 1).toList();
+
+//           if (searchTerm.isNotEmpty) {
+//             return allMovies
+//                 .where((movie) => movie.name
+//                     .toLowerCase()
+//                     .contains(searchTerm.toLowerCase()))
+//                 .toList();
+//           }
+//           return allMovies;
+//         }
+//       }
+//       return [];
+//     } catch (e) {
+//       print("Search API Error: $e");
+//       return [];
+//     }
+//   }
+
+//   void _performSearch(String searchTerm) {
+//     _debounce?.cancel();
+//     if (searchTerm.trim().isEmpty) {
+//       setState(() {
+//         _isSearching = false;
+//         _isSearchLoading = false;
+//         _searchResults.clear();
+//         _rebuildMovieNodes();
+//       });
+//       return;
+//     }
+
+//     _debounce = Timer(const Duration(milliseconds: 400), () async {
+//       if (!mounted) return;
+//       setState(() {
+//         _isSearchLoading = true;
+//         _isSearching = true;
+//         _searchResults.clear();
+//       });
+
+//       final results = await _fetchMoviesBySearch(searchTerm);
+//       if (!mounted) return;
+
+//       setState(() {
+//         _searchResults = results;
+//         _isSearchLoading = false;
+//         _rebuildMovieNodes();
+//       });
+//     });
+//   }
+
+//   void _onKeyPressed(String value) {
+//     setState(() {
+//       if (value == 'OK') {
+//         _showKeyboard = false;
+//         if (_movieFocusNodes.isNotEmpty) {
+//           _movieFocusNodes.first.requestFocus();
+//         } else {
+//           _searchButtonFocusNode.requestFocus();
+//         }
+//         return;
+//       }
+
+//       if (value == 'DEL') {
+//         if (_searchText.isNotEmpty) {
+//           _searchText = _searchText.substring(0, _searchText.length - 1);
+//         }
+//       } else if (value == ' ') {
+//         _searchText += ' ';
+//       } else {
+//         _searchText += value;
+//       }
+//       _performSearch(_searchText);
+//     });
+//   }
+
+//   void _updateMoviesForGenre(int index) {
+//     if (_isSearching) {
+//       setState(() {
+//         _isSearching = false;
+//         _searchText = '';
+//         _searchResults.clear();
+//       });
+//     }
+
+//     if (_selectedGenreIndex == index) return;
+//     setState(() {
+//       _selectedGenreIndex = index;
+//       _rebuildMovieNodes();
+//     });
+//   }
+
+//   void _onGenreFocus(int index) {
+//     if (!mounted) return;
+//     Provider.of<InternalFocusProvider>(context, listen: false)
+//         .updateName(_genres[index]);
+
+//     final buttonContext = _genreButtonKeys[index].currentContext;
+//     if (buttonContext != null) {
+//       Scrollable.ensureVisible(buttonContext,
+//           duration: const Duration(milliseconds: 300),
+//           curve: Curves.easeOut,
+//           alignment: 0.5);
+//     }
+//   }
+
+//   void _onMovieFocus(int index) {
+//     if (!mounted) return;
+//     final currentList = _isSearching
+//         ? _searchResults
+//         : _moviesByGenre[_genres[_selectedGenreIndex]] ?? [];
+//     if (index < currentList.length) {
+//       Provider.of<InternalFocusProvider>(context, listen: false)
+//           .updateName(currentList[index].name);
+//     }
+
+//     final cardContext = _movieCardKeys[index].currentContext;
+//     if (cardContext != null) {
+//       Scrollable.ensureVisible(cardContext,
+//           duration: const Duration(milliseconds: 300),
+//           curve: Curves.easeOut,
+//           alignment: 0.5);
+//     }
+//   }
+
+//   // ================== FIXED: ADDED PLAY CONTENT FUNCTION ==================
+//   Future<void> _playContent(Movie content) async {
+//     if (_isVideoLoading || !mounted) return;
+//     setState(() {
+//       _isVideoLoading = true;
+//     });
+
+//     try {
+//       String playableUrl = content.getPlayableUrl();
+
+//       if (content.contentType == 2) {
+//         await Navigator.push(
+//           context,
+//           MaterialPageRoute(
+//             builder: (context) => WebSeriesDetailsPage(
+//               id: content.id,
+//               banner: content.banner ?? '',
+//               poster: content.poster ?? '',
+//               logo: widget.logoUrl,
+//               name: content.name,
+//               updatedAt: content.updatedAt ?? '',
+//             ),
+//           ),
+//         );
+//         return;
+//       }
+
+//       if (playableUrl.isEmpty) {
+//         throw Exception('No video URL found');
+//       }
+
+//       if (!mounted) return;
+
+//       if (content.sourceType == 'YoutubeLive' ||
+//           (content.youtubeTrailer != null &&
+//               content.youtubeTrailer!.isNotEmpty)) {
+//         final deviceInfo = context.read<DeviceInfoProvider>();
+//         if (deviceInfo.deviceName == 'AFTSS : Amazon Fire Stick HD') {
+//           await Navigator.push(
+//               context,
+//               MaterialPageRoute(
+//                   builder: (context) => YoutubeWebviewPlayer(
+//                       videoUrl: playableUrl, name: content.name)));
+//         } else {
+//           await Navigator.push(
+//             context,
+//             MaterialPageRoute(
+//               builder: (context) => CustomYoutubePlayer(
+//                 videoData: VideoData(
+//                   id: content.id.toString(),
+//                   title: content.name,
+//                   youtubeUrl: playableUrl,
+//                   thumbnail: content.poster ?? content.banner ?? '',
+//                   description: content.description ?? '',
+//                 ),
+//                 playlist: [],
+//               ),
+//             ),
+//           );
+//         }
+//       } else {
+//         await Navigator.push(
+//           context,
+//           MaterialPageRoute(
+//             builder: (context) => VideoScreen(
+//               videoUrl: playableUrl,
+//               bannerImageUrl: content.poster ?? content.banner ?? '',
+//               videoId: content.id,
+//               name: content.name,
+//               updatedAt: content.updatedAt ?? '',
+//               source: 'isVod',
+//               channelList: [],
+//               liveStatus: false,
+//             ),
+//           ),
+//         );
+//       }
+//     } catch (e) {
+//       if (mounted) {
+//         ScaffoldMessenger.of(context)
+//             .showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
+//       }
+//     } finally {
+//       if (mounted) {
+//         setState(() {
+//           _isVideoLoading = false;
+//         });
+//       }
+//     }
+//   }
+//   // =======================================================================
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final screenSize = MediaQuery.of(context).size;
+//     // ================== FIXED: UNDEFINED VARIABLE ERROR ==================
+//     // bannerhgt variable ko define kiya gaya.
+//     // final double bannerhgt = screenSize.height * 0.22;
+//     // =====================================================================
+    
+//     return Scaffold(
+//       backgroundColor: ProfessionalColors.primaryDark,
+//       body: Stack(
+//         children: [
+//           if (_loadingState == LoadingState.loading ||
+//               _loadingState == LoadingState.initial)
+//             const Center(child: CircularProgressIndicator())
+//           else if (_error != null)
+//             Center(child: Text('Error: $_error'))
+//           else
+//             Column(
+//               children: [
+//                 SizedBox(
+//                   height: screenSize.height * 0.62,
+//                   child:
+//                       _showKeyboard ? _buildSearchUI() : _buildLogoSection(),
+//                 ),
+//                 _buildGenreButtons(),
+//                 SizedBox(
+//                   height: bannerhgt + 40,
+//                   child: _buildMoviesList(),
+//                 ),
+//               ],
+//             ),
+//           Positioned(top: 0, left: 0, right: 0, child: _buildBeautifulAppBar()),
+//           if (_isVideoLoading)
+//             Container(
+//               color: Colors.black.withOpacity(0.7),
+//               child: const Center(
+//                   child: CircularProgressIndicator(
+//                       valueColor: AlwaysStoppedAnimation<Color>(Colors.white))),
+//             ),
+//         ],
+//       ),
+//     );
+//   }
+
+//   Widget _buildBeautifulAppBar() {
+//     final focusedName = context.watch<InternalFocusProvider>().focusedItemName;
+//     return Container(
+//       decoration: BoxDecoration(
+//         gradient: LinearGradient(
+//             begin: Alignment.topCenter,
+//             end: Alignment.bottomCenter,
+//             colors: [
+//               ProfessionalColors.primaryDark.withOpacity(0.95),
+//               ProfessionalColors.surfaceDark.withOpacity(0.9),
+//               ProfessionalColors.surfaceDark.withOpacity(0.8),
+//               Colors.transparent
+//             ]),
+//       ),
+//       child: ClipRRect(
+//         child: BackdropFilter(
+//           filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
+//           child: Container(
+//             padding: EdgeInsets.only(
+//                 top: MediaQuery.of(context).padding.top + 10,
+//                 left: 20,
+//                 right: 30,
+//                 bottom: 10),
+//             child: Row(
+//               children: [
+//                 // Container(
+//                 //     decoration: BoxDecoration(
+//                 //         shape: BoxShape.circle,
+//                 //         gradient: LinearGradient(colors: [
+//                 //           ProfessionalColors.accentBlue.withOpacity(0.3),
+//                 //           ProfessionalColors.accentPurple.withOpacity(0.3)
+//                 //         ])),
+//                 //     child: IconButton(
+//                 //         icon: const Icon(Icons.arrow_back_rounded,
+//                 //             color: Colors.white, size: 24),
+//                 //         onPressed: () => Navigator.pop(context))),
+//                 const SizedBox(width: 16),
+//                 GradientText(widget.title,
+//                     style: const TextStyle(
+//                         fontWeight: FontWeight.bold, fontSize: 22),
+//                     gradient: const LinearGradient(colors: [
+//                       ProfessionalColors.accentPink,
+//                       ProfessionalColors.accentPurple,
+//                       ProfessionalColors.accentBlue
+//                     ])),
+//                 const SizedBox(width: 40),
+//                 Expanded(
+//                     child: Text(focusedName,
+//                         textAlign: TextAlign.left,
+//                         style: const TextStyle(
+//                             color: ProfessionalColors.textSecondary,
+//                             fontWeight: FontWeight.bold,
+//                             fontSize: 20),
+//                         overflow: TextOverflow.ellipsis)),
+//               ],
+//             ),
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildTopSection() {
+//     return SizedBox(
+//       height: MediaQuery.of(context).size.height * 0.65,
+//       child: _showKeyboard ? _buildSearchUI() : _buildLogoSection(),
+//     );
+//   }
+
+//   Widget _buildSearchUI() {
+//     return Row(
+//       crossAxisAlignment: CrossAxisAlignment.center,
+//       children: [
+//         Expanded(
+//           flex: 4,
+//           child: Container(
+//             padding: const EdgeInsets.symmetric(horizontal: 40),
+//             child: Column(
+//               mainAxisAlignment: MainAxisAlignment.center,
+//               children: [
+//                 const GradientText(
+//                   "Search for Content",
+//                   style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+//                   gradient: LinearGradient(colors: [
+//                     ProfessionalColors.accentBlue,
+//                     ProfessionalColors.accentPurple
+//                   ]),
+//                 ),
+//                 const SizedBox(height: 24),
+//                 Container(
+//                   width: double.infinity,
+//                   padding:
+//                       const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+//                   decoration: BoxDecoration(
+//                     color: Colors.white.withOpacity(0.05),
+//                     borderRadius: BorderRadius.circular(10),
+//                     border: Border.all(
+//                         color: ProfessionalColors.accentPurple, width: 2),
+//                   ),
+//                   child: Text(
+//                     _searchText.isEmpty ? 'Start typing...' : _searchText,
+//                     textAlign: TextAlign.center,
+//                     style: TextStyle(
+//                       color:
+//                           _searchText.isEmpty ? Colors.white54 : Colors.white,
+//                       fontSize: 22,
+//                       fontWeight: FontWeight.w600,
+//                     ),
+//                     overflow: TextOverflow.ellipsis,
+//                   ),
+//                 ),
+//               ],
+//             ),
+//           ),
+//         ),
+//         Expanded(
+//           flex: 6,
+//           child: _buildQwertyKeyboard(),
+//         ),
+//       ],
+//     );
+//   }
+
+//   Widget _buildQwertyKeyboard() {
+//     final row1 = "1234567890".split('');
+//     final row2 = "qwertyuiop".split('');
+//     final row3 = "asdfghjkl".split('');
+//     final row4 = ["zxcvbnm", "DEL"]
+//         .expand((e) => e == "DEL" ? [e] : e.split(''))
+//         .toList();
+//     final row5 = [" ", "OK"];
+
+//     return Container(
+//       color: Colors.transparent,
+//       padding: const EdgeInsets.all(10),
+//       child: Column(
+//         mainAxisAlignment: MainAxisAlignment.end,
+//         children: [
+//           _buildKeyboardRow(row1),
+//           _buildKeyboardRow(row2),
+//           _buildKeyboardRow(row3),
+//           _buildKeyboardRow(row4),
+//           _buildKeyboardRow(row5),
+//         ],
+//       ),
+//     );
+//   }
+
+//   Widget _buildKeyboardRow(List<String> keys) {
+//     return Row(
+//       mainAxisAlignment: MainAxisAlignment.center,
+//       children: keys.map((key) {
+//         final screenWidth = MediaQuery.of(context).size.width;
+//         final screenHeight = MediaQuery.of(context).size.height;
+//         double width;
+
+//         const double keyWidthFactor = 0.045;
+//         const double keyHeightFactor = 0.08;
+//         const double keyFontSize = 22.0;
+//         const double keyMargin = 4.0;
+//         const double keyBorderRadius = 12.0;
+
+//         if (key == ' ') {
+//           width = screenWidth * 0.315;
+//         } else if (key == 'OK' || key == 'DEL') {
+//           width = screenWidth * 0.09;
+//         } else {
+//           width = screenWidth * keyWidthFactor;
+//         }
+
+//         return Container(
+//           width: width,
+//           height: screenHeight * keyHeightFactor,
+//           margin: const EdgeInsets.all(keyMargin),
+//           child: ElevatedButton(
+//             onPressed: () => _onKeyPressed(key),
+//             style: ElevatedButton.styleFrom(
+//                 backgroundColor: Colors.white.withOpacity(0.1),
+//                 foregroundColor: Colors.white,
+//                 shape: RoundedRectangleBorder(
+//                     borderRadius: BorderRadius.circular(keyBorderRadius)),
+//                 padding: EdgeInsets.zero),
+//             child: Text(key,
+//                 style: const TextStyle(
+//                     fontSize: keyFontSize, fontWeight: FontWeight.bold)),
+//           ),
+//         );
+//       }).toList(),
+//     );
+//   }
+
+//   Widget _buildLogoSection() {
+//     return Container(
+//       width: double.infinity,
+//       decoration: BoxDecoration(
+//         image: DecorationImage(
+//           image: NetworkImage(widget.logoUrl),
+//           fit: BoxFit.fill,
+//         ),
+//         gradient: LinearGradient(
+//           begin: Alignment.topCenter,
+//           end: Alignment.bottomCenter,
+//           colors: [
+//             Colors.transparent,
+//             ProfessionalColors.primaryDark.withOpacity(0.5),
+//             ProfessionalColors.primaryDark,
+//           ],
+//           stops: const [0.0, 0.7, 1.0],
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildGenreButtons() {
+//     return SizedBox(
+//       height: 60,
+//       child: ListView.builder(
+//         controller: _genreScrollController,
+//         scrollDirection: Axis.horizontal,
+//         itemCount: _genres.length + 1,
+//         padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
+//         itemBuilder: (context, index) {
+//           if (index == 0) {
+//             return Focus(
+//               focusNode: _searchButtonFocusNode,
+//               onKey: (node, event) {
+//                 if (event is RawKeyDownEvent &&
+//                     (event.logicalKey == LogicalKeyboardKey.enter ||
+//                         event.logicalKey == LogicalKeyboardKey.select)) {
+//                   setState(() => _showKeyboard = true);
+//                   return KeyEventResult.handled;
+//                 }
+//                 if (event is RawKeyDownEvent &&
+//                     event.logicalKey == LogicalKeyboardKey.arrowRight) {
+//                   if (_genreFocusNodes.isNotEmpty) {
+//                     _genreFocusNodes.first.requestFocus();
+//                     return KeyEventResult.handled;
+//                   }
+//                 }
+//                 return KeyEventResult.ignored;
+//               },
+//               child: GestureDetector(
+//                 onTap: () {
+//                   _searchButtonFocusNode.requestFocus();
+//                   setState(() => _showKeyboard = true);
+//                 },
+//                 child: Container(
+//                   margin: const EdgeInsets.only(right: 15),
+//                   child: AnimatedContainer(
+//                     duration: const Duration(milliseconds: 200),
+//                     padding: const EdgeInsets.symmetric(
+//                         horizontal: 24, vertical: 8),
+//                     decoration: BoxDecoration(
+//                       color: _searchButtonFocusNode.hasFocus
+//                           ? ProfessionalColors.accentOrange
+//                           : (_isSearching
+//                               ? ProfessionalColors.accentPurple
+//                               : ProfessionalColors.cardDark),
+//                       borderRadius: BorderRadius.circular(30),
+//                       border: Border.all(
+//                         color: _searchButtonFocusNode.hasFocus
+//                             ? Colors.white
+//                             : Colors.transparent,
+//                         width: 2,
+//                       ),
+//                       boxShadow: _searchButtonFocusNode.hasFocus
+//                           ? [
+//                               BoxShadow(
+//                                 color: ProfessionalColors.accentOrange
+//                                     .withOpacity(0.7),
+//                                 blurRadius: 10,
+//                                 spreadRadius: 2,
+//                               )
+//                             ]
+//                           : null,
+//                     ),
+//                     child: const Row(
+//                       mainAxisSize: MainAxisSize.min,
+//                       children: [
+//                         Icon(Icons.search, color: Colors.white),
+//                         SizedBox(width: 8),
+//                         Text("Search",
+//                             style: TextStyle(
+//                                 color: Colors.white,
+//                                 fontWeight: FontWeight.bold,
+//                                 fontSize: 16)),
+//                       ],
+//                     ),
+//                   ),
+//                 ),
+//               ),
+//             );
+//           }
+
+//           final genreIndex = index - 1;
+//           final genre = _genres[genreIndex];
+//           final isSelected = !_isSearching && _selectedGenreIndex == genreIndex;
+//           return Focus(
+//             focusNode: _genreFocusNodes[genreIndex],
+//             onKey: (node, event) {
+//               if (event is RawKeyDownEvent) {
+//                 if (event.logicalKey == LogicalKeyboardKey.arrowLeft &&
+//                     genreIndex == 0) {
+//                   _searchButtonFocusNode.requestFocus();
+//                   return KeyEventResult.handled;
+//                 }
+//                 if (event.logicalKey == LogicalKeyboardKey.enter ||
+//                     event.logicalKey == LogicalKeyboardKey.select) {
+//                   _updateMoviesForGenre(genreIndex);
+//                   return KeyEventResult.handled;
+//                 }
+//               }
+//               return KeyEventResult.ignored;
+//             },
+//             child: GestureDetector(
+//               onTap: () => _genreFocusNodes[genreIndex].requestFocus(),
+//               child: Container(
+//                 key: _genreButtonKeys[genreIndex],
+//                 margin: const EdgeInsets.only(right: 15),
+//                 child: AnimatedContainer(
+//                   duration: const Duration(milliseconds: 200),
+//                   padding:
+//                       const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+//                   decoration: BoxDecoration(
+//                       color: isSelected
+//                           ? _focusColors[genreIndex % _focusColors.length]
+//                           : ProfessionalColors.cardDark,
+//                       borderRadius: BorderRadius.circular(30),
+//                       border: Border.all(
+//                         color: _genreFocusNodes[genreIndex].hasFocus
+//                             ? Colors.white
+//                             : Colors.transparent,
+//                         width: 2,
+//                       ),
+//                       boxShadow: [
+//                         if (_genreFocusNodes[genreIndex].hasFocus)
+//                           BoxShadow(
+//                             color: _focusColors[genreIndex % _focusColors.length]
+//                                 .withOpacity(0.7),
+//                             blurRadius: 10,
+//                             spreadRadius: 2,
+//                           )
+//                       ]),
+//                   child: Center(
+//                     child: Text(
+//                       genre,
+//                       style: const TextStyle(
+//                         color: Colors.white,
+//                         fontWeight: FontWeight.bold,
+//                         fontSize: 16,
+//                       ),
+//                     ),
+//                   ),
+//                 ),
+//               ),
+//             ),
+//           );
+//         },
+//       ),
+//     );
+//   }
+
+//   Widget _buildMoviesList() {
+//     final currentList = _isSearching
+//         ? _searchResults
+//         : _moviesByGenre[_genres[_selectedGenreIndex]] ?? [];
+
+//     if (_isSearchLoading) {
+//       return const Center(child: CircularProgressIndicator());
+//     }
+
+//     if (currentList.isEmpty) {
+//       return Center(
+//         child: Text(
+//           _isSearching && _searchText.isNotEmpty
+//               ? "No results found for '$_searchText'"
+//               : "No content available for this genre.",
+//           style: const TextStyle(
+//               color: ProfessionalColors.textSecondary, fontSize: 16),
+//         ),
+//       );
+//     }
+
+//     return Padding(
+//       padding: const EdgeInsets.only(top: 10.0),
+//       child: ListView.builder(
+//         controller: _movieScrollController,
+//         scrollDirection: Axis.horizontal,
+//         itemCount: currentList.length,
+//         padding: const EdgeInsets.symmetric(horizontal: 30.0),
+//         itemBuilder: (context, index) {
+//           final movie = currentList[index];
+//           return Focus(
+//             focusNode: _movieFocusNodes[index],
+//             onKey: (node, event) {
+//               if (event is RawKeyDownEvent) {
+//                 if (event.logicalKey == LogicalKeyboardKey.select ||
+//                     event.logicalKey == LogicalKeyboardKey.enter) {
+//                   _playContent(movie);
+//                   return KeyEventResult.handled;
+//                 }
+//               }
+//               return KeyEventResult.ignored;
+//             },
+//             child: MovieCard(
+//                 key: _movieCardKeys[index],
+//                 movie: movie,
+//                 logoUrl: widget.logoUrl,
+//                 focusNode: _movieFocusNodes[index],
+//                 focusColors: _focusColors,
+//                 uniqueIndex: index,
+//                 onTap: () => _playContent(movie)),
+//           );
+//         },
+//       ),
+//     );
+//   }
+// }
+
+// // ==========================================================
+// // REUSABLE WIDGETS
+// // ==========================================================
+
+// class MovieCard extends StatefulWidget {
+//   final Movie movie;
+//   final String logoUrl;
+//   final FocusNode focusNode;
+//   final List<Color> focusColors;
+//   final int uniqueIndex;
+//   final VoidCallback onTap;
+
+//   const MovieCard(
+//       {super.key,
+//       required this.movie,
+//       required this.logoUrl,
+//       required this.focusNode,
+//       required this.focusColors,
+//       required this.uniqueIndex,
+//       required this.onTap});
+
+//   @override
+//   State<MovieCard> createState() => _MovieCardState();
+// }
+
+// class _MovieCardState extends State<MovieCard> {
+//   bool _hasFocus = false;
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     widget.focusNode.addListener(_onFocusChange);
+//   }
+
+//   @override
+//   void dispose() {
+//     widget.focusNode.removeListener(_onFocusChange);
+//     super.dispose();
+//   }
+
+//   void _onFocusChange() {
+//     if (mounted && widget.focusNode.hasFocus != _hasFocus) {
+//       setState(() {
+//         _hasFocus = widget.focusNode.hasFocus;
+//       });
+//     }
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final focusColor =
+//         widget.focusColors[widget.uniqueIndex % widget.focusColors.length];
+
+//     final screenSize = MediaQuery.of(context).size;
+
+//     return Container(
+//       width: screenSize.width / 7,
+//       margin: const EdgeInsets.only(right: 12.0),
+//       child: GestureDetector(
+//         onTap: widget.onTap,
+//         child: Column(
+//           crossAxisAlignment: CrossAxisAlignment.start,
+//           mainAxisSize: MainAxisSize.min,
+//           children: [
+//             Expanded(
+//               child: Container(
+//                 decoration: BoxDecoration(
+//                     borderRadius: BorderRadius.circular(8.0),
+//                     border: _hasFocus
+//                         ? Border.all(color: focusColor, width: 3)
+//                         : Border.all(color: Colors.transparent, width: 3),
+//                     boxShadow: _hasFocus
+//                         ? [
+//                             BoxShadow(
+//                                 color: focusColor.withOpacity(0.5),
+//                                 blurRadius: 12,
+//                                 spreadRadius: 1)
+//                           ]
+//                         : []),
+//                 child: ClipRRect(
+//                   borderRadius: BorderRadius.circular(6.0),
+//                   child: Stack(
+//                     fit: StackFit.expand,
+//                     children: [
+//                       displayImage(widget.movie.banner ?? widget.movie.poster?? '',
+//                           fit: BoxFit.cover),
+//                       if (widget.movie.contentType == 2)
+//                         Positioned(
+//                             bottom: 8,
+//                             left: 8,
+//                             child: Container(
+//                                 padding: const EdgeInsets.symmetric(
+//                                     horizontal: 8, vertical: 4),
+//                                 decoration: BoxDecoration(
+//                                     color: ProfessionalColors.accentPurple
+//                                         .withOpacity(0.9),
+//                                     borderRadius: BorderRadius.circular(4.0)),
+//                                 child: const Text('Web Series',
+//                                     style: TextStyle(
+//                                         color: ProfessionalColors.textPrimary,
+//                                         fontSize: 10,
+//                                         fontWeight: FontWeight.bold)))),
+//                       if (_hasFocus)
+//                         Positioned(
+//                             left: 5,
+//                             top: 5,
+//                             child: Container(
+//                                 color: Colors.black.withOpacity(0.4),
+//                                 child: Icon(Icons.play_circle_filled_outlined,
+//                                     color: focusColor, size: 40))),
+//                       Positioned(
+//                           top: 5,
+//                           right: 5,
+//                           child: CircleAvatar(
+//                               radius: 12,
+//                               backgroundImage: NetworkImage(widget.logoUrl),
+//                               backgroundColor: Colors.black54)),
+//                     ],
+//                   ),
+//                 ),
+//               ),
+//             ),
+//             Padding(
+//                 padding:
+//                     const EdgeInsets.only(top: 4.0, left: 2.0, right: 2.0),
+//                 child: Text(widget.movie.name,
+//                     style: TextStyle(
+//                         color: _hasFocus
+//                             ? focusColor
+//                             : ProfessionalColors.textSecondary,
+//                         fontSize: 14),
+//                     maxLines: 1,
+//                     overflow: TextOverflow.ellipsis)),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+// class GradientText extends StatelessWidget {
+//   const GradientText(this.text,
+//       {super.key, required this.gradient, this.style});
+//   final String text;
+//   final TextStyle? style;
+//   final Gradient gradient;
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return ShaderMask(
+//       blendMode: BlendMode.srcIn,
+//       shaderCallback: (bounds) => gradient
+//           .createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
+//       child: Text(text, style: style),
+//     );
+//   }
+// }
+
+// // ==========================================================
+// // HELPER FUNCTIONS
+// // ==========================================================
+
+// Widget displayImage(String imageUrl,
+//     {double? width, double? height, BoxFit fit = BoxFit.cover}) {
+//   if (imageUrl.isEmpty ||
+//       imageUrl == 'localImage' ||
+//       imageUrl.contains('localhost')) {
+//     return _buildErrorWidget(width, height);
+//   }
+//   if (imageUrl.startsWith('data:image')) {
+//     try {
+//       final imageBytes = base64Decode(imageUrl.split(',').last);
+//       return Image.memory(imageBytes,
+//           fit: fit,
+//           width: width,
+//           height: height,
+//           errorBuilder: (c, e, s) => _buildErrorWidget(width, height));
+//     } catch (e) {
+//       return _buildErrorWidget(width, height);
+//     }
+//   } else if (imageUrl.startsWith('http')) {
+//     if (imageUrl.toLowerCase().endsWith('.svg')) {
+//       return SvgPicture.network(imageUrl,
+//           width: width,
+//           height: height,
+//           fit: fit,
+//           placeholderBuilder: (c) => _buildLoadingWidget(width, height));
+//     } else {
+//       return Image.network(
+//         imageUrl,
+//         width: width,
+//         height: height,
+//         fit: fit,
+//         // headers: const {'User-Agent': 'Flutter App'},
+//   //         headers: const {
+//   //   'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36',
+//   // },
+//         loadingBuilder: (c, child, progress) =>
+//             progress == null ? child : _buildLoadingWidget(width, height),
+//         errorBuilder: (c, e, s) => _buildErrorWidget(width, height),
+//       );
+//     }
+//   } else {
+//     return _buildErrorWidget(width, height);
+//   }
+// }
+
+// Widget _buildErrorWidget(double? width, double? height) {
+//   return Container(
+//     width: width,
+//     height: height,
+//     decoration: const BoxDecoration(
+//         gradient: LinearGradient(colors: [
+//       ProfessionalColors.accentGreen,
+//       ProfessionalColors.accentBlue
+//     ])),
+//     child: const Icon(Icons.broken_image, color: Colors.white, size: 24),
+//   );
+// }
+
+// Widget _buildLoadingWidget(double? width, double? height) {
+//   return SizedBox(
+//     width: width,
+//     height: height,
+//     child: const Center(
+//         child: CircularProgressIndicator(
+//             strokeWidth: 2,
+//             valueColor: AlwaysStoppedAnimation<Color>(Colors.white))),
+//   );
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:ui';
@@ -6263,23 +7692,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 enum LoadingState { initial, loading, rebuilding, loaded, error }
 
-class ParsedData {
-  final List<String> genres;
-  final Map<String, List<Movie>> moviesByGenre;
-  ParsedData({required this.genres, required this.moviesByGenre});
-}
-
-ParsedData _parseJsonAndPrepareData(String jsonData) {
-  final data = json.decode(jsonData) as Map<String, dynamic>;
-  final allGenres = List<String>.from(data['genres']);
-  final allMoviesByGenre = (data['moviesByGenre'] as Map<String, dynamic>).map(
-      (key, value) => MapEntry(key,
-          (value as List).map((movieMap) => Movie.fromMap(movieMap)).toList()));
-  final activeGenres =
-      allGenres.where((g) => allMoviesByGenre[g]?.isNotEmpty ?? false).toList();
-  return ParsedData(genres: activeGenres, moviesByGenre: allMoviesByGenre);
-}
-
 class ProfessionalColors {
   static const primaryDark = Color(0xFF0A0E1A);
   static const surfaceDark = Color(0xFF1A1D29);
@@ -6294,14 +7706,18 @@ class ProfessionalColors {
   static const textSecondary = Color(0xFFB3B3B3);
 }
 
-class GenreResponse {
-  final bool status;
-  final List<String> genres;
-  GenreResponse({required this.status, required this.genres});
-  factory GenreResponse.fromJson(Map<String, dynamic> json) {
-    return GenreResponse(
-      status: json['status'],
-      genres: List<String>.from(json['genres']),
+class ContentSlider {
+  final int id;
+  final String title;
+  final String? banner;
+
+  ContentSlider({required this.id, required this.title, this.banner});
+
+  factory ContentSlider.fromJson(Map<String, dynamic> json) {
+    return ContentSlider(
+      id: json['id'] ?? 0,
+      title: json['title'] ?? 'No Title',
+      banner: json['banner'],
     );
   }
 }
@@ -6310,12 +7726,31 @@ class MovieResponse {
   final bool status;
   final int total;
   final List<Movie> data;
-  MovieResponse({required this.status, required this.total, required this.data});
+  final List<ContentSlider> contentSliders;
+
+  MovieResponse({
+    required this.status,
+    required this.total,
+    required this.data,
+    required this.contentSliders,
+  });
+
   factory MovieResponse.fromJson(Map<String, dynamic> json) {
+    List<T> parseList<T>(String key, T Function(Map<String, dynamic>) fromJson) {
+      if (json[key] is List) {
+        return (json[key] as List)
+            .map((i) => fromJson(i as Map<String, dynamic>))
+            .toList();
+      }
+      return [];
+    }
+
     return MovieResponse(
       status: json['status'] ?? false,
       total: json['total'] ?? 0,
-      data: (json['data'] as List).map((i) => Movie.fromJson(i)).toList(),
+      data: parseList('data', (i) => Movie.fromJson(i)),
+      contentSliders:
+          parseList('content_sliders', (i) => ContentSlider.fromJson(i)),
     );
   }
 }
@@ -6326,6 +7761,7 @@ class Movie {
   final String? banner;
   final String? poster;
   final String? description;
+  final String genres;
   final int? contentType;
   final String? sourceType;
   final String? youtubeTrailer;
@@ -6339,6 +7775,7 @@ class Movie {
     this.banner,
     this.poster,
     this.description,
+    required this.genres,
     this.contentType,
     this.sourceType,
     this.youtubeTrailer,
@@ -6354,6 +7791,7 @@ class Movie {
       banner: json['banner'],
       poster: json['poster'],
       description: json['description'],
+      genres: json['genres'] ?? 'Uncategorized',
       contentType: json['content_type'],
       sourceType: json['source_type'],
       youtubeTrailer: json['youtube_trailer'],
@@ -6370,6 +7808,7 @@ class Movie {
       'banner': banner,
       'poster': poster,
       'description': description,
+      'genres': genres,
       'content_type': contentType,
       'source_type': sourceType,
       'youtube_trailer': youtubeTrailer,
@@ -6390,154 +7829,8 @@ class Movie {
   }
 }
 
-class SmartCacheManager {
-  static const String _cachePrefix = 'genre_movies_cache_';
-  static const String _timestampSuffix = '_timestamp';
-  static const Duration _cacheValidity = Duration(hours: 2);
-
-  static String _getCacheKey(String tvChannelId) => '$_cachePrefix$tvChannelId';
-  static String _getTimestampKey(String tvChannelId) =>
-      '$_cachePrefix$tvChannelId$_timestampSuffix';
-
-  static Future<bool> isCacheValid(String tvChannelId) async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final timestampStr = prefs.getString(_getTimestampKey(tvChannelId));
-
-      if (timestampStr == null) return false;
-
-      final cacheTime = DateTime.parse(timestampStr);
-      final now = DateTime.now();
-      final difference = now.difference(cacheTime);
-
-      final isValid = difference < _cacheValidity;
-      return isValid;
-    } catch (e) {
-      return false;
-    }
-  }
-
-  static Future<String?> getCachedData(String tvChannelId) async {
-    try {
-      final isValid = await isCacheValid(tvChannelId);
-      if (!isValid) return null;
-
-      final prefs = await SharedPreferences.getInstance();
-      final cachedData = prefs.getString(_getCacheKey(tvChannelId));
-
-      if (cachedData != null && cachedData.isNotEmpty) {
-        return cachedData;
-      }
-
-      return null;
-    } catch (e) {
-      return null;
-    }
-  }
-
-  static Future<void> saveToCache(String tvChannelId, String data) async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final now = DateTime.now().toIso8601String();
-
-      await Future.wait([
-        prefs.setString(_getCacheKey(tvChannelId), data),
-        prefs.setString(_getTimestampKey(tvChannelId), now),
-      ]);
-    } catch (e) {
-      print('Failed to save to cache: $e');
-    }
-  }
-}
-
-Future<String> _fetchAndCacheDataIsolateOptimized(
-    Map<String, String> params) async {
-  final String tvChannelId = params['tvChannelId']!;
-  final String authKey = params['authKey']!;
-
-  final client = http.Client();
-
-  try {
-    final genresResponse = await client.get(
-      Uri.parse(
-          'https://dashboard.cpplayers.com/api/v2/getGenreByContentNetwork/$tvChannelId'),
-      headers: {
-        'auth-key': authKey,
-        'Accept': 'application/json',
-        'domain': 'coretechinfo.com'
-      },
-    ).timeout(const Duration(seconds: 15),
-        onTimeout: () => throw Exception('Genres request timed out'));
-
-    if (genresResponse.statusCode != 200) {
-      throw Exception('Failed to load genres: ${genresResponse.statusCode}');
-    }
-
-    final genreData = GenreResponse.fromJson(json.decode(genresResponse.body));
-    if (!genreData.status) return '';
-
-    final genres = genreData.genres;
-
-    final List<Future<MapEntry<String, List<Movie>>>> genreFutures =
-        genres.map((genre) async {
-      try {
-        final moviesResponse = await client
-            .post(
-              Uri.parse(
-                  'https://dashboard.cpplayers.com/api/v2/getAllContentsOfNetworkNew?page=1&records=10'),
-              headers: {
-                'auth-key': authKey,
-                'domain': 'coretechinfo.com',
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-              },
-              body: json.encode({"genre": genre, "network_id": tvChannelId}),
-            )
-            .timeout(const Duration(seconds: 10),
-                onTimeout: () => throw Exception('$genre request timed out'));
-
-        if (moviesResponse.statusCode == 200) {
-          final movieData =
-              MovieResponse.fromJson(json.decode(moviesResponse.body));
-          if (movieData.status && movieData.data.isNotEmpty) {
-            final activeMovies =
-                movieData.data.where((movie) => movie.status == 1).toList();
-            if (activeMovies.isNotEmpty) {
-              return MapEntry(genre, activeMovies);
-            }
-          }
-        }
-        return MapEntry(genre, <Movie>[]);
-      } catch (e) {
-        return MapEntry(genre, <Movie>[]);
-      }
-    }).toList();
-
-    final results = await Future.wait(genreFutures);
-
-    final Map<String, List<Movie>> moviesByGenre = {};
-    for (final result in results) {
-      if (result.value.isNotEmpty) {
-        moviesByGenre[result.key] = result.value;
-      }
-    }
-
-    final Map<String, dynamic> serializableData = {
-      'genres': genres,
-      'moviesByGenre': moviesByGenre.map(
-          (key, value) => MapEntry(key, value.map((m) => m.toMap()).toList())),
-    };
-
-    return json.encode(serializableData);
-  } catch (e) {
-    return '';
-  } finally {
-    client.close();
-  }
-}
-
 // ==========================================================
-// GENRE MOVIES SCREEN (UPDATED)
+// GENRE MOVIES SCREEN
 // ==========================================================
 
 class GenreMoviesScreen extends StatefulWidget {
@@ -6557,10 +7850,17 @@ class _GenreMoviesScreenState extends State<GenreMoviesScreen> {
   LoadingState _loadingState = LoadingState.initial;
   String? _error;
 
+  // Slider state variables
+  List<ContentSlider> _contentSliders = [];
+  late PageController _sliderPageController;
+  Timer? _sliderTimer;
+  int _currentSliderPage = 0;
+
   // Genre browsing state
   List<String> _genres = [];
   Map<String, List<Movie>> _moviesByGenre = {};
   int _selectedGenreIndex = 0;
+  List<Movie> _currentDisplayList = []; // For shuffled list
 
   // Search state
   bool _isSearching = false;
@@ -6605,10 +7905,12 @@ class _GenreMoviesScreenState extends State<GenreMoviesScreen> {
       }
     });
 
+    _sliderPageController = PageController(initialPage: 0);
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<InternalFocusProvider>(context, listen: false).updateName('');
+      _fetchAndProcessData();
     });
-    _loadInitialData();
   }
 
   @override
@@ -6627,37 +7929,20 @@ class _GenreMoviesScreenState extends State<GenreMoviesScreen> {
     }
     _genreScrollController.dispose();
     _movieScrollController.dispose();
+
+    _sliderPageController.dispose();
+    _sliderTimer?.cancel();
     _debounce?.cancel();
   }
+  
+  void _shuffleAndSetDisplayList() {
+    if (_genres.isEmpty) return;
 
-  void _applyDataToState(ParsedData parsedData) {
-    if (!mounted) return;
+    final originalList = _moviesByGenre[_genres[_selectedGenreIndex]] ?? [];
+    final shuffledList = List<Movie>.from(originalList)..shuffle();
+
     setState(() {
-      _loadingState = LoadingState.rebuilding;
-      _genres = parsedData.genres.reversed.toList();
-      _moviesByGenre = parsedData.moviesByGenre;
-      _selectedGenreIndex = 0;
-
-      for (var node in _genreFocusNodes) {
-        node.dispose();
-      }
-      _genreFocusNodes = List.generate(_genres.length, (i) => FocusNode());
-      _genreButtonKeys = List.generate(_genres.length, (i) => GlobalKey());
-
-      for (int i = 0; i < _genres.length; i++) {
-        _genreFocusNodes[i].addListener(() {
-          if (_genreFocusNodes[i].hasFocus) _onGenreFocus(i);
-        });
-      }
-
-      _rebuildMovieNodes();
-      _loadingState = LoadingState.loaded;
-    });
-
-    Future.delayed(const Duration(milliseconds: 200), () {
-      if (mounted && _searchButtonFocusNode.canRequestFocus) {
-        _searchButtonFocusNode.requestFocus();
-      }
+      _currentDisplayList = shuffledList;
     });
   }
 
@@ -6667,9 +7952,7 @@ class _GenreMoviesScreenState extends State<GenreMoviesScreen> {
       node.dispose();
     }
 
-    final currentList = _isSearching
-        ? _searchResults
-        : _moviesByGenre[_genres[_selectedGenreIndex]] ?? [];
+    final currentList = _isSearching ? _searchResults : _currentDisplayList;
 
     _movieFocusNodes = List.generate(currentList.length, (i) => FocusNode());
     _movieCardKeys = List.generate(currentList.length, (i) => GlobalKey());
@@ -6681,32 +7964,99 @@ class _GenreMoviesScreenState extends State<GenreMoviesScreen> {
     }
   }
 
-  Future<void> _loadInitialData() async {
-    final cachedData =
-        await SmartCacheManager.getCachedData(widget.tvChannelId);
-    if (cachedData != null) {
-      final parsedData = await compute(_parseJsonAndPrepareData, cachedData);
-      _applyDataToState(parsedData);
-    } else {
-      await _fetchDataWithLoading();
-    }
-  }
-
-  Future<void> _fetchDataWithLoading() async {
+  Future<void> _fetchAndProcessData() async {
     if (mounted) setState(() => _loadingState = LoadingState.loading);
     try {
       final prefs = await SharedPreferences.getInstance();
       final authKey = prefs.getString('result_auth_key') ?? '56456456456';
-      final String freshDataJson = await _fetchAndCacheDataIsolateOptimized(
-          {'tvChannelId': widget.tvChannelId, 'authKey': authKey});
 
-      if (freshDataJson.isNotEmpty) {
-        await SmartCacheManager.saveToCache(widget.tvChannelId, freshDataJson);
-        final parsedData =
-            await compute(_parseJsonAndPrepareData, freshDataJson);
-        _applyDataToState(parsedData);
+      final response = await http.post(
+        Uri.parse(
+            'https://dashboard.cpplayers.com/api/v2/getAllContentsOfNetworkNew'),
+        headers: {
+          'auth-key': authKey,
+          'domain': 'coretechinfo.com',
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: json.encode({
+          "genre": "",
+          "network_id": widget.tvChannelId,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final fullResponse =
+            MovieResponse.fromJson(json.decode(response.body));
+
+        if (fullResponse.status) {
+          final allMovies =
+              fullResponse.data.where((movie) => movie.status == 1).toList();
+
+          final Map<String, List<Movie>> moviesByGenre = {};
+          final Set<String> uniqueGenres = {};
+
+          for (final movie in allMovies) {
+            final genres =
+                movie.genres.split(',').map((g) => g.trim()).toList();
+            for (var genre in genres) {
+              if (genre.isNotEmpty) {
+                uniqueGenres.add(genre);
+                if (moviesByGenre.containsKey(genre)) {
+                  moviesByGenre[genre]!.add(movie);
+                } else {
+                  moviesByGenre[genre] = [movie];
+                }
+              }
+            }
+          }
+
+          List<String> sortedGenres = uniqueGenres.toList();
+
+          if (sortedGenres.contains('Web Series')) {
+            sortedGenres.remove('Web Series');
+            sortedGenres.sort();
+            sortedGenres.insert(0, 'Web Series');
+          } else {
+            sortedGenres.sort();
+          }
+
+          if (!mounted) return;
+
+          setState(() {
+            _loadingState = LoadingState.rebuilding;
+            _contentSliders = fullResponse.contentSliders;
+            _genres = sortedGenres;
+            _moviesByGenre = moviesByGenre;
+            _selectedGenreIndex = 0;
+            
+            _genreFocusNodes =
+                List.generate(_genres.length, (i) => FocusNode());
+            _genreButtonKeys =
+                List.generate(_genres.length, (i) => GlobalKey());
+
+            for (int i = 0; i < _genres.length; i++) {
+              _genreFocusNodes[i].addListener(() {
+                if (_genreFocusNodes[i].hasFocus) _onGenreFocus(i);
+              });
+            }
+            _loadingState = LoadingState.loaded;
+          });
+          
+          _shuffleAndSetDisplayList();
+          _rebuildMovieNodes();
+          _setupSliderTimer();
+
+          Future.delayed(const Duration(milliseconds: 200), () {
+            if (mounted && _searchButtonFocusNode.canRequestFocus) {
+              _searchButtonFocusNode.requestFocus();
+            }
+          });
+        } else {
+          throw Exception('API status returned false.');
+        }
       } else {
-        throw Exception('Failed to load data');
+        throw Exception('Failed to load data: ${response.statusCode}');
       }
     } catch (e) {
       if (mounted) {
@@ -6715,6 +8065,31 @@ class _GenreMoviesScreenState extends State<GenreMoviesScreen> {
           _loadingState = LoadingState.error;
         });
       }
+    }
+  }
+
+  void _setupSliderTimer() {
+    _sliderTimer?.cancel();
+    if (_contentSliders.length > 1) {
+      _sliderTimer = Timer.periodic(const Duration(seconds: 5), (Timer timer) {
+        if (!mounted) return;
+
+        int nextPage = _currentSliderPage + 1;
+
+        if (nextPage >= _contentSliders.length) {
+          if (_sliderPageController.hasClients) {
+             _sliderPageController.jumpToPage(0);
+          }
+        } else {
+          if (_sliderPageController.hasClients) {
+            _sliderPageController.animateToPage(
+              nextPage,
+              duration: const Duration(milliseconds: 800),
+              curve: Curves.easeInOut,
+            );
+          }
+        }
+      });
     }
   }
 
@@ -6826,15 +8201,22 @@ class _GenreMoviesScreenState extends State<GenreMoviesScreen> {
       });
     }
 
-    if (_selectedGenreIndex == index) return;
+    if (_selectedGenreIndex == index) {
+        _shuffleAndSetDisplayList();
+        _rebuildMovieNodes();
+        return;
+    };
+
     setState(() {
       _selectedGenreIndex = index;
-      _rebuildMovieNodes();
     });
+    
+    _shuffleAndSetDisplayList();
+    _rebuildMovieNodes();
   }
 
   void _onGenreFocus(int index) {
-    if (!mounted) return;
+    if (!mounted || index >= _genres.length) return;
     Provider.of<InternalFocusProvider>(context, listen: false)
         .updateName(_genres[index]);
 
@@ -6849,9 +8231,9 @@ class _GenreMoviesScreenState extends State<GenreMoviesScreen> {
 
   void _onMovieFocus(int index) {
     if (!mounted) return;
-    final currentList = _isSearching
-        ? _searchResults
-        : _moviesByGenre[_genres[_selectedGenreIndex]] ?? [];
+    
+    final currentList = _isSearching ? _searchResults : _currentDisplayList;
+
     if (index < currentList.length) {
       Provider.of<InternalFocusProvider>(context, listen: false)
           .updateName(currentList[index].name);
@@ -6866,7 +8248,6 @@ class _GenreMoviesScreenState extends State<GenreMoviesScreen> {
     }
   }
 
-  // ================== FIXED: ADDED PLAY CONTENT FUNCTION ==================
   Future<void> _playContent(Movie content) async {
     if (_isVideoLoading || !mounted) return;
     setState(() {
@@ -6956,16 +8337,11 @@ class _GenreMoviesScreenState extends State<GenreMoviesScreen> {
       }
     }
   }
-  // =======================================================================
 
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
-    // ================== FIXED: UNDEFINED VARIABLE ERROR ==================
-    // bannerhgt variable ko define kiya gaya.
-    // final double bannerhgt = screenSize.height * 0.22;
-    // =====================================================================
-    
+
     return Scaffold(
       backgroundColor: ProfessionalColors.primaryDark,
       body: Stack(
@@ -6974,18 +8350,21 @@ class _GenreMoviesScreenState extends State<GenreMoviesScreen> {
               _loadingState == LoadingState.initial)
             const Center(child: CircularProgressIndicator())
           else if (_error != null)
-            Center(child: Text('Error: $_error'))
+            Center(
+                child: Text('Error: $_error',
+                    style: const TextStyle(color: Colors.white)))
           else
             Column(
               children: [
                 SizedBox(
-                  height: screenSize.height * 0.62,
-                  child:
-                      _showKeyboard ? _buildSearchUI() : _buildLogoSection(),
+                  height: screenSize.height * 0.63,
+                  child: _showKeyboard
+                      ? _buildSearchUI()
+                      : _buildImageSliderSection(),
                 ),
                 _buildGenreButtons(),
                 SizedBox(
-                  height: bannerhgt + 30,
+                  height: bannerhgt * 1.5,
                   child: _buildMoviesList(),
                 ),
               ],
@@ -7028,17 +8407,6 @@ class _GenreMoviesScreenState extends State<GenreMoviesScreen> {
                 bottom: 10),
             child: Row(
               children: [
-                // Container(
-                //     decoration: BoxDecoration(
-                //         shape: BoxShape.circle,
-                //         gradient: LinearGradient(colors: [
-                //           ProfessionalColors.accentBlue.withOpacity(0.3),
-                //           ProfessionalColors.accentPurple.withOpacity(0.3)
-                //         ])),
-                //     child: IconButton(
-                //         icon: const Icon(Icons.arrow_back_rounded,
-                //             color: Colors.white, size: 24),
-                //         onPressed: () => Navigator.pop(context))),
                 const SizedBox(width: 16),
                 GradientText(widget.title,
                     style: const TextStyle(
@@ -7062,13 +8430,6 @@ class _GenreMoviesScreenState extends State<GenreMoviesScreen> {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildTopSection() {
-    return SizedBox(
-      height: MediaQuery.of(context).size.height * 0.65,
-      child: _showKeyboard ? _buildSearchUI() : _buildLogoSection(),
     );
   }
 
@@ -7194,36 +8555,110 @@ class _GenreMoviesScreenState extends State<GenreMoviesScreen> {
     );
   }
 
-  Widget _buildLogoSection() {
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        image: DecorationImage(
-          image: NetworkImage(widget.logoUrl),
-          fit: BoxFit.fill,
+  Widget _buildSliderIndicator() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: _contentSliders.asMap().entries.map((entry) {
+        int index = entry.key;
+        return AnimatedContainer(
+          duration: const Duration(milliseconds: 300),
+          width: _currentSliderPage == index ? 12.0 : 8.0,
+          height: _currentSliderPage == index ? 12.0 : 8.0,
+          margin: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 4.0),
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: _currentSliderPage == index
+                ? ProfessionalColors.accentBlue
+                : Colors.white.withOpacity(0.4),
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildImageSliderSection() {
+    if (_contentSliders.isEmpty) {
+      return Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: NetworkImage(widget.logoUrl),
+            fit: BoxFit.fill,
+          ),
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Colors.transparent,
+              ProfessionalColors.primaryDark.withOpacity(0.5),
+              ProfessionalColors.primaryDark,
+            ],
+            stops: const [0.0, 0.7, 1.0],
+          ),
         ),
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            Colors.transparent,
-            ProfessionalColors.primaryDark.withOpacity(0.5),
-            ProfessionalColors.primaryDark,
-          ],
-          stops: const [0.0, 0.7, 1.0],
+      );
+    }
+
+    return Stack(
+      children: [
+        PageView.builder(
+          controller: _sliderPageController,
+          itemCount: _contentSliders.length,
+          onPageChanged: (index) {
+            setState(() {
+              _currentSliderPage = index;
+            });
+          },
+          itemBuilder: (context, index) {
+            final slider = _contentSliders[index];
+            return Container(
+              color: ProfessionalColors.primaryDark,
+              child: displayImage(
+                slider.banner ?? '',
+                width: double.infinity,
+                height: double.infinity,
+                fit: BoxFit.contain,
+              ),
+            );
+          },
         ),
-      ),
+        Container(
+          width: double.infinity,
+          height: double.infinity,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+              colors: [
+                ProfessionalColors.primaryDark,
+                ProfessionalColors.primaryDark,
+                Colors.transparent,
+                Colors.transparent,
+                ProfessionalColors.primaryDark,
+                ProfessionalColors.primaryDark,
+              ],
+              stops: const [0.0, 0.2, 0.4, 0.6, 0.8, 1.0],
+            ),
+          ),
+        ),
+        Positioned(
+          bottom: 20.0,
+          left: 0,
+          right: 0,
+          child: _buildSliderIndicator(),
+        ),
+      ],
     );
   }
 
   Widget _buildGenreButtons() {
     return SizedBox(
-      height: 60,
+      height: screenhgt * 0.1,
       child: ListView.builder(
         controller: _genreScrollController,
         scrollDirection: Axis.horizontal,
         itemCount: _genres.length + 1,
-        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
+        padding:  EdgeInsets.symmetric(horizontal: screenwdt * 0.002, vertical: screenhgt * 0.01),
         itemBuilder: (context, index) {
           if (index == 0) {
             return Focus(
@@ -7366,9 +8801,7 @@ class _GenreMoviesScreenState extends State<GenreMoviesScreen> {
   }
 
   Widget _buildMoviesList() {
-    final currentList = _isSearching
-        ? _searchResults
-        : _moviesByGenre[_genres[_selectedGenreIndex]] ?? [];
+    final currentList = _isSearching ? _searchResults : _currentDisplayList;
 
     if (_isSearchLoading) {
       return const Center(child: CircularProgressIndicator());
@@ -7478,7 +8911,7 @@ class _MovieCardState extends State<MovieCard> {
     final screenSize = MediaQuery.of(context).size;
 
     return Container(
-      width: screenSize.width / 6.5,
+      width: screenSize.width / 7,
       margin: const EdgeInsets.only(right: 12.0),
       child: GestureDetector(
         onTap: widget.onTap,
@@ -7506,7 +8939,8 @@ class _MovieCardState extends State<MovieCard> {
                   child: Stack(
                     fit: StackFit.expand,
                     children: [
-                      displayImage(widget.movie.banner ?? '',
+                      displayImage(
+                          widget.movie.banner ?? widget.movie.poster ?? '',
                           fit: BoxFit.cover),
                       if (widget.movie.contentType == 2)
                         Positioned(
@@ -7615,7 +9049,6 @@ Widget displayImage(String imageUrl,
         width: width,
         height: height,
         fit: fit,
-        headers: const {'User-Agent': 'Flutter App'},
         loadingBuilder: (c, child, progress) =>
             progress == null ? child : _buildLoadingWidget(width, height),
         errorBuilder: (c, e, s) => _buildErrorWidget(width, height),

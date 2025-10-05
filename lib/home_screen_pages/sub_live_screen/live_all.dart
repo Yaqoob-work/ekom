@@ -10168,39 +10168,66 @@ if (channelFocusNodes.containsKey(firstChannelId)) {
 
     return Focus(
       focusNode: channelFocusNodes[channelId],
-      onFocusChange: (hasFocus) async {
-        if (hasFocus && mounted) {
-          try {
-            // ✅ ENHANCED: Generate dynamic color for background
+      // onFocusChange: (hasFocus) async {
+      //   if (hasFocus && mounted) {
+      //     try {
+      //       // ✅ ENHANCED: Generate dynamic color for background
 
-            Color dominantColor = ProfessionalColors.gradientColors[
-                math.Random()
-                    .nextInt(ProfessionalColors.gradientColors.length)];
+      //       Color dominantColor = ProfessionalColors.gradientColors[
+      //           math.Random()
+      //               .nextInt(ProfessionalColors.gradientColors.length)];
 
-            // ✅ ENHANCED: Update background color when channel focused
+      //       // ✅ ENHANCED: Update background color when channel focused
 
-            try {
-              context.read<ColorProvider>().updateColor(dominantColor, true);
-            } catch (e) {
-              print('Color provider update failed: $e');
-            }
+      //       try {
+      //         context.read<ColorProvider>().updateColor(dominantColor, true);
+      //       } catch (e) {
+      //         print('Color provider update failed: $e');
+      //       }
 
-            widget.onFocusChange?.call(true);
-          } catch (e) {
-            print('Focus change handling failed: $e');
-          }
-        } else if (mounted) {
-          try {
-            // ✅ ENHANCED: Reset background when unfocused
+      //       widget.onFocusChange?.call(true);
+      //     } catch (e) {
+      //       print('Focus change handling failed: $e');
+      //     }
+      //   } else if (mounted) {
+      //     try {
+      //       // ✅ ENHANCED: Reset background when unfocused
 
-            context.read<ColorProvider>().resetColor();
-          } catch (e) {
-            print('Color reset failed: $e');
-          }
+      //       context.read<ColorProvider>().resetColor();
+      //     } catch (e) {
+      //       print('Color reset failed: $e');
+      //     }
 
-          widget.onFocusChange?.call(false);
-        }
-      },
+      //     widget.onFocusChange?.call(false);
+      //   }
+      // },
+      // live_channels.dart ke andar _buildChannelItem method mein
+
+// ...
+onFocusChange: (hasFocus) async {
+  if (hasFocus && mounted) {
+    try {
+      // ✅ STEP 2.1: FocusProvider ko active genre ka index batayein
+      context.read<FocusProvider>().setLastFocusedLiveGenreIndex(widget.navigationIndex);
+      
+      Color dominantColor = ProfessionalColors.gradientColors[
+          math.Random().nextInt(ProfessionalColors.gradientColors.length)];
+      
+      context.read<ColorProvider>().updateColor(dominantColor, true);
+      widget.onFocusChange?.call(true);
+    } catch (e) {
+      print('Focus change handling failed: $e');
+    }
+  } else if (mounted) {
+    try {
+      context.read<ColorProvider>().resetColor();
+    } catch (e) {
+      print('Color reset failed: $e');
+    }
+    widget.onFocusChange?.call(false);
+  }
+},
+// ...
       onKey: (FocusNode node, RawKeyEvent event) {
         if (event is RawKeyDownEvent) {
           if (event.logicalKey == LogicalKeyboardKey.arrowRight) {

@@ -46,7 +46,7 @@
 //   final List<dynamic> channelList;
 //   final String bannerImageUrl;
 //   // final Duration startAtPosition;
-//   // final bool isLive;
+//   // final bool liveStatus;
 //   // final bool isVOD;
 //   // final bool isSearch;
 //   // final bool? isHomeCategory;
@@ -63,7 +63,7 @@
 //  required this.bannerImageUrl,
 //  // required this.startAtPosition,
 //  // required this.videoType,
-//  // required this.isLive,
+//  // required this.liveStatus,
 //  // required this.isVOD,
 //  // required this.isSearch,
 //  // this.isHomeCategory,
@@ -1228,7 +1228,7 @@
 //   //  _togglePlayPause();
 //   //  FocusScope.of(context).requestFocus(playPauseButtonFocusNode);
 //   //   } else {
-//   //  // if (widget.isLive) {
+//   //  // if (widget.liveStatus) {
 //   //  _onItemTap(_focusedIndex);
 //   //  // } else {
 //   //  // FocusScope.of(context).requestFocus(playPauseButtonFocusNode);
@@ -2165,12 +2165,6 @@
 //   }
 // }
 
-
-
-
-
-
-
 // import 'dart:async';
 // import 'package:flutter/material.dart';
 // import 'package:flutter/services.dart';
@@ -2800,11 +2794,6 @@
 //   }
 // }
 
-
-
-
-
-
 // import 'dart:async';
 // import 'package:flutter/material.dart';
 // import 'package:flutter/services.dart';
@@ -3207,10 +3196,6 @@
 //   }
 // }
 
-
-
-
-
 // import 'dart:async';
 // import 'package:flutter/material.dart';
 // import 'package:flutter/services.dart';
@@ -3326,7 +3311,6 @@
 //  final isVolumeKey = event.logicalKey == LogicalKeyboardKey.arrowUp ||
 //   event.logicalKey == LogicalKeyboardKey.arrowDown;
 
-
 //  if (event is KeyDownEvent) {
 //    if (isSeekingKey) {
 //   if (_seekDirection == 0) { // Start seeking only if not already seeking
@@ -3367,7 +3351,7 @@
 //    // To achieve 30 seconds of seek per 1 second of hold,
 //    // we add 3 seconds of seek every 100ms.
 //    _accumulatedSeek += const Duration(seconds: 3);
-   
+
 //    final totalDuration = player.state.duration;
 //    var newPosition = _seekStartPosition + (_accumulatedSeek * _seekDirection);
 
@@ -3381,12 +3365,12 @@
 
 //   void _stopAndExecuteSeek() {
 //  _seekTimer?.cancel();
-    
+
 //  // Use the final preview position to perform the seek
 //  if (_seekPreviewNotifier.value != null) {
 //    player.seek(_seekPreviewNotifier.value!);
 //  }
-    
+
 //  // Reset all seek-related state
 //  _seekPreviewNotifier.value = null;
 //  _accumulatedSeek = Duration.zero;
@@ -3492,7 +3476,7 @@
 //  builder: (context, snapshot) {
 //    final position = snapshot.data ?? player.state.position;
 //    final duration = player.state.duration;
-   
+
 //    // When seeking, show the preview time. Otherwise, show current time.
 //    final displayPosition = isSeeking ? previewPosition! : position;
 
@@ -3622,6 +3606,8 @@
 
 
 
+
+
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -3678,7 +3664,7 @@ class _VideoScreenState extends State<VideoScreen> {
     super.initState();
 
     player = Player(
-      configuration: const PlayerConfiguration(
+      configuration: PlayerConfiguration(
         vo: 'gpu',
         bufferSize: 15 * 1024 * 1024, // 15 MB buffer
         logLevel: MPVLogLevel.warn,
@@ -3737,7 +3723,6 @@ class _VideoScreenState extends State<VideoScreen> {
     final isVolumeKey = event.logicalKey == LogicalKeyboardKey.arrowUp ||
         event.logicalKey == LogicalKeyboardKey.arrowDown;
 
-
     if (event is KeyDownEvent) {
       if (isSeekingKey) {
         if (_seekDirection == 0) { // Start seeking only if not already seeking
@@ -3777,8 +3762,8 @@ class _VideoScreenState extends State<VideoScreen> {
     _seekTimer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
       // To achieve 30 seconds of seek per 1 second of hold,
       // we add 3 seconds of seek every 100ms.
-      _accumulatedSeek += const Duration(seconds: 3);
-      
+      _accumulatedSeek += const Duration(seconds: 15);
+
       final totalDuration = player.state.duration;
       var newPosition = _seekStartPosition + (_accumulatedSeek * _seekDirection);
 
@@ -3792,12 +3777,12 @@ class _VideoScreenState extends State<VideoScreen> {
 
   void _stopAndExecuteSeek() {
     _seekTimer?.cancel();
-    
+
     // Use the final preview position to perform the seek
     if (_seekPreviewNotifier.value != null) {
       player.seek(_seekPreviewNotifier.value!);
     }
-    
+
     // Reset all seek-related state
     _seekPreviewNotifier.value = null;
     _accumulatedSeek = Duration.zero;
@@ -3811,10 +3796,7 @@ class _VideoScreenState extends State<VideoScreen> {
     final hours = duration.inHours;
     final minutes = duration.inMinutes.remainder(60);
     final seconds = duration.inSeconds.remainder(60);
-    if (hours > 0) {
       return "${twoDigits(hours)}:${twoDigits(minutes)}:${twoDigits(seconds)}";
-    }
-    return "${twoDigits(minutes)}:${twoDigits(seconds)}";
   }
 
   @override
@@ -3852,28 +3834,28 @@ class _VideoScreenState extends State<VideoScreen> {
     controller: controller,
     fit: BoxFit.contain,
   ),
-  // Listen for errors and display a message
-  StreamBuilder<String>(
-    stream: player.stream.error,
-    builder: (context, snapshot) {
-      if (snapshot.hasData) {
-        return Center(
-          child: Card(
-            color: Colors.black87,
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text(
-                'Error: Could not play video.\n(${snapshot.data})',
-                textAlign: TextAlign.center,
-                style: const TextStyle(color: Colors.white, fontSize: 16),
-              ),
-            ),
-          ),
-        );
-      }
-      return const SizedBox.shrink();
-    },
-  ),
+  // // Listen for errors and display a message
+  // StreamBuilder<String>(
+  //   stream: player.stream.error,
+  //   builder: (context, snapshot) {
+  //     if (snapshot.hasData) {
+  //       return Center(
+  //         child: Card(
+  //           color: Colors.black87,
+  //           child: Padding(
+  //             padding: const EdgeInsets.all(16.0),
+  //             child: Text(
+  //               'Error: Could not play video.\n(${snapshot.data})',
+  //               textAlign: TextAlign.center,
+  //               style: const TextStyle(color: Colors.white, fontSize: 16),
+  //             ),
+  //           ),
+  //         ),
+  //       );
+  //     }
+  //     return const SizedBox.shrink();
+  //   },
+  // ),
   // Buffering indicator
   StreamBuilder<bool>(
     stream: player.stream.buffering,
@@ -3905,147 +3887,1031 @@ class _VideoScreenState extends State<VideoScreen> {
     );
   }
 
-  Widget _buildCustomControls() {
-    return ValueListenableBuilder<Duration?>(
-        valueListenable: _seekPreviewNotifier,
-        builder: (context, previewPosition, child) {
-          final isSeeking = previewPosition != null;
-          return IgnorePointer(
-            child: Container(
-              color: Colors.black.withOpacity(0.5),
-              padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-              child: StreamBuilder<Duration>(
-                stream: player.stream.position,
-                builder: (context, snapshot) {
-                  final position = snapshot.data ?? player.state.position;
-                  final duration = player.state.duration;
-                  
-                  // When seeking, show the preview time. Otherwise, show current time.
-                  final displayPosition = isSeeking ? previewPosition! : position;
+  // Widget _buildCustomControls() {
+  //   return ValueListenableBuilder<Duration?>(
+  //       valueListenable: _seekPreviewNotifier,
+  //       builder: (context, previewPosition, child) {
+  //         final isSeeking = previewPosition != null;
+  //         return IgnorePointer(
+  //           child: Container(
+  //             color: Colors.black.withOpacity(0.5),
+  //             padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+  //             child: StreamBuilder<Duration>(
+  //               stream: player.stream.position,
+  //               builder: (context, snapshot) {
+  //                 final position = snapshot.data ?? player.state.position;
+  //                 final duration = player.state.duration;
 
-                  return Row(
-  children: [
-    if (widget.liveStatus)
-      Row(
-        children: const [
-          Icon(Icons.circle, color: Colors.red, size: 14),
-          SizedBox(width: 6),
-          Text('Live',
-              style: TextStyle(
-                  color: Colors.red,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16)),
-        ],
-      )
-    else
-      Text(_formatDuration(displayPosition),
-          style:
-              const TextStyle(color: Colors.white, fontSize: 16)),
-    const SizedBox(width: 16),
-    Expanded(
-      child: _buildBeautifulProgressBar(
-        position: position,
-        duration: duration,
-        previewPosition: previewPosition,
-      ),
-    ),
-    const SizedBox(width: 16),
-    if (!widget.liveStatus)
-      Text(_formatDuration(duration),
-          style: const TextStyle(
-              color: Colors.white, fontSize: 16)),
-  ],
-                  );
-                },
-              ),
+  //                 // When seeking, show the preview time. Otherwise, show current time.
+  //                 final displayPosition = isSeeking ? previewPosition! : position;
+
+  //                 return Row(
+  // children: [
+  //   if (widget.liveStatus)
+  //     Row(
+  //       children: const [
+  //         Icon(Icons.circle, color: Colors.red, size: 14),
+  //         SizedBox(width: 6),
+  //         Text('Live',
+  //             style: TextStyle(
+  //                 color: Colors.red,
+  //                 fontWeight: FontWeight.bold,
+  //                 fontSize: 16)),
+  //       ],
+  //     )
+  //   else
+  //     Text(_formatDuration(displayPosition),
+  //         style:
+  //             const TextStyle(color: Colors.white, fontSize: 16)),
+  //   const SizedBox(width: 16),
+  //   Expanded(
+  //     child: _buildBeautifulProgressBar(
+  //       position: position,
+  //       duration: duration,
+  //       previewPosition: previewPosition,
+  //     ),
+  //   ),
+  //   const SizedBox(width: 16),
+  //   if (!widget.liveStatus)
+  //     Text(_formatDuration(duration),
+  //         style: const TextStyle(
+  //             color: Colors.white, fontSize: 16)),
+  // ],
+  //                 );
+  //               },
+  //             ),
+  //           ),
+  //         );
+  //       });
+  // }
+
+
+
+
+  Widget _buildCustomControls() {
+  return ValueListenableBuilder<Duration?>(
+      valueListenable: _seekPreviewNotifier,
+      builder: (context, previewPosition, child) {
+        final isSeeking = previewPosition != null;
+        return IgnorePointer(
+          child: Container(
+            color: Colors.black.withOpacity(0.5),
+            padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+            child: StreamBuilder<Duration>(
+              stream: player.stream.position,
+              builder: (context, snapshot) {
+                final position = snapshot.data ?? player.state.position;
+                final duration = player.state.duration;
+                final displayPosition = isSeeking ? previewPosition! : position;
+
+                return Row(
+                  children: [
+                    // LEFT SIDE - Position/Live
+                    Padding(
+                      padding: const EdgeInsets.only(left: 20.0), // LEFT PADDING
+                      child: widget.liveStatus
+                          ? Row(
+                              children: const [
+                                Icon(Icons.circle, color: Colors.red, size: 14),
+                                SizedBox(width: 6),
+                                Text('Live',
+                                    style: TextStyle(
+                                        color: Colors.red,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16)),
+                              ],
+                            )
+                          : Text(_formatDuration(displayPosition),
+                              style: const TextStyle(color: Colors.white, fontSize: 16)),
+                    ),
+                    const SizedBox(width: 16),
+                    
+                    // MIDDLE - Progress Bar
+                    Expanded(
+                      child: _buildBeautifulProgressBar(
+                        position: position,
+                        duration: duration,
+                        previewPosition: previewPosition,
+                      ),
+                    ),
+                    
+                    const SizedBox(width: 16),
+                    
+                    // RIGHT SIDE - Duration
+                    if (!widget.liveStatus)
+                      Padding(
+                        padding: const EdgeInsets.only(right: 20.0), // RIGHT PADDING
+                        child: Text(_formatDuration(duration),
+                            style: const TextStyle(color: Colors.white, fontSize: 16)),
+                      ),
+                  ],
+                );
+              },
             ),
-          );
-        });
+          ),
+        );
+      });
+}
+
+  // Widget _buildBeautifulProgressBar({
+  //   required Duration position,
+  //   required Duration duration,
+  //   Duration? previewPosition,
+  // }) {
+  //   if (duration.inMilliseconds <= 0) {
+  //     return Container(
+  //         height: 16, // Consistent height
+  //         alignment: Alignment.centerLeft,
+  //         child: Container(
+  //             height: 8,
+  //             decoration: BoxDecoration(
+  //                 color: Colors.grey[800],
+  //                 borderRadius: BorderRadius.circular(4))));
+  //   }
+
+  //   double currentProgress =
+  //       (position.inMilliseconds / duration.inMilliseconds).clamp(0.0, 1.0);
+  //   double previewProgress = ((previewPosition?.inMilliseconds ?? 0) /
+  //           duration.inMilliseconds)
+  //       .clamp(0.0, 1.0);
+
+  //   const double circleDiameter = 16.0;
+
+  //   return LayoutBuilder(builder: (context, constraints) {
+  //     final double progressBarWidth = constraints.maxWidth;
+  //     return SizedBox(
+  //       height: circleDiameter,
+  //       child: Stack(
+  //         alignment: Alignment.centerLeft,
+  //         children: [
+  //           // Base track
+  //           Container(
+  //             height: 8,
+  //             decoration: BoxDecoration(
+  //               color: Colors.grey[800],
+  //               borderRadius: BorderRadius.circular(4),
+  //             ),
+  //           ),
+  //           // Preview progress (only shown when seeking)
+  //           if (previewPosition != null)
+  //             FractionallySizedBox(
+  //               widthFactor: previewProgress,
+  //               child: Container(
+  //                 height: 8,
+  //                 decoration: BoxDecoration(
+  // color: Colors.white.withOpacity(0.4),
+  // borderRadius: BorderRadius.circular(4),
+  //                 ),
+  //               ),
+  //             ),
+  //           // Current played progress
+  //           FractionallySizedBox(
+  //             widthFactor: currentProgress,
+  //             child: Container(
+  //               height: 8,
+  //               decoration: BoxDecoration(
+  //                 color: Colors.red,
+  //                 borderRadius: BorderRadius.circular(4),
+  //               ),
+  //             ),
+  //           ),
+  //           // Thumb at the preview position (only shown when seeking)
+  //           if (previewPosition != null)
+  //             Positioned(
+  //               left: (previewProgress * progressBarWidth)
+  // .clamp(0, progressBarWidth - circleDiameter),
+  //               child: Container(
+  //                 width: circleDiameter,
+  //                 height: circleDiameter,
+  //                 decoration: BoxDecoration(
+  // shape: BoxShape.circle,
+  // color: Colors.red,
+  // border: Border.all(color: Colors.white, width: 2.0),
+  //                 ),
+  //               ),
+  //             ),
+  //         ],
+  //       ),
+  //     );
+  //   });
+  // }
+
+Widget _buildBeautifulProgressBar({
+  required Duration position,
+  required Duration duration,
+  Duration? previewPosition,
+}) {
+  if (duration.inMilliseconds <= 0) {
+    return Container(
+      height: 24,
+      alignment: Alignment.center,
+      child: Container(
+        height: 6,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Colors.white.withOpacity(0.1),
+              Colors.white.withOpacity(0.05),
+            ],
+          ),
+          borderRadius: BorderRadius.circular(3),
+        ),
+      ),
+    );
   }
 
-  Widget _buildBeautifulProgressBar({
-    required Duration position,
-    required Duration duration,
-    Duration? previewPosition,
-  }) {
-    if (duration.inMilliseconds <= 0) {
-      return Container(
-          height: 16, // Consistent height
-          alignment: Alignment.centerLeft,
-          child: Container(
-              height: 8,
-              decoration: BoxDecoration(
-                  color: Colors.grey[800],
-                  borderRadius: BorderRadius.circular(4))));
-    }
+  double currentProgress =
+      (position.inMilliseconds / duration.inMilliseconds).clamp(0.0, 1.0);
+  double previewProgress = ((previewPosition?.inMilliseconds ?? 0) /
+          duration.inMilliseconds)
+      .clamp(0.0, 1.0);
 
-    double currentProgress =
-        (position.inMilliseconds / duration.inMilliseconds).clamp(0.0, 1.0);
-    double previewProgress = ((previewPosition?.inMilliseconds ?? 0) /
-            duration.inMilliseconds)
-        .clamp(0.0, 1.0);
+  final bool isSeeking = previewPosition != null;
+  const double thumbSize = 16.0;
 
-    const double circleDiameter = 16.0;
-
-    return LayoutBuilder(builder: (context, constraints) {
-      final double progressBarWidth = constraints.maxWidth;
-      return SizedBox(
-        height: circleDiameter,
-        child: Stack(
-          alignment: Alignment.centerLeft,
-          children: [
-            // Base track
-            Container(
-              height: 8,
-              decoration: BoxDecoration(
-                color: Colors.grey[800],
-                borderRadius: BorderRadius.circular(4),
-              ),
+  return LayoutBuilder(
+    builder: (context, constraints) {
+      final double barWidth = constraints.maxWidth;
+    
+    return SizedBox(
+      height: 24,
+      child: Stack(
+        alignment: Alignment.center,
+        clipBehavior: Clip.none,
+        children: [
+          // Background track
+          Container(
+            height: isSeeking ? 8 : 5,
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.15),
+              borderRadius: BorderRadius.circular(4),
             ),
-            // Preview progress (only shown when seeking)
-            if (previewPosition != null)
-              FractionallySizedBox(
-                widthFactor: previewProgress,
-                child: Container(
-                  height: 8,
-                  decoration: BoxDecoration(
-  color: Colors.white.withOpacity(0.4),
-  borderRadius: BorderRadius.circular(4),
-                  ),
-                ),
-              ),
-            // Current played progress
-            FractionallySizedBox(
-              widthFactor: currentProgress,
+          ),
+          
+          // Buffered/Preview layer (subtle hint)
+          if (isSeeking)
+            Align(
+              alignment: Alignment.centerLeft,
               child: Container(
                 height: 8,
+                width: previewProgress * barWidth,
                 decoration: BoxDecoration(
-                  color: Colors.red,
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.yellow.withOpacity(0.2),
+                      Colors.orange.withOpacity(0.2),
+                    ],
+                  ),
                   borderRadius: BorderRadius.circular(4),
                 ),
               ),
             ),
-            // Thumb at the preview position (only shown when seeking)
-            if (previewPosition != null)
-              Positioned(
-                left: (previewProgress * progressBarWidth)
-  .clamp(0, progressBarWidth - circleDiameter),
-                child: Container(
-                  width: circleDiameter,
-                  height: circleDiameter,
-                  decoration: BoxDecoration(
-  shape: BoxShape.circle,
-  color: Colors.red,
-  border: Border.all(color: Colors.white, width: 2.0),
+          
+          // Main progress - VIBRANT!
+          Align(
+            alignment: Alignment.centerLeft,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 150),
+              height: isSeeking ? 8 : 5,
+              width: currentProgress * barWidth,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                  colors: const [
+                    Color(0xFFFF1744), // Bright red
+                    Color(0xFFFF5252), // Lighter red
+                    Color(0xFFFF6E40), // Orange-red
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(4),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFFFF1744).withOpacity(0.6),
+                    blurRadius: isSeeking ? 12 : 6,
+                    spreadRadius: isSeeking ? 2 : 0,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          
+          // Pulsing glow at playhead
+          if (isSeeking)
+            Positioned(
+              left: (currentProgress * barWidth).clamp(0.0, barWidth),
+              child: Container(
+                width: 30,
+                height: 30,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: RadialGradient(
+                    colors: [
+                      Colors.red.withOpacity(0.4),
+                      Colors.red.withOpacity(0.0),
+                    ],
                   ),
                 ),
               ),
-          ],
-        ),
-      );
-    });
-  }
+            ),
+          
+          // Current position thumb
+          if (isSeeking)
+            Positioned(
+              left: (currentProgress * barWidth - thumbSize / 2)
+                  .clamp(0.0, barWidth - thumbSize),
+              child: Container(
+                width: thumbSize,
+                height: thumbSize,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: const RadialGradient(
+                    colors: [
+                      Colors.white,
+                      Color(0xFFFAFAFA),
+                    ],
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.3),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          
+          // Preview position thumb - THE STAR! ⭐
+          if (previewPosition != null)
+            Positioned(
+              left: (previewProgress * barWidth - thumbSize / 2)
+                  .clamp(0.0, barWidth - thumbSize),
+              child: TweenAnimationBuilder<double>(
+                tween: Tween(begin: 0.8, end: 1.0),
+                duration: const Duration(milliseconds: 400),
+                curve: Curves.easeInOut,
+                builder: (context, scale, child) {
+                  return Transform.scale(
+                    scale: scale,
+                    child: Container(
+                      width: thumbSize + 4,
+                      height: thumbSize + 4,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: const RadialGradient(
+                          colors: [
+                            Color(0xFFFFEB3B), // Yellow center
+                            Color(0xFFFF9800), // Orange
+                            Color(0xFFFF5722), // Red-orange edge
+                          ],
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFFFFEB3B).withOpacity(0.6),
+                            blurRadius: 20,
+                            spreadRadius: 4,
+                          ),
+                          BoxShadow(
+                            color: Colors.orange.withOpacity(0.8),
+                            blurRadius: 12,
+                            spreadRadius: 2,
+                          ),
+                        ],
+                      ),
+                      child: Center(
+                        child: Container(
+                          width: 8,
+                          height: 8,
+                          decoration: const BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.white,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black26,
+                                blurRadius: 2,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          
+          // Time preview tooltip
+          if (previewPosition != null)
+            Positioned(
+              left: (previewProgress * barWidth - 40)
+                  .clamp(10.0, barWidth - 90),
+              top: -35,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [
+                      Color(0xFF1E1E1E),
+                      Color(0xFF2C2C2C),
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: Colors.orange.withOpacity(0.5),
+                    width: 1.5,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.6),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                    BoxShadow(
+                      color: Colors.orange.withOpacity(0.3),
+                      blurRadius: 20,
+                    ),
+                  ],
+                ),
+                child: Text(
+                  _formatDuration(previewPosition),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 13,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  },
+  );
 }
+}
+
+// import 'package:flutter/material.dart';
+// import 'package:flutter/services.dart';
+// import 'package:video_player/video_player.dart';
+// import 'package:chewie/chewie.dart';
+// import 'dart:async';
+
+// class VideoScreen extends StatefulWidget {
+//   final String videoUrl;
+//   final String name;
+//   final bool liveStatus;
+//   final String updatedAt;
+//   final List<dynamic> channelList;
+//   final String bannerImageUrl;
+//   final int? videoId;
+//   final String source;
+
+//   const VideoScreen({
+//     super.key,
+//     required this.videoUrl,
+//     required this.name,
+//     required this.liveStatus,
+//     required this.updatedAt,
+//     required this.channelList,
+//     required this.bannerImageUrl,
+//     required this.videoId,
+//     required this.source,
+//   });
+
+//   @override
+//   State<VideoScreen> createState() => _VideoScreenState();
+// }
+
+// class _VideoScreenState extends State<VideoScreen> {
+//   late VideoPlayerController _videoPlayerController;
+//   ChewieController? _chewieController;
+//   bool isInitialized = false;
+//   String? errorMessage;
+
+//   // Progress bar controls
+//   bool showProgressBar = true;
+//   Timer? _hideTimer;
+//   final FocusNode _focusNode = FocusNode();
+
+//   // Seek controls
+//   Timer? _seekTimer;
+//   int _seekAmount = 0; // seconds
+//   bool _isSeekingForward = false;
+//   bool _isSeekingBackward = false;
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     _initializePlayer();
+//     _startHideTimer();
+//   }
+
+//   void _startHideTimer() {
+//     _hideTimer?.cancel();
+//     setState(() {
+//       showProgressBar = true;
+//     });
+
+//     _hideTimer = Timer(Duration(seconds: 5), () {
+//       if (mounted) {
+//         setState(() {
+//           showProgressBar = false;
+//         });
+//       }
+//     });
+//   }
+
+//   Future<void> _initializePlayer() async {
+//     try {
+//       _videoPlayerController = VideoPlayerController.networkUrl(
+//         Uri.parse(widget.videoUrl),
+//       );
+
+//       await _videoPlayerController.initialize();
+
+//       _chewieController = ChewieController(
+//         videoPlayerController: _videoPlayerController,
+//         autoPlay: true,
+//         looping: false,
+//         aspectRatio: 16 / 9,
+//         showControls: false, // Custom controls ke liye disable karein
+//         allowFullScreen: false,
+//         allowMuting: true,
+//         materialProgressColors: ChewieProgressColors(
+//           playedColor: Colors.blue,
+//           handleColor: Colors.blueAccent,
+//           backgroundColor: Colors.grey,
+//           bufferedColor: Colors.lightBlue,
+//         ),
+//         placeholder: Container(
+//           color: Colors.black,
+//           child: Center(
+//             child: CircularProgressIndicator(color: Colors.white),
+//           ),
+//         ),
+//       );
+
+//       if (mounted) {
+//         setState(() {
+//           isInitialized = true;
+//         });
+//       }
+//     } catch (e) {
+//       if (mounted) {
+//         setState(() {
+//           errorMessage = 'Failed to load video: $e';
+//         });
+//       }
+//       print('Video Player Error: $e');
+//     }
+//   }
+
+//   void _handleKeyEvent(KeyEvent event) {
+//     _startHideTimer(); // Koi bhi button press karne par timer restart karein
+
+//     if (event is KeyDownEvent) {
+//       if (event.logicalKey == LogicalKeyboardKey.select ||
+//           event.logicalKey == LogicalKeyboardKey.enter ||
+//           event.logicalKey == LogicalKeyboardKey.space) {
+//         // Play/Pause toggle
+//         if (_videoPlayerController.value.isPlaying) {
+//           _videoPlayerController.pause();
+//         } else {
+//           _videoPlayerController.play();
+//         }
+//         setState(() {});
+//       }
+//       else if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
+//         // Forward seek start
+//         if (!_isSeekingForward) {
+//           _isSeekingForward = true;
+//           _seekAmount = 0;
+//           _startSeekTimer(true);
+//         }
+//       }
+//       else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+//         // Backward seek start
+//         if (!_isSeekingBackward) {
+//           _isSeekingBackward = true;
+//           _seekAmount = 0;
+//           _startSeekTimer(false);
+//         }
+//       }
+//       else if (event.logicalKey == LogicalKeyboardKey.goBack ||
+//                event.logicalKey == LogicalKeyboardKey.escape) {
+//         // Back button press par video screen se bahar jaayein
+//         Navigator.pop(context);
+//       }
+//     }
+//     else if (event is KeyUpEvent) {
+//       // Button release hone par final seek perform karein
+//       if (event.logicalKey == LogicalKeyboardKey.arrowRight && _isSeekingForward) {
+//         _performFinalSeek();
+//       }
+//       else if (event.logicalKey == LogicalKeyboardKey.arrowLeft && _isSeekingBackward) {
+//         _performFinalSeek();
+//       }
+//     }
+//   }
+
+//   void _startSeekTimer(bool forward) {
+//     _seekTimer?.cancel();
+
+//     // Pehla seek 5 seconds ka
+//     _seekAmount = 15;
+//     setState(() {});
+
+//     // Har 200ms mein 2 seconds add karein
+//     _seekTimer = Timer.periodic(Duration(milliseconds: 100), (timer) {
+//       if (mounted) {
+//         setState(() {
+//           _seekAmount += 15;
+//           // // Maximum 60 seconds tak seek allow karein
+//           // if (_seekAmount > 60) {
+//           //   _seekAmount = 60;
+//           // }
+//         });
+//       }
+//     });
+//   }
+
+//   void _performFinalSeek() {
+//     _seekTimer?.cancel();
+
+//     if (_seekAmount > 0) {
+//       final currentPosition = _videoPlayerController.value.position;
+//       final duration = _videoPlayerController.value.duration;
+//       Duration newPosition;
+
+//       if (_isSeekingForward) {
+//         newPosition = currentPosition + Duration(seconds: _seekAmount);
+//         if (newPosition > duration) {
+//           newPosition = duration;
+//         }
+//       } else {
+//         newPosition = currentPosition - Duration(seconds: _seekAmount);
+//         if (newPosition < Duration.zero) {
+//           newPosition = Duration.zero;
+//         }
+//       }
+
+//       _videoPlayerController.seekTo(newPosition);
+//     }
+
+//     // Reset seek state
+//     setState(() {
+//       _seekAmount = 0;
+//       _isSeekingForward = false;
+//       _isSeekingBackward = false;
+//     });
+//   }
+
+//   @override
+//   void dispose() {
+//     _hideTimer?.cancel();
+//     _seekTimer?.cancel();
+//     _videoPlayerController.dispose();
+//     _chewieController?.dispose();
+//     _focusNode.dispose();
+//     super.dispose();
+//   }
+
+//   String _formatDuration(Duration duration) {
+//     String twoDigits(int n) => n.toString().padLeft(2, '0');
+//     final hours = twoDigits(duration.inHours);
+//     final minutes = twoDigits(duration.inMinutes.remainder(60));
+//     final seconds = twoDigits(duration.inSeconds.remainder(60));
+
+//     // if (duration.inHours > 0) {
+//       return '$hours:$minutes:$seconds';
+//     // }
+//     // return '$minutes:$seconds';
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return KeyboardListener(
+//       focusNode: _focusNode,
+//       autofocus: true,
+//       onKeyEvent: _handleKeyEvent,
+//       child: Scaffold(
+//         backgroundColor: Colors.black,
+//         body: Stack(
+//           children: [
+//             // Video Player
+//             Center(
+//               child: Container(
+//                 width: MediaQuery.of(context).size.width,
+//                 height: MediaQuery.of(context).size.height,
+//                 color: Colors.black,
+//                 child: _buildVideoPlayer(),
+//               ),
+//             ),
+
+//             // Custom Progress Bar Overlay
+//             if (showProgressBar && isInitialized)
+//               Positioned(
+//                 bottom: 0,
+//                 left: 0,
+//                 right: 0,
+//                 child: _buildCustomProgressBar(),
+//               ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildVideoPlayer() {
+//     if (errorMessage != null) {
+//       return Center(
+//         child: Column(
+//           mainAxisAlignment: MainAxisAlignment.center,
+//           children: [
+//             Icon(Icons.error_outline, size: 60, color: Colors.red),
+//             SizedBox(height: 10),
+//             Text(
+//               'Failed to load video',
+//               style: TextStyle(color: Colors.white, fontSize: 18),
+//             ),
+//             SizedBox(height: 10),
+//             ElevatedButton(
+//               onPressed: () {
+//                 setState(() {
+//                   errorMessage = null;
+//                 });
+//                 _initializePlayer();
+//               },
+//               child: Text('Retry'),
+//             ),
+//           ],
+//         ),
+//       );
+//     }
+
+//     if (!isInitialized || _chewieController == null) {
+//       return Center(
+//         child: Column(
+//           mainAxisAlignment: MainAxisAlignment.center,
+//           children: [
+//             CircularProgressIndicator(color: Colors.white),
+//             SizedBox(height: 10),
+//             Text(
+//               'Loading video...',
+//               style: TextStyle(color: Colors.white, fontSize: 16),
+//             ),
+//           ],
+//         ),
+//       );
+//     }
+
+//     return Chewie(controller: _chewieController!);
+//   }
+
+//   Widget _buildCustomProgressBar() {
+//     return AnimatedOpacity(
+//       opacity: showProgressBar ? 1.0 : 0.0,
+//       duration: Duration(milliseconds: 300),
+//       child: Container(
+//         margin: EdgeInsets.all(20),
+//         padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+//         decoration: BoxDecoration(
+//           gradient: LinearGradient(
+//             colors: [
+//               Colors.black.withOpacity(0.85),
+//               Colors.black.withOpacity(0.75),
+//             ],
+//           ),
+//           borderRadius: BorderRadius.circular(16),
+//           boxShadow: [
+//             BoxShadow(
+//               color: Colors.black.withOpacity(0.5),
+//               blurRadius: 20,
+//               spreadRadius: 5,
+//             ),
+//           ],
+//           border: Border.all(
+//             color: Colors.white.withOpacity(0.1),
+//             width: 1,
+//           ),
+//         ),
+//         child: StreamBuilder(
+//           stream: Stream.periodic(Duration(milliseconds: 100)),
+//           builder: (context, snapshot) {
+//             final position = _videoPlayerController.value.position;
+//             final duration = _videoPlayerController.value.duration;
+
+//             // Agar seek ho raha hai to preview position calculate karein
+//             Duration displayPosition = position;
+//             if (_seekAmount > 0) {
+//               if (_isSeekingForward) {
+//                 displayPosition = position + Duration(seconds: _seekAmount);
+//                 if (displayPosition > duration) {
+//                   displayPosition = duration;
+//                 }
+//               } else if (_isSeekingBackward) {
+//                 displayPosition = position - Duration(seconds: _seekAmount);
+//                 if (displayPosition < Duration.zero) {
+//                   displayPosition = Duration.zero;
+//                 }
+//               }
+//             }
+
+//             final progress = duration.inMilliseconds > 0
+//                 ? position.inMilliseconds / duration.inMilliseconds
+//                 : 0.0;
+
+//             final previewProgress = duration.inMilliseconds > 0
+//                 ? displayPosition.inMilliseconds / duration.inMilliseconds
+//                 : 0.0;
+
+//             return Row(
+//               children: [
+//                 // Play/Pause Icon with glow effect
+//                 Container(
+//                   padding: EdgeInsets.all(8),
+//                   decoration: BoxDecoration(
+//                     shape: BoxShape.circle,
+//                     gradient: LinearGradient(
+//                       colors: [
+//                         Colors.blue.withOpacity(0.3),
+//                         Colors.blue.withOpacity(0.1),
+//                       ],
+//                     ),
+//                     boxShadow: [
+//                       BoxShadow(
+//                         color: Colors.blue.withOpacity(0.3),
+//                         blurRadius: 12,
+//                         spreadRadius: 2,
+//                       ),
+//                     ],
+//                   ),
+//                   child: Icon(
+//                     _videoPlayerController.value.isPlaying
+//                         ? Icons.pause_rounded
+//                         : Icons.play_arrow_rounded,
+//                     color: Colors.white,
+//                     size: 32,
+//                   ),
+//                 ),
+
+//                 SizedBox(width: 20),
+
+//                 // Current/Preview Time with styling
+//                 Container(
+//                   padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+//                   decoration: BoxDecoration(
+//                     color: _seekAmount > 0
+//                         ? Colors.orange.withOpacity(0.2)
+//                         : Colors.white.withOpacity(0.1),
+//                     borderRadius: BorderRadius.circular(8),
+//                     border: _seekAmount > 0
+//                         ? Border.all(color: Colors.orange.withOpacity(0.5), width: 1)
+//                         : null,
+//                   ),
+//                   child: Text(
+//                     _formatDuration(displayPosition),
+//                     style: TextStyle(
+//                       color: _seekAmount > 0 ? Colors.orange : Colors.white,
+//                       fontSize: 15,
+//                       fontWeight: FontWeight.w600,
+//                       letterSpacing: 0.5,
+//                     ),
+//                   ),
+//                 ),
+
+//                 SizedBox(width: 16),
+
+//                 // Progress Bar with enhanced styling and preview
+//                 Expanded(
+//                   child: Container(
+//                     height: 8,
+//                     decoration: BoxDecoration(
+//                       borderRadius: BorderRadius.circular(4),
+//                       boxShadow: [
+//                         BoxShadow(
+//                           color: Colors.blue.withOpacity(0.2),
+//                           blurRadius: 8,
+//                         ),
+//                       ],
+//                     ),
+//                     child: ClipRRect(
+//                       borderRadius: BorderRadius.circular(4),
+//                       child: Stack(
+//                         children: [
+//                           // Background
+//                           Container(
+//                             color: Colors.white.withOpacity(0.15),
+//                           ),
+//                           // Current Progress
+//                           FractionallySizedBox(
+//                             widthFactor: progress,
+//                             child: Container(
+//                               decoration: BoxDecoration(
+//                                 gradient: LinearGradient(
+//                                   colors: [
+//                                     Color(0xFF2196F3),
+//                                     Color(0xFF64B5F6),
+//                                   ],
+//                                 ),
+//                                 boxShadow: [
+//                                   BoxShadow(
+//                                     color: Colors.blue.withOpacity(0.5),
+//                                     blurRadius: 8,
+//                                     spreadRadius: 1,
+//                                   ),
+//                                 ],
+//                               ),
+//                             ),
+//                           ),
+//                           // Preview Progress (agar seek ho raha hai)
+//                           if (_seekAmount > 0)
+//                             FractionallySizedBox(
+//                               widthFactor: previewProgress,
+//                               child: Container(
+//                                 decoration: BoxDecoration(
+//                                   gradient: LinearGradient(
+//                                     colors: [
+//                                       Colors.orange.withOpacity(0.6),
+//                                       Colors.orange.withOpacity(0.8),
+//                                     ],
+//                                   ),
+//                                   boxShadow: [
+//                                     BoxShadow(
+//                                       color: Colors.orange.withOpacity(0.6),
+//                                       blurRadius: 10,
+//                                       spreadRadius: 2,
+//                                     ),
+//                                   ],
+//                                 ),
+//                               ),
+//                             ),
+//                         ],
+//                       ),
+//                     ),
+//                   ),
+//                 ),
+
+//                 SizedBox(width: 16),
+
+//                 // Total Duration with styling
+//                 Container(
+//                   padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+//                   decoration: BoxDecoration(
+//                     color: Colors.white.withOpacity(0.1),
+//                     borderRadius: BorderRadius.circular(8),
+//                   ),
+//                   child: Text(
+//                     _formatDuration(duration),
+//                     style: TextStyle(
+//                       color: Colors.white,
+//                       fontSize: 15,
+//                       fontWeight: FontWeight.w600,
+//                       letterSpacing: 0.5,
+//                     ),
+//                   ),
+//                 ),
+
+//                 // Buffering indicator with animation
+//                 if (_videoPlayerController.value.isBuffering)
+//                   Padding(
+//                     padding: EdgeInsets.only(left: 20),
+//                     child: Container(
+//                       padding: EdgeInsets.all(8),
+//                       decoration: BoxDecoration(
+//                         shape: BoxShape.circle,
+//                         gradient: LinearGradient(
+//                           colors: [
+//                             Colors.orange.withOpacity(0.3),
+//                             Colors.orange.withOpacity(0.1),
+//                           ],
+//                         ),
+//                       ),
+//                       child: SizedBox(
+//                         width: 24,
+//                         height: 24,
+//                         child: CircularProgressIndicator(
+//                           strokeWidth: 3,
+//                           valueColor: AlwaysStoppedAnimation<Color>(Colors.orange),
+//                         ),
+//                       ),
+//                     ),
+//                   ),
+//               ],
+//             );
+//           },
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+
 
 
 
