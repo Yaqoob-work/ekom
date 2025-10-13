@@ -2301,42 +2301,111 @@ class _ProfessionalWebSeriesHorizontalListState
     _viewAllFocusNode = FocusNode();
   }
 
-  void _scrollToPosition(int index) {
-    if (!mounted || !_scrollController.hasClients) return;
-    try {
-      double bannerwdth = bannerwdt ;
-      double scrollPosition = index * bannerwdth;
-      _scrollController.animateTo(
-        scrollPosition,
-        duration: const Duration(milliseconds: 500),
-        curve: Curves.easeOut,
-      );
-    } catch (e) {
-      print('Error scrolling in webseries: $e');
-    }
-  }
+  // void _scrollToPosition(int index) {
+  //   if (!mounted || !_scrollController.hasClients) return;
+  //   try {
+  //     double bannerwdth = bannerwdt ;
+  //     double scrollPosition = index * bannerwdth;
+  //     _scrollController.animateTo(
+  //       scrollPosition,
+  //       duration: const Duration(milliseconds: 500),
+  //       curve: Curves.easeOut,
+  //     );
+  //   } catch (e) {
+  //     print('Error scrolling in webseries: $e');
+  //   }
+  // }
 
-  void _setupFocusProvider() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted && webSeriesList.isNotEmpty) {
-        final focusProvider =
-            Provider.of<FocusProvider>(context, listen: false);
-        final firstWebSeriesId = webSeriesList[0].id.toString();
-        webseriesFocusNodes.putIfAbsent(firstWebSeriesId, () => FocusNode());
-        _firstWebSeriesFocusNode = webseriesFocusNodes[firstWebSeriesId];
-        _firstWebSeriesFocusNode?.addListener(() {
-          if (_firstWebSeriesFocusNode!.hasFocus &&
-              !_hasReceivedFocusFromMovies) {
-            _hasReceivedFocusFromMovies = true;
-            setState(() => focusedIndex = 0);
-            _scrollToPosition(0);
-          }
-        });
-        focusProvider
-            .setFirstManageWebseriesFocusNode(_firstWebSeriesFocusNode!);
-      }
-    });
+
+
+  // Change the return type to Future<void> and add the 'async' keyword
+Future<void> _scrollToPosition(int index) async {
+  if (!mounted || !_scrollController.hasClients) return;
+  try {
+    double bannerwdth = bannerwdt + 10;
+    // Calculate the scroll position to center the item if possible
+    final screenWidth = MediaQuery.of(context).size.width;
+    double targetPosition = (index * bannerwdth) ;
+    
+    // Ensure the scroll position is within valid bounds
+    targetPosition = math.max(0, targetPosition);
+    targetPosition = math.min(_scrollController.position.maxScrollExtent, targetPosition);
+
+    // Await the animation to complete
+    await _scrollController.animateTo(
+      targetPosition,
+      duration: const Duration(milliseconds: 200), // Slightly faster for a snappier feel
+      curve: Curves.easeOut,
+    );
+  } catch (e) {
+    print('Error scrolling in webseries: $e');
   }
+}
+
+
+
+// Add this new method to _ProfessionalWebSeriesHorizontalListState
+Future<void> _handleFocusRequestFromAbove() async {
+  // 1. First, scroll the item into view and wait for it to finish.
+  await _scrollToPosition(0);
+
+  // 2. After scrolling is done, apply focus to the first item.
+  if (mounted && _firstWebSeriesFocusNode != null) {
+    _firstWebSeriesFocusNode!.requestFocus();
+  }
+}
+
+  // void _setupFocusProvider() {
+  //   WidgetsBinding.instance.addPostFrameCallback((_) {
+  //     if (mounted && webSeriesList.isNotEmpty) {
+  //       final focusProvider =
+  //           Provider.of<FocusProvider>(context, listen: false);
+  //       final firstWebSeriesId = webSeriesList[0].id.toString();
+  //       webseriesFocusNodes.putIfAbsent(firstWebSeriesId, () => FocusNode());
+  //       _firstWebSeriesFocusNode = webseriesFocusNodes[firstWebSeriesId];
+  //       _firstWebSeriesFocusNode?.addListener(() {
+  //         if (_firstWebSeriesFocusNode!.hasFocus &&
+  //             !_hasReceivedFocusFromMovies) {
+  //           _hasReceivedFocusFromMovies = true;
+  //           setState(() => focusedIndex = 0);
+  //           _scrollToPosition(0);
+  //         }
+  //       });
+  //       focusProvider
+  //           .setFirstManageWebseriesFocusNode(_firstWebSeriesFocusNode!);
+  //     }
+  //   });
+  // }
+
+
+// In _ProfessionalWebSeriesHorizontalListState
+void _setupFocusProvider() {
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    if (mounted && webSeriesList.isNotEmpty) {
+      final focusProvider =
+          Provider.of<FocusProvider>(context, listen: false);
+      final firstWebSeriesId = webSeriesList[0].id.toString();
+      webseriesFocusNodes.putIfAbsent(firstWebSeriesId, () => FocusNode());
+      _firstWebSeriesFocusNode = webseriesFocusNodes[firstWebSeriesId];
+
+      _firstWebSeriesFocusNode?.addListener(() {
+        if (_firstWebSeriesFocusNode!.hasFocus && !_hasReceivedFocusFromMovies) {
+          _hasReceivedFocusFromMovies = true;
+          // This setState is still useful for updating internal state
+          setState(() => focusedIndex = 0);
+          // The scroll is now handled by our new function, but this call
+          // ensures it scrolls if focus is set by other means.
+          _scrollToPosition(0);
+        }
+      });
+      
+      // ✅ Pass the new handler function to the provider
+      focusProvider.setFirstWebseriesFocusNode(_handleFocusRequestFromAbove);
+    }
+  });
+}
+
+  
 
   Future<void> fetchWebSeriesWithCache() async {
     if (!mounted) return;
@@ -2583,6 +2652,14 @@ class _ProfessionalWebSeriesHorizontalListState
   Widget _buildViewAllButton() {
     return Focus(
       focusNode: _viewAllFocusNode,
+            onFocusChange: (hasFocus) {
+        if (hasFocus) {
+          // This logic is the same as the other cards.
+          Color dominantColor = ProfessionalColors.gradientColors[
+              math.Random().nextInt(ProfessionalColors.gradientColors.length)];
+          context.read<ColorProvider>().updateColor(dominantColor, true);
+        }
+      },
       onKey: (node, event) {
         if (event is RawKeyDownEvent) {
           if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
@@ -2626,14 +2703,22 @@ class _ProfessionalWebSeriesHorizontalListState
 
     return Focus(
       focusNode: focusNode,
-      onFocusChange: (hasFocus) {
+      // onFocusChange: (hasFocus) {
+      //   if (hasFocus) {
+      //     Color dominantColor = ProfessionalColors.gradientColors[
+      //         math.Random().nextInt(ProfessionalColors.gradientColors.length)];
+      //     context.read<ColorProvider>().updateColor(dominantColor, true);
+      //   } else {
+      //     context.read<ColorProvider>().resetColor();
+      //   }
+      // },
+            onFocusChange: (hasFocus) {
         if (hasFocus) {
           Color dominantColor = ProfessionalColors.gradientColors[
               math.Random().nextInt(ProfessionalColors.gradientColors.length)];
           context.read<ColorProvider>().updateColor(dominantColor, true);
-        } else {
-          context.read<ColorProvider>().resetColor();
         }
+        // ✅ The 'else' block has been removed.
       },
       onKey: (node, event) {
         if (event is RawKeyDownEvent) {
@@ -2734,7 +2819,7 @@ class _ProfessionalWebSeriesCardState extends State<ProfessionalWebSeriesCard>
     with TickerProviderStateMixin {
   late AnimationController _scaleController;
   late Animation<double> _scaleAnimation;
-  Color _dominantColor = ProfessionalColors.accentBlue;
+  // Color _dominantColor = ProfessionalColors.accentBlue;
   bool _isFocused = false;
 
   @override
@@ -2752,8 +2837,8 @@ class _ProfessionalWebSeriesCardState extends State<ProfessionalWebSeriesCard>
     setState(() => _isFocused = widget.focusNode.hasFocus);
     if (_isFocused) {
       _scaleController.forward();
-      _dominantColor = ProfessionalColors.gradientColors[
-          math.Random().nextInt(ProfessionalColors.gradientColors.length)];
+      // _dominantColor = ProfessionalColors.gradientColors[
+      //     math.Random().nextInt(ProfessionalColors.gradientColors.length)];
       HapticFeedback.lightImpact();
     } else {
       _scaleController.reverse();
@@ -2767,149 +2852,310 @@ class _ProfessionalWebSeriesCardState extends State<ProfessionalWebSeriesCard>
     super.dispose();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _scaleAnimation,
-      builder: (context, child) {
-        return Transform.scale(
-          scale: _scaleAnimation.value,
-          child: Container(
-            width: bannerwdt,
-            margin: const EdgeInsets.symmetric(horizontal: 6),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                _buildProfessionalPoster(),
-                _buildProfessionalTitle(),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
 
-  Widget _buildProfessionalPoster() {
-    final posterHeight = _isFocused ? focussedBannerhgt : bannerhgt;
-    return Container(
-      height: posterHeight,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        border: _isFocused ? Border.all(color: _dominantColor, width: 3) : null,
-        boxShadow: [
-          if (_isFocused)
-            BoxShadow(
-              color: _dominantColor.withOpacity(0.4),
-              blurRadius: 25,
-              spreadRadius: 3,
-              offset: const Offset(0, 8),
-            ),
-          BoxShadow(
-            color: Colors.black.withOpacity(0.4),
-            blurRadius: 10,
-            spreadRadius: 2,
-            offset: const Offset(0, 5),
+
+  // Place this inside _ProfessionalWebSeriesCardState
+@override
+Widget build(BuildContext context) {
+  // ✅ Get the dominant color from the provider
+  final colorProvider = context.watch<ColorProvider>();
+  final dominantColor = colorProvider.isItemFocused && _isFocused
+      ? colorProvider.dominantColor
+      : ProfessionalColors.accentBlue; // Fallback color
+
+  return AnimatedBuilder(
+    animation: _scaleAnimation,
+    builder: (context, child) {
+      return Transform.scale(
+        scale: _scaleAnimation.value,
+        child: Container(
+          width: bannerwdt,
+          margin: const EdgeInsets.symmetric(horizontal: 6),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              _buildProfessionalPoster(dominantColor), // Pass the color
+              _buildProfessionalTitle(dominantColor),   // Pass the color
+            ],
           ),
+        ),
+      );
+    },
+  );
+}
+
+Widget _buildProfessionalPoster(Color dominantColor) { // ✅ Accept the color
+  final posterHeight = _isFocused ? focussedBannerhgt : bannerhgt;
+  return Container(
+    height: posterHeight,
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(12),
+      // ✅ Use the color from the provider
+      border: _isFocused ? Border.all(color: dominantColor, width: 3) : null,
+      boxShadow: [
+        if (_isFocused)
+          BoxShadow(
+            // ✅ Use the color from the provider
+            color: dominantColor.withOpacity(0.4),
+            blurRadius: 25,
+            spreadRadius: 3,
+            offset: const Offset(0, 8),
+          ),
+        BoxShadow(
+          color: Colors.black.withOpacity(0.4),
+          blurRadius: 10,
+          spreadRadius: 2,
+          offset: const Offset(0, 5),
+        ),
+      ],
+    ),
+    child: ClipRRect(
+      borderRadius: BorderRadius.circular(12),
+      child: Stack(
+        children: [
+          _buildWebSeriesImage(posterHeight),
+          if (_isFocused) _buildHoverOverlay(dominantColor), // Pass the color
         ],
       ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(12),
-        child: Stack(
-          children: [
-            _buildWebSeriesImage(posterHeight),
-            if (_isFocused) _buildHoverOverlay(),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildWebSeriesImage(double posterHeight) {
-    final String uniqueImageUrl =
-        "${widget.webSeries.banner}?v=${widget.webSeries.updatedAt}";
-    final String uniqueCacheKey =
-        "${widget.webSeries.id.toString()}_${widget.webSeries.updatedAt}";
-    return SizedBox(
-      width: double.infinity,
-      height: posterHeight,
-      child: widget.webSeries.banner != null &&
-              widget.webSeries.banner!.isNotEmpty
-          ? CachedNetworkImage(
-              imageUrl: uniqueImageUrl,
-              fit: BoxFit.cover,
-              memCacheHeight: 300,
-              cacheKey: uniqueCacheKey,
-              placeholder: (context, url) => _buildImagePlaceholder(),
-              errorWidget: (context, url, error) => _buildImagePlaceholder(),
-            )
-          : _buildImagePlaceholder(),
-    );
-  }
-
-  Widget _buildImagePlaceholder() {
-    return Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [ProfessionalColors.cardDark, ProfessionalColors.surfaceDark],
-        ),
-      ),
-      child: const Center(
-        child: Icon(Icons.tv_outlined,
-            size: 40, color: ProfessionalColors.textSecondary),
-      ),
-    );
-  }
-
-  Widget _buildHoverOverlay() {
-    return Positioned.fill(
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Colors.transparent, _dominantColor.withOpacity(0.1)],
-          ),
-        ),
-        child: Center(
-          child: Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.7),
-              borderRadius: BorderRadius.circular(25),
-            ),
-            child:
-                Icon(Icons.play_arrow_rounded, color: _dominantColor, size: 30),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildProfessionalTitle() {
-    return SizedBox(
-      width: bannerwdt,
-      child: AnimatedDefaultTextStyle(
-        duration: AnimationTiming.medium,
-        style: TextStyle(
-          fontSize: _isFocused ? 13 : 11,
-          fontWeight: FontWeight.w600,
-          color: _isFocused ? _dominantColor : ProfessionalColors.textPrimary,
-          letterSpacing: 0.5,
-        ),
-        child: Text(
-          widget.webSeries.name.toUpperCase(),
-          textAlign: TextAlign.center,
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-        ),
-      ),
-    );
-  }
+    ),
+  );
 }
+
+// ... _buildWebSeriesImage and _buildImagePlaceholder methods remain unchanged ...
+Widget _buildWebSeriesImage(double posterHeight) {
+  final String uniqueImageUrl =
+      "${widget.webSeries.banner}?v=${widget.webSeries.updatedAt}";
+  final String uniqueCacheKey =
+      "${widget.webSeries.id.toString()}_${widget.webSeries.updatedAt}";
+  return SizedBox(
+    width: double.infinity,
+    height: posterHeight,
+    child: widget.webSeries.banner != null &&
+            widget.webSeries.banner!.isNotEmpty
+        ? CachedNetworkImage(
+            imageUrl: uniqueImageUrl,
+            fit: BoxFit.cover,
+            memCacheHeight: 300,
+            cacheKey: uniqueCacheKey,
+            placeholder: (context, url) => _buildImagePlaceholder(),
+            errorWidget: (context, url, error) => _buildImagePlaceholder(),
+          )
+        : _buildImagePlaceholder(),
+  );
+}
+
+Widget _buildImagePlaceholder() {
+  return Container(
+    decoration: const BoxDecoration(
+      gradient: LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [ProfessionalColors.cardDark, ProfessionalColors.surfaceDark],
+      ),
+    ),
+    child: const Center(
+      child: Icon(Icons.tv_outlined,
+          size: 40, color: ProfessionalColors.textSecondary),
+    ),
+  );
+}
+
+
+Widget _buildHoverOverlay(Color dominantColor) { // ✅ Accept the color
+  return Positioned.fill(
+    child: Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Colors.transparent, dominantColor.withOpacity(0.1)], // ✅ Use it
+        ),
+      ),
+      child: Center(
+        child: Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: Colors.black.withOpacity(0.7),
+            borderRadius: BorderRadius.circular(25),
+          ),
+          child:
+              Icon(Icons.play_arrow_rounded, color: dominantColor, size: 30), // ✅ Use it
+        ),
+      ),
+    ),
+  );
+}
+
+Widget _buildProfessionalTitle(Color dominantColor) { // ✅ Accept the color
+  return SizedBox(
+    width: bannerwdt,
+    child: AnimatedDefaultTextStyle(
+      duration: AnimationTiming.medium,
+      style: TextStyle(
+        fontSize: _isFocused ? 13 : 11,
+        fontWeight: FontWeight.w600,
+        // ✅ Use the color from the provider
+        color: _isFocused ? dominantColor : ProfessionalColors.textPrimary,
+        letterSpacing: 0.5,
+      ),
+      child: Text(
+        widget.webSeries.name.toUpperCase(),
+        textAlign: TextAlign.center,
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+      ),
+    ),
+  );
+}
+
+//   @override
+//   Widget build(BuildContext context) {
+    
+//     return AnimatedBuilder(
+//       animation: _scaleAnimation,
+//       builder: (context, child) {
+//         return Transform.scale(
+//           scale: _scaleAnimation.value,
+//           child: Container(
+//             width: bannerwdt,
+//             margin: const EdgeInsets.symmetric(horizontal: 6),
+//             child: Column(
+//               crossAxisAlignment: CrossAxisAlignment.center,
+//               children: [
+//                 _buildProfessionalPoster(),
+//                 _buildProfessionalTitle(),
+//               ],
+//             ),
+//           ),
+//         );
+//       },
+//     );
+//   }
+
+//   Widget _buildProfessionalPoster() {
+//     final posterHeight = _isFocused ? focussedBannerhgt : bannerhgt;
+//     return Container(
+//       height: posterHeight,
+//       decoration: BoxDecoration(
+//         borderRadius: BorderRadius.circular(12),
+//         border: _isFocused ? Border.all(color: _dominantColor, width: 3) : null,
+//         boxShadow: [
+//           if (_isFocused)
+//             BoxShadow(
+//               color: _dominantColor.withOpacity(0.4),
+//               blurRadius: 25,
+//               spreadRadius: 3,
+//               offset: const Offset(0, 8),
+//             ),
+//           BoxShadow(
+//             color: Colors.black.withOpacity(0.4),
+//             blurRadius: 10,
+//             spreadRadius: 2,
+//             offset: const Offset(0, 5),
+//           ),
+//         ],
+//       ),
+//       child: ClipRRect(
+//         borderRadius: BorderRadius.circular(12),
+//         child: Stack(
+//           children: [
+//             _buildWebSeriesImage(posterHeight),
+//             if (_isFocused) _buildHoverOverlay(),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildWebSeriesImage(double posterHeight) {
+//     final String uniqueImageUrl =
+//         "${widget.webSeries.banner}?v=${widget.webSeries.updatedAt}";
+//     final String uniqueCacheKey =
+//         "${widget.webSeries.id.toString()}_${widget.webSeries.updatedAt}";
+//     return SizedBox(
+//       width: double.infinity,
+//       height: posterHeight,
+//       child: widget.webSeries.banner != null &&
+//               widget.webSeries.banner!.isNotEmpty
+//           ? CachedNetworkImage(
+//               imageUrl: uniqueImageUrl,
+//               fit: BoxFit.cover,
+//               memCacheHeight: 300,
+//               cacheKey: uniqueCacheKey,
+//               placeholder: (context, url) => _buildImagePlaceholder(),
+//               errorWidget: (context, url, error) => _buildImagePlaceholder(),
+//             )
+//           : _buildImagePlaceholder(),
+//     );
+//   }
+
+//   Widget _buildImagePlaceholder() {
+//     return Container(
+//       decoration: const BoxDecoration(
+//         gradient: LinearGradient(
+//           begin: Alignment.topLeft,
+//           end: Alignment.bottomRight,
+//           colors: [ProfessionalColors.cardDark, ProfessionalColors.surfaceDark],
+//         ),
+//       ),
+//       child: const Center(
+//         child: Icon(Icons.tv_outlined,
+//             size: 40, color: ProfessionalColors.textSecondary),
+//       ),
+//     );
+//   }
+
+//   Widget _buildHoverOverlay() {
+//     return Positioned.fill(
+//       child: Container(
+//         decoration: BoxDecoration(
+//           borderRadius: BorderRadius.circular(12),
+//           gradient: LinearGradient(
+//             begin: Alignment.topCenter,
+//             end: Alignment.bottomCenter,
+//             colors: [Colors.transparent, _dominantColor.withOpacity(0.1)],
+//           ),
+//         ),
+//         child: Center(
+//           child: Container(
+//             padding: const EdgeInsets.all(10),
+//             decoration: BoxDecoration(
+//               color: Colors.black.withOpacity(0.7),
+//               borderRadius: BorderRadius.circular(25),
+//             ),
+//             child:
+//                 Icon(Icons.play_arrow_rounded, color: _dominantColor, size: 30),
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildProfessionalTitle() {
+//     return SizedBox(
+//       width: bannerwdt,
+//       child: AnimatedDefaultTextStyle(
+//         duration: AnimationTiming.medium,
+//         style: TextStyle(
+//           fontSize: _isFocused ? 13 : 11,
+//           fontWeight: FontWeight.w600,
+//           color: _isFocused ? _dominantColor : ProfessionalColors.textPrimary,
+//           letterSpacing: 0.5,
+//         ),
+//         child: Text(
+//           widget.webSeries.name.toUpperCase(),
+//           textAlign: TextAlign.center,
+//           maxLines: 2,
+//           overflow: TextOverflow.ellipsis,
+//         ),
+//       ),
+//     );
+//   }
+}
+
+
+
 
 class ProfessionalWebSeriesViewAllButton extends StatefulWidget {
   final FocusNode focusNode;
@@ -2948,62 +3194,133 @@ class _ProfessionalWebSeriesViewAllButtonState
     super.dispose();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: bannerwdt,
-      margin: const EdgeInsets.symmetric(horizontal: 6),
-      child: Column(
-        children: [
-          AnimatedContainer(
-            duration: AnimationTiming.fast,
-            height: _isFocused ? focussedBannerhgt : bannerhgt,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              border: _isFocused
-                  ? Border.all(color: ProfessionalColors.accentPurple, width: 3)
-                  : null,
-              gradient: const LinearGradient(
-                colors: [
-                  ProfessionalColors.cardDark,
-                  ProfessionalColors.surfaceDark
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.grid_view_rounded,
-                    size: 35,
-                    color: _isFocused
-                        ? ProfessionalColors.accentPurple
-                        : Colors.white),
-                const SizedBox(height: 8),
-                Text('VIEW ALL',
-                    style: TextStyle(
-                        color: _isFocused
-                            ? ProfessionalColors.accentPurple
-                            : Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14)),
+  // @override
+  // Widget build(BuildContext context) {
+  //   return Container(
+  //     width: bannerwdt,
+  //     margin: const EdgeInsets.symmetric(horizontal: 6),
+  //     child: Column(
+  //       children: [
+  //         AnimatedContainer(
+  //           duration: AnimationTiming.fast,
+  //           height: _isFocused ? focussedBannerhgt : bannerhgt,
+  //           decoration: BoxDecoration(
+  //             borderRadius: BorderRadius.circular(12),
+  //             border: _isFocused
+  //                 ? Border.all(color: ProfessionalColors.accentPurple, width: 3)
+  //                 : null,
+  //             gradient: const LinearGradient(
+  //               colors: [
+  //                 ProfessionalColors.cardDark,
+  //                 ProfessionalColors.surfaceDark
+  //               ],
+  //               begin: Alignment.topLeft,
+  //               end: Alignment.bottomRight,
+  //             ),
+  //           ),
+  //           child: Column(
+  //             mainAxisAlignment: MainAxisAlignment.center,
+  //             children: [
+  //               Icon(Icons.grid_view_rounded,
+  //                   size: 35,
+  //                   color: _isFocused
+  //                       ? ProfessionalColors.accentPurple
+  //                       : Colors.white),
+  //               const SizedBox(height: 8),
+  //               Text('VIEW ALL',
+  //                   style: TextStyle(
+  //                       color: _isFocused
+  //                           ? ProfessionalColors.accentPurple
+  //                           : Colors.white,
+  //                       fontWeight: FontWeight.bold,
+  //                       fontSize: 14)),
+  //             ],
+  //           ),
+  //         ),
+  //         AnimatedDefaultTextStyle(
+  //           duration: AnimationTiming.medium,
+  //           style: TextStyle(
+  //             fontSize: _isFocused ? 13 : 11,
+  //             fontWeight: FontWeight.w600,
+  //             color: _isFocused
+  //                 ? ProfessionalColors.accentPurple
+  //                 : ProfessionalColors.textPrimary,
+  //           ),
+  //           child: const Text('ALL SERIES', textAlign: TextAlign.center),
+  //         )
+  //       ],
+  //     ),
+  //   );
+  // }
+
+  // Place this inside the _ProfessionalWeb-SeriesViewAllButtonState class
+
+@override
+Widget build(BuildContext context) {
+  // ✅ Get the dominant color from the provider
+  final colorProvider = context.watch<ColorProvider>();
+  final dominantColor = colorProvider.isItemFocused && _isFocused
+      ? colorProvider.dominantColor
+      : ProfessionalColors.accentPurple; // Fallback color
+
+  return Container(
+    width: bannerwdt,
+    margin: const EdgeInsets.symmetric(horizontal: 6),
+    child: Column(
+      children: [
+        AnimatedContainer(
+          duration: AnimationTiming.fast,
+          height: _isFocused ? focussedBannerhgt : bannerhgt,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            // ✅ Use the color from the provider for the border
+            border: _isFocused
+                ? Border.all(color: dominantColor, width: 3)
+                : null,
+            gradient: const LinearGradient(
+              colors: [
+                ProfessionalColors.cardDark,
+                ProfessionalColors.surfaceDark
               ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
             ),
           ),
-          AnimatedDefaultTextStyle(
-            duration: AnimationTiming.medium,
-            style: TextStyle(
-              fontSize: _isFocused ? 13 : 11,
-              fontWeight: FontWeight.w600,
-              color: _isFocused
-                  ? ProfessionalColors.accentPurple
-                  : ProfessionalColors.textPrimary,
-            ),
-            child: const Text('ALL SERIES', textAlign: TextAlign.center),
-          )
-        ],
-      ),
-    );
-  }
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.grid_view_rounded,
+                  size: 35,
+                  // ✅ Use the color from the provider for the icon
+                  color: _isFocused
+                      ? dominantColor
+                      : Colors.white),
+              const SizedBox(height: 8),
+              Text('VIEW ALL',
+                  style: TextStyle(
+                      // ✅ Use the color from the provider for the text
+                      color: _isFocused
+                          ? dominantColor
+                          : Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14)),
+            ],
+          ),
+        ),
+        AnimatedDefaultTextStyle(
+          duration: AnimationTiming.medium,
+          style: TextStyle(
+            fontSize: _isFocused ? 13 : 11,
+            fontWeight: FontWeight.w600,
+            // ✅ Use the color from the provider for the title
+            color: _isFocused
+                ? dominantColor
+                : ProfessionalColors.textPrimary,
+          ),
+          child: const Text('ALL SERIES', textAlign: TextAlign.center),
+        )
+      ],
+    ),
+  );
+}
 }

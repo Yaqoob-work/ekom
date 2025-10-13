@@ -388,6 +388,11 @@
 
 
 
+
+
+
+
+
 // Updated NewsItemModel with proper type conversion in fromJson
 class NewsItemModel {
   final String id;
@@ -493,15 +498,19 @@ class NewsItemModel {
       return defaultValue;
     }
 
+
+
+
+
     return NewsItemModel(
       id: safeIntToString(json['id']),  // Convert int to String properly
       index: safeIntToString(json['index']),  // Convert int to String properly
-      name: safeToString(json['name'] ?? json['Episoade_Name'] ?? json['session_name']??json['channel_name'] , defaultValue: 'No Name'),
+      name: safeToString(json['name'] ?? json['Episoade_Name'] ?? json['session_name']??json['channel_name']??json['Episoade_Name']?? '', defaultValue: 'No Name'),
       updatedAt: safeToString(json['updated_at'] ??''),
       unUpdatedUrl: safeIntToString(json['unUpdatedUrl']),
       description: safeToString(json['description'] ?? json['episoade_description'] ?? json['session_description']),
       thumbnail_high: safeToString(json['thumbnail_high']),
-      thumbnail: safeToString(json['thumbnail']??json['channel_logo']),
+      thumbnail: safeToString(json['thumbnail']??json['channel_logo']??json['episoade_image']),
       banner: safeToString(json['banner'] ?? json['session_image'] ?? json['episoade_image']??json['channel_logo']),
       poster: safeToString(json['poster'] ?? json['session_image'] ?? json['episoade_image']??json['channel_logo']),
       image: safeToString(json['image']??json['channel_logo']),
@@ -517,7 +526,7 @@ class NewsItemModel {
       status: safeIntToString(json['status']),  // Convert int to String properly
       category: safeToString(json['category']),
       contentId: safeToString(json['content_id']),
-      contentType: safeToString(json['content_type']),
+      contentType: safeToString(json['content_type']??json['type']??''),
       isYoutubeVideo: json['content_type']?.toString() == "1",
       isFocused: json['isFocused'] ?? false,
       liveStatus: json['liveStatus'] ?? false,
@@ -538,6 +547,8 @@ class NewsItemModel {
       webSeriesId: safeToString(json['web_series_id']),
     );
   }
+
+
 
   // Helper method to check if content is active (since status is now String)
   bool get isActive => status == '1';

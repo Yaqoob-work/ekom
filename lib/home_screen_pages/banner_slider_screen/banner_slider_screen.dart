@@ -2015,37 +2015,86 @@ class _BannerSliderState extends State<BannerSlider>
     );
   }
 
-  // Event Handlers
-  KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
-    if (event is! KeyDownEvent) return KeyEventResult.ignored;
+  // // Event Handlers
+  // KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
+  //   if (event is! KeyDownEvent) return KeyEventResult.ignored;
 
-    if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
-      if (_pageController.hasClients &&
-          _pageController.page != null &&
-          _pageController.page! < bannerList.length - 1) {
-        _pageController.nextPage(
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeInOut,
-        );
-        return KeyEventResult.handled;
-      }
-    } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
-      if (_pageController.hasClients &&
-          _pageController.page != null &&
-          _pageController.page! > 0) {
-        _pageController.previousPage(
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeInOut,
-        );
-        return KeyEventResult.handled;
-      }
-    } else if (event.logicalKey == LogicalKeyboardKey.select ||
-        event.logicalKey == LogicalKeyboardKey.enter) {
-      _handleWatchNowTap();
+  //   if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
+  //     if (_pageController.hasClients &&
+  //         _pageController.page != null &&
+  //         _pageController.page! < bannerList.length - 1) {
+  //       _pageController.nextPage(
+  //         duration: const Duration(milliseconds: 300),
+  //         curve: Curves.easeInOut,
+  //       );
+  //       return KeyEventResult.handled;
+  //     }
+  //   } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+  //     if (_pageController.hasClients &&
+  //         _pageController.page != null &&
+  //         _pageController.page! > 0) {
+  //       _pageController.previousPage(
+  //         duration: const Duration(milliseconds: 300),
+  //         curve: Curves.easeInOut,
+  //       );
+  //       return KeyEventResult.handled;
+  //     }
+  //   } else if (event.logicalKey == LogicalKeyboardKey.select ||
+  //       event.logicalKey == LogicalKeyboardKey.enter) {
+  //     _handleWatchNowTap();
+  //     return KeyEventResult.handled;
+  //   }
+  //   return KeyEventResult.ignored;
+  // }
+
+
+
+  // Event Handlers
+// ✅✅✅ YAHAN BADLAV KIYA GAYA HAI ✅✅✅
+KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
+  if (event is! KeyDownEvent) return KeyEventResult.ignored;
+
+  if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
+    if (_pageController.hasClients &&
+        _pageController.page != null &&
+        _pageController.page! < bannerList.length - 1) {
+      _pageController.nextPage(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
       return KeyEventResult.handled;
     }
-    return KeyEventResult.ignored;
+  } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+    if (_pageController.hasClients &&
+        _pageController.page != null &&
+        _pageController.page! > 0) {
+      _pageController.previousPage(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+      return KeyEventResult.handled;
+    }
+  } 
+  // ✅ Naya logic: Arrow Down ke liye
+  else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+    // FocusProvider se neeche wale section (Live Channels) par focus bhejein
+    node.unfocus();
+    widget.onFocusChange?.call(false);
+    Future.delayed(const Duration(milliseconds: 50), () {
+      if (mounted) {
+        // Aapke FocusProvider ka function yahan call ho raha hai
+        context.read<FocusProvider>().requestLiveChannelLanguageFocus();
+      }
+    });
+    return KeyEventResult.handled;
+  } 
+  else if (event.logicalKey == LogicalKeyboardKey.select ||
+      event.logicalKey == LogicalKeyboardKey.enter) {
+    _handleWatchNowTap();
+    return KeyEventResult.handled;
   }
+  return KeyEventResult.ignored;
+}
 
   // ✅ STEP 4: VIDEO PLAY LOGIC KO AASAAN BANAYA GAYA
   void _handleWatchNowTap() {

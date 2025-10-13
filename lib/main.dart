@@ -3252,7 +3252,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'home_screen_pages/sub_vod_screen/sub_vod.dart';
 import 'menu/top_navigation_bar.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -3527,8 +3526,8 @@ class MyApp extends StatelessWidget {
       routes: {
         '/mainscreen': (context) => HomeScreen(),
         '/search': (context) => SearchScreen(),
-        '/vod': (context) => VOD(),
-        '/live': (context) => LiveScreen(),
+        // '/vod': (context) => VOD(),
+        // '/live': (context) => LiveScreen(),
         '/home': (context) => MyHome(),
         '/login': (context) => LoginScreen(),
       },
@@ -4332,10 +4331,10 @@ class _MyHomeState extends State<MyHome> {
   Widget build(BuildContext context) {
     List<Widget> pages = [
       HomeScreen(),
-      VOD(),
-      LiveScreen(),
+      // VOD(),
+      // LiveScreen(),
       SearchScreen(),
-      YoutubeSearchScreen()
+      // YoutubeSearchScreen()
     ];
 
     return Consumer<ColorProvider>(builder: (context, colorProvider, child) {

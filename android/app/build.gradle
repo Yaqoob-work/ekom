@@ -15,12 +15,12 @@ if (localPropertiesFile.exists()) {
 
 def flutterVersionCode = localProperties.getProperty("flutter.versionCode")
 if (flutterVersionCode == null) {
-    flutterVersionCode = "9"
+    flutterVersionCode = "14"
 }
 
 def flutterVersionName = localProperties.getProperty("flutter.versionName")
 if (flutterVersionName == null) {
-    flutterVersionName = "1.0.9"
+    flutterVersionName = "1.0.14"
 }
 
 android {
@@ -66,7 +66,7 @@ android {
     defaultConfig {
         applicationId "com.gigabitcdn.getplaybox"
         minSdkVersion 21
-        targetSdk 35
+        targetSdk 36
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         multiDexEnabled true

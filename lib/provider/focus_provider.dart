@@ -92,6 +92,7 @@ class FocusProvider extends ChangeNotifier {
   FocusNode? _firstSubVodFocusNode;
   // FocusNode? _homeCategoryFirstItemFocusNode;
   FocusNode? _firstManageMoviesFocusNode;
+  FocusNode? _firstLiveChannelLanguageFocusNode;
   FocusNode? _firstManageWebseriesFocusNode;
   FocusNode? _firstReligiousChannelFocusNode;
   FocusNode? _searchIconFocusNode;
@@ -107,6 +108,10 @@ class FocusProvider extends ChangeNotifier {
   FocusNode? firstVodBannerFocusNode;
   FocusNode? topNavigationFocusNode;
   FocusNode? middleNavigationFocusNode;
+
+
+
+  
 
 
 int _currentSelectedNavIndex = 0;
@@ -236,6 +241,31 @@ int _currentSelectedNavIndex = 0;
   // =================================================================
   // MOVIES METHODS
   // =================================================================
+  void setLiveChannelLanguageFocusNode(FocusNode node) {
+    _firstLiveChannelLanguageFocusNode = node;
+    notifyListeners();
+  }
+
+  void requestLiveChannelLanguageFocus() {
+    if (_firstLiveChannelLanguageFocusNode != null) {
+      // _scrollToFirstMovieItem();
+      Future.delayed(const Duration(milliseconds: 50), () {
+        _firstLiveChannelLanguageFocusNode!.requestFocus();
+        // scrollToElement('manageMovies');
+        Future.delayed(const Duration(milliseconds: 50), () {
+          scrollToElement('liveChannelLanguage');
+        });
+      });
+    }
+  }
+
+  // void requestMoviesFocus() {
+  //   requestFirstMoviesFocus();
+  // }
+
+
+
+
   void setFirstManageMoviesFocusNode(FocusNode node) {
     _firstManageMoviesFocusNode = node;
     notifyListeners();
@@ -268,23 +298,77 @@ int _currentSelectedNavIndex = 0;
   //   notifyListeners();
   // }
 
-  void setFirstManageWebseriesFocusNode(FocusNode node) {
-    _firstManageWebseriesFocusNode = node;
-    notifyListeners();
-  }
+  // void setFirstManageWebseriesFocusNode(FocusNode node) {
+  //   _firstManageWebseriesFocusNode = node;
+  //   notifyListeners();
+  // }
 
-  void requestFirstWebseriesFocus() {
-    if (_firstManageWebseriesFocusNode != null) {
-      Future.delayed(const Duration(milliseconds: 50), () {
-        _firstManageWebseriesFocusNode!.requestFocus();
-        scrollToElement('manageWebseries');
-        Future.delayed(const Duration(milliseconds: 50), () {
-          scrollToElement('manageWebseries');
-        });
-      });
-    }
-  }
+  // void requestFirstWebseriesFocus() {
+  //   if (_firstManageWebseriesFocusNode != null) {
+  //     Future.delayed(const Duration(milliseconds: 50), () {
+  //       _firstManageWebseriesFocusNode!.requestFocus();
+  //       scrollToElement('manageWebseries');
+  //       Future.delayed(const Duration(milliseconds: 50), () {
+  //         scrollToElement('manageWebseries');
+  //       });
+  //     });
+  //   }
+  // }
 
+
+
+
+// In your FocusProvider class (Example)
+// --- AFTER ---
+// Use a VoidCallback (or Future<void> Function()) instead of FocusNode
+// --- BEFORE (Incorrect Name) ---
+
+// Future<void> Function()? _requestFirstWebseriesFocusCallback;
+
+// void setFirstManageWebseriesFocusNode(Future<void> Function() callback) {
+//   _requestFirstWebseriesFocusCallback = callback;
+// }
+
+// void requestFirstManageWebseriesFocus() {
+//   _requestFirstWebseriesFocusCallback?.call();
+// }
+
+
+// --- AFTER (Correct Name) ---
+
+Future<void> Function()? _requestFirstWebseriesFocusCallback;
+
+// ✅ Yahan se 'Manage' hata dein
+void setFirstWebseriesFocusNode(Future<void> Function() callback) {
+  _requestFirstWebseriesFocusCallback = callback;
+}
+
+// // ✅ Aur yahan se bhi 'Manage' hata dein
+// void requestFirstWebseriesFocus() {
+//   _requestFirstWebseriesFocusCallback?.call();
+//           Future.delayed(const Duration(milliseconds: 50), () {
+//           scrollToElement('manageWebseries');
+//         });
+// }
+
+
+
+// --- AFTER (Correct, Smoother Sequence) ---
+void requestFirstWebseriesFocus() {
+  // 1. First, start the vertical scroll to bring the whole list into view.
+  // scrollToElement('manageWebseries');
+    _requestFirstWebseriesFocusCallback?.call();
+
+  // 2. Wait for the vertical scroll to get started (e.g., 300ms).
+  //    This is the key to decoupling the animations.
+  Future.delayed(const Duration(milliseconds: 200), () {
+  scrollToElement('manageWebseries');
+
+    // 3. AFTER the delay, call the function that handles the
+    //    horizontal scroll and focus on the item.
+    // _requestFirstWebseriesFocusCallback?.call();
+  });
+}
 
 
 
@@ -472,6 +556,11 @@ int _currentSelectedNavIndex = 0;
     _VodMenuFocusNode?.requestFocus();
   }
 
+
+
+
+  
+
   // =================================================================
   // BANNER/WATCH NOW METHODS
   // =================================================================
@@ -648,9 +737,10 @@ int _currentSelectedNavIndex = 0;
       requestMoviesFocus();
     } else if (_firstManageMoviesFocusNode?.hasFocus == true) {
       requestNewsChannelsFocus();
-    } else if (_firstNewsChannelFocusNode?.hasFocus == true) {
-      requestFirstWebseriesFocus();
     }
+    //  else if (_firstNewsChannelFocusNode?.hasFocus == true) {
+    //   requestFirstWebseriesFocus();
+    // }
   }
 
   List<FocusNode>? _middleNavigationFocusNodes;

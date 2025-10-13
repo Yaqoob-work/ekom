@@ -7668,13 +7668,3080 @@
 
 
 
+// import 'dart:async';
+// import 'dart:convert';
+// import 'dart:ui';
+// import 'package:flutter/foundation.dart';
+// import 'package:flutter/material.dart';
+// import 'package:flutter/services.dart';
+// import 'package:flutter_svg/svg.dart';
+// import 'package:http/http.dart' as http;
+// import 'package:mobi_tv_entertainment/home_screen_pages/webseries_screen/webseries_details_page.dart';
+// import 'package:mobi_tv_entertainment/main.dart';
+// import 'package:mobi_tv_entertainment/provider/device_info_provider.dart';
+// import 'package:mobi_tv_entertainment/provider/internal_focus_provider.dart';
+// import 'package:mobi_tv_entertainment/video_widget/custom_youtube_player.dart';
+// import 'package:mobi_tv_entertainment/video_widget/video_screen.dart';
+// import 'package:mobi_tv_entertainment/video_widget/youtube_webview_player.dart';
+// import 'package:provider/provider.dart';
+// import 'package:shared_preferences/shared_preferences.dart';
+
+// // ==========================================================
+// // ENUMS AND DATA MODELS
+// // ==========================================================
+
+// enum LoadingState { initial, loading, rebuilding, loaded, error }
+
+// class ProfessionalColors {
+//   static const primaryDark = Color(0xFF0A0E1A);
+//   static const surfaceDark = Color(0xFF1A1D29);
+//   static const cardDark = Color(0xFF2A2D3A);
+//   static const accentBlue = Color(0xFF3B82F6);
+//   static const accentPurple = Color(0xFF8B5CF6);
+//   static const accentGreen = Color(0xFF10B981);
+//   static const accentRed = Color(0xFFEF4444);
+//   static const accentOrange = Color(0xFFF59E0B);
+//   static const accentPink = Color(0xFFEC4899);
+//   static const textPrimary = Color(0xFFFFFFFF);
+//   static const textSecondary = Color(0xFFB3B3B3);
+// }
+
+// class ContentSlider {
+//   final int id;
+//   final String title;
+//   final String? banner;
+
+//   ContentSlider({required this.id, required this.title, this.banner});
+
+//   factory ContentSlider.fromJson(Map<String, dynamic> json) {
+//     return ContentSlider(
+//       id: json['id'] ?? 0,
+//       title: json['title'] ?? 'No Title',
+//       banner: json['banner'],
+//     );
+//   }
+// }
+
+// class MovieResponse {
+//   final bool status;
+//   final int total;
+//   final List<Movie> data;
+//   final List<ContentSlider> contentSliders;
+
+//   MovieResponse({
+//     required this.status,
+//     required this.total,
+//     required this.data,
+//     required this.contentSliders,
+//   });
+
+//   factory MovieResponse.fromJson(Map<String, dynamic> json) {
+//     List<T> parseList<T>(String key, T Function(Map<String, dynamic>) fromJson) {
+//       if (json[key] is List) {
+//         return (json[key] as List)
+//             .map((i) => fromJson(i as Map<String, dynamic>))
+//             .toList();
+//       }
+//       return [];
+//     }
+
+//     return MovieResponse(
+//       status: json['status'] ?? false,
+//       total: json['total'] ?? 0,
+//       data: parseList('data', (i) => Movie.fromJson(i)),
+//       contentSliders:
+//           parseList('content_sliders', (i) => ContentSlider.fromJson(i)),
+//     );
+//   }
+// }
+
+// class Movie {
+//   final int id;
+//   final String name;
+//   final String? banner;
+//   final String? poster;
+//   final String? description;
+//   final String genres;
+//   final int? contentType;
+//   final String? sourceType;
+//   final String? youtubeTrailer;
+//   final String? updatedAt;
+//   final String? movieUrl;
+//   final int? status;
+
+//   Movie({
+//     required this.id,
+//     required this.name,
+//     this.banner,
+//     this.poster,
+//     this.description,
+//     required this.genres,
+//     this.contentType,
+//     this.sourceType,
+//     this.youtubeTrailer,
+//     this.updatedAt,
+//     this.movieUrl,
+//     this.status,
+//   });
+
+//   factory Movie.fromJson(Map<String, dynamic> json) {
+//     return Movie(
+//       id: json['id'] ?? 0,
+//       name: json['name'] ?? 'No Name',
+//       banner: json['banner'],
+//       poster: json['poster'],
+//       description: json['description'],
+//       genres: json['genres'] ?? 'Uncategorized',
+//       contentType: json['content_type'],
+//       sourceType: json['source_type'],
+//       youtubeTrailer: json['youtube_trailer'],
+//       updatedAt: json['updated_at'],
+//       movieUrl: json['movie_url'],
+//       status: json['status'],
+//     );
+//   }
+
+//   Map<String, dynamic> toMap() {
+//     return {
+//       'id': id,
+//       'name': name,
+//       'banner': banner,
+//       'poster': poster,
+//       'description': description,
+//       'genres': genres,
+//       'content_type': contentType,
+//       'source_type': sourceType,
+//       'youtube_trailer': youtubeTrailer,
+//       'updated_at': updatedAt,
+//       'movie_url': movieUrl,
+//       'status': status,
+//     };
+//   }
+
+//   factory Movie.fromMap(Map<String, dynamic> map) => Movie.fromJson(map);
+
+//   String getPlayableUrl() {
+//     if (sourceType == 'YoutubeLive') return movieUrl ?? '';
+//     if (youtubeTrailer != null && youtubeTrailer!.isNotEmpty) {
+//       return youtubeTrailer!;
+//     }
+//     return movieUrl ?? '';
+//   }
+// }
+
+// // ==========================================================
+// // GENRE MOVIES SCREEN
+// // ==========================================================
+
+// class GenreMoviesScreen extends StatefulWidget {
+//   final String tvChannelId;
+//   final String logoUrl;
+//   final String title;
+//   const GenreMoviesScreen(
+//       {super.key,
+//       required this.tvChannelId,
+//       required this.logoUrl,
+//       required this.title});
+//   @override
+//   State<GenreMoviesScreen> createState() => _GenreMoviesScreenState();
+// }
+
+// class _GenreMoviesScreenState extends State<GenreMoviesScreen> {
+//   LoadingState _loadingState = LoadingState.initial;
+//   String? _error;
+
+//   // Slider state variables
+//   List<ContentSlider> _contentSliders = [];
+//   late PageController _sliderPageController;
+//   Timer? _sliderTimer;
+//   int _currentSliderPage = 0;
+
+//   // Genre browsing state
+//   List<String> _genres = [];
+//   Map<String, List<Movie>> _moviesByGenre = {};
+//   int _selectedGenreIndex = 0;
+//   List<Movie> _currentDisplayList = []; // For shuffled list
+
+//   // Search state
+//   bool _isSearching = false;
+//   bool _showKeyboard = false;
+//   String _searchText = '';
+//   Timer? _debounce;
+//   List<Movie> _searchResults = [];
+//   bool _isSearchLoading = false;
+//   bool _isVideoLoading = false;
+
+//   // Focus Nodes
+//   late FocusNode _searchButtonFocusNode;
+//   List<FocusNode> _genreFocusNodes = [];
+//   List<FocusNode> _movieFocusNodes = [];
+
+//   // Keys and Controllers
+//   List<GlobalKey> _genreButtonKeys = [];
+//   List<GlobalKey> _movieCardKeys = [];
+//   final ScrollController _genreScrollController = ScrollController();
+//   final ScrollController _movieScrollController = ScrollController();
+
+//   final List<Color> _focusColors = [
+//     ProfessionalColors.accentBlue,
+//     ProfessionalColors.accentPurple,
+//     ProfessionalColors.accentGreen,
+//     ProfessionalColors.accentOrange,
+//     ProfessionalColors.accentPink,
+//     ProfessionalColors.accentRed
+//   ];
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     _searchButtonFocusNode = FocusNode();
+//     _searchButtonFocusNode.addListener(() {
+//       if (mounted) {
+//         setState(() {});
+//         if (_searchButtonFocusNode.hasFocus) {
+//           Provider.of<InternalFocusProvider>(context, listen: false)
+//               .updateName("Search");
+//         }
+//       }
+//     });
+
+//     _sliderPageController = PageController(initialPage: 0);
+
+//     WidgetsBinding.instance.addPostFrameCallback((_) {
+//       Provider.of<InternalFocusProvider>(context, listen: false).updateName('');
+//       _fetchAndProcessData();
+//     });
+//   }
+
+//   @override
+//   void dispose() {
+//     _cleanupResources();
+//     super.dispose();
+//   }
+
+//   void _cleanupResources() {
+//     _searchButtonFocusNode.dispose();
+//     for (var node in _genreFocusNodes) {
+//       node.dispose();
+//     }
+//     for (var node in _movieFocusNodes) {
+//       node.dispose();
+//     }
+//     _genreScrollController.dispose();
+//     _movieScrollController.dispose();
+
+//     _sliderPageController.dispose();
+//     _sliderTimer?.cancel();
+//     _debounce?.cancel();
+//   }
+  
+//   void _shuffleAndSetDisplayList() {
+//     if (_genres.isEmpty) return;
+
+//     final originalList = _moviesByGenre[_genres[_selectedGenreIndex]] ?? [];
+//     final shuffledList = List<Movie>.from(originalList)..shuffle();
+
+//     setState(() {
+//       _currentDisplayList = shuffledList;
+//     });
+//   }
+
+//   void _rebuildMovieNodes() {
+//     if (!mounted) return;
+//     for (var node in _movieFocusNodes) {
+//       node.dispose();
+//     }
+
+//     final currentList = _isSearching ? _searchResults : _currentDisplayList;
+
+//     _movieFocusNodes = List.generate(currentList.length, (i) => FocusNode());
+//     _movieCardKeys = List.generate(currentList.length, (i) => GlobalKey());
+
+//     for (int i = 0; i < currentList.length; i++) {
+//       _movieFocusNodes[i].addListener(() {
+//         if (_movieFocusNodes[i].hasFocus) _onMovieFocus(i);
+//       });
+//     }
+//   }
+
+//   Future<void> _fetchAndProcessData() async {
+//     if (mounted) setState(() => _loadingState = LoadingState.loading);
+//     try {
+//       final prefs = await SharedPreferences.getInstance();
+//       final authKey = prefs.getString('result_auth_key') ?? '56456456456';
+
+//       final response = await http.post(
+//         Uri.parse(
+//             'https://dashboard.cpplayers.com/api/v2/getAllContentsOfNetworkNew'),
+//         headers: {
+//           'auth-key': authKey,
+//           'domain': 'coretechinfo.com',
+//           'Accept': 'application/json',
+//           'Content-Type': 'application/json'
+//         },
+//         body: json.encode({
+//           "genre": "",
+//           "network_id": widget.tvChannelId,
+//         }),
+//       );
+
+//       if (response.statusCode == 200) {
+//         final fullResponse =
+//             MovieResponse.fromJson(json.decode(response.body));
+
+//         if (fullResponse.status) {
+//           final allMovies =
+//               fullResponse.data.where((movie) => movie.status == 1).toList();
+
+//           final Map<String, List<Movie>> moviesByGenre = {};
+//           final Set<String> uniqueGenres = {};
+
+//           for (final movie in allMovies) {
+//             final genres =
+//                 movie.genres.split(',').map((g) => g.trim()).toList();
+//             for (var genre in genres) {
+//               if (genre.isNotEmpty) {
+//                 uniqueGenres.add(genre);
+//                 if (moviesByGenre.containsKey(genre)) {
+//                   moviesByGenre[genre]!.add(movie);
+//                 } else {
+//                   moviesByGenre[genre] = [movie];
+//                 }
+//               }
+//             }
+//           }
+
+//           List<String> sortedGenres = uniqueGenres.toList();
+
+//           if (sortedGenres.contains('Web Series')) {
+//             sortedGenres.remove('Web Series');
+//             sortedGenres.sort();
+//             sortedGenres.insert(0, 'Web Series');
+//           } else {
+//             sortedGenres.sort();
+//           }
+
+//           if (!mounted) return;
+
+//           setState(() {
+//             _loadingState = LoadingState.rebuilding;
+//             _contentSliders = fullResponse.contentSliders;
+//             _genres = sortedGenres;
+//             _moviesByGenre = moviesByGenre;
+//             _selectedGenreIndex = 0;
+            
+//             _genreFocusNodes =
+//                 List.generate(_genres.length, (i) => FocusNode());
+//             _genreButtonKeys =
+//                 List.generate(_genres.length, (i) => GlobalKey());
+
+//             for (int i = 0; i < _genres.length; i++) {
+//               _genreFocusNodes[i].addListener(() {
+//                 if (_genreFocusNodes[i].hasFocus) _onGenreFocus(i);
+//               });
+//             }
+//             _loadingState = LoadingState.loaded;
+//           });
+          
+//           _shuffleAndSetDisplayList();
+//           _rebuildMovieNodes();
+//           _setupSliderTimer();
+
+//           Future.delayed(const Duration(milliseconds: 200), () {
+//             if (mounted && _searchButtonFocusNode.canRequestFocus) {
+//               _searchButtonFocusNode.requestFocus();
+//             }
+//           });
+//         } else {
+//           throw Exception('API status returned false.');
+//         }
+//       } else {
+//         throw Exception('Failed to load data: ${response.statusCode}');
+//       }
+//     } catch (e) {
+//       if (mounted) {
+//         setState(() {
+//           _error = e.toString();
+//           _loadingState = LoadingState.error;
+//         });
+//       }
+//     }
+//   }
+
+//   void _setupSliderTimer() {
+//     _sliderTimer?.cancel();
+//     if (_contentSliders.length > 1) {
+//       _sliderTimer = Timer.periodic(const Duration(seconds: 5), (Timer timer) {
+//         if (!mounted) return;
+
+//         int nextPage = _currentSliderPage + 1;
+
+//         if (nextPage >= _contentSliders.length) {
+//           if (_sliderPageController.hasClients) {
+//              _sliderPageController.jumpToPage(0);
+//           }
+//         } else {
+//           if (_sliderPageController.hasClients) {
+//             _sliderPageController.animateToPage(
+//               nextPage,
+//               duration: const Duration(milliseconds: 800),
+//               curve: Curves.easeInOut,
+//             );
+//           }
+//         }
+//       });
+//     }
+//   }
+
+//   Future<List<Movie>> _fetchMoviesBySearch(String searchTerm) async {
+//     try {
+//       final prefs = await SharedPreferences.getInstance();
+//       final authKey = prefs.getString('result_auth_key') ?? '56456456456';
+
+//       final response = await http.post(
+//         Uri.parse(
+//             'https://dashboard.cpplayers.com/api/v2/getAllContentsOfNetworkNew'),
+//         headers: {
+//           'auth-key': authKey,
+//           'domain': 'coretechinfo.com',
+//           'Accept': 'application/json',
+//           'Content-Type': 'application/json'
+//         },
+//         body: json.encode({
+//           "genre": "",
+//           "network_id": widget.tvChannelId,
+//         }),
+//       );
+
+//       if (response.statusCode == 200) {
+//         final movieData = MovieResponse.fromJson(json.decode(response.body));
+//         if (movieData.status) {
+//           List<Movie> allMovies =
+//               movieData.data.where((movie) => movie.status == 1).toList();
+
+//           if (searchTerm.isNotEmpty) {
+//             return allMovies
+//                 .where((movie) => movie.name
+//                     .toLowerCase()
+//                     .contains(searchTerm.toLowerCase()))
+//                 .toList();
+//           }
+//           return allMovies;
+//         }
+//       }
+//       return [];
+//     } catch (e) {
+//       print("Search API Error: $e");
+//       return [];
+//     }
+//   }
+
+//   void _performSearch(String searchTerm) {
+//     _debounce?.cancel();
+//     if (searchTerm.trim().isEmpty) {
+//       setState(() {
+//         _isSearching = false;
+//         _isSearchLoading = false;
+//         _searchResults.clear();
+//         _rebuildMovieNodes();
+//       });
+//       return;
+//     }
+
+//     _debounce = Timer(const Duration(milliseconds: 400), () async {
+//       if (!mounted) return;
+//       setState(() {
+//         _isSearchLoading = true;
+//         _isSearching = true;
+//         _searchResults.clear();
+//       });
+
+//       final results = await _fetchMoviesBySearch(searchTerm);
+//       if (!mounted) return;
+
+//       setState(() {
+//         _searchResults = results;
+//         _isSearchLoading = false;
+//         _rebuildMovieNodes();
+//       });
+//     });
+//   }
+
+//   void _onKeyPressed(String value) {
+//     setState(() {
+//       if (value == 'OK') {
+//         _showKeyboard = false;
+//         if (_movieFocusNodes.isNotEmpty) {
+//           _movieFocusNodes.first.requestFocus();
+//         } else {
+//           _searchButtonFocusNode.requestFocus();
+//         }
+//         return;
+//       }
+
+//       if (value == 'DEL') {
+//         if (_searchText.isNotEmpty) {
+//           _searchText = _searchText.substring(0, _searchText.length - 1);
+//         }
+//       } else if (value == ' ') {
+//         _searchText += ' ';
+//       } else {
+//         _searchText += value;
+//       }
+//       _performSearch(_searchText);
+//     });
+//   }
+
+//   void _updateMoviesForGenre(int index) {
+//     if (_isSearching) {
+//       setState(() {
+//         _isSearching = false;
+//         _searchText = '';
+//         _searchResults.clear();
+//       });
+//     }
+
+//     if (_selectedGenreIndex == index) {
+//         _shuffleAndSetDisplayList();
+//         _rebuildMovieNodes();
+//         return;
+//     };
+
+//     setState(() {
+//       _selectedGenreIndex = index;
+//     });
+    
+//     _shuffleAndSetDisplayList();
+//     _rebuildMovieNodes();
+//   }
+
+//   void _onGenreFocus(int index) {
+//     if (!mounted || index >= _genres.length) return;
+//     Provider.of<InternalFocusProvider>(context, listen: false)
+//         .updateName(_genres[index]);
+
+//     final buttonContext = _genreButtonKeys[index].currentContext;
+//     if (buttonContext != null) {
+//       Scrollable.ensureVisible(buttonContext,
+//           duration: const Duration(milliseconds: 300),
+//           curve: Curves.easeOut,
+//           alignment: 0.5);
+//     }
+//   }
+
+//   void _onMovieFocus(int index) {
+//     if (!mounted) return;
+    
+//     final currentList = _isSearching ? _searchResults : _currentDisplayList;
+
+//     if (index < currentList.length) {
+//       Provider.of<InternalFocusProvider>(context, listen: false)
+//           .updateName(currentList[index].name);
+//     }
+
+//     final cardContext = _movieCardKeys[index].currentContext;
+//     if (cardContext != null) {
+//       Scrollable.ensureVisible(cardContext,
+//           duration: const Duration(milliseconds: 300),
+//           curve: Curves.easeOut,
+//           alignment: 0.5);
+//     }
+//   }
+
+//   Future<void> _playContent(Movie content) async {
+//     if (_isVideoLoading || !mounted) return;
+//     setState(() {
+//       _isVideoLoading = true;
+//     });
+
+//     try {
+//       String playableUrl = content.getPlayableUrl();
+
+//       if (content.contentType == 2) {
+//         await Navigator.push(
+//           context,
+//           MaterialPageRoute(
+//             builder: (context) => WebSeriesDetailsPage(
+//               id: content.id,
+//               banner: content.banner ?? '',
+//               poster: content.poster ?? '',
+//               logo: widget.logoUrl,
+//               name: content.name,
+//               updatedAt: content.updatedAt ?? '',
+//             ),
+//           ),
+//         );
+//         return;
+//       }
+
+//       if (playableUrl.isEmpty) {
+//         throw Exception('No video URL found');
+//       }
+
+//       if (!mounted) return;
+
+//       if (content.sourceType == 'YoutubeLive' ||
+//           (content.youtubeTrailer != null &&
+//               content.youtubeTrailer!.isNotEmpty)) {
+//         final deviceInfo = context.read<DeviceInfoProvider>();
+//         if (deviceInfo.deviceName == 'AFTSS : Amazon Fire Stick HD') {
+//           await Navigator.push(
+//               context,
+//               MaterialPageRoute(
+//                   builder: (context) => YoutubeWebviewPlayer(
+//                       videoUrl: playableUrl, name: content.name)));
+//         } else {
+//           await Navigator.push(
+//             context,
+//             MaterialPageRoute(
+//               builder: (context) => CustomYoutubePlayer(
+//                 videoData: VideoData(
+//                   id: content.id.toString(),
+//                   title: content.name,
+//                   youtubeUrl: playableUrl,
+//                   thumbnail: content.poster ?? content.banner ?? '',
+//                   description: content.description ?? '',
+//                 ),
+//                 playlist: [],
+//               ),
+//             ),
+//           );
+//         }
+//       } else {
+//         await Navigator.push(
+//           context,
+//           MaterialPageRoute(
+//             builder: (context) => VideoScreen(
+//               videoUrl: playableUrl,
+//               bannerImageUrl: content.poster ?? content.banner ?? '',
+//               videoId: content.id,
+//               name: content.name,
+//               updatedAt: content.updatedAt ?? '',
+//               source: 'isVod',
+//               channelList: [],
+//               liveStatus: false,
+//             ),
+//           ),
+//         );
+//       }
+//     } catch (e) {
+//       if (mounted) {
+//         ScaffoldMessenger.of(context)
+//             .showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
+//       }
+//     } finally {
+//       if (mounted) {
+//         setState(() {
+//           _isVideoLoading = false;
+//         });
+//       }
+//     }
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final screenSize = MediaQuery.of(context).size;
+
+//     return Scaffold(
+//       backgroundColor: ProfessionalColors.primaryDark,
+//       body: Stack(
+//         children: [
+//           if (_loadingState == LoadingState.loading ||
+//               _loadingState == LoadingState.initial)
+//             const Center(child: CircularProgressIndicator())
+//           else if (_error != null)
+//             Center(
+//                 child: Text('Error: $_error',
+//                     style: const TextStyle(color: Colors.white)))
+//           else
+//             Column(
+//               children: [
+//                 SizedBox(
+//                   height: screenSize.height * 0.63,
+//                   child: _showKeyboard
+//                       ? _buildSearchUI()
+//                       : _buildImageSliderSection(),
+//                 ),
+//                 _buildGenreButtons(),
+//                 SizedBox(
+//                   height: bannerhgt * 1.5,
+//                   child: _buildMoviesList(),
+//                 ),
+//               ],
+//             ),
+//           Positioned(top: 0, left: 0, right: 0, child: _buildBeautifulAppBar()),
+//           if (_isVideoLoading)
+//             Container(
+//               color: Colors.black.withOpacity(0.7),
+//               child: const Center(
+//                   child: CircularProgressIndicator(
+//                       valueColor: AlwaysStoppedAnimation<Color>(Colors.white))),
+//             ),
+//         ],
+//       ),
+//     );
+//   }
+
+//   Widget _buildBeautifulAppBar() {
+//     final focusedName = context.watch<InternalFocusProvider>().focusedItemName;
+//     return Container(
+//       decoration: BoxDecoration(
+//         gradient: LinearGradient(
+//             begin: Alignment.topCenter,
+//             end: Alignment.bottomCenter,
+//             colors: [
+//               ProfessionalColors.primaryDark.withOpacity(0.95),
+//               ProfessionalColors.surfaceDark.withOpacity(0.9),
+//               ProfessionalColors.surfaceDark.withOpacity(0.8),
+//               Colors.transparent
+//             ]),
+//       ),
+//       child: ClipRRect(
+//         child: BackdropFilter(
+//           filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
+//           child: Container(
+//             padding: EdgeInsets.only(
+//                 top: MediaQuery.of(context).padding.top + 10,
+//                 left: 20,
+//                 right: 30,
+//                 bottom: 10),
+//             child: Row(
+//               children: [
+//                 const SizedBox(width: 16),
+//                 GradientText(widget.title,
+//                     style: const TextStyle(
+//                         fontWeight: FontWeight.bold, fontSize: 22),
+//                     gradient: const LinearGradient(colors: [
+//                       ProfessionalColors.accentPink,
+//                       ProfessionalColors.accentPurple,
+//                       ProfessionalColors.accentBlue
+//                     ])),
+//                 const SizedBox(width: 40),
+//                 Expanded(
+//                     child: Text(focusedName,
+//                         textAlign: TextAlign.left,
+//                         style: const TextStyle(
+//                             color: ProfessionalColors.textSecondary,
+//                             fontWeight: FontWeight.bold,
+//                             fontSize: 20),
+//                         overflow: TextOverflow.ellipsis)),
+//               ],
+//             ),
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildSearchUI() {
+//     return Row(
+//       crossAxisAlignment: CrossAxisAlignment.center,
+//       children: [
+//         Expanded(
+//           flex: 4,
+//           child: Container(
+//             padding: const EdgeInsets.symmetric(horizontal: 40),
+//             child: Column(
+//               mainAxisAlignment: MainAxisAlignment.center,
+//               children: [
+//                 const GradientText(
+//                   "Search for Content",
+//                   style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+//                   gradient: LinearGradient(colors: [
+//                     ProfessionalColors.accentBlue,
+//                     ProfessionalColors.accentPurple
+//                   ]),
+//                 ),
+//                 const SizedBox(height: 24),
+//                 Container(
+//                   width: double.infinity,
+//                   padding:
+//                       const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+//                   decoration: BoxDecoration(
+//                     color: Colors.white.withOpacity(0.05),
+//                     borderRadius: BorderRadius.circular(10),
+//                     border: Border.all(
+//                         color: ProfessionalColors.accentPurple, width: 2),
+//                   ),
+//                   child: Text(
+//                     _searchText.isEmpty ? 'Start typing...' : _searchText,
+//                     textAlign: TextAlign.center,
+//                     style: TextStyle(
+//                       color:
+//                           _searchText.isEmpty ? Colors.white54 : Colors.white,
+//                       fontSize: 22,
+//                       fontWeight: FontWeight.w600,
+//                     ),
+//                     overflow: TextOverflow.ellipsis,
+//                   ),
+//                 ),
+//               ],
+//             ),
+//           ),
+//         ),
+//         Expanded(
+//           flex: 6,
+//           child: _buildQwertyKeyboard(),
+//         ),
+//       ],
+//     );
+//   }
+
+//   Widget _buildQwertyKeyboard() {
+//     final row1 = "1234567890".split('');
+//     final row2 = "qwertyuiop".split('');
+//     final row3 = "asdfghjkl".split('');
+//     final row4 = ["zxcvbnm", "DEL"]
+//         .expand((e) => e == "DEL" ? [e] : e.split(''))
+//         .toList();
+//     final row5 = [" ", "OK"];
+
+//     return Container(
+//       color: Colors.transparent,
+//       padding: const EdgeInsets.all(10),
+//       child: Column(
+//         mainAxisAlignment: MainAxisAlignment.end,
+//         children: [
+//           _buildKeyboardRow(row1),
+//           _buildKeyboardRow(row2),
+//           _buildKeyboardRow(row3),
+//           _buildKeyboardRow(row4),
+//           _buildKeyboardRow(row5),
+//         ],
+//       ),
+//     );
+//   }
+
+//   Widget _buildKeyboardRow(List<String> keys) {
+//     return Row(
+//       mainAxisAlignment: MainAxisAlignment.center,
+//       children: keys.map((key) {
+//         final screenWidth = MediaQuery.of(context).size.width;
+//         final screenHeight = MediaQuery.of(context).size.height;
+//         double width;
+
+//         const double keyWidthFactor = 0.045;
+//         const double keyHeightFactor = 0.08;
+//         const double keyFontSize = 22.0;
+//         const double keyMargin = 4.0;
+//         const double keyBorderRadius = 12.0;
+
+//         if (key == ' ') {
+//           width = screenWidth * 0.315;
+//         } else if (key == 'OK' || key == 'DEL') {
+//           width = screenWidth * 0.09;
+//         } else {
+//           width = screenWidth * keyWidthFactor;
+//         }
+
+//         return Container(
+//           width: width,
+//           height: screenHeight * keyHeightFactor,
+//           margin: const EdgeInsets.all(keyMargin),
+//           child: ElevatedButton(
+//             onPressed: () => _onKeyPressed(key),
+//             style: ElevatedButton.styleFrom(
+//                 backgroundColor: Colors.white.withOpacity(0.1),
+//                 foregroundColor: Colors.white,
+//                 shape: RoundedRectangleBorder(
+//                     borderRadius: BorderRadius.circular(keyBorderRadius)),
+//                 padding: EdgeInsets.zero),
+//             child: Text(key,
+//                 style: const TextStyle(
+//                     fontSize: keyFontSize, fontWeight: FontWeight.bold)),
+//           ),
+//         );
+//       }).toList(),
+//     );
+//   }
+
+//   Widget _buildSliderIndicator() {
+//     return Row(
+//       mainAxisAlignment: MainAxisAlignment.center,
+//       children: _contentSliders.asMap().entries.map((entry) {
+//         int index = entry.key;
+//         return AnimatedContainer(
+//           duration: const Duration(milliseconds: 300),
+//           width: _currentSliderPage == index ? 12.0 : 8.0,
+//           height: _currentSliderPage == index ? 12.0 : 8.0,
+//           margin: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 4.0),
+//           decoration: BoxDecoration(
+//             shape: BoxShape.circle,
+//             color: _currentSliderPage == index
+//                 ? ProfessionalColors.accentBlue
+//                 : Colors.white.withOpacity(0.4),
+//           ),
+//         );
+//       }).toList(),
+//     );
+//   }
+
+//   Widget _buildImageSliderSection() {
+//     if (_contentSliders.isEmpty) {
+//       return Container(
+//         width: double.infinity,
+//         decoration: BoxDecoration(
+//           image: DecorationImage(
+//             image: NetworkImage(widget.logoUrl),
+//             fit: BoxFit.fill,
+//           ),
+//           gradient: LinearGradient(
+//             begin: Alignment.topCenter,
+//             end: Alignment.bottomCenter,
+//             colors: [
+//               Colors.transparent,
+//               ProfessionalColors.primaryDark.withOpacity(0.5),
+//               ProfessionalColors.primaryDark,
+//             ],
+//             stops: const [0.0, 0.7, 1.0],
+//           ),
+//         ),
+//       );
+//     }
+
+//     return Stack(
+//       children: [
+//         PageView.builder(
+//           controller: _sliderPageController,
+//           itemCount: _contentSliders.length,
+//           onPageChanged: (index) {
+//             setState(() {
+//               _currentSliderPage = index;
+//             });
+//           },
+//           itemBuilder: (context, index) {
+//             final slider = _contentSliders[index];
+//             return Container(
+//               color: ProfessionalColors.primaryDark,
+//               child: displayImage(
+//                 slider.banner ?? '',
+//                 width: double.infinity,
+//                 height: double.infinity,
+//                 fit: BoxFit.contain,
+//               ),
+//             );
+//           },
+//         ),
+//         Container(
+//           width: double.infinity,
+//           height: double.infinity,
+//           decoration: BoxDecoration(
+//             gradient: LinearGradient(
+//               begin: Alignment.centerLeft,
+//               end: Alignment.centerRight,
+//               colors: [
+//                 ProfessionalColors.primaryDark,
+//                 ProfessionalColors.primaryDark,
+//                 Colors.transparent,
+//                 Colors.transparent,
+//                 ProfessionalColors.primaryDark,
+//                 ProfessionalColors.primaryDark,
+//               ],
+//               stops: const [0.0, 0.2, 0.4, 0.6, 0.8, 1.0],
+//             ),
+//           ),
+//         ),
+//         Positioned(
+//           bottom: 20.0,
+//           left: 0,
+//           right: 0,
+//           child: _buildSliderIndicator(),
+//         ),
+//       ],
+//     );
+//   }
+
+//   Widget _buildGenreButtons() {
+//     return SizedBox(
+//       height: screenhgt * 0.1,
+//       child: ListView.builder(
+//         controller: _genreScrollController,
+//         scrollDirection: Axis.horizontal,
+//         itemCount: _genres.length + 1,
+//         padding:  EdgeInsets.symmetric(horizontal: screenwdt * 0.002, vertical: screenhgt * 0.01),
+//         itemBuilder: (context, index) {
+//           if (index == 0) {
+//             return Focus(
+//               focusNode: _searchButtonFocusNode,
+//               onKey: (node, event) {
+//                 if (event is RawKeyDownEvent &&
+//                     (event.logicalKey == LogicalKeyboardKey.enter ||
+//                         event.logicalKey == LogicalKeyboardKey.select)) {
+//                   setState(() => _showKeyboard = true);
+//                   return KeyEventResult.handled;
+//                 }
+//                 if (event is RawKeyDownEvent &&
+//                     event.logicalKey == LogicalKeyboardKey.arrowRight) {
+//                   if (_genreFocusNodes.isNotEmpty) {
+//                     _genreFocusNodes.first.requestFocus();
+//                     return KeyEventResult.handled;
+//                   }
+//                 }
+//                 return KeyEventResult.ignored;
+//               },
+//               child: GestureDetector(
+//                 onTap: () {
+//                   _searchButtonFocusNode.requestFocus();
+//                   setState(() => _showKeyboard = true);
+//                 },
+//                 child: Container(
+//                   margin: const EdgeInsets.only(right: 15),
+//                   child: AnimatedContainer(
+//                     duration: const Duration(milliseconds: 200),
+//                     padding: const EdgeInsets.symmetric(
+//                         horizontal: 24, vertical: 8),
+//                     decoration: BoxDecoration(
+//                       color: _searchButtonFocusNode.hasFocus
+//                           ? ProfessionalColors.accentOrange
+//                           : (_isSearching
+//                               ? ProfessionalColors.accentPurple
+//                               : ProfessionalColors.cardDark),
+//                       borderRadius: BorderRadius.circular(30),
+//                       border: Border.all(
+//                         color: _searchButtonFocusNode.hasFocus
+//                             ? Colors.white
+//                             : Colors.transparent,
+//                         width: 2,
+//                       ),
+//                       boxShadow: _searchButtonFocusNode.hasFocus
+//                           ? [
+//                               BoxShadow(
+//                                 color: ProfessionalColors.accentOrange
+//                                     .withOpacity(0.7),
+//                                 blurRadius: 10,
+//                                 spreadRadius: 2,
+//                               )
+//                             ]
+//                           : null,
+//                     ),
+//                     child: const Row(
+//                       mainAxisSize: MainAxisSize.min,
+//                       children: [
+//                         Icon(Icons.search, color: Colors.white),
+//                         SizedBox(width: 8),
+//                         Text("Search",
+//                             style: TextStyle(
+//                                 color: Colors.white,
+//                                 fontWeight: FontWeight.bold,
+//                                 fontSize: 16)),
+//                       ],
+//                     ),
+//                   ),
+//                 ),
+//               ),
+//             );
+//           }
+
+//           final genreIndex = index - 1;
+//           final genre = _genres[genreIndex];
+//           final isSelected = !_isSearching && _selectedGenreIndex == genreIndex;
+//           return Focus(
+//             focusNode: _genreFocusNodes[genreIndex],
+//             onKey: (node, event) {
+//               if (event is RawKeyDownEvent) {
+//                 if (event.logicalKey == LogicalKeyboardKey.arrowLeft &&
+//                     genreIndex == 0) {
+//                   _searchButtonFocusNode.requestFocus();
+//                   return KeyEventResult.handled;
+//                 }
+//                 if (event.logicalKey == LogicalKeyboardKey.enter ||
+//                     event.logicalKey == LogicalKeyboardKey.select) {
+//                   _updateMoviesForGenre(genreIndex);
+//                   return KeyEventResult.handled;
+//                 }
+//               }
+//               return KeyEventResult.ignored;
+//             },
+//             child: GestureDetector(
+//               onTap: () => _genreFocusNodes[genreIndex].requestFocus(),
+//               child: Container(
+//                 key: _genreButtonKeys[genreIndex],
+//                 margin: const EdgeInsets.only(right: 15),
+//                 child: AnimatedContainer(
+//                   duration: const Duration(milliseconds: 200),
+//                   padding:
+//                       const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+//                   decoration: BoxDecoration(
+//                       color: isSelected
+//                           ? _focusColors[genreIndex % _focusColors.length]
+//                           : ProfessionalColors.cardDark,
+//                       borderRadius: BorderRadius.circular(30),
+//                       border: Border.all(
+//                         color: _genreFocusNodes[genreIndex].hasFocus
+//                             ? Colors.white
+//                             : Colors.transparent,
+//                         width: 2,
+//                       ),
+//                       boxShadow: [
+//                         if (_genreFocusNodes[genreIndex].hasFocus)
+//                           BoxShadow(
+//                             color: _focusColors[genreIndex % _focusColors.length]
+//                                 .withOpacity(0.7),
+//                             blurRadius: 10,
+//                             spreadRadius: 2,
+//                           )
+//                       ]),
+//                   child: Center(
+//                     child: Text(
+//                       genre,
+//                       style: const TextStyle(
+//                         color: Colors.white,
+//                         fontWeight: FontWeight.bold,
+//                         fontSize: 16,
+//                       ),
+//                     ),
+//                   ),
+//                 ),
+//               ),
+//             ),
+//           );
+//         },
+//       ),
+//     );
+//   }
+
+//   Widget _buildMoviesList() {
+//     final currentList = _isSearching ? _searchResults : _currentDisplayList;
+
+//     if (_isSearchLoading) {
+//       return const Center(child: CircularProgressIndicator());
+//     }
+
+//     if (currentList.isEmpty) {
+//       return Center(
+//         child: Text(
+//           _isSearching && _searchText.isNotEmpty
+//               ? "No results found for '$_searchText'"
+//               : "No content available for this genre.",
+//           style: const TextStyle(
+//               color: ProfessionalColors.textSecondary, fontSize: 16),
+//         ),
+//       );
+//     }
+
+//     return Padding(
+//       padding: const EdgeInsets.only(top: 10.0),
+//       child: ListView.builder(
+//         controller: _movieScrollController,
+//         scrollDirection: Axis.horizontal,
+//         itemCount: currentList.length,
+//         padding: const EdgeInsets.symmetric(horizontal: 30.0),
+//         itemBuilder: (context, index) {
+//           final movie = currentList[index];
+//           return Focus(
+//             focusNode: _movieFocusNodes[index],
+//             onKey: (node, event) {
+//               if (event is RawKeyDownEvent) {
+//                 if (event.logicalKey == LogicalKeyboardKey.select ||
+//                     event.logicalKey == LogicalKeyboardKey.enter) {
+//                   _playContent(movie);
+//                   return KeyEventResult.handled;
+//                 }
+//               }
+//               return KeyEventResult.ignored;
+//             },
+//             child: MovieCard(
+//                 key: _movieCardKeys[index],
+//                 movie: movie,
+//                 logoUrl: widget.logoUrl,
+//                 focusNode: _movieFocusNodes[index],
+//                 focusColors: _focusColors,
+//                 uniqueIndex: index,
+//                 onTap: () => _playContent(movie)),
+//           );
+//         },
+//       ),
+//     );
+//   }
+// }
+
+// // ==========================================================
+// // REUSABLE WIDGETS
+// // ==========================================================
+
+// class MovieCard extends StatefulWidget {
+//   final Movie movie;
+//   final String logoUrl;
+//   final FocusNode focusNode;
+//   final List<Color> focusColors;
+//   final int uniqueIndex;
+//   final VoidCallback onTap;
+
+//   const MovieCard(
+//       {super.key,
+//       required this.movie,
+//       required this.logoUrl,
+//       required this.focusNode,
+//       required this.focusColors,
+//       required this.uniqueIndex,
+//       required this.onTap});
+
+//   @override
+//   State<MovieCard> createState() => _MovieCardState();
+// }
+
+// class _MovieCardState extends State<MovieCard> {
+//   bool _hasFocus = false;
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     widget.focusNode.addListener(_onFocusChange);
+//   }
+
+//   @override
+//   void dispose() {
+//     widget.focusNode.removeListener(_onFocusChange);
+//     super.dispose();
+//   }
+
+//   void _onFocusChange() {
+//     if (mounted && widget.focusNode.hasFocus != _hasFocus) {
+//       setState(() {
+//         _hasFocus = widget.focusNode.hasFocus;
+//       });
+//     }
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final focusColor =
+//         widget.focusColors[widget.uniqueIndex % widget.focusColors.length];
+
+//     final screenSize = MediaQuery.of(context).size;
+
+//     return Container(
+//       width: screenSize.width / 7,
+//       margin: const EdgeInsets.only(right: 12.0),
+//       child: GestureDetector(
+//         onTap: widget.onTap,
+//         child: Column(
+//           crossAxisAlignment: CrossAxisAlignment.start,
+//           mainAxisSize: MainAxisSize.min,
+//           children: [
+//             Expanded(
+//               child: Container(
+//                 decoration: BoxDecoration(
+//                     borderRadius: BorderRadius.circular(8.0),
+//                     border: _hasFocus
+//                         ? Border.all(color: focusColor, width: 3)
+//                         : Border.all(color: Colors.transparent, width: 3),
+//                     boxShadow: _hasFocus
+//                         ? [
+//                             BoxShadow(
+//                                 color: focusColor.withOpacity(0.5),
+//                                 blurRadius: 12,
+//                                 spreadRadius: 1)
+//                           ]
+//                         : []),
+//                 child: ClipRRect(
+//                   borderRadius: BorderRadius.circular(6.0),
+//                   child: Stack(
+//                     fit: StackFit.expand,
+//                     children: [
+//                       displayImage(
+//                           widget.movie.banner ?? widget.movie.poster ?? '',
+//                           fit: BoxFit.cover),
+//                       if (widget.movie.contentType == 2)
+//                         Positioned(
+//                             bottom: 8,
+//                             left: 8,
+//                             child: Container(
+//                                 padding: const EdgeInsets.symmetric(
+//                                     horizontal: 8, vertical: 4),
+//                                 decoration: BoxDecoration(
+//                                     color: ProfessionalColors.accentPurple
+//                                         .withOpacity(0.9),
+//                                     borderRadius: BorderRadius.circular(4.0)),
+//                                 child: const Text('Web Series',
+//                                     style: TextStyle(
+//                                         color: ProfessionalColors.textPrimary,
+//                                         fontSize: 10,
+//                                         fontWeight: FontWeight.bold)))),
+//                       if (_hasFocus)
+//                         Positioned(
+//                             left: 5,
+//                             top: 5,
+//                             child: Container(
+//                                 color: Colors.black.withOpacity(0.4),
+//                                 child: Icon(Icons.play_circle_filled_outlined,
+//                                     color: focusColor, size: 40))),
+//                       Positioned(
+//                           top: 5,
+//                           right: 5,
+//                           child: CircleAvatar(
+//                               radius: 12,
+//                               backgroundImage: NetworkImage(widget.logoUrl),
+//                               backgroundColor: Colors.black54)),
+//                     ],
+//                   ),
+//                 ),
+//               ),
+//             ),
+//             Padding(
+//                 padding:
+//                     const EdgeInsets.only(top: 4.0, left: 2.0, right: 2.0),
+//                 child: Text(widget.movie.name,
+//                     style: TextStyle(
+//                         color: _hasFocus
+//                             ? focusColor
+//                             : ProfessionalColors.textSecondary,
+//                         fontSize: 14),
+//                     maxLines: 1,
+//                     overflow: TextOverflow.ellipsis)),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+// class GradientText extends StatelessWidget {
+//   const GradientText(this.text,
+//       {super.key, required this.gradient, this.style});
+//   final String text;
+//   final TextStyle? style;
+//   final Gradient gradient;
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return ShaderMask(
+//       blendMode: BlendMode.srcIn,
+//       shaderCallback: (bounds) => gradient
+//           .createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
+//       child: Text(text, style: style),
+//     );
+//   }
+// }
+
+// // ==========================================================
+// // HELPER FUNCTIONS
+// // ==========================================================
+
+// Widget displayImage(String imageUrl,
+//     {double? width, double? height, BoxFit fit = BoxFit.cover}) {
+//   if (imageUrl.isEmpty ||
+//       imageUrl == 'localImage' ||
+//       imageUrl.contains('localhost')) {
+//     return _buildErrorWidget(width, height);
+//   }
+//   if (imageUrl.startsWith('data:image')) {
+//     try {
+//       final imageBytes = base64Decode(imageUrl.split(',').last);
+//       return Image.memory(imageBytes,
+//           fit: fit,
+//           width: width,
+//           height: height,
+//           errorBuilder: (c, e, s) => _buildErrorWidget(width, height));
+//     } catch (e) {
+//       return _buildErrorWidget(width, height);
+//     }
+//   } else if (imageUrl.startsWith('http')) {
+//     if (imageUrl.toLowerCase().endsWith('.svg')) {
+//       return SvgPicture.network(imageUrl,
+//           width: width,
+//           height: height,
+//           fit: fit,
+//           placeholderBuilder: (c) => _buildLoadingWidget(width, height));
+//     } else {
+//       return Image.network(
+//         imageUrl,
+//         width: width,
+//         height: height,
+//         fit: fit,
+//         loadingBuilder: (c, child, progress) =>
+//             progress == null ? child : _buildLoadingWidget(width, height),
+//         errorBuilder: (c, e, s) => _buildErrorWidget(width, height),
+//       );
+//     }
+//   } else {
+//     return _buildErrorWidget(width, height);
+//   }
+// }
+
+// Widget _buildErrorWidget(double? width, double? height) {
+//   return Container(
+//     width: width,
+//     height: height,
+//     decoration: const BoxDecoration(
+//         gradient: LinearGradient(colors: [
+//       ProfessionalColors.accentGreen,
+//       ProfessionalColors.accentBlue
+//     ])),
+//     child: const Icon(Icons.broken_image, color: Colors.white, size: 24),
+//   );
+// }
+
+// Widget _buildLoadingWidget(double? width, double? height) {
+//   return SizedBox(
+//     width: width,
+//     height: height,
+//     child: const Center(
+//         child: CircularProgressIndicator(
+//             strokeWidth: 2,
+//             valueColor: AlwaysStoppedAnimation<Color>(Colors.white))),
+//   );
+// }
+
+
+
+
+// import 'dart:async';
+// import 'dart:convert';
+// import 'dart:ui';
+// import 'package:flutter/foundation.dart';
+// import 'package:flutter/material.dart';
+// import 'package:flutter/services.dart';
+// import 'package:flutter_svg/svg.dart';
+// import 'package:http/http.dart' as https;
+// import 'package:mobi_tv_entertainment/home_screen_pages/webseries_screen/webseries_details_page.dart';
+// import 'package:mobi_tv_entertainment/main.dart';
+// import 'package:mobi_tv_entertainment/provider/device_info_provider.dart';
+// import 'package:mobi_tv_entertainment/provider/internal_focus_provider.dart';
+// import 'package:mobi_tv_entertainment/video_widget/custom_youtube_player.dart';
+// import 'package:mobi_tv_entertainment/video_widget/video_screen.dart';
+// import 'package:mobi_tv_entertainment/video_widget/youtube_webview_player.dart';
+// import 'package:provider/provider.dart';
+// import 'package:shared_preferences/shared_preferences.dart';
+
+// // ==========================================================
+// // ENUMS AND DATA MODELS
+// // ==========================================================
+
+// enum LoadingState { initial, loading, rebuilding, loaded, error }
+
+// class ProfessionalColors {
+//   static const primaryDark = Color(0xFF0A0E1A);
+//   static const surfaceDark = Color(0xFF1A1D29);
+//   static const cardDark = Color(0xFF2A2D3A);
+//   static const accentBlue = Color(0xFF3B82F6);
+//   static const accentPurple = Color(0xFF8B5CF6);
+//   static const accentGreen = Color(0xFF10B981);
+//   static const accentRed = Color(0xFFEF4444);
+//   static const accentOrange = Color(0xFFF59E0B);
+//   static const accentPink = Color(0xFFEC4899);
+//   static const textPrimary = Color(0xFFFFFFFF);
+//   static const textSecondary = Color(0xFFB3B3B3);
+// }
+
+// class ContentSlider {
+//   final int id;
+//   final String title;
+//   final String? banner;
+//   final String? sliderFor;
+
+//   ContentSlider(
+//       {required this.id, required this.title, this.banner, this.sliderFor});
+
+//   factory ContentSlider.fromJson(Map<String, dynamic> json) {
+//     return ContentSlider(
+//       id: json['id'] ?? 0,
+//       title: json['title'] ?? 'No Title',
+//       banner: json['banner'],
+//       sliderFor: json['slider_for'],
+//     );
+//   }
+// }
+
+// class MovieResponse {
+//   final bool status;
+//   final int total;
+//   final List<Movie> data;
+//   final List<ContentSlider> contentSliders;
+
+//   MovieResponse({
+//     required this.status,
+//     required this.total,
+//     required this.data,
+//     required this.contentSliders,
+//   });
+
+//   factory MovieResponse.fromJson(Map<String, dynamic> json) {
+//     List<T> parseList<T>(String key, T Function(Map<String, dynamic>) fromJson) {
+//       if (json[key] is List) {
+//         return (json[key] as List)
+//             .map((i) => fromJson(i as Map<String, dynamic>))
+//             .toList();
+//       }
+//       return [];
+//     }
+
+//     return MovieResponse(
+//       status: json['status'] ?? false,
+//       total: json['total'] ?? 0,
+//       data: parseList('data', (i) => Movie.fromJson(i)),
+//       contentSliders:
+//           parseList('content_sliders', (i) => ContentSlider.fromJson(i)),
+//     );
+//   }
+// }
+
+// class Movie {
+//   final int id;
+//   final String name;
+//   final String? banner;
+//   final String? poster;
+//   final String? description;
+//   final String genres;
+//   final int? contentType;
+//   final String? sourceType;
+//   final String? youtubeTrailer;
+//   final String? updatedAt;
+//   final String? movieUrl;
+//   final int? status;
+
+//   Movie({
+//     required this.id,
+//     required this.name,
+//     this.banner,
+//     this.poster,
+//     this.description,
+//     required this.genres,
+//     this.contentType,
+//     this.sourceType,
+//     this.youtubeTrailer,
+//     this.updatedAt,
+//     this.movieUrl,
+//     this.status,
+//   });
+
+//   factory Movie.fromJson(Map<String, dynamic> json) {
+//     return Movie(
+//       id: json['id'] ?? 0,
+//       name: json['name'] ?? 'No Name',
+//       banner: json['banner'],
+//       poster: json['poster'],
+//       description: json['description'],
+//       genres: json['genres'] ?? 'Uncategorized',
+//       contentType: json['content_type'],
+//       sourceType: json['source_type'],
+//       youtubeTrailer: json['youtube_trailer'],
+//       updatedAt: json['updated_at'],
+//       movieUrl: json['movie_url'],
+//       status: json['status'],
+//     );
+//   }
+
+//   Map<String, dynamic> toMap() {
+//     return {
+//       'id': id,
+//       'name': name,
+//       'banner': banner,
+//       'poster': poster,
+//       'description': description,
+//       'genres': genres,
+//       'content_type': contentType,
+//       'source_type': sourceType,
+//       'youtube_trailer': youtubeTrailer,
+//       'updated_at': updatedAt,
+//       'movie_url': movieUrl,
+//       'status': status,
+//     };
+//   }
+
+//   factory Movie.fromMap(Map<String, dynamic> map) => Movie.fromJson(map);
+
+//   String getPlayableUrl() {
+//     if (sourceType == 'YoutubeLive') return movieUrl ?? '';
+//     if (youtubeTrailer != null && youtubeTrailer!.isNotEmpty) {
+//       return youtubeTrailer!;
+//     }
+//     return movieUrl ?? '';
+//   }
+// }
+
+// // ==========================================================
+// // GENRE MOVIES SCREEN
+// // ==========================================================
+
+// class GenreMoviesScreen extends StatefulWidget {
+//   final String tvChannelId;
+//   final String logoUrl;
+//   final String title;
+//   const GenreMoviesScreen(
+//       {super.key,
+//       required this.tvChannelId,
+//       required this.logoUrl,
+//       required this.title});
+//   @override
+//   State<GenreMoviesScreen> createState() => _GenreMoviesScreenState();
+// }
+
+// class _GenreMoviesScreenState extends State<GenreMoviesScreen> {
+//   LoadingState _loadingState = LoadingState.initial;
+//   String? _error;
+
+//   // Slider state variables
+//   List<ContentSlider> _contentSliders = [];
+//   late PageController _sliderPageController;
+//   Timer? _sliderTimer;
+//   int _currentSliderPage = 0;
+
+//   // Genre browsing state
+//   List<String> _genres = [];
+//   Map<String, List<Movie>> _moviesByGenre = {};
+//   int _selectedGenreIndex = 0;
+//   List<Movie> _currentDisplayList = []; // For shuffled list
+
+//   // Search state
+//   bool _isSearching = false;
+//   bool _showKeyboard = false;
+//   String _searchText = '';
+//   Timer? _debounce;
+//   List<Movie> _searchResults = [];
+//   bool _isSearchLoading = false;
+//   bool _isVideoLoading = false;
+
+//   // Focus Nodes
+//   late FocusNode _searchButtonFocusNode;
+//   List<FocusNode> _genreFocusNodes = [];
+//   List<FocusNode> _movieFocusNodes = [];
+
+//   // Keys and Controllers
+//   List<GlobalKey> _genreButtonKeys = [];
+//   List<GlobalKey> _movieCardKeys = [];
+//   final ScrollController _genreScrollController = ScrollController();
+//   final ScrollController _movieScrollController = ScrollController();
+
+//   final List<Color> _focusColors = [
+//     ProfessionalColors.accentBlue,
+//     ProfessionalColors.accentPurple,
+//     ProfessionalColors.accentGreen,
+//     ProfessionalColors.accentOrange,
+//     ProfessionalColors.accentPink,
+//     ProfessionalColors.accentRed
+//   ];
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     _searchButtonFocusNode = FocusNode();
+//     _searchButtonFocusNode.addListener(() {
+//       if (mounted) {
+//         setState(() {});
+//         if (_searchButtonFocusNode.hasFocus) {
+//           Provider.of<InternalFocusProvider>(context, listen: false)
+//               .updateName("Search");
+//         }
+//       }
+//     });
+
+//     _sliderPageController = PageController(initialPage: 0);
+
+//     WidgetsBinding.instance.addPostFrameCallback((_) {
+//       Provider.of<InternalFocusProvider>(context, listen: false).updateName('');
+//       _fetchAndProcessData();
+//     });
+//   }
+
+//   @override
+//   void dispose() {
+//     _cleanupResources();
+//     super.dispose();
+//   }
+
+//   void _cleanupResources() {
+//     _searchButtonFocusNode.dispose();
+//     for (var node in _genreFocusNodes) {
+//       node.dispose();
+//     }
+//     for (var node in _movieFocusNodes) {
+//       node.dispose();
+//     }
+//     _genreScrollController.dispose();
+//     _movieScrollController.dispose();
+
+//     _sliderPageController.dispose();
+//     _sliderTimer?.cancel();
+//     _debounce?.cancel();
+//   }
+  
+//   void _shuffleAndSetDisplayList() {
+//     if (_genres.isEmpty) return;
+
+//     final originalList = _moviesByGenre[_genres[_selectedGenreIndex]] ?? [];
+//     final shuffledList = List<Movie>.from(originalList)..shuffle();
+
+//     setState(() {
+//       _currentDisplayList = shuffledList;
+//     });
+//   }
+
+//   void _rebuildMovieNodes() {
+//     if (!mounted) return;
+//     for (var node in _movieFocusNodes) {
+//       node.dispose();
+//     }
+
+//     final currentList = _isSearching ? _searchResults : _currentDisplayList;
+
+//     _movieFocusNodes = List.generate(currentList.length, (i) => FocusNode());
+//     _movieCardKeys = List.generate(currentList.length, (i) => GlobalKey());
+
+//     for (int i = 0; i < currentList.length; i++) {
+//       _movieFocusNodes[i].addListener(() {
+//         if (_movieFocusNodes[i].hasFocus) _onMovieFocus(i);
+//       });
+//     }
+//   }
+
+//   // Future<void> _fetchAndProcessData() async {
+//   //   if (mounted) setState(() => _loadingState = LoadingState.loading);
+//   //   try {
+//   //     final prefs = await SharedPreferences.getInstance();
+//   //     final authKey = prefs.getString('result_auth_key') ?? '56456456456';
+
+//   //     final response = await https.post(
+//   //       Uri.parse(
+//   //           'https://dashboard.cpplayers.com/api/v2/getAllContentsOfNetworkNew'),
+//   //       headers: {
+//   //         'auth-key': authKey,
+//   //         'domain': 'coretechinfo.com',
+//   //         'Accept': 'application/json',
+//   //         'Content-Type': 'application/json'
+//   //       },
+//   //       body: json.encode({
+//   //         "genre": "",
+//   //         "network_id": widget.tvChannelId,
+//   //       }),
+//   //     );
+
+//   //     if (response.statusCode == 200) {
+//   //       final fullResponse =
+//   //           MovieResponse.fromJson(json.decode(response.body));
+
+//   //       if (fullResponse.status) {
+//   //         final allMovies =
+//   //             fullResponse.data.where((movie) => movie.status == 1).toList();
+
+//   //         final Map<String, List<Movie>> moviesByGenre = {};
+//   //         final Set<String> uniqueGenres = {};
+
+//   //         for (final movie in allMovies) {
+//   //           final genres =
+//   //               movie.genres.split(',').map((g) => g.trim()).toList();
+//   //           for (var genre in genres) {
+//   //             if (genre.isNotEmpty) {
+//   //               uniqueGenres.add(genre);
+//   //               if (moviesByGenre.containsKey(genre)) {
+//   //                 moviesByGenre[genre]!.add(movie);
+//   //               } else {
+//   //                 moviesByGenre[genre] = [movie];
+//   //               }
+//   //             }
+//   //           }
+//   //         }
+
+//   //         List<String> sortedGenres = uniqueGenres.toList();
+
+//   //         if (sortedGenres.contains('Web Series')) {
+//   //           sortedGenres.remove('Web Series');
+//   //           sortedGenres.sort();
+//   //           sortedGenres.insert(0, 'Web Series');
+//   //         } else {
+//   //           sortedGenres.sort();
+//   //         }
+
+//   //         if (!mounted) return;
+
+//   //         setState(() {
+//   //           _loadingState = LoadingState.rebuilding;
+//   //           // Filter sliders to only include those for "movies"
+//   //           _contentSliders = fullResponse.contentSliders
+//   //               .where((slider) => slider.sliderFor == 'movies')
+//   //               .toList();
+//   //           _genres = sortedGenres;
+//   //           _moviesByGenre = moviesByGenre;
+//   //           _selectedGenreIndex = 0;
+            
+//   //           _genreFocusNodes =
+//   //               List.generate(_genres.length, (i) => FocusNode());
+//   //           _genreButtonKeys =
+//   //               List.generate(_genres.length, (i) => GlobalKey());
+
+//   //           for (int i = 0; i < _genres.length; i++) {
+//   //             _genreFocusNodes[i].addListener(() {
+//   //               if (_genreFocusNodes[i].hasFocus) _onGenreFocus(i);
+//   //             });
+//   //           }
+//   //           _loadingState = LoadingState.loaded;
+//   //         });
+          
+//   //         _shuffleAndSetDisplayList();
+//   //         _rebuildMovieNodes();
+//   //         _setupSliderTimer();
+
+//   //         Future.delayed(const Duration(milliseconds: 200), () {
+//   //           if (mounted && _searchButtonFocusNode.canRequestFocus) {
+//   //             _searchButtonFocusNode.requestFocus();
+//   //           }
+//   //         });
+//   //       } else {
+//   //         throw Exception('API status returned false.');
+//   //       }
+//   //     } else {
+//   //       throw Exception('Failed to load data: ${response.statusCode}');
+//   //     }
+//   //   } catch (e) {
+//   //     if (mounted) {
+//   //       setState(() {
+//   //         _error = e.toString();
+//   //         _loadingState = LoadingState.error;
+//   //       });
+//   //     }
+//   //   }
+//   // }
+
+
+// // Replace the entire _fetchAndProcessData function with this one
+
+// Future<void> _fetchAndProcessData() async {
+//   if (mounted) setState(() => _loadingState = LoadingState.loading);
+//   try {
+//     final prefs = await SharedPreferences.getInstance();
+//     final authKey = prefs.getString('result_auth_key') ?? '56456456456';
+
+//     final commonHeaders = {
+//       'auth-key': authKey,
+//       'domain': 'coretechinfo.com',
+//       'Accept': 'application/json',
+//       'Content-Type': 'application/json'
+//     };
+
+//     List<String> apiGenres = [];
+//     bool genresFetchedSuccessfully = false;
+
+//     // ==========================================================
+//     // STEP 1: TRY TO FETCH GENRES FROM THE NEW API
+//     // ==========================================================
+//     try {
+//       final genreResponse = await https.post(
+//         Uri.parse('https://dashboard.cpplayers.com/api/v2/getGenreByContentNetwork'),
+//         headers: commonHeaders,
+//         body: json.encode({
+//           // The API expects an integer. Let's use 1 as a safer default than 0.
+//           "widget.tvChannelId": int.tryParse(widget.tvChannelId) ?? 1,
+//           "data_for": ""
+//         }),
+//       );
+
+//       if (genreResponse.statusCode == 200) {
+//         final genreData = json.decode(genreResponse.body);
+//         // Check for status: true AND that the genres list exists and is not empty
+//         if (genreData['status'] == true && genreData['genres'] != null) {
+//           apiGenres = List<String>.from(genreData['genres']);
+//           if (apiGenres.isNotEmpty) {
+//             genresFetchedSuccessfully = true;
+//             print("Successfully fetched genres from new API.");
+//           }
+//         }
+//       }
+//     } catch (e) {
+//       // If the new API call fails, we just print the error and continue.
+//       // The app will fall back to the old method automatically.
+//       print("Could not fetch genres from new API, falling back. Error: $e");
+//       genresFetchedSuccessfully = false;
+//     }
+
+//     // ==========================================================
+//     // STEP 2: ALWAYS FETCH ALL MOVIES
+//     // ==========================================================
+//     final movieResponse = await https.post(
+//       Uri.parse('https://dashboard.cpplayers.com/api/v2/getAllContentsOfNetworkNew'),
+//       headers: commonHeaders,
+//       body: json.encode({
+//         "genre": "",
+//         "network_id": widget.tvChannelId,
+//       }),
+//     );
+
+//     if (movieResponse.statusCode != 200) {
+//       throw Exception('Failed to load movies: ${movieResponse.statusCode}');
+//     }
+
+//     final fullResponse = MovieResponse.fromJson(json.decode(movieResponse.body));
+
+//     if (fullResponse.status) {
+//       final allMovies = fullResponse.data.where((movie) => movie.status == 1).toList();
+//       final Map<String, List<Movie>> moviesByGenre = {};
+
+//       for (final movie in allMovies) {
+//         final genres = movie.genres.split(',').map((g) => g.trim()).toList();
+//         for (var genre in genres) {
+//           if (genre.isNotEmpty) {
+//             moviesByGenre.putIfAbsent(genre, () => []).add(movie);
+//           }
+//         }
+//       }
+
+//       // ==========================================================
+//       // STEP 3: DECIDE WHICH GENRE LIST TO USE
+//       // ==========================================================
+//       List<String> finalGenres;
+
+//       if (genresFetchedSuccessfully) {
+//         // SUCCESS: Use the list from the new API
+//         finalGenres = apiGenres;
+//       } else {
+//         // FALLBACK: Use the old method to get genres from the movie list
+//         print("Using fallback method to get genres from movies.");
+//         final Set<String> uniqueGenres = {};
+//         for (final movie in allMovies) {
+//           final genres = movie.genres.split(',').map((g) => g.trim()).where((g) => g.isNotEmpty);
+//           uniqueGenres.addAll(genres);
+//         }
+//         finalGenres = uniqueGenres.toList();
+//       }
+
+//       // Now, sort whichever list of genres we ended up with
+//       List<String> sortedGenres = finalGenres;
+//       if (sortedGenres.contains('Web Series')) {
+//         sortedGenres.remove('Web Series');
+//         sortedGenres.sort();
+//         sortedGenres.insert(0, 'Web Series');
+//       } else {
+//         sortedGenres.sort();
+//       }
+
+//       if (!mounted) return;
+
+//       setState(() {
+//         _loadingState = LoadingState.rebuilding;
+//         _contentSliders = fullResponse.contentSliders.where((s) => s.sliderFor == 'movies').toList();
+//         _genres = sortedGenres; // Use the final sorted list
+//         _moviesByGenre = moviesByGenre;
+//         _selectedGenreIndex = 0;
+        
+//         _genreFocusNodes = List.generate(_genres.length, (_) => FocusNode());
+//         _genreButtonKeys = List.generate(_genres.length, (_) => GlobalKey());
+
+//         for (int i = 0; i < _genres.length; i++) {
+//           _genreFocusNodes[i].addListener(() {
+//             if (_genreFocusNodes[i].hasFocus) _onGenreFocus(i);
+//           });
+//         }
+//         _loadingState = LoadingState.loaded;
+//       });
+      
+//       _shuffleAndSetDisplayList();
+//       _rebuildMovieNodes();
+//       _setupSliderTimer();
+
+//       Future.delayed(const Duration(milliseconds: 200), () {
+//         if (mounted && _searchButtonFocusNode.canRequestFocus) {
+//           _searchButtonFocusNode.requestFocus();
+//         }
+//       });
+
+//     } else {
+//       throw Exception('Movie API status returned false.');
+//     }
+//   } catch (e) {
+//     if (mounted) {
+//       setState(() {
+//         _error = e.toString();
+//         _loadingState = LoadingState.error;
+//       });
+//     }
+//   }
+// }
+
+
+//   void _setupSliderTimer() {
+//     _sliderTimer?.cancel();
+//     if (_contentSliders.length > 1) {
+//       _sliderTimer = Timer.periodic(const Duration(seconds: 5), (Timer timer) {
+//         if (!mounted) return;
+
+//         int nextPage = _currentSliderPage + 1;
+
+//         if (nextPage >= _contentSliders.length) {
+//           if (_sliderPageController.hasClients) {
+//              _sliderPageController.jumpToPage(0);
+//           }
+//         } else {
+//           if (_sliderPageController.hasClients) {
+//             _sliderPageController.animateToPage(
+//               nextPage,
+//               duration: const Duration(milliseconds: 800),
+//               curve: Curves.easeInOut,
+//             );
+//           }
+//         }
+//       });
+//     }
+//   }
+
+//   Future<List<Movie>> _fetchMoviesBySearch(String searchTerm) async {
+//     try {
+//       final prefs = await SharedPreferences.getInstance();
+//       final authKey = prefs.getString('result_auth_key') ?? '56456456456';
+
+//       final response = await https.post(
+//         Uri.parse(
+//             'https://dashboard.cpplayers.com/api/v2/getAllContentsOfNetworkNew'),
+//         headers: {
+//           'auth-key': authKey,
+//           'domain': 'coretechinfo.com',
+//           'Accept': 'application/json',
+//           'Content-Type': 'application/json'
+//         },
+//         body: json.encode({
+//           "genre": "",
+//           "network_id": widget.tvChannelId,
+//         }),
+//       );
+
+//       if (response.statusCode == 200) {
+//         final movieData = MovieResponse.fromJson(json.decode(response.body));
+//         if (movieData.status) {
+//           List<Movie> allMovies =
+//               movieData.data.where((movie) => movie.status == 1).toList();
+
+//           if (searchTerm.isNotEmpty) {
+//             return allMovies
+//                 .where((movie) => movie.name
+//                     .toLowerCase()
+//                     .contains(searchTerm.toLowerCase()))
+//                 .toList();
+//           }
+//           return allMovies;
+//         }
+//       }
+//       return [];
+//     } catch (e) {
+//       print("Search API Error: $e");
+//       return [];
+//     }
+//   }
+
+//   void _performSearch(String searchTerm) {
+//     _debounce?.cancel();
+//     if (searchTerm.trim().isEmpty) {
+//       setState(() {
+//         _isSearching = false;
+//         _isSearchLoading = false;
+//         _searchResults.clear();
+//         _rebuildMovieNodes();
+//       });
+//       return;
+//     }
+
+//     _debounce = Timer(const Duration(milliseconds: 400), () async {
+//       if (!mounted) return;
+//       setState(() {
+//         _isSearchLoading = true;
+//         _isSearching = true;
+//         _searchResults.clear();
+//       });
+
+//       final results = await _fetchMoviesBySearch(searchTerm);
+//       if (!mounted) return;
+
+//       setState(() {
+//         _searchResults = results;
+//         _isSearchLoading = false;
+//         _rebuildMovieNodes();
+//       });
+//     });
+//   }
+
+//   void _onKeyPressed(String value) {
+//     setState(() {
+//       if (value == 'OK') {
+//         _showKeyboard = false;
+//         if (_movieFocusNodes.isNotEmpty) {
+//           _movieFocusNodes.first.requestFocus();
+//         } else {
+//           _searchButtonFocusNode.requestFocus();
+//         }
+//         return;
+//       }
+
+//       if (value == 'DEL') {
+//         if (_searchText.isNotEmpty) {
+//           _searchText = _searchText.substring(0, _searchText.length - 1);
+//         }
+//       } else if (value == ' ') {
+//         _searchText += ' ';
+//       } else {
+//         _searchText += value;
+//       }
+//       _performSearch(_searchText);
+//     });
+//   }
+
+//   void _updateMoviesForGenre(int index) {
+//     if (_isSearching) {
+//       setState(() {
+//         _isSearching = false;
+//         _searchText = '';
+//         _searchResults.clear();
+//       });
+//     }
+
+//     if (_selectedGenreIndex == index) {
+//         _shuffleAndSetDisplayList();
+//         _rebuildMovieNodes();
+//         return;
+//     };
+
+//     setState(() {
+//       _selectedGenreIndex = index;
+//     });
+    
+//     _shuffleAndSetDisplayList();
+//     _rebuildMovieNodes();
+//   }
+
+//   void _onGenreFocus(int index) {
+//     if (!mounted || index >= _genres.length) return;
+//     Provider.of<InternalFocusProvider>(context, listen: false)
+//         .updateName(_genres[index]);
+
+//     final buttonContext = _genreButtonKeys[index].currentContext;
+//     if (buttonContext != null) {
+//       Scrollable.ensureVisible(buttonContext,
+//           duration: const Duration(milliseconds: 300),
+//           curve: Curves.easeOut,
+//           alignment: 0.5);
+//     }
+//   }
+
+//   void _onMovieFocus(int index) {
+//     if (!mounted) return;
+    
+//     final currentList = _isSearching ? _searchResults : _currentDisplayList;
+
+//     if (index < currentList.length) {
+//       Provider.of<InternalFocusProvider>(context, listen: false)
+//           .updateName(currentList[index].name);
+//     }
+
+//     final cardContext = _movieCardKeys[index].currentContext;
+//     if (cardContext != null) {
+//       Scrollable.ensureVisible(cardContext,
+//           duration: const Duration(milliseconds: 300),
+//           curve: Curves.easeOut,
+//           alignment: 0.5);
+//     }
+//   }
+
+//   Future<void> _playContent(Movie content) async {
+//     if (_isVideoLoading || !mounted) return;
+//     setState(() {
+//       _isVideoLoading = true;
+//     });
+
+//     try {
+//       String playableUrl = content.getPlayableUrl();
+
+//       if (content.contentType == 2) {
+//         await Navigator.push(
+//           context,
+//           MaterialPageRoute(
+//             builder: (context) => WebSeriesDetailsPage(
+//               id: content.id,
+//               banner: content.banner ?? '',
+//               poster: content.poster ?? '',
+//               logo: widget.logoUrl,
+//               name: content.name,
+//               updatedAt: content.updatedAt ?? '',
+//             ),
+//           ),
+//         );
+//         return;
+//       }
+
+//       if (playableUrl.isEmpty) {
+//         throw Exception('No video URL found');
+//       }
+
+//       if (!mounted) return;
+
+//       if (content.sourceType == 'YoutubeLive' ||
+//           (content.youtubeTrailer != null &&
+//               content.youtubeTrailer!.isNotEmpty)) {
+//         final deviceInfo = context.read<DeviceInfoProvider>();
+//         if (deviceInfo.deviceName == 'AFTSS : Amazon Fire Stick HD') {
+//           await Navigator.push(
+//               context,
+//               MaterialPageRoute(
+//                   builder: (context) => YoutubeWebviewPlayer(
+//                       videoUrl: playableUrl, name: content.name)));
+//         } else {
+//           await Navigator.push(
+//             context,
+//             MaterialPageRoute(
+//               builder: (context) => CustomYoutubePlayer(
+//                 videoData: VideoData(
+//                   id: content.id.toString(),
+//                   title: content.name,
+//                   youtubeUrl: playableUrl,
+//                   thumbnail: content.poster ?? content.banner ?? '',
+//                   description: content.description ?? '',
+//                 ),
+//                 playlist: [],
+//               ),
+//             ),
+//           );
+//         }
+//       } else {
+//         await Navigator.push(
+//           context,
+//           MaterialPageRoute(
+//             builder: (context) => VideoScreen(
+//               videoUrl: playableUrl,
+//               bannerImageUrl: content.poster ?? content.banner ?? '',
+//               videoId: content.id,
+//               name: content.name,
+//               updatedAt: content.updatedAt ?? '',
+//               source: 'isVod',
+//               channelList: [],
+//               liveStatus: false,
+//             ),
+//           ),
+//         );
+//       }
+//     } catch (e) {
+//       if (mounted) {
+//         ScaffoldMessenger.of(context)
+//             .showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
+//       }
+//     } finally {
+//       if (mounted) {
+//         setState(() {
+//           _isVideoLoading = false;
+//         });
+//       }
+//     }
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final screenSize = MediaQuery.of(context).size;
+
+//     return Scaffold(
+//       backgroundColor: ProfessionalColors.primaryDark,
+//       body: Stack(
+//         fit: StackFit.expand,
+//         children: [
+//           // Layer 1: NEW Full-screen background slider
+//           if (_loadingState == LoadingState.loaded)
+//             _showKeyboard
+//                 ? Container(color: ProfessionalColors.primaryDark)
+//                 : _buildBackgroundSlider(),
+
+//           // Layer 2: Original UI structure (Loading, Error, or Content)
+//           if (_loadingState == LoadingState.loading ||
+//               _loadingState == LoadingState.initial)
+//             const Center(child: CircularProgressIndicator())
+//           else if (_error != null)
+//             Center(
+//                 child: Text('Error: $_error',
+//                     style: const TextStyle(color: Colors.white)))
+//           else
+//             Column(
+//               children: [
+//                 SizedBox(
+//                   height: screenSize.height * 0.63,
+//                   child: _showKeyboard
+//                       ? _buildSearchUI()
+//                       : const SizedBox
+//                           .shrink(), // Transparent placeholder for the old slider
+//                 ),
+//                 _buildGenreButtons(),
+//                 SizedBox(
+//                   height: bannerhgt * 1.5,
+//                   child: _buildMoviesList(),
+//                 ),
+//               ],
+//             ),
+
+//           // Layer 3: Positioned AppBar (now always visible when loaded)
+//           if (_loadingState == LoadingState.loaded)
+//             Positioned(
+//                 top: 0,
+//                 left: 0,
+//                 right: 0,
+//                 child: _buildBeautifulAppBar()),
+
+//           // Layer 4: Video loading overlay
+//           if (_isVideoLoading)
+//             Container(
+//               color: Colors.black.withOpacity(0.7),
+//               child: const Center(
+//                   child: CircularProgressIndicator(
+//                       valueColor: AlwaysStoppedAnimation<Color>(Colors.white))),
+//             ),
+//         ],
+//       ),
+//     );
+//   }
+
+//   Widget _buildBackgroundSlider() {
+//     return Stack(
+//       fit: StackFit.expand,
+//       children: [
+//         // Use PageView if sliders exist, otherwise show a fallback image
+//         if (_contentSliders.isNotEmpty)
+//           PageView.builder(
+//             controller: _sliderPageController,
+//             itemCount: _contentSliders.length,
+//             onPageChanged: (index) {
+//               if (mounted) {
+//                 setState(() {
+//                   _currentSliderPage = index;
+//                 });
+//               }
+//             },
+//             itemBuilder: (context, index) {
+//               final slider = _contentSliders[index];
+//               return displayImage(
+//                 slider.banner ?? '',
+//                 width: double.infinity,
+//                 height: double.infinity,
+//                 fit: BoxFit.cover,
+//               );
+//             },
+//           )
+//         else
+//           // Fallback background
+//           displayImage(
+//             widget.logoUrl,
+//             width: double.infinity,
+//             height: double.infinity,
+//             fit: BoxFit.cover,
+//           ),
+
+//         // Gradient overlay for readability
+//         Container(
+//           decoration: BoxDecoration(
+//             gradient: LinearGradient(
+//               begin: Alignment.topCenter,
+//               end: Alignment.bottomCenter,
+//               colors: [
+//                 Colors.transparent,
+//                 ProfessionalColors.primaryDark.withOpacity(0.3),
+//                 ProfessionalColors.primaryDark.withOpacity(0.5),
+//                 ProfessionalColors.primaryDark.withOpacity(0.9),
+//               ],
+//               stops: const [0.3,0.5, 0.8, 0.9],
+//             ),
+//           ),
+//         ),
+
+//         // Slider indicator positioned at the bottom of the background
+//         if (_contentSliders.length > 1)
+//           Positioned(
+//             bottom:
+//                 bannerhgt * 1.5 + (screenhgt * 0.1) + 20, // Position above lists
+//             left: 0,
+//             right: 0,
+//             child: _buildSliderIndicator(),
+//           )
+//       ],
+//     );
+//   }
+
+//   Widget _buildBeautifulAppBar() {
+//     final focusedName = context.watch<InternalFocusProvider>().focusedItemName;
+//     return Container(
+//       decoration: BoxDecoration(
+//         gradient: LinearGradient(
+//             begin: Alignment.topCenter,
+//             end: Alignment.bottomCenter,
+//             colors: [
+//               ProfessionalColors.primaryDark.withOpacity(0.95),
+//               ProfessionalColors.surfaceDark.withOpacity(0.9),
+//               ProfessionalColors.surfaceDark.withOpacity(0.8),
+//               Colors.transparent
+//             ]),
+//       ),
+//       child: ClipRRect(
+//         child: BackdropFilter(
+//           filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
+//           child: Container(
+//             padding: EdgeInsets.only(
+//                 top: MediaQuery.of(context).padding.top + 10,
+//                 left: 20,
+//                 right: 30,
+//                 bottom: 10),
+//             child: Row(
+//               children: [
+//                 const SizedBox(width: 16),
+//                 GradientText(widget.title,
+//                     style: const TextStyle(
+//                         fontWeight: FontWeight.bold, fontSize: 22),
+//                     gradient: const LinearGradient(colors: [
+//                       ProfessionalColors.accentPink,
+//                       ProfessionalColors.accentPurple,
+//                       ProfessionalColors.accentBlue
+//                     ])),
+//                 const SizedBox(width: 40),
+//                 Expanded(
+//                     child: Text(focusedName,
+//                         textAlign: TextAlign.left,
+//                         style: const TextStyle(
+//                             color: ProfessionalColors.textSecondary,
+//                             fontWeight: FontWeight.bold,
+//                             fontSize: 20),
+//                         overflow: TextOverflow.ellipsis)),
+//               ],
+//             ),
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildSearchUI() {
+//     return Row(
+//       crossAxisAlignment: CrossAxisAlignment.center,
+//       children: [
+//         Expanded(
+//           flex: 4,
+//           child: Container(
+//             padding: const EdgeInsets.symmetric(horizontal: 40),
+//             child: Column(
+//               mainAxisAlignment: MainAxisAlignment.center,
+//               children: [
+//                 const GradientText(
+//                   "Search for Content",
+//                   style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+//                   gradient: LinearGradient(colors: [
+//                     ProfessionalColors.accentBlue,
+//                     ProfessionalColors.accentPurple
+//                   ]),
+//                 ),
+//                 const SizedBox(height: 24),
+//                 Container(
+//                   width: double.infinity,
+//                   padding:
+//                       const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+//                   decoration: BoxDecoration(
+//                     color: Colors.white.withOpacity(0.05),
+//                     borderRadius: BorderRadius.circular(10),
+//                     border: Border.all(
+//                         color: ProfessionalColors.accentPurple, width: 2),
+//                   ),
+//                   child: Text(
+//                     _searchText.isEmpty ? 'Start typing...' : _searchText,
+//                     textAlign: TextAlign.center,
+//                     style: TextStyle(
+//                       color:
+//                           _searchText.isEmpty ? Colors.white54 : Colors.white,
+//                       fontSize: 22,
+//                       fontWeight: FontWeight.w600,
+//                     ),
+//                     overflow: TextOverflow.ellipsis,
+//                   ),
+//                 ),
+//               ],
+//             ),
+//           ),
+//         ),
+//         Expanded(
+//           flex: 6,
+//           child: _buildQwertyKeyboard(),
+//         ),
+//       ],
+//     );
+//   }
+
+//   Widget _buildQwertyKeyboard() {
+//     final row1 = "1234567890".split('');
+//     final row2 = "qwertyuiop".split('');
+//     final row3 = "asdfghjkl".split('');
+//     final row4 = ["zxcvbnm", "DEL"]
+//         .expand((e) => e == "DEL" ? [e] : e.split(''))
+//         .toList();
+//     final row5 = [" ", "OK"];
+
+//     return Container(
+//       color: Colors.transparent,
+//       padding: const EdgeInsets.all(10),
+//       child: Column(
+//         mainAxisAlignment: MainAxisAlignment.end,
+//         children: [
+//           _buildKeyboardRow(row1),
+//           _buildKeyboardRow(row2),
+//           _buildKeyboardRow(row3),
+//           _buildKeyboardRow(row4),
+//           _buildKeyboardRow(row5),
+//         ],
+//       ),
+//     );
+//   }
+
+//   Widget _buildKeyboardRow(List<String> keys) {
+//     return Row(
+//       mainAxisAlignment: MainAxisAlignment.center,
+//       children: keys.map((key) {
+//         final screenWidth = MediaQuery.of(context).size.width;
+//         final screenHeight = MediaQuery.of(context).size.height;
+//         double width;
+
+//         const double keyWidthFactor = 0.045;
+//         const double keyHeightFactor = 0.08;
+//         const double keyFontSize = 22.0;
+//         const double keyMargin = 4.0;
+//         const double keyBorderRadius = 12.0;
+
+//         if (key == ' ') {
+//           width = screenWidth * 0.315;
+//         } else if (key == 'OK' || key == 'DEL') {
+//           width = screenWidth * 0.09;
+//         } else {
+//           width = screenWidth * keyWidthFactor;
+//         }
+
+//         return Container(
+//           width: width,
+//           height: screenHeight * keyHeightFactor,
+//           margin: const EdgeInsets.all(keyMargin),
+//           child: ElevatedButton(
+//             onPressed: () => _onKeyPressed(key),
+//             style: ElevatedButton.styleFrom(
+//                 backgroundColor: Colors.white.withOpacity(0.1),
+//                 foregroundColor: Colors.white,
+//                 shape: RoundedRectangleBorder(
+//                     borderRadius: BorderRadius.circular(keyBorderRadius)),
+//                 padding: EdgeInsets.zero),
+//             child: Text(key,
+//                 style: const TextStyle(
+//                     fontSize: keyFontSize, fontWeight: FontWeight.bold)),
+//           ),
+//         );
+//       }).toList(),
+//     );
+//   }
+
+//   Widget _buildSliderIndicator() {
+//     return Row(
+//       mainAxisAlignment: MainAxisAlignment.center,
+//       children: _contentSliders.asMap().entries.map((entry) {
+//         int index = entry.key;
+//         return AnimatedContainer(
+//           duration: const Duration(milliseconds: 300),
+//           width: _currentSliderPage == index ? 12.0 : 8.0,
+//           height: _currentSliderPage == index ? 12.0 : 8.0,
+//           margin: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 4.0),
+//           decoration: BoxDecoration(
+//             shape: BoxShape.circle,
+//             color: _currentSliderPage == index
+//                 ? ProfessionalColors.accentBlue
+//                 : Colors.white.withOpacity(0.4),
+//           ),
+//         );
+//       }).toList(),
+//     );
+//   }
+
+//   // ==========================================================
+//   // MODIFIED WIDGET
+//   // ==========================================================
+
+
+// // ==========================================================
+// // MODIFIED WIDGET
+// // ==========================================================
+// Widget _buildGenreButtons() {
+//   return SizedBox(
+//     height: screenhgt * 0.1,
+//     child: ListView.builder(
+//       controller: _genreScrollController,
+//       scrollDirection: Axis.horizontal,
+//       itemCount: _genres.length + 1,
+//       padding: EdgeInsets.symmetric(
+//           horizontal: screenwdt * 0.002, vertical: screenhgt * 0.01),
+//       itemBuilder: (context, index) {
+//         if (index == 0) {
+//           // Search Button
+//           return Focus(
+//             focusNode: _searchButtonFocusNode,
+//             onKey: (node, event) {
+//               if (event is RawKeyDownEvent &&
+//                   (event.logicalKey == LogicalKeyboardKey.enter ||
+//                       event.logicalKey == LogicalKeyboardKey.select)) {
+//                 setState(() => _showKeyboard = true);
+//                 return KeyEventResult.handled;
+//               }
+//               if (event is RawKeyDownEvent &&
+//                   event.logicalKey == LogicalKeyboardKey.arrowRight) {
+//                 if (_genreFocusNodes.isNotEmpty) {
+//                   _genreFocusNodes.first.requestFocus();
+//                   return KeyEventResult.handled;
+//                 }
+//               }
+//               return KeyEventResult.ignored;
+//             },
+//             child: GestureDetector(
+//               onTap: () {
+//                 _searchButtonFocusNode.requestFocus();
+//                 setState(() => _showKeyboard = true);
+//               },
+//               child: Container(
+//                 margin: const EdgeInsets.only(right: 15),
+//                 child: ClipRRect(
+//                   borderRadius: BorderRadius.circular(30),
+//                   child: BackdropFilter(
+//                     filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+//                     child: AnimatedContainer(
+//                       duration: const Duration(milliseconds: 200),
+//                       padding: const EdgeInsets.symmetric(
+//                           horizontal: 24, vertical: 8),
+//                       decoration: BoxDecoration(
+//                         color: _searchButtonFocusNode.hasFocus
+//                             ? ProfessionalColors.accentOrange.withOpacity(0.7)
+//                             : (_isSearching
+//                                 ? ProfessionalColors.accentPurple
+//                                     .withOpacity(0.6)
+//                                 : Colors.white.withOpacity(0.08)),
+//                         gradient: LinearGradient(
+//                           begin: Alignment.topLeft,
+//                           end: Alignment.bottomRight,
+//                           colors: [
+//                             Colors.black.withOpacity(0.25),
+//                             Colors.white.withOpacity(0.1),
+//                           ],
+//                           stops: const [0.0, 0.8],
+//                         ),
+//                         borderRadius: BorderRadius.circular(30),
+//                         border: Border.all(
+//                           color: _searchButtonFocusNode.hasFocus
+//                               ? Colors.white
+//                               : Colors.white.withOpacity(0.3),
+//                           width: _searchButtonFocusNode.hasFocus ? 3 : 2,
+//                         ),
+//                         boxShadow: _searchButtonFocusNode.hasFocus
+//                             ? [
+//                                 BoxShadow(
+//                                   color: ProfessionalColors.accentOrange
+//                                       .withOpacity(0.8),
+//                                   blurRadius: 15,
+//                                   spreadRadius: 3,
+//                                 )
+//                               ]
+//                             : null,
+//                       ),
+//                       child: const Row(
+//                         mainAxisSize: MainAxisSize.min,
+//                         children: [
+//                           Icon(Icons.search, color: Colors.white),
+//                           SizedBox(width: 8),
+//                           Text("Search",
+//                               style: TextStyle(
+//                                   color: Colors.white,
+//                                   fontWeight: FontWeight.bold,
+//                                   fontSize: 16)),
+//                         ],
+//                       ),
+//                     ),
+//                   ),
+//                 ),
+//               ),
+//             ),
+//           );
+//         }
+
+//         // Genre Buttons
+//         final genreIndex = index - 1;
+//         final genre = _genres[genreIndex];
+//         final isSelected = !_isSearching && _selectedGenreIndex == genreIndex;
+//         return Focus(
+//           focusNode: _genreFocusNodes[genreIndex],
+//           onKey: (node, event) {
+//             if (event is RawKeyDownEvent) {
+//               if (event.logicalKey == LogicalKeyboardKey.arrowLeft &&
+//                   genreIndex == 0) {
+//                 _searchButtonFocusNode.requestFocus();
+//                 return KeyEventResult.handled;
+//               }
+//               if (event.logicalKey == LogicalKeyboardKey.enter ||
+//                   event.logicalKey == LogicalKeyboardKey.select) {
+//                 _updateMoviesForGenre(genreIndex);
+//                 return KeyEventResult.handled;
+//               }
+//             }
+//             return KeyEventResult.ignored;
+//           },
+//           child: GestureDetector(
+//             onTap: () => _genreFocusNodes[genreIndex].requestFocus(),
+//             child: Container(
+//               key: _genreButtonKeys[genreIndex],
+//               margin: const EdgeInsets.only(right: 15),
+//               child: ClipRRect(
+//                 borderRadius: BorderRadius.circular(30.0),
+//                 child: BackdropFilter(
+//                   filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+//                   child: AnimatedContainer(
+//                     duration: const Duration(milliseconds: 200),
+//                     padding: const EdgeInsets.symmetric(
+//                         horizontal: 24, vertical: 8),
+//                     decoration: BoxDecoration(
+//                         color: isSelected
+//                             ? _focusColors[genreIndex % _focusColors.length]
+//                                 .withOpacity(0.6)
+//                             : Colors.white.withOpacity(0.08),
+//                         gradient: LinearGradient(
+//                           begin: Alignment.topLeft,
+//                           end: Alignment.bottomRight,
+//                           colors: [
+//                             Colors.black.withOpacity(0.25),
+//                             Colors.white.withOpacity(0.1),
+//                           ],
+//                           stops: const [0.0, 0.8],
+//                         ),
+//                         borderRadius: BorderRadius.circular(30),
+//                         border: Border.all(
+//                           color: _genreFocusNodes[genreIndex].hasFocus
+//                               ? Colors.white
+//                               : Colors.white.withOpacity(0.3),
+//                           width: _genreFocusNodes[genreIndex].hasFocus ? 3 : 2,
+//                         ),
+//                         boxShadow: _genreFocusNodes[genreIndex].hasFocus
+//                             ? [
+//                                 BoxShadow(
+//                                   color: _focusColors[
+//                                           genreIndex % _focusColors.length]
+//                                       .withOpacity(0.8),
+//                                   blurRadius: 15,
+//                                   spreadRadius: 3,
+//                                 )
+//                               ]
+//                             : null),
+//                     child: Center(
+//                       child: Text(
+//                         genre,
+//                         style: const TextStyle(
+//                           color: Colors.white,
+//                           fontWeight: FontWeight.bold,
+//                           fontSize: 16,
+//                         ),
+//                       ),
+//                     ),
+//                   ),
+//                 ),
+//               ),
+//             ),
+//           ));
+//         },
+//       ),
+//     );
+//   }
+//   // ==========================================================
+
+//   Widget _buildMoviesList() {
+//     final currentList = _isSearching ? _searchResults : _currentDisplayList;
+
+//     if (_isSearchLoading) {
+//       return const Center(child: CircularProgressIndicator());
+//     }
+
+//     if (currentList.isEmpty) {
+//       return Center(
+//         child: Text(
+//           _isSearching && _searchText.isNotEmpty
+//               ? "No results found for '$_searchText'"
+//               : "No content available for this genre.",
+//           style: const TextStyle(
+//               color: ProfessionalColors.textSecondary, fontSize: 16),
+//         ),
+//       );
+//     }
+
+//     return Padding(
+//       padding: const EdgeInsets.only(top: 10.0),
+//       child: ListView.builder(
+//         controller: _movieScrollController,
+//         scrollDirection: Axis.horizontal,
+//         itemCount: currentList.length,
+//         padding: const EdgeInsets.symmetric(horizontal: 30.0),
+//         itemBuilder: (context, index) {
+//           final movie = currentList[index];
+//           return Focus(
+//             focusNode: _movieFocusNodes[index],
+//             onKey: (node, event) {
+//               if (event is RawKeyDownEvent) {
+//                 if (event.logicalKey == LogicalKeyboardKey.select ||
+//                     event.logicalKey == LogicalKeyboardKey.enter) {
+//                   _playContent(movie);
+//                   return KeyEventResult.handled;
+//                 }
+//               }
+//               return KeyEventResult.ignored;
+//             },
+//             child: MovieCard(
+//                 key: _movieCardKeys[index],
+//                 movie: movie,
+//                 logoUrl: widget.logoUrl,
+//                 focusNode: _movieFocusNodes[index],
+//                 focusColors: _focusColors,
+//                 uniqueIndex: index,
+//                 onTap: () => _playContent(movie)),
+//           );
+//         },
+//       ),
+//     );
+//   }
+// }
+
+// // ==========================================================
+// // REUSABLE WIDGETS
+// // ==========================================================
+
+// class MovieCard extends StatefulWidget {
+//   final Movie movie;
+//   final String logoUrl;
+//   final FocusNode focusNode;
+//   final List<Color> focusColors;
+//   final int uniqueIndex;
+//   final VoidCallback onTap;
+
+//   const MovieCard(
+//       {super.key,
+//       required this.movie,
+//       required this.logoUrl,
+//       required this.focusNode,
+//       required this.focusColors,
+//       required this.uniqueIndex,
+//       required this.onTap});
+
+//   @override
+//   State<MovieCard> createState() => _MovieCardState();
+// }
+
+// class _MovieCardState extends State<MovieCard> {
+//   bool _hasFocus = false;
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     widget.focusNode.addListener(_onFocusChange);
+//   }
+
+//   @override
+//   void dispose() {
+//     widget.focusNode.removeListener(_onFocusChange);
+//     super.dispose();
+//   }
+
+//   void _onFocusChange() {
+//     if (mounted && widget.focusNode.hasFocus != _hasFocus) {
+//       setState(() {
+//         _hasFocus = widget.focusNode.hasFocus;
+//       });
+//     }
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final focusColor =
+//         widget.focusColors[widget.uniqueIndex % widget.focusColors.length];
+
+//     final screenSize = MediaQuery.of(context).size;
+
+//     return Container(
+//       width: screenSize.width / 7,
+//       margin: const EdgeInsets.only(right: 12.0),
+//       child: GestureDetector(
+//         onTap: widget.onTap,
+//         child: Column(
+//           crossAxisAlignment: CrossAxisAlignment.start,
+//           mainAxisSize: MainAxisSize.min,
+//           children: [
+//             Expanded(
+//               child: Container(
+//                 decoration: BoxDecoration(
+//                     borderRadius: BorderRadius.circular(8.0),
+//                     border: _hasFocus
+//                         ? Border.all(color: focusColor, width: 3)
+//                         : Border.all(color: Colors.transparent, width: 3),
+//                     boxShadow: _hasFocus
+//                         ? [
+//                             BoxShadow(
+//                                 color: focusColor.withOpacity(0.5),
+//                                 blurRadius: 12,
+//                                 spreadRadius: 1)
+//                           ]
+//                         : []),
+//                 child: ClipRRect(
+//                   borderRadius: BorderRadius.circular(6.0),
+//                   child: Stack(
+//                     fit: StackFit.expand,
+//                     children: [
+//                       displayImage(
+//                           widget.movie.banner ?? widget.movie.poster ?? '',
+//                           fit: BoxFit.cover),
+//                       if (widget.movie.contentType == 2)
+//                         Positioned(
+//                             bottom: 8,
+//                             left: 8,
+//                             child: Container(
+//                                 padding: const EdgeInsets.symmetric(
+//                                     horizontal: 8, vertical: 4),
+//                                 decoration: BoxDecoration(
+//                                     color: ProfessionalColors.accentPurple
+//                                         .withOpacity(0.9),
+//                                     borderRadius: BorderRadius.circular(4.0)),
+//                                 child: const Text('Web Series',
+//                                     style: TextStyle(
+//                                         color: ProfessionalColors.textPrimary,
+//                                         fontSize: 10,
+//                                         fontWeight: FontWeight.bold)))),
+//                       if (_hasFocus)
+//                         Positioned(
+//                             left: 5,
+//                             top: 5,
+//                             child: Container(
+//                                 color: Colors.black.withOpacity(0.4),
+//                                 child: Icon(Icons.play_circle_filled_outlined,
+//                                     color: focusColor, size: 40))),
+//                       Positioned(
+//                           top: 5,
+//                           right: 5,
+//                           child: CircleAvatar(
+//                               radius: 12,
+//                               backgroundImage: NetworkImage(widget.logoUrl),
+//                               backgroundColor: Colors.black54)),
+//                     ],
+//                   ),
+//                 ),
+//               ),
+//             ),
+//             Padding(
+//                 padding:
+//                     const EdgeInsets.only(top: 4.0, left: 2.0, right: 2.0),
+//                 child: Text(widget.movie.name,
+//                     style: TextStyle(
+//                         color: _hasFocus
+//                             ? focusColor
+//                             : ProfessionalColors.textSecondary,
+//                         fontSize: 14),
+//                     maxLines: 1,
+//                     overflow: TextOverflow.ellipsis)),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+// class GradientText extends StatelessWidget {
+//   const GradientText(this.text,
+//       {super.key, required this.gradient, this.style});
+//   final String text;
+//   final TextStyle? style;
+//   final Gradient gradient;
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return ShaderMask(
+//       blendMode: BlendMode.srcIn,
+//       shaderCallback: (bounds) => gradient
+//           .createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
+//       child: Text(text, style: style),
+//     );
+//   }
+// }
+
+// // ==========================================================
+// // HELPER FUNCTIONS
+// // ==========================================================
+
+// Widget displayImage(String imageUrl,
+//     {double? width, double? height, BoxFit fit = BoxFit.cover}) {
+//   if (imageUrl.isEmpty ||
+//       imageUrl == 'localImage' ||
+//       imageUrl.contains('localhost')) {
+//     return _buildErrorWidget(width, height);
+//   }
+//   if (imageUrl.startsWith('data:image')) {
+//     try {
+//       final imageBytes = base64Decode(imageUrl.split(',').last);
+//       return Image.memory(imageBytes,
+//           fit: fit,
+//           width: width,
+//           height: height,
+//           errorBuilder: (c, e, s) => _buildErrorWidget(width, height));
+//     } catch (e) {
+//       return _buildErrorWidget(width, height);
+//     }
+//   } else if (imageUrl.startsWith('http')) {
+//     if (imageUrl.toLowerCase().endsWith('.svg')) {
+//       return SvgPicture.network(imageUrl,
+//           width: width,
+//           height: height,
+//           fit: fit,
+//           placeholderBuilder: (c) => _buildLoadingWidget(width, height));
+//     } else {
+//       return Image.network(
+//         imageUrl,
+//         width: width,
+//         height: height,
+//         fit: fit,
+//         loadingBuilder: (c, child, progress) =>
+//             progress == null ? child : _buildLoadingWidget(width, height),
+//         errorBuilder: (c, e, s) => _buildErrorWidget(width, height),
+//       );
+//     }
+//   } else {
+//     return _buildErrorWidget(width, height);
+//   }
+// }
+
+// Widget _buildErrorWidget(double? width, double? height) {
+//   return Container(
+//     width: width,
+//     height: height,
+//     decoration: const BoxDecoration(
+//         gradient: LinearGradient(colors: [
+//       ProfessionalColors.accentGreen,
+//       ProfessionalColors.accentBlue
+//     ])),
+//     child: const Icon(Icons.broken_image, color: Colors.white, size: 24),
+//   );
+// }
+
+// Widget _buildLoadingWidget(double? width, double? height) {
+//   return SizedBox(
+//     width: width,
+//     height: height,
+//     child: const Center(
+//         child: CircularProgressIndicator(
+//             strokeWidth: 2,
+//             valueColor: AlwaysStoppedAnimation<Color>(Colors.white))),
+//   );
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:ui';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:http/http.dart' as http;
 import 'package:mobi_tv_entertainment/home_screen_pages/webseries_screen/webseries_details_page.dart';
 import 'package:mobi_tv_entertainment/main.dart';
@@ -7685,12 +10752,11 @@ import 'package:mobi_tv_entertainment/video_widget/video_screen.dart';
 import 'package:mobi_tv_entertainment/video_widget/youtube_webview_player.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:math' as math;
 
-// ==========================================================
-// ENUMS AND DATA MODELS
-// ==========================================================
-
-enum LoadingState { initial, loading, rebuilding, loaded, error }
+//==============================================================================
+// SECTION 1: COMMON CLASSES, MODELS, AND CONSTANTS
+//==============================================================================
 
 class ProfessionalColors {
   static const primaryDark = Color(0xFF0A0E1A);
@@ -7698,59 +10764,34 @@ class ProfessionalColors {
   static const cardDark = Color(0xFF2A2D3A);
   static const accentBlue = Color(0xFF3B82F6);
   static const accentPurple = Color(0xFF8B5CF6);
-  static const accentGreen = Color(0xFF10B981);
-  static const accentRed = Color(0xFFEF4444);
-  static const accentOrange = Color(0xFFF59E0B);
   static const accentPink = Color(0xFFEC4899);
+  static const accentOrange = Color(0xFFF59E0B);
+  static const accentRed = Color(0xFFEF4444);
+  static const accentGreen = Color(0xFF10B981);
   static const textPrimary = Color(0xFFFFFFFF);
   static const textSecondary = Color(0xFFB3B3B3);
+}
+
+class AnimationTiming {
+  static const Duration fast = Duration(milliseconds: 250);
+  static const Duration medium = Duration(milliseconds: 400);
 }
 
 class ContentSlider {
   final int id;
   final String title;
   final String? banner;
+  final String? sliderFor;
 
-  ContentSlider({required this.id, required this.title, this.banner});
+  ContentSlider(
+      {required this.id, required this.title, this.banner, this.sliderFor});
 
   factory ContentSlider.fromJson(Map<String, dynamic> json) {
     return ContentSlider(
       id: json['id'] ?? 0,
       title: json['title'] ?? 'No Title',
       banner: json['banner'],
-    );
-  }
-}
-
-class MovieResponse {
-  final bool status;
-  final int total;
-  final List<Movie> data;
-  final List<ContentSlider> contentSliders;
-
-  MovieResponse({
-    required this.status,
-    required this.total,
-    required this.data,
-    required this.contentSliders,
-  });
-
-  factory MovieResponse.fromJson(Map<String, dynamic> json) {
-    List<T> parseList<T>(String key, T Function(Map<String, dynamic>) fromJson) {
-      if (json[key] is List) {
-        return (json[key] as List)
-            .map((i) => fromJson(i as Map<String, dynamic>))
-            .toList();
-      }
-      return [];
-    }
-
-    return MovieResponse(
-      status: json['status'] ?? false,
-      total: json['total'] ?? 0,
-      data: parseList('data', (i) => Movie.fromJson(i)),
-      contentSliders:
-          parseList('content_sliders', (i) => ContentSlider.fromJson(i)),
+      sliderFor: json['slider_for'],
     );
   }
 }
@@ -7801,25 +10842,6 @@ class Movie {
     );
   }
 
-  Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'name': name,
-      'banner': banner,
-      'poster': poster,
-      'description': description,
-      'genres': genres,
-      'content_type': contentType,
-      'source_type': sourceType,
-      'youtube_trailer': youtubeTrailer,
-      'updated_at': updatedAt,
-      'movie_url': movieUrl,
-      'status': status,
-    };
-  }
-
-  factory Movie.fromMap(Map<String, dynamic> map) => Movie.fromJson(map);
-
   String getPlayableUrl() {
     if (sourceType == 'YoutubeLive') return movieUrl ?? '';
     if (youtubeTrailer != null && youtubeTrailer!.isNotEmpty) {
@@ -7829,9 +10851,39 @@ class Movie {
   }
 }
 
-// ==========================================================
-// GENRE MOVIES SCREEN
-// ==========================================================
+class MovieResponse {
+  final bool status;
+  final List<Movie> data;
+  final List<ContentSlider> contentSliders;
+
+  MovieResponse(
+      {required this.status,
+      required this.data,
+      required this.contentSliders});
+
+  factory MovieResponse.fromJson(Map<String, dynamic> json) {
+    List<T> parseList<T>(
+        String key, T Function(Map<String, dynamic>) fromJson) {
+      if (json[key] is List) {
+        return (json[key] as List)
+            .map((i) => fromJson(i as Map<String, dynamic>))
+            .toList();
+      }
+      return [];
+    }
+
+    return MovieResponse(
+      status: json['status'] ?? false,
+      data: parseList('data', (i) => Movie.fromJson(i)),
+      contentSliders:
+          parseList('content_sliders', (i) => ContentSlider.fromJson(i)),
+    );
+  }
+}
+
+//==============================================================================
+// SECTION 2: MAIN PAGE WIDGET AND STATE
+//==============================================================================
 
 class GenreMoviesScreen extends StatefulWidget {
   final String tvChannelId;
@@ -7846,41 +10898,59 @@ class GenreMoviesScreen extends StatefulWidget {
   State<GenreMoviesScreen> createState() => _GenreMoviesScreenState();
 }
 
-class _GenreMoviesScreenState extends State<GenreMoviesScreen> {
-  LoadingState _loadingState = LoadingState.initial;
-  String? _error;
-
-  // Slider state variables
-  List<ContentSlider> _contentSliders = [];
-  late PageController _sliderPageController;
-  Timer? _sliderTimer;
-  int _currentSliderPage = 0;
-
-  // Genre browsing state
-  List<String> _genres = [];
+class _GenreMoviesScreenState extends State<GenreMoviesScreen>
+    with SingleTickerProviderStateMixin {
+  // Data State
+  List<Movie> _allMovies = [];
   Map<String, List<Movie>> _moviesByGenre = {};
-  int _selectedGenreIndex = 0;
-  List<Movie> _currentDisplayList = []; // For shuffled list
+  List<Movie> _filteredMovies = [];
+  List<String> _genres = [];
+  List<ContentSlider> _contentSliders = [];
+  bool _isLoading = true;
+  String? _errorMessage;
 
-  // Search state
+  // UI and Filter State
+  int _focusedGenreIndex = 0;
+  int _focusedMovieIndex = -1;
+  String _selectedGenre = '';
+  late PageController _sliderPageController;
+  int _currentSliderPage = 0;
+  Timer? _sliderTimer;
+  bool _isVideoLoading = false;
+  late AnimationController _fadeController;
+  late Animation<double> _fadeAnimation;
+
+  // Focus and Scroll Controllers
+  final FocusNode _widgetFocusNode = FocusNode();
+  final ScrollController _genreScrollController = ScrollController();
+  final ScrollController _movieScrollController = ScrollController();
+  late FocusNode _searchButtonFocusNode;
+  List<FocusNode> _genreFocusNodes = [];
+  List<FocusNode> _movieFocusNodes = [];
+  List<FocusNode> _keyboardFocusNodes = [];
+
+  // Search State
   bool _isSearching = false;
   bool _showKeyboard = false;
   String _searchText = '';
   Timer? _debounce;
   List<Movie> _searchResults = [];
   bool _isSearchLoading = false;
-  bool _isVideoLoading = false;
 
-  // Focus Nodes
-  late FocusNode _searchButtonFocusNode;
-  List<FocusNode> _genreFocusNodes = [];
-  List<FocusNode> _movieFocusNodes = [];
+  // Keyboard State
+  int _focusedKeyRow = 0;
+  int _focusedKeyCol = 0;
+  final List<List<String>> _keyboardLayout = [
+    "1234567890".split(''),
+    "qwertyuiop".split(''),
+    "asdfghjkl".split(''),
+    ["z", "x", "c", "v", "b", "n", "m", "DEL"],
+    [" ", "OK"],
+  ];
 
-  // Keys and Controllers
-  List<GlobalKey> _genreButtonKeys = [];
-  List<GlobalKey> _movieCardKeys = [];
-  final ScrollController _genreScrollController = ScrollController();
-  final ScrollController _movieScrollController = ScrollController();
+  // Performance Fix: Navigation Lock for fast remote presses
+  bool _isNavigationLocked = false;
+  Timer? _navigationLockTimer;
 
   final List<Color> _focusColors = [
     ProfessionalColors.accentBlue,
@@ -7894,82 +10964,76 @@ class _GenreMoviesScreenState extends State<GenreMoviesScreen> {
   @override
   void initState() {
     super.initState();
+    _sliderPageController = PageController();
     _searchButtonFocusNode = FocusNode();
-    _searchButtonFocusNode.addListener(() {
-      if (mounted) {
-        setState(() {});
-        if (_searchButtonFocusNode.hasFocus) {
-          Provider.of<InternalFocusProvider>(context, listen: false)
-              .updateName("Search");
-        }
-      }
-    });
-
-    _sliderPageController = PageController(initialPage: 0);
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<InternalFocusProvider>(context, listen: false).updateName('');
-      _fetchAndProcessData();
-    });
+    _fetchDataForPage();
+    _initializeAnimations();
   }
 
   @override
   void dispose() {
-    _cleanupResources();
+    _sliderPageController.dispose();
+    _fadeController.dispose();
+    _widgetFocusNode.dispose();
+    _genreScrollController.dispose();
+    _movieScrollController.dispose();
+    _searchButtonFocusNode.dispose();
+    _debounce?.cancel();
+    _sliderTimer?.cancel();
+    _navigationLockTimer?.cancel();
+
+    _disposeFocusNodes(_genreFocusNodes);
+    _disposeFocusNodes(_movieFocusNodes);
+    _disposeFocusNodes(_keyboardFocusNodes);
     super.dispose();
   }
 
-  void _cleanupResources() {
-    _searchButtonFocusNode.dispose();
-    for (var node in _genreFocusNodes) {
-      node.dispose();
-    }
-    for (var node in _movieFocusNodes) {
-      node.dispose();
-    }
-    _genreScrollController.dispose();
-    _movieScrollController.dispose();
-
-    _sliderPageController.dispose();
-    _sliderTimer?.cancel();
-    _debounce?.cancel();
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: ProfessionalColors.primaryDark,
+      body: Focus(
+        focusNode: _widgetFocusNode,
+        autofocus: true,
+        onKey: _onKeyHandler,
+        child: Stack(
+          children: [
+            _buildBackgroundOrSlider(),
+            _isLoading
+                ? const Center(
+                    child: CircularProgressIndicator(color: Colors.white))
+                : _errorMessage != null
+                    ? _buildErrorWidget()
+                    : _buildPageContent(),
+            if (_isVideoLoading && _errorMessage == null)
+              Positioned.fill(
+                child: Container(
+                  color: Colors.black.withOpacity(0.8),
+                  child: const Center(
+                    child: CircularProgressIndicator(color: Colors.white),
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
   }
-  
-  void _shuffleAndSetDisplayList() {
-    if (_genres.isEmpty) return;
 
-    final originalList = _moviesByGenre[_genres[_selectedGenreIndex]] ?? [];
-    final shuffledList = List<Movie>.from(originalList)..shuffle();
+  //=================================================
+  // SECTION 2.1: DATA FETCHING AND PROCESSING
+  //=================================================
 
-    setState(() {
-      _currentDisplayList = shuffledList;
-    });
-  }
-
-  void _rebuildMovieNodes() {
+  Future<void> _fetchDataForPage({bool forceRefresh = false}) async {
     if (!mounted) return;
-    for (var node in _movieFocusNodes) {
-      node.dispose();
-    }
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
 
-    final currentList = _isSearching ? _searchResults : _currentDisplayList;
-
-    _movieFocusNodes = List.generate(currentList.length, (i) => FocusNode());
-    _movieCardKeys = List.generate(currentList.length, (i) => GlobalKey());
-
-    for (int i = 0; i < currentList.length; i++) {
-      _movieFocusNodes[i].addListener(() {
-        if (_movieFocusNodes[i].hasFocus) _onMovieFocus(i);
-      });
-    }
-  }
-
-  Future<void> _fetchAndProcessData() async {
-    if (mounted) setState(() => _loadingState = LoadingState.loading);
     try {
       final prefs = await SharedPreferences.getInstance();
       final authKey = prefs.getString('result_auth_key') ?? '56456456456';
-
       final response = await http.post(
         Uri.parse(
             'https://dashboard.cpplayers.com/api/v2/getAllContentsOfNetworkNew'),
@@ -7979,161 +11043,285 @@ class _GenreMoviesScreenState extends State<GenreMoviesScreen> {
           'Accept': 'application/json',
           'Content-Type': 'application/json'
         },
-        body: json.encode({
-          "genre": "",
-          "network_id": widget.tvChannelId,
-        }),
+        body: json.encode(
+            {"genre": "", "network_id": widget.tvChannelId, "limit": 500}),
       );
 
-      if (response.statusCode == 200) {
-        final fullResponse =
-            MovieResponse.fromJson(json.decode(response.body));
-
-        if (fullResponse.status) {
-          final allMovies =
-              fullResponse.data.where((movie) => movie.status == 1).toList();
-
-          final Map<String, List<Movie>> moviesByGenre = {};
-          final Set<String> uniqueGenres = {};
-
-          for (final movie in allMovies) {
-            final genres =
-                movie.genres.split(',').map((g) => g.trim()).toList();
-            for (var genre in genres) {
-              if (genre.isNotEmpty) {
-                uniqueGenres.add(genre);
-                if (moviesByGenre.containsKey(genre)) {
-                  moviesByGenre[genre]!.add(movie);
-                } else {
-                  moviesByGenre[genre] = [movie];
-                }
-              }
-            }
-          }
-
-          List<String> sortedGenres = uniqueGenres.toList();
-
-          if (sortedGenres.contains('Web Series')) {
-            sortedGenres.remove('Web Series');
-            sortedGenres.sort();
-            sortedGenres.insert(0, 'Web Series');
-          } else {
-            sortedGenres.sort();
-          }
-
-          if (!mounted) return;
-
-          setState(() {
-            _loadingState = LoadingState.rebuilding;
-            _contentSliders = fullResponse.contentSliders;
-            _genres = sortedGenres;
-            _moviesByGenre = moviesByGenre;
-            _selectedGenreIndex = 0;
-            
-            _genreFocusNodes =
-                List.generate(_genres.length, (i) => FocusNode());
-            _genreButtonKeys =
-                List.generate(_genres.length, (i) => GlobalKey());
-
-            for (int i = 0; i < _genres.length; i++) {
-              _genreFocusNodes[i].addListener(() {
-                if (_genreFocusNodes[i].hasFocus) _onGenreFocus(i);
-              });
-            }
-            _loadingState = LoadingState.loaded;
-          });
-          
-          _shuffleAndSetDisplayList();
-          _rebuildMovieNodes();
-          _setupSliderTimer();
-
-          Future.delayed(const Duration(milliseconds: 200), () {
-            if (mounted && _searchButtonFocusNode.canRequestFocus) {
-              _searchButtonFocusNode.requestFocus();
-            }
-          });
-        } else {
-          throw Exception('API status returned false.');
-        }
-      } else {
-        throw Exception('Failed to load data: ${response.statusCode}');
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _error = e.toString();
-          _loadingState = LoadingState.error;
-        });
-      }
-    }
-  }
-
-  void _setupSliderTimer() {
-    _sliderTimer?.cancel();
-    if (_contentSliders.length > 1) {
-      _sliderTimer = Timer.periodic(const Duration(seconds: 5), (Timer timer) {
-        if (!mounted) return;
-
-        int nextPage = _currentSliderPage + 1;
-
-        if (nextPage >= _contentSliders.length) {
-          if (_sliderPageController.hasClients) {
-             _sliderPageController.jumpToPage(0);
-          }
-        } else {
-          if (_sliderPageController.hasClients) {
-            _sliderPageController.animateToPage(
-              nextPage,
-              duration: const Duration(milliseconds: 800),
-              curve: Curves.easeInOut,
-            );
-          }
-        }
-      });
-    }
-  }
-
-  Future<List<Movie>> _fetchMoviesBySearch(String searchTerm) async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final authKey = prefs.getString('result_auth_key') ?? '56456456456';
-
-      final response = await http.post(
-        Uri.parse(
-            'https://dashboard.cpplayers.com/api/v2/getAllContentsOfNetworkNew'),
-        headers: {
-          'auth-key': authKey,
-          'domain': 'coretechinfo.com',
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: json.encode({
-          "genre": "",
-          "network_id": widget.tvChannelId,
-        }),
-      );
+      if (!mounted) return;
 
       if (response.statusCode == 200) {
         final movieData = MovieResponse.fromJson(json.decode(response.body));
         if (movieData.status) {
-          List<Movie> allMovies =
+          _allMovies =
               movieData.data.where((movie) => movie.status == 1).toList();
-
-          if (searchTerm.isNotEmpty) {
-            return allMovies
-                .where((movie) => movie.name
-                    .toLowerCase()
-                    .contains(searchTerm.toLowerCase()))
-                .toList();
-          }
-          return allMovies;
+          _contentSliders = movieData.contentSliders
+              .where((s) => s.sliderFor == 'movies')
+              .toList();
+          _processInitialData();
+          _initializeFocusNodes();
+          _startAnimations();
+          _setupSliderTimer();
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) {
+              Provider.of<InternalFocusProvider>(context, listen: false)
+                  .updateName('');
+              if (_searchButtonFocusNode.canRequestFocus) {
+                _searchButtonFocusNode.requestFocus();
+              }
+            }
+          });
+        } else {
+          throw Exception('API returned status false.');
         }
+      } else {
+        throw Exception('API Error: ${response.statusCode}');
       }
-      return [];
     } catch (e) {
-      print("Search API Error: $e");
-      return [];
+      if (mounted) {
+        setState(() {
+          _errorMessage =
+              "Failed to load movies.\nPlease check your connection.";
+        });
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
+  }
+
+  void _processInitialData() {
+    final Map<String, List<Movie>> moviesByGenre = {};
+    for (final movie in _allMovies) {
+      final genres = movie.genres
+          .split(',')
+          .map((g) => g.trim())
+          .where((g) => g.isNotEmpty);
+      for (var genre in genres) {
+        moviesByGenre.putIfAbsent(genre, () => []).add(movie);
+      }
+    }
+
+    List<String> sortedGenres = moviesByGenre.keys.toList();
+    if (sortedGenres.contains('Web Series')) {
+      sortedGenres.remove('Web Series');
+      sortedGenres.sort();
+      sortedGenres.insert(0, 'Web Series');
+    } else {
+      sortedGenres.sort();
+    }
+
+    setState(() {
+      _moviesByGenre = moviesByGenre;
+      _genres = sortedGenres;
+      if (_genres.isNotEmpty) {
+        _selectedGenre = _genres[0];
+      }
+    });
+
+    _applyFilters();
+  }
+
+  //=================================================
+  // SECTION 2.2: KEYBOARD AND FOCUS NAVIGATION
+  //=================================================
+
+  KeyEventResult _onKeyHandler(FocusNode node, RawKeyEvent event) {
+    if (event is! RawKeyDownEvent) return KeyEventResult.ignored;
+
+    bool searchHasFocus = _searchButtonFocusNode.hasFocus;
+    bool genreHasFocus = _genreFocusNodes.any((n) => n.hasFocus);
+    bool movieHasFocus = _movieFocusNodes.any((n) => n.hasFocus);
+    bool keyboardHasFocus = _keyboardFocusNodes.any((n) => n.hasFocus);
+    final LogicalKeyboardKey key = event.logicalKey;
+
+    if (key == LogicalKeyboardKey.goBack) {
+      if (_showKeyboard) {
+        setState(() {
+          _showKeyboard = false;
+          _focusedKeyRow = 0;
+          _focusedKeyCol = 0;
+        });
+        _searchButtonFocusNode.requestFocus();
+        return KeyEventResult.handled;
+      }
+      return KeyEventResult.ignored; // Allow navigator to pop
+    }
+
+    if (keyboardHasFocus && _showKeyboard) {
+      return _navigateKeyboard(key);
+    }
+
+    if (searchHasFocus) return _navigateFromSearch(key);
+    if (genreHasFocus) return _navigateGenres(key);
+    if (movieHasFocus) return _navigateMovies(key);
+
+    return KeyEventResult.ignored;
+  }
+
+  KeyEventResult _navigateFromSearch(LogicalKeyboardKey key) {
+    if (key == LogicalKeyboardKey.select || key == LogicalKeyboardKey.enter) {
+      setState(() => _showKeyboard = true);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && _keyboardFocusNodes.isNotEmpty) {
+          _keyboardFocusNodes[0].requestFocus();
+        }
+      });
+      return KeyEventResult.handled;
+    }
+    if (key == LogicalKeyboardKey.arrowRight && _genreFocusNodes.isNotEmpty) {
+      _genreFocusNodes[0].requestFocus();
+      return KeyEventResult.handled;
+    }
+    if (key == LogicalKeyboardKey.arrowDown && _movieFocusNodes.isNotEmpty) {
+      _focusFirstMovieItemWithScroll();
+      return KeyEventResult.handled;
+    }
+    return KeyEventResult.handled;
+  }
+
+  KeyEventResult _navigateGenres(LogicalKeyboardKey key) {
+    int newIndex = _focusedGenreIndex;
+    if (key == LogicalKeyboardKey.arrowLeft) {
+      if (newIndex > 0) {
+        newIndex--;
+      } else {
+        _searchButtonFocusNode.requestFocus();
+        return KeyEventResult.handled;
+      }
+    } else if (key == LogicalKeyboardKey.arrowRight) {
+      if (newIndex < _genres.length - 1) {
+        newIndex++;
+      }
+    } else if (key == LogicalKeyboardKey.arrowDown) {
+      _updateSelectedGenre();
+      if (_movieFocusNodes.isNotEmpty) {
+        _focusFirstMovieItemWithScroll();
+      }
+      return KeyEventResult.handled;
+    } else if (key == LogicalKeyboardKey.select ||
+        key == LogicalKeyboardKey.enter) {
+      _updateSelectedGenre();
+      return KeyEventResult.handled;
+    }
+
+    if (newIndex != _focusedGenreIndex) {
+      setState(() => _focusedGenreIndex = newIndex);
+      _genreFocusNodes[newIndex].requestFocus();
+      _updateAndScrollToFocus(
+          _genreFocusNodes, newIndex, _genreScrollController, 160);
+    }
+    return KeyEventResult.handled;
+  }
+
+  KeyEventResult _navigateMovies(LogicalKeyboardKey key) {
+    if (_isNavigationLocked) return KeyEventResult.handled;
+    if (_focusedMovieIndex < 0 || _movieFocusNodes.isEmpty) {
+      return KeyEventResult.ignored;
+    }
+
+    setState(() => _isNavigationLocked = true);
+    _navigationLockTimer = Timer(const Duration(milliseconds: 300), () {
+      if (mounted) setState(() => _isNavigationLocked = false);
+    });
+
+    int newIndex = _focusedMovieIndex;
+    final currentList = _isSearching ? _searchResults : _filteredMovies;
+
+    if (key == LogicalKeyboardKey.arrowUp) {
+      _genreFocusNodes[_focusedGenreIndex].requestFocus();
+      setState(() => _focusedMovieIndex = -1);
+      _isNavigationLocked = false;
+      _navigationLockTimer?.cancel();
+      return KeyEventResult.handled;
+    } else if (key == LogicalKeyboardKey.arrowLeft) {
+      if (newIndex > 0) newIndex--;
+    } else if (key == LogicalKeyboardKey.arrowRight) {
+      if (newIndex < currentList.length - 1) newIndex++;
+    } else if (key == LogicalKeyboardKey.select ||
+        key == LogicalKeyboardKey.enter) {
+      _isNavigationLocked = false;
+      _navigationLockTimer?.cancel();
+      _playContent(currentList[_focusedMovieIndex]);
+      return KeyEventResult.handled;
+    }
+
+    if (newIndex != _focusedMovieIndex) {
+      setState(() => _focusedMovieIndex = newIndex);
+      if (newIndex < _movieFocusNodes.length) {
+        _movieFocusNodes[newIndex].requestFocus();
+        _updateAndScrollToFocus(_movieFocusNodes, newIndex,
+            _movieScrollController, (screenwdt / 7) + 12);
+      }
+    } else {
+      _navigationLockTimer?.cancel();
+      if (mounted) setState(() => _isNavigationLocked = false);
+    }
+
+    return KeyEventResult.handled;
+  }
+
+  KeyEventResult _navigateKeyboard(LogicalKeyboardKey key) {
+    int newRow = _focusedKeyRow;
+    int newCol = _focusedKeyCol;
+    if (key == LogicalKeyboardKey.arrowUp) {
+      if (newRow > 0) {
+        newRow--;
+        newCol = math.min(newCol, _keyboardLayout[newRow].length - 1);
+      }
+    } else if (key == LogicalKeyboardKey.arrowDown) {
+      if (newRow < _keyboardLayout.length - 1) {
+        newRow++;
+        newCol = math.min(newCol, _keyboardLayout[newRow].length - 1);
+      }
+    } else if (key == LogicalKeyboardKey.arrowLeft) {
+      if (newCol > 0) newCol--;
+    } else if (key == LogicalKeyboardKey.arrowRight) {
+      if (newCol < _keyboardLayout[newRow].length - 1) newCol++;
+    } else if (key == LogicalKeyboardKey.select ||
+        key == LogicalKeyboardKey.enter) {
+      final keyValue = _keyboardLayout[newRow][newCol];
+      _onKeyPressed(keyValue);
+      return KeyEventResult.handled;
+    }
+
+    if (newRow != _focusedKeyRow || newCol != _focusedKeyCol) {
+      setState(() {
+        _focusedKeyRow = newRow;
+        _focusedKeyCol = newCol;
+      });
+      final focusIndex = _getFocusNodeIndexForKey(newRow, newCol);
+      if (focusIndex >= 0 && focusIndex < _keyboardFocusNodes.length) {
+        _keyboardFocusNodes[focusIndex].requestFocus();
+      }
+    }
+    return KeyEventResult.handled;
+  }
+
+  //=================================================
+  // SECTION 2.3: STATE MANAGEMENT & UI LOGIC
+  //=================================================
+
+  void _applyFilters() {
+    if (_isSearching) {
+      setState(() {
+        _isSearching = false;
+        _searchText = '';
+        _searchResults.clear();
+      });
+    }
+    setState(() {
+      _filteredMovies = _moviesByGenre[_selectedGenre] ?? [];
+      _rebuildMovieFocusNodes();
+      _focusedMovieIndex = -1;
+    });
+  }
+
+  void _updateSelectedGenre() {
+    setState(() {
+      _selectedGenre = _genres[_focusedGenreIndex];
+      _applyFilters();
+    });
   }
 
   void _performSearch(String searchTerm) {
@@ -8143,11 +11331,10 @@ class _GenreMoviesScreenState extends State<GenreMoviesScreen> {
         _isSearching = false;
         _isSearchLoading = false;
         _searchResults.clear();
-        _rebuildMovieNodes();
+        _rebuildMovieFocusNodes();
       });
       return;
     }
-
     _debounce = Timer(const Duration(milliseconds: 400), () async {
       if (!mounted) return;
       setState(() {
@@ -8156,13 +11343,16 @@ class _GenreMoviesScreenState extends State<GenreMoviesScreen> {
         _searchResults.clear();
       });
 
-      final results = await _fetchMoviesBySearch(searchTerm);
-      if (!mounted) return;
+      final results = _allMovies
+          .where((movie) =>
+              movie.name.toLowerCase().contains(searchTerm.toLowerCase()))
+          .toList();
 
+      if (!mounted) return;
       setState(() {
         _searchResults = results;
         _isSearchLoading = false;
-        _rebuildMovieNodes();
+        _rebuildMovieFocusNodes();
       });
     });
   }
@@ -8178,7 +11368,6 @@ class _GenreMoviesScreenState extends State<GenreMoviesScreen> {
         }
         return;
       }
-
       if (value == 'DEL') {
         if (_searchText.isNotEmpty) {
           _searchText = _searchText.substring(0, _searchText.length - 1);
@@ -8192,71 +11381,12 @@ class _GenreMoviesScreenState extends State<GenreMoviesScreen> {
     });
   }
 
-  void _updateMoviesForGenre(int index) {
-    if (_isSearching) {
-      setState(() {
-        _isSearching = false;
-        _searchText = '';
-        _searchResults.clear();
-      });
-    }
-
-    if (_selectedGenreIndex == index) {
-        _shuffleAndSetDisplayList();
-        _rebuildMovieNodes();
-        return;
-    };
-
-    setState(() {
-      _selectedGenreIndex = index;
-    });
-    
-    _shuffleAndSetDisplayList();
-    _rebuildMovieNodes();
-  }
-
-  void _onGenreFocus(int index) {
-    if (!mounted || index >= _genres.length) return;
-    Provider.of<InternalFocusProvider>(context, listen: false)
-        .updateName(_genres[index]);
-
-    final buttonContext = _genreButtonKeys[index].currentContext;
-    if (buttonContext != null) {
-      Scrollable.ensureVisible(buttonContext,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-          alignment: 0.5);
-    }
-  }
-
-  void _onMovieFocus(int index) {
-    if (!mounted) return;
-    
-    final currentList = _isSearching ? _searchResults : _currentDisplayList;
-
-    if (index < currentList.length) {
-      Provider.of<InternalFocusProvider>(context, listen: false)
-          .updateName(currentList[index].name);
-    }
-
-    final cardContext = _movieCardKeys[index].currentContext;
-    if (cardContext != null) {
-      Scrollable.ensureVisible(cardContext,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-          alignment: 0.5);
-    }
-  }
-
   Future<void> _playContent(Movie content) async {
     if (_isVideoLoading || !mounted) return;
-    setState(() {
-      _isVideoLoading = true;
-    });
+    setState(() => _isVideoLoading = true);
 
     try {
       String playableUrl = content.getPlayableUrl();
-
       if (content.contentType == 2) {
         await Navigator.push(
           context,
@@ -8271,163 +11401,481 @@ class _GenreMoviesScreenState extends State<GenreMoviesScreen> {
             ),
           ),
         );
-        return;
-      }
-
-      if (playableUrl.isEmpty) {
-        throw Exception('No video URL found');
-      }
-
-      if (!mounted) return;
-
-      if (content.sourceType == 'YoutubeLive' ||
-          (content.youtubeTrailer != null &&
-              content.youtubeTrailer!.isNotEmpty)) {
-        final deviceInfo = context.read<DeviceInfoProvider>();
-        if (deviceInfo.deviceName == 'AFTSS : Amazon Fire Stick HD') {
-          await Navigator.push(
+      } else if (playableUrl.isNotEmpty) {
+        if (content.sourceType == 'YoutubeLive' ||
+            (content.youtubeTrailer != null &&
+                content.youtubeTrailer!.isNotEmpty)) {
+          final deviceInfo = context.read<DeviceInfoProvider>();
+          if (deviceInfo.deviceName == 'AFTSS : Amazon Fire Stick HD') {
+            await Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => YoutubeWebviewPlayer(
+                        videoUrl: playableUrl, name: content.name)));
+          } else {
+            await Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => YoutubeWebviewPlayer(
-                      videoUrl: playableUrl, name: content.name)));
+                builder: (context) => CustomYoutubePlayer(
+                  videoData: VideoData(
+                    id: content.id.toString(),
+                    title: content.name,
+                    youtubeUrl: playableUrl,
+                    thumbnail: content.poster ?? content.banner ?? '',
+                    description: content.description ?? '',
+                  ),
+                  playlist: const [],
+                ),
+              ),
+            );
+          }
         } else {
           await Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => CustomYoutubePlayer(
-                videoData: VideoData(
-                  id: content.id.toString(),
-                  title: content.name,
-                  youtubeUrl: playableUrl,
-                  thumbnail: content.poster ?? content.banner ?? '',
-                  description: content.description ?? '',
-                ),
-                playlist: [],
+              builder: (context) => VideoScreen(
+                videoUrl: playableUrl,
+                bannerImageUrl: content.poster ?? content.banner ?? '',
+                videoId: content.id,
+                name: content.name,
+                updatedAt: content.updatedAt ?? '',
+                source: 'isVod',
+                channelList: const [],
+                liveStatus: false,
               ),
             ),
           );
         }
       } else {
-        await Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => VideoScreen(
-              videoUrl: playableUrl,
-              bannerImageUrl: content.poster ?? content.banner ?? '',
-              videoId: content.id,
-              name: content.name,
-              updatedAt: content.updatedAt ?? '',
-              source: 'isVod',
-              channelList: [],
-              liveStatus: false,
-            ),
-          ),
-        );
+        throw Exception('No playable video URL found.');
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error playing content: ${e.toString()}')));
       }
     } finally {
       if (mounted) {
-        setState(() {
-          _isVideoLoading = false;
-        });
+        setState(() => _isVideoLoading = false);
       }
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final screenSize = MediaQuery.of(context).size;
+  void _setupSliderTimer() {
+    _sliderTimer?.cancel();
+    if (_contentSliders.length > 1) {
+      _sliderTimer = Timer.periodic(const Duration(seconds: 5), (Timer timer) {
+        if (!mounted || !_sliderPageController.hasClients) return;
+        int nextPage = (_sliderPageController.page?.round() ?? 0) + 1;
+        if (nextPage >= _contentSliders.length) {
+          nextPage = 0;
+        }
+        _sliderPageController.animateToPage(
+          nextPage,
+          duration: const Duration(milliseconds: 800),
+          curve: Curves.easeInOut,
+        );
+      });
+    }
+  }
 
-    return Scaffold(
-      backgroundColor: ProfessionalColors.primaryDark,
-      body: Stack(
-        children: [
-          if (_loadingState == LoadingState.loading ||
-              _loadingState == LoadingState.initial)
-            const Center(child: CircularProgressIndicator())
-          else if (_error != null)
-            Center(
-                child: Text('Error: $_error',
-                    style: const TextStyle(color: Colors.white)))
-          else
-            Column(
-              children: [
-                SizedBox(
-                  height: screenSize.height * 0.63,
-                  child: _showKeyboard
-                      ? _buildSearchUI()
-                      : _buildImageSliderSection(),
-                ),
-                _buildGenreButtons(),
-                SizedBox(
-                  height: bannerhgt * 1.5,
-                  child: _buildMoviesList(),
-                ),
+  //=================================================
+  // SECTION 2.4: INITIALIZATION AND CLEANUP
+  //=================================================
+
+  void _initializeAnimations() {
+    _fadeController =
+        AnimationController(duration: AnimationTiming.medium, vsync: this);
+    _fadeAnimation =
+        CurvedAnimation(parent: _fadeController, curve: Curves.easeInOut);
+  }
+
+  void _startAnimations() {
+    _fadeController.forward();
+  }
+
+  void _initializeFocusNodes() {
+    _disposeFocusNodes(_genreFocusNodes);
+    _genreFocusNodes =
+        List.generate(_genres.length, (i) => FocusNode(debugLabel: 'Genre-$i'));
+    _rebuildMovieFocusNodes();
+    _rebuildKeyboardFocusNodes();
+  }
+
+  void _rebuildMovieFocusNodes() {
+    _disposeFocusNodes(_movieFocusNodes);
+    final currentList = _isSearching ? _searchResults : _filteredMovies;
+    _movieFocusNodes = List.generate(
+        currentList.length, (i) => FocusNode(debugLabel: 'Movie-$i'));
+  }
+
+  void _rebuildKeyboardFocusNodes() {
+    _disposeFocusNodes(_keyboardFocusNodes);
+    int totalKeys =
+        _keyboardLayout.fold(0, (prev, row) => prev + row.length);
+    _keyboardFocusNodes =
+        List.generate(totalKeys, (index) => FocusNode(debugLabel: 'Key-$index'));
+  }
+
+  int _getFocusNodeIndexForKey(int row, int col) {
+    int index = 0;
+    for (int r = 0; r < row; r++) {
+      index += _keyboardLayout[r].length;
+    }
+    return index + col;
+  }
+
+  void _disposeFocusNodes(List<FocusNode> nodes) {
+    for (var node in nodes) {
+      node.dispose();
+    }
+  }
+
+  void _updateAndScrollToFocus(List<FocusNode> nodes, int index,
+      ScrollController controller, double itemWidth) {
+    if (!mounted ||
+        index < 0 ||
+        index >= nodes.length ||
+        !controller.hasClients) return;
+    double screenWidth = MediaQuery.of(context).size.width;
+    double scrollPosition =
+        (index * itemWidth) - (screenWidth / 2) + (itemWidth / 2);
+    controller.animateTo(
+      scrollPosition.clamp(0.0, controller.position.maxScrollExtent),
+      duration: AnimationTiming.fast,
+      curve: Curves.easeInOut,
+    );
+  }
+
+  void _focusFirstMovieItemWithScroll() {
+    if (_movieFocusNodes.isEmpty) return;
+    if (_movieScrollController.hasClients) {
+      _movieScrollController.animateTo(0.0,
+          duration: AnimationTiming.fast, curve: Curves.easeInOut);
+    }
+    Future.delayed(const Duration(milliseconds: 250), () {
+      if (mounted && _movieFocusNodes.isNotEmpty) {
+        setState(() => _focusedMovieIndex = 0);
+        _movieFocusNodes[0].requestFocus();
+      }
+    });
+  }
+
+  //=================================================
+  // SECTION 2.5: WIDGET BUILDER METHODS
+  //=================================================
+
+  Widget _buildPageContent() {
+    return Column(
+      children: [
+        _buildBeautifulAppBar(),
+        Expanded(
+          child: FadeTransition(
+            opacity: _fadeAnimation,
+            child: _buildContentBody(),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildContentBody() {
+    return Column(
+      children: [
+        SizedBox(
+          height: screenhgt * 0.52,
+          child: _showKeyboard ? _buildSearchUI() : const SizedBox.shrink(),
+        ),
+        _buildSliderIndicators(),
+        _buildGenreAndSearchButtons(),
+        SizedBox(height: screenhgt * 0.02),
+        _buildMoviesList(),
+      ],
+    );
+  }
+
+  Widget _buildBackgroundOrSlider() {
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        if (_contentSliders.isNotEmpty)
+          PageView.builder(
+            controller: _sliderPageController,
+            itemCount: _contentSliders.length,
+            onPageChanged: (index) {
+              if (mounted) setState(() => _currentSliderPage = index);
+            },
+            itemBuilder: (context, index) {
+              final slider = _contentSliders[index];
+              return CachedNetworkImage(
+                imageUrl: slider.banner ?? '',
+                fit: BoxFit.cover,
+                placeholder: (context, url) =>
+                    Container(color: ProfessionalColors.surfaceDark),
+                errorWidget: (context, url, error) =>
+                    Container(color: ProfessionalColors.surfaceDark),
+              );
+            },
+          )
+        else
+          // Fallback if no sliders
+          Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  ProfessionalColors.primaryDark,
+                  ProfessionalColors.surfaceDark,
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+          ),
+        Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                ProfessionalColors.primaryDark.withOpacity(0.2),
+                ProfessionalColors.primaryDark.withOpacity(0.4),
+                ProfessionalColors.primaryDark.withOpacity(0.6),
+                ProfessionalColors.primaryDark.withOpacity(0.9),
               ],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              stops: const [0.0, 0.5, 0.7, 0.9],
             ),
-          Positioned(top: 0, left: 0, right: 0, child: _buildBeautifulAppBar()),
-          if (_isVideoLoading)
-            Container(
-              color: Colors.black.withOpacity(0.7),
-              child: const Center(
-                  child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white))),
-            ),
-        ],
-      ),
+          ),
+        ),
+      ],
     );
   }
 
   Widget _buildBeautifulAppBar() {
+    // This line listens to the provider for the focused item's name
     final focusedName = context.watch<InternalFocusProvider>().focusedItemName;
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              ProfessionalColors.primaryDark.withOpacity(0.95),
-              ProfessionalColors.surfaceDark.withOpacity(0.9),
-              ProfessionalColors.surfaceDark.withOpacity(0.8),
-              Colors.transparent
-            ]),
-      ),
-      child: ClipRRect(
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
-          child: Container(
-            padding: EdgeInsets.only(
-                top: MediaQuery.of(context).padding.top + 10,
-                left: 20,
-                right: 30,
-                bottom: 10),
-            child: Row(
-              children: [
-                const SizedBox(width: 16),
-                GradientText(widget.title,
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 22),
-                    gradient: const LinearGradient(colors: [
-                      ProfessionalColors.accentPink,
-                      ProfessionalColors.accentPurple,
-                      ProfessionalColors.accentBlue
-                    ])),
-                const SizedBox(width: 40),
-                Expanded(
-                    child: Text(focusedName,
-                        textAlign: TextAlign.left,
-                        style: const TextStyle(
-                            color: ProfessionalColors.textSecondary,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20),
-                        overflow: TextOverflow.ellipsis)),
+
+    return ClipRRect(
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: Container(
+          padding: EdgeInsets.only(
+            top: MediaQuery.of(context).padding.top + 7,
+            bottom: 2,
+            left: 20,
+            right: 20,
+          ),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Colors.black.withOpacity(0.1),
+                Colors.black.withOpacity(0.0),
               ],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+            border: Border(
+              bottom: BorderSide(
+                color: Colors.white.withOpacity(0.1),
+                width: 1,
+              ),
             ),
           ),
+          child: Row(
+            children: [
+              // Colorful Title
+              GradientText(
+                widget.title,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 24,
+                ),
+                gradient: const LinearGradient(
+                  colors: [
+                    ProfessionalColors.accentPink,
+                    ProfessionalColors.accentPurple,
+                    ProfessionalColors.accentBlue,
+                  ],
+                ),
+              ),
+              const SizedBox(width: 24),
+
+              // Focused Item Name (Flexible to prevent overflow)
+              Expanded(
+                child: Text(
+                  focusedName,
+                  style: const TextStyle(
+                    color: ProfessionalColors.textSecondary,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+
+              // const Spacer(),
+
+              // Network Logo
+              if (widget.logoUrl.isNotEmpty)
+                SizedBox(
+                  height: screenhgt * 0.05,
+                  child: CachedNetworkImage(imageUrl: widget.logoUrl ),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGenreAndSearchButtons() {
+    return SizedBox(
+      height: screenhgt * 0.07,
+      child: Center(
+        child: ListView.builder(
+          controller: _genreScrollController,
+          scrollDirection: Axis.horizontal,
+          itemCount: _genres.length + 1, // +1 for Search button
+          padding: EdgeInsets.symmetric(horizontal: screenwdt * 0.01),
+          itemBuilder: (context, index) {
+            if (index == 0) {
+              // Search Button
+              return Focus(
+                focusNode: _searchButtonFocusNode,
+                onFocusChange: (hasFocus) {
+                  if (hasFocus) {
+                    Provider.of<InternalFocusProvider>(context, listen: false)
+                        .updateName("Search");
+                  }
+                },
+                child: _buildGlassEffectButton(
+                  focusNode: _searchButtonFocusNode,
+                  isSelected: _isSearching,
+                  focusColor: ProfessionalColors.accentOrange,
+                  onTap: () {
+                    _searchButtonFocusNode.requestFocus();
+                    setState(() {
+                      _showKeyboard = true;
+                      _focusedKeyRow = 0;
+                      _focusedKeyCol = 0;
+                    });
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      if (mounted && _keyboardFocusNodes.isNotEmpty) {
+                        _keyboardFocusNodes[0].requestFocus();
+                      }
+                    });
+                  },
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.search, color: Colors.white),
+                      SizedBox(width: 8),
+                      Text(
+                        "Search",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }
+
+            // Genre Buttons
+            final genreIndex = index - 1;
+            final genre = _genres[genreIndex];
+            final focusNode = _genreFocusNodes[genreIndex];
+            final isSelected = !_isSearching && _selectedGenre == genre;
+
+            return Focus(
+              focusNode: focusNode,
+              onFocusChange: (hasFocus) {
+                if (hasFocus) {
+                  setState(() => _focusedGenreIndex = genreIndex);
+                  Provider.of<InternalFocusProvider>(context, listen: false)
+                      .updateName(genre);
+                }
+              },
+              child: _buildGlassEffectButton(
+                focusNode: focusNode,
+                isSelected: isSelected,
+                focusColor: _focusColors[genreIndex % _focusColors.length],
+                onTap: () {
+                  focusNode.requestFocus();
+                  _updateSelectedGenre();
+                },
+                child: Text(
+                  genre.toUpperCase(),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMoviesList() {
+    final currentList = _isSearching ? _searchResults : _filteredMovies;
+
+    if (_isSearchLoading) {
+      return const Expanded(child: Center(child: CircularProgressIndicator()));
+    }
+
+    if (currentList.isEmpty) {
+      return Expanded(
+        child: Center(
+          child: Text(
+            _isSearching && _searchText.isNotEmpty
+                ? "No results found for '$_searchText'"
+                : 'No movies available for this filter.',
+            style: const TextStyle(
+                color: ProfessionalColors.textSecondary, fontSize: 16),
+          ),
+        ),
+      );
+    }
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsets.only(top: 1.0),
+        child: ListView.builder(
+          clipBehavior: Clip.none,
+          controller: _movieScrollController,
+          scrollDirection: Axis.horizontal,
+          padding: const EdgeInsets.symmetric(horizontal: 30.0),
+          itemCount: currentList.length,
+          itemBuilder: (context, index) {
+            final movie = currentList[index];
+            return InkWell(
+              focusNode: _movieFocusNodes[index],
+              onTap: () => _playContent(movie),
+              onFocusChange: (hasFocus) {
+                if (hasFocus) {
+                  setState(() => _focusedMovieIndex = index);
+                  Provider.of<InternalFocusProvider>(context, listen: false)
+                      .updateName(movie.name);
+                  _updateAndScrollToFocus(_movieFocusNodes, index,
+                      _movieScrollController, (screenwdt / 7) + 12);
+                }
+              },
+              child: MovieCard(
+                movie: movie,
+                isFocused: _focusedMovieIndex == index,
+                onTap: () => _playContent(movie),
+                cardHeight: bannerhgt * 1.2,
+                logoUrl: widget.logoUrl,
+                uniqueIndex: index,
+                focusColors: _focusColors,
+              ),
+            );
+          },
         ),
       ),
     );
@@ -8444,13 +11892,12 @@ class _GenreMoviesScreenState extends State<GenreMoviesScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const GradientText(
-                  "Search for Content",
-                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-                  gradient: LinearGradient(colors: [
-                    ProfessionalColors.accentBlue,
-                    ProfessionalColors.accentPurple
-                  ]),
+                const Text(
+                  "Search Movies",
+                  style: TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white),
                 ),
                 const SizedBox(height: 24),
                 Container(
@@ -8467,8 +11914,7 @@ class _GenreMoviesScreenState extends State<GenreMoviesScreen> {
                     _searchText.isEmpty ? 'Start typing...' : _searchText,
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      color:
-                          _searchText.isEmpty ? Colors.white54 : Colors.white,
+                      color: _searchText.isEmpty ? Colors.white54 : Colors.white,
                       fontSize: 22,
                       fontWeight: FontWeight.w600,
                     ),
@@ -8488,508 +11934,304 @@ class _GenreMoviesScreenState extends State<GenreMoviesScreen> {
   }
 
   Widget _buildQwertyKeyboard() {
-    final row1 = "1234567890".split('');
-    final row2 = "qwertyuiop".split('');
-    final row3 = "asdfghjkl".split('');
-    final row4 = ["zxcvbnm", "DEL"]
-        .expand((e) => e == "DEL" ? [e] : e.split(''))
-        .toList();
-    final row5 = [" ", "OK"];
-
     return Container(
       color: Colors.transparent,
-      padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.all(5),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          _buildKeyboardRow(row1),
-          _buildKeyboardRow(row2),
-          _buildKeyboardRow(row3),
-          _buildKeyboardRow(row4),
-          _buildKeyboardRow(row5),
+          for (int rowIndex = 0; rowIndex < _keyboardLayout.length; rowIndex++)
+            _buildKeyboardRow(_keyboardLayout[rowIndex], rowIndex),
         ],
       ),
     );
   }
 
-  Widget _buildKeyboardRow(List<String> keys) {
+  Widget _buildKeyboardRow(List<String> keys, int rowIndex) {
+    int startIndex = 0;
+    for (int i = 0; i < rowIndex; i++) {
+      startIndex += _keyboardLayout[i].length;
+    }
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: keys.map((key) {
-        final screenWidth = MediaQuery.of(context).size.width;
-        final screenHeight = MediaQuery.of(context).size.height;
+      children: keys.asMap().entries.map((entry) {
+        final colIndex = entry.key;
+        final key = entry.value;
+        final focusIndex = startIndex + colIndex;
+        final isFocused =
+            _focusedKeyRow == rowIndex && _focusedKeyCol == colIndex;
         double width;
-
-        const double keyWidthFactor = 0.045;
-        const double keyHeightFactor = 0.08;
-        const double keyFontSize = 22.0;
-        const double keyMargin = 4.0;
-        const double keyBorderRadius = 12.0;
-
         if (key == ' ') {
-          width = screenWidth * 0.315;
+          width = screenwdt * 0.315;
         } else if (key == 'OK' || key == 'DEL') {
-          width = screenWidth * 0.09;
+          width = screenwdt * 0.09;
         } else {
-          width = screenWidth * keyWidthFactor;
+          width = screenwdt * 0.045;
         }
 
         return Container(
           width: width,
-          height: screenHeight * keyHeightFactor,
-          margin: const EdgeInsets.all(keyMargin),
-          child: ElevatedButton(
-            onPressed: () => _onKeyPressed(key),
-            style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white.withOpacity(0.1),
+          height: screenhgt * 0.08,
+          margin: const EdgeInsets.all(4.0),
+          child: Focus(
+            focusNode: _keyboardFocusNodes[focusIndex],
+            onFocusChange: (hasFocus) {
+              if (hasFocus) {
+                setState(() {
+                  _focusedKeyRow = rowIndex;
+                  _focusedKeyCol = colIndex;
+                });
+              }
+            },
+            child: ElevatedButton(
+              onPressed: () => _onKeyPressed(key),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: isFocused
+                    ? ProfessionalColors.accentPurple
+                    : Colors.white.withOpacity(0.1),
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(keyBorderRadius)),
-                padding: EdgeInsets.zero),
-            child: Text(key,
-                style: const TextStyle(
-                    fontSize: keyFontSize, fontWeight: FontWeight.bold)),
+                  borderRadius: BorderRadius.circular(12.0),
+                  side: isFocused
+                      ? const BorderSide(color: Colors.white, width: 3)
+                      : BorderSide.none,
+                ),
+                padding: EdgeInsets.zero,
+              ),
+              child: Text(
+                key,
+                style: TextStyle(
+                  fontSize: 22.0,
+                  fontWeight: isFocused ? FontWeight.bold : FontWeight.normal,
+                ),
+              ),
+            ),
           ),
         );
       }).toList(),
     );
   }
 
-  Widget _buildSliderIndicator() {
+  Widget _buildSliderIndicators() {
+    if (_contentSliders.length <= 1) {
+      return const SizedBox.shrink();
+    }
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: _contentSliders.asMap().entries.map((entry) {
-        int index = entry.key;
+      children: List.generate(_contentSliders.length, (index) {
+        bool isActive = _currentSliderPage == index;
         return AnimatedContainer(
           duration: const Duration(milliseconds: 300),
-          width: _currentSliderPage == index ? 12.0 : 8.0,
-          height: _currentSliderPage == index ? 12.0 : 8.0,
-          margin: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 4.0),
+          margin: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 10.0),
+          height: 8.0,
+          width: isActive ? 24.0 : 8.0,
           decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: _currentSliderPage == index
-                ? ProfessionalColors.accentBlue
-                : Colors.white.withOpacity(0.4),
+            color: isActive ? Colors.white : Colors.white.withOpacity(0.5),
+            borderRadius: BorderRadius.circular(12),
           ),
         );
-      }).toList(),
+      }),
     );
   }
 
-  Widget _buildImageSliderSection() {
-    if (_contentSliders.isEmpty) {
-      return Container(
-        width: double.infinity,
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: NetworkImage(widget.logoUrl),
-            fit: BoxFit.fill,
-          ),
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Colors.transparent,
-              ProfessionalColors.primaryDark.withOpacity(0.5),
-              ProfessionalColors.primaryDark,
-            ],
-            stops: const [0.0, 0.7, 1.0],
-          ),
-        ),
-      );
-    }
-
-    return Stack(
-      children: [
-        PageView.builder(
-          controller: _sliderPageController,
-          itemCount: _contentSliders.length,
-          onPageChanged: (index) {
-            setState(() {
-              _currentSliderPage = index;
-            });
-          },
-          itemBuilder: (context, index) {
-            final slider = _contentSliders[index];
-            return Container(
-              color: ProfessionalColors.primaryDark,
-              child: displayImage(
-                slider.banner ?? '',
-                width: double.infinity,
-                height: double.infinity,
-                fit: BoxFit.contain,
+  Widget _buildGlassEffectButton({
+    required FocusNode focusNode,
+    required VoidCallback onTap,
+    required bool isSelected,
+    required Color focusColor,
+    required Widget child,
+  }) {
+    bool hasFocus = focusNode.hasFocus;
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.only(right: 15),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(30),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 6),
+              decoration: BoxDecoration(
+                color: hasFocus
+                    ? focusColor
+                    : isSelected
+                        ? focusColor.withOpacity(0.5)
+                        : Colors.white.withOpacity(0.08),
+                borderRadius: BorderRadius.circular(30),
+                border: Border.all(
+                  color:
+                      hasFocus ? Colors.white : Colors.white.withOpacity(0.3),
+                  width: hasFocus ? 3 : 2,
+                ),
+                boxShadow: hasFocus
+                    ? [
+                        BoxShadow(
+                          color: focusColor.withOpacity(0.8),
+                          blurRadius: 15,
+                          spreadRadius: 3,
+                        )
+                      ]
+                    : null,
               ),
-            );
-          },
-        ),
-        Container(
-          width: double.infinity,
-          height: double.infinity,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-              colors: [
-                ProfessionalColors.primaryDark,
-                ProfessionalColors.primaryDark,
-                Colors.transparent,
-                Colors.transparent,
-                ProfessionalColors.primaryDark,
-                ProfessionalColors.primaryDark,
-              ],
-              stops: const [0.0, 0.2, 0.4, 0.6, 0.8, 1.0],
+              child: child,
             ),
           ),
         ),
-        Positioned(
-          bottom: 20.0,
-          left: 0,
-          right: 0,
-          child: _buildSliderIndicator(),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildGenreButtons() {
-    return SizedBox(
-      height: screenhgt * 0.1,
-      child: ListView.builder(
-        controller: _genreScrollController,
-        scrollDirection: Axis.horizontal,
-        itemCount: _genres.length + 1,
-        padding:  EdgeInsets.symmetric(horizontal: screenwdt * 0.002, vertical: screenhgt * 0.01),
-        itemBuilder: (context, index) {
-          if (index == 0) {
-            return Focus(
-              focusNode: _searchButtonFocusNode,
-              onKey: (node, event) {
-                if (event is RawKeyDownEvent &&
-                    (event.logicalKey == LogicalKeyboardKey.enter ||
-                        event.logicalKey == LogicalKeyboardKey.select)) {
-                  setState(() => _showKeyboard = true);
-                  return KeyEventResult.handled;
-                }
-                if (event is RawKeyDownEvent &&
-                    event.logicalKey == LogicalKeyboardKey.arrowRight) {
-                  if (_genreFocusNodes.isNotEmpty) {
-                    _genreFocusNodes.first.requestFocus();
-                    return KeyEventResult.handled;
-                  }
-                }
-                return KeyEventResult.ignored;
-              },
-              child: GestureDetector(
-                onTap: () {
-                  _searchButtonFocusNode.requestFocus();
-                  setState(() => _showKeyboard = true);
-                },
-                child: Container(
-                  margin: const EdgeInsets.only(right: 15),
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 24, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: _searchButtonFocusNode.hasFocus
-                          ? ProfessionalColors.accentOrange
-                          : (_isSearching
-                              ? ProfessionalColors.accentPurple
-                              : ProfessionalColors.cardDark),
-                      borderRadius: BorderRadius.circular(30),
-                      border: Border.all(
-                        color: _searchButtonFocusNode.hasFocus
-                            ? Colors.white
-                            : Colors.transparent,
-                        width: 2,
-                      ),
-                      boxShadow: _searchButtonFocusNode.hasFocus
-                          ? [
-                              BoxShadow(
-                                color: ProfessionalColors.accentOrange
-                                    .withOpacity(0.7),
-                                blurRadius: 10,
-                                spreadRadius: 2,
-                              )
-                            ]
-                          : null,
-                    ),
-                    child: const Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.search, color: Colors.white),
-                        SizedBox(width: 8),
-                        Text("Search",
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16)),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            );
-          }
-
-          final genreIndex = index - 1;
-          final genre = _genres[genreIndex];
-          final isSelected = !_isSearching && _selectedGenreIndex == genreIndex;
-          return Focus(
-            focusNode: _genreFocusNodes[genreIndex],
-            onKey: (node, event) {
-              if (event is RawKeyDownEvent) {
-                if (event.logicalKey == LogicalKeyboardKey.arrowLeft &&
-                    genreIndex == 0) {
-                  _searchButtonFocusNode.requestFocus();
-                  return KeyEventResult.handled;
-                }
-                if (event.logicalKey == LogicalKeyboardKey.enter ||
-                    event.logicalKey == LogicalKeyboardKey.select) {
-                  _updateMoviesForGenre(genreIndex);
-                  return KeyEventResult.handled;
-                }
-              }
-              return KeyEventResult.ignored;
-            },
-            child: GestureDetector(
-              onTap: () => _genreFocusNodes[genreIndex].requestFocus(),
-              child: Container(
-                key: _genreButtonKeys[genreIndex],
-                margin: const EdgeInsets.only(right: 15),
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-                  decoration: BoxDecoration(
-                      color: isSelected
-                          ? _focusColors[genreIndex % _focusColors.length]
-                          : ProfessionalColors.cardDark,
-                      borderRadius: BorderRadius.circular(30),
-                      border: Border.all(
-                        color: _genreFocusNodes[genreIndex].hasFocus
-                            ? Colors.white
-                            : Colors.transparent,
-                        width: 2,
-                      ),
-                      boxShadow: [
-                        if (_genreFocusNodes[genreIndex].hasFocus)
-                          BoxShadow(
-                            color: _focusColors[genreIndex % _focusColors.length]
-                                .withOpacity(0.7),
-                            blurRadius: 10,
-                            spreadRadius: 2,
-                          )
-                      ]),
-                  child: Center(
-                    child: Text(
-                      genre,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          );
-        },
       ),
     );
   }
 
-  Widget _buildMoviesList() {
-    final currentList = _isSearching ? _searchResults : _currentDisplayList;
-
-    if (_isSearchLoading) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
-    if (currentList.isEmpty) {
-      return Center(
-        child: Text(
-          _isSearching && _searchText.isNotEmpty
-              ? "No results found for '$_searchText'"
-              : "No content available for this genre.",
-          style: const TextStyle(
-              color: ProfessionalColors.textSecondary, fontSize: 16),
-        ),
-      );
-    }
-
-    return Padding(
-      padding: const EdgeInsets.only(top: 10.0),
-      child: ListView.builder(
-        controller: _movieScrollController,
-        scrollDirection: Axis.horizontal,
-        itemCount: currentList.length,
-        padding: const EdgeInsets.symmetric(horizontal: 30.0),
-        itemBuilder: (context, index) {
-          final movie = currentList[index];
-          return Focus(
-            focusNode: _movieFocusNodes[index],
-            onKey: (node, event) {
-              if (event is RawKeyDownEvent) {
-                if (event.logicalKey == LogicalKeyboardKey.select ||
-                    event.logicalKey == LogicalKeyboardKey.enter) {
-                  _playContent(movie);
-                  return KeyEventResult.handled;
-                }
-              }
-              return KeyEventResult.ignored;
-            },
-            child: MovieCard(
-                key: _movieCardKeys[index],
-                movie: movie,
-                logoUrl: widget.logoUrl,
-                focusNode: _movieFocusNodes[index],
-                focusColors: _focusColors,
-                uniqueIndex: index,
-                onTap: () => _playContent(movie)),
-          );
-        },
+  Widget _buildErrorWidget() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(Icons.cloud_off, color: Colors.white, size: 50),
+          const SizedBox(height: 16),
+          Text(
+            _errorMessage ?? 'An unknown error occurred.',
+            style: const TextStyle(color: Colors.white, fontSize: 18),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 20),
+          ElevatedButton.icon(
+            onPressed: () => _fetchDataForPage(forceRefresh: true),
+            icon: const Icon(Icons.refresh),
+            label: const Text('Try Again'),
+            style: ElevatedButton.styleFrom(
+              foregroundColor: Colors.white,
+              backgroundColor: ProfessionalColors.accentBlue,
+            ),
+          ),
+        ],
       ),
     );
   }
 }
 
-// ==========================================================
-// REUSABLE WIDGETS
-// ==========================================================
+//==============================================================================
+// SECTION 3: REUSABLE UI COMPONENTS
+//==============================================================================
 
-class MovieCard extends StatefulWidget {
+class MovieCard extends StatelessWidget {
   final Movie movie;
-  final String logoUrl;
-  final FocusNode focusNode;
-  final List<Color> focusColors;
-  final int uniqueIndex;
+  final bool isFocused;
   final VoidCallback onTap;
+  final double cardHeight;
+  final String logoUrl;
+  final int uniqueIndex;
+  final List<Color> focusColors;
 
-  const MovieCard(
-      {super.key,
-      required this.movie,
-      required this.logoUrl,
-      required this.focusNode,
-      required this.focusColors,
-      required this.uniqueIndex,
-      required this.onTap});
-
-  @override
-  State<MovieCard> createState() => _MovieCardState();
-}
-
-class _MovieCardState extends State<MovieCard> {
-  bool _hasFocus = false;
-
-  @override
-  void initState() {
-    super.initState();
-    widget.focusNode.addListener(_onFocusChange);
-  }
-
-  @override
-  void dispose() {
-    widget.focusNode.removeListener(_onFocusChange);
-    super.dispose();
-  }
-
-  void _onFocusChange() {
-    if (mounted && widget.focusNode.hasFocus != _hasFocus) {
-      setState(() {
-        _hasFocus = widget.focusNode.hasFocus;
-      });
-    }
-  }
+  const MovieCard({
+    super.key,
+    required this.movie,
+    required this.isFocused,
+    required this.onTap,
+    required this.cardHeight,
+    required this.logoUrl,
+    required this.uniqueIndex,
+    required this.focusColors,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final focusColor =
-        widget.focusColors[widget.uniqueIndex % widget.focusColors.length];
-
-    final screenSize = MediaQuery.of(context).size;
+    final focusColor = focusColors[uniqueIndex % focusColors.length];
 
     return Container(
-      width: screenSize.width / 7,
+      width: screenwdt / 7,
       margin: const EdgeInsets.only(right: 12.0),
-      child: GestureDetector(
-        onTap: widget.onTap,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Expanded(
-              child: Container(
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8.0),
-                    border: _hasFocus
-                        ? Border.all(color: focusColor, width: 3)
-                        : Border.all(color: Colors.transparent, width: 3),
-                    boxShadow: _hasFocus
-                        ? [
-                            BoxShadow(
-                                color: focusColor.withOpacity(0.5),
-                                blurRadius: 12,
-                                spreadRadius: 1)
-                          ]
-                        : []),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(6.0),
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      displayImage(
-                          widget.movie.banner ?? widget.movie.poster ?? '',
-                          fit: BoxFit.cover),
-                      if (widget.movie.contentType == 2)
-                        Positioned(
-                            bottom: 8,
-                            left: 8,
-                            child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 8, vertical: 4),
-                                decoration: BoxDecoration(
-                                    color: ProfessionalColors.accentPurple
-                                        .withOpacity(0.9),
-                                    borderRadius: BorderRadius.circular(4.0)),
-                                child: const Text('Web Series',
-                                    style: TextStyle(
-                                        color: ProfessionalColors.textPrimary,
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.bold)))),
-                      if (_hasFocus)
-                        Positioned(
-                            left: 5,
-                            top: 5,
-                            child: Container(
-                                color: Colors.black.withOpacity(0.4),
-                                child: Icon(Icons.play_circle_filled_outlined,
-                                    color: focusColor, size: 40))),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SizedBox(
+            height: cardHeight,
+            child: AnimatedContainer(
+              duration: AnimationTiming.fast,
+              transform: isFocused
+                  ? (Matrix4.identity()..scale(1.05))
+                  : Matrix4.identity(),
+              transformAlignment: Alignment.center,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8.0),
+                  border: isFocused
+                      ? Border.all(color: focusColor, width: 3)
+                      : Border.all(color: Colors.transparent, width: 3),
+                  boxShadow: isFocused
+                      ? [
+                          BoxShadow(
+                              color: focusColor.withOpacity(0.5),
+                              blurRadius: 12,
+                              spreadRadius: 1)
+                        ]
+                      : []),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(6.0),
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    _buildMovieImage(),
+                    if (isFocused)
+                      Positioned(
+                          left: 5,
+                          top: 5,
+                          child: Container(
+                              color: Colors.black.withOpacity(0.4),
+                              child: Icon(Icons.play_circle_filled_outlined,
+                                  color: focusColor, size: 40))),
+                    if (logoUrl.isNotEmpty)
                       Positioned(
                           top: 5,
                           right: 5,
                           child: CircleAvatar(
                               radius: 12,
-                              backgroundImage: NetworkImage(widget.logoUrl),
+                              backgroundImage: NetworkImage(logoUrl),
                               backgroundColor: Colors.black54)),
-                    ],
-                  ),
+                  ],
                 ),
               ),
             ),
-            Padding(
-                padding:
-                    const EdgeInsets.only(top: 4.0, left: 2.0, right: 2.0),
-                child: Text(widget.movie.name,
-                    style: TextStyle(
-                        color: _hasFocus
-                            ? focusColor
-                            : ProfessionalColors.textSecondary,
-                        fontSize: 14),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis)),
-          ],
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 2.0, left: 2.0, right: 2.0),
+            child: Text(movie.name,
+                style: TextStyle(
+                    color: isFocused
+                        ? focusColor
+                        : ProfessionalColors.textSecondary,
+                    fontSize: 14,
+                    fontWeight: isFocused ? FontWeight.bold : FontWeight.normal),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMovieImage() {
+    final imageUrl = movie.poster ?? movie.banner;
+    return imageUrl != null && imageUrl.isNotEmpty
+        ? CachedNetworkImage(
+            imageUrl: imageUrl,
+            fit: BoxFit.cover,
+            placeholder: (context, url) => _buildImagePlaceholder(),
+            errorWidget: (context, url, error) => _buildImagePlaceholder(),
+          )
+        : _buildImagePlaceholder();
+  }
+
+  Widget _buildImagePlaceholder() {
+    return Container(
+      color: ProfessionalColors.cardDark,
+      child: Center(
+        child: Icon(
+          Icons.movie_creation_outlined,
+          size: 50,
+          color: ProfessionalColors.textSecondary.withOpacity(0.5),
         ),
       ),
     );
@@ -8997,8 +12239,13 @@ class _MovieCardState extends State<MovieCard> {
 }
 
 class GradientText extends StatelessWidget {
-  const GradientText(this.text,
-      {super.key, required this.gradient, this.style});
+  const GradientText(
+    this.text, {
+    super.key,
+    required this.gradient,
+    this.style,
+  });
+
   final String text;
   final TextStyle? style;
   final Gradient gradient;
@@ -9007,78 +12254,10 @@ class GradientText extends StatelessWidget {
   Widget build(BuildContext context) {
     return ShaderMask(
       blendMode: BlendMode.srcIn,
-      shaderCallback: (bounds) => gradient
-          .createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
+      shaderCallback: (bounds) => gradient.createShader(
+        Rect.fromLTWH(0, 0, bounds.width, bounds.height),
+      ),
       child: Text(text, style: style),
     );
   }
-}
-
-// ==========================================================
-// HELPER FUNCTIONS
-// ==========================================================
-
-Widget displayImage(String imageUrl,
-    {double? width, double? height, BoxFit fit = BoxFit.cover}) {
-  if (imageUrl.isEmpty ||
-      imageUrl == 'localImage' ||
-      imageUrl.contains('localhost')) {
-    return _buildErrorWidget(width, height);
-  }
-  if (imageUrl.startsWith('data:image')) {
-    try {
-      final imageBytes = base64Decode(imageUrl.split(',').last);
-      return Image.memory(imageBytes,
-          fit: fit,
-          width: width,
-          height: height,
-          errorBuilder: (c, e, s) => _buildErrorWidget(width, height));
-    } catch (e) {
-      return _buildErrorWidget(width, height);
-    }
-  } else if (imageUrl.startsWith('http')) {
-    if (imageUrl.toLowerCase().endsWith('.svg')) {
-      return SvgPicture.network(imageUrl,
-          width: width,
-          height: height,
-          fit: fit,
-          placeholderBuilder: (c) => _buildLoadingWidget(width, height));
-    } else {
-      return Image.network(
-        imageUrl,
-        width: width,
-        height: height,
-        fit: fit,
-        loadingBuilder: (c, child, progress) =>
-            progress == null ? child : _buildLoadingWidget(width, height),
-        errorBuilder: (c, e, s) => _buildErrorWidget(width, height),
-      );
-    }
-  } else {
-    return _buildErrorWidget(width, height);
-  }
-}
-
-Widget _buildErrorWidget(double? width, double? height) {
-  return Container(
-    width: width,
-    height: height,
-    decoration: const BoxDecoration(
-        gradient: LinearGradient(colors: [
-      ProfessionalColors.accentGreen,
-      ProfessionalColors.accentBlue
-    ])),
-    child: const Icon(Icons.broken_image, color: Colors.white, size: 24),
-  );
-}
-
-Widget _buildLoadingWidget(double? width, double? height) {
-  return SizedBox(
-    width: width,
-    height: height,
-    child: const Center(
-        child: CircularProgressIndicator(
-            strokeWidth: 2,
-            valueColor: AlwaysStoppedAnimation<Color>(Colors.white))),
-  );
 }

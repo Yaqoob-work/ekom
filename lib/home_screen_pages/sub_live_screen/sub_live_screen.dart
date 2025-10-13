@@ -395,7 +395,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:mobi_tv_entertainment/home_screen_pages/sub_live_screen/channels_category.dart';
 import 'package:mobi_tv_entertainment/home_screen_pages/sub_live_screen/live_all.dart';
-import 'package:mobi_tv_entertainment/home_screen_pages/sub_vod_screen/sub_vod.dart';
 import 'package:mobi_tv_entertainment/main.dart';
 import 'package:mobi_tv_entertainment/menu/middle_navigation_bar.dart';
 import 'package:mobi_tv_entertainment/provider/focus_provider.dart';

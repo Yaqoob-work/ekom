@@ -11443,7 +11443,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:http/http.dart' as https;
 import 'package:mobi_tv_entertainment/home_screen_pages/sub_vod_screen/genre_movies_screen.dart';
 import 'package:mobi_tv_entertainment/home_screen_pages/sub_vod_screen/horizontal_list_details_page.dart';
-import 'package:mobi_tv_entertainment/home_screen_pages/sub_vod_screen/sub_vod.dart';
 import 'dart:math' as math;
 import 'package:mobi_tv_entertainment/home_screen_pages/tv_show/tv_show_second_page.dart';
 import 'package:mobi_tv_entertainment/main.dart';
@@ -11665,7 +11664,7 @@ class HorizontalVodService {
     final prefs = await SharedPreferences.getInstance();
     final authKey = prefs.getString('result_auth_key') ?? '';
 
-    final response = await https.get(
+    final response = await https.post(
       Uri.parse('https://dashboard.cpplayers.com/api/v2/getNetworks'),
       headers: {
         'auth-key': authKey,
@@ -11673,6 +11672,7 @@ class HorizontalVodService {
         'Accept': 'application/json',
         'domain': 'coretechinfo.com'
       },
+      body: json.encode({"network_id" :"" ,"data_for" : ""}),
     ).timeout(const Duration(seconds: 30));
 
     if (response.statusCode == 200) {
@@ -12143,7 +12143,8 @@ onKey: (node, event) {
       Future.delayed(const Duration(milliseconds: 50), () {
         if (mounted) {
           // Provider se active genre par focus karne ko kahein
-          context.read<FocusProvider>().requestFocusOnActiveLiveGenre();
+          // context.read<FocusProvider>().requestFocusOnActiveLiveGenre();
+          context.read<FocusProvider>().requestLiveChannelLanguageFocus();
         }
       });
       return KeyEventResult.handled;

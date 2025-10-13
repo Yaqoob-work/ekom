@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:http/http.dart' as http;
+import 'package:http/http.dart' as https;
 import 'package:mobi_tv_entertainment/home_screen_pages/sports_category/sports_category_second_page.dart';
 import 'dart:math' as math;
 // import 'package:mobi_tv_entertainment/home_screen_pages/sports/sports_category_second_page.dart';
@@ -201,7 +201,7 @@ class SportsCategoriesService {
     try {
       String authKey = prefs.getString(_cacheKeyAuthKey) ?? '';
 
-      final response = await http.get(
+      final response = await https.get(
         Uri.parse(
             'https://dashboard.cpplayers.com/public/api/v2/getsportCategories'),
         headers: {
