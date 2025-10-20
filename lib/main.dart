@@ -3224,6 +3224,11 @@
 //   }
 // }
 
+
+
+
+
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -3233,34 +3238,34 @@ import 'package:hive/hive.dart';
 // import 'package:hive_flutter/hive_flutter.dart';
 import 'package:http/http.dart' as https;
 import 'package:mobi_tv_entertainment/exit_confirmation_screen.dart';
-import 'package:mobi_tv_entertainment/home_screen_pages/home_screen.dart';
-import 'package:mobi_tv_entertainment/menu_screens/live_screen.dart';
-import 'package:mobi_tv_entertainment/menu_screens/search_screen.dart';
-import 'package:mobi_tv_entertainment/menu_screens/youtube_search_screen.dart';
-import 'package:mobi_tv_entertainment/models/channel_data_cache.dart';
-import 'package:mobi_tv_entertainment/models/content_item.dart';
-import 'package:mobi_tv_entertainment/models/horizontal_vod_cache.dart';
-import 'package:mobi_tv_entertainment/models/horizontal_vod_model.dart';
-import 'package:mobi_tv_entertainment/provider/color_provider.dart';
-import 'package:mobi_tv_entertainment/provider/device_info_provider.dart';
-import 'package:mobi_tv_entertainment/provider/focus_provider.dart';
-import 'package:mobi_tv_entertainment/provider/internal_focus_provider.dart';
-import 'package:mobi_tv_entertainment/widgets/small_widgets/loading_indicator.dart';
+import 'package:mobi_tv_entertainment/home_screen.dart';
+import 'package:mobi_tv_entertainment/components/menu_screens/live_screen.dart';
+import 'package:mobi_tv_entertainment/components/menu_screens/search_screen.dart';
+import 'package:mobi_tv_entertainment/components/menu_screens/youtube_search_screen.dart';
+import 'package:mobi_tv_entertainment/components/models/channel_data_cache.dart';
+import 'package:mobi_tv_entertainment/components/models/content_item.dart';
+import 'package:mobi_tv_entertainment/components/models/horizontal_vod_cache.dart';
+import 'package:mobi_tv_entertainment/components/models/horizontal_vod_model.dart';
+import 'package:mobi_tv_entertainment/components/provider/color_provider.dart';
+import 'package:mobi_tv_entertainment/components/provider/device_info_provider.dart';
+import 'package:mobi_tv_entertainment/components/provider/focus_provider.dart';
+import 'package:mobi_tv_entertainment/components/provider/internal_focus_provider.dart';
+import 'package:mobi_tv_entertainment/components/widgets/small_widgets/loading_indicator.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'menu/top_navigation_bar.dart';
+import 'components/menu/top_navigation_bar.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 // import 'package:video_player_avplay/video_player_avplay.dart'; // <-- Add this import
 import 'package:flutter/material.dart';
-import 'package:media_kit/media_kit.dart'; // Provides [Player], [Media], [Playlist] etc.
-import 'package:media_kit_video/media_kit_video.dart'; // Provides [VideoController] & [Video] etc.
+// import 'package:media_kit/media_kit.dart'; // Provides [Player], [Media], [Playlist] etc.
+// import 'package:media_kit_video/media_kit_video.dart'; // Provides [VideoController] & [Video] etc.
 
 class SessionManager {
   static bool _isInitialized = false;
@@ -3429,7 +3434,7 @@ class MyHttpOverrides extends HttpOverrides {
 void main() async {
   // VideoPlayerAvplay.init();
   WidgetsFlutterBinding.ensureInitialized();
-  MediaKit.ensureInitialized();
+  // MediaKit.ensureInitialized();
   HttpOverrides.global = MyHttpOverrides();
   await initializeDateFormatting(null, null);
   await SessionManager.initialize();
@@ -4327,81 +4332,152 @@ class _MyHomeState extends State<MyHome> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    List<Widget> pages = [
-      HomeScreen(),
-      // VOD(),
-      // LiveScreen(),
-      SearchScreen(),
-      // YoutubeSearchScreen()
-    ];
+  // @override
+  // Widget build(BuildContext context) {
+  //   List<Widget> pages = [
+  //     HomeScreen(),
+  //     // VOD(),
+  //     // LiveScreen(),
+  //     SearchScreen(),
+  //     // YoutubeSearchScreen()
+  //   ];
 
-    return Consumer<ColorProvider>(builder: (context, colorProvider, child) {
-      Color backgroundColor = colorProvider.isItemFocused
-          ? colorProvider.dominantColor.withOpacity(0.5)
-          : cardColor;
-      return SafeArea(
-        child: Scaffold(
-          body: Container(
-            color: backgroundColor,
-            child: Stack(
-              children: [
-                Container(
-                  width: screenwdt,
-                  height: screenhgt,
-                  color: cardColor,
-                  child: Column(
-                    children: [
-                      Container(
-                        child: Stack(
-                          children: [
-                            TopNavigationBar(
-                              selectedPage: _selectedPage,
-                              onPageSelected: _onPageSelected,
-                              tvenableAll: _tvenableAll,
-                            ),
-                            // Positioned(
-                            //   top: 10,
-                            //   right: 10,
-                            //   child: GestureDetector(
-                            //     onTap: _showLogoutDialog, // Enable logout button
-                            //     child: Container(
-                            //       padding: EdgeInsets.all(8),
-                            //       decoration: BoxDecoration(
-                            //         color: Colors.red.withOpacity(0.7),
-                            //         borderRadius: BorderRadius.circular(20),
-                            //       ),
-                            //       child: Icon(
-                            //         Icons.logout,
-                            //         color: Colors.white,
-                            //         size: 20,
-                            //       ),
-                            //     ),
-                            //   ),
-                            // ),
-                          ],
-                        ),
-                      ),
-                      Expanded(
-                        child: PageView(
-                          controller: _pageController,
-                          onPageChanged: (index) {
-                            setState(() {
-                              _selectedPage = index;
-                            });
-                          },
-                          children: pages,
-                        ),
-                      ),
-                    ],
-                  ),
+  //   return Consumer<ColorProvider>(builder: (context, colorProvider, child) {
+  //     Color backgroundColor = colorProvider.isItemFocused
+  //         ? colorProvider.dominantColor.withOpacity(0.5)
+  //         : cardColor;
+  //     return SafeArea(
+  //       child: Scaffold(
+  //         body: Container(
+  //           color: backgroundColor,
+  //           child: Stack(
+  //             children: [
+  //               Container(
+  //                 width: screenwdt,
+  //                 height: screenhgt,
+  //                 color: cardColor,
+  //                 child: Column(
+  //                   children: [
+  //                     Container(
+  //                       child: Stack(
+  //                         children: [
+  //                           TopNavigationBar(
+  //                             selectedPage: _selectedPage,
+  //                             onPageSelected: _onPageSelected,
+  //                             tvenableAll: _tvenableAll,
+  //                           ),
+  //                           // Positioned(
+  //                           //   top: 10,
+  //                           //   right: 10,
+  //                           //   child: GestureDetector(
+  //                           //     onTap: _showLogoutDialog, // Enable logout button
+  //                           //     child: Container(
+  //                           //       padding: EdgeInsets.all(8),
+  //                           //       decoration: BoxDecoration(
+  //                           //         color: Colors.red.withOpacity(0.7),
+  //                           //         borderRadius: BorderRadius.circular(20),
+  //                           //       ),
+  //                           //       child: Icon(
+  //                           //         Icons.logout,
+  //                           //         color: Colors.white,
+  //                           //         size: 20,
+  //                           //       ),
+  //                           //     ),
+  //                           //   ),
+  //                           // ),
+  //                         ],
+  //                       ),
+  //                     ),
+  //                     Expanded(
+  //                       child: PageView(
+  //                         controller: _pageController,
+  //                         onPageChanged: (index) {
+  //                           setState(() {
+  //                             _selectedPage = index;
+  //                           });
+  //                         },
+  //                         children: pages,
+  //                       ),
+  //                     ),
+  //                   ],
+  //                 ),
+  //               ),
+  //             ],
+  //           ),
+  //         ),
+  //       ),
+  //     );
+  //   });
+  // }
+
+  // ✅ YEH 'MyHome' KA NAYA BUILD METHOD HAI
+
+@override
+Widget build(BuildContext context) {
+  List<Widget> pages = [
+    HomeScreen(),
+    SearchScreen(),
+  ];
+
+  // Hum 'SafeArea' ko hata rahe hain taaki content poori screen par dikhe
+  return Scaffold(
+    // Consumer ko 'body' ke andar le aayein
+    body: Consumer<ColorProvider>(
+      builder: (context, colorProvider, child) {
+        
+        // Background color logic waisi hi rahegi
+        Color backgroundColor = colorProvider.isItemFocused
+            ? colorProvider.dominantColor.withOpacity(0.5)
+            : cardColor;
+
+        // Yeh Container ab poora background banayega
+        return Container(
+          color: backgroundColor, // Animated background color
+          
+          // ✅ YEH HAI ASLI STACK LAYOUT
+          child: Stack(
+            children: [
+              
+              // 1. CONTENT (PEECHE)
+              // PageView ab 'Expanded' mein nahi hai.
+              // Yeh poori screen lega aur Stack mein sabse peeche rahega.
+              PageView(
+                controller: _pageController,
+                onPageChanged: (index) {
+                  setState(() {
+                    _selectedPage = index;
+                  });
+                },
+                children: pages,
+              ),
+
+              // 2. APP BAR (OOPAR)
+              // TopNavigationBar ko 'Positioned' karke oopar fix kar diya hai.
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                child: TopNavigationBar(
+                  selectedPage: _selectedPage,
+                  onPageSelected: _onPageSelected,
+                  tvenableAll: _tvenableAll,
                 ),
-              ],
-            ),
+              ),
+
+              // Aapka logout button (agar future mein add karein)
+              // Positioned(
+              //   top: 10,
+              //   right: 10,
+              //   child: GestureDetector(
+              //     onTap: _showLogoutDialog,
+              //     ...
+              //   ),
+              // ),
+            ],
           ),
-        ),
-      );
-    });
-  }
+        );
+      },
+    ),
+  );
+}
 }
