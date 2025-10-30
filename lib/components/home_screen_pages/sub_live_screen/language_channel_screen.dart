@@ -889,7 +889,6 @@ import 'package:mobi_tv_entertainment/components/video_widget/video_screen.dart'
 import 'package:mobi_tv_entertainment/main.dart';
 import 'package:mobi_tv_entertainment/components/provider/internal_focus_provider.dart';
 import 'package:mobi_tv_entertainment/components/services/history_service.dart';
-import 'package:mobi_tv_entertainment/components/video_widget/live_video_screen.dart';
 import 'package:mobi_tv_entertainment/components/widgets/models/news_item_model.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -1205,7 +1204,7 @@ class _LanguageChannelsScreenState extends State<LanguageChannelsScreen> {
     _sliderTimer?.cancel();
     if (_sliders.length > 1 && mounted) {
       _sliderPageController = PageController(initialPage: 0);
-      _sliderTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
+      _sliderTimer = Timer.periodic(const Duration(seconds: 8), (timer) {
         if (!mounted || _sliderPageController?.hasClients == false) return;
 
         int nextPage = _currentSliderPage + 1;

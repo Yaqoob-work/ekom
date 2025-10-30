@@ -4101,561 +4101,561 @@
 // }
 // }
 
-// // import 'package:flutter/material.dart';
-// // import 'package:flutter/services.dart';
-// // import 'package:video_player/video_player.dart';
-// // import 'package:chewie/chewie.dart';
-// // import 'dart:async';
+// import 'package:flutter/material.dart';
+// import 'package:flutter/services.dart';
+// import 'package:video_player/video_player.dart';
+// import 'package:chewie/chewie.dart';
+// import 'dart:async';
 
-// // class VideoScreen extends StatefulWidget {
-// //   final String videoUrl;
-// //   final String name;
-// //   final bool liveStatus;
-// //   final String updatedAt;
-// //   final List<dynamic> channelList;
-// //   final String bannerImageUrl;
-// //   final int? videoId;
-// //   final String source;
+// class VideoScreen extends StatefulWidget {
+//   final String videoUrl;
+//   final String name;
+//   final bool liveStatus;
+//   final String updatedAt;
+//   final List<dynamic> channelList;
+//   final String bannerImageUrl;
+//   final int? videoId;
+//   final String source;
 
-// //   const VideoScreen({
-// //     super.key,
-// //     required this.videoUrl,
-// //     required this.name,
-// //     required this.liveStatus,
-// //     required this.updatedAt,
-// //     required this.channelList,
-// //     required this.bannerImageUrl,
-// //     required this.videoId,
-// //     required this.source,
-// //   });
+//   const VideoScreen({
+//     super.key,
+//     required this.videoUrl,
+//     required this.name,
+//     required this.liveStatus,
+//     required this.updatedAt,
+//     required this.channelList,
+//     required this.bannerImageUrl,
+//     required this.videoId,
+//     required this.source,
+//   });
 
-// //   @override
-// //   State<VideoScreen> createState() => _VideoScreenState();
-// // }
+//   @override
+//   State<VideoScreen> createState() => _VideoScreenState();
+// }
 
-// // class _VideoScreenState extends State<VideoScreen> {
-// //   late VideoPlayerController _videoPlayerController;
-// //   ChewieController? _chewieController;
-// //   bool isInitialized = false;
-// //   String? errorMessage;
+// class _VideoScreenState extends State<VideoScreen> {
+//   late VideoPlayerController _videoPlayerController;
+//   ChewieController? _chewieController;
+//   bool isInitialized = false;
+//   String? errorMessage;
 
-// //   // Progress bar controls
-// //   bool showProgressBar = true;
-// //   Timer? _hideTimer;
-// //   final FocusNode _focusNode = FocusNode();
+//   // Progress bar controls
+//   bool showProgressBar = true;
+//   Timer? _hideTimer;
+//   final FocusNode _focusNode = FocusNode();
 
-// //   // Seek controls
-// //   Timer? _seekTimer;
-// //   int _seekAmount = 0; // seconds
-// //   bool _isSeekingForward = false;
-// //   bool _isSeekingBackward = false;
+//   // Seek controls
+//   Timer? _seekTimer;
+//   int _seekAmount = 0; // seconds
+//   bool _isSeekingForward = false;
+//   bool _isSeekingBackward = false;
 
-// //   @override
-// //   void initState() {
-// //     super.initState();
-// //     _initializePlayer();
-// //     _startHideTimer();
-// //   }
+//   @override
+//   void initState() {
+//     super.initState();
+//     _initializePlayer();
+//     _startHideTimer();
+//   }
 
-// //   void _startHideTimer() {
-// //     _hideTimer?.cancel();
-// //     setState(() {
-// //       showProgressBar = true;
-// //     });
+//   void _startHideTimer() {
+//     _hideTimer?.cancel();
+//     setState(() {
+//       showProgressBar = true;
+//     });
 
-// //     _hideTimer = Timer(Duration(seconds: 5), () {
-// //       if (mounted) {
-// //         setState(() {
-// //           showProgressBar = false;
-// //         });
-// //       }
-// //     });
-// //   }
+//     _hideTimer = Timer(Duration(seconds: 5), () {
+//       if (mounted) {
+//         setState(() {
+//           showProgressBar = false;
+//         });
+//       }
+//     });
+//   }
 
-// //   Future<void> _initializePlayer() async {
-// //     try {
-// //       _videoPlayerController = VideoPlayerController.networkUrl(
-// //         Uri.parse(widget.videoUrl),
-// //       );
+//   Future<void> _initializePlayer() async {
+//     try {
+//       _videoPlayerController = VideoPlayerController.networkUrl(
+//         Uri.parse(widget.videoUrl),
+//       );
 
-// //       await _videoPlayerController.initialize();
+//       await _videoPlayerController.initialize();
 
-// //       _chewieController = ChewieController(
-// //         videoPlayerController: _videoPlayerController,
-// //         autoPlay: true,
-// //         looping: false,
-// //         aspectRatio: 16 / 9,
-// //         showControls: false, // Custom controls ke liye disable karein
-// //         allowFullScreen: false,
-// //         allowMuting: true,
-// //         materialProgressColors: ChewieProgressColors(
-// //           playedColor: Colors.blue,
-// //           handleColor: Colors.blueAccent,
-// //           backgroundColor: Colors.grey,
-// //           bufferedColor: Colors.lightBlue,
-// //         ),
-// //         placeholder: Container(
-// //           color: Colors.black,
-// //           child: Center(
-// //             child: CircularProgressIndicator(color: Colors.white),
-// //           ),
-// //         ),
-// //       );
+//       _chewieController = ChewieController(
+//         videoPlayerController: _videoPlayerController,
+//         autoPlay: true,
+//         looping: false,
+//         aspectRatio: 16 / 9,
+//         showControls: false, // Custom controls ke liye disable karein
+//         allowFullScreen: false,
+//         allowMuting: true,
+//         materialProgressColors: ChewieProgressColors(
+//           playedColor: Colors.blue,
+//           handleColor: Colors.blueAccent,
+//           backgroundColor: Colors.grey,
+//           bufferedColor: Colors.lightBlue,
+//         ),
+//         placeholder: Container(
+//           color: Colors.black,
+//           child: Center(
+//             child: CircularProgressIndicator(color: Colors.white),
+//           ),
+//         ),
+//       );
 
-// //       if (mounted) {
-// //         setState(() {
-// //           isInitialized = true;
-// //         });
-// //       }
-// //     } catch (e) {
-// //       if (mounted) {
-// //         setState(() {
-// //           errorMessage = 'Failed to load video: $e';
-// //         });
-// //       }
-// //       print('Video Player Error: $e');
-// //     }
-// //   }
+//       if (mounted) {
+//         setState(() {
+//           isInitialized = true;
+//         });
+//       }
+//     } catch (e) {
+//       if (mounted) {
+//         setState(() {
+//           errorMessage = 'Failed to load video: $e';
+//         });
+//       }
+//       print('Video Player Error: $e');
+//     }
+//   }
 
-// //   void _handleKeyEvent(KeyEvent event) {
-// //     _startHideTimer(); // Koi bhi button press karne par timer restart karein
+//   void _handleKeyEvent(KeyEvent event) {
+//     _startHideTimer(); // Koi bhi button press karne par timer restart karein
 
-// //     if (event is KeyDownEvent) {
-// //       if (event.logicalKey == LogicalKeyboardKey.select ||
-// //           event.logicalKey == LogicalKeyboardKey.enter ||
-// //           event.logicalKey == LogicalKeyboardKey.space) {
-// //         // Play/Pause toggle
-// //         if (_videoPlayerController.value.isPlaying) {
-// //           _videoPlayerController.pause();
-// //         } else {
-// //           _videoPlayerController.play();
-// //         }
-// //         setState(() {});
-// //       }
-// //       else if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
-// //         // Forward seek start
-// //         if (!_isSeekingForward) {
-// //           _isSeekingForward = true;
-// //           _seekAmount = 0;
-// //           _startSeekTimer(true);
-// //         }
-// //       }
-// //       else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
-// //         // Backward seek start
-// //         if (!_isSeekingBackward) {
-// //           _isSeekingBackward = true;
-// //           _seekAmount = 0;
-// //           _startSeekTimer(false);
-// //         }
-// //       }
-// //       else if (event.logicalKey == LogicalKeyboardKey.goBack ||
-// //                event.logicalKey == LogicalKeyboardKey.escape) {
-// //         // Back button press par video screen se bahar jaayein
-// //         Navigator.pop(context);
-// //       }
-// //     }
-// //     else if (event is KeyUpEvent) {
-// //       // Button release hone par final seek perform karein
-// //       if (event.logicalKey == LogicalKeyboardKey.arrowRight && _isSeekingForward) {
-// //         _performFinalSeek();
-// //       }
-// //       else if (event.logicalKey == LogicalKeyboardKey.arrowLeft && _isSeekingBackward) {
-// //         _performFinalSeek();
-// //       }
-// //     }
-// //   }
+//     if (event is KeyDownEvent) {
+//       if (event.logicalKey == LogicalKeyboardKey.select ||
+//           event.logicalKey == LogicalKeyboardKey.enter ||
+//           event.logicalKey == LogicalKeyboardKey.space) {
+//         // Play/Pause toggle
+//         if (_videoPlayerController.value.isPlaying) {
+//           _videoPlayerController.pause();
+//         } else {
+//           _videoPlayerController.play();
+//         }
+//         setState(() {});
+//       }
+//       else if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
+//         // Forward seek start
+//         if (!_isSeekingForward) {
+//           _isSeekingForward = true;
+//           _seekAmount = 0;
+//           _startSeekTimer(true);
+//         }
+//       }
+//       else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+//         // Backward seek start
+//         if (!_isSeekingBackward) {
+//           _isSeekingBackward = true;
+//           _seekAmount = 0;
+//           _startSeekTimer(false);
+//         }
+//       }
+//       else if (event.logicalKey == LogicalKeyboardKey.goBack ||
+//                event.logicalKey == LogicalKeyboardKey.escape) {
+//         // Back button press par video screen se bahar jaayein
+//         Navigator.pop(context);
+//       }
+//     }
+//     else if (event is KeyUpEvent) {
+//       // Button release hone par final seek perform karein
+//       if (event.logicalKey == LogicalKeyboardKey.arrowRight && _isSeekingForward) {
+//         _performFinalSeek();
+//       }
+//       else if (event.logicalKey == LogicalKeyboardKey.arrowLeft && _isSeekingBackward) {
+//         _performFinalSeek();
+//       }
+//     }
+//   }
 
-// //   void _startSeekTimer(bool forward) {
-// //     _seekTimer?.cancel();
+//   void _startSeekTimer(bool forward) {
+//     _seekTimer?.cancel();
 
-// //     // Pehla seek 5 seconds ka
-// //     _seekAmount = 15;
-// //     setState(() {});
+//     // Pehla seek 5 seconds ka
+//     _seekAmount = 15;
+//     setState(() {});
 
-// //     // Har 200ms mein 2 seconds add karein
-// //     _seekTimer = Timer.periodic(Duration(milliseconds: 100), (timer) {
-// //       if (mounted) {
-// //         setState(() {
-// //           _seekAmount += 15;
-// //           // // Maximum 60 seconds tak seek allow karein
-// //           // if (_seekAmount > 60) {
-// //           //   _seekAmount = 60;
-// //           // }
-// //         });
-// //       }
-// //     });
-// //   }
+//     // Har 200ms mein 2 seconds add karein
+//     _seekTimer = Timer.periodic(Duration(milliseconds: 100), (timer) {
+//       if (mounted) {
+//         setState(() {
+//           _seekAmount += 15;
+//           // // Maximum 60 seconds tak seek allow karein
+//           // if (_seekAmount > 60) {
+//           //   _seekAmount = 60;
+//           // }
+//         });
+//       }
+//     });
+//   }
 
-// //   void _performFinalSeek() {
-// //     _seekTimer?.cancel();
+//   void _performFinalSeek() {
+//     _seekTimer?.cancel();
 
-// //     if (_seekAmount > 0) {
-// //       final currentPosition = _videoPlayerController.value.position;
-// //       final duration = _videoPlayerController.value.duration;
-// //       Duration newPosition;
+//     if (_seekAmount > 0) {
+//       final currentPosition = _videoPlayerController.value.position;
+//       final duration = _videoPlayerController.value.duration;
+//       Duration newPosition;
 
-// //       if (_isSeekingForward) {
-// //         newPosition = currentPosition + Duration(seconds: _seekAmount);
-// //         if (newPosition > duration) {
-// //           newPosition = duration;
-// //         }
-// //       } else {
-// //         newPosition = currentPosition - Duration(seconds: _seekAmount);
-// //         if (newPosition < Duration.zero) {
-// //           newPosition = Duration.zero;
-// //         }
-// //       }
+//       if (_isSeekingForward) {
+//         newPosition = currentPosition + Duration(seconds: _seekAmount);
+//         if (newPosition > duration) {
+//           newPosition = duration;
+//         }
+//       } else {
+//         newPosition = currentPosition - Duration(seconds: _seekAmount);
+//         if (newPosition < Duration.zero) {
+//           newPosition = Duration.zero;
+//         }
+//       }
 
-// //       _videoPlayerController.seekTo(newPosition);
-// //     }
+//       _videoPlayerController.seekTo(newPosition);
+//     }
 
-// //     // Reset seek state
-// //     setState(() {
-// //       _seekAmount = 0;
-// //       _isSeekingForward = false;
-// //       _isSeekingBackward = false;
-// //     });
-// //   }
+//     // Reset seek state
+//     setState(() {
+//       _seekAmount = 0;
+//       _isSeekingForward = false;
+//       _isSeekingBackward = false;
+//     });
+//   }
 
-// //   @override
-// //   void dispose() {
-// //     _hideTimer?.cancel();
-// //     _seekTimer?.cancel();
-// //     _videoPlayerController.dispose();
-// //     _chewieController?.dispose();
-// //     _focusNode.dispose();
-// //     super.dispose();
-// //   }
+//   @override
+//   void dispose() {
+//     _hideTimer?.cancel();
+//     _seekTimer?.cancel();
+//     _videoPlayerController.dispose();
+//     _chewieController?.dispose();
+//     _focusNode.dispose();
+//     super.dispose();
+//   }
 
-// //   String _formatDuration(Duration duration) {
-// //     String twoDigits(int n) => n.toString().padLeft(2, '0');
-// //     final hours = twoDigits(duration.inHours);
-// //     final minutes = twoDigits(duration.inMinutes.remainder(60));
-// //     final seconds = twoDigits(duration.inSeconds.remainder(60));
+//   String _formatDuration(Duration duration) {
+//     String twoDigits(int n) => n.toString().padLeft(2, '0');
+//     final hours = twoDigits(duration.inHours);
+//     final minutes = twoDigits(duration.inMinutes.remainder(60));
+//     final seconds = twoDigits(duration.inSeconds.remainder(60));
 
-// //     // if (duration.inHours > 0) {
-// //       return '$hours:$minutes:$seconds';
-// //     // }
-// //     // return '$minutes:$seconds';
-// //   }
+//     // if (duration.inHours > 0) {
+//       return '$hours:$minutes:$seconds';
+//     // }
+//     // return '$minutes:$seconds';
+//   }
 
-// //   @override
-// //   Widget build(BuildContext context) {
-// //     return KeyboardListener(
-// //       focusNode: _focusNode,
-// //       autofocus: true,
-// //       onKeyEvent: _handleKeyEvent,
-// //       child: Scaffold(
-// //         backgroundColor: Colors.black,
-// //         body: Stack(
-// //           children: [
-// //             // Video Player
-// //             Center(
-// //               child: Container(
-// //                 width: MediaQuery.of(context).size.width,
-// //                 height: MediaQuery.of(context).size.height,
-// //                 color: Colors.black,
-// //                 child: _buildVideoPlayer(),
-// //               ),
-// //             ),
+//   @override
+//   Widget build(BuildContext context) {
+//     return KeyboardListener(
+//       focusNode: _focusNode,
+//       autofocus: true,
+//       onKeyEvent: _handleKeyEvent,
+//       child: Scaffold(
+//         backgroundColor: Colors.black,
+//         body: Stack(
+//           children: [
+//             // Video Player
+//             Center(
+//               child: Container(
+//                 width: MediaQuery.of(context).size.width,
+//                 height: MediaQuery.of(context).size.height,
+//                 color: Colors.black,
+//                 child: _buildVideoPlayer(),
+//               ),
+//             ),
 
-// //             // Custom Progress Bar Overlay
-// //             if (showProgressBar && isInitialized)
-// //               Positioned(
-// //                 bottom: 0,
-// //                 left: 0,
-// //                 right: 0,
-// //                 child: _buildCustomProgressBar(),
-// //               ),
-// //           ],
-// //         ),
-// //       ),
-// //     );
-// //   }
+//             // Custom Progress Bar Overlay
+//             if (showProgressBar && isInitialized)
+//               Positioned(
+//                 bottom: 0,
+//                 left: 0,
+//                 right: 0,
+//                 child: _buildCustomProgressBar(),
+//               ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
 
-// //   Widget _buildVideoPlayer() {
-// //     if (errorMessage != null) {
-// //       return Center(
-// //         child: Column(
-// //           mainAxisAlignment: MainAxisAlignment.center,
-// //           children: [
-// //             Icon(Icons.error_outline, size: 60, color: Colors.red),
-// //             SizedBox(height: 10),
-// //             Text(
-// //               'Failed to load video',
-// //               style: TextStyle(color: Colors.white, fontSize: 18),
-// //             ),
-// //             SizedBox(height: 10),
-// //             ElevatedButton(
-// //               onPressed: () {
-// //                 setState(() {
-// //                   errorMessage = null;
-// //                 });
-// //                 _initializePlayer();
-// //               },
-// //               child: Text('Retry'),
-// //             ),
-// //           ],
-// //         ),
-// //       );
-// //     }
+//   Widget _buildVideoPlayer() {
+//     if (errorMessage != null) {
+//       return Center(
+//         child: Column(
+//           mainAxisAlignment: MainAxisAlignment.center,
+//           children: [
+//             Icon(Icons.error_outline, size: 60, color: Colors.red),
+//             SizedBox(height: 10),
+//             Text(
+//               'Failed to load video',
+//               style: TextStyle(color: Colors.white, fontSize: 18),
+//             ),
+//             SizedBox(height: 10),
+//             ElevatedButton(
+//               onPressed: () {
+//                 setState(() {
+//                   errorMessage = null;
+//                 });
+//                 _initializePlayer();
+//               },
+//               child: Text('Retry'),
+//             ),
+//           ],
+//         ),
+//       );
+//     }
 
-// //     if (!isInitialized || _chewieController == null) {
-// //       return Center(
-// //         child: Column(
-// //           mainAxisAlignment: MainAxisAlignment.center,
-// //           children: [
-// //             CircularProgressIndicator(color: Colors.white),
-// //             SizedBox(height: 10),
-// //             Text(
-// //               'Loading video...',
-// //               style: TextStyle(color: Colors.white, fontSize: 16),
-// //             ),
-// //           ],
-// //         ),
-// //       );
-// //     }
+//     if (!isInitialized || _chewieController == null) {
+//       return Center(
+//         child: Column(
+//           mainAxisAlignment: MainAxisAlignment.center,
+//           children: [
+//             CircularProgressIndicator(color: Colors.white),
+//             SizedBox(height: 10),
+//             Text(
+//               'Loading video...',
+//               style: TextStyle(color: Colors.white, fontSize: 16),
+//             ),
+//           ],
+//         ),
+//       );
+//     }
 
-// //     return Chewie(controller: _chewieController!);
-// //   }
+//     return Chewie(controller: _chewieController!);
+//   }
 
-// //   Widget _buildCustomProgressBar() {
-// //     return AnimatedOpacity(
-// //       opacity: showProgressBar ? 1.0 : 0.0,
-// //       duration: Duration(milliseconds: 300),
-// //       child: Container(
-// //         margin: EdgeInsets.all(20),
-// //         padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-// //         decoration: BoxDecoration(
-// //           gradient: LinearGradient(
-// //             colors: [
-// //               Colors.black.withOpacity(0.85),
-// //               Colors.black.withOpacity(0.75),
-// //             ],
-// //           ),
-// //           borderRadius: BorderRadius.circular(16),
-// //           boxShadow: [
-// //             BoxShadow(
-// //               color: Colors.black.withOpacity(0.5),
-// //               blurRadius: 20,
-// //               spreadRadius: 5,
-// //             ),
-// //           ],
-// //           border: Border.all(
-// //             color: Colors.white.withOpacity(0.1),
-// //             width: 1,
-// //           ),
-// //         ),
-// //         child: StreamBuilder(
-// //           stream: Stream.periodic(Duration(milliseconds: 100)),
-// //           builder: (context, snapshot) {
-// //             final position = _videoPlayerController.value.position;
-// //             final duration = _videoPlayerController.value.duration;
+//   Widget _buildCustomProgressBar() {
+//     return AnimatedOpacity(
+//       opacity: showProgressBar ? 1.0 : 0.0,
+//       duration: Duration(milliseconds: 300),
+//       child: Container(
+//         margin: EdgeInsets.all(20),
+//         padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+//         decoration: BoxDecoration(
+//           gradient: LinearGradient(
+//             colors: [
+//               Colors.black.withOpacity(0.85),
+//               Colors.black.withOpacity(0.75),
+//             ],
+//           ),
+//           borderRadius: BorderRadius.circular(16),
+//           boxShadow: [
+//             BoxShadow(
+//               color: Colors.black.withOpacity(0.5),
+//               blurRadius: 20,
+//               spreadRadius: 5,
+//             ),
+//           ],
+//           border: Border.all(
+//             color: Colors.white.withOpacity(0.1),
+//             width: 1,
+//           ),
+//         ),
+//         child: StreamBuilder(
+//           stream: Stream.periodic(Duration(milliseconds: 100)),
+//           builder: (context, snapshot) {
+//             final position = _videoPlayerController.value.position;
+//             final duration = _videoPlayerController.value.duration;
 
-// //             // Agar seek ho raha hai to preview position calculate karein
-// //             Duration displayPosition = position;
-// //             if (_seekAmount > 0) {
-// //               if (_isSeekingForward) {
-// //                 displayPosition = position + Duration(seconds: _seekAmount);
-// //                 if (displayPosition > duration) {
-// //                   displayPosition = duration;
-// //                 }
-// //               } else if (_isSeekingBackward) {
-// //                 displayPosition = position - Duration(seconds: _seekAmount);
-// //                 if (displayPosition < Duration.zero) {
-// //                   displayPosition = Duration.zero;
-// //                 }
-// //               }
-// //             }
+//             // Agar seek ho raha hai to preview position calculate karein
+//             Duration displayPosition = position;
+//             if (_seekAmount > 0) {
+//               if (_isSeekingForward) {
+//                 displayPosition = position + Duration(seconds: _seekAmount);
+//                 if (displayPosition > duration) {
+//                   displayPosition = duration;
+//                 }
+//               } else if (_isSeekingBackward) {
+//                 displayPosition = position - Duration(seconds: _seekAmount);
+//                 if (displayPosition < Duration.zero) {
+//                   displayPosition = Duration.zero;
+//                 }
+//               }
+//             }
 
-// //             final progress = duration.inMilliseconds > 0
-// //                 ? position.inMilliseconds / duration.inMilliseconds
-// //                 : 0.0;
+//             final progress = duration.inMilliseconds > 0
+//                 ? position.inMilliseconds / duration.inMilliseconds
+//                 : 0.0;
 
-// //             final previewProgress = duration.inMilliseconds > 0
-// //                 ? displayPosition.inMilliseconds / duration.inMilliseconds
-// //                 : 0.0;
+//             final previewProgress = duration.inMilliseconds > 0
+//                 ? displayPosition.inMilliseconds / duration.inMilliseconds
+//                 : 0.0;
 
-// //             return Row(
-// //               children: [
-// //                 // Play/Pause Icon with glow effect
-// //                 Container(
-// //                   padding: EdgeInsets.all(8),
-// //                   decoration: BoxDecoration(
-// //                     shape: BoxShape.circle,
-// //                     gradient: LinearGradient(
-// //                       colors: [
-// //                         Colors.blue.withOpacity(0.3),
-// //                         Colors.blue.withOpacity(0.1),
-// //                       ],
-// //                     ),
-// //                     boxShadow: [
-// //                       BoxShadow(
-// //                         color: Colors.blue.withOpacity(0.3),
-// //                         blurRadius: 12,
-// //                         spreadRadius: 2,
-// //                       ),
-// //                     ],
-// //                   ),
-// //                   child: Icon(
-// //                     _videoPlayerController.value.isPlaying
-// //                         ? Icons.pause_rounded
-// //                         : Icons.play_arrow_rounded,
-// //                     color: Colors.white,
-// //                     size: 32,
-// //                   ),
-// //                 ),
+//             return Row(
+//               children: [
+//                 // Play/Pause Icon with glow effect
+//                 Container(
+//                   padding: EdgeInsets.all(8),
+//                   decoration: BoxDecoration(
+//                     shape: BoxShape.circle,
+//                     gradient: LinearGradient(
+//                       colors: [
+//                         Colors.blue.withOpacity(0.3),
+//                         Colors.blue.withOpacity(0.1),
+//                       ],
+//                     ),
+//                     boxShadow: [
+//                       BoxShadow(
+//                         color: Colors.blue.withOpacity(0.3),
+//                         blurRadius: 12,
+//                         spreadRadius: 2,
+//                       ),
+//                     ],
+//                   ),
+//                   child: Icon(
+//                     _videoPlayerController.value.isPlaying
+//                         ? Icons.pause_rounded
+//                         : Icons.play_arrow_rounded,
+//                     color: Colors.white,
+//                     size: 32,
+//                   ),
+//                 ),
 
-// //                 SizedBox(width: 20),
+//                 SizedBox(width: 20),
 
-// //                 // Current/Preview Time with styling
-// //                 Container(
-// //                   padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-// //                   decoration: BoxDecoration(
-// //                     color: _seekAmount > 0
-// //                         ? Colors.orange.withOpacity(0.2)
-// //                         : Colors.white.withOpacity(0.1),
-// //                     borderRadius: BorderRadius.circular(8),
-// //                     border: _seekAmount > 0
-// //                         ? Border.all(color: Colors.orange.withOpacity(0.5), width: 1)
-// //                         : null,
-// //                   ),
-// //                   child: Text(
-// //                     _formatDuration(displayPosition),
-// //                     style: TextStyle(
-// //                       color: _seekAmount > 0 ? Colors.orange : Colors.white,
-// //                       fontSize: 15,
-// //                       fontWeight: FontWeight.w600,
-// //                       letterSpacing: 0.5,
-// //                     ),
-// //                   ),
-// //                 ),
+//                 // Current/Preview Time with styling
+//                 Container(
+//                   padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+//                   decoration: BoxDecoration(
+//                     color: _seekAmount > 0
+//                         ? Colors.orange.withOpacity(0.2)
+//                         : Colors.white.withOpacity(0.1),
+//                     borderRadius: BorderRadius.circular(8),
+//                     border: _seekAmount > 0
+//                         ? Border.all(color: Colors.orange.withOpacity(0.5), width: 1)
+//                         : null,
+//                   ),
+//                   child: Text(
+//                     _formatDuration(displayPosition),
+//                     style: TextStyle(
+//                       color: _seekAmount > 0 ? Colors.orange : Colors.white,
+//                       fontSize: 15,
+//                       fontWeight: FontWeight.w600,
+//                       letterSpacing: 0.5,
+//                     ),
+//                   ),
+//                 ),
 
-// //                 SizedBox(width: 16),
+//                 SizedBox(width: 16),
 
-// //                 // Progress Bar with enhanced styling and preview
-// //                 Expanded(
-// //                   child: Container(
-// //                     height: 8,
-// //                     decoration: BoxDecoration(
-// //                       borderRadius: BorderRadius.circular(4),
-// //                       boxShadow: [
-// //                         BoxShadow(
-// //                           color: Colors.blue.withOpacity(0.2),
-// //                           blurRadius: 8,
-// //                         ),
-// //                       ],
-// //                     ),
-// //                     child: ClipRRect(
-// //                       borderRadius: BorderRadius.circular(4),
-// //                       child: Stack(
-// //                         children: [
-// //                           // Background
-// //                           Container(
-// //                             color: Colors.white.withOpacity(0.15),
-// //                           ),
-// //                           // Current Progress
-// //                           FractionallySizedBox(
-// //                             widthFactor: progress,
-// //                             child: Container(
-// //                               decoration: BoxDecoration(
-// //                                 gradient: LinearGradient(
-// //                                   colors: [
-// //                                     Color(0xFF2196F3),
-// //                                     Color(0xFF64B5F6),
-// //                                   ],
-// //                                 ),
-// //                                 boxShadow: [
-// //                                   BoxShadow(
-// //                                     color: Colors.blue.withOpacity(0.5),
-// //                                     blurRadius: 8,
-// //                                     spreadRadius: 1,
-// //                                   ),
-// //                                 ],
-// //                               ),
-// //                             ),
-// //                           ),
-// //                           // Preview Progress (agar seek ho raha hai)
-// //                           if (_seekAmount > 0)
-// //                             FractionallySizedBox(
-// //                               widthFactor: previewProgress,
-// //                               child: Container(
-// //                                 decoration: BoxDecoration(
-// //                                   gradient: LinearGradient(
-// //                                     colors: [
-// //                                       Colors.orange.withOpacity(0.6),
-// //                                       Colors.orange.withOpacity(0.8),
-// //                                     ],
-// //                                   ),
-// //                                   boxShadow: [
-// //                                     BoxShadow(
-// //                                       color: Colors.orange.withOpacity(0.6),
-// //                                       blurRadius: 10,
-// //                                       spreadRadius: 2,
-// //                                     ),
-// //                                   ],
-// //                                 ),
-// //                               ),
-// //                             ),
-// //                         ],
-// //                       ),
-// //                     ),
-// //                   ),
-// //                 ),
+//                 // Progress Bar with enhanced styling and preview
+//                 Expanded(
+//                   child: Container(
+//                     height: 8,
+//                     decoration: BoxDecoration(
+//                       borderRadius: BorderRadius.circular(4),
+//                       boxShadow: [
+//                         BoxShadow(
+//                           color: Colors.blue.withOpacity(0.2),
+//                           blurRadius: 8,
+//                         ),
+//                       ],
+//                     ),
+//                     child: ClipRRect(
+//                       borderRadius: BorderRadius.circular(4),
+//                       child: Stack(
+//                         children: [
+//                           // Background
+//                           Container(
+//                             color: Colors.white.withOpacity(0.15),
+//                           ),
+//                           // Current Progress
+//                           FractionallySizedBox(
+//                             widthFactor: progress,
+//                             child: Container(
+//                               decoration: BoxDecoration(
+//                                 gradient: LinearGradient(
+//                                   colors: [
+//                                     Color(0xFF2196F3),
+//                                     Color(0xFF64B5F6),
+//                                   ],
+//                                 ),
+//                                 boxShadow: [
+//                                   BoxShadow(
+//                                     color: Colors.blue.withOpacity(0.5),
+//                                     blurRadius: 8,
+//                                     spreadRadius: 1,
+//                                   ),
+//                                 ],
+//                               ),
+//                             ),
+//                           ),
+//                           // Preview Progress (agar seek ho raha hai)
+//                           if (_seekAmount > 0)
+//                             FractionallySizedBox(
+//                               widthFactor: previewProgress,
+//                               child: Container(
+//                                 decoration: BoxDecoration(
+//                                   gradient: LinearGradient(
+//                                     colors: [
+//                                       Colors.orange.withOpacity(0.6),
+//                                       Colors.orange.withOpacity(0.8),
+//                                     ],
+//                                   ),
+//                                   boxShadow: [
+//                                     BoxShadow(
+//                                       color: Colors.orange.withOpacity(0.6),
+//                                       blurRadius: 10,
+//                                       spreadRadius: 2,
+//                                     ),
+//                                   ],
+//                                 ),
+//                               ),
+//                             ),
+//                         ],
+//                       ),
+//                     ),
+//                   ),
+//                 ),
 
-// //                 SizedBox(width: 16),
+//                 SizedBox(width: 16),
 
-// //                 // Total Duration with styling
-// //                 Container(
-// //                   padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-// //                   decoration: BoxDecoration(
-// //                     color: Colors.white.withOpacity(0.1),
-// //                     borderRadius: BorderRadius.circular(8),
-// //                   ),
-// //                   child: Text(
-// //                     _formatDuration(duration),
-// //                     style: TextStyle(
-// //                       color: Colors.white,
-// //                       fontSize: 15,
-// //                       fontWeight: FontWeight.w600,
-// //                       letterSpacing: 0.5,
-// //                     ),
-// //                   ),
-// //                 ),
+//                 // Total Duration with styling
+//                 Container(
+//                   padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+//                   decoration: BoxDecoration(
+//                     color: Colors.white.withOpacity(0.1),
+//                     borderRadius: BorderRadius.circular(8),
+//                   ),
+//                   child: Text(
+//                     _formatDuration(duration),
+//                     style: TextStyle(
+//                       color: Colors.white,
+//                       fontSize: 15,
+//                       fontWeight: FontWeight.w600,
+//                       letterSpacing: 0.5,
+//                     ),
+//                   ),
+//                 ),
 
-// //                 // Buffering indicator with animation
-// //                 if (_videoPlayerController.value.isBuffering)
-// //                   Padding(
-// //                     padding: EdgeInsets.only(left: 20),
-// //                     child: Container(
-// //                       padding: EdgeInsets.all(8),
-// //                       decoration: BoxDecoration(
-// //                         shape: BoxShape.circle,
-// //                         gradient: LinearGradient(
-// //                           colors: [
-// //                             Colors.orange.withOpacity(0.3),
-// //                             Colors.orange.withOpacity(0.1),
-// //                           ],
-// //                         ),
-// //                       ),
-// //                       child: SizedBox(
-// //                         width: 24,
-// //                         height: 24,
-// //                         child: CircularProgressIndicator(
-// //                           strokeWidth: 3,
-// //                           valueColor: AlwaysStoppedAnimation<Color>(Colors.orange),
-// //                         ),
-// //                       ),
-// //                     ),
-// //                   ),
-// //               ],
-// //             );
-// //           },
-// //         ),
-// //       ),
-// //     );
-// //   }
-// // }
+//                 // Buffering indicator with animation
+//                 if (_videoPlayerController.value.isBuffering)
+//                   Padding(
+//                     padding: EdgeInsets.only(left: 20),
+//                     child: Container(
+//                       padding: EdgeInsets.all(8),
+//                       decoration: BoxDecoration(
+//                         shape: BoxShape.circle,
+//                         gradient: LinearGradient(
+//                           colors: [
+//                             Colors.orange.withOpacity(0.3),
+//                             Colors.orange.withOpacity(0.1),
+//                           ],
+//                         ),
+//                       ),
+//                       child: SizedBox(
+//                         width: 24,
+//                         height: 24,
+//                         child: CircularProgressIndicator(
+//                           strokeWidth: 3,
+//                           valueColor: AlwaysStoppedAnimation<Color>(Colors.orange),
+//                         ),
+//                       ),
+//                     ),
+//                   ),
+//               ],
+//             );
+//           },
+//         ),
+//       ),
+//     );
+//   }
+// }
 
 
 
@@ -8533,6 +8533,3733 @@
 
 
 
+// import 'dart:async';
+// import 'dart:convert';
+// import 'dart:io';
+// import 'package:cached_network_image/cached_network_image.dart';
+// import 'package:flutter/material.dart';
+// import 'package:flutter/services.dart';
+// import 'package:flutter_vlc_player/flutter_vlc_player.dart';
+// import 'package:keep_screen_on/keep_screen_on.dart';
+// import 'package:mobi_tv_entertainment/components/widgets/small_widgets/rainbow_page.dart';
+// import 'package:mobi_tv_entertainment/main.dart';
+// // Asegúrate de que este import sea correcto si lo estás usando.
+// // import '../widgets/models/news_item_model.dart'; 
+
+// class GlobalVariables {
+//   static String unUpdatedUrl = '';
+//   static Duration position = Duration.zero;
+//   static Duration duration = Duration.zero;
+//   static String banner = '';
+//   static String name = '';
+//   static bool liveStatus = false;
+// }
+
+// class RefreshPageEvent {
+//   final String pageId;
+//   RefreshPageEvent(this.pageId);
+// }
+
+// class VideoScreen extends StatefulWidget {
+//   final String videoUrl;
+//   final String name;
+//   final bool liveStatus;
+//   final String updatedAt;
+//   final List<dynamic> channelList;
+//   final String bannerImageUrl;
+//   final int? videoId;
+//   final String source;
+
+//   VideoScreen({
+//     required this.videoUrl,
+//     required this.updatedAt,
+//     required this.channelList,
+//     required this.bannerImageUrl,
+//     required this.videoId,
+//     required this.source,
+//     required this.name,
+//     required this.liveStatus,
+//   });
+
+//   @override
+//   _VideoScreenState createState() => _VideoScreenState();
+// }
+
+// class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
+//   VlcPlayerController? _controller;
+//   bool _controlsVisible = true;
+//   late Timer _hideControlsTimer;
+//   bool _isBuffering = false;
+//   bool _isVideoInitialized = false;
+//   int _focusedIndex = 0;
+//   List<FocusNode> focusNodes = [];
+//   final ScrollController _scrollController = ScrollController();
+//   final FocusNode playPauseButtonFocusNode = FocusNode();
+
+//   bool _loadingVisible = false;
+//   Duration _lastKnownPosition = Duration.zero;
+//   Timer? _networkCheckTimer;
+//   bool _wasDisconnected = false;
+//   String? _currentModifiedUrl; // Almacena la URL actual
+
+//   // --- Variables para detección de atascos (Stall Detection) ---
+//   bool _isAttemptingResume = false;
+//   DateTime _lastPlayingTime = DateTime.now();
+//   Duration _lastPositionCheck = Duration.zero;
+//   int _stallCounter = 0;
+//   bool _hasStartedPlaying = false; // 🚀 FIX: Flag para el primer play
+//   // ---
+
+//   // Variable para búsqueda con el dedo (Scrubbing)
+//   bool _isScrubbing = false;
+
+//   Map<String, Uint8List> _bannerCache = {};
+
+//   // Decodifica y cachea imágenes Base64
+//   Uint8List _getCachedImage(String base64String) {
+//     try {
+//       if (!_bannerCache.containsKey(base64String)) {
+//         _bannerCache[base64String] =
+//             base64Decode(base64String.split(',').last);
+//       }
+//       return _bannerCache[base64String]!;
+//     } catch (e) {
+//       print('Error procesando imagen: $e');
+//       // Devuelve un píxel transparente como fallback
+//       return Uint8List.fromList([0, 0, 0, 0]);
+//     }
+//   }
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     WidgetsBinding.instance.addObserver(this);
+//     KeepScreenOn.turnOn();
+
+//     // Encuentra el índice inicial
+//     _focusedIndex = widget.channelList.indexWhere(
+//       (channel) => channel.id.toString() == widget.videoId.toString(),
+//     );
+//     _focusedIndex = (_focusedIndex >= 0) ? _focusedIndex : 0;
+
+//     // Inicializa FocusNodes
+//     focusNodes = List.generate(
+//       widget.channelList.length,
+//       (index) => FocusNode(),
+//     );
+
+//     // Configuración inicial
+//     WidgetsBinding.instance.addPostFrameCallback((_) {
+//       _focusAndScrollToInitialItem();
+//     });
+//     _initializeVLCController(widget.videoUrl); // 🚀 Pasa la URL base
+//     _startHideControlsTimer();
+//     _startNetworkMonitor();
+//     _startPositionUpdater(); // Inicia el detector de atascos
+//   }
+
+//   // Función para establecer el foco y scroll inicial
+//   void _focusAndScrollToInitialItem() {
+//     if (_focusedIndex < 0 || _focusedIndex >= focusNodes.length || !mounted) {
+//       return;
+//     }
+
+//     WidgetsBinding.instance.addPostFrameCallback((_) {
+//       if (!_scrollController.hasClients) return;
+
+//       // --- 1: Scroll a la vista ---
+//       final double itemHeight = (screenhgt * 0.18) + 16.0;
+//       final double targetOffset = (itemHeight * _focusedIndex) - 40.0;
+//       final double clampedOffset = targetOffset.clamp(
+//         _scrollController.position.minScrollExtent,
+//         _scrollController.position.maxScrollExtent,
+//       );
+//       _scrollController.jumpTo(clampedOffset);
+
+//       // --- 2: Pedir Foco ---
+//       WidgetsBinding.instance.addPostFrameCallback((_) {
+//         if (!mounted) return;
+//         if (widget.liveStatus == false) {
+//           FocusScope.of(context).requestFocus(playPauseButtonFocusNode);
+//         } else if (widget.channelList.isNotEmpty &&
+//             _focusedIndex < focusNodes.length) {
+//           FocusScope.of(context).requestFocus(focusNodes[_focusedIndex]);
+//         } else {
+//           FocusScope.of(context).requestFocus(playPauseButtonFocusNode);
+//         }
+//       });
+//     });
+//   }
+
+//   // Función para cambiar foco y hacer scroll durante la navegación
+//   void _changeFocusAndScroll(int newIndex) {
+//     if (newIndex < 0 || newIndex >= widget.channelList.length) {
+//       return;
+//     }
+
+//     setState(() {
+//       _focusedIndex = newIndex;
+//     });
+
+//     WidgetsBinding.instance.addPostFrameCallback((_) {
+//       if (!_scrollController.hasClients || !mounted) return;
+
+//       // --- 1: Scroll (Jump) ---
+//       final double itemHeight = (screenhgt * 0.18) + 16.0;
+//       final double targetOffset = (itemHeight * _focusedIndex) - 40.0;
+//       final double clampedOffset = targetOffset.clamp(
+//         _scrollController.position.minScrollExtent,
+//         _scrollController.position.maxScrollExtent,
+//       );
+//       _scrollController.jumpTo(clampedOffset);
+
+//       // --- 2: Foco ---
+//       WidgetsBinding.instance.addPostFrameCallback((_) {
+//         if (mounted) {
+//           FocusScope.of(context).requestFocus(focusNodes[_focusedIndex]);
+//         }
+//       });
+//     });
+//   }
+
+//   // Manejador de eventos del D-pad
+//   void _handleKeyEvent(RawKeyEvent event) {
+//     if (event is RawKeyDownEvent) {
+//       _resetHideControlsTimer();
+
+//       switch (event.logicalKey) {
+//         case LogicalKeyboardKey.arrowUp:
+//           if (playPauseButtonFocusNode.hasFocus) {
+//             if (widget.liveStatus == false && widget.channelList.isNotEmpty) {
+//               FocusScope.of(context).requestFocus(focusNodes[_focusedIndex]);
+//             }
+//           } else if (_focusedIndex > 0) {
+//             _changeFocusAndScroll(_focusedIndex - 1);
+//           }
+//           break;
+
+//         case LogicalKeyboardKey.arrowDown:
+//           if (_focusedIndex < widget.channelList.length - 1) {
+//             _changeFocusAndScroll(_focusedIndex + 1);
+//           } else if (_focusedIndex < widget.channelList.length) {
+//             FocusScope.of(context).requestFocus(playPauseButtonFocusNode);
+//           }
+//           break;
+
+//         case LogicalKeyboardKey.arrowRight:
+//           if (widget.liveStatus == false) {
+//             _seekForward();
+//           }
+//           if (focusNodes.any((node) => node.hasFocus)) {
+//             FocusScope.of(context).requestFocus(playPauseButtonFocusNode);
+//           }
+//           break;
+
+//         case LogicalKeyboardKey.arrowLeft:
+//           if (widget.liveStatus == false) {
+//             _seekBackward();
+//           }
+//           if (playPauseButtonFocusNode.hasFocus && widget.channelList.isNotEmpty) {
+//             FocusScope.of(context).requestFocus(focusNodes[_focusedIndex]);
+//           }
+//           break;
+
+//         case LogicalKeyboardKey.select:
+//         case LogicalKeyboardKey.enter:
+//           // Para VOD, Enter siempre es Play/Pause
+//           if (widget.liveStatus == false) {
+//             _togglePlayPause();
+//           } else {
+//             // Para Live, depende de qué esté enfocado
+//             if (playPauseButtonFocusNode.hasFocus ||
+//                 widget.channelList.isEmpty) {
+//               _togglePlayPause();
+//             } else {
+//               _onItemTap(_focusedIndex);
+//             }
+//           }
+//           break;
+//       }
+//     }
+//   }
+
+//   // --- Detección y recuperación de atascos (Stall Detection) ---
+
+//   // Future<void> _attemptResumeLiveStream() async {
+//   //   if (!mounted ||
+//   //       _isAttemptingResume ||
+//   //       _controller == null ||
+//   //       widget.liveStatus == false) {
+//   //     return;
+//   //   }
+
+//   //   setState(() {
+//   //     _isAttemptingResume = true;
+//   //     _loadingVisible = true;
+//   //   });
+//   //   print("⚠️ Detectado atasco en Live stream. Intentando resumir...");
+
+//   //   try {
+//   //     final urlToResume = _buildVlcUrl(
+//   //         _currentModifiedUrl ?? widget.videoUrl); // Usa la URL base actual
+//   //     await _retryPlayback(urlToResume, 3);
+
+//   //     // Resetear contadores
+//   //     _lastPlayingTime = DateTime.now();
+//   //     _stallCounter = 0;
+//   //     _lastPositionCheck = Duration.zero;
+//   //     print("✅ Intento de resumen finalizado.");
+//   //   } catch (e) {
+//   //     print("❌ Error durante el resumen del live stream: $e");
+//   //   } finally {
+//   //     if (mounted) {
+//   //       setState(() {
+//   //         _isAttemptingResume = false;
+//   //       });
+//   //     }
+//   //   }
+//   // }
+
+
+// Future<void> _attemptResumeLiveStream() async {
+//     if (!mounted ||
+//         _isAttemptingResume ||
+//         _controller == null ||
+//         widget.liveStatus == false) {
+//       return;
+//     }
+
+//     setState(() {
+//       _isAttemptingResume = true;
+//       _loadingVisible = true;
+//     });
+//     print("⚠️ Detectado atasco en Live stream. Intentando resumen...");
+
+//     try {
+//       // --- 🚀 NUEVA LÓGICA "SOFT" ---
+//       print("Intentando 'soft resume' (pause/play)...");
+//       await _controller!.pause();
+//       await Future.delayed(Duration(milliseconds: 500));
+//       await _controller!.play();
+      
+//       // Dale 3 segundos para ver si funciona
+//       await Future.delayed(Duration(seconds: 3));
+
+//       // Si sigue sin reproducir, haz el "hard resume"
+//       if (mounted && _controller!.value.playingState != PlayingState.playing) {
+//         print("❌ 'Soft resume' fallido. Intentando 'hard resume' (re-load)...");
+//         final urlToResume = _buildVlcUrl(
+//             _currentModifiedUrl ?? widget.videoUrl); // Usa la URL base actual
+//         await _retryPlayback(urlToResume, 3);
+//       } else if (mounted) {
+//          print("✅ 'Soft resume' exitoso.");
+//       }
+//       // --- FIN NUEVA LÓGICA ---
+
+//       // Resetear contadores
+//       _lastPlayingTime = DateTime.now();
+//       _stallCounter = 0;
+//       _lastPositionCheck = Duration.zero;
+
+//     } catch (e) {
+//       print("❌ Error durante el resumen del live stream: $e");
+//     } finally {
+//       if (mounted) {
+//         setState(() {
+//           _isAttemptingResume = false;
+//         });
+//       }
+//     }
+//   }
+
+//   // Detector #1: Errores, Paradas, Buffering largo (CORREGIDO)
+//   void _vlcListener() {
+//     if (!mounted || _controller == null || !_controller!.value.isInitialized)
+//       return;
+
+//     final VlcPlayerValue value = _controller!.value;
+//     final bool isBuffering = value.isBuffering;
+//     final PlayingState playingState = value.playingState;
+
+//     // --- Lógica de detección de atascos #1 (CORREGIDA) ---
+//     if (widget.liveStatus == true && !_isAttemptingResume) {
+//       if (playingState == PlayingState.playing) {
+//         _lastPlayingTime = DateTime.now(); // All good, reset timer
+//         if (!_hasStartedPlaying) {
+//           _hasStartedPlaying = true; // 🚀 SET THE FLAG
+//         }
+//       } else if (playingState == PlayingState.buffering && _hasStartedPlaying) {
+//         // 🚀 ONLY CHECK FOR STALLS *AFTER* IT HAS STARTED PLAYING
+//         // Buffering... for how long?
+//         final stalledDuration = DateTime.now().difference(_lastPlayingTime);
+//         if (stalledDuration > Duration(seconds: 15)) {
+//           print(
+//               "⚠️ Atasco (Listener): Buffering por ${stalledDuration.inSeconds} seg.");
+//           _attemptResumeLiveStream();
+//           _lastPlayingTime = DateTime.now(); // Reset timer after attempt
+//         }
+//       } else if (playingState == PlayingState.error) {
+//         print("⚠️ Atasco (Listener): Player en estado de error.");
+//         _attemptResumeLiveStream();
+//         _lastPlayingTime = DateTime.now();
+//       } else if ((playingState == PlayingState.stopped ||
+//               playingState == PlayingState.ended) &&
+//           _hasStartedPlaying) {
+//         // 🚀 Only restart if it was playing
+//         // Player stopped unexpectedly
+//         final stalledDuration = DateTime.now().difference(_lastPlayingTime);
+//         if (stalledDuration > Duration(seconds: 5)) {
+//           print("⚠️ Atasco (Listener): Player parado inesperadamente.");
+//           _attemptResumeLiveStream();
+//           _lastPlayingTime = DateTime.now();
+//         }
+//       } else if (playingState == PlayingState.paused) {
+//         _lastPlayingTime = DateTime.now(); // Manual pause, do nothing
+//       }
+//     }
+//     // --- Fin lógica #1 ---
+
+//     // Actualizar UI
+//     if (mounted) {
+//       setState(() {
+//         _isBuffering = isBuffering;
+
+//         if (playingState == PlayingState.playing && !isBuffering) {
+//           _loadingVisible = false;
+//         } else if (playingState == PlayingState.buffering ||
+//             playingState == PlayingState.initializing) {
+//           _loadingVisible = true;
+//         }
+
+//         if (_isAttemptingResume) {
+//           _loadingVisible = true;
+//         }
+//       });
+//     }
+//   }
+
+//   // Detector #2: Fotograma congelado (Posición atascada)
+//   void _startPositionUpdater() {
+//     Timer.periodic(Duration(seconds: 2), (_) {
+//       if (!mounted || _controller == null || !_controller!.value.isInitialized) {
+//         return;
+//       }
+
+//       final VlcPlayerValue value = _controller!.value;
+//       final Duration currentPosition = value.position;
+
+//       // Actualizar UI de progreso (solo si no se está haciendo scrubbing)
+//       if (mounted && !_isScrubbing) {
+//         setState(() {
+//           _lastKnownPosition = currentPosition;
+//         });
+//       }
+
+//       // --- Lógica de detección "Fotograma Congelado" ---
+//       if (widget.liveStatus == true &&
+//           !_isAttemptingResume &&
+//           _hasStartedPlaying) { // 🚀 Solo si ya empezó
+//         if (value.playingState == PlayingState.playing) {
+//           if (_lastPositionCheck != Duration.zero &&
+//               currentPosition == _lastPositionCheck) {
+//             // La posición no ha cambiado
+//             _stallCounter++;
+//             print(
+//                 "⚠️ Posición atascada (Fotograma Congelado). Contador: $_stallCounter");
+//           } else {
+//             _stallCounter = 0; // Todo bien, resetear
+//           }
+
+//           if (_stallCounter >= 8) {
+//             // 6 segundos atascado
+//             print("🔴 ATASCADO (Fotograma Congelado). Intentando resumen...");
+//             _attemptResumeLiveStream();
+//             _stallCounter = 0;
+//           }
+//         } else {
+//           _stallCounter = 0; // No está en "playing", resetear
+//         }
+//         _lastPositionCheck = currentPosition;
+//       }
+//       // --- Fin lógica #2 ---
+//     });
+//   }
+
+//   // --- Fin Detección de Atascos ---
+
+//   @override
+//   void dispose() {
+//     print("🗑️ VideoScreen dispose llamado.");
+//     KeepScreenOn.turnOff();
+//     _hideControlsTimer.cancel();
+//     _networkCheckTimer?.cancel();
+//     _scrollController.dispose();
+//     focusNodes.forEach((node) => node.dispose());
+//     playPauseButtonFocusNode.dispose();
+
+//     try {
+//       _controller?.removeListener(_vlcListener);
+//       _controller?.stop();
+//       _controller?.dispose();
+//       print("✅ VLC Controller dispuesto.");
+//     } catch (e) {
+//       print("❌ Error disponiendo controller: $e");
+//     }
+//     super.dispose();
+//   }
+
+//   // Asegura que el item enfocado esté visible
+//   void _scrollToFocusedItem() {
+//     WidgetsBinding.instance.addPostFrameCallback((_) {
+//       if (_focusedIndex < 0 ||
+//           !_scrollController.hasClients ||
+//           _focusedIndex >= focusNodes.length) {
+//         return;
+//       }
+//       final context = focusNodes[_focusedIndex].context;
+//       if (context == null) return;
+
+//       Scrollable.ensureVisible(
+//         context,
+//         duration: const Duration(milliseconds: 300),
+//         curve: Curves.easeInOut,
+//         alignment: 0.01, // Alinea cerca del borde superior
+//       );
+//     });
+//   }
+
+//   // --- Manejo de Red ---
+
+//   void _startNetworkMonitor() {
+//     _networkCheckTimer = Timer.periodic(Duration(seconds: 5), (_) async {
+//       bool isConnected = await _isInternetAvailable();
+//       if (!isConnected && !_wasDisconnected) {
+//         _wasDisconnected = true;
+//         print("Red desconectada");
+//       } else if (isConnected && _wasDisconnected) {
+//         _wasDisconnected = false;
+//         print("Red reconectada. Intentando resumir video...");
+//         if (_controller?.value.isInitialized ?? false) {
+//           _onNetworkReconnected();
+//         }
+//       }
+//     });
+//   }
+
+//   Future<void> _onNetworkReconnected() async {
+//     if (_controller == null || _currentModifiedUrl == null) return;
+    
+//     // Construye la URL completa con opciones de cache
+//     final fullUrl = _buildVlcUrl(_currentModifiedUrl!);
+//     print("Reconectando a: $fullUrl");
+
+//     try {
+//       if (widget.liveStatus == true) {
+//         await _retryPlayback(fullUrl, 3);
+//       } else {
+//         await _retryPlayback(fullUrl, 3);
+//         if (_lastKnownPosition != Duration.zero) {
+//           _seekToPosition(_lastKnownPosition);
+//         }
+//         await _controller!.play();
+//       }
+//     } catch (e) {
+//       print("Error durante reconexión: $e");
+//     }
+//   }
+
+//   Future<bool> _isInternetAvailable() async {
+//     try {
+//       final result = await InternetAddress.lookup('google.com');
+//       return result.isNotEmpty && result[0].rawAddress.isNotEmpty;
+//     } catch (_) {
+//       return false;
+//     }
+//   }
+
+//   // --- Control de Reproducción ---
+
+//   // 🚀 NUEVO: Helper para construir la URL con caching
+//   String _buildVlcUrl(String baseUrl) {
+//     // Opciones en milisegundos
+// final String networkCaching = "network-caching=5000"; // 5 segundos
+//     final String liveCaching = "live-caching=1000";    // 10 segundos
+//     final String fileCaching = "file-caching=5000";     // 5 segundos
+//     final String rtspTcp = "rtsp-tcp";
+
+//     if (widget.liveStatus == true) {
+//       return '$baseUrl?$networkCaching&$liveCaching&$fileCaching&$rtspTcp';
+//     } else {
+//       return '$baseUrl?$networkCaching&$fileCaching&$rtspTcp';
+//     }
+//   }
+
+//   bool _isSeeking = false; // Flag para evitar seeks duplicados
+//   Future<void> _seekToPosition(Duration position) async {
+//     if (_isSeeking || _controller == null) return;
+//     _isSeeking = true;
+//     try {
+//       print("Buscando posición: $position");
+//       await _controller!.seekTo(position);
+//       await _controller!.play();
+//     } catch (e) {
+//       print("Error durante seek: $e");
+//     } finally {
+//       await Future.delayed(Duration(milliseconds: 500));
+//       _isSeeking = false;
+//     }
+//   }
+
+//   Future<void> _initializeVLCController(String baseUrl) async {
+//     setState(() {
+//       _loadingVisible = true;
+//     });
+
+//     // 🚀 USA EL NUEVO HELPER
+//     _currentModifiedUrl = baseUrl; // Almacena la URL base
+//     final String fullVlcUrl = _buildVlcUrl(baseUrl);
+
+//     // Resetear contadores de atasco
+//     _lastPlayingTime = DateTime.now();
+//     _lastPositionCheck = Duration.zero;
+//     _stallCounter = 0;
+//     _hasStartedPlaying = false; // 🚀 FIX
+
+//     print("Inicializando con URL: $fullVlcUrl");
+
+//     _controller = VlcPlayerController.network(
+//       fullVlcUrl,
+//       hwAcc: HwAcc.auto, // 🚀 FIX: Usa 'auto'
+//       options: VlcPlayerOptions(
+//         video: VlcVideoOptions([
+//           VlcVideoOptions.dropLateFrames(true),
+//           VlcVideoOptions.skipFrames(true),
+//         ]),
+//       ),
+//     );
+
+//     await _retryPlayback(fullVlcUrl, 5);
+//     _controller!.addListener(_vlcListener);
+
+//     setState(() {
+//       _isVideoInitialized = true;
+//     });
+//   }
+
+//   // Función de reintento mejorada usando stop()
+//   Future<void> _retryPlayback(String url, int retries) async {
+//     for (int i = 0; i < retries; i++) {
+//       if (!mounted || _controller == null) return;
+//       try {
+//         print("Intento ${i + 1}/$retries: Deteniendo player...");
+//         await _controller!.stop(); // Detiene completamente el stream
+//         print("Asignando media: $url");
+//         await _controller!.setMediaFromNetwork(url);
+//         await _controller!.play();
+//         print("Comando Play enviado.");
+//         return; // Éxito
+//       } catch (e) {
+//         print("Reintento ${i + 1} fallido: $e");
+//         if (i < retries - 1) {
+//           await Future.delayed(Duration(seconds: 1));
+//         }
+//       }
+//     }
+//     print("Todos los reintentos fallaron para: $url");
+//   }
+
+//   Future<void> _onItemTap(int index) async {
+//     setState(() {
+//       _loadingVisible = true;
+//       _focusedIndex = index;
+//     });
+
+//     var selectedChannel = widget.channelList[index];
+    
+//     // 🚀 USA EL NUEVO HELPER
+//     _currentModifiedUrl = selectedChannel.url; // Almacena la URL base
+//     final String fullVlcUrl = _buildVlcUrl(selectedChannel.url);
+//     print("Cambiando a URL: $fullVlcUrl");
+
+//     // Resetear contadores de atasco
+//     _lastPlayingTime = DateTime.now();
+//     _lastPositionCheck = Duration.zero;
+//     _stallCounter = 0;
+//     _hasStartedPlaying = false; // 🚀 FIX
+
+//     try {
+//       if (_controller != null && _controller!.value.isInitialized) {
+//         await _retryPlayback(fullVlcUrl, 5);
+//         _controller!.addListener(_vlcListener); // Asegura que el listener esté
+//       } else {
+//         throw Exception("VLC Controller no inicializado");
+//       }
+//       _scrollToFocusedItem();
+//       _resetHideControlsTimer();
+//     } catch (e) {
+//       print("Error cambiando de canal: $e");
+//     }
+//     // _loadingVisible será quitado por el _vlcListener cuando empiece a reproducir
+//   }
+
+//   void _togglePlayPause() {
+//     if (_controller != null && _controller!.value.isInitialized) {
+//       _controller!.value.isPlaying
+//           ? _controller!.pause()
+//           : _controller!.play();
+//       // Resetear timers de atasco al pausar/reanudar manualmente
+//       _lastPlayingTime = DateTime.now();
+//       _stallCounter = 0;
+//     }
+//     FocusScope.of(context).requestFocus(playPauseButtonFocusNode);
+//     _resetHideControlsTimer();
+//   }
+
+//   // --- Control de UI y Temporizadores ---
+
+//   void _resetHideControlsTimer() {
+//     _hideControlsTimer.cancel();
+//     if (!_controlsVisible) {
+//       setState(() {
+//         _controlsVisible = true;
+//       });
+//       // Al mostrar controles, re-enfocar el item correcto
+//       WidgetsBinding.instance.addPostFrameCallback((_) {
+//         if (!mounted) return;
+//         if (widget.liveStatus == false || widget.channelList.isEmpty) {
+//           FocusScope.of(context).requestFocus(playPauseButtonFocusNode);
+//         } else {
+//           FocusScope.of(context).requestFocus(focusNodes[_focusedIndex]);
+//           _scrollToFocusedItem();
+//         }
+//       });
+//     }
+//     _startHideControlsTimer();
+//   }
+
+//   void _startHideControlsTimer() {
+//     _hideControlsTimer = Timer(Duration(seconds: 10), () {
+//       if (mounted) {
+//         setState(() {
+//           _controlsVisible = false;
+//         });
+//       }
+//     });
+//   }
+
+//   // --- Búsqueda (Seeking) para VOD ---
+
+//   int _accumulatedSeekForward = 0;
+//   int _accumulatedSeekBackward = 0;
+//   Timer? _seekTimer;
+//   Duration _previewPosition = Duration.zero;
+//   final int _seekDuration = 5; // segundos
+//   final int _seekDelay = 800; // milisegundos
+
+//   void _seekForward() {
+//     if (_controller == null ||
+//         !_controller!.value.isInitialized ||
+//         _controller!.value.duration <= Duration.zero) return;
+
+//     _accumulatedSeekForward += _seekDuration;
+//     final newPosition =
+//         _controller!.value.position + Duration(seconds: _accumulatedSeekForward);
+
+//     setState(() {
+//       _previewPosition = newPosition > _controller!.value.duration
+//           ? _controller!.value.duration
+//           : newPosition;
+//     });
+
+//     _seekTimer?.cancel();
+//     _seekTimer = Timer(Duration(milliseconds: _seekDelay), () {
+//       _seekToPosition(_previewPosition).then((_) {
+//         setState(() {
+//           _accumulatedSeekForward = 0;
+//         });
+//       });
+//     });
+//   }
+
+//   void _seekBackward() {
+//     if (_controller == null ||
+//         !_controller!.value.isInitialized ||
+//         _controller!.value.duration <= Duration.zero) return;
+
+//     _accumulatedSeekBackward += _seekDuration;
+//     final newPosition = _controller!.value.position -
+//         Duration(seconds: _accumulatedSeekBackward);
+
+//     setState(() {
+//       _previewPosition =
+//           newPosition > Duration.zero ? newPosition : Duration.zero;
+//     });
+
+//     _seekTimer?.cancel();
+//     _seekTimer = Timer(Duration(milliseconds: _seekDelay), () {
+//       _seekToPosition(_previewPosition).then((_) {
+//         setState(() {
+//           _accumulatedSeekBackward = 0;
+//         });
+//       });
+//     });
+//   }
+
+//   String _formatDuration(Duration duration) {
+//     if (duration.isNegative) {
+//       duration = Duration.zero;
+//     }
+//     String twoDigits(int n) => n.toString().padLeft(2, '0');
+//     final String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
+//     final String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
+//     return "${twoDigits(duration.inHours)}:$twoDigitMinutes:$twoDigitSeconds";
+//   }
+
+//   // --- Funciones de Búsqueda con el dedo (Scrubbing) ---
+
+//   void _onScrubStart(DragStartDetails details, BoxConstraints constraints) {
+//     if (_controller == null || _controller!.value.duration <= Duration.zero)
+//       return;
+
+//     _resetHideControlsTimer();
+//     setState(() {
+//       _isScrubbing = true;
+//       _accumulatedSeekForward = 1; // Para activar la vista previa
+//       final double progress =
+//           (details.localPosition.dx / constraints.maxWidth).clamp(0.0, 1.0);
+//       _previewPosition = _controller!.value.duration * progress;
+//     });
+//   }
+
+//   void _onScrubUpdate(DragUpdateDetails details, BoxConstraints constraints) {
+//     if (!_isScrubbing ||
+//         _controller == null ||
+//         _controller!.value.duration <= Duration.zero) return;
+
+//     _resetHideControlsTimer();
+//     final double progress =
+//         (details.localPosition.dx / constraints.maxWidth).clamp(0.0, 1.0);
+//     final newPosition = _controller!.value.duration * progress;
+//     setState(() {
+//       _previewPosition = newPosition;
+//     });
+//   }
+
+//   void _onScrubEnd(DragEndDetails details) {
+//     if (!_isScrubbing) return;
+
+//     _seekToPosition(_previewPosition).then((_) {
+//       setState(() {
+//         _accumulatedSeekForward = 0; // Desactiva la vista previa
+//       });
+//     });
+//     _resetHideControlsTimer();
+//     setState(() {
+//       _isScrubbing = false;
+//     });
+//   }
+
+//   // --- Widgets de Construcción (Build Widgets) ---
+
+//   Widget _buildVideoPlayer() {
+//     if (!_isVideoInitialized || _controller == null) {
+//       return Center(child: CircularProgressIndicator());
+//     }
+//     // Ajuste de escala para llenar la pantalla (similar a "cover")
+//     return LayoutBuilder(
+//       builder: (context, constraints) {
+//         final screenWidth = constraints.maxWidth;
+//         final screenHeight = constraints.maxHeight;
+//         final videoWidth = _controller!.value.size?.width ?? screenWidth;
+//         final videoHeight = _controller!.value.size?.height ?? screenHeight;
+//         final videoRatio = videoWidth / videoHeight;
+//         final screenRatio = screenWidth / screenHeight;
+
+//         double scaleX = 1.0;
+//         double scaleY = 1.0;
+
+//         if (videoRatio < screenRatio) {
+//           // El video es más "estrecho" que la pantalla (p.ej. 4:3 en 16:9)
+//           scaleX = screenRatio / videoRatio;
+//         } else {
+//           // El video es más "ancho" que la pantalla (p.ej. 21:9 en 16:9)
+//           scaleY = videoRatio / screenRatio;
+//         }
+
+//         return Container(
+//           width: screenWidth,
+//           height: screenHeight,
+//           color: Colors.black,
+//           child: Center(
+//             child: Transform.scale(
+//               scaleX: scaleX,
+//               scaleY: scaleY,
+//               child: VlcPlayer(
+//                 controller: _controller!,
+//                 placeholder: Center(child: CircularProgressIndicator()),
+//                 aspectRatio: 16 / 9,
+//               ),
+//             ),
+//           ),
+//         );
+//       },
+//     );
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return WillPopScope(
+//       onWillPop: () async {
+//         print("🔙 Botón Atrás presionado. Iniciando disposición segura...");
+//         setState(() {
+//           _loadingVisible = true;
+//         });
+//         try {
+//           if (_controller != null && _controller!.value.isInitialized) {
+//             await _controller?.stop();
+//             await _controller?.dispose();
+//             print("✅ VLC Controller dispuesto manualmente.");
+//           }
+//         } catch (e) {
+//           print("❌ Error durante dispose manual: $e");
+//         }
+//         _hideControlsTimer.cancel();
+//         _networkCheckTimer?.cancel();
+//         KeepScreenOn.turnOff();
+//         return true; // Permite salir
+//       },
+//       child: Scaffold(
+//         backgroundColor: Colors.black,
+//         body: SizedBox(
+//           width: screenwdt,
+//           height: screenhgt,
+//           child: Focus(
+//             autofocus: true, // Asegura que el Focus capture teclas
+//             onKey: (node, event) {
+//               if (event is RawKeyDownEvent) {
+//                 _handleKeyEvent(event);
+//                 return KeyEventResult.handled;
+//               }
+//               return KeyEventResult.ignored;
+//             },
+//             child: GestureDetector(
+//               onTap: _resetHideControlsTimer,
+//               child: Stack(
+//                 children: [
+//                   if (_isVideoInitialized && _controller != null)
+//                     _buildVideoPlayer(),
+
+//                   // Indicador de carga/buffering/resumen
+//                   if (_loadingVisible ||
+//                       !_isVideoInitialized ||
+//                       _isAttemptingResume ||
+//                       (_isBuffering && !_loadingVisible))
+//                     Container(
+//                       color: _loadingVisible || !_isVideoInitialized
+//                           ? Colors.black54
+//                           : Colors.transparent,
+//                       child: Center(
+//                         child: RainbowPage(
+//                           backgroundColor: _loadingVisible || !_isVideoInitialized
+//                               ? Colors.black
+//                               : Colors.transparent,
+//                         ),
+//                       ),
+//                     ),
+
+//                   if (_controlsVisible && widget.channelList.isNotEmpty)
+//                     _buildChannelList(),
+
+//                   _buildControls(),
+//                 ],
+//               ),
+//             ),
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildChannelList() {
+//     return Positioned(
+//       top: MediaQuery.of(context).size.height * 0.02,
+//       bottom: MediaQuery.of(context).size.height * 0.1,
+//       left: 0,
+//       right: MediaQuery.of(context).size.width * 0.78,
+//       child: ListView.builder(
+//         controller: _scrollController,
+//         itemCount: widget.channelList.length,
+//         itemBuilder: (context, index) {
+//           final channel = widget.channelList[index];
+//           final String channelId = channel.id?.toString() ?? '';
+//           final bool isBase64 =
+//               channel.banner?.startsWith('data:image') ?? false;
+//           final bool isFocused = _focusedIndex == index;
+
+//           return Padding(
+//             padding:
+//                 const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+//             child: Focus(
+//               focusNode: focusNodes[index],
+//               onFocusChange: (hasFocus) {
+//                 if (hasFocus) {
+//                   print("✅ FOCO GANADO: Canal en índice $index");
+//                   _scrollToFocusedItem();
+//                 }
+//               },
+//               child: GestureDetector(
+//                 onTap: () {
+//                   _onItemTap(index);
+//                   _resetHideControlsTimer();
+//                 },
+//                 child: Container(
+//                   width: screenwdt * 0.3,
+//                   height: screenhgt * 0.18,
+//                   decoration: BoxDecoration(
+//                     border: Border.all(
+//                       color: isFocused && !playPauseButtonFocusNode.hasFocus
+//                           ? const Color.fromARGB(211, 155, 40, 248)
+//                           : Colors.transparent,
+//                       width: 5.0,
+//                     ),
+//                     borderRadius: BorderRadius.circular(10),
+//                     color: isFocused ? Colors.black26 : Colors.transparent,
+//                   ),
+//                   child: ClipRRect(
+//                     borderRadius: BorderRadius.circular(6),
+//                     child: Stack(
+//                       children: [
+//                         Positioned.fill(
+//                           child: Opacity(
+//                             opacity: 0.6,
+//                             child: isBase64
+//                                 ? Image.memory(
+//                                     _bannerCache[channelId] ??
+//                                         _getCachedImage(
+//                                             channel.banner ?? localImage),
+//                                     fit: BoxFit.cover,
+//                                     errorBuilder: (context, e, s) =>
+//                                         Image.asset('assets/placeholder.png'),
+//                                   )
+//                                 : CachedNetworkImage(
+//                                     imageUrl: channel.banner ?? localImage,
+//                                     fit: BoxFit.cover,
+//                                     errorWidget: (context, url, error) =>
+//                                         Image.asset('assets/placeholder.png'),
+//                                   ),
+//                           ),
+//                         ),
+//                         if (isFocused)
+//                           Positioned.fill(
+//                             child: Container(
+//                               decoration: BoxDecoration(
+//                                 gradient: LinearGradient(
+//                                   begin: Alignment.topCenter,
+//                                   end: Alignment.bottomCenter,
+//                                   colors: [
+//                                     Colors.transparent,
+//                                     Colors.black.withOpacity(0.9),
+//                                   ],
+//                                 ),
+//                               ),
+//                             ),
+//                           ),
+//                         if (isFocused)
+//                           Positioned(
+//                             left: 8,
+//                             bottom: 8,
+//                             child: Text(
+//                               channel.name ?? '',
+//                               style: TextStyle(
+//                                 color: Colors.white,
+//                                 fontSize: 16,
+//                                 fontWeight: FontWeight.bold,
+//                               ),
+//                             ),
+//                           ),
+//                       ],
+//                     ),
+//                   ),
+//                 ),
+//               ),
+//             ),
+//           );
+//         },
+//       ),
+//     );
+//   }
+
+//   Widget _buildControls() {
+//     // Determina la posición a mostrar
+//     final Duration currentPosition =
+//         _accumulatedSeekForward > 0 || _accumulatedSeekBackward > 0 || _isScrubbing
+//             ? _previewPosition
+//             : _controller?.value.position ?? Duration.zero;
+//     final Duration totalDuration = _controller?.value.duration ?? Duration.zero;
+
+//     return Positioned(
+//       bottom: 0,
+//       left: 0,
+//       right: 0,
+//       child: Opacity(
+//         opacity: _controlsVisible ? 1 : 0.0,
+//         child: IgnorePointer(
+//           ignoring: !_controlsVisible, // Ignora taps si está oculto
+//           child: Container(
+//             color: Colors.black54,
+//             padding: const EdgeInsets.symmetric(vertical: 4.0),
+//             child: Row(
+//               crossAxisAlignment: CrossAxisAlignment.center,
+//               children: [
+//                 SizedBox(width: screenwdt * 0.03),
+//                 // --- Botón Play/Pause ---
+//                 Container(
+//                   color: playPauseButtonFocusNode.hasFocus
+//                       ? const Color.fromARGB(200, 16, 62, 99)
+//                       : Colors.transparent,
+//                   child: Focus(
+//                     focusNode: playPauseButtonFocusNode,
+//                     onFocusChange: (hasFocus) {
+//                       if (hasFocus) print("✅ FOCO GANADO: Botón Play/Pause");
+//                       setState(() {});
+//                     },
+//                     child: IconButton(
+//                       icon: Image.asset(
+//                         (_controller?.value.isPlaying ?? false)
+//                             ? 'assets/pause.png'
+//                             : 'assets/play.png',
+//                         width: 35,
+//                         height: 35,
+//                       ),
+//                       onPressed: _togglePlayPause,
+//                     ),
+//                   ),
+//                 ),
+
+//                 // --- Tiempo actual (Solo VOD) ---
+//                 if (widget.liveStatus == false)
+//                   Padding(
+//                     padding: const EdgeInsets.symmetric(horizontal: 12.0),
+//                     child: Text(
+//                       _formatDuration(currentPosition),
+//                       style: const TextStyle(
+//                         color: Colors.white,
+//                         fontSize: 18,
+//                         fontWeight: FontWeight.bold,
+//                       ),
+//                     ),
+//                   ),
+
+//                 // --- Barra de Progreso ---
+//                 Expanded(
+//                   flex:10,
+//                   child: LayoutBuilder(
+//                     builder: (context, constraints) {
+//                       return GestureDetector(
+//                         onHorizontalDragStart: (widget.liveStatus == false)
+//                             ? (details) => _onScrubStart(details, constraints)
+//                             : null,
+//                         onHorizontalDragUpdate: (widget.liveStatus == false)
+//                             ? (details) => _onScrubUpdate(details, constraints)
+//                             : null,
+//                         onHorizontalDragEnd: (widget.liveStatus == false)
+//                             ? (details) => _onScrubEnd(details)
+//                             : null,
+//                         child: Container(
+//                           color: Colors.transparent, // Área de toque
+//                           child: _buildBeautifulProgressBar(
+//                               currentPosition, totalDuration),
+//                         ),
+//                       );
+//                     },
+//                   ),
+//                 ),
+
+//                 // --- Tiempo Total (Solo VOD) ---
+//                 if (widget.liveStatus == false)
+//                   Padding(
+//                     padding: const EdgeInsets.symmetric(horizontal: 12.0),
+//                     child: Text(
+//                       _formatDuration(totalDuration),
+//                       style: const TextStyle(
+//                         color: Colors.white,
+//                         fontSize: 18,
+//                         fontWeight: FontWeight.bold,
+//                       ),
+//                     ),
+//                   ),
+
+//                 // --- Indicador "Live" (Solo Live) ---
+//                 if (widget.liveStatus == true)
+//                   Expanded(
+//                     flex: 1,
+//                     child: Row(
+//                       mainAxisAlignment: MainAxisAlignment.center,
+//                       children: const [
+//                         Icon(Icons.circle, color: Colors.red, size: 15),
+//                         SizedBox(width: 5),
+//                         Text(
+//                           'Live',
+//                           style: TextStyle(
+//                             color: Colors.red,
+//                             fontSize: 20,
+//                             fontWeight: FontWeight.bold,
+//                           ),
+//                         ),
+//                       ],
+//                     ),
+//                   ),
+//                 SizedBox(width: screenwdt * 0.03),
+//               ],
+//             ),
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+
+//   // Barra de progreso principal
+//   Widget _buildBeautifulProgressBar(Duration displayPosition, Duration totalDuration) {
+//     final totalDurationMs = totalDuration.inMilliseconds.toDouble();
+    
+//     // Si es Live o la duración es 0, muestra una barra simple
+//     if (totalDurationMs <= 0 || widget.liveStatus == true) {
+//       return Container(
+//         padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+//         child: Container(
+//             height: 8,
+//             decoration: BoxDecoration(
+//                 color: Colors.grey[800],
+//                 borderRadius: BorderRadius.circular(4))),
+//       );
+//     }
+
+//     double playedProgress =
+//         (displayPosition.inMilliseconds / totalDurationMs).clamp(0.0, 1.0);
+    
+//     // Simula un pequeño buffer
+//     double bufferedProgress = (playedProgress + 0.005).clamp(0.0, 1.0); 
+
+//     return Container(
+//       padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+//       child: Container(
+//         height: 8,
+//         decoration: BoxDecoration(
+//           borderRadius: BorderRadius.circular(4),
+//           boxShadow: [
+//             BoxShadow(
+//               color: Colors.black.withOpacity(0.3),
+//               blurRadius: 4,
+//               offset: Offset(0, 2),
+//             ),
+//           ],
+//         ),
+//         child: ClipRRect(
+//           borderRadius: BorderRadius.circular(4),
+//           child: Stack(
+//             children: [
+//               // Fondo
+//               Container(
+//                 width: double.infinity,
+//                 decoration: BoxDecoration(
+//                   gradient: LinearGradient(
+//                     colors: [Colors.grey[800]!, Colors.grey[700]!],
+//                   ),
+//                 ),
+//               ),
+//               // Progreso "bufferizado" (simulado)
+//               FractionallySizedBox(
+//                 widthFactor: bufferedProgress,
+//                 child: Container(
+//                   decoration: BoxDecoration(
+//                     gradient: LinearGradient(
+//                       colors: [Colors.grey[600]!, Colors.grey[500]!],
+//                     ),
+//                   ),
+//                 ),
+//               ),
+//               // Progreso reproducido
+//               FractionallySizedBox(
+//                 widthFactor: playedProgress,
+//                 child: Container(
+//                   decoration: BoxDecoration(
+//                     gradient: LinearGradient(
+//                       colors: [
+//                         Color(0xFF9B28F8), // Morado
+//                         Color(0xFFE62B1E), // Rojo
+//                         Color(0xFFFF6B35), // Naranja
+//                       ],
+//                       stops: [0.0, 0.7, 1.0],
+//                     ),
+//                     boxShadow: [
+//                       BoxShadow(
+//                         color: Color(0xFF9B28F8).withOpacity(0.6),
+//                         blurRadius: 8,
+//                         spreadRadius: 1,
+//                       ),
+//                     ],
+//                   ),
+//                 ),
+//               ),
+//             ],
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+
+
+
+
+
+
+
+
+
+// import 'dart:async';
+// import 'dart:convert';
+// import 'dart:io';
+// import 'package:cached_network_image/cached_network_image.dart';
+// import 'package:flutter/material.dart';
+// import 'package:flutter/services.dart';
+// import 'package:flutter_vlc_player/flutter_vlc_player.dart';
+// import 'package:keep_screen_on/keep_screen_on.dart';
+// import 'package:mobi_tv_entertainment/components/widgets/small_widgets/rainbow_page.dart';
+// import 'package:mobi_tv_entertainment/main.dart';
+// // Asegúrate de que este import sea correcto si lo estás usando.
+// // import '../widgets/models/news_item_model.dart';
+
+// class GlobalVariables {
+//   static String unUpdatedUrl = '';
+//   static Duration position = Duration.zero;
+//   static Duration duration = Duration.zero;
+//   static String banner = '';
+//   static String name = '';
+//   static bool liveStatus = false;
+// }
+
+// class RefreshPageEvent {
+//   final String pageId;
+//   RefreshPageEvent(this.pageId);
+// }
+
+// class VideoScreen extends StatefulWidget {
+//   final String videoUrl;
+//   final String name;
+//   final bool liveStatus;
+//   final String updatedAt;
+//   final List<dynamic> channelList;
+//   final String bannerImageUrl;
+//   final int? videoId;
+//   final String source;
+
+//   VideoScreen({
+//     required this.videoUrl,
+//     required this.updatedAt,
+//     required this.channelList,
+//     required this.bannerImageUrl,
+//     required this.videoId,
+//     required this.source,
+//     required this.name,
+//     required this.liveStatus,
+//   });
+
+//   @override
+//   _VideoScreenState createState() => _VideoScreenState();
+// }
+
+// class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
+//   VlcPlayerController? _controller;
+//   bool _controlsVisible = true;
+//   late Timer _hideControlsTimer;
+//   bool _isBuffering = false;
+//   bool _isVideoInitialized = false;
+//   int _focusedIndex = 0;
+//   List<FocusNode> focusNodes = [];
+//   final ScrollController _scrollController = ScrollController();
+//   final FocusNode playPauseButtonFocusNode = FocusNode();
+
+//   bool _loadingVisible = false;
+//   Duration _lastKnownPosition = Duration.zero;
+//   Timer? _networkCheckTimer;
+//   bool _wasDisconnected = false;
+//   String? _currentModifiedUrl; // Almacena la URL actual
+
+//   // --- Variables para detección de atascos (Stall Detection) ---
+//   // ⛔️ ELIMINADAS
+//   // ---
+
+//   // Variable para búsqueda con el dedo (Scrubbing)
+//   bool _isScrubbing = false;
+
+//   Map<String, Uint8List> _bannerCache = {};
+
+//   // Decodifica y cachea imágenes Base64
+//   Uint8List _getCachedImage(String base64String) {
+//     try {
+//       if (!_bannerCache.containsKey(base64String)) {
+//         _bannerCache[base64String] =
+//             base64Decode(base64String.split(',').last);
+//       }
+//       return _bannerCache[base64String]!;
+//     } catch (e) {
+//       print('Error procesando imagen: $e');
+//       // Devuelve un píxel transparente como fallback
+//       return Uint8List.fromList([0, 0, 0, 0]);
+//     }
+//   }
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     WidgetsBinding.instance.addObserver(this);
+//     KeepScreenOn.turnOn();
+
+//     // Encuentra el índice inicial
+//     _focusedIndex = widget.channelList.indexWhere(
+//       (channel) => channel.id.toString() == widget.videoId.toString(),
+//     );
+//     _focusedIndex = (_focusedIndex >= 0) ? _focusedIndex : 0;
+
+//     // Inicializa FocusNodes
+//     focusNodes = List.generate(
+//       widget.channelList.length,
+//       (index) => FocusNode(),
+//     );
+
+//     // Configuración inicial
+//     WidgetsBinding.instance.addPostFrameCallback((_) {
+//       _focusAndScrollToInitialItem();
+//     });
+//     _initializeVLCController(widget.videoUrl); // 🚀 Pasa la URL base
+//     _startHideControlsTimer();
+//     _startNetworkMonitor();
+//     _startPositionUpdater(); // Inicia el actualizador de posición (sin detector de atascos)
+//   }
+
+//   // Función para establecer el foco y scroll inicial
+//   void _focusAndScrollToInitialItem() {
+//     if (_focusedIndex < 0 || _focusedIndex >= focusNodes.length || !mounted) {
+//       return;
+//     }
+
+//     WidgetsBinding.instance.addPostFrameCallback((_) {
+//       if (!_scrollController.hasClients) return;
+
+//       // --- 1: Scroll a la vista ---
+//       final double itemHeight = (screenhgt * 0.18) + 16.0;
+//       final double targetOffset = (itemHeight * _focusedIndex) - 40.0;
+//       final double clampedOffset = targetOffset.clamp(
+//         _scrollController.position.minScrollExtent,
+//         _scrollController.position.maxScrollExtent,
+//       );
+//       _scrollController.jumpTo(clampedOffset);
+
+//       // --- 2: Pedir Foco ---
+//       WidgetsBinding.instance.addPostFrameCallback((_) {
+//         if (!mounted) return;
+//         if (widget.liveStatus == false) {
+//           FocusScope.of(context).requestFocus(playPauseButtonFocusNode);
+//         } else if (widget.channelList.isNotEmpty &&
+//             _focusedIndex < focusNodes.length) {
+//           FocusScope.of(context).requestFocus(focusNodes[_focusedIndex]);
+//         } else {
+//           FocusScope.of(context).requestFocus(playPauseButtonFocusNode);
+//         }
+//       });
+//     });
+//   }
+
+//   // Función para cambiar foco y hacer scroll durante la navegación
+//   void _changeFocusAndScroll(int newIndex) {
+//     if (newIndex < 0 || newIndex >= widget.channelList.length) {
+//       return;
+//     }
+
+//     setState(() {
+//       _focusedIndex = newIndex;
+//     });
+
+//     WidgetsBinding.instance.addPostFrameCallback((_) {
+//       if (!_scrollController.hasClients || !mounted) return;
+
+//       // --- 1: Scroll (Jump) ---
+//       final double itemHeight = (screenhgt * 0.18) + 16.0;
+//       final double targetOffset = (itemHeight * _focusedIndex) - 40.0;
+//       final double clampedOffset = targetOffset.clamp(
+//         _scrollController.position.minScrollExtent,
+//         _scrollController.position.maxScrollExtent,
+//       );
+//       _scrollController.jumpTo(clampedOffset);
+
+//       // --- 2: Foco ---
+//       WidgetsBinding.instance.addPostFrameCallback((_) {
+//         if (mounted) {
+//           FocusScope.of(context).requestFocus(focusNodes[_focusedIndex]);
+//         }
+//       });
+//     });
+//   }
+
+//   // Manejador de eventos del D-pad
+//   void _handleKeyEvent(RawKeyEvent event) {
+//     if (event is RawKeyDownEvent) {
+//       _resetHideControlsTimer();
+
+//       switch (event.logicalKey) {
+//         case LogicalKeyboardKey.arrowUp:
+//           if (playPauseButtonFocusNode.hasFocus) {
+//             if (widget.liveStatus == false && widget.channelList.isNotEmpty) {
+//               FocusScope.of(context).requestFocus(focusNodes[_focusedIndex]);
+//             }
+//           } else if (_focusedIndex > 0) {
+//             _changeFocusAndScroll(_focusedIndex - 1);
+//           }
+//           break;
+
+//         case LogicalKeyboardKey.arrowDown:
+//           if (_focusedIndex < widget.channelList.length - 1) {
+//             _changeFocusAndScroll(_focusedIndex + 1);
+//           } else if (_focusedIndex < widget.channelList.length) {
+//             FocusScope.of(context).requestFocus(playPauseButtonFocusNode);
+//           }
+//           break;
+
+//         case LogicalKeyboardKey.arrowRight:
+//           if (widget.liveStatus == false) {
+//             _seekForward();
+//           }
+//           if (focusNodes.any((node) => node.hasFocus)) {
+//             FocusScope.of(context).requestFocus(playPauseButtonFocusNode);
+//           }
+//           break;
+
+//         case LogicalKeyboardKey.arrowLeft:
+//           if (widget.liveStatus == false) {
+//             _seekBackward();
+//           }
+//           if (playPauseButtonFocusNode.hasFocus &&
+//               widget.channelList.isNotEmpty) {
+//             FocusScope.of(context).requestFocus(focusNodes[_focusedIndex]);
+//           }
+//           break;
+
+//         case LogicalKeyboardKey.select:
+//         case LogicalKeyboardKey.enter:
+//           // Para VOD, Enter siempre es Play/Pause
+//           if (widget.liveStatus == false) {
+//             _togglePlayPause();
+//           } else {
+//             // Para Live, depende de qué esté enfocado
+//             if (playPauseButtonFocusNode.hasFocus ||
+//                 widget.channelList.isEmpty) {
+//               _togglePlayPause();
+//             } else {
+//               _onItemTap(_focusedIndex);
+//             }
+//           }
+//           break;
+//       }
+//     }
+//   }
+
+//   // --- Detección y recuperación de atascos (Stall Detection) ---
+//   // ⛔️ FUNCIONALIDAD ELIMINADA
+//   // ---
+
+//   // Detector #1: Errores, Paradas, Buffering (Solo UI)
+//   void _vlcListener() {
+//     if (!mounted || _controller == null || !_controller!.value.isInitialized)
+//       return;
+
+//     final VlcPlayerValue value = _controller!.value;
+//     final bool isBuffering = value.isBuffering;
+//     final PlayingState playingState = value.playingState;
+
+//     // --- Lógica de detección de atascos #1 (CORREGIDA) ---
+//     // ⛔️ ELIMINADA
+//     // --- Fin lógica #1 ---
+
+//     // Actualizar UI
+//     if (mounted) {
+//       setState(() {
+//         _isBuffering = isBuffering;
+
+//         if (playingState == PlayingState.playing && !isBuffering) {
+//           _loadingVisible = false;
+//         } else if (playingState == PlayingState.buffering ||
+//             playingState == PlayingState.initializing) {
+//           _loadingVisible = true;
+//         }
+//       });
+//     }
+//   }
+
+//   // Detector #2: Actualizador de posición (sin detector de atascos)
+//   void _startPositionUpdater() {
+//     Timer.periodic(Duration(seconds: 2), (_) {
+//       if (!mounted || _controller == null || !_controller!.value.isInitialized) {
+//         return;
+//       }
+
+//       final VlcPlayerValue value = _controller!.value;
+//       final Duration currentPosition = value.position;
+
+//       // Actualizar UI de progreso (solo si no se está haciendo scrubbing)
+//       if (mounted && !_isScrubbing) {
+//         setState(() {
+//           _lastKnownPosition = currentPosition;
+//         });
+//       }
+
+//       // --- Lógica de detección "Fotograma Congelado" ---
+//       // ⛔️ ELIMINADA
+//       // --- Fin lógica #2 ---
+//     });
+//   }
+
+//   // --- Fin Detección de Atascos ---
+
+//   @override
+//   void dispose() {
+//     print("🗑️ VideoScreen dispose llamado.");
+//     KeepScreenOn.turnOff();
+//     _hideControlsTimer.cancel();
+//     _networkCheckTimer?.cancel();
+//     _scrollController.dispose();
+//     focusNodes.forEach((node) => node.dispose());
+//     playPauseButtonFocusNode.dispose();
+
+//     try {
+//       _controller?.removeListener(_vlcListener);
+//       _controller?.stop();
+//       _controller?.dispose();
+//       print("✅ VLC Controller dispuesto.");
+//     } catch (e) {
+//       print("❌ Error disponiendo controller: $e");
+//     }
+//     super.dispose();
+//   }
+
+//   // Asegura que el item enfocado esté visible
+//   void _scrollToFocusedItem() {
+//     WidgetsBinding.instance.addPostFrameCallback((_) {
+//       if (_focusedIndex < 0 ||
+//           !_scrollController.hasClients ||
+//           _focusedIndex >= focusNodes.length) {
+//         return;
+//       }
+//       final context = focusNodes[_focusedIndex].context;
+//       if (context == null) return;
+
+//       Scrollable.ensureVisible(
+//         context,
+//         duration: const Duration(milliseconds: 300),
+//         curve: Curves.easeInOut,
+//         alignment: 0.01, // Alinea cerca del borde superior
+//       );
+//     });
+//   }
+
+//   // --- Manejo de Red ---
+
+//   void _startNetworkMonitor() {
+//     _networkCheckTimer = Timer.periodic(Duration(seconds: 5), (_) async {
+//       bool isConnected = await _isInternetAvailable();
+//       if (!isConnected && !_wasDisconnected) {
+//         _wasDisconnected = true;
+//         print("Red desconectada");
+//       } else if (isConnected && _wasDisconnected) {
+//         _wasDisconnected = false;
+//         print("Red reconectada. Intentando resumir video...");
+//         if (_controller?.value.isInitialized ?? false) {
+//           _onNetworkReconnected();
+//         }
+//       }
+//     });
+//   }
+
+//   Future<void> _onNetworkReconnected() async {
+//     if (_controller == null || _currentModifiedUrl == null) return;
+
+//     // Construye la URL completa con opciones de cache
+//     final fullUrl = _buildVlcUrl(_currentModifiedUrl!);
+//     print("Reconectando a: $fullUrl");
+
+//     try {
+//       if (widget.liveStatus == true) {
+//         await _retryPlayback(fullUrl, 3);
+//       } else {
+//         await _retryPlayback(fullUrl, 3);
+//         if (_lastKnownPosition != Duration.zero) {
+//           _seekToPosition(_lastKnownPosition);
+//         }
+//         await _controller!.play();
+//       }
+//     } catch (e) {
+//       print("Error durante reconexión: $e");
+//     }
+//   }
+
+//   Future<bool> _isInternetAvailable() async {
+//     try {
+//       final result = await InternetAddress.lookup('google.com');
+//       return result.isNotEmpty && result[0].rawAddress.isNotEmpty;
+//     } catch (_) {
+//       return false;
+//     }
+//   }
+
+//   // --- Control de Reproducción ---
+
+//   // 🚀 NUEVO: Helper para construir la URL con caching
+//   String _buildVlcUrl(String baseUrl) {
+//     // Opciones en milisegundos
+//     final String networkCaching = "network-caching=5000"; // 5 segundos
+//     final String liveCaching = "live-caching=10000"; // 10 segundos
+//     final String fileCaching = "file-caching=5000"; // 5 segundos
+//     final String rtspTcp = "rtsp-tcp";
+
+//     if (widget.liveStatus == true) {
+//       return '$baseUrl?$networkCaching&$liveCaching&$fileCaching&$rtspTcp';
+//     } else {
+//       return '$baseUrl?$networkCaching&$fileCaching&$rtspTcp';
+//     }
+//   }
+
+//   bool _isSeeking = false; // Flag para evitar seeks duplicados
+//   Future<void> _seekToPosition(Duration position) async {
+//     if (_isSeeking || _controller == null) return;
+//     _isSeeking = true;
+//     try {
+//       print("Buscando posición: $position");
+//       await _controller!.seekTo(position);
+//       await _controller!.play();
+//     } catch (e) {
+//       print("Error durante seek: $e");
+//     } finally {
+//       await Future.delayed(Duration(milliseconds: 500));
+//       _isSeeking = false;
+//     }
+//   }
+
+//   Future<void> _initializeVLCController(String baseUrl) async {
+//     setState(() {
+//       _loadingVisible = true;
+//     });
+
+//     // 🚀 USA EL NUEVO HELPER
+//     _currentModifiedUrl = baseUrl; // Almacena la URL base
+//     final String fullVlcUrl = _buildVlcUrl(baseUrl);
+
+//     // Resetear contadores de atasco
+//     // ⛔️ ELIMINADO
+
+//     print("Inicializando con URL: $fullVlcUrl");
+
+//     _controller = VlcPlayerController.network(
+//       fullVlcUrl,
+//       hwAcc: HwAcc.auto, // 🚀 FIX: Usa 'auto'
+//       options: VlcPlayerOptions(
+//         video: VlcVideoOptions([
+//           VlcVideoOptions.dropLateFrames(true),
+//           VlcVideoOptions.skipFrames(true),
+//         ]),
+//       ),
+//     );
+
+//     await _retryPlayback(fullVlcUrl, 5);
+//     _controller!.addListener(_vlcListener);
+
+//     setState(() {
+//       _isVideoInitialized = true;
+//     });
+//   }
+
+//   // Función de reintento mejorada usando stop()
+//   Future<void> _retryPlayback(String url, int retries) async {
+//     for (int i = 0; i < retries; i++) {
+//       if (!mounted || _controller == null) return;
+//       try {
+//         print("Intento ${i + 1}/$retries: Deteniendo player...");
+//         await _controller!.stop(); // Detiene completamente el stream
+//         print("Asignando media: $url");
+//         await _controller!.setMediaFromNetwork(url);
+//         await _controller!.play();
+//         print("Comando Play enviado.");
+//         return; // Éxito
+//       } catch (e) {
+//         print("Reintento ${i + 1} fallido: $e");
+//         if (i < retries - 1) {
+//           await Future.delayed(Duration(seconds: 1));
+//         }
+//       }
+//     }
+//     print("Todos los reintentos fallaron para: $url");
+//   }
+
+//   Future<void> _onItemTap(int index) async {
+//     setState(() {
+//       _loadingVisible = true;
+//       _focusedIndex = index;
+//     });
+
+//     var selectedChannel = widget.channelList[index];
+
+//     // 🚀 USA EL NUEVO HELPER
+//     _currentModifiedUrl = selectedChannel.url; // Almacena la URL base
+//     final String fullVlcUrl = _buildVlcUrl(selectedChannel.url);
+//     print("Cambiando a URL: $fullVlcUrl");
+
+//     // Resetear contadores de atasco
+//     // ⛔️ ELIMINADO
+
+//     try {
+//       if (_controller != null && _controller!.value.isInitialized) {
+//         await _retryPlayback(fullVlcUrl, 5);
+//         _controller!.addListener(_vlcListener); // Asegura que el listener esté
+//       } else {
+//         throw Exception("VLC Controller no inicializado");
+//       }
+//       _scrollToFocusedItem();
+//       _resetHideControlsTimer();
+//     } catch (e) {
+//       print("Error cambiando de canal: $e");
+//     }
+//     // _loadingVisible será quitado por el _vlcListener cuando empiece a reproducir
+//   }
+
+//   void _togglePlayPause() {
+//     if (_controller != null && _controller!.value.isInitialized) {
+//       _controller!.value.isPlaying
+//           ? _controller!.pause()
+//           : _controller!.play();
+//       // Resetear timers de atasco al pausar/reanudar manually
+//       // ⛔️ ELIMINADO
+//     }
+//     FocusScope.of(context).requestFocus(playPauseButtonFocusNode);
+//     _resetHideControlsTimer();
+//   }
+
+//   // --- Control de UI y Temporizadores ---
+
+//   void _resetHideControlsTimer() {
+//     _hideControlsTimer.cancel();
+//     if (!_controlsVisible) {
+//       setState(() {
+//         _controlsVisible = true;
+//       });
+//       // Al mostrar controles, re-enfocar el item correcto
+//       WidgetsBinding.instance.addPostFrameCallback((_) {
+//         if (!mounted) return;
+//         if (widget.liveStatus == false || widget.channelList.isEmpty) {
+//           FocusScope.of(context).requestFocus(playPauseButtonFocusNode);
+//         } else {
+//           FocusScope.of(context).requestFocus(focusNodes[_focusedIndex]);
+//           _scrollToFocusedItem();
+//         }
+//       });
+//     }
+//     _startHideControlsTimer();
+//   }
+
+//   void _startHideControlsTimer() {
+//     _hideControlsTimer = Timer(Duration(seconds: 10), () {
+//       if (mounted) {
+//         setState(() {
+//           _controlsVisible = false;
+//         });
+//       }
+//     });
+//   }
+
+//   // --- Búsqueda (Seeking) para VOD ---
+
+//   int _accumulatedSeekForward = 0;
+//   int _accumulatedSeekBackward = 0;
+//   Timer? _seekTimer;
+//   Duration _previewPosition = Duration.zero;
+//   final int _seekDuration = 5; // segundos
+//   final int _seekDelay = 800; // milisegundos
+
+//   void _seekForward() {
+//     if (_controller == null ||
+//         !_controller!.value.isInitialized ||
+//         _controller!.value.duration <= Duration.zero) return;
+
+//     _accumulatedSeekForward += _seekDuration;
+//     final newPosition =
+//         _controller!.value.position + Duration(seconds: _accumulatedSeekForward);
+
+//     setState(() {
+//       _previewPosition = newPosition > _controller!.value.duration
+//           ? _controller!.value.duration
+//           : newPosition;
+//     });
+
+//     _seekTimer?.cancel();
+//     _seekTimer = Timer(Duration(milliseconds: _seekDelay), () {
+//       _seekToPosition(_previewPosition).then((_) {
+//         setState(() {
+//           _accumulatedSeekForward = 0;
+//         });
+//       });
+//     });
+//   }
+
+//   void _seekBackward() {
+//     if (_controller == null ||
+//         !_controller!.value.isInitialized ||
+//         _controller!.value.duration <= Duration.zero) return;
+
+//     _accumulatedSeekBackward += _seekDuration;
+//     final newPosition = _controller!.value.position -
+//         Duration(seconds: _accumulatedSeekBackward);
+
+//     setState(() {
+//       _previewPosition =
+//           newPosition > Duration.zero ? newPosition : Duration.zero;
+//     });
+
+//     _seekTimer?.cancel();
+//     _seekTimer = Timer(Duration(milliseconds: _seekDelay), () {
+//       _seekToPosition(_previewPosition).then((_) {
+//         setState(() {
+//           _accumulatedSeekBackward = 0;
+//         });
+//       });
+//     });
+//   }
+
+//   String _formatDuration(Duration duration) {
+//     if (duration.isNegative) {
+//       duration = Duration.zero;
+//     }
+//     String twoDigits(int n) => n.toString().padLeft(2, '0');
+//     final String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
+//     final String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
+//     return "${twoDigits(duration.inHours)}:$twoDigitMinutes:$twoDigitSeconds";
+//   }
+
+//   // --- Funciones de Búsqueda con el dedo (Scrubbing) ---
+
+//   void _onScrubStart(DragStartDetails details, BoxConstraints constraints) {
+//     if (_controller == null || _controller!.value.duration <= Duration.zero)
+//       return;
+
+//     _resetHideControlsTimer();
+//     setState(() {
+//       _isScrubbing = true;
+//       _accumulatedSeekForward = 1; // Para activar la vista previa
+//       final double progress =
+//           (details.localPosition.dx / constraints.maxWidth).clamp(0.0, 1.0);
+//       _previewPosition = _controller!.value.duration * progress;
+//     });
+//   }
+
+//   void _onScrubUpdate(DragUpdateDetails details, BoxConstraints constraints) {
+//     if (!_isScrubbing ||
+//         _controller == null ||
+//         _controller!.value.duration <= Duration.zero) return;
+
+//     _resetHideControlsTimer();
+//     final double progress =
+//         (details.localPosition.dx / constraints.maxWidth).clamp(0.0, 1.0);
+//     final newPosition = _controller!.value.duration * progress;
+//     setState(() {
+//       _previewPosition = newPosition;
+//     });
+//   }
+
+//   void _onScrubEnd(DragEndDetails details) {
+//     if (!_isScrubbing) return;
+
+//     _seekToPosition(_previewPosition).then((_) {
+//       setState(() {
+//         _accumulatedSeekForward = 0; // Desactiva la vista previa
+//       });
+//     });
+//     _resetHideControlsTimer();
+//     setState(() {
+//       _isScrubbing = false;
+//     });
+//   }
+
+//   // --- Widgets de Construcción (Build Widgets) ---
+
+//   Widget _buildVideoPlayer() {
+//     if (!_isVideoInitialized || _controller == null) {
+//       return Center(child: CircularProgressIndicator());
+//     }
+//     // Ajuste de escala para llenar la pantalla (similar a "cover")
+//     return LayoutBuilder(
+//       builder: (context, constraints) {
+//         final screenWidth = constraints.maxWidth;
+//         final screenHeight = constraints.maxHeight;
+//         final videoWidth = _controller!.value.size?.width ?? screenWidth;
+//         final videoHeight = _controller!.value.size?.height ?? screenHeight;
+//         final videoRatio = videoWidth / videoHeight;
+//         final screenRatio = screenWidth / screenHeight;
+
+//         double scaleX = 1.0;
+//         double scaleY = 1.0;
+
+//         if (videoRatio < screenRatio) {
+//           // El video es más "estrecho" que la pantalla (p.ej. 4:3 en 16:9)
+//           scaleX = screenRatio / videoRatio;
+//         } else {
+//           // El video es más "ancho" que la pantalla (p.ej. 21:9 en 16:9)
+//           scaleY = videoRatio / screenRatio;
+//         }
+
+//         return Container(
+//           width: screenWidth,
+//           height: screenHeight,
+//           color: Colors.black,
+//           child: Center(
+//             child: Transform.scale(
+//               scaleX: scaleX,
+//               scaleY: scaleY,
+//               child: VlcPlayer(
+//                 controller: _controller!,
+//                 placeholder: Center(child: CircularProgressIndicator()),
+//                 aspectRatio: 16 / 9,
+//               ),
+//             ),
+//           ),
+//         );
+//       },
+//     );
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return WillPopScope(
+//       onWillPop: () async {
+//         print("🔙 Botón Atrás presionado. Iniciando disposición segura...");
+//         setState(() {
+//           _loadingVisible = true;
+//         });
+//         try {
+//           if (_controller != null && _controller!.value.isInitialized) {
+//             await _controller?.stop();
+//             await _controller?.dispose();
+//             print("✅ VLC Controller dispuesto manualmente.");
+//           }
+//         } catch (e) {
+//           print("❌ Error durante dispose manual: $e");
+//         }
+//         _hideControlsTimer.cancel();
+//         _networkCheckTimer?.cancel();
+//         KeepScreenOn.turnOff();
+//         return true; // Permite salir
+//       },
+//       child: Scaffold(
+//         backgroundColor: Colors.black,
+//         body: SizedBox(
+//           width: screenwdt,
+//           height: screenhgt,
+//           child: Focus(
+//             autofocus: true, // Asegura que el Focus capture teclas
+//             onKey: (node, event) {
+//               if (event is RawKeyDownEvent) {
+//                 _handleKeyEvent(event);
+//                 return KeyEventResult.handled;
+//               }
+//               return KeyEventResult.ignored;
+//             },
+//             child: GestureDetector(
+//               onTap: _resetHideControlsTimer,
+//               child: Stack(
+//                 children: [
+//                   if (_isVideoInitialized && _controller != null)
+//                     _buildVideoPlayer(),
+
+//                   // Indicador de carga/buffering/resumen
+//                   if (_loadingVisible ||
+//                       !_isVideoInitialized ||
+//                       // _isAttemptingResume || // ⛔️ ELIMINADO
+//                       (_isBuffering && !_loadingVisible))
+//                     Container(
+//                       color: _loadingVisible || !_isVideoInitialized
+//                           ? Colors.black54
+//                           : Colors.transparent,
+//                       child: Center(
+//                         child: RainbowPage(
+//                           backgroundColor: _loadingVisible || !_isVideoInitialized
+//                               ? Colors.black
+//                               : Colors.transparent,
+//                         ),
+//                       ),
+//                     ),
+
+//                   if (_controlsVisible && widget.channelList.isNotEmpty)
+//                     _buildChannelList(),
+
+//                   _buildControls(),
+//                 ],
+//               ),
+//             ),
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildChannelList() {
+//     return Positioned(
+//       top: MediaQuery.of(context).size.height * 0.02,
+//       bottom: MediaQuery.of(context).size.height * 0.1,
+//       left: 0,
+//       right: MediaQuery.of(context).size.width * 0.78,
+//       child: ListView.builder(
+//         controller: _scrollController,
+//         itemCount: widget.channelList.length,
+//         itemBuilder: (context, index) {
+//           final channel = widget.channelList[index];
+//           final String channelId = channel.id?.toString() ?? '';
+//           final bool isBase64 =
+//               channel.banner?.startsWith('data:image') ?? false;
+//           final bool isFocused = _focusedIndex == index;
+
+//           return Padding(
+//             padding:
+//                 const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+//             child: Focus(
+//               focusNode: focusNodes[index],
+//               onFocusChange: (hasFocus) {
+//                 if (hasFocus) {
+//                   print("✅ FOCO GANADO: Canal en índice $index");
+//                   _scrollToFocusedItem();
+//                 }
+//               },
+//               child: GestureDetector(
+//                 onTap: () {
+//                   _onItemTap(index);
+//                   _resetHideControlsTimer();
+//                 },
+//                 child: Container(
+//                   width: screenwdt * 0.3,
+//                   height: screenhgt * 0.18,
+//                   decoration: BoxDecoration(
+//                     border: Border.all(
+//                       color: isFocused && !playPauseButtonFocusNode.hasFocus
+//                           ? const Color.fromARGB(211, 155, 40, 248)
+//                           : Colors.transparent,
+//                       width: 5.0,
+//                     ),
+//                     borderRadius: BorderRadius.circular(10),
+//                     color: isFocused ? Colors.black26 : Colors.transparent,
+//                   ),
+//                   child: ClipRRect(
+//                     borderRadius: BorderRadius.circular(6),
+//                     child: Stack(
+//                       children: [
+//                         Positioned.fill(
+//                           child: Opacity(
+//                             opacity: 0.6,
+//                             child: isBase64
+//                                 ? Image.memory(
+//                                     _bannerCache[channelId] ??
+//                                         _getCachedImage(
+//                                             channel.banner ?? localImage),
+//                                     fit: BoxFit.cover,
+//                                     errorBuilder: (context, e, s) =>
+//                                         Image.asset('assets/placeholder.png'),
+//                                   )
+//                                 : CachedNetworkImage(
+//                                     imageUrl: channel.banner ?? localImage,
+//                                     fit: BoxFit.cover,
+//                                     errorWidget: (context, url, error) =>
+//                                         Image.asset('assets/placeholder.png'),
+//                                   ),
+//                           ),
+//                         ),
+//                         if (isFocused)
+//                           Positioned.fill(
+//                             child: Container(
+//                               decoration: BoxDecoration(
+//                                 gradient: LinearGradient(
+//                                   begin: Alignment.topCenter,
+//                                   end: Alignment.bottomCenter,
+//                                   colors: [
+//                                     Colors.transparent,
+//                                     Colors.black.withOpacity(0.9),
+//                                   ],
+//                                 ),
+//                               ),
+//                             ),
+//                           ),
+//                         if (isFocused)
+//                           Positioned(
+//                             left: 8,
+//                             bottom: 8,
+//                             child: Text(
+//                               channel.name ?? '',
+//                               style: TextStyle(
+//                                 color: Colors.white,
+//                                 fontSize: 16,
+//                                 fontWeight: FontWeight.bold,
+//                               ),
+//                             ),
+//                           ),
+//                       ],
+//                     ),
+//                   ),
+//                 ),
+//               ),
+//             ),
+//           );
+//         },
+//       ),
+//     );
+//   }
+
+//   Widget _buildControls() {
+//     // Determina la posición a mostrar
+//     final Duration currentPosition =
+//         _accumulatedSeekForward > 0 || _accumulatedSeekBackward > 0 || _isScrubbing
+//             ? _previewPosition
+//             : _controller?.value.position ?? Duration.zero;
+//     final Duration totalDuration = _controller?.value.duration ?? Duration.zero;
+
+//     return Positioned(
+//       bottom: 0,
+//       left: 0,
+//       right: 0,
+//       child: Opacity(
+//         opacity: _controlsVisible ? 1 : 0.0,
+//         child: IgnorePointer(
+//           ignoring: !_controlsVisible, // Ignora taps si está oculto
+//           child: Container(
+//             color: Colors.black54,
+//             padding: const EdgeInsets.symmetric(vertical: 4.0),
+//             child: Row(
+//               crossAxisAlignment: CrossAxisAlignment.center,
+//               children: [
+//                 SizedBox(width: screenwdt * 0.03),
+//                 // --- Botón Play/Pause ---
+//                 Container(
+//                   color: playPauseButtonFocusNode.hasFocus
+//                       ? const Color.fromARGB(200, 16, 62, 99)
+//                       : Colors.transparent,
+//                   child: Focus(
+//                     focusNode: playPauseButtonFocusNode,
+//                     onFocusChange: (hasFocus) {
+//                       if (hasFocus) print("✅ FOCO GANADO: Botón Play/Pause");
+//                       setState(() {});
+//                     },
+//                     child: IconButton(
+//                       icon: Image.asset(
+//                         (_controller?.value.isPlaying ?? false)
+//                             ? 'assets/pause.png'
+//                             : 'assets/play.png',
+//                         width: 35,
+//                         height: 35,
+//                       ),
+//                       onPressed: _togglePlayPause,
+//                     ),
+//                   ),
+//                 ),
+
+//                 // --- Tiempo actual (Solo VOD) ---
+//                 if (widget.liveStatus == false)
+//                   Padding(
+//                     padding: const EdgeInsets.symmetric(horizontal: 12.0),
+//                     child: Text(
+//                       _formatDuration(currentPosition),
+//                       style: const TextStyle(
+//                         color: Colors.white,
+//                         fontSize: 18,
+//                         fontWeight: FontWeight.bold,
+//                       ),
+//                     ),
+//                   ),
+
+//                 // --- Barra de Progreso ---
+//                 Expanded(
+//                   flex: 10,
+//                   child: LayoutBuilder(
+//                     builder: (context, constraints) {
+//                       return GestureDetector(
+//                         onHorizontalDragStart: (widget.liveStatus == false)
+//                             ? (details) => _onScrubStart(details, constraints)
+//                             : null,
+//                         onHorizontalDragUpdate: (widget.liveStatus == false)
+//                             ? (details) => _onScrubUpdate(details, constraints)
+//                             : null,
+//                         onHorizontalDragEnd: (widget.liveStatus == false)
+//                             ? (details) => _onScrubEnd(details)
+//                             : null,
+//                         child: Container(
+//                           color: Colors.transparent, // Área de toque
+//                           child: _buildBeautifulProgressBar(
+//                               currentPosition, totalDuration),
+//                         ),
+//                       );
+//                     },
+//                   ),
+//                 ),
+
+//                 // --- Tiempo Total (Solo VOD) ---
+//                 if (widget.liveStatus == false)
+//                   Padding(
+//                     padding: const EdgeInsets.symmetric(horizontal: 12.0),
+//                     child: Text(
+//                       _formatDuration(totalDuration),
+//                       style: const TextStyle(
+//                         color: Colors.white,
+//                         fontSize: 18,
+//                         fontWeight: FontWeight.bold,
+//                       ),
+//                     ),
+//                   ),
+
+//                 // --- Indicador "Live" (Solo Live) ---
+//                 if (widget.liveStatus == true)
+//                   Expanded(
+//                     flex: 1,
+//                     child: Row(
+//                       mainAxisAlignment: MainAxisAlignment.center,
+//                       children: const [
+//                         Icon(Icons.circle, color: Colors.red, size: 15),
+//                         SizedBox(width: 5),
+//                         Text(
+//                           'Live',
+//                           style: TextStyle(
+//                             color: Colors.red,
+//                             fontSize: 20,
+//                             fontWeight: FontWeight.bold,
+//                           ),
+//                         ),
+//                       ],
+//                     ),
+//                   ),
+//                 SizedBox(width: screenwdt * 0.03),
+//               ],
+//             ),
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+
+//   // Barra de progreso principal
+//   Widget _buildBeautifulProgressBar(
+//       Duration displayPosition, Duration totalDuration) {
+//     final totalDurationMs = totalDuration.inMilliseconds.toDouble();
+
+//     // Si es Live o la duración es 0, muestra una barra simple
+//     if (totalDurationMs <= 0 || widget.liveStatus == true) {
+//       return Container(
+//         padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+//         child: Container(
+//             height: 8,
+//             decoration: BoxDecoration(
+//                 color: Colors.grey[800],
+//                 borderRadius: BorderRadius.circular(4))),
+//       );
+//     }
+
+//     double playedProgress =
+//         (displayPosition.inMilliseconds / totalDurationMs).clamp(0.0, 1.0);
+
+//     // Simula un pequeño buffer
+//     double bufferedProgress = (playedProgress + 0.005).clamp(0.0, 1.0);
+
+//     return Container(
+//       padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+//       child: Container(
+//         height: 8,
+//         decoration: BoxDecoration(
+//           borderRadius: BorderRadius.circular(4),
+//           boxShadow: [
+//             BoxShadow(
+//               color: Colors.black.withOpacity(0.3),
+//               blurRadius: 4,
+//               offset: Offset(0, 2),
+//             ),
+//           ],
+//         ),
+//         child: ClipRRect(
+//           borderRadius: BorderRadius.circular(4),
+//           child: Stack(
+//             children: [
+//               // Fondo
+//               Container(
+//                 width: double.infinity,
+//                 decoration: BoxDecoration(
+//                   gradient: LinearGradient(
+//                     colors: [Colors.grey[800]!, Colors.grey[700]!],
+//                   ),
+//                 ),
+//               ),
+//               // Progreso "bufferizado" (simulado)
+//               FractionallySizedBox(
+//                 widthFactor: bufferedProgress,
+//                 child: Container(
+//                   decoration: BoxDecoration(
+//                     gradient: LinearGradient(
+//                       colors: [Colors.grey[600]!, Colors.grey[500]!],
+//                     ),
+//                   ),
+//                 ),
+//               ),
+//               // Progreso reproducido
+//               FractionallySizedBox(
+//                 widthFactor: playedProgress,
+//                 child: Container(
+//                   decoration: BoxDecoration(
+//                     gradient: LinearGradient(
+//                       colors: [
+//                         Color(0xFF9B28F8), // Morado
+//                         Color(0xFFE62B1E), // Rojo
+//                         Color(0xFFFF6B35), // Naranja
+//                       ],
+//                       stops: [0.0, 0.7, 1.0],
+//                     ),
+//                     boxShadow: [
+//                       BoxShadow(
+//                         color: Color(0xFF9B28F8).withOpacity(0.6),
+//                         blurRadius: 8,
+//                         spreadRadius: 1,
+//                       ),
+//                     ],
+//                   ),
+//                 ),
+//               ),
+//             ],
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+// import 'dart:async';
+// import 'dart:convert';
+// import 'dart:io';
+// import 'package:cached_network_image/cached_network_image.dart';
+// import 'package:flutter/material.dart';
+// import 'package:flutter/services.dart';
+// import 'package:flutter_vlc_player/flutter_vlc_player.dart';
+// import 'package:keep_screen_on/keep_screen_on.dart';
+// import 'package:mobi_tv_entertainment/components/widgets/small_widgets/rainbow_page.dart';
+// import 'package:mobi_tv_entertainment/main.dart';
+// // Asegúrate de que este import sea correcto si lo estás usando.
+// // import '../widgets/models/news_item_model.dart'; 
+
+// class GlobalVariables {
+//   static String unUpdatedUrl = '';
+//   static Duration position = Duration.zero;
+//   static Duration duration = Duration.zero;
+//   static String banner = '';
+//   static String name = '';
+//   static bool liveStatus = false;
+// }
+
+// class RefreshPageEvent {
+//   final String pageId;
+//   RefreshPageEvent(this.pageId);
+// }
+
+// class VideoScreen extends StatefulWidget {
+//   final String videoUrl;
+//   final String name;
+//   final bool liveStatus;
+//   final String updatedAt;
+//   final List<dynamic> channelList;
+//   final String bannerImageUrl;
+//   final int? videoId;
+//   final String source;
+
+//   VideoScreen({
+//     required this.videoUrl,
+//     required this.updatedAt,
+//     required this.channelList,
+//     required this.bannerImageUrl,
+//     required this.videoId,
+//     required this.source,
+//     required this.name,
+//     required this.liveStatus,
+//   });
+
+//   @override
+//   _VideoScreenState createState() => _VideoScreenState();
+// }
+
+// class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
+//   VlcPlayerController? _controller;
+//   bool _controlsVisible = true;
+//   late Timer _hideControlsTimer;
+//   bool _isBuffering = false;
+//   bool _isVideoInitialized = false;
+//   int _focusedIndex = 0;
+//   List<FocusNode> focusNodes = [];
+//   final ScrollController _scrollController = ScrollController();
+//   final FocusNode playPauseButtonFocusNode = FocusNode();
+
+//   bool _loadingVisible = false;
+//   Duration _lastKnownPosition = Duration.zero;
+//   Timer? _networkCheckTimer;
+//   bool _wasDisconnected = false;
+//   String? _currentModifiedUrl; // Almacena la URL actual
+
+//   // --- Variables para detección de atascos (Stall Detection) ---
+//   bool _isAttemptingResume = false;
+//   DateTime _lastPlayingTime = DateTime.now();
+//   Duration _lastPositionCheck = Duration.zero;
+//   int _stallCounter = 0;
+//   bool _hasStartedPlaying = false; // 🚀 FIX: Flag para el primer play
+//   // ---
+
+//   // Variable para búsqueda con el dedo (Scrubbing)
+//   bool _isScrubbing = false;
+
+//   Map<String, Uint8List> _bannerCache = {};
+
+//   // Decodifica y cachea imágenes Base64
+//   Uint8List _getCachedImage(String base64String) {
+//     try {
+//       if (!_bannerCache.containsKey(base64String)) {
+//         _bannerCache[base64String] =
+//             base64Decode(base64String.split(',').last);
+//       }
+//       return _bannerCache[base64String]!;
+//     } catch (e) {
+//       print('Error procesando imagen: $e');
+//       // Devuelve un píxel transparente como fallback
+//       return Uint8List.fromList([0, 0, 0, 0]);
+//     }
+//   }
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     WidgetsBinding.instance.addObserver(this);
+//     KeepScreenOn.turnOn();
+
+//     // Encuentra el índice inicial
+//     _focusedIndex = widget.channelList.indexWhere(
+//       (channel) => channel.id.toString() == widget.videoId.toString(),
+//     );
+//     _focusedIndex = (_focusedIndex >= 0) ? _focusedIndex : 0;
+
+//     // Inicializa FocusNodes
+//     focusNodes = List.generate(
+//       widget.channelList.length,
+//       (index) => FocusNode(),
+//     );
+
+//     // Configuración inicial
+//     WidgetsBinding.instance.addPostFrameCallback((_) {
+//       _focusAndScrollToInitialItem();
+//     });
+//     _initializeVLCController(widget.videoUrl); // 🚀 Pasa la URL base
+//     _startHideControlsTimer();
+//     _startNetworkMonitor();
+//     _startPositionUpdater(); // Inicia el detector de atascos
+//   }
+
+//   // Función para establecer el foco y scroll inicial
+//   void _focusAndScrollToInitialItem() {
+//     if (_focusedIndex < 0 || _focusedIndex >= focusNodes.length || !mounted) {
+//       return;
+//     }
+
+//     WidgetsBinding.instance.addPostFrameCallback((_) {
+//       if (!_scrollController.hasClients) return;
+
+//       // --- 1: Scroll a la vista ---
+//       final double itemHeight = (screenhgt * 0.18) + 16.0;
+//       final double targetOffset = (itemHeight * _focusedIndex) - 40.0;
+//       final double clampedOffset = targetOffset.clamp(
+//         _scrollController.position.minScrollExtent,
+//         _scrollController.position.maxScrollExtent,
+//       );
+//       _scrollController.jumpTo(clampedOffset);
+
+//       // --- 2: Pedir Foco ---
+//       WidgetsBinding.instance.addPostFrameCallback((_) {
+//         if (!mounted) return;
+//         if (widget.liveStatus == false) {
+//           FocusScope.of(context).requestFocus(playPauseButtonFocusNode);
+//         } else if (widget.channelList.isNotEmpty &&
+//             _focusedIndex < focusNodes.length) {
+//           FocusScope.of(context).requestFocus(focusNodes[_focusedIndex]);
+//         } else {
+//           FocusScope.of(context).requestFocus(playPauseButtonFocusNode);
+//         }
+//       });
+//     });
+//   }
+
+//   // Función para cambiar foco y hacer scroll durante la navegación
+//   void _changeFocusAndScroll(int newIndex) {
+//     if (newIndex < 0 || newIndex >= widget.channelList.length) {
+//       return;
+//     }
+
+//     setState(() {
+//       _focusedIndex = newIndex;
+//     });
+
+//     WidgetsBinding.instance.addPostFrameCallback((_) {
+//       if (!_scrollController.hasClients || !mounted) return;
+
+//       // --- 1: Scroll (Jump) ---
+//       final double itemHeight = (screenhgt * 0.18) + 16.0;
+//       final double targetOffset = (itemHeight * _focusedIndex) - 40.0;
+//       final double clampedOffset = targetOffset.clamp(
+//         _scrollController.position.minScrollExtent,
+//         _scrollController.position.maxScrollExtent,
+//       );
+//       _scrollController.jumpTo(clampedOffset);
+
+//       // --- 2: Foco ---
+//       WidgetsBinding.instance.addPostFrameCallback((_) {
+//         if (mounted) {
+//           FocusScope.of(context).requestFocus(focusNodes[_focusedIndex]);
+//         }
+//       });
+//     });
+//   }
+
+//   // Manejador de eventos del D-pad
+//   void _handleKeyEvent(RawKeyEvent event) {
+//     if (event is RawKeyDownEvent) {
+//       _resetHideControlsTimer();
+
+//       switch (event.logicalKey) {
+//         case LogicalKeyboardKey.arrowUp:
+//           if (playPauseButtonFocusNode.hasFocus) {
+//             if (widget.liveStatus == false && widget.channelList.isNotEmpty) {
+//               FocusScope.of(context).requestFocus(focusNodes[_focusedIndex]);
+//             }
+//           } else if (_focusedIndex > 0) {
+//             _changeFocusAndScroll(_focusedIndex - 1);
+//           }
+//           break;
+
+//         case LogicalKeyboardKey.arrowDown:
+//           if (_focusedIndex < widget.channelList.length - 1) {
+//             _changeFocusAndScroll(_focusedIndex + 1);
+//           } else if (_focusedIndex < widget.channelList.length) {
+//             FocusScope.of(context).requestFocus(playPauseButtonFocusNode);
+//           }
+//           break;
+
+//         case LogicalKeyboardKey.arrowRight:
+//           if (widget.liveStatus == false) {
+//             _seekForward();
+//           }
+//           if (focusNodes.any((node) => node.hasFocus)) {
+//             FocusScope.of(context).requestFocus(playPauseButtonFocusNode);
+//           }
+//           break;
+
+//         case LogicalKeyboardKey.arrowLeft:
+//           if (widget.liveStatus == false) {
+//             _seekBackward();
+//           }
+//           if (playPauseButtonFocusNode.hasFocus && widget.channelList.isNotEmpty) {
+//             FocusScope.of(context).requestFocus(focusNodes[_focusedIndex]);
+//           }
+//           break;
+
+//         case LogicalKeyboardKey.select:
+//         case LogicalKeyboardKey.enter:
+//           // Para VOD, Enter siempre es Play/Pause
+//           if (widget.liveStatus == false) {
+//             _togglePlayPause();
+//           } else {
+//             // Para Live, depende de qué esté enfocado
+//             if (playPauseButtonFocusNode.hasFocus ||
+//                 widget.channelList.isEmpty) {
+//               _togglePlayPause();
+//             } else {
+//               _onItemTap(_focusedIndex);
+//             }
+//           }
+//           break;
+//       }
+//     }
+//   }
+
+//   // --- Detección y recuperación de atascos (Stall Detection) ---
+
+//   Future<void> _attemptResumeLiveStream() async {
+//     if (!mounted ||
+//         _isAttemptingResume ||
+//         _controller == null ||
+//         widget.liveStatus == false) {
+//       return;
+//     }
+
+//     setState(() {
+//       _isAttemptingResume = true;
+//       _loadingVisible = true;
+//     });
+//     print("⚠️ Detectado atasco en Live stream. Intentando resumir...");
+
+//     try {
+//       final urlToResume = _buildVlcUrl(
+//           _currentModifiedUrl ?? widget.videoUrl); // Usa la URL base actual
+//       await _retryPlayback(urlToResume, 3);
+
+//       // Resetear contadores
+//       _lastPlayingTime = DateTime.now();
+//       _stallCounter = 0;
+//       _lastPositionCheck = Duration.zero;
+//       print("✅ Intento de resumen finalizado.");
+//     } catch (e) {
+//       print("❌ Error durante el resumen del live stream: $e");
+//     } finally {
+//       if (mounted) {
+//         setState(() {
+//           _isAttemptingResume = false;
+//         });
+//       }
+//     }
+//   }
+
+//   // Detector #1: Errores, Paradas, Buffering largo (CORREGIDO)
+//   void _vlcListener() {
+//     if (!mounted || _controller == null || !_controller!.value.isInitialized)
+//       return;
+
+//     final VlcPlayerValue value = _controller!.value;
+//     final bool isBuffering = value.isBuffering;
+//     final PlayingState playingState = value.playingState;
+
+//     // --- Lógica de detección de atascos #1 (CORREGIDA) ---
+//     if (widget.liveStatus == true && !_isAttemptingResume) {
+//       if (playingState == PlayingState.playing) {
+//         _lastPlayingTime = DateTime.now(); // All good, reset timer
+//         if (!_hasStartedPlaying) {
+//           _hasStartedPlaying = true; // 🚀 SET THE FLAG
+//         }
+//       } else if (playingState == PlayingState.buffering && _hasStartedPlaying) {
+//         // 🚀 ONLY CHECK FOR STALLS *AFTER* IT HAS STARTED PLAYING
+//         // Buffering... for how long?
+//         final stalledDuration = DateTime.now().difference(_lastPlayingTime);
+//         if (stalledDuration > Duration(seconds: 8)) {
+//           print(
+//               "⚠️ Atasco (Listener): Buffering por ${stalledDuration.inSeconds} seg.");
+//           _attemptResumeLiveStream();
+//           _lastPlayingTime = DateTime.now(); // Reset timer after attempt
+//         }
+//       } else if (playingState == PlayingState.error) {
+//         print("⚠️ Atasco (Listener): Player en estado de error.");
+//         _attemptResumeLiveStream();
+//         _lastPlayingTime = DateTime.now();
+//       } else if ((playingState == PlayingState.stopped ||
+//               playingState == PlayingState.ended) &&
+//           _hasStartedPlaying) {
+//         // 🚀 Only restart if it was playing
+//         // Player stopped unexpectedly
+//         final stalledDuration = DateTime.now().difference(_lastPlayingTime);
+//         if (stalledDuration > Duration(seconds: 5)) {
+//           print("⚠️ Atasco (Listener): Player parado inesperadamente.");
+//           _attemptResumeLiveStream();
+//           _lastPlayingTime = DateTime.now();
+//         }
+//       } else if (playingState == PlayingState.paused) {
+//         _lastPlayingTime = DateTime.now(); // Manual pause, do nothing
+//       }
+//     }
+//     // --- Fin lógica #1 ---
+
+//     // Actualizar UI
+//     if (mounted) {
+//       setState(() {
+//         _isBuffering = isBuffering;
+
+//         if (playingState == PlayingState.playing && !isBuffering) {
+//           _loadingVisible = false;
+//         } else if (playingState == PlayingState.buffering ||
+//             playingState == PlayingState.initializing) {
+//           _loadingVisible = true;
+//         }
+
+//         if (_isAttemptingResume) {
+//           _loadingVisible = true;
+//         }
+//       });
+//     }
+//   }
+
+//   // Detector #2: Fotograma congelado (Posición atascada)
+//   void _startPositionUpdater() {
+//     Timer.periodic(Duration(seconds: 2), (_) {
+//       if (!mounted || _controller == null || !_controller!.value.isInitialized) {
+//         return;
+//       }
+
+//       final VlcPlayerValue value = _controller!.value;
+//       final Duration currentPosition = value.position;
+
+//       // Actualizar UI de progreso (solo si no se está haciendo scrubbing)
+//       if (mounted && !_isScrubbing) {
+//         setState(() {
+//           _lastKnownPosition = currentPosition;
+//         });
+//       }
+
+//       // --- Lógica de detección "Fotograma Congelado" ---
+//       if (widget.liveStatus == true &&
+//           !_isAttemptingResume &&
+//           _hasStartedPlaying) { // 🚀 Solo si ya empezó
+//         if (value.playingState == PlayingState.playing) {
+//           if (_lastPositionCheck != Duration.zero &&
+//               currentPosition == _lastPositionCheck) {
+//             // La posición no ha cambiado
+//             _stallCounter++;
+//             print(
+//                 "⚠️ Posición atascada (Fotograma Congelado). Contador: $_stallCounter");
+//           } else {
+//             _stallCounter = 0; // Todo bien, resetear
+//           }
+
+//           if (_stallCounter >= 3) {
+//             // 6 segundos atascado
+//             print("🔴 ATASCADO (Fotograma Congelado). Intentando resumen...");
+//             _attemptResumeLiveStream();
+//             _stallCounter = 0;
+//           }
+//         } else {
+//           _stallCounter = 0; // No está en "playing", resetear
+//         }
+//         _lastPositionCheck = currentPosition;
+//       }
+//       // --- Fin lógica #2 ---
+//     });
+//   }
+
+//   // --- Fin Detección de Atascos ---
+
+//   @override
+//   void dispose() {
+//     print("🗑️ VideoScreen dispose llamado.");
+//     KeepScreenOn.turnOff();
+//     _hideControlsTimer.cancel();
+//     _networkCheckTimer?.cancel();
+//     _scrollController.dispose();
+//     focusNodes.forEach((node) => node.dispose());
+//     playPauseButtonFocusNode.dispose();
+
+//     try {
+//       _controller?.removeListener(_vlcListener);
+//       _controller?.stop();
+//       _controller?.dispose();
+//       print("✅ VLC Controller dispuesto.");
+//     } catch (e) {
+//       print("❌ Error disponiendo controller: $e");
+//     }
+//     super.dispose();
+//   }
+
+//   // Asegura que el item enfocado esté visible
+//   void _scrollToFocusedItem() {
+//     WidgetsBinding.instance.addPostFrameCallback((_) {
+//       if (_focusedIndex < 0 ||
+//           !_scrollController.hasClients ||
+//           _focusedIndex >= focusNodes.length) {
+//         return;
+//       }
+//       final context = focusNodes[_focusedIndex].context;
+//       if (context == null) return;
+
+//       Scrollable.ensureVisible(
+//         context,
+//         duration: const Duration(milliseconds: 300),
+//         curve: Curves.easeInOut,
+//         alignment: 0.01, // Alinea cerca del borde superior
+//       );
+//     });
+//   }
+
+//   // --- Manejo de Red ---
+
+//   void _startNetworkMonitor() {
+//     _networkCheckTimer = Timer.periodic(Duration(seconds: 5), (_) async {
+//       bool isConnected = await _isInternetAvailable();
+//       if (!isConnected && !_wasDisconnected) {
+//         _wasDisconnected = true;
+//         print("Red desconectada");
+//       } else if (isConnected && _wasDisconnected) {
+//         _wasDisconnected = false;
+//         print("Red reconectada. Intentando resumir video...");
+//         if (_controller?.value.isInitialized ?? false) {
+//           _onNetworkReconnected();
+//         }
+//       }
+//     });
+//   }
+
+//   Future<void> _onNetworkReconnected() async {
+//     if (_controller == null || _currentModifiedUrl == null) return;
+    
+//     // Construye la URL completa con opciones de cache
+//     final fullUrl = _buildVlcUrl(_currentModifiedUrl!);
+//     print("Reconectando a: $fullUrl");
+
+//     try {
+//       if (widget.liveStatus == true) {
+//         await _retryPlayback(fullUrl, 3);
+//       } else {
+//         await _retryPlayback(fullUrl, 3);
+//         if (_lastKnownPosition != Duration.zero) {
+//           _seekToPosition(_lastKnownPosition);
+//         }
+//         await _controller!.play();
+//       }
+//     } catch (e) {
+//       print("Error durante reconexión: $e");
+//     }
+//   }
+
+//   Future<bool> _isInternetAvailable() async {
+//     try {
+//       final result = await InternetAddress.lookup('google.com');
+//       return result.isNotEmpty && result[0].rawAddress.isNotEmpty;
+//     } catch (_) {
+//       return false;
+//     }
+//   }
+
+//   // --- Control de Reproducción ---
+
+//   // 🚀 NUEVO: Helper para construir la URL con caching
+//   String _buildVlcUrl(String baseUrl) {
+//     // Opciones en milisegundos
+//     final String networkCaching = "network-caching=3000"; // 60 segundos
+//     final String liveCaching = "live-caching=60000"; // 60 segundos
+//     final String fileCaching = "file-caching=20000"; // 20 segundos
+//     final String rtspTcp = "rtsp-tcp";
+
+//     if (widget.liveStatus == true) {
+//       return '$baseUrl?$networkCaching&$liveCaching&$fileCaching&$rtspTcp';
+//     } else {
+//       return '$baseUrl?$networkCaching&$fileCaching&$rtspTcp';
+//     }
+//   }
+
+//   bool _isSeeking = false; // Flag para evitar seeks duplicados
+//   Future<void> _seekToPosition(Duration position) async {
+//     if (_isSeeking || _controller == null) return;
+//     _isSeeking = true;
+//     try {
+//       print("Buscando posición: $position");
+//       await _controller!.seekTo(position);
+//       await _controller!.play();
+//     } catch (e) {
+//       print("Error durante seek: $e");
+//     } finally {
+//       await Future.delayed(Duration(milliseconds: 500));
+//       _isSeeking = false;
+//     }
+//   }
+
+//   Future<void> _initializeVLCController(String baseUrl) async {
+//     setState(() {
+//       _loadingVisible = true;
+//     });
+
+//     // 🚀 USA EL NUEVO HELPER
+//     _currentModifiedUrl = baseUrl; // Almacena la URL base
+//     final String fullVlcUrl = _buildVlcUrl(baseUrl);
+
+//     // Resetear contadores de atasco
+//     _lastPlayingTime = DateTime.now();
+//     _lastPositionCheck = Duration.zero;
+//     _stallCounter = 0;
+//     _hasStartedPlaying = false; // 🚀 FIX
+
+//     print("Inicializando con URL: $fullVlcUrl");
+
+//     _controller = VlcPlayerController.network(
+//       fullVlcUrl,
+//       hwAcc: HwAcc.auto, // 🚀 FIX: Usa 'auto'
+//       options: VlcPlayerOptions(
+//         video: VlcVideoOptions([
+//           VlcVideoOptions.dropLateFrames(true),
+//           VlcVideoOptions.skipFrames(true),
+//         ]),
+//       ),
+//     );
+
+//     await _retryPlayback(fullVlcUrl, 5);
+//     _controller!.addListener(_vlcListener);
+
+//     setState(() {
+//       _isVideoInitialized = true;
+//     });
+//   }
+
+//   // Función de reintento mejorada usando stop()
+//   Future<void> _retryPlayback(String url, int retries) async {
+//     for (int i = 0; i < retries; i++) {
+//       if (!mounted || _controller == null) return;
+//       try {
+//         print("Intento ${i + 1}/$retries: Deteniendo player...");
+//         await _controller!.stop(); // Detiene completamente el stream
+//         print("Asignando media: $url");
+//         await _controller!.setMediaFromNetwork(url);
+//         await _controller!.play();
+//         print("Comando Play enviado.");
+//         return; // Éxito
+//       } catch (e) {
+//         print("Reintento ${i + 1} fallido: $e");
+//         if (i < retries - 1) {
+//           await Future.delayed(Duration(seconds: 1));
+//         }
+//       }
+//     }
+//     print("Todos los reintentos fallaron para: $url");
+//   }
+
+//   Future<void> _onItemTap(int index) async {
+//     setState(() {
+//       _loadingVisible = true;
+//       _focusedIndex = index;
+//     });
+
+//     var selectedChannel = widget.channelList[index];
+    
+//     // 🚀 USA EL NUEVO HELPER
+//     _currentModifiedUrl = selectedChannel.url; // Almacena la URL base
+//     final String fullVlcUrl = _buildVlcUrl(selectedChannel.url);
+//     print("Cambiando a URL: $fullVlcUrl");
+
+//     // Resetear contadores de atasco
+//     _lastPlayingTime = DateTime.now();
+//     _lastPositionCheck = Duration.zero;
+//     _stallCounter = 0;
+//     _hasStartedPlaying = false; // 🚀 FIX
+
+//     try {
+//       if (_controller != null && _controller!.value.isInitialized) {
+//         await _retryPlayback(fullVlcUrl, 5);
+//         _controller!.addListener(_vlcListener); // Asegura que el listener esté
+//       } else {
+//         throw Exception("VLC Controller no inicializado");
+//       }
+//       _scrollToFocusedItem();
+//       _resetHideControlsTimer();
+//     } catch (e) {
+//       print("Error cambiando de canal: $e");
+//     }
+//     // _loadingVisible será quitado por el _vlcListener cuando empiece a reproducir
+//   }
+
+//   void _togglePlayPause() {
+//     if (_controller != null && _controller!.value.isInitialized) {
+//       _controller!.value.isPlaying
+//           ? _controller!.pause()
+//           : _controller!.play();
+//       // Resetear timers de atasco al pausar/reanudar manualmente
+//       _lastPlayingTime = DateTime.now();
+//       _stallCounter = 0;
+//     }
+//     FocusScope.of(context).requestFocus(playPauseButtonFocusNode);
+//     _resetHideControlsTimer();
+//   }
+
+//   // --- Control de UI y Temporizadores ---
+
+//   void _resetHideControlsTimer() {
+//     _hideControlsTimer.cancel();
+//     if (!_controlsVisible) {
+//       setState(() {
+//         _controlsVisible = true;
+//       });
+//       // Al mostrar controles, re-enfocar el item correcto
+//       WidgetsBinding.instance.addPostFrameCallback((_) {
+//         if (!mounted) return;
+//         if (widget.liveStatus == false || widget.channelList.isEmpty) {
+//           FocusScope.of(context).requestFocus(playPauseButtonFocusNode);
+//         } else {
+//           FocusScope.of(context).requestFocus(focusNodes[_focusedIndex]);
+//           _scrollToFocusedItem();
+//         }
+//       });
+//     }
+//     _startHideControlsTimer();
+//   }
+
+//   void _startHideControlsTimer() {
+//     _hideControlsTimer = Timer(Duration(seconds: 10), () {
+//       if (mounted) {
+//         setState(() {
+//           _controlsVisible = false;
+//         });
+//       }
+//     });
+//   }
+
+//   // --- Búsqueda (Seeking) para VOD ---
+
+//   int _accumulatedSeekForward = 0;
+//   int _accumulatedSeekBackward = 0;
+//   Timer? _seekTimer;
+//   Duration _previewPosition = Duration.zero;
+//   final int _seekDuration = 5; // segundos
+//   final int _seekDelay = 800; // milisegundos
+
+//   void _seekForward() {
+//     if (_controller == null ||
+//         !_controller!.value.isInitialized ||
+//         _controller!.value.duration <= Duration.zero) return;
+
+//     _accumulatedSeekForward += _seekDuration;
+//     final newPosition =
+//         _controller!.value.position + Duration(seconds: _accumulatedSeekForward);
+
+//     setState(() {
+//       _previewPosition = newPosition > _controller!.value.duration
+//           ? _controller!.value.duration
+//           : newPosition;
+//     });
+
+//     _seekTimer?.cancel();
+//     _seekTimer = Timer(Duration(milliseconds: _seekDelay), () {
+//       _seekToPosition(_previewPosition).then((_) {
+//         setState(() {
+//           _accumulatedSeekForward = 0;
+//         });
+//       });
+//     });
+//   }
+
+//   void _seekBackward() {
+//     if (_controller == null ||
+//         !_controller!.value.isInitialized ||
+//         _controller!.value.duration <= Duration.zero) return;
+
+//     _accumulatedSeekBackward += _seekDuration;
+//     final newPosition = _controller!.value.position -
+//         Duration(seconds: _accumulatedSeekBackward);
+
+//     setState(() {
+//       _previewPosition =
+//           newPosition > Duration.zero ? newPosition : Duration.zero;
+//     });
+
+//     _seekTimer?.cancel();
+//     _seekTimer = Timer(Duration(milliseconds: _seekDelay), () {
+//       _seekToPosition(_previewPosition).then((_) {
+//         setState(() {
+//           _accumulatedSeekBackward = 0;
+//         });
+//       });
+//     });
+//   }
+
+//   String _formatDuration(Duration duration) {
+//     if (duration.isNegative) {
+//       duration = Duration.zero;
+//     }
+//     String twoDigits(int n) => n.toString().padLeft(2, '0');
+//     final String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
+//     final String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
+//     return "${twoDigits(duration.inHours)}:$twoDigitMinutes:$twoDigitSeconds";
+//   }
+
+//   // --- Funciones de Búsqueda con el dedo (Scrubbing) ---
+
+//   void _onScrubStart(DragStartDetails details, BoxConstraints constraints) {
+//     if (_controller == null || _controller!.value.duration <= Duration.zero)
+//       return;
+
+//     _resetHideControlsTimer();
+//     setState(() {
+//       _isScrubbing = true;
+//       _accumulatedSeekForward = 1; // Para activar la vista previa
+//       final double progress =
+//           (details.localPosition.dx / constraints.maxWidth).clamp(0.0, 1.0);
+//       _previewPosition = _controller!.value.duration * progress;
+//     });
+//   }
+
+//   void _onScrubUpdate(DragUpdateDetails details, BoxConstraints constraints) {
+//     if (!_isScrubbing ||
+//         _controller == null ||
+//         _controller!.value.duration <= Duration.zero) return;
+
+//     _resetHideControlsTimer();
+//     final double progress =
+//         (details.localPosition.dx / constraints.maxWidth).clamp(0.0, 1.0);
+//     final newPosition = _controller!.value.duration * progress;
+//     setState(() {
+//       _previewPosition = newPosition;
+//     });
+//   }
+
+//   void _onScrubEnd(DragEndDetails details) {
+//     if (!_isScrubbing) return;
+
+//     _seekToPosition(_previewPosition).then((_) {
+//       setState(() {
+//         _accumulatedSeekForward = 0; // Desactiva la vista previa
+//       });
+//     });
+//     _resetHideControlsTimer();
+//     setState(() {
+//       _isScrubbing = false;
+//     });
+//   }
+
+//   // --- Widgets de Construcción (Build Widgets) ---
+
+//   Widget _buildVideoPlayer() {
+//     if (!_isVideoInitialized || _controller == null) {
+//       return Center(child: CircularProgressIndicator());
+//     }
+//     // Ajuste de escala para llenar la pantalla (similar a "cover")
+//     return LayoutBuilder(
+//       builder: (context, constraints) {
+//         final screenWidth = constraints.maxWidth;
+//         final screenHeight = constraints.maxHeight;
+//         final videoWidth = _controller!.value.size?.width ?? screenWidth;
+//         final videoHeight = _controller!.value.size?.height ?? screenHeight;
+//         final videoRatio = videoWidth / videoHeight;
+//         final screenRatio = screenWidth / screenHeight;
+
+//         double scaleX = 1.0;
+//         double scaleY = 1.0;
+
+//         if (videoRatio < screenRatio) {
+//           // El video es más "estrecho" que la pantalla (p.ej. 4:3 en 16:9)
+//           scaleX = screenRatio / videoRatio;
+//         } else {
+//           // El video es más "ancho" que la pantalla (p.ej. 21:9 en 16:9)
+//           scaleY = videoRatio / screenRatio;
+//         }
+
+//         return Container(
+//           width: screenWidth,
+//           height: screenHeight,
+//           color: Colors.black,
+//           child: Center(
+//             child: Transform.scale(
+//               scaleX: scaleX,
+//               scaleY: scaleY,
+//               child: VlcPlayer(
+//                 controller: _controller!,
+//                 placeholder: Center(child: CircularProgressIndicator()),
+//                 aspectRatio: 16 / 9,
+//               ),
+//             ),
+//           ),
+//         );
+//       },
+//     );
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return WillPopScope(
+//       onWillPop: () async {
+//         print("🔙 Botón Atrás presionado. Iniciando disposición segura...");
+//         setState(() {
+//           _loadingVisible = true;
+//         });
+//         try {
+//           if (_controller != null && _controller!.value.isInitialized) {
+//             await _controller?.stop();
+//             await _controller?.dispose();
+//             print("✅ VLC Controller dispuesto manualmente.");
+//           }
+//         } catch (e) {
+//           print("❌ Error durante dispose manual: $e");
+//         }
+//         _hideControlsTimer.cancel();
+//         _networkCheckTimer?.cancel();
+//         KeepScreenOn.turnOff();
+//         return true; // Permite salir
+//       },
+//       child: Scaffold(
+//         backgroundColor: Colors.black,
+//         body: SizedBox(
+//           width: screenwdt,
+//           height: screenhgt,
+//           child: Focus(
+//             autofocus: true, // Asegura que el Focus capture teclas
+//             onKey: (node, event) {
+//               if (event is RawKeyDownEvent) {
+//                 _handleKeyEvent(event);
+//                 return KeyEventResult.handled;
+//               }
+//               return KeyEventResult.ignored;
+//             },
+//             child: GestureDetector(
+//               onTap: _resetHideControlsTimer,
+//               child: Stack(
+//                 children: [
+//                   if (_isVideoInitialized && _controller != null)
+//                     _buildVideoPlayer(),
+
+//                   // Indicador de carga/buffering/resumen
+//                   if (_loadingVisible ||
+//                       !_isVideoInitialized ||
+//                       _isAttemptingResume ||
+//                       (_isBuffering && !_loadingVisible))
+//                     Container(
+//                       color: _loadingVisible || !_isVideoInitialized
+//                           ? Colors.black54
+//                           : Colors.transparent,
+//                       child: Center(
+//                         child: RainbowPage(
+//                           backgroundColor: _loadingVisible || !_isVideoInitialized
+//                               ? Colors.black
+//                               : Colors.transparent,
+//                         ),
+//                       ),
+//                     ),
+
+//                   if (_controlsVisible && widget.channelList.isNotEmpty)
+//                     _buildChannelList(),
+
+//                   _buildControls(),
+//                 ],
+//               ),
+//             ),
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildChannelList() {
+//     return Positioned(
+//       top: MediaQuery.of(context).size.height * 0.02,
+//       bottom: MediaQuery.of(context).size.height * 0.1,
+//       left: 0,
+//       right: MediaQuery.of(context).size.width * 0.78,
+//       child: ListView.builder(
+//         controller: _scrollController,
+//         itemCount: widget.channelList.length,
+//         itemBuilder: (context, index) {
+//           final channel = widget.channelList[index];
+//           final String channelId = channel.id?.toString() ?? '';
+//           final bool isBase64 =
+//               channel.banner?.startsWith('data:image') ?? false;
+//           final bool isFocused = _focusedIndex == index;
+
+//           return Padding(
+//             padding:
+//                 const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+//             child: Focus(
+//               focusNode: focusNodes[index],
+//               onFocusChange: (hasFocus) {
+//                 if (hasFocus) {
+//                   print("✅ FOCO GANADO: Canal en índice $index");
+//                   _scrollToFocusedItem();
+//                 }
+//               },
+//               child: GestureDetector(
+//                 onTap: () {
+//                   _onItemTap(index);
+//                   _resetHideControlsTimer();
+//                 },
+//                 child: Container(
+//                   width: screenwdt * 0.3,
+//                   height: screenhgt * 0.18,
+//                   decoration: BoxDecoration(
+//                     border: Border.all(
+//                       color: isFocused && !playPauseButtonFocusNode.hasFocus
+//                           ? const Color.fromARGB(211, 155, 40, 248)
+//                           : Colors.transparent,
+//                       width: 5.0,
+//                     ),
+//                     borderRadius: BorderRadius.circular(10),
+//                     color: isFocused ? Colors.black26 : Colors.transparent,
+//                   ),
+//                   child: ClipRRect(
+//                     borderRadius: BorderRadius.circular(6),
+//                     child: Stack(
+//                       children: [
+//                         Positioned.fill(
+//                           child: Opacity(
+//                             opacity: 0.6,
+//                             child: isBase64
+//                                 ? Image.memory(
+//                                     _bannerCache[channelId] ??
+//                                         _getCachedImage(
+//                                             channel.banner ?? localImage),
+//                                     fit: BoxFit.cover,
+//                                     errorBuilder: (context, e, s) =>
+//                                         Image.asset('assets/placeholder.png'),
+//                                   )
+//                                 : CachedNetworkImage(
+//                                     imageUrl: channel.banner ?? localImage,
+//                                     fit: BoxFit.cover,
+//                                     errorWidget: (context, url, error) =>
+//                                         Image.asset('assets/placeholder.png'),
+//                                   ),
+//                           ),
+//                         ),
+//                         if (isFocused)
+//                           Positioned.fill(
+//                             child: Container(
+//                               decoration: BoxDecoration(
+//                                 gradient: LinearGradient(
+//                                   begin: Alignment.topCenter,
+//                                   end: Alignment.bottomCenter,
+//                                   colors: [
+//                                     Colors.transparent,
+//                                     Colors.black.withOpacity(0.9),
+//                                   ],
+//                                 ),
+//                               ),
+//                             ),
+//                           ),
+//                         if (isFocused)
+//                           Positioned(
+//                             left: 8,
+//                             bottom: 8,
+//                             child: Text(
+//                               channel.name ?? '',
+//                               style: TextStyle(
+//                                 color: Colors.white,
+//                                 fontSize: 16,
+//                                 fontWeight: FontWeight.bold,
+//                               ),
+//                             ),
+//                           ),
+//                       ],
+//                     ),
+//                   ),
+//                 ),
+//               ),
+//             ),
+//           );
+//         },
+//       ),
+//     );
+//   }
+
+//   Widget _buildControls() {
+//     // Determina la posición a mostrar
+//     final Duration currentPosition =
+//         _accumulatedSeekForward > 0 || _accumulatedSeekBackward > 0 || _isScrubbing
+//             ? _previewPosition
+//             : _controller?.value.position ?? Duration.zero;
+//     final Duration totalDuration = _controller?.value.duration ?? Duration.zero;
+
+//     return Positioned(
+//       bottom: 0,
+//       left: 0,
+//       right: 0,
+//       child: Opacity(
+//         opacity: _controlsVisible ? 1 : 0.0,
+//         child: IgnorePointer(
+//           ignoring: !_controlsVisible, // Ignora taps si está oculto
+//           child: Container(
+//             color: Colors.black54,
+//             padding: const EdgeInsets.symmetric(vertical: 4.0),
+//             child: Row(
+//               crossAxisAlignment: CrossAxisAlignment.center,
+//               children: [
+//                 SizedBox(width: screenwdt * 0.03),
+//                 // --- Botón Play/Pause ---
+//                 Container(
+//                   color: playPauseButtonFocusNode.hasFocus
+//                       ? const Color.fromARGB(200, 16, 62, 99)
+//                       : Colors.transparent,
+//                   child: Focus(
+//                     focusNode: playPauseButtonFocusNode,
+//                     onFocusChange: (hasFocus) {
+//                       if (hasFocus) print("✅ FOCO GANADO: Botón Play/Pause");
+//                       setState(() {});
+//                     },
+//                     child: IconButton(
+//                       icon: Image.asset(
+//                         (_controller?.value.isPlaying ?? false)
+//                             ? 'assets/pause.png'
+//                             : 'assets/play.png',
+//                         width: 35,
+//                         height: 35,
+//                       ),
+//                       onPressed: _togglePlayPause,
+//                     ),
+//                   ),
+//                 ),
+
+//                 // --- Tiempo actual (Solo VOD) ---
+//                 if (widget.liveStatus == false)
+//                   Padding(
+//                     padding: const EdgeInsets.symmetric(horizontal: 12.0),
+//                     child: Text(
+//                       _formatDuration(currentPosition),
+//                       style: const TextStyle(
+//                         color: Colors.white,
+//                         fontSize: 18,
+//                         fontWeight: FontWeight.bold,
+//                       ),
+//                     ),
+//                   ),
+
+//                 // --- Barra de Progreso ---
+//                 Expanded(
+//                   flex:10,
+//                   child: LayoutBuilder(
+//                     builder: (context, constraints) {
+//                       return GestureDetector(
+//                         onHorizontalDragStart: (widget.liveStatus == false)
+//                             ? (details) => _onScrubStart(details, constraints)
+//                             : null,
+//                         onHorizontalDragUpdate: (widget.liveStatus == false)
+//                             ? (details) => _onScrubUpdate(details, constraints)
+//                             : null,
+//                         onHorizontalDragEnd: (widget.liveStatus == false)
+//                             ? (details) => _onScrubEnd(details)
+//                             : null,
+//                         child: Container(
+//                           color: Colors.transparent, // Área de toque
+//                           child: _buildBeautifulProgressBar(
+//                               currentPosition, totalDuration),
+//                         ),
+//                       );
+//                     },
+//                   ),
+//                 ),
+
+//                 // --- Tiempo Total (Solo VOD) ---
+//                 if (widget.liveStatus == false)
+//                   Padding(
+//                     padding: const EdgeInsets.symmetric(horizontal: 12.0),
+//                     child: Text(
+//                       _formatDuration(totalDuration),
+//                       style: const TextStyle(
+//                         color: Colors.white,
+//                         fontSize: 18,
+//                         fontWeight: FontWeight.bold,
+//                       ),
+//                     ),
+//                   ),
+
+//                 // --- Indicador "Live" (Solo Live) ---
+//                 if (widget.liveStatus == true)
+//                   Expanded(
+//                     flex: 1,
+//                     child: Row(
+//                       mainAxisAlignment: MainAxisAlignment.center,
+//                       children: const [
+//                         Icon(Icons.circle, color: Colors.red, size: 15),
+//                         SizedBox(width: 5),
+//                         Text(
+//                           'Live',
+//                           style: TextStyle(
+//                             color: Colors.red,
+//                             fontSize: 20,
+//                             fontWeight: FontWeight.bold,
+//                           ),
+//                         ),
+//                       ],
+//                     ),
+//                   ),
+//                 SizedBox(width: screenwdt * 0.03),
+//               ],
+//             ),
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+
+//   // Barra de progreso principal
+//   Widget _buildBeautifulProgressBar(Duration displayPosition, Duration totalDuration) {
+//     final totalDurationMs = totalDuration.inMilliseconds.toDouble();
+    
+//     // Si es Live o la duración es 0, muestra una barra simple
+//     if (totalDurationMs <= 0 || widget.liveStatus == true) {
+//       return Container(
+//         padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+//         child: Container(
+//             height: 8,
+//             decoration: BoxDecoration(
+//                 color: Colors.grey[800],
+//                 borderRadius: BorderRadius.circular(4))),
+//       );
+//     }
+
+//     double playedProgress =
+//         (displayPosition.inMilliseconds / totalDurationMs).clamp(0.0, 1.0);
+    
+//     // Simula un pequeño buffer
+//     double bufferedProgress = (playedProgress + 0.005).clamp(0.0, 1.0); 
+
+//     return Container(
+//       padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+//       child: Container(
+//         height: 8,
+//         decoration: BoxDecoration(
+//           borderRadius: BorderRadius.circular(4),
+//           boxShadow: [
+//             BoxShadow(
+//               color: Colors.black.withOpacity(0.3),
+//               blurRadius: 4,
+//               offset: Offset(0, 2),
+//             ),
+//           ],
+//         ),
+//         child: ClipRRect(
+//           borderRadius: BorderRadius.circular(4),
+//           child: Stack(
+//             children: [
+//               // Fondo
+//               Container(
+//                 width: double.infinity,
+//                 decoration: BoxDecoration(
+//                   gradient: LinearGradient(
+//                     colors: [Colors.grey[800]!, Colors.grey[700]!],
+//                   ),
+//                 ),
+//               ),
+//               // Progreso "bufferizado" (simulado)
+//               FractionallySizedBox(
+//                 widthFactor: bufferedProgress,
+//                 child: Container(
+//                   decoration: BoxDecoration(
+//                     gradient: LinearGradient(
+//                       colors: [Colors.grey[600]!, Colors.grey[500]!],
+//                     ),
+//                   ),
+//                 ),
+//               ),
+//               // Progreso reproducido
+//               FractionallySizedBox(
+//                 widthFactor: playedProgress,
+//                 child: Container(
+//                   decoration: BoxDecoration(
+//                     gradient: LinearGradient(
+//                       colors: [
+//                         Color(0xFF9B28F8), // Morado
+//                         Color(0xFFE62B1E), // Rojo
+//                         Color(0xFFFF6B35), // Naranja
+//                       ],
+//                       stops: [0.0, 0.7, 1.0],
+//                     ),
+//                     boxShadow: [
+//                       BoxShadow(
+//                         color: Color(0xFF9B28F8).withOpacity(0.6),
+//                         blurRadius: 8,
+//                         spreadRadius: 1,
+//                       ),
+//                     ],
+//                   ),
+//                 ),
+//               ),
+//             ],
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -8543,8 +12270,6 @@ import 'package:flutter_vlc_player/flutter_vlc_player.dart';
 import 'package:keep_screen_on/keep_screen_on.dart';
 import 'package:mobi_tv_entertainment/components/widgets/small_widgets/rainbow_page.dart';
 import 'package:mobi_tv_entertainment/main.dart';
-// Asegúrate de que este import sea correcto si lo estás usando.
-// import '../widgets/models/news_item_model.dart'; 
 
 class GlobalVariables {
   static String unUpdatedUrl = '';
@@ -8600,22 +12325,21 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
   Duration _lastKnownPosition = Duration.zero;
   Timer? _networkCheckTimer;
   bool _wasDisconnected = false;
-  String? _currentModifiedUrl; // Almacena la URL actual
+  String? _currentModifiedUrl;
 
-  // --- Variables para detección de atascos (Stall Detection) ---
   bool _isAttemptingResume = false;
   DateTime _lastPlayingTime = DateTime.now();
   Duration _lastPositionCheck = Duration.zero;
   int _stallCounter = 0;
-  bool _hasStartedPlaying = false; // 🚀 FIX: Flag para el primer play
-  // ---
+  bool _hasStartedPlaying = false;
 
-  // Variable para búsqueda con el dedo (Scrubbing)
   bool _isScrubbing = false;
 
   Map<String, Uint8List> _bannerCache = {};
 
-  // Decodifica y cachea imágenes Base64
+  // 🆕 केवल disposal के लिए flag
+  bool _isDisposing = false;
+
   Uint8List _getCachedImage(String base64String) {
     try {
       if (!_bannerCache.containsKey(base64String)) {
@@ -8625,7 +12349,6 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
       return _bannerCache[base64String]!;
     } catch (e) {
       print('Error procesando imagen: $e');
-      // Devuelve un píxel transparente como fallback
       return Uint8List.fromList([0, 0, 0, 0]);
     }
   }
@@ -8636,29 +12359,86 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
     KeepScreenOn.turnOn();
 
-    // Encuentra el índice inicial
     _focusedIndex = widget.channelList.indexWhere(
       (channel) => channel.id.toString() == widget.videoId.toString(),
     );
     _focusedIndex = (_focusedIndex >= 0) ? _focusedIndex : 0;
 
-    // Inicializa FocusNodes
     focusNodes = List.generate(
       widget.channelList.length,
       (index) => FocusNode(),
     );
 
-    // Configuración inicial
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _focusAndScrollToInitialItem();
     });
-    _initializeVLCController(widget.videoUrl); // 🚀 Pasa la URL base
+    _initializeVLCController(widget.videoUrl);
     _startHideControlsTimer();
     _startNetworkMonitor();
-    _startPositionUpdater(); // Inicia el detector de atascos
+    _startPositionUpdater();
   }
 
-  // Función para establecer el foco y scroll inicial
+  // 🆕 Safe disposal method
+  Future<void> _safeDispose() async {
+    if (_isDisposing) return;
+    
+    _isDisposing = true;
+    print("🔄 Safe disposal started...");
+
+    // Cancel all timers
+    _hideControlsTimer.cancel();
+    _networkCheckTimer?.cancel();
+    _seekTimer?.cancel();
+
+    // Dispose focus nodes
+    focusNodes.forEach((node) => node.dispose());
+    playPauseButtonFocusNode.dispose();
+    _scrollController.dispose();
+
+    // Dispose VLC controller safely
+    try {
+      if (_controller != null) {
+        _controller?.removeListener(_vlcListener);
+        await _controller?.stop();
+        await _controller?.dispose();
+        _controller = null;
+        print("✅ VLC Controller safely disposed");
+      }
+    } catch (e) {
+      print("⚠️ Warning during VLC controller disposal: $e");
+    }
+
+    KeepScreenOn.turnOff();
+    WidgetsBinding.instance.removeObserver(this);
+    
+    print("✅ Safe disposal completed");
+  }
+
+  @override
+  void dispose() {
+    print("🗑️ VideoScreen dispose called");
+    _safeDispose();
+    super.dispose();
+  }
+
+  // 🆕 Improved back button handler
+  Future<bool> _onWillPop() async {
+    print("🔙 Back button pressed");
+    
+    if (_isDisposing) {
+      return false;
+    }
+
+    setState(() {
+      _loadingVisible = true;
+    });
+
+    // Safe disposal और फिर navigate
+    await _safeDispose();
+    
+    return true;
+  }
+
   void _focusAndScrollToInitialItem() {
     if (_focusedIndex < 0 || _focusedIndex >= focusNodes.length || !mounted) {
       return;
@@ -8667,7 +12447,6 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!_scrollController.hasClients) return;
 
-      // --- 1: Scroll a la vista ---
       final double itemHeight = (screenhgt * 0.18) + 16.0;
       final double targetOffset = (itemHeight * _focusedIndex) - 40.0;
       final double clampedOffset = targetOffset.clamp(
@@ -8676,7 +12455,6 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
       );
       _scrollController.jumpTo(clampedOffset);
 
-      // --- 2: Pedir Foco ---
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted) return;
         if (widget.liveStatus == false) {
@@ -8691,7 +12469,6 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
     });
   }
 
-  // Función para cambiar foco y hacer scroll durante la navegación
   void _changeFocusAndScroll(int newIndex) {
     if (newIndex < 0 || newIndex >= widget.channelList.length) {
       return;
@@ -8704,7 +12481,6 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!_scrollController.hasClients || !mounted) return;
 
-      // --- 1: Scroll (Jump) ---
       final double itemHeight = (screenhgt * 0.18) + 16.0;
       final double targetOffset = (itemHeight * _focusedIndex) - 40.0;
       final double clampedOffset = targetOffset.clamp(
@@ -8713,7 +12489,6 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
       );
       _scrollController.jumpTo(clampedOffset);
 
-      // --- 2: Foco ---
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
           FocusScope.of(context).requestFocus(focusNodes[_focusedIndex]);
@@ -8722,7 +12497,6 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
     });
   }
 
-  // Manejador de eventos del D-pad
   void _handleKeyEvent(RawKeyEvent event) {
     if (event is RawKeyDownEvent) {
       _resetHideControlsTimer();
@@ -8766,11 +12540,9 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
 
         case LogicalKeyboardKey.select:
         case LogicalKeyboardKey.enter:
-          // Para VOD, Enter siempre es Play/Pause
           if (widget.liveStatus == false) {
             _togglePlayPause();
           } else {
-            // Para Live, depende de qué esté enfocado
             if (playPauseButtonFocusNode.hasFocus ||
                 widget.channelList.isEmpty) {
               _togglePlayPause();
@@ -8782,8 +12554,6 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
       }
     }
   }
-
-  // --- Detección y recuperación de atascos (Stall Detection) ---
 
   Future<void> _attemptResumeLiveStream() async {
     if (!mounted ||
@@ -8801,10 +12571,9 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
 
     try {
       final urlToResume = _buildVlcUrl(
-          _currentModifiedUrl ?? widget.videoUrl); // Usa la URL base actual
+          _currentModifiedUrl ?? widget.videoUrl);
       await _retryPlayback(urlToResume, 3);
 
-      // Resetear contadores
       _lastPlayingTime = DateTime.now();
       _stallCounter = 0;
       _lastPositionCheck = Duration.zero;
@@ -8820,7 +12589,6 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
     }
   }
 
-  // Detector #1: Errores, Paradas, Buffering largo (CORREGIDO)
   void _vlcListener() {
     if (!mounted || _controller == null || !_controller!.value.isInitialized)
       return;
@@ -8829,22 +12597,19 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
     final bool isBuffering = value.isBuffering;
     final PlayingState playingState = value.playingState;
 
-    // --- Lógica de detección de atascos #1 (CORREGIDA) ---
     if (widget.liveStatus == true && !_isAttemptingResume) {
       if (playingState == PlayingState.playing) {
-        _lastPlayingTime = DateTime.now(); // All good, reset timer
+        _lastPlayingTime = DateTime.now();
         if (!_hasStartedPlaying) {
-          _hasStartedPlaying = true; // 🚀 SET THE FLAG
+          _hasStartedPlaying = true;
         }
       } else if (playingState == PlayingState.buffering && _hasStartedPlaying) {
-        // 🚀 ONLY CHECK FOR STALLS *AFTER* IT HAS STARTED PLAYING
-        // Buffering... for how long?
         final stalledDuration = DateTime.now().difference(_lastPlayingTime);
         if (stalledDuration > Duration(seconds: 8)) {
           print(
               "⚠️ Atasco (Listener): Buffering por ${stalledDuration.inSeconds} seg.");
           _attemptResumeLiveStream();
-          _lastPlayingTime = DateTime.now(); // Reset timer after attempt
+          _lastPlayingTime = DateTime.now();
         }
       } else if (playingState == PlayingState.error) {
         print("⚠️ Atasco (Listener): Player en estado de error.");
@@ -8853,8 +12618,6 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
       } else if ((playingState == PlayingState.stopped ||
               playingState == PlayingState.ended) &&
           _hasStartedPlaying) {
-        // 🚀 Only restart if it was playing
-        // Player stopped unexpectedly
         final stalledDuration = DateTime.now().difference(_lastPlayingTime);
         if (stalledDuration > Duration(seconds: 5)) {
           print("⚠️ Atasco (Listener): Player parado inesperadamente.");
@@ -8862,12 +12625,10 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
           _lastPlayingTime = DateTime.now();
         }
       } else if (playingState == PlayingState.paused) {
-        _lastPlayingTime = DateTime.now(); // Manual pause, do nothing
+        _lastPlayingTime = DateTime.now();
       }
     }
-    // --- Fin lógica #1 ---
 
-    // Actualizar UI
     if (mounted) {
       setState(() {
         _isBuffering = isBuffering;
@@ -8886,7 +12647,6 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
     }
   }
 
-  // Detector #2: Fotograma congelado (Posición atascada)
   void _startPositionUpdater() {
     Timer.periodic(Duration(seconds: 2), (_) {
       if (!mounted || _controller == null || !_controller!.value.isInitialized) {
@@ -8896,67 +12656,38 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
       final VlcPlayerValue value = _controller!.value;
       final Duration currentPosition = value.position;
 
-      // Actualizar UI de progreso (solo si no se está haciendo scrubbing)
       if (mounted && !_isScrubbing) {
         setState(() {
           _lastKnownPosition = currentPosition;
         });
       }
 
-      // --- Lógica de detección "Fotograma Congelado" ---
       if (widget.liveStatus == true &&
           !_isAttemptingResume &&
-          _hasStartedPlaying) { // 🚀 Solo si ya empezó
+          _hasStartedPlaying) {
         if (value.playingState == PlayingState.playing) {
           if (_lastPositionCheck != Duration.zero &&
               currentPosition == _lastPositionCheck) {
-            // La posición no ha cambiado
             _stallCounter++;
             print(
                 "⚠️ Posición atascada (Fotograma Congelado). Contador: $_stallCounter");
           } else {
-            _stallCounter = 0; // Todo bien, resetear
+            _stallCounter = 0;
           }
 
           if (_stallCounter >= 3) {
-            // 6 segundos atascado
             print("🔴 ATASCADO (Fotograma Congelado). Intentando resumen...");
             _attemptResumeLiveStream();
             _stallCounter = 0;
           }
         } else {
-          _stallCounter = 0; // No está en "playing", resetear
+          _stallCounter = 0;
         }
         _lastPositionCheck = currentPosition;
       }
-      // --- Fin lógica #2 ---
     });
   }
 
-  // --- Fin Detección de Atascos ---
-
-  @override
-  void dispose() {
-    print("🗑️ VideoScreen dispose llamado.");
-    KeepScreenOn.turnOff();
-    _hideControlsTimer.cancel();
-    _networkCheckTimer?.cancel();
-    _scrollController.dispose();
-    focusNodes.forEach((node) => node.dispose());
-    playPauseButtonFocusNode.dispose();
-
-    try {
-      _controller?.removeListener(_vlcListener);
-      _controller?.stop();
-      _controller?.dispose();
-      print("✅ VLC Controller dispuesto.");
-    } catch (e) {
-      print("❌ Error disponiendo controller: $e");
-    }
-    super.dispose();
-  }
-
-  // Asegura que el item enfocado esté visible
   void _scrollToFocusedItem() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_focusedIndex < 0 ||
@@ -8971,12 +12702,10 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
         context,
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
-        alignment: 0.01, // Alinea cerca del borde superior
+        alignment: 0.01,
       );
     });
   }
-
-  // --- Manejo de Red ---
 
   void _startNetworkMonitor() {
     _networkCheckTimer = Timer.periodic(Duration(seconds: 5), (_) async {
@@ -8994,27 +12723,88 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
     });
   }
 
-  Future<void> _onNetworkReconnected() async {
-    if (_controller == null || _currentModifiedUrl == null) return;
+  // Future<void> _onNetworkReconnected() async {
+  //   if (_controller == null || _currentModifiedUrl == null) return;
     
-    // Construye la URL completa con opciones de cache
+  //   final fullUrl = _buildVlcUrl(_currentModifiedUrl!);
+  //   print("Reconectando a: $fullUrl");
+
+  //   try {
+  //     if (widget.liveStatus == true) {
+  //       await _retryPlayback(fullUrl, 3);
+  //     } else {
+  //       await _retryPlayback(fullUrl, 3);
+  //       if (_lastKnownPosition != Duration.zero) {
+  //         _seekToPosition(_lastKnownPosition);
+  //       }
+  //       await _controller!.play();
+  //     }
+  //   } catch (e) {
+  //     print("Error durante reconexión: $e");
+  //   }
+  // }
+
+
+Future<void> _onNetworkReconnected() async {
+    if (_controller == null || _currentModifiedUrl == null) return;
+
     final fullUrl = _buildVlcUrl(_currentModifiedUrl!);
     print("Reconectando a: $fullUrl");
 
     try {
       if (widget.liveStatus == true) {
+        // --- Lógica de Live Stream (sin cambios) ---
+        print("Reconexión Live Stream: Reiniciando stream...");
         await _retryPlayback(fullUrl, 3);
+
       } else {
-        await _retryPlayback(fullUrl, 3);
-        if (_lastKnownPosition != Duration.zero) {
-          _seekToPosition(_lastKnownPosition);
+        // --- 🆕 Lógica MEJORADA para VOD (video no-en-vivo) ---
+        print("Reconexión VOD: Intentando resumir desde $_lastKnownPosition");
+        
+        // setState(() { _loadingVisible = true; }); // Opcional: mostrar loading
+
+        try {
+          // Plan A: Intentar "desatascar" el player sin recargar.
+          // Esto es mucho más rápido y fluido para el usuario.
+          
+          // Pausar primero para asegurar el estado
+          await _controller!.pause();
+          await Future.delayed(const Duration(milliseconds: 100));
+
+          if (_lastKnownPosition != Duration.zero) {
+            // _seekToPosition ya incluye el comando de play() al final.
+            // Esto forzará al player a re-bufferizar desde ese punto.
+            await _seekToPosition(_lastKnownPosition);
+          } else {
+            // Si no hay posición guardada, solo darle play
+            await _controller!.play();
+          }
+          print("✅ VOD Resumido (Plan A) tras reconexión.");
+
+        } catch (e) {
+          // Plan B: Si el Plan A falla (el controller está muy roto),
+          // recurrir al método de recarga completa como último recurso.
+          print("⚠️ Plan A falló. Recurriendo a Plan B (Recarga). Error: $e");
+          
+          await _retryPlayback(fullUrl, 3);
+          
+          // Esperar un momento a que el video se cargue después de 'setMedia'
+          await Future.delayed(const Duration(seconds: 2)); 
+          
+          if (_lastKnownPosition != Duration.zero) {
+            await _seekToPosition(_lastKnownPosition);
+          }
+          print("✅ VOD Resumido (Plan B) tras reconexión.");
         }
-        await _controller!.play();
       }
     } catch (e) {
-      print("Error durante reconexión: $e");
-    }
+      print("❌ Error crítico durante reconexión: $e");
+    } 
+    // finally {
+    //   if (mounted) setState(() { _loadingVisible = false; }); // Opcional
+    // }
   }
+
 
   Future<bool> _isInternetAvailable() async {
     try {
@@ -9025,14 +12815,10 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
     }
   }
 
-  // --- Control de Reproducción ---
-
-  // 🚀 NUEVO: Helper para construir la URL con caching
   String _buildVlcUrl(String baseUrl) {
-    // Opciones en milisegundos
-    final String networkCaching = "network-caching=60000"; // 60 segundos
-    final String liveCaching = "live-caching=60000"; // 60 segundos
-    final String fileCaching = "file-caching=20000"; // 20 segundos
+    final String networkCaching = "network-caching=60000";
+    final String liveCaching = "live-caching=60000";
+    final String fileCaching = "file-caching=20000";
     final String rtspTcp = "rtsp-tcp";
 
     if (widget.liveStatus == true) {
@@ -9042,7 +12828,7 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
     }
   }
 
-  bool _isSeeking = false; // Flag para evitar seeks duplicados
+  bool _isSeeking = false;
   Future<void> _seekToPosition(Duration position) async {
     if (_isSeeking || _controller == null) return;
     _isSeeking = true;
@@ -9063,21 +12849,19 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
       _loadingVisible = true;
     });
 
-    // 🚀 USA EL NUEVO HELPER
-    _currentModifiedUrl = baseUrl; // Almacena la URL base
+    _currentModifiedUrl = baseUrl;
     final String fullVlcUrl = _buildVlcUrl(baseUrl);
 
-    // Resetear contadores de atasco
     _lastPlayingTime = DateTime.now();
     _lastPositionCheck = Duration.zero;
     _stallCounter = 0;
-    _hasStartedPlaying = false; // 🚀 FIX
+    _hasStartedPlaying = false;
 
     print("Inicializando con URL: $fullVlcUrl");
 
     _controller = VlcPlayerController.network(
       fullVlcUrl,
-      hwAcc: HwAcc.auto, // 🚀 FIX: Usa 'auto'
+      hwAcc: HwAcc.auto,
       options: VlcPlayerOptions(
         video: VlcVideoOptions([
           VlcVideoOptions.dropLateFrames(true),
@@ -9094,18 +12878,17 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
     });
   }
 
-  // Función de reintento mejorada usando stop()
   Future<void> _retryPlayback(String url, int retries) async {
     for (int i = 0; i < retries; i++) {
       if (!mounted || _controller == null) return;
       try {
         print("Intento ${i + 1}/$retries: Deteniendo player...");
-        await _controller!.stop(); // Detiene completamente el stream
+        await _controller!.stop();
         print("Asignando media: $url");
         await _controller!.setMediaFromNetwork(url);
         await _controller!.play();
         print("Comando Play enviado.");
-        return; // Éxito
+        return;
       } catch (e) {
         print("Reintento ${i + 1} fallido: $e");
         if (i < retries - 1) {
@@ -9124,21 +12907,19 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
 
     var selectedChannel = widget.channelList[index];
     
-    // 🚀 USA EL NUEVO HELPER
-    _currentModifiedUrl = selectedChannel.url; // Almacena la URL base
+    _currentModifiedUrl = selectedChannel.url;
     final String fullVlcUrl = _buildVlcUrl(selectedChannel.url);
     print("Cambiando a URL: $fullVlcUrl");
 
-    // Resetear contadores de atasco
     _lastPlayingTime = DateTime.now();
     _lastPositionCheck = Duration.zero;
     _stallCounter = 0;
-    _hasStartedPlaying = false; // 🚀 FIX
+    _hasStartedPlaying = false;
 
     try {
       if (_controller != null && _controller!.value.isInitialized) {
         await _retryPlayback(fullVlcUrl, 5);
-        _controller!.addListener(_vlcListener); // Asegura que el listener esté
+        _controller!.addListener(_vlcListener);
       } else {
         throw Exception("VLC Controller no inicializado");
       }
@@ -9147,7 +12928,6 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
     } catch (e) {
       print("Error cambiando de canal: $e");
     }
-    // _loadingVisible será quitado por el _vlcListener cuando empiece a reproducir
   }
 
   void _togglePlayPause() {
@@ -9155,7 +12935,6 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
       _controller!.value.isPlaying
           ? _controller!.pause()
           : _controller!.play();
-      // Resetear timers de atasco al pausar/reanudar manualmente
       _lastPlayingTime = DateTime.now();
       _stallCounter = 0;
     }
@@ -9163,15 +12942,12 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
     _resetHideControlsTimer();
   }
 
-  // --- Control de UI y Temporizadores ---
-
   void _resetHideControlsTimer() {
     _hideControlsTimer.cancel();
     if (!_controlsVisible) {
       setState(() {
         _controlsVisible = true;
       });
-      // Al mostrar controles, re-enfocar el item correcto
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted) return;
         if (widget.liveStatus == false || widget.channelList.isEmpty) {
@@ -9195,14 +12971,12 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
     });
   }
 
-  // --- Búsqueda (Seeking) para VOD ---
-
   int _accumulatedSeekForward = 0;
   int _accumulatedSeekBackward = 0;
   Timer? _seekTimer;
   Duration _previewPosition = Duration.zero;
-  final int _seekDuration = 5; // segundos
-  final int _seekDelay = 800; // milisegundos
+  final int _seekDuration = 5;
+  final int _seekDelay = 800;
 
   void _seekForward() {
     if (_controller == null ||
@@ -9263,8 +13037,6 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
     return "${twoDigits(duration.inHours)}:$twoDigitMinutes:$twoDigitSeconds";
   }
 
-  // --- Funciones de Búsqueda con el dedo (Scrubbing) ---
-
   void _onScrubStart(DragStartDetails details, BoxConstraints constraints) {
     if (_controller == null || _controller!.value.duration <= Duration.zero)
       return;
@@ -9272,7 +13044,7 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
     _resetHideControlsTimer();
     setState(() {
       _isScrubbing = true;
-      _accumulatedSeekForward = 1; // Para activar la vista previa
+      _accumulatedSeekForward = 1;
       final double progress =
           (details.localPosition.dx / constraints.maxWidth).clamp(0.0, 1.0);
       _previewPosition = _controller!.value.duration * progress;
@@ -9298,7 +13070,7 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
 
     _seekToPosition(_previewPosition).then((_) {
       setState(() {
-        _accumulatedSeekForward = 0; // Desactiva la vista previa
+        _accumulatedSeekForward = 0;
       });
     });
     _resetHideControlsTimer();
@@ -9307,13 +13079,10 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
     });
   }
 
-  // --- Widgets de Construcción (Build Widgets) ---
-
   Widget _buildVideoPlayer() {
     if (!_isVideoInitialized || _controller == null) {
       return Center(child: CircularProgressIndicator());
     }
-    // Ajuste de escala para llenar la pantalla (similar a "cover")
     return LayoutBuilder(
       builder: (context, constraints) {
         final screenWidth = constraints.maxWidth;
@@ -9327,10 +13096,8 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
         double scaleY = 1.0;
 
         if (videoRatio < screenRatio) {
-          // El video es más "estrecho" que la pantalla (p.ej. 4:3 en 16:9)
           scaleX = screenRatio / videoRatio;
         } else {
-          // El video es más "ancho" que la pantalla (p.ej. 21:9 en 16:9)
           scaleY = videoRatio / screenRatio;
         }
 
@@ -9357,32 +13124,14 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () async {
-        print("🔙 Botón Atrás presionado. Iniciando disposición segura...");
-        setState(() {
-          _loadingVisible = true;
-        });
-        try {
-          if (_controller != null && _controller!.value.isInitialized) {
-            await _controller?.stop();
-            await _controller?.dispose();
-            print("✅ VLC Controller dispuesto manualmente.");
-          }
-        } catch (e) {
-          print("❌ Error durante dispose manual: $e");
-        }
-        _hideControlsTimer.cancel();
-        _networkCheckTimer?.cancel();
-        KeepScreenOn.turnOff();
-        return true; // Permite salir
-      },
+      onWillPop: _onWillPop, // 🆕 Improved back button handler
       child: Scaffold(
         backgroundColor: Colors.black,
         body: SizedBox(
           width: screenwdt,
           height: screenhgt,
           child: Focus(
-            autofocus: true, // Asegura que el Focus capture teclas
+            autofocus: true,
             onKey: (node, event) {
               if (event is RawKeyDownEvent) {
                 _handleKeyEvent(event);
@@ -9397,7 +13146,6 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
                   if (_isVideoInitialized && _controller != null)
                     _buildVideoPlayer(),
 
-                  // Indicador de carga/buffering/resumen
                   if (_loadingVisible ||
                       !_isVideoInitialized ||
                       _isAttemptingResume ||
@@ -9538,7 +13286,6 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
   }
 
   Widget _buildControls() {
-    // Determina la posición a mostrar
     final Duration currentPosition =
         _accumulatedSeekForward > 0 || _accumulatedSeekBackward > 0 || _isScrubbing
             ? _previewPosition
@@ -9552,7 +13299,7 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
       child: Opacity(
         opacity: _controlsVisible ? 1 : 0.0,
         child: IgnorePointer(
-          ignoring: !_controlsVisible, // Ignora taps si está oculto
+          ignoring: !_controlsVisible,
           child: Container(
             color: Colors.black54,
             padding: const EdgeInsets.symmetric(vertical: 4.0),
@@ -9560,7 +13307,6 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 SizedBox(width: screenwdt * 0.03),
-                // --- Botón Play/Pause ---
                 Container(
                   color: playPauseButtonFocusNode.hasFocus
                       ? const Color.fromARGB(200, 16, 62, 99)
@@ -9584,7 +13330,6 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
                   ),
                 ),
 
-                // --- Tiempo actual (Solo VOD) ---
                 if (widget.liveStatus == false)
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 12.0),
@@ -9598,7 +13343,6 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
                     ),
                   ),
 
-                // --- Barra de Progreso ---
                 Expanded(
                   flex:10,
                   child: LayoutBuilder(
@@ -9614,7 +13358,7 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
                             ? (details) => _onScrubEnd(details)
                             : null,
                         child: Container(
-                          color: Colors.transparent, // Área de toque
+                          color: Colors.transparent,
                           child: _buildBeautifulProgressBar(
                               currentPosition, totalDuration),
                         ),
@@ -9623,7 +13367,6 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
                   ),
                 ),
 
-                // --- Tiempo Total (Solo VOD) ---
                 if (widget.liveStatus == false)
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 12.0),
@@ -9637,7 +13380,6 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
                     ),
                   ),
 
-                // --- Indicador "Live" (Solo Live) ---
                 if (widget.liveStatus == true)
                   Expanded(
                     flex: 1,
@@ -9666,11 +13408,9 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
     );
   }
 
-  // Barra de progreso principal
   Widget _buildBeautifulProgressBar(Duration displayPosition, Duration totalDuration) {
     final totalDurationMs = totalDuration.inMilliseconds.toDouble();
     
-    // Si es Live o la duración es 0, muestra una barra simple
     if (totalDurationMs <= 0 || widget.liveStatus == true) {
       return Container(
         padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
@@ -9685,8 +13425,7 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
     double playedProgress =
         (displayPosition.inMilliseconds / totalDurationMs).clamp(0.0, 1.0);
     
-    // Simula un pequeño buffer
-    double bufferedProgress = (playedProgress + 0.005).clamp(0.0, 1.0); 
+    double bufferedProgress = (playedProgress + 0.005).clamp(0.0, 1.0);
 
     return Container(
       padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
@@ -9706,7 +13445,6 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
           borderRadius: BorderRadius.circular(4),
           child: Stack(
             children: [
-              // Fondo
               Container(
                 width: double.infinity,
                 decoration: BoxDecoration(
@@ -9715,7 +13453,6 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
                   ),
                 ),
               ),
-              // Progreso "bufferizado" (simulado)
               FractionallySizedBox(
                 widthFactor: bufferedProgress,
                 child: Container(
@@ -9726,16 +13463,15 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
                   ),
                 ),
               ),
-              // Progreso reproducido
               FractionallySizedBox(
                 widthFactor: playedProgress,
                 child: Container(
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-                        Color(0xFF9B28F8), // Morado
-                        Color(0xFFE62B1E), // Rojo
-                        Color(0xFFFF6B35), // Naranja
+                        Color(0xFF9B28F8),
+                        Color(0xFFE62B1E),
+                        Color(0xFFFF6B35),
                       ],
                       stops: [0.0, 0.7, 1.0],
                     ),
@@ -9756,5 +13492,8 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
     );
   }
 }
+
+
+
 
 

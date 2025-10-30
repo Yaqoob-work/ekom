@@ -1015,6 +1015,7 @@ import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mobi_tv_entertainment/components/menu_screens/search_screen.dart';
 import 'package:mobi_tv_entertainment/components/provider/color_provider.dart';
 import 'package:mobi_tv_entertainment/components/provider/focus_provider.dart';
 import 'package:provider/provider.dart';
@@ -1085,16 +1086,13 @@ class _TopNavigationBarState extends State<TopNavigationBar>
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _focusNodes[0].requestFocus();
-      context.read<FocusProvider>().setTopNavigationFocusNode(_focusNodes[0]);
+      context.read<FocusProvider>().registerFocusNode('topNavigation', _focusNodes[0]);
     });
   }
 
   @override
   void dispose() {
     _animationController.dispose();
-    for (var node in _focusNodes) {
-      node.dispose();
-    }
     super.dispose();
   }
 
@@ -1113,7 +1111,7 @@ Widget build(BuildContext context) {
     canPop: false,
     onPopInvoked: (didPop) {
       if (!didPop) {
-        context.read<FocusProvider>().requestWatchNowFocus();
+        context.read<FocusProvider>().requestFocus('watchNow');
       }
     },
     child: Consumer<ColorProvider>(
@@ -1327,7 +1325,7 @@ Widget _buildNavigationItem(
                 case 1:
                   context
                       .read<FocusProvider>()
-                      .setSearchNavigationFocusNode(focusNode);
+                      .registerFocusNode('searchNavigation', focusNode);
                   break;
               }
               // ✨ YEH IMPORTANT HAI: Ye line poore navigation bar ka color badalti hai
@@ -1341,9 +1339,22 @@ Widget _buildNavigationItem(
         },
         onKeyEvent: (node, event) => _handleKeyEvent(node, event, index),
         child: GestureDetector(
+          // onTap: () {
+          //   widget.onPageSelected(index);
+          //   focusNode.requestFocus();
+          // },
           onTap: () {
-            widget.onPageSelected(index);
-            focusNode.requestFocus();
+            if (index == 1) { // index 1 = Search button
+              // Naya logic: Search page par navigate karein
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const SearchScreen()),
+              );
+            } else {
+              // Purana logic (agar future mein aur buttons add hote hain)
+              widget.onPageSelected(index);
+              focusNode.requestFocus();
+            }
           },
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 300),
@@ -1426,28 +1437,42 @@ Widget _buildNavigationItem(
     int index,
   ) {
     if (event is KeyDownEvent) {
+      if (index == 1) { 
+        // Aur user Enter, Select, ya Arrow Down dabata hai
+        if (event.logicalKey == LogicalKeyboardKey.enter ||
+            event.logicalKey == LogicalKeyboardKey.select ||
+            event.logicalKey == LogicalKeyboardKey.arrowDown) {
+          
+          // SearchScreen par navigate karein
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const SearchScreen()),
+          );
+          return KeyEventResult.handled; // Event ko handle kar liya
+        }
+      }
       if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
         if (index == widget.selectedPage) {
           switch (index) {
             case 0:
-              context.read<FocusProvider>().requestWatchNowFocus();
+              context.read<FocusProvider>().requestFocus('watchNow');
               break;
             case 1:
-              context.read<FocusProvider>().requestSearchIconFocus();
+              context.read<FocusProvider>().requestFocus('searchIcon');
               break;
           }
         } else {
-          context.read<FocusProvider>().requestWatchNowFocus();
+          context.read<FocusProvider>().requestFocus('watchNow');
         }
         return KeyEventResult.handled;
       } else if (event.logicalKey == LogicalKeyboardKey.enter ||
           event.logicalKey == LogicalKeyboardKey.select) {
         switch (index) {
           case 0:
-            context.read<FocusProvider>().requestWatchNowFocus();
+            context.read<FocusProvider>().requestFocus('watchNow');
             break;
           case 1:
-            context.read<FocusProvider>().requestSearchIconFocus();
+            context.read<FocusProvider>().requestFocus('searchIcon');
             break;
         }
         widget.onPageSelected(index);

@@ -3224,11 +3224,6 @@
 //   }
 // }
 
-
-
-
-
-
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -3485,7 +3480,8 @@ void main() async {
 }
 
 // Global variables
-String baseUrl = 'https://dashboard.cpplayers.com/public/api/';
+// String baseUrl = 'https://dashboard.cpplayers.com/public/api/';
+var baseUrl;
 var highlightColor;
 var cardColor;
 var hintColor;
@@ -3509,6 +3505,7 @@ String streamImage = 'assets/streamstarting.gif';
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    baseUrl = 'https://dashboard.cpplayers.com/api/v3/';
     screenhgt = MediaQuery.of(context).size.height;
     screenwdt = MediaQuery.of(context).size.width;
     bannerwdt = screenwdt * 0.13;
@@ -4412,72 +4409,70 @@ class _MyHomeState extends State<MyHome> {
 
   // ✅ YEH 'MyHome' KA NAYA BUILD METHOD HAI
 
-@override
-Widget build(BuildContext context) {
-  List<Widget> pages = [
-    HomeScreen(),
-    SearchScreen(),
-  ];
+  @override
+  Widget build(BuildContext context) {
+    List<Widget> pages = [
+      HomeScreen(),
+      SearchScreen(),
+    ];
 
-  // Hum 'SafeArea' ko hata rahe hain taaki content poori screen par dikhe
-  return Scaffold(
-    // Consumer ko 'body' ke andar le aayein
-    body: Consumer<ColorProvider>(
-      builder: (context, colorProvider, child) {
-        
-        // Background color logic waisi hi rahegi
-        Color backgroundColor = colorProvider.isItemFocused
-            ? colorProvider.dominantColor.withOpacity(0.5)
-            : cardColor;
+    // Hum 'SafeArea' ko hata rahe hain taaki content poori screen par dikhe
+    return Scaffold(
+      // Consumer ko 'body' ke andar le aayein
+      body: Consumer<ColorProvider>(
+        builder: (context, colorProvider, child) {
+          // Background color logic waisi hi rahegi
+          Color backgroundColor = colorProvider.isItemFocused
+              ? colorProvider.dominantColor.withOpacity(0.5)
+              : cardColor;
 
-        // Yeh Container ab poora background banayega
-        return Container(
-          color: backgroundColor, // Animated background color
-          
-          // ✅ YEH HAI ASLI STACK LAYOUT
-          child: Stack(
-            children: [
-              
-              // 1. CONTENT (PEECHE)
-              // PageView ab 'Expanded' mein nahi hai.
-              // Yeh poori screen lega aur Stack mein sabse peeche rahega.
-              PageView(
-                controller: _pageController,
-                onPageChanged: (index) {
-                  setState(() {
-                    _selectedPage = index;
-                  });
-                },
-                children: pages,
-              ),
+          // Yeh Container ab poora background banayega
+          return Container(
+            color: backgroundColor, // Animated background color
 
-              // 2. APP BAR (OOPAR)
-              // TopNavigationBar ko 'Positioned' karke oopar fix kar diya hai.
-              Positioned(
-                top: 0,
-                left: 0,
-                right: 0,
-                child: TopNavigationBar(
-                  selectedPage: _selectedPage,
-                  onPageSelected: _onPageSelected,
-                  tvenableAll: _tvenableAll,
+            // ✅ YEH HAI ASLI STACK LAYOUT
+            child: Stack(
+              children: [
+                // 1. CONTENT (PEECHE)
+                // PageView ab 'Expanded' mein nahi hai.
+                // Yeh poori screen lega aur Stack mein sabse peeche rahega.
+                PageView(
+                  controller: _pageController,
+                  onPageChanged: (index) {
+                    setState(() {
+                      _selectedPage = index;
+                    });
+                  },
+                  children: pages,
                 ),
-              ),
 
-              // Aapka logout button (agar future mein add karein)
-              // Positioned(
-              //   top: 10,
-              //   right: 10,
-              //   child: GestureDetector(
-              //     onTap: _showLogoutDialog,
-              //     ...
-              //   ),
-              // ),
-            ],
-          ),
-        );
-      },
-    ),
-  );
-}
+                // 2. APP BAR (OOPAR)
+                // TopNavigationBar ko 'Positioned' karke oopar fix kar diya hai.
+                Positioned(
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  child: TopNavigationBar(
+                    selectedPage: _selectedPage,
+                    onPageSelected: _onPageSelected,
+                    tvenableAll: _tvenableAll,
+                  ),
+                ),
+
+                // Aapka logout button (agar future mein add karein)
+                // Positioned(
+                //   top: 10,
+                //   right: 10,
+                //   child: GestureDetector(
+                //     onTap: _showLogoutDialog,
+                //     ...
+                //   ),
+                // ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
 }

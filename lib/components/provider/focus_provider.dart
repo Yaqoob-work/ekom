@@ -1,479 +1,1244 @@
-// focus_provider.dart - Complete working code according to your structure
+
+
+
+
+
+
+
+
+
+  
+
+  // =================================================================
+  // DISPOSE METHOD
+  // =================================================================
+
+
+
+
+
+
+
+
+
+
+// focus_provider.dart - Refactored (No Delays & Null-Safe)
+
+
+
+
+
+
+// import 'package:flutter/material.dart';
+
+// class FocusProvider extends ChangeNotifier {
+//   // 1. सभी FocusNodes को स्टोर करने के लिए एक Map
+//   final Map<String, FocusNode> _focusNodes = {};
+
+//   // 2. स्क्रॉलिंग के लिए Element Keys
+//   final Map<String, GlobalKey> _elementKeys = {};
+//   final ScrollController scrollController = ScrollController();
+
+//   // 3. बटन फोकस स्टेट
+//   // bool _isButtonFocused = false;
+//   // bool get isButtonFocused => _isButtonFocused;
+//   // Color? _currentFocusColor;
+//   // Color? get currentFocusColor => _currentFocusColor;
+
+
+
+//   // --- जेनेरिक फोकस मेथड्स ---
+
+//   /// किसी भी FocusNode को एक नाम के साथ रजिस्टर करें
+//   void registerFocusNode(String identifier, FocusNode node) {
+//     // अगर इस नाम से कोई पुराना नोड है, तो उसे dispose करें
+//     // if (_focusNodes.containsKey(identifier)) {
+//     //   _focusNodes[identifier]?.dispose();
+//     // }
+//     _focusNodes[identifier] = node;
+
+//     // // 'watchNow' के लिए विशेष लिस्नर
+//     // if (identifier == 'watchNow') {
+//     //   node.addListener(() {
+//     //     if (node.hasFocus) {
+//     //       scrollToElement('watchNow');
+//     //     }
+//     //   });
+//     // }
+//     notifyListeners();
+//   }
+
+//   // /// किसी भी रजिस्टर्ड FocusNode पर नाम से फोकस करें (बिना देरी के)
+//   // void requestFocus(String identifier) {
+//   //   final node = _focusNodes[identifier];
+//   //   if (node == null || !node.canRequestFocus) {
+//   //     print('FocusProvider: $identifier के लिए कोई नोड नहीं मिला।');
+//   //     return;
+//   //   }
+
+//   //   // हर identifier के लिए विशेष लॉजिक (बिना देरी के)
+//   //   switch (identifier) {
+//   //     // --- सीधे फोकस ---
+//   //     case 'topNavigation':
+//   //     case 'searchNavigation':
+//   //     case 'searchIcon':
+//   //       node.requestFocus();
+//   //       break;
+
+//   //     // --- फोकस + बटन स्टेट + स्क्रॉल ---
+//   //     case 'watchNow':
+//   //       node.requestFocus();
+//   //       setButtonFocus(true);
+//   //       scrollToElement('watchNow');
+//   //       break;
+
+//   //     // --- फोकस + स्क्रॉल --- (Delay Removed)
+//   //     case 'liveChannelLanguage':
+//   //     case 'manageMovies':
+//   //     case 'religiousChannels':
+//   //       node.requestFocus();
+//   //       scrollToElement(identifier);
+//   //       break;
+
+//   //     // --- फोकस + प्रिंट + स्क्रॉल --- (Delay Removed)
+//   //     case 'subVod': // (was horizontalListNetworks)
+//   //     case 'tvShows':
+//   //     case 'sportsCategory':
+//   //     case 'tvShowsPak':
+//   //       if (node.context != null) {
+//   //         node.requestFocus();
+//   //         print('✅ Focus requested for $identifier');
+//   //         scrollToElement(identifier);
+//   //       }
+//   //       break;
+
+//   //     // --- डिफॉल्ट केस ---
+//   //     default:
+//   //       node.requestFocus();
+//   //   }
+//   // }
+
+// // ❗️ फ़ाइल: focus_provider.dart
+// // ❗️ FocusProvider -> requestFocus
+
+//   void requestFocus(String identifier) {
+//     final node = _focusNodes[identifier];
+//     if (node == null) { // ❗️ simplified check
+//       print('FocusProvider: $identifier के लिए कोई नोड नहीं मिला।');
+//       return;
+//     }
+
+//     // ❗️❗️ FIX 3: YAHAN EK DELAY DAALEIN ❗️❗️
+//     // Focus ko ek widget se doosre widget mein move karne ke liye 
+//     // ek frame ka intezaar karna (ya 10ms) sabse safe hai.
+//     Future.delayed(const Duration(milliseconds: 10), () {
+//       if (!node.canRequestFocus) {
+//          print('FocusProvider: $identifier पर फोकस नहीं किया जा सकता।');
+//          return;
+//       }
+
+//     // ab har identifier ke liye special logic
+//     switch (identifier) {
+//       // --- Seedhe focus ---
+//       case 'topNavigation':
+//       case 'searchNavigation':
+//       case 'searchIcon':
+//         node.requestFocus();
+//         break;
+
+//       // // --- Focus + button state + scroll ---
+//       // case 'watchNow':
+//       //   node.requestFocus();
+//       //   // setButtonFocus(true);
+//       //   scrollToElement('watchNow');
+//       //   break;
+
+//       // --- Focus + scroll ---
+//       case 'watchNow':
+//       case 'liveChannelLanguage':
+//       case 'subVod':
+//       case 'manageMovies': // ⬅️ YEH AAPKA CASE HAI
+//       case 'manageWebseries':
+//       case 'tvShows':
+//       case 'sportsCategory':
+//       case 'religiousChannels':
+//       case 'tvShowsPak':
+//         node.requestFocus(); // ❗️ Ab yeh delay ke baad run hoga
+//         scrollToElement(identifier);
+//         break;
+
+//       // // --- Focus + print + scroll ---
+       
+      
+//       //   if (node.context != null) {
+//       //     node.requestFocus(); // ❗️ Ab yeh delay ke baad run hoga
+//       //     print('✅ Focus requested for $identifier');
+//       //     scrollToElement(identifier);
+//       //   }
+//       //   break;
+
+//       // --- Default case ---
+//       default:
+//         node.requestFocus();
+//     }
+//   }); // ❗️ Delay wrapper ko yahan band karein
+//   }
+
+
+//   // --- वेब-सीरीज़ (बिना देरी के) ---
+
+//   // void setFirstWebseriesFocusNode(Future<void> Function() callback) {
+//   //   _requestFirstWebseriesFocusCallback = callback;
+//   // }
+
+//   // void requestFirstWebseriesFocus() {
+//   //   _requestFirstWebseriesFocusCallback?.call();
+//   //   // Delay हटा दिया गया
+//   //   scrollToElement('manageWebseries');
+//   // }
+
+//   // --- अन्य मेथड्स (पहले जैसे ही) ---
+
+//   // void setButtonFocus(bool focused, {Color? color}) {
+//   //   _isButtonFocused = focused;
+//   //   if (focused) {
+//   //     _currentFocusColor = color;
+//   //   }
+//   //   notifyListeners();
+//   // }
+
+//   // void resetFocus() {
+//   //   _isButtonFocused = false;
+//   //   _currentFocusColor = null;
+//   //   notifyListeners();
+//   // }
+
+//   // --- स्क्रॉलिंग मेथड्स (पहले जैसे ही) ---
+
+//   void registerElementKey(String identifier, GlobalKey key) {
+//     final bool isNewKey = _elementKeys[identifier] != key;
+//     _elementKeys[identifier] = key;
+//     if (isNewKey) {
+//       WidgetsBinding.instance.addPostFrameCallback((_) {
+//         notifyListeners();
+//       });
+//     }
+//   }
+
+//   void unregisterElementKey(String identifier) {
+//     _elementKeys.remove(identifier);
+//     notifyListeners();
+//   }
+
+//   // --- 🌟 FIX HERE 🌟 ---
+//   // 'key' null हो सकता है, इसलिए 'key.currentContext' को
+//   // एक्सेस करने के बजाय 'key?.currentContext' का उपयोग करें।
+//   void scrollToElement(String identifier) {
+//     final key = _elementKeys[identifier];
+    
+//     // key?.currentContext का उपयोग करने से:
+//     // 1. अगर key null है, तो 'context' null हो जाएगा।
+//     // 2. अगर key null नहीं है, तो 'context' को 'currentContext' की वैल्यू मिल जाएगी।
+//     final BuildContext? context = key?.currentContext;
+
+//     // अगर context null नहीं है (मतलब key भी null नहीं था और currentContext भी null नहीं था)
+//     if (context != null) {
+//       Scrollable.ensureVisible(
+//         context,
+//         alignment: 0.05,
+//         duration: const Duration(milliseconds: 800),
+//         curve: Curves.linear,
+//       );
+//     }
+//   }
+
+//   // --- Dispose ---
+//   @override
+//   void dispose() {
+//     scrollController.dispose();
+//     // Map में मौजूद सभी FocusNodes को एक साथ dispose करें
+//     for (var node in _focusNodes.values) {
+//       node.dispose();
+//     }
+//     _focusNodes.clear();
+//     super.dispose();
+//   }
+// }
+
+
+
+
+
+// // focus_provider.dart - Refactored and Shorter
+// import 'package:flutter/material.dart';
+
+// class FocusProvider extends ChangeNotifier {
+//   // 1. सभी FocusNodes को स्टोर करने के लिए एक Map
+//   final Map<String, FocusNode> _focusNodes = {};
+
+//   // 2. स्क्रॉलिंग के लिए Element Keys (यह पहले जैसा ही है)
+//   final Map<String, GlobalKey> _elementKeys = {};
+//   final ScrollController scrollController = ScrollController();
+
+//   // 3. बटन फोकस स्टेट (यह पहले जैसा ही है)
+//   bool _isButtonFocused = false;
+//   bool get isButtonFocused => _isButtonFocused;
+//   Color? _currentFocusColor;
+//   Color? get currentFocusColor => _currentFocusColor;
+
+//   // 4. वेब-सीरीज़ के लिए विशेष कॉलबैक (यह अलग था, इसलिए इसे अलग रखा गया है)
+//   Future<void> Function()? _requestFirstWebseriesFocusCallback;
+
+//   // --- जेनेरिक फोकस मेथड्स ---
+
+//   /// किसी भी FocusNode को एक नाम के साथ रजिस्टर करें
+//   void registerFocusNode(String identifier, FocusNode node) {
+//     // अगर इस नाम से कोई पुराना नोड है, तो उसे dispose करें
+//     if (_focusNodes.containsKey(identifier)) {
+//       _focusNodes[identifier]?.dispose();
+//     }
+//     _focusNodes[identifier] = node;
+
+//     // 'watchNow' के लिए विशेष लिस्नर
+//     if (identifier == 'watchNow') {
+//       node.addListener(() {
+//         if (node.hasFocus) {
+//           scrollToElement('watchNow');
+//         }
+//       });
+//     }
+//     notifyListeners();
+//   }
+
+//   /// किसी भी रजिस्टर्ड FocusNode पर नाम से फोकस करें
+//   void requestFocus(String identifier) {
+//     final node = _focusNodes[identifier];
+//     if (node == null || !node.canRequestFocus) {
+//       print('FocusProvider: $identifier के लिए कोई नोड नहीं मिला।');
+//       return;
+//     }
+
+//     // हर identifier के लिए विशेष लॉजिक (जो आपके पुराने request... मेथड्स में था)
+//     switch (identifier) {
+//       // --- सीधे फोकस ---
+//       case 'topNavigation':
+//       case 'searchNavigation':
+//       case 'searchIcon':
+//         node.requestFocus();
+//         break;
+
+//       // --- फोकस + बटन स्टेट + स्क्रॉल ---
+//       case 'watchNow':
+//         node.requestFocus();
+//         setButtonFocus(true);
+//         scrollToElement('watchNow');
+//         break;
+
+//       // --- देरी + फोकस + देरी + स्क्रॉल ---
+//       case 'liveChannelLanguage':
+//       case 'manageMovies':
+//       case 'religiousChannels':
+//         Future.delayed(const Duration(milliseconds: 50), () {
+//           node.requestFocus();
+//           Future.delayed(const Duration(milliseconds: 50), () {
+//             scrollToElement(identifier);
+//           });
+//         });
+//         break;
+
+//       // --- फोकस + प्रिंट + स्क्रॉल (कुछ में डबल स्क्रॉल) ---
+//       case 'subVod': // (was horizontalListNetworks)
+//       case 'tvShows':
+//       case 'sportsCategory':
+//       case 'tvShowsPak':
+//         if (node.context != null) {
+//           node.requestFocus();
+//           print('✅ Focus requested for $identifier');
+//           scrollToElement(identifier);
+
+//           if (identifier == 'tvShows' || identifier == 'sportsCategory') {
+//             Future.delayed(const Duration(milliseconds: 50), () {
+//               scrollToElement(identifier);
+//             });
+//           }
+//         }
+//         break;
+
+//       // --- डिफॉल्ट केस ---
+//       default:
+//         node.requestFocus();
+//     }
+//   }
+
+//   // --- वेब-सीरीज़ (यह अलग लॉजिक का उपयोग करता है) ---
+
+//   void setFirstWebseriesFocusNode(Future<void> Function() callback) {
+//     _requestFirstWebseriesFocusCallback = callback;
+//   }
+
+//   void requestFirstWebseriesFocus() {
+//     _requestFirstWebseriesFocusCallback?.call();
+//     Future.delayed(const Duration(milliseconds: 200), () {
+//       scrollToElement('manageWebseries');
+//     });
+//   }
+
+//   // --- अन्य मेथड्स (पहले जैसे ही) ---
+
+//   void setButtonFocus(bool focused, {Color? color}) {
+//     _isButtonFocused = focused;
+//     if (focused) {
+//       _currentFocusColor = color;
+//     }
+//     notifyListeners();
+//   }
+
+//   void resetFocus() {
+//     _isButtonFocused = false;
+//     _currentFocusColor = null;
+//     notifyListeners();
+//   }
+
+//   // --- स्क्रॉलिंग मेथड्स (पहले जैसे ही) ---
+
+//   void registerElementKey(String identifier, GlobalKey key) {
+//     final bool isNewKey = _elementKeys[identifier] != key;
+//     _elementKeys[identifier] = key;
+//     if (isNewKey) {
+//       WidgetsBinding.instance.addPostFrameCallback((_) {
+//         notifyListeners();
+//       });
+//     }
+//   }
+
+//   void unregisterElementKey(String identifier) {
+//     _elementKeys.remove(identifier);
+//     notifyListeners();
+//   }
+
+//   void scrollToElement(String identifier) {
+//     final key = _elementKeys[identifier];
+//     if (key?.currentContext == null) {
+//       return;
+//     }
+//     final BuildContext? context = key?.currentContext;
+//     if (context != null) {
+//       Scrollable.ensureVisible(
+//         context,
+//         alignment: 0.05,
+//         duration: const Duration(milliseconds: 800),
+//         curve: Curves.linear,
+//       );
+//     }
+//   }
+
+//   // --- Dispose ---
+//   @override
+//   void dispose() {
+//     scrollController.dispose();
+//     // Map में मौजूद सभी FocusNodes को एक साथ dispose करें
+//     for (var node in _focusNodes.values) {
+//       node.dispose();
+//     }
+//     _focusNodes.clear();
+//     super.dispose();
+//   }
+// }
+
+
+
+
+
+
+// import 'package:flutter/material.dart';
+
+// class FocusProvider extends ChangeNotifier {
+//   final Map<String, FocusNode> _focusNodes = {};
+//   final Map<String, GlobalKey> _elementKeys = {};
+//   final ScrollController scrollController = ScrollController();
+
+//   void registerFocusNode(String identifier, FocusNode node) {
+//     _focusNodes[identifier] = node;
+//     notifyListeners();
+//   }
+
+//   void requestFocus(String identifier) {
+//     final node = _focusNodes[identifier];
+//     if (node == null) {
+//       print('FocusProvider: $identifier के लिए कोई नोड नहीं मिला।');
+//       return;
+//     }
+
+//     Future.delayed(const Duration(milliseconds: 10), () {
+//       if (!node.canRequestFocus) {
+//         print('FocusProvider: $identifier पर फोकस नहीं किया जा सकता।');
+//         return;
+//       }
+
+//       switch (identifier) {
+//         case 'topNavigation':
+//         case 'searchNavigation':
+//         case 'searchIcon':
+//           node.requestFocus();
+//           break;
+
+//         case 'watchNow':
+//         case 'liveChannelLanguage':
+//         case 'subVod':
+//         case 'manageMovies':
+//         case 'manageWebseries':
+//         case 'tvShows':
+//         case 'sportsCategory':
+//         case 'religiousChannels':
+//         case 'tvShowsPak':
+//           node.requestFocus();
+//           scrollToElement(identifier);
+//           break;
+
+//         default:
+//           node.requestFocus();
+//       }
+//     });
+//   }
+
+//   void registerElementKey(String identifier, GlobalKey key) {
+//     final bool isNewKey = _elementKeys[identifier] != key;
+//     _elementKeys[identifier] = key;
+//     if (isNewKey) {
+//       WidgetsBinding.instance.addPostFrameCallback((_) {
+//         notifyListeners();
+//       });
+//     }
+//   }
+
+//   void unregisterElementKey(String identifier) {
+//     _elementKeys.remove(identifier);
+//     notifyListeners();
+//   }
+
+//   void scrollToElement(String identifier) {
+//     final key = _elementKeys[identifier];
+
+//     final BuildContext? context = key?.currentContext;
+
+//     if (context != null) {
+//       Scrollable.ensureVisible(
+//         context,
+//         alignment: 0.05,
+//         duration: const Duration(milliseconds: 500),
+//         curve: Curves.linear,
+//       );
+//     }
+//   }
+
+//   @override
+//   void dispose() {
+//     scrollController.dispose();
+//     for (var node in _focusNodes.values) {
+//       node.dispose();
+//     }
+//     _focusNodes.clear();
+//     super.dispose();
+//   }
+// }
+
+
+
+
+// import 'package:flutter/material.dart';
+// import 'dart:async'; // Timer ke liye yeh import add karein
+
+// class FocusProvider extends ChangeNotifier {
+//   final Map<String, FocusNode> _focusNodes = {};
+//   final Map<String, GlobalKey> _elementKeys = {};
+//   final ScrollController scrollController = ScrollController();
+
+//   // --- NAVIGATION LOCK VARIABLES ---
+//   bool _isNavigationLocked = false;
+//   Timer? _navigationLockTimer;
+
+//   // In identifiers ki list banayein jin par lock lagana hai
+//   // Yeh woh items hain jo horizontal lists mein ho sakte hain
+//   final Set<String> _lockableIdentifiers = {
+//     'watchNow',
+//     'liveChannelLanguage',
+//     'subVod',
+//     'manageMovies',
+//     'manageWebseries',
+//     'tvShows',
+//     'sportsCategory',
+//     'religiousChannels',
+//     'tvShowsPak',
+//     // Aap is list mein aur identifiers add kar sakte hain
+//   };
+//   // ---------------------------------
+
+//   void registerFocusNode(String identifier, FocusNode node) {
+//     _focusNodes[identifier] = node;
+//     notifyListeners();
+//   }
+
+//   void requestFocus(String identifier) {
+//     final node = _focusNodes[identifier];
+//     if (node == null) {
+//       print('FocusProvider: $identifier के लिए कोई नोड नहीं मिला।');
+//       return;
+//     }
+
+//     // --- YAHAN BADLAV KIYA GAYA HAI ---
+
+//     // 1. Check karein ki kya is identifier par lock lagna chahiye
+//     final bool requiresLock = _lockableIdentifiers.contains(identifier);
+
+//     // 2. Agar lock chahiye aur navigation pehle se locked hai, toh request ignore karein
+//     if (requiresLock && _isNavigationLocked) {
+//       print('FocusProvider: Navigation locked, request for $identifier ignored.');
+//       return;
+//     }
+
+//     // 3. Agar lock chahiye, toh lock set karein aur timer start karein
+//     if (requiresLock) {
+//       _isNavigationLocked = true;
+//       _navigationLockTimer?.cancel(); // Purana timer (agar hai) cancel karein
+//       _navigationLockTimer = Timer(const Duration(milliseconds: 400), () { 
+//         // Duration 400ms se 600ms rakh sakte hain
+//         _isNavigationLocked = false;
+//       });
+//     }
+//     // --- BADLAV KHATAM ---
+
+//     Future.delayed(const Duration(milliseconds: 10), () {
+//       if (!node.canRequestFocus) {
+//         print('FocusProvider: $identifier पर फोकस नहीं किया जा सकता।');
+        
+//         // Agar focus request fail ho, toh lock turant hata dein
+//         if (requiresLock) {
+//           _isNavigationLocked = false;
+//           _navigationLockTimer?.cancel();
+//         }
+//         return;
+//       }
+
+//       switch (identifier) {
+//         case 'topNavigation':
+//         case 'searchNavigation':
+//         case 'searchIcon':
+//           node.requestFocus();
+//           break;
+
+//         case 'watchNow':
+//         case 'liveChannelLanguage':
+//         case 'subVod':
+//         case 'manageMovies':
+//         case 'manageWebseries':
+//         case 'tvShows':
+//         case 'sportsCategory':
+//         case 'religiousChannels':
+//         case 'tvShowsPak':
+//           node.requestFocus();
+//           scrollToElement(identifier);
+//           break;
+
+//         default:
+//           node.requestFocus();
+//       }
+//     });
+//   }
+
+//   void registerElementKey(String identifier, GlobalKey key) {
+//     final bool isNewKey = _elementKeys[identifier] != key;
+//     _elementKeys[identifier] = key;
+//     if (isNewKey) {
+//       WidgetsBinding.instance.addPostFrameCallback((_) {
+//         notifyListeners();
+//       });
+//     }
+//   }
+
+//   void unregisterElementKey(String identifier) {
+//     _elementKeys.remove(identifier);
+//     notifyListeners();
+//   }
+
+//   void scrollToElement(String identifier) {
+//     final key = _elementKeys[identifier];
+
+//     final BuildContext? context = key?.currentContext;
+
+//     if (context != null) {
+//       Scrollable.ensureVisible(
+//         context,
+//         alignment: 0.05,
+//         duration: const Duration(milliseconds: 500),
+//         curve: Curves.linear,
+//       );
+//     }
+//   }
+
+//   @override
+//   void dispose() {
+//     _navigationLockTimer?.cancel(); // Dispose mein timer ko cancel karna zaroori hai
+//     scrollController.dispose();
+//     for (var node in _focusNodes.values) {
+//       node.dispose();
+//     }
+//     _focusNodes.clear();
+//     super.dispose();
+//   }
+// }
+
+
+
+// import 'package:flutter/material.dart';
+// import 'dart:async'; // Timer ke liye yeh import add karein
+
+// class FocusProvider extends ChangeNotifier {
+//   final Map<String, FocusNode> _focusNodes = {};
+//   final Map<String, GlobalKey> _elementKeys = {};
+//   final ScrollController scrollController = ScrollController();
+
+//   // --- DURATION CONSTANTS ---
+//   // Lock 1 second (1000ms) tak rahega
+//   static const int _kLockDurationMs = 11; // <-- YEH LOCK KE LIYE HAI
+//   // Scroll animation 800ms tak chalega
+//   static const int _kScrollDurationMs = 800; // <-- YEH SCROLL KE LIYE HAI
+//   // -------------------------
+
+//   // --- NAVIGATION LOCK VARIABLES ---
+//   bool _isNavigationLocked = false;
+//   Timer? _navigationLockTimer;
+//   String _lastFocusedIdentifier = '';
+
+//   final Set<String> _lockableIdentifiers = {
+//     'watchNow',
+//     'liveChannelLanguage',
+//     'subVod',
+//     'manageMovies',
+//     'manageWebseries',
+//     'tvShows',
+//     'sportsCategory',
+//     'religiousChannels',
+//     'tvShowsPak',
+//   };
+//   // ---------------------------------
+
+//   void registerFocusNode(String identifier, FocusNode node) {
+//     _focusNodes[identifier] = node;
+//     notifyListeners();
+//   }
+
+//   void requestFocus(String identifier) {
+//     final node = _focusNodes[identifier];
+//     if (node == null) {
+//       print('FocusProvider: $identifier के लिए कोई नोड नहीं मिला।');
+//       return;
+//     }
+
+//     // --- LOCK LOGIC ---
+//     final bool requiresLock = _lockableIdentifiers.contains(identifier);
+//     final bool shouldApplyLock = requiresLock;
+
+//     // Agar lock chahiye aur navigation pehle se locked hai, toh request ignore karein
+//     if (shouldApplyLock && _isNavigationLocked) {
+//       print(
+//           'FocusProvider: Navigation locked, request for $identifier ignored.');
+//       return; // <-- YAHIN PAR REQUEST IGNORE HOTI HAI
+//     }
+
+//     // Agar lock chahiye, toh lock set karein
+//     if (shouldApplyLock) {
+//       _isNavigationLocked = true;
+//       _navigationLockTimer?.cancel();
+//       // Lock ke liye _kLockDurationMs (1000ms) ka istemal karein
+//       _navigationLockTimer = Timer(
+//           const Duration(milliseconds: _kLockDurationMs), () { 
+//         _isNavigationLocked = false;
+//       });
+//     }
+//     // --- LOCK LOGIC KHATAM ---
+
+//     // Future.delayed ko 10ms par set karein
+//     Future.delayed(const Duration(milliseconds: 10), () { 
+//       if (!node.canRequestFocus) {
+//         print('FocusProvider: $identifier पर फोकस नहीं किया जा सकता।');
+//         if (shouldApplyLock) {
+//           _isNavigationLocked = false;
+//           _navigationLockTimer?.cancel();
+//         }
+//         return;
+//       }
+
+//       _lastFocusedIdentifier = identifier;
+
+//       // --- SWITCH CASE WALA TAREEKA WAPAS ---
+//       switch (identifier) {
+//         case 'topNavigation':
+//         case 'searchNavigation':
+//         case 'searchIcon':
+//           node.requestFocus();
+//           break;
+
+//         case 'watchNow':
+//         case 'liveChannelLanguage':
+//         case 'subVod':
+//         case 'manageMovies':
+//         case 'manageWebseries':
+//         case 'tvShows':
+//         case 'sportsCategory':
+//         case 'religiousChannels':
+//         case 'tvShowsPak':
+//           node.requestFocus();
+//           scrollToElement(identifier); // Scroll function call karein
+//           break;
+
+//         default:
+//           node.requestFocus();
+//       }
+//       // --- SWITCH CASE KHATAM ---
+//     });
+//   }
+
+//   void registerElementKey(String identifier, GlobalKey key) {
+//     final bool isNewKey = _elementKeys[identifier] != key;
+//     _elementKeys[identifier] = key;
+//     if (isNewKey) {
+//       WidgetsBinding.instance.addPostFrameCallback((_) {
+//         notifyListeners();
+//       });
+//     }
+//   }
+
+//   void unregisterElementKey(String identifier) {
+//     _elementKeys.remove(identifier);
+//     notifyListeners();
+//   }
+
+//   void scrollToElement(String identifier) {
+//     final key = _elementKeys[identifier];
+//     final BuildContext? context = key?.currentContext;
+
+//     if (context != null) {
+//       Scrollable.ensureVisible(
+//         context,
+//         alignment: 0.05,
+//         // Scroll ke liye _kScrollDurationMs (800ms) ka istemal karein
+//         duration: const Duration(milliseconds: _kScrollDurationMs), // <-- BADLAV YAHAN
+//         curve: Curves.easeOut,
+//       );
+//     }
+//   }
+
+//   @override
+//   void dispose() {
+//     _navigationLockTimer?.cancel();
+//     scrollController.dispose();
+//     for (var node in _focusNodes.values) {
+//       node.dispose();
+//     }
+//     _focusNodes.clear();
+//     super.dispose();
+//   }
+// }
+
+
+
+
+// import 'package:flutter/material.dart';
+// import 'dart:async'; // Timer ke liye yeh import add karein
+
+// class FocusProvider extends ChangeNotifier {
+//   final Map<String, FocusNode> _focusNodes = {};
+//   final Map<String, GlobalKey> _elementKeys = {};
+//   final ScrollController scrollController = ScrollController();
+
+//   // --- DURATION CONSTANTS ---
+//   static const int _kLockDurationMs = 11; // <-- YEH LOCK KE LIYE HAI
+//   static const int _kScrollDurationMs = 800; // <-- YEH SCROLL KE LIYE HAI
+//   // -------------------------
+
+//   // --- NAVIGATION LOCK VARIABLES ---
+//   bool _isNavigationLocked = false;
+//   Timer? _navigationLockTimer;
+//   String _lastFocusedIdentifier = '';
+//   // ---------------------------------
+
+//   // --- NAYA VARIABLE ---
+//   // Yeh list sirf visible rows ke identifiers rakhegi
+//   List<String> _visibleRowIdentifiers = [];
+//   // -------------------
+
+//   // --- MODIFIED SET ---
+//   // Yeh IDs `HomeScreen` mein register ki gayi keys se *bilkul* match honi chahiye
+//   final Set<String> _lockableIdentifiers = {
+//     'watchNow',
+//     'liveChannelLanguage',
+//     'subVod',
+//     'manageMovies',
+//     'manageWebseries',
+//     'tvShows',
+//     'sportsCategory',
+//     'religiousChannels', // HomeScreen mein 'religiousChannels' register kiya tha
+//     'tvShowPak',         // HomeScreen mein 'tvShowPak' register kiya tha
+//   };
+//   // ---------------------------------
+
+//   // --- NAYA METHOD ---
+//   /// HomeScreen is method ko call karke visible rows ki list update karega
+//   void updateVisibleRowIdentifiers(List<String> identifiers) {
+//     _visibleRowIdentifiers = identifiers;
+//     // Hum notifyListeners() nahi call kar rahe kyunki
+//     // UI ko is list ke change hone par rebuild hone ki zaroorat nahi hai.
+//   }
+//   // --------------------
+
+//   // --- NAYE NAVIGATION METHODS ---
+
+//   /// Agli VISIBLE row par focus karta hai.
+//   /// Yeh method aapke row widgets (jaise BannerSlider, LiveChannelLanguageScreen)
+//   /// ke 'Arrow Down' key event par call hona chahiye.
+//   void focusNextRow() {
+//     // Check karo ki last focus kahan tha
+//     final currentIndex = _visibleRowIdentifiers.indexOf(_lastFocusedIdentifier);
+
+//     if (currentIndex == -1 && _visibleRowIdentifiers.isNotEmpty) {
+//       // Agar kisi row par focus nahi hai, toh pehli visible row par focus karo
+//       requestFocus(_visibleRowIdentifiers[0]);
+//     } else if (currentIndex < _visibleRowIdentifiers.length - 1) {
+//       // Agar list ke aakhir mein nahi hain, toh agli row par jao
+//       final String nextIdentifier = _visibleRowIdentifiers[currentIndex + 1];
+//       requestFocus(nextIdentifier);
+//     }
+//     // Agar aakhri row par hain, toh kuch mat karo
+//   }
+
+//   /// Pichli VISIBLE row par focus karta hai.
+//   /// Yeh method aapke row widgets ke 'Arrow Up' key event par call hona chahiye.
+//   void focusPreviousRow() {
+//     // Check karo ki last focus kahan tha
+//     final currentIndex = _visibleRowIdentifiers.indexOf(_lastFocusedIdentifier);
+
+//     if (currentIndex > 0) {
+//       // Agar pehli row par nahi hain, toh pichli row par jao
+//       final String prevIdentifier = _visibleRowIdentifiers[currentIndex - 1];
+//       requestFocus(prevIdentifier);
+//     } else if (currentIndex == 0) {
+//       // Yahan aap Top Navigation Bar ya Search icon par focus bhej sakte hain
+//       // requestFocus('topNavigation');
+//     }
+//   }
+//   // -----------------------------
+
+//   void registerFocusNode(String identifier, FocusNode node) {
+//     _focusNodes[identifier] = node;
+//     notifyListeners();
+//   }
+
+//   /// Yeh method rows ke andar (left/right) navigation, ya
+//   /// naye methods (focusNextRow/focusPreviousRow) ke zariye call hoga.
+//   void requestFocus(String identifier) {
+//     final node = _focusNodes[identifier];
+//     if (node == null) {
+//       print('FocusProvider: $identifier के लिए कोई नोड नहीं मिला।');
+//       return;
+//     }
+
+//     // --- LOCK LOGIC ---
+//     final bool requiresLock = _lockableIdentifiers.contains(identifier);
+//     final bool shouldApplyLock = requiresLock;
+
+//     if (shouldApplyLock && _isNavigationLocked) {
+//       print(
+//           'FocusProvider: Navigation locked, request for $identifier ignored.');
+//       return; // <-- YAHIN PAR REQUEST IGNORE HOTI HAI
+//     }
+
+//     if (shouldApplyLock) {
+//       _isNavigationLocked = true;
+//       _navigationLockTimer?.cancel();
+//       // Lock ke liye _kLockDurationMs ka istemal karein
+//       _navigationLockTimer = Timer(
+//           const Duration(milliseconds: _kLockDurationMs), () {
+//         _isNavigationLocked = false;
+//       });
+//     }
+//     // --- LOCK LOGIC KHATAM ---
+
+//     // Future.delayed ko 10ms par set karein
+//     Future.delayed(const Duration(milliseconds: 10), () {
+//       if (!node.canRequestFocus) {
+//         print('FocusProvider: $identifier पर फोकस नहीं किया जा सकता।');
+//         if (shouldApplyLock) {
+//           _isNavigationLocked = false;
+//           _navigationLockTimer?.cancel();
+//         }
+//         return;
+//       }
+
+//       // --- MODIFIED ---
+//       // Last focused item ko update karein,
+//       // taaki 'focusNextRow' aur 'focusPreviousRow' kaam kar sakein
+//       if (_visibleRowIdentifiers.contains(identifier)) {
+//         _lastFocusedIdentifier = identifier;
+//       }
+//       // ----------------
+
+//       // --- MODIFIED SWITCH CASE ---
+//       // IDs ko _lockableIdentifiers se match karein
+//       switch (identifier) {
+//         case 'topNavigation':
+//         case 'searchNavigation':
+//         case 'searchIcon':
+//           node.requestFocus();
+//           break;
+
+//         case 'watchNow':
+//         case 'liveChannelLanguage':
+//         case 'subVod':
+//         case 'manageMovies':
+//         case 'manageWebseries':
+//         case 'tvShows':
+//         case 'sportsCategory':
+//         case 'religiousChannels': // ID Matched
+//         case 'tvShowPak':         // ID Matched
+//           node.requestFocus();
+//           scrollToElement(identifier); // Scroll function call karein
+//           break;
+
+//         default:
+//           node.requestFocus();
+//       }
+//       // --- SWITCH CASE KHATAM ---
+//     });
+//   }
+
+//   void registerElementKey(String identifier, GlobalKey key) {
+//     final bool isNewKey = _elementKeys[identifier] != key;
+//     _elementKeys[identifier] = key;
+//     if (isNewKey) {
+//       WidgetsBinding.instance.addPostFrameCallback((_) {
+//         notifyListeners();
+//       });
+//     }
+//   }
+
+//   void unregisterElementKey(String identifier) {
+//     _elementKeys.remove(identifier);
+//     notifyListeners();
+//   }
+
+//   void scrollToElement(String identifier) {
+//     final key = _elementKeys[identifier];
+//     final BuildContext? context = key?.currentContext;
+
+//     if (context != null) {
+//       Scrollable.ensureVisible(
+//         context,
+//         alignment: 0.05,
+//         // Scroll ke liye _kScrollDurationMs (800ms) ka istemal karein
+//         duration: const Duration(milliseconds: _kScrollDurationMs),
+//         curve: Curves.easeOut,
+//       );
+//     }
+//   }
+
+//   @override
+//   void dispose() {
+//     _navigationLockTimer?.cancel();
+//     scrollController.dispose();
+//     for (var node in _focusNodes.values) {
+//       node.dispose();
+//     }
+//     _focusNodes.clear();
+//     super.dispose();
+//   }
+// }
+
+
+
+
 import 'package:flutter/material.dart';
+import 'dart:async'; 
 
 class FocusProvider extends ChangeNotifier {
-
-
-
-
-  
-  // =================================================================
-  // REFRESH STATE MANAGEMENT
-  // =================================================================
-  bool _shouldRefreshBanners = false;
-  bool _shouldRefreshLastPlayed = false;
-  String _refreshSource = '';
-
-  // Getters
-  bool get shouldRefreshBanners => _shouldRefreshBanners;
-  bool get shouldRefreshLastPlayed => _shouldRefreshLastPlayed;
-  String get refreshSource => _refreshSource;
-
-  // Refresh banners
-  void refreshBanners({String source = 'unknown'}) {
-    _shouldRefreshBanners = true;
-    _refreshSource = source;
-    notifyListeners();
-  }
-
-  // Refresh last played videos
-  void refreshLastPlayed({String source = 'unknown'}) {
-    _shouldRefreshLastPlayed = true;
-    _refreshSource = source;
-    notifyListeners();
-  }
-
-  // Refresh both
-  void refreshAll({String source = 'unknown'}) {
-    _shouldRefreshBanners = true;
-    _shouldRefreshLastPlayed = true;
-    _refreshSource = source;
-    notifyListeners();
-  }
-
-  // Reset flags after refresh is done
-  void markBannersRefreshed() {
-    _shouldRefreshBanners = false;
-    notifyListeners();
-  }
-
-  void markLastPlayedRefreshed() {
-    _shouldRefreshLastPlayed = false;
-    notifyListeners();
-  }
-
-  void markAllRefreshed() {
-    _shouldRefreshBanners = false;
-    _shouldRefreshLastPlayed = false;
-    _refreshSource = '';
-    notifyListeners();
-  }
-
-  // =================================================================
-  // SCROLL CONTROLLER AND FOCUS STATE
-  // =================================================================
+  final Map<String, FocusNode> _focusNodes = {};
+  final Map<String, GlobalKey> _elementKeys = {};
   final ScrollController scrollController = ScrollController();
 
-  // Focus state variables
-  bool _isButtonFocused = false;
-  bool _isLastPlayedFocused = false;
-  bool _isVodfirstbannerFocussed = false;
-  int _focusedVideoIndex = -1;
-  Color? _currentFocusColor;
+  // --- DURATION CONSTANTS ---
+  static const int _kLockDurationMs = 11; 
+  static const int _kScrollDurationMs = 800; 
 
-  // Store global keys for elements that need scrolling
-  final Map<String, GlobalKey> _elementKeys = {};
+  // --- NAVIGATION LOCK VARIABLES ---
+  bool _isNavigationLocked = false;
+  Timer? _navigationLockTimer;
+  String _lastFocusedIdentifier = '';
 
-  // Getters
-  bool get isButtonFocused => _isButtonFocused;
-  bool get isLastPlayedFocused => _isLastPlayedFocused;
-  bool get isVodfirstbannerFocussed => _isVodfirstbannerFocussed;
-  int get focusedVideoIndex => _focusedVideoIndex;
-  Color? get currentFocusColor => _currentFocusColor;
-
-  // =================================================================
-  // FOCUS NODES DECLARATIONS
-  // =================================================================
-  FocusNode? watchNowFocusNode;
-  FocusNode? firstLastPlayedFocusNode;
-  FocusNode? firstMusicItemFocusNode;
-  FocusNode? firstSubVodFocusNode;
-  FocusNode? _firstLastPlayedFocusNode;
-  FocusNode? _firstSubVodFocusNode;
-  // FocusNode? _homeCategoryFirstItemFocusNode;
-  FocusNode? _firstManageMoviesFocusNode;
-  FocusNode? _firstLiveChannelLanguageFocusNode;
-  FocusNode? _firstManageWebseriesFocusNode;
-  FocusNode? _firstReligiousChannelFocusNode;
-  FocusNode? _searchIconFocusNode;
-  FocusNode? _youtubeSearchIconFocusNode;
-  FocusNode? _searchNavigationFocusNode;
-  FocusNode? _youtubeSearchNavigationFocusNode;
-  // FocusNode? _homeCategoryFirstBannerFocusNode;
-  FocusNode? _firstMusicItemFocusNode;
-  FocusNode? _newsItemFocusNode;
-  FocusNode? firstItemFocusNode;
-  FocusNode? _liveTvFocusNode;
-  FocusNode? _VodMenuFocusNode;
-  FocusNode? firstVodBannerFocusNode;
-  FocusNode? topNavigationFocusNode;
-  FocusNode? middleNavigationFocusNode;
-
-
-
+  // --- VISIBLE ROWS LIST ---
+  List<String> _visibleRowIdentifiers = []; 
+  String _lastNavigationDirection = 'down';
   
+  final Set<String> _lockableIdentifiers = {
+    'watchNow',
+    'liveChannelLanguage',
+    'subVod',
+    'manageMovies',
+    'manageWebseries',
+    'tvShows',
+    'sportsCategory',
+    'religiousChannels',
+    'tvShowPak',
+  };
 
-
-int _currentSelectedNavIndex = 0;
-
-    void setCurrentSelectedNavIndex(int index) {
-    _currentSelectedNavIndex = index;
-    notifyListeners();
-    print('✅ Current selected nav index set to: $index');
+  void updateVisibleRowIdentifiers(List<String> identifiers) {
+    _visibleRowIdentifiers = identifiers;
   }
 
-  int get currentSelectedNavIndex => _currentSelectedNavIndex;
+  // --- NAYE NAVIGATION METHODS ---
 
-  // ✅ NEW: Request focus to current selected navigation's first channel
-  void requestCurrentNavFirstChannelFocus() {
-    if (_channelFirstFocusNodes.containsKey(_currentSelectedNavIndex)) {
-      _channelFirstFocusNodes[_currentSelectedNavIndex]?.requestFocus();
-      scrollToElement('subLiveScreen');
-      notifyListeners();
-      print('✅ Focusing first channel for current nav index: $_currentSelectedNavIndex');
-    } else {
-      print('❌ No first channel focus found for current nav index: $_currentSelectedNavIndex');
+  /// ✅ [UPDATED] Agli VISIBLE aur REGISTERED row par focus karta hai.
+  void focusNextRow() {
+    _lastNavigationDirection = 'down';
+    final currentIndex = _visibleRowIdentifiers.indexOf(_lastFocusedIdentifier);
+
+    if (currentIndex == -1 && _visibleRowIdentifiers.isNotEmpty) {
+      // Agar kisi row par focus nahi hai, toh pehli visible row par focus karo
+      requestFocus(_visibleRowIdentifiers[0]);
+    } else if (currentIndex < _visibleRowIdentifiers.length - 1) {
+      
+      // --- NAYA LOGIC (Race Condition Fix) ---
+      // Agle item se check karna shuru karein
+      for (int i = currentIndex + 1; i < _visibleRowIdentifiers.length; i++) {
+        final String nextIdentifier = _visibleRowIdentifiers[i];
+        final node = _focusNodes[nextIdentifier]; // Check karein ki node register hai ya nahi
+
+        if (node != null && node.canRequestFocus) {
+          // Valid, registered node mil gaya. Focus karein.
+          print('FocusProvider: focusNextRow attempting: $nextIdentifier');
+          requestFocus(nextIdentifier);
+          return; // Loop band karein
+        } else {
+          // Node ya toh null hai (register nahi hua) ya focus nahi ho sakta.
+          // Loop ko agle item ke liye jaari rakhein.
+          print('FocusProvider: focusNextRow skipping: $nextIdentifier (not registered yet)');
+        }
+      }
+      // Agar loop poora ho gaya aur koi node nahi mila
+      print('FocusProvider: focusNextRow found no available nodes after $_lastFocusedIdentifier');
+      // --- NAYA LOGIC KHATAM ---
     }
   }
 
-  // News Channels Focus Nodes (NEW)
-  FocusNode? _firstNewsChannelFocusNode;
-  FocusNode? _newsChannelsViewAllFocusNode;
-  ScrollController? _newsChannelsScrollController;
+  /// ✅ [UPDATED] Pichli VISIBLE aur REGISTERED row par focus karta hai.
+  void focusPreviousRow() {
+    _lastNavigationDirection = 'up';
+    final currentIndex = _visibleRowIdentifiers.indexOf(_lastFocusedIdentifier);
 
-  void setFirstNewsChannelFocusNode(FocusNode node) {
-    _firstNewsChannelFocusNode = node;
-    notifyListeners();
-  }
+    if (currentIndex > 0) {
+      
+      // --- NAYA LOGIC (Race Condition Fix) ---
+      // Pichle item se check karna shuru karein
+      for (int i = currentIndex - 1; i >= 0; i--) {
+        final String prevIdentifier = _visibleRowIdentifiers[i];
+        final node = _focusNodes[prevIdentifier]; // Check karein ki node register hai ya nahi
 
-  void requestFirstNewsChannelFocus() {
-    if (_firstNewsChannelFocusNode != null) {
-      _firstNewsChannelFocusNode!.requestFocus();
-      notifyListeners();
-      scrollToElement('subLiveScreen');
+        if (node != null && node.canRequestFocus) {
+          // Valid, registered node mil gaya. Focus karein.
+          print('FocusProvider: focusPreviousRow attempting: $prevIdentifier');
+          requestFocus(prevIdentifier);
+          return; // Loop band karein
+        } else {
+          // Node ya toh null hai (register nahi hua) ya focus nahi ho sakta.
+          // Loop ko pichle item ke liye jaari rakhein.
+          print('FocusProvider: focusPreviousRow skipping: $prevIdentifier (not registered yet)');
+        }
+      }
+      // Agar loop poora ho gaya aur koi node nahi mila
+      print('FocusProvider: focusPreviousRow found no available nodes before $_lastFocusedIdentifier');
+      // --- NAYA LOGIC KHATAM ---
+
+    } else if (currentIndex == 0) {
+      // Yahan aap Top Navigation Bar ya Search icon par focus bhej sakte hain
+      // requestFocus('topNavigation');
     }
   }
+  // -----------------------------
 
-  void requestNewsChannelsFocus() {
-    requestFirstNewsChannelFocus();
-  }
 
-  // News Channels Focus Nodes (NEW)
-  FocusNode? _firstMusicChannelFocusNode;
-  FocusNode? _musicChannelsViewAllFocusNode;
-  ScrollController? _musicChannelsScrollController;
-
-  // =================================================================
-  // NEWS CHANNELS METHODS (NEW)
-  // =================================================================
-  void setFirstMusicChannelFocusNode(FocusNode node) {
-    _firstMusicChannelFocusNode = node;
+  void registerFocusNode(String identifier, FocusNode node) {
+    _focusNodes[identifier] = node;
     notifyListeners();
   }
 
-  // =================================================================
-  // SCROLL CONTROLLERS MANAGEMENT
-  // =================================================================
-  // ScrollController? _moviesScrollController;
-  // ScrollController? _webseriesScrollController;
-  Map<String, ScrollController> _webseriesScrollControllers = {};
-  Map<String, ScrollController> _religiousChannelScrollControllers = {};
-
-  // void setMoviesScrollController(ScrollController controller) {
-  //   _moviesScrollController = controller;
-  // }
-
-  // void setwebseriesScrollController(ScrollController controller) {
-  //   _webseriesScrollController = controller;
-  // }
-
-  void setWebseriesScrollControllers(
-      Map<String, ScrollController> controllers) {
-    _webseriesScrollControllers = controllers;
-    notifyListeners();
-  }
-
-  void scrollWebseriesToFirst(String categoryId) {
-    final controller = _webseriesScrollControllers[categoryId];
-    if (controller != null && controller.hasClients) {
-      controller.animateTo(
-        0.0,
-        duration: Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-      );
+  void requestFocus(String identifier) {
+    final node = _focusNodes[identifier];
+    if (node == null) {
+      print('FocusProvider: $identifier के लिए कोई नोड नहीं मिला।');
+      return;
     }
-  }
 
+    // --- LOCK LOGIC ---
+    final bool requiresLock = _lockableIdentifiers.contains(identifier);
+    final bool shouldApplyLock = requiresLock;
 
-
-  // void setwebseriesScrollController(ScrollController controller) {
-  //   _webseriesScrollController = controller;
-  // }
-
-  void setReligiousChannelScrollControllers(
-      Map<String, ScrollController> controllers) {
-    _religiousChannelScrollControllers = controllers;
-    notifyListeners();
-  }
-
-  void scrollReligiousChannelToFirst(String categoryId) {
-    final controller = _religiousChannelScrollControllers[categoryId];
-    if (controller != null && controller.hasClients) {
-      controller.animateTo(
-        0.0,
-        duration: Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-      );
+    if (shouldApplyLock && _isNavigationLocked) {
+      print('FocusProvider: Navigation locked, request for $identifier ignored.');
+      return; 
     }
-  }
 
-  // void _scrollToFirstMovieItem() {
-  //   if (_moviesScrollController != null &&
-  //       _moviesScrollController!.hasClients) {
-  //     _moviesScrollController!.animateTo(
-  //       0.02,
-  //       duration: Duration(milliseconds: 800),
-  //       curve: Curves.linear,
-  //     );
-  //   }
-  // }
-
-  // =================================================================
-  // MOVIES METHODS
-  // =================================================================
-  void setLiveChannelLanguageFocusNode(FocusNode node) {
-    _firstLiveChannelLanguageFocusNode = node;
-    notifyListeners();
-  }
-
-  void requestLiveChannelLanguageFocus() {
-    if (_firstLiveChannelLanguageFocusNode != null) {
-      // _scrollToFirstMovieItem();
-      Future.delayed(const Duration(milliseconds: 50), () {
-        _firstLiveChannelLanguageFocusNode!.requestFocus();
-        // scrollToElement('manageMovies');
-        Future.delayed(const Duration(milliseconds: 50), () {
-          scrollToElement('liveChannelLanguage');
-        });
+    if (shouldApplyLock) {
+      _isNavigationLocked = true;
+      _navigationLockTimer?.cancel();
+      _navigationLockTimer = Timer(
+          const Duration(milliseconds: _kLockDurationMs), () { 
+        _isNavigationLocked = false;
       });
     }
+    // --- LOCK LOGIC KHATAM ---
+
+    Future.delayed(const Duration(milliseconds: 10), () { 
+      if (!node.canRequestFocus) {
+        print('FocusProvider: $identifier पर फोकस नहीं किया जा सकता।');
+        if (shouldApplyLock) {
+          _isNavigationLocked = false;
+          _navigationLockTimer?.cancel();
+        }
+        return;
+      }
+
+      // --- YEH ZAROORI HAI ---
+      if (_visibleRowIdentifiers.contains(identifier)) {
+         _lastFocusedIdentifier = identifier;
+      }
+      // ------------------------
+
+      // --- SWITCH CASE ---
+      switch (identifier) {
+        case 'topNavigation':
+        case 'searchNavigation':
+        case 'searchIcon':
+          node.requestFocus();
+          break;
+
+        case 'watchNow':
+        case 'liveChannelLanguage':
+        case 'subVod':
+        case 'manageMovies':
+        case 'manageWebseries':
+        case 'tvShows':
+        case 'sportsCategory':
+        case 'religiousChannels':
+        case 'tvShowPak': 
+          node.requestFocus();
+          scrollToElement(identifier); // Scroll function call karein
+          break;
+
+        default:
+          node.requestFocus();
+      }
+      // --- SWITCH CASE KHATAM ---
+    });
   }
 
-  // void requestMoviesFocus() {
-  //   requestFirstMoviesFocus();
-  // }
-
-
-
-
-  void setFirstManageMoviesFocusNode(FocusNode node) {
-    _firstManageMoviesFocusNode = node;
-    notifyListeners();
-  }
-
-  void requestFirstMoviesFocus() {
-    if (_firstManageMoviesFocusNode != null) {
-      // _scrollToFirstMovieItem();
-      Future.delayed(const Duration(milliseconds: 50), () {
-        _firstManageMoviesFocusNode!.requestFocus();
-        // scrollToElement('manageMovies');
-        Future.delayed(const Duration(milliseconds: 50), () {
-          scrollToElement('manageMovies');
-        });
-      });
-    }
-  }
-
-  void requestMoviesFocus() {
-    requestFirstMoviesFocus();
-  }
-
-  // =================================================================
-  // WEB SERIES METHODS
-  // =================================================================
-  // bool _webseriesFocusPrepared = false;
-
-  // void prepareWebseriesFocus() {
-  //   _webseriesFocusPrepared = true;
-  //   notifyListeners();
-  // }
-
-  // void setFirstManageWebseriesFocusNode(FocusNode node) {
-  //   _firstManageWebseriesFocusNode = node;
-  //   notifyListeners();
-  // }
-
-  // void requestFirstWebseriesFocus() {
-  //   if (_firstManageWebseriesFocusNode != null) {
-  //     Future.delayed(const Duration(milliseconds: 50), () {
-  //       _firstManageWebseriesFocusNode!.requestFocus();
-  //       scrollToElement('manageWebseries');
-  //       Future.delayed(const Duration(milliseconds: 50), () {
-  //         scrollToElement('manageWebseries');
-  //       });
-  //     });
-  //   }
-  // }
-
-
-
-
-// In your FocusProvider class (Example)
-// --- AFTER ---
-// Use a VoidCallback (or Future<void> Function()) instead of FocusNode
-// --- BEFORE (Incorrect Name) ---
-
-// Future<void> Function()? _requestFirstWebseriesFocusCallback;
-
-// void setFirstManageWebseriesFocusNode(Future<void> Function() callback) {
-//   _requestFirstWebseriesFocusCallback = callback;
-// }
-
-// void requestFirstManageWebseriesFocus() {
-//   _requestFirstWebseriesFocusCallback?.call();
-// }
-
-
-// --- AFTER (Correct Name) ---
-
-Future<void> Function()? _requestFirstWebseriesFocusCallback;
-
-// ✅ Yahan se 'Manage' hata dein
-void setFirstWebseriesFocusNode(Future<void> Function() callback) {
-  _requestFirstWebseriesFocusCallback = callback;
-}
-
-// // ✅ Aur yahan se bhi 'Manage' hata dein
-// void requestFirstWebseriesFocus() {
-//   _requestFirstWebseriesFocusCallback?.call();
-//           Future.delayed(const Duration(milliseconds: 50), () {
-//           scrollToElement('manageWebseries');
-//         });
-// }
-
-
-
-// --- AFTER (Correct, Smoother Sequence) ---
-void requestFirstWebseriesFocus() {
-  // 1. First, start the vertical scroll to bring the whole list into view.
-  // scrollToElement('manageWebseries');
-    _requestFirstWebseriesFocusCallback?.call();
-
-  // 2. Wait for the vertical scroll to get started (e.g., 300ms).
-  //    This is the key to decoupling the animations.
-  Future.delayed(const Duration(milliseconds: 200), () {
-  scrollToElement('manageWebseries');
-
-    // 3. AFTER the delay, call the function that handles the
-    //    horizontal scroll and focus on the item.
-    // _requestFirstWebseriesFocusCallback?.call();
-  });
-}
-
-
-
-  
-  FocusNode? _firstTVShowsFocusNode;
-  // ✅ TV Shows functions (नए)
-  void setFirstTVShowsFocusNode(FocusNode focusNode) {
-    _firstTVShowsFocusNode = focusNode;
-  }
-
-  void requestFirstTVShowsFocus() {
-    if (_firstTVShowsFocusNode != null &&
-        _firstTVShowsFocusNode!.context != null) {
-      _firstTVShowsFocusNode!.requestFocus();
-      print('✅ TV Shows first focus requested');
-      scrollToElement('tvShows');
-              Future.delayed(const Duration(milliseconds: 50), () {
-          scrollToElement('tvShows');
-        });
-    }
-  }
-
-
-
-  
-  FocusNode? _firstSportsCategoryFocusNode;
-  // ✅ TV Shows functions (नए)
-  void setFirstSportsCategoryFocusNode(FocusNode focusNode) {
-    _firstSportsCategoryFocusNode = focusNode;
-  }
-
-  void requestFirstSportsCategoryFocus() {
-    if (_firstSportsCategoryFocusNode != null &&
-        _firstSportsCategoryFocusNode!.context != null) {
-      _firstSportsCategoryFocusNode!.requestFocus();
-      print('✅ TV Shows first focus requested');
-      scrollToElement('sportsCategory');
-        Future.delayed(const Duration(milliseconds: 50), () {
-          scrollToElement('sportsCategory');
-        });
-    }
-
-  }
-
-
-  void setFirstReligiousChannelFocusNode(FocusNode node) {
-    _firstReligiousChannelFocusNode = node;
-    notifyListeners();
-  }
-
-  void requestFirstReligiousChannelFocus() {
-    if (_firstReligiousChannelFocusNode != null) {
-      Future.delayed(const Duration(milliseconds: 50), () {
-        _firstReligiousChannelFocusNode!.requestFocus();
-        scrollToElement('religiousChannels');
-        Future.delayed(const Duration(milliseconds: 50), () {
-          scrollToElement('religiousChannels');
-        });
-      });
-    }
-  }
-
-  // =================================================================
-  // SEARCH METHODS
-  // =================================================================
-  void setSearchIconFocusNode(FocusNode focusNode) {
-    _searchIconFocusNode = focusNode;
-  }
-
-  void requestSearchIconFocus() {
-    if (_searchIconFocusNode != null && _searchIconFocusNode!.canRequestFocus) {
-      _searchIconFocusNode!.requestFocus();
-    }
-  }
-
-  void setYoutubeSearchIconFocusNode(FocusNode focusNode) {
-    _youtubeSearchIconFocusNode = focusNode;
-  }
-
-  void requestYoutubeSearchIconFocus() {
-    if (_youtubeSearchIconFocusNode != null &&
-        _youtubeSearchIconFocusNode!.canRequestFocus) {
-      _youtubeSearchIconFocusNode!.requestFocus();
-    }
-  }
-
-  void setSearchNavigationFocusNode(FocusNode node) {
-    _searchNavigationFocusNode = node;
-  }
-
-  void requestSearchNavigationFocus() {
-    _searchNavigationFocusNode?.requestFocus();
-  }
-
-  void setYoutubeSearchNavigationFocusNode(FocusNode node) {
-    _youtubeSearchNavigationFocusNode = node;
-  }
-
-  void requestYoutubeSearchNavigationFocus() {
-    _youtubeSearchNavigationFocusNode?.requestFocus();
-  }
-
-  // =================================================================
-  // ELEMENT KEYS MANAGEMENT
-  // =================================================================
   void registerElementKey(String identifier, GlobalKey key) {
     final bool isNewKey = _elementKeys[identifier] != key;
     _elementKeys[identifier] = key;
@@ -491,392 +1256,28 @@ void requestFirstWebseriesFocus() {
 
   void scrollToElement(String identifier) {
     final key = _elementKeys[identifier];
-    if (key?.currentContext == null) {
-      return;
-    }
     final BuildContext? context = key?.currentContext;
+final double targetAlignment = (_lastNavigationDirection == 'up') 
+                                    ? 0.5   // Center mein (ArrowUp ke liye)
+                                    : 0.05; // Top par (ArrowDown ke liye)
     if (context != null) {
       Scrollable.ensureVisible(
         context,
-        alignment: 0.05,
-        duration: const Duration(milliseconds: 800),
-        curve: Curves.linear,
+        alignment: targetAlignment,
+        duration: const Duration(milliseconds: _kScrollDurationMs),
+        curve: Curves.easeOut,
       );
     }
   }
 
-  void requestMusicItemFocusSimple() {
-    if (firstMusicItemFocusNode != null) {
-      Future.delayed(Duration(milliseconds: 100), () {
-        if (firstMusicItemFocusNode!.canRequestFocus) {
-          firstMusicItemFocusNode!.requestFocus();
-          scrollToElement('subLiveScreen');
-        }
-      });
-    }
-  }
-
-  void resetFocus() {
-    _isButtonFocused = false;
-    _isLastPlayedFocused = false;
-    _focusedVideoIndex = -1;
-    _currentFocusColor = null;
-    notifyListeners();
-  }
-
-  // =================================================================
-  // LIVE SCREEN METHODS
-  // =================================================================
-  void setLiveScreenFocusNode(FocusNode node) {
-    firstItemFocusNode = node;
-  }
-
-  void requestLiveScreenFocus() {
-    if (firstItemFocusNode != null) {
-      firstItemFocusNode!.requestFocus();
-      if (firstItemFocusNode != null) {
-        setLiveScreenFocusNode(firstItemFocusNode!);
-      }
-    }
-  }
-
-  void setLiveTvFocusNode(FocusNode node) {
-    _liveTvFocusNode = node;
-  }
-
-  void requestLiveTvFocus() {
-    _liveTvFocusNode?.requestFocus();
-  }
-
-  void setVodMenuFocusNode(FocusNode node) {
-    _VodMenuFocusNode = node;
-  }
-
-  void requestVodMenuFocus() {
-    _VodMenuFocusNode?.requestFocus();
-  }
-
-
-
-
-  
-
-  // =================================================================
-  // BANNER/WATCH NOW METHODS
-  // =================================================================
-  void setWatchNowFocusNode(FocusNode node) {
-    watchNowFocusNode = node;
-    node.addListener(() {
-      if (node.hasFocus) {
-        scrollToElement('watchNow');
-      }
-    });
-  }
-
-  void requestWatchNowFocus() {
-    if (watchNowFocusNode != null) {
-      watchNowFocusNode!.requestFocus();
-      setButtonFocus(true);
-      scrollToElement('watchNow');
-    }
-  }
-
-  void setButtonFocus(bool focused, {Color? color}) {
-    _isButtonFocused = focused;
-    if (focused) {
-      _currentFocusColor = color;
-      _isLastPlayedFocused = false;
-      _focusedVideoIndex = -1;
-    }
-    notifyListeners();
-  }
-
-  void setFirstVodBannerFocusNode(FocusNode node) {
-    firstVodBannerFocusNode = node;
-    node.addListener(() {
-      // Optional scroll behavior
-    });
-  }
-
-  void requestVodBannerFocus() {
-    if (firstVodBannerFocusNode != null) {
-      firstVodBannerFocusNode!.requestFocus();
-    }
-  }
-
-  void setTopNavigationFocusNode(FocusNode node) {
-    topNavigationFocusNode = node;
-  }
-
-  void requestTopNavigationFocus() {
-    if (topNavigationFocusNode != null) {
-      topNavigationFocusNode!.requestFocus();
-      setTopNavigationFocusNode(topNavigationFocusNode!);
-    }
-  }
-
-  void setMiddleNavigationFocusNode(FocusNode node) {
-    middleNavigationFocusNode = node;
-  }
-
-  void requestMiddleNavigationFocus() {
-    if (middleNavigationFocusNode != null) {
-      middleNavigationFocusNode!.requestFocus();
-      setMiddleNavigationFocusNode(middleNavigationFocusNode!);
-    }
-  }
-
-  // FocusProvider में ये methods add/update करें:
-
-// ✅ Live TV specific focus node
-  FocusNode? _liveChannelsFocusNode;
-
-// ✅ Set Live channels focus node
-  void setLiveChannelsFocusNode(FocusNode node) {
-    _liveChannelsFocusNode = node;
-    notifyListeners();
-    print('✅ Live channels focus node registered');
-  }
-
-// ✅ Request Live channels focus
-  void requestLiveChannelsFocus() {
-    if (_liveChannelsFocusNode != null) {
-      _liveChannelsFocusNode!.requestFocus();
-      scrollToElement('subLiveScreen');
-      notifyListeners();
-      print('✅ Live channels focus requested');
-    } else {
-      print('❌ Live channels focus node not found');
-    }
-  }
-
-  // ✅ 5. GENERIC: Request any page's first channel focus
-  void requestFirstChannelFocus(int navIndex) {
-    if (_channelFirstFocusNodes.containsKey(navIndex)) {
-      _channelFirstFocusNodes[navIndex]?.requestFocus();
-      scrollToElement('subLiveScreen');
-      notifyListeners();
-      print('✅ Focusing first channel for index: $navIndex');
-    } else {
-      print('❌ First channel focus failed for index: $navIndex');
-    }
-  }
-
-  // =================================================================
-  // SUB VOD METHODS
-  // =================================================================
-  // BuildContext? _subVodContext;
-
-  // void setFirstSubVodFocusNode(FocusNode node) {
-  //   firstSubVodFocusNode = node;
-  //   node.addListener(() {
-  //     if (node.hasFocus) {
-  //       scrollToElement('subVod');
-  //     }
-  //   });
-  // }
-
-  // void setSubVodContext(BuildContext context) {
-  //   _subVodContext = context;
-  // }
-
-  // void requestSubVodFocus() {
-  //   if (firstSubVodFocusNode != null) {
-  //     firstSubVodFocusNode!.requestFocus();
-  //     setVodFirstBannerFocus(true);
-  //     Future.delayed(Duration(milliseconds: 50), () {
-  //       WidgetsBinding.instance.addPostFrameCallback((_) {
-  //         if (firstSubVodFocusNode!.canRequestFocus) {
-  //           firstSubVodFocusNode!.requestFocus();
-  //         }
-  //       });
-  //     });
-  //     scrollToElement('subVod');
-  //   }
-  // }
-
-  // void setVodFirstBannerFocus(bool focused) {
-  //   _isVodfirstbannerFocussed = focused;
-  //   notifyListeners();
-  // }
-
-  // void requestFirstSubVodFocus() {
-  //   if (firstSubVodFocusNode != null) {
-  //     firstSubVodFocusNode!.requestFocus();
-  //     setFirstSubVodFocusNode(firstSubVodFocusNode!);
-  //     Future.delayed(Duration(milliseconds: 100), () {
-  //       firstSubVodFocusNode!.requestFocus();
-  //     });
-  //     scrollToElement('subVod');
-  //   }
-  // }
-
-  // =================================================================
-  // NAVIGATION HELPERS (SIMPLIFIED)
-  // =================================================================
-  void navigateUpSimple() {
-    if (_firstNewsChannelFocusNode?.hasFocus == true) {
-      requestMoviesFocus();
-    } else if (_firstManageMoviesFocusNode?.hasFocus == true) {
-      // requestSubVodFocus();
-      requestFirstHorizontalListNetworksFocus();
-    } else if (firstSubVodFocusNode?.hasFocus == true) {
-      requestMusicItemFocusSimple();
-    } else if (firstMusicItemFocusNode?.hasFocus == true) {
-      requestWatchNowFocus();
-    }
-  }
-
-  void navigateDownSimple() {
-    if (watchNowFocusNode?.hasFocus == true) {
-      requestMusicItemFocusSimple();
-    } else if (firstMusicItemFocusNode?.hasFocus == true) {
-      // requestSubVodFocus();
-      requestFirstHorizontalListNetworksFocus();
-    } else if (firstSubVodFocusNode?.hasFocus == true) {
-      requestMoviesFocus();
-    } else if (_firstManageMoviesFocusNode?.hasFocus == true) {
-      requestNewsChannelsFocus();
-    }
-    //  else if (_firstNewsChannelFocusNode?.hasFocus == true) {
-    //   requestFirstWebseriesFocus();
-    // }
-  }
-
-  List<FocusNode>? _middleNavigationFocusNodes;
-  Map<int, FocusNode> _channelFirstFocusNodes = {};
-  Map<int, ScrollController> _channelScrollControllers = {};
-  Map<int, FocusNode> _viewAllFocusNodes = {};
-
-
-
-  // List<FocusNode>? _middleNavigationFocusNodes;
-  // Map<int, FocusNode> _channelFirstFocusNodes = {};
-  // Map<int, ScrollController> _channelScrollControllers = {};
-  // Map<int, FocusNode> _viewAllFocusNodes = {};
-
-  // ✅ ADD THIS VARIABLE: Yeh last active genre ka index yaad rakhega.
-  int _lastFocusedLiveGenreIndex = 0;
-
-  // ✅ ADD THIS METHOD: Yeh last active genre ka index set karega.
-  void setLastFocusedLiveGenreIndex(int index) {
-    _lastFocusedLiveGenreIndex = index;
-    print('🟢 Last focused live genre index set to: $index');
-  }
-
-  // ✅ ADD THIS METHOD: Yeh 'HorzontalVod' se call hoga.
-  void requestFocusOnActiveLiveGenre() {
-    print('🔼 Requesting focus for last active live genre index: $_lastFocusedLiveGenreIndex');
-    // Ab hum generic method ko last saved index ke saath call karenge.
-    requestFirstChannelFocus(_lastFocusedLiveGenreIndex);
-  }
-
-  // ✅ 1. Set middle navigation focus nodes (Existing)
-  void setMiddleNavigationFocusNodes(List<FocusNode> nodes) {
-    _middleNavigationFocusNodes = nodes;
-    notifyListeners();
-  }
-
-  // ✅ 2. GENERIC: Register any page's channel focus (Existing)
-  void registerGenericChannelFocus(int navIndex,
-      ScrollController scrollController, FocusNode firstChannelNode) {
-    _channelScrollControllers[navIndex] = scrollController;
-    _channelFirstFocusNodes[navIndex] = firstChannelNode;
-    notifyListeners();
-    print('✅ Registered generic focus for index: $navIndex');
-  }
-
-  // // ✅ 1. Set middle navigation focus nodes
-  // void setMiddleNavigationFocusNodes(List<FocusNode> nodes) {
-  //   _middleNavigationFocusNodes = nodes;
-  //   notifyListeners();
-  // }
-
-  // // ✅ 2. GENERIC: Register any page's channel focus
-  // void registerGenericChannelFocus(int navIndex,
-  //     ScrollController scrollController, FocusNode firstChannelNode) {
-  //   _channelScrollControllers[navIndex] = scrollController;
-  //   _channelFirstFocusNodes[navIndex] = firstChannelNode;
-  //   notifyListeners();
-  //   print('✅ Registered generic focus for index: $navIndex');
-  // }
-
-  // ✅ 3. GENERIC: Register ViewAll focus node
-  void registerViewAllFocusNode(int navIndex, FocusNode viewAllNode) {
-    _viewAllFocusNodes[navIndex] = viewAllNode;
-    notifyListeners();
-  }
-
-  // ✅ 4. GENERIC: Request focus for any navigation index
-  void requestNavigationFocus(int navIndex) {
-    if (_middleNavigationFocusNodes != null &&
-        navIndex >= 0 &&
-        navIndex < _middleNavigationFocusNodes!.length) {
-      _middleNavigationFocusNodes![navIndex].requestFocus();
-      print('✅ Focusing navigation index: $navIndex');
-    } else {
-      print('❌ Navigation focus failed for index: $navIndex');
-    }
-  }
-
-
-
-
-
-
-
-  FocusNode? _firstTVShowsPakFocusNode;
-  // ✅ TV Shows functions (नए)
-  void setFirstTVShowsPakFocusNode(FocusNode focusNode) {
-    _firstTVShowsPakFocusNode = focusNode;
-  }
-
-  void requestFirstTVShowsPakFocus() {
-    if (_firstTVShowsPakFocusNode != null &&
-        _firstTVShowsPakFocusNode!.context != null) {
-      _firstTVShowsPakFocusNode!.requestFocus();
-      print('✅ TV Shows first focus requested');
-      scrollToElement('tvShowsPak');
-    }
-
-  }
-
-
-  FocusNode? _firstHorizontalListNetworksFocusNode;
-  // ✅ TV Shows functions (नए)
-  void setFirstHorizontalListNetworksFocusNode(FocusNode focusNode) {
-    _firstHorizontalListNetworksFocusNode = focusNode;
-  }
-
-  void requestFirstHorizontalListNetworksFocus() {
-    if (_firstHorizontalListNetworksFocusNode != null &&
-        _firstHorizontalListNetworksFocusNode!.context != null) {
-      _firstHorizontalListNetworksFocusNode!.requestFocus();
-      print('✅ TV Shows first focus requested');
-      scrollToElement('subVod');
-
-    }
-  }
-
-
-
-
-  
-
-  // =================================================================
-  // DISPOSE METHOD
-  // =================================================================
   @override
   void dispose() {
+    _navigationLockTimer?.cancel();
     scrollController.dispose();
-    watchNowFocusNode?.dispose();
-    firstLastPlayedFocusNode?.dispose();
-    firstMusicItemFocusNode?.dispose();
-    firstSubVodFocusNode?.dispose();
-    _firstManageMoviesFocusNode?.dispose();
-    _firstManageWebseriesFocusNode?.dispose();
-    _firstNewsChannelFocusNode?.dispose();
-    _newsChannelsViewAllFocusNode?.dispose();
+    for (var node in _focusNodes.values) {
+      node.dispose();
+    }
+    _focusNodes.clear();
     super.dispose();
   }
 }

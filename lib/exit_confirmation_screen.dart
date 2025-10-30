@@ -216,7 +216,7 @@ class _ExitConfirmationScreenState extends State<ExitConfirmationScreen>
 
     if (!widget.isFromBackButton) {
       // 5 second ke baad screen ko automatically band kar dein
-      Timer(const Duration(seconds: 8), () {
+      Timer(const Duration(seconds: 5), () {
         if (mounted) {
           // Screen ko fade-out karte hue pop karein
           _animationController.reverse().whenComplete(() {
@@ -227,7 +227,11 @@ class _ExitConfirmationScreenState extends State<ExitConfirmationScreen>
     } else {
       // 'Enter' button par focus set karein
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        FocusScope.of(context).requestFocus(_enterButtonFocusNode);
+        Future.delayed(const Duration(milliseconds: 100), () {
+          if (mounted) { // Check karein ki widget abhi bhi screen par hai
+            FocusScope.of(context).requestFocus(_enterButtonFocusNode);
+          }
+        });
       });
     }
 

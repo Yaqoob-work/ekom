@@ -2299,7 +2299,7 @@ class _GenreMoviesScreenState extends State<GenreMoviesScreen>
   void _setupSliderTimer() {
     _sliderTimer?.cancel();
     if (_contentSliders.length > 1) {
-      _sliderTimer = Timer.periodic(const Duration(seconds: 5), (Timer timer) {
+      _sliderTimer = Timer.periodic(const Duration(seconds: 8), (Timer timer) {
         if (!mounted || !_sliderPageController.hasClients) return;
         int nextPage = (_sliderPageController.page?.round() ?? 0) + 1;
         if (nextPage >= _contentSliders.length) {

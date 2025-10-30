@@ -1118,7 +1118,6 @@ import 'package:mobi_tv_entertainment/components/provider/device_info_provider.d
 // InternalFocusProvider import (jaisa example mein tha)
 import 'package:mobi_tv_entertainment/components/provider/internal_focus_provider.dart';
 import 'package:mobi_tv_entertainment/components/video_widget/custom_youtube_player.dart';
-import 'package:mobi_tv_entertainment/components/video_widget/live_video_screen.dart';
 import 'package:mobi_tv_entertainment/components/video_widget/video_screen.dart';
 import 'package:mobi_tv_entertainment/components/video_widget/youtube_webview_player.dart';
 import 'package:mobi_tv_entertainment/components/widgets/models/news_item_model.dart';
@@ -1326,7 +1325,7 @@ class _SearchScreenState extends State<SearchScreen>
       // Set node for side menu navigation
       context
           .read<FocusProvider>()
-          .setSearchIconFocusNode(_searchTriggerFocusNode);
+          .registerFocusNode('searchIcon', _searchTriggerFocusNode);
     });
   }
 
@@ -1336,7 +1335,6 @@ class _SearchScreenState extends State<SearchScreen>
     _backgroundController.dispose();
     _widgetFocusNode.dispose();
     _resultScrollController.dispose();
-    _searchTriggerFocusNode.dispose();
     _debounce?.cancel();
     _navigationLockTimer?.cancel();
     _disposeFocusNodes(_resultFocusNodes);
@@ -1361,7 +1359,8 @@ class _SearchScreenState extends State<SearchScreen>
           _searchTriggerFocusNode.requestFocus();
         } else {
           // Navigate back to the main app focus (e.g., side menu)
-          context.read<FocusProvider>().requestWatchNowFocus();
+          // context.read<FocusProvider>().requestFocus('watchNow');
+          Navigator.pop(context);
         }
       },
       child: Scaffold(
@@ -1456,7 +1455,7 @@ class _SearchScreenState extends State<SearchScreen>
     }
     if (key == LogicalKeyboardKey.arrowUp) {
       // Handle navigation to side menu
-      context.read<FocusProvider>().requestSearchNavigationFocus();
+      context.read<FocusProvider>().requestFocus('searchNavigation');
       return KeyEventResult.handled;
     }
     return KeyEventResult.handled;
@@ -2070,7 +2069,7 @@ class _SearchScreenState extends State<SearchScreen>
   Widget _buildPageContent() {
     return Column(
       children: [
-        SizedBox(height: screenhgt * 0.12),
+        SizedBox(height: screenhgt * 0.02),
         _buildBeautifulAppBar(),
         Expanded(
           child: FadeTransition(

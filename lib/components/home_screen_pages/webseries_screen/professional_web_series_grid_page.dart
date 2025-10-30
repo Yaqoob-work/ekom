@@ -1893,7 +1893,7 @@ class _WebSeriesBannerSliderState extends State<WebSeriesBannerSlider> {
 
   void _startTimer() {
     _timer?.cancel();
-    _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 8), (timer) {
       if (!mounted || !widget.controller.hasClients || widget.sliders.length <= 1) return;
 
       int currentPage = widget.controller.page?.round() ?? 0;
