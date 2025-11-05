@@ -3225,15 +3225,15 @@ class BannerService {
 
  static Future<List<dynamic>> _fetchBannersFromApi() async {
    try {
-     final prefs = await SharedPreferences.getInstance();
-     final authKey = prefs.getString('result_auth_key') ?? '';
-     final response = await https.get(
-       Uri.parse('https://dashboard.cpplayers.com/api/v2/getCustomImageSlider'),
+            String authKey = SessionManager.authKey ;
+      var url = Uri.parse(SessionManager.baseUrl + 'getCustomImageSlider');
+     final response = await https.get(url,
+      //  Uri.parse('https://dashboard.cpplayers.com/api/v2/getCustomImageSlider'),
        headers: {
          'auth-key': authKey,
          'Content-Type': 'application/json',
          'Accept': 'application/json',
-         'domain': 'coretechinfo.com'
+         'domain': SessionManager.savedDomain
        },
      ).timeout(const Duration(seconds: 30));
 

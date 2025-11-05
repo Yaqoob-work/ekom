@@ -3091,17 +3091,17 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
   }
 
   Future<List<SeasonModel>?> _fetchSeasonsFromAPIDirectly() async {
-    final prefs = await SharedPreferences.getInstance();
-    final authKey = prefs.getString('result_auth_key') ?? _authKey;
+            String authKey = SessionManager.authKey ;
+      var url = Uri.parse(SessionManager.baseUrl + 'getSeasons/${widget.id}');
 
-    final response = await https.get(
-      Uri.parse(
-          'https://dashboard.cpplayers.com/api/v2/getSeasons/${widget.id}'),
+    final response = await https.get(url,
+      // Uri.parse(
+      //     'https://dashboard.cpplayers.com/api/v2/getSeasons/${widget.id}'),
       headers: {
         'auth-key': authKey,
         'Accept': 'application/json',
         'Content-Type': 'application/json',
-        'domain': 'coretechinfo.com'
+        'domain': SessionManager.savedDomain,
       },
     ).timeout(const Duration(seconds: 15));
 
@@ -3203,17 +3203,17 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
 
   Future<List<NewsItemModel>?> _fetchEpisodesFromAPIDirectly(
       int seasonId) async {
-    final prefs = await SharedPreferences.getInstance();
-    final authKey = prefs.getString('result_auth_key') ?? _authKey;
+            String authKey = SessionManager.authKey ;
+      var url = Uri.parse(SessionManager.baseUrl + 'getEpisodes/$seasonId/0');
 
-    final response = await https.get(
-      Uri.parse(
-          'https://dashboard.cpplayers.com/api/v2/getEpisodes/$seasonId/0'),
+    final response = await https.get(url,
+      // Uri.parse(
+      //     'https://dashboard.cpplayers.com/api/v2/getEpisodes/$seasonId/0'),
       headers: {
         'auth-key': authKey,
         'Accept': 'application/json',
         'Content-Type': 'application/json',
-        'domain': 'coretechinfo.com',
+        'domain': SessionManager.savedDomain,
       },
     ).timeout(const Duration(seconds: 15));
 

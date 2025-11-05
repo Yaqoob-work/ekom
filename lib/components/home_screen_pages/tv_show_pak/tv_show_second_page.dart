@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mobi_tv_entertainment/components/home_screen_pages/tv_show/manage_tv_shows.dart';
 // import 'package:mobi_tv_entertainment/components/home_screen_pages/tv_show/manage_network_tv_shows.dart';
-import 'package:mobi_tv_entertainment/components/home_screen_pages/tv_show_pak/tv_show_final_details_page.dart';
+import 'package:mobi_tv_entertainment/components/home_screen_pages/tv_show_pak/tv_show_pak_final_details_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 // ✅ IMPORT करें TvShowPakFinalDetailsPage
@@ -1704,3 +1704,14 @@ class _TVShowDetailsCardState extends State<TVShowDetailsCard>
     );
   }
 }
+
+
+
+
+
+
+
+
+
+
+

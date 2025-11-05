@@ -1542,7 +1542,7 @@ import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:http/http.dart' as http;
+import 'package:http/http.dart' as https;
 import 'package:mobi_tv_entertainment/components/home_screen_pages/webseries_screen/webseries_details_page.dart';
 import 'package:mobi_tv_entertainment/main.dart';
 import 'package:mobi_tv_entertainment/components/provider/device_info_provider.dart';
@@ -1762,10 +1762,12 @@ class _GenreMoviesScreenState extends State<GenreMoviesScreen>
   @override
   void initState() {
     super.initState();
+    
     _sliderPageController = PageController();
     _searchButtonFocusNode = FocusNode();
     _fetchDataForPage();
     _initializeAnimations();
+    print('getBaseUrl: ${SessionManager.baseUrl}');
   }
 
   @override
@@ -1833,18 +1835,25 @@ class _GenreMoviesScreenState extends State<GenreMoviesScreen>
 
     try {
       final prefs = await SharedPreferences.getInstance();
-      final authKey = prefs.getString('result_auth_key') ?? '56456456456';
-      final response = await http.post(
-        Uri.parse(
-            'https://dashboard.cpplayers.com/api/v2/getAllContentsOfNetworkNew'),
+      final authKey = SessionManager.authKey;
+      var url = Uri.parse(SessionManager.baseUrl + 'getAllContentsOfNetworkNew');
+      final response = await https.post(
+        // Uri.parse(
+          url,
+          // SessionManager.baseUrl + 'getAllContentsOfNetworkNew'
+            // 'https://dashboard.cpplayers.com/api/v2/getAllContentsOfNetworkNew'
+            
         headers: {
           'auth-key': authKey,
-          'domain': 'coretechinfo.com',
+          // 'domain': 'coretechinfo.com',
+          'domain': SessionManager.savedDomain,
           'Accept': 'application/json',
           'Content-Type': 'application/json'
         },
+        // ),
         body: json.encode(
-            {"genre": "", "network_id": widget.tvChannelId, "limit": 500}),
+            // {"genre": "", "network_id": widget.tvChannelId, "limit": 500}),
+            {"genre": "", "network_id": widget.tvChannelId,}),
       );
 
       if (!mounted) return;
@@ -3058,7 +3067,7 @@ class MovieCard extends StatelessWidget {
   }
 
   Widget _buildMovieImage() {
-    final imageUrl = movie.poster ?? movie.banner;
+    final imageUrl =  movie.banner;
     // BADLA GAYA: CachedNetworkImage ko Image.network se replace kiya gaya hai
     return imageUrl != null && imageUrl.isNotEmpty
         ? Image.network(

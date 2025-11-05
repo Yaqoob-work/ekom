@@ -3429,13 +3429,18 @@ class _LiveChannelLanguageScreenState extends State<LiveChannelLanguageScreen>
     setState(() { _isLoading = true; _errorMessage = ''; });
 
     try {
-      String authKey = SessionManager.authKey;
-      final response = await https.get(
-        Uri.parse('https://dashboard.cpplayers.com/api/v2/getAllLanguages'),
+            String authKey = SessionManager.authKey ;
+      var url = Uri.parse(SessionManager.baseUrl + 'getAllLanguages');
+      final response = await https.get(url,
+        // Uri.parse(
+        //   // SessionManager.baseUrl + 'getAllLanguages'
+        //   'https://dashboard.cpplayers.com/api/v2/getAllLanguages'
+        //   ),
         headers: {
           'auth-key': authKey,
           'Content-Type': 'application/json',
-          'domain': 'coretechinfo.com'
+          // 'domain': 'coretechinfo.com'
+          'domain': SessionManager.savedDomain
         },
       ).timeout(const Duration(seconds: 20)); // Added timeout
 
@@ -3553,11 +3558,11 @@ class _LiveChannelLanguageScreenState extends State<LiveChannelLanguageScreen>
      Future.delayed(Duration(milliseconds: 200), () { // Added delay
        if (mounted) {
            setState(() { _isNavigating = false; });
-           String langId = language.id.toString();
-           if(languageFocusNodes.containsKey(langId)){
-              languageFocusNodes[langId]?.requestFocus();
-              _scrollToFocusedItem(langId); // Ensure it scrolls back
-           }
+          //  String langId = language.id.toString();
+          //  if(languageFocusNodes.containsKey(langId)){
+          //     languageFocusNodes[langId]?.requestFocus();
+          //     _scrollToFocusedItem(langId); // Ensure it scrolls back
+          //  }
        }
      });
 

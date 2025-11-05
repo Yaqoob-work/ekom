@@ -3296,16 +3296,17 @@ class SportsCategoriesService {
   static Future<List<SportsCategoryModel>> _fetchFreshSportsCategories(
       SharedPreferences prefs) async {
     try {
-      String authKey = prefs.getString(_cacheKeyAuthKey) ?? '';
+      String authKey = SessionManager.authKey ;
+      var url = Uri.parse(SessionManager.baseUrl + 'getsportCategories');
 
-      final response = await https.get(
-        Uri.parse(
-            'https://dashboard.cpplayers.com/public/api/v2/getsportCategories'),
+      final response = await https.get(url,
+        // Uri.parse(
+        //     'https://dashboard.cpplayers.com/public/api/v2/getsportCategories'),
         headers: {
           'auth-key': authKey,
           'Content-Type': 'application/json',
           'Accept': 'application/json',
-          'domain': 'coretechinfo.com',
+          'domain': SessionManager.savedDomain,
         },
       ).timeout(
         const Duration(seconds: 30),

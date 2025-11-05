@@ -3224,6 +3224,13 @@
 //   }
 // }
 
+
+
+
+
+
+
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -3272,6 +3279,17 @@ class SessionManager {
   static String _logoUrl = '';
   static String _savedDomain = '';
   static int? _userId; // ✅ 1. User ID ke liye naya variable
+
+  static String get baseUrl {
+    if (_savedDomain.isNotEmpty) {
+      // ✅ 1. Agar domain hai, toh usse URL banakar return karein
+      return 'https://$_savedDomain/api/v3/';
+    } else {
+      // ✅ 2. Agar domain nahi hai (jo login ke baad nahi hona chahiye),
+      //    toh ek error throw karein taaki aapko galti pata chal sake.
+      throw StateError('FATAL: baseUrl was requested but no domain is saved in SessionManager.');
+    }
+  }
 
   // --- Feature flags (No changes here) ---
   static bool _showMovies = false;
@@ -3346,37 +3364,43 @@ class SessionManager {
     }
   }
 
-  static Future<void> saveSession(Map<String, dynamic> apiResponse) async {
+
+// 1. Add 'String loginDomain' as a parameter
+  static Future<void> saveSession(
+      Map<String, dynamic> apiResponse, String loginDomain) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     _authKey = apiResponse['result_auth_key'] ?? '';
     _imageBaseUrl = apiResponse['imageBaseUrl'] ?? '';
     _userData = apiResponse['data'] as Map<String, dynamic>?;
 
-    // ✅ 4. API response se 'id' nikalein aur save karein
     if (_userData != null && _userData!['id'] != null) {
       _userId = _userData!['id'];
       await prefs.setInt('user_id', _userId!);
     }
 
-    if (_userData != null && _userData!['domain'] != null) {
-      _savedDomain = _userData!['domain'];
-      await prefs.setString('saved_domain', _savedDomain);
+    // --- ⬇️ MODIFIED SECTION ⬇️ ---
+
+    // 2. Nayi logic: Pehle API se domain lene ki koshish karein
+    String domainFromApi = '';
+    if (_userData != null && _userData!['domain'] != null && _userData!['domain'].isNotEmpty) {
+      domainFromApi = _userData!['domain'];
     }
+
+    // 3. Agar API se domain NAHI mila, toh 'loginDomain' (jo user ne type kiya) use karein
+    _savedDomain = domainFromApi.isNotEmpty ? domainFromApi : loginDomain;
+
+    // 4. Final domain ko save karein
+    await prefs.setString('saved_domain', _savedDomain);
+    
+    // --- ⬆️ MODIFIED SECTION ⬆️ ---
 
     if (_userData != null && _userData!['domain_content'] != null) {
       final domainContent = _userData!['domain_content'];
       _logoUrl = domainContent['logo'] ?? '';
       _showMovies = (domainContent['movies'] ?? 0) == 1;
       _showWebseries = (domainContent['webseries'] ?? 0) == 1;
-      _showTvShow = (domainContent['tvshow'] ?? 0) == 1;
-      _showTvShowPak = (domainContent['tvshow_pak'] ?? 0) == 1;
-      _showKidsShow = (domainContent['kids_show'] ?? 0) == 1;
-      _showReligious = (domainContent['religious'] ?? 0) == 1;
-      _showSports = (domainContent['sports'] ?? 0) == 1;
-      _showStageShows = (domainContent['stage_shows'] ?? 0) == 1;
-      _showLaughterShows = (domainContent['laughter_shows'] ?? 0) == 1;
-      _showContentNetwork = (domainContent['content_network'] ?? 0) == 1;
+      // ... (baaki ka code same) ...
       _showSearch = (domainContent['search'] ?? 0) == 1;
     }
 
@@ -3401,19 +3425,93 @@ class SessionManager {
     await prefs.setBool('show_search', _showSearch);
   }
 
+  // static Future<void> saveSession(Map<String, dynamic> apiResponse) async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+
+  //   _authKey = apiResponse['result_auth_key'] ?? '';
+  //   _imageBaseUrl = apiResponse['imageBaseUrl'] ?? '';
+  //   _userData = apiResponse['data'] as Map<String, dynamic>?;
+
+  //   // ✅ 4. API response se 'id' nikalein aur save karein
+  //   if (_userData != null && _userData!['id'] != null) {
+  //     _userId = _userData!['id'];
+  //     await prefs.setInt('user_id', _userId!);
+  //   }
+
+  //   if (_userData != null && _userData!['domain'] != null) {
+  //     _savedDomain = _userData!['domain'];
+  //     await prefs.setString('saved_domain', _savedDomain);
+  //   }
+
+  //   if (_userData != null && _userData!['domain_content'] != null) {
+  //     final domainContent = _userData!['domain_content'];
+  //     _logoUrl = domainContent['logo'] ?? '';
+  //     _showMovies = (domainContent['movies'] ?? 0) == 1;
+  //     _showWebseries = (domainContent['webseries'] ?? 0) == 1;
+  //     _showTvShow = (domainContent['tvshow'] ?? 0) == 1;
+  //     _showTvShowPak = (domainContent['tvshow_pak'] ?? 0) == 1;
+  //     _showKidsShow = (domainContent['kids_show'] ?? 0) == 1;
+  //     _showReligious = (domainContent['religious'] ?? 0) == 1;
+  //     _showSports = (domainContent['sports'] ?? 0) == 1;
+  //     _showStageShows = (domainContent['stage_shows'] ?? 0) == 1;
+  //     _showLaughterShows = (domainContent['laughter_shows'] ?? 0) == 1;
+  //     _showContentNetwork = (domainContent['content_network'] ?? 0) == 1;
+  //     _showSearch = (domainContent['search'] ?? 0) == 1;
+  //   }
+
+  //   await prefs.setString('result_auth_key', _authKey);
+  //   await prefs.setString('image_base_url', _imageBaseUrl);
+  //   await prefs.setString('logo_url', _logoUrl);
+  //   if (_userData != null) {
+  //     await prefs.setString('user_data', jsonEncode(_userData));
+  //   }
+  //   await prefs.setBool('is_logged_in', true);
+
+  //   await prefs.setBool('show_movies', _showMovies);
+  //   await prefs.setBool('show_webseries', _showWebseries);
+  //   await prefs.setBool('show_tvshow', _showTvShow);
+  //   await prefs.setBool('show_tvshow_pak', _showTvShowPak);
+  //   await prefs.setBool('show_kids_show', _showKidsShow);
+  //   await prefs.setBool('show_religious', _showReligious);
+  //   await prefs.setBool('show_sports', _showSports);
+  //   await prefs.setBool('show_stage_shows', _showStageShows);
+  //   await prefs.setBool('show_laughter_shows', _showLaughterShows);
+  //   await prefs.setBool('show_content_network', _showContentNetwork);
+  //   await prefs.setBool('show_search', _showSearch);
+  // }
+
+  // static Future<void> clearSession() async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+
+  //   await prefs.remove('result_auth_key');
+  //   await prefs.remove('user_data');
+  //   await prefs.remove('is_logged_in');
+  //   await prefs.remove('user_id'); // ✅ 5. Logout par ID ko remove karein
+
+  //   // Variables reset karein
+  //   _authKey = '';
+  //   _userData = null;
+  //   _logoUrl = '';
+  //   _userId = null; // ✅ 6. Variable ko bhi reset karein
+  // }
+
+
+
   static Future<void> clearSession() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     await prefs.remove('result_auth_key');
     await prefs.remove('user_data');
     await prefs.remove('is_logged_in');
-    await prefs.remove('user_id'); // ✅ 5. Logout par ID ko remove karein
+    await prefs.remove('user_id');
+    await prefs.remove('saved_domain'); // <-- 1. ADD THIS LINE
 
     // Variables reset karein
     _authKey = '';
     _userData = null;
     _logoUrl = '';
-    _userId = null; // ✅ 6. Variable ko bhi reset karein
+    _userId = null;
+    _savedDomain = ''; // <-- 2. ADD THIS LINE
   }
 }
 
@@ -3481,7 +3579,6 @@ void main() async {
 
 // Global variables
 // String baseUrl = 'https://dashboard.cpplayers.com/public/api/';
-var baseUrl;
 var highlightColor;
 var cardColor;
 var hintColor;
@@ -3505,7 +3602,6 @@ String streamImage = 'assets/streamstarting.gif';
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    baseUrl = 'https://dashboard.cpplayers.com/api/v3/';
     screenhgt = MediaQuery.of(context).size.height;
     screenwdt = MediaQuery.of(context).size.width;
     bannerwdt = screenwdt * 0.13;
@@ -3716,7 +3812,9 @@ class _LoginScreenState extends State<LoginScreen>
         final data = jsonDecode(response.body);
 
         if (data['status'] == true) {
-          await SessionManager.saveSession(data);
+          // await SessionManager.saveSession(data);
+          await SessionManager.saveSession(
+              data, _domainController.text.trim());
 
           SharedPreferences prefs = await SharedPreferences.getInstance();
           await prefs.setString('user_pin', _pinController.text.trim());

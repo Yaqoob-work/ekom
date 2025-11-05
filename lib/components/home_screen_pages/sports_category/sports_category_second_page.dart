@@ -1,8 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:http/http.dart' as http;
-import 'package:mobi_tv_entertainment/components/home_screen_pages/sports_category/tv_show_final_details_page.dart';
+import 'package:http/http.dart' as https;
+import 'package:mobi_tv_entertainment/components/home_screen_pages/sports_category/sports_final_details_page.dart';
+import 'package:mobi_tv_entertainment/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:math' as math;
 
@@ -241,18 +242,17 @@ class _SportsCategorySecondPageState extends State<SportsCategorySecondPage>
         errorMessage = null;
       });
 
-      final prefs = await SharedPreferences.getInstance();
-      String authKey = prefs.getString('result_auth_key') ??
-          'YOUR_result_auth_key'; // Replace with your auth key
+      String authKey = SessionManager.authKey ;
+      var url = Uri.parse(SessionManager.baseUrl + 'getsportTournament/${widget.tvChannelId}');
 
-      final response = await http.get(
-        Uri.parse(
-            'https://dashboard.cpplayers.com/public/api/v2/getsportTournament/${widget.tvChannelId}'),
+      final response = await https.get(url,
+        // Uri.parse(
+        //     'https://dashboard.cpplayers.com/public/api/v2/getsportTournament/${widget.tvChannelId}'),
         headers: {
           'auth-key': authKey,
           'Content-Type': 'application/json',
           'Accept': 'application/json',
-          'domain': 'coretechinfo.com',
+          'domain': SessionManager.savedDomain,
         },
       );
 
@@ -300,14 +300,13 @@ class _SportsCategorySecondPageState extends State<SportsCategorySecondPage>
     setState(() => isBackgroundRefreshing = true);
 
     try {
-      final prefs = await SharedPreferences.getInstance();
-      String authKey = prefs.getString('result_auth_key') ??
-          'YOUR_result_auth_key'; // Replace
+      String authKey = SessionManager.authKey ;
+      var url = Uri.parse(SessionManager.baseUrl + 'getsportTournament/${widget.tvChannelId}');
 
-      final response = await http.get(
-        Uri.parse(
-            'https://dashboard.cpplayers.com/public/api/v2/getsportTournament/${widget.tvChannelId}'),
-        headers: {'auth-key': authKey, 'domain': 'coretechinfo.com'},
+      final response = await https.get(url,
+        // Uri.parse(
+        //     'https://dashboard.cpplayers.com/public/api/v2/getsportTournament/${widget.tvChannelId}'),
+        headers: {'auth-key': authKey, 'domain': SessionManager.savedDomain},
       );
 
       if (!mounted) return;

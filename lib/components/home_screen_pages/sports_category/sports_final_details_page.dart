@@ -778,21 +778,18 @@ class _TournamentFinalDetailsPageState extends State<TournamentFinalDetailsPage>
 
   // Direct API call for seasons
   Future<List<TournamentSeasonModel>?> _fetchSeasonsFromAPIDirectly() async {
-    final prefs = await SharedPreferences.getInstance();
-    final authKey = prefs.getString('result_auth_key') ?? _authKey;
-
-    print('🔍 Fetching seasons for tournament ID: ${widget.id}');
-    print('🔍 Using auth key: ${authKey.isNotEmpty ? "Present" : "Missing"}');
+      String authKey = SessionManager.authKey ;
+      var url = Uri.parse(SessionManager.baseUrl + 'getTouranamentSeasons/${widget.id}');
 
     try {
-      final response = await https.get(
-        Uri.parse(
-            'https://dashboard.cpplayers.com/public/api/v2/getTouranamentSeasons/${widget.id}'),
+      final response = await https.get(url,
+        // Uri.parse(
+        //     'https://dashboard.cpplayers.com/public/api/v2/getTouranamentSeasons/${widget.id}'),
         headers: {
           'auth-key': authKey,
           'Accept': 'application/json',
           'Content-Type': 'application/json',
-          'domain': 'acomtv.coretechinfo.com'
+          'domain': SessionManager.savedDomain,
         },
       ).timeout(const Duration(seconds: 15));
 
@@ -967,21 +964,18 @@ class _TournamentFinalDetailsPageState extends State<TournamentFinalDetailsPage>
   // Direct API call for matches
   Future<List<TournamentMatchModel>?> _fetchMatchesFromAPIDirectly(
       int seasonId) async {
-    final prefs = await SharedPreferences.getInstance();
-    final authKey = prefs.getString('result_auth_key') ?? _authKey;
-
-    print('🔍 Fetching matches for season ID: $seasonId');
-    print('🔍 Using auth key: ${authKey.isNotEmpty ? "Present" : "Missing"}');
+      String authKey = SessionManager.authKey ;
+      var url = Uri.parse(SessionManager.baseUrl + 'getTouranamentSeasonsEvents/$seasonId');
 
     try {
-      final response = await https.get(
-        Uri.parse(
-            'https://dashboard.cpplayers.com/public/api/v2/getTouranamentSeasonsEvents/$seasonId'),
+      final response = await https.get(url,
+        // Uri.parse(
+        //     'https://dashboard.cpplayers.com/public/api/v2/getTouranamentSeasonsEvents/$seasonId'),
         headers: {
           'auth-key': authKey,
           'Accept': 'application/json',
           'Content-Type': 'application/json',
-          'domain': 'coretechinfo.com'
+          'domain': SessionManager.savedDomain,
         },
       ).timeout(const Duration(seconds: 15));
 

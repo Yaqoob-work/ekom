@@ -577,17 +577,17 @@ class _ReligiousChannelDetailsPageState
 
   // Direct API call for shows
   Future<List<ReligiousShowModel>?> _fetchShowsFromAPIDirectly() async {
-    final prefs = await SharedPreferences.getInstance();
-    final authKey = prefs.getString('result_auth_key') ?? _authKey;
+            String authKey = SessionManager.authKey ;
+      var url = Uri.parse(SessionManager.baseUrl + 'getReligiousShows/${widget.id}');
 
-    final response = await https.get(
-      Uri.parse(
-          'https://dashboard.cpplayers.com/public/api/v2/getReligiousShows/${widget.id}'),
+    final response = await https.get(url,
+      // Uri.parse(
+      //     'https://dashboard.cpplayers.com/public/api/v2/getReligiousShows/${widget.id}'),
       headers: {
         'auth-key': authKey,
         'Accept': 'application/json',
         'Content-Type': 'application/json',
-        'domain': 'coretechinfo.com',
+        'domain': SessionManager.savedDomain,
       },
     ).timeout(const Duration(seconds: 15));
 
@@ -679,17 +679,17 @@ class _ReligiousChannelDetailsPageState
   // Direct API call for episodes
   Future<List<ReligiousEpisodeModel>?> _fetchEpisodesFromAPIDirectly(
       int showId) async {
-    final prefs = await SharedPreferences.getInstance();
-    final authKey = prefs.getString('result_auth_key') ?? _authKey;
+            String authKey = SessionManager.authKey ;
+      var url = Uri.parse(SessionManager.baseUrl + 'getReligiousShowsEpisodes/$showId');
 
-    final response = await https.get(
-      Uri.parse(
-          'https://dashboard.cpplayers.com/public/api/v2/getReligiousShowsEpisodes/$showId'),
+    final response = await https.get(url,
+      // Uri.parse(
+      //     'https://dashboard.cpplayers.com/public/api/v2/getReligiousShowsEpisodes/$showId'),
       headers: {
         'auth-key': authKey,
         'Accept': 'application/json',
         'Content-Type': 'application/json',
-        'domain': 'coretechinfo.com',
+        'domain': SessionManager.savedDomain,
       },
     ).timeout(const Duration(seconds: 15));
 

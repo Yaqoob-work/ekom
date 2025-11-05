@@ -574,17 +574,17 @@ class _TvShowPakFinalDetailsPageState extends State<TvShowPakFinalDetailsPage>
 
   // Direct API call for seasons
   Future<List<ShowSeasonModel>?> _fetchSeasonsFromAPIDirectly() async {
-    final prefs = await SharedPreferences.getInstance();
-    final authKey = prefs.getString('result_auth_key') ?? _authKey;
+            String authKey = SessionManager.authKey ;
+      var url = Uri.parse(SessionManager.baseUrl + 'getShowSeasonsPak/${widget.id}');
 
-    final response = await https.get(
-      Uri.parse(
-          'https://dashboard.cpplayers.com/api/v2/getShowSeasonsPak/${widget.id}'),
+    final response = await https.get(url,
+      // Uri.parse(
+      //     'https://dashboard.cpplayers.com/api/v2/getShowSeasonsPak/${widget.id}'),
       headers: {
         'auth-key': authKey,
         'Accept': 'application/json',
         'Content-Type': 'application/json',
-        'domain': 'coretechinfo.com'
+        'domain': SessionManager.savedDomain,
       },
     ).timeout(const Duration(seconds: 15));
 
@@ -704,17 +704,17 @@ class _TvShowPakFinalDetailsPageState extends State<TvShowPakFinalDetailsPage>
   // Direct API call for episodes
   Future<List<ShowEpisodeModel>?> _fetchEpisodesFromAPIDirectly(
       int seasonId) async {
-    final prefs = await SharedPreferences.getInstance();
-    final authKey = prefs.getString('result_auth_key') ?? _authKey;
+            String authKey = SessionManager.authKey ;
+      var url = Uri.parse(SessionManager.baseUrl + 'getShowSeasonsEpisodesPak/$seasonId');
 
-    final response = await https.get(
-      Uri.parse(
-          'https://dashboard.cpplayers.com/api/v2/getShowSeasonsEpisodesPak/$seasonId'),
+    final response = await https.get(url,
+      // Uri.parse(
+      //     'https://dashboard.cpplayers.com/api/v2/getShowSeasonsEpisodesPak/$seasonId'),
       headers: {
         'auth-key': authKey,
         'Accept': 'application/json',
         'Content-Type': 'application/json',
-        'domain': 'coretechinfo.com'
+        'domain': SessionManager.savedDomain,
       },
     ).timeout(const Duration(seconds: 15));
 

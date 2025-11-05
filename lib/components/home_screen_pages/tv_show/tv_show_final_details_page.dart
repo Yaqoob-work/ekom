@@ -586,17 +586,17 @@ class _TvShowFinalDetailsPageState extends State<TvShowFinalDetailsPage>
 
   // Direct API call for seasons
   Future<List<ShowSeasonModel>?> _fetchSeasonsFromAPIDirectly() async {
-    final prefs = await SharedPreferences.getInstance();
-    final authKey = prefs.getString('result_auth_key') ?? _authKey;
+            String authKey = SessionManager.authKey ;
+      var url = Uri.parse(SessionManager.baseUrl + 'getShowSeasons/${widget.id}');
 
-    final response = await https.get(
-      Uri.parse(
-          'https://dashboard.cpplayers.com/api/v2/getShowSeasons/${widget.id}'),
+    final response = await https.get(url,
+      // Uri.parse(
+          // 'https://dashboard.cpplayers.com/api/v2/getShowSeasons/${widget.id}'),
       headers: {
         'auth-key': authKey,
         'Accept': 'application/json',
         'Content-Type': 'application/json',
-        'domain': 'coretechinfo.com'
+        'domain': SessionManager.savedDomain,
       },
     ).timeout(const Duration(seconds: 15));
 
@@ -716,17 +716,17 @@ class _TvShowFinalDetailsPageState extends State<TvShowFinalDetailsPage>
   // Direct API call for episodes
   Future<List<ShowEpisodeModel>?> _fetchEpisodesFromAPIDirectly(
       int seasonId) async {
-    final prefs = await SharedPreferences.getInstance();
-    final authKey = prefs.getString('result_auth_key') ?? _authKey;
+            String authKey = SessionManager.authKey ;
+      var url = Uri.parse(SessionManager.baseUrl + 'getShowSeasonsEpisodes/$seasonId');
 
-    final response = await https.get(
-      Uri.parse(
-          'https://dashboard.cpplayers.com/api/v2/getShowSeasonsEpisodes/$seasonId'),
+    final response = await https.get(url,
+      // Uri.parse(
+      //     'https://dashboard.cpplayers.com/api/v2/getShowSeasonsEpisodes/$seasonId'),
       headers: {
         'auth-key': authKey,
         'Accept': 'application/json',
         'Content-Type': 'application/json',
-        'domain': 'coretechinfo.com'
+        'domain': SessionManager.savedDomain,
       },
     ).timeout(const Duration(seconds: 15));
 

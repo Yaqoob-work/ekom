@@ -1286,11 +1286,13 @@ Widget _buildLogoItem(FocusNode focusNode) {
                 ),
               ),
             ),
-            errorWidget: (context, url, error) => Icon(
-              Icons.broken_image,
-              color: ProfessionalColors.textSecondary,
-              size: screenhgt * 0.05,
-            ),
+            errorWidget: (context, url, error) => 
+            // Icon(
+            //   Icons.broken_image,
+            //   color: ProfessionalColors.textSecondary,
+            //   size: screenhgt * 0.05,
+            // ),
+            Text('Home'),
           ),
         ),
       ),

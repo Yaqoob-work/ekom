@@ -1396,7 +1396,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // PRODUCTION-READY API FUNCTION
   Future<void> _checkPlanStatus() async {
-    final prefs = await SharedPreferences.getInstance();
+    // final prefs = await SharedPreferences.getInstance();
     final String? authKey = SessionManager.authKey;
 
     if (authKey == null || authKey.isEmpty) {
@@ -1406,14 +1406,19 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     try {
-      final response = await https.get(
-        Uri.parse(
-            'https://dashboard.cpplayers.com/public/api/v2/checkExpiryPlan'),
+      var url = Uri.parse(SessionManager.baseUrl + 'checkExpiryPlan');
+
+      final response = await https.get(url,
+        // Uri.parse(
+          // SessionManager.baseUrl + 'checkExpiryPlan' 
+            // 'https://dashboard.cpplayers.com/public/api/v2/checkExpiryPlan'
+            // ),
         headers: {
           'auth-key': authKey,
           'Content-Type': 'application/json',
           'Accept': 'application/json',
-          'domain': 'coretechinfo.com',
+          // 'domain': 'coretechinfo.com',
+          'domain': SessionManager.savedDomain,
         },
       ).timeout(const Duration(seconds: 20));
 
@@ -1616,7 +1621,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     SizedBox(
                         height: screenhgt * 0.38,
                         key: tvShowsPakKey,
-                        child: const TvShowPak()),
+                        child: const TvShowsPak()),
                 ],
               ),
             ),

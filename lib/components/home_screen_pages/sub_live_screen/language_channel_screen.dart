@@ -1076,16 +1076,19 @@ class _LanguageChannelsScreenState extends State<LanguageChannelsScreen> {
     if (mounted) setState(() => _loadingState = LoadingState.loading);
     try {
       final prefs = await SharedPreferences.getInstance();
-      final authKey = prefs.getString('result_auth_key') ?? '';
+            String authKey = SessionManager.authKey ;
+      var url = Uri.parse(SessionManager.baseUrl + 'getAllLanguages');
 
       // --- NEW: Fetch slider data ---
       try {
-        final languagesResponse = await https.get(
-          Uri.parse(
-              'https://dashboard.cpplayers.com/public/api/v2/getAllLanguages'),
+        final languagesResponse = await https.get(url,
+          // Uri.parse(
+              
+          //     'https://dashboard.cpplayers.com/public/api/v2/getAllLanguages'
+          //     ),
           headers: {
             'auth-key': authKey,
-            'domain': 'coretechinfo.com',
+            'domain': SessionManager.savedDomain,
           },
         );
 
@@ -1123,10 +1126,14 @@ class _LanguageChannelsScreenState extends State<LanguageChannelsScreen> {
       // --- End of new slider fetch logic ---
 
       final response = await https.post(
-        Uri.parse('https://dashboard.cpplayers.com/api/v2/getAllLiveTV'),
+        Uri.parse(
+          SessionManager.baseUrl + 'getAllLiveTV'
+          // 'https://dashboard.cpplayers.com/api/v2/getAllLiveTV'
+          ),
         headers: {
           'auth-key': authKey,
-          'domain': 'coretechinfo.com',
+          // 'domain': 'coretechinfo.com',
+          'domain': SessionManager.savedDomain ,
           'Content-Type': 'application/json'
         },
         body: json.encode({"genere": "", "languageId": widget.languageId}),

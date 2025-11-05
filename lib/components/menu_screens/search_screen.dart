@@ -1126,9 +1126,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:math' as math;
 
 import '../home_screen_pages/religious_channel/religious_channel_details_page.dart';
-import '../home_screen_pages/sports_category/tv_show_final_details_page.dart';
+import '../home_screen_pages/sports_category/sports_final_details_page.dart';
 import '../home_screen_pages/tv_show/tv_show_final_details_page.dart';
-import '../home_screen_pages/tv_show_pak/tv_show_final_details_page.dart';
+import '../home_screen_pages/tv_show_pak/tv_show_pak_final_details_page.dart';
 import '../../main.dart'; // Assuming bannerhgt, screenwdt, etc. are defined here
 import '../provider/focus_provider.dart'; // Ye provider bhi zaroori hai
 import 'package:flutter_spinkit/flutter_spinkit.dart'; // Loading indicator ke liye
@@ -1172,11 +1172,11 @@ final List<Color> _focusColors = [
 
 Future<List<NewsItemModel>> fetchFromApi(String searchTerm) async {
   try {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? authKey = prefs.getString('result_auth_key');
+            String authKey = SessionManager.authKey ;
+      var url = Uri.parse(SessionManager.baseUrl + 'getSearchCategoryList');
 
-    final url = Uri.parse(
-        'https://dashboard.cpplayers.com/api/v2/getSearchCategoryList');
+    // final url = Uri.parse(
+    //     'https://dashboard.cpplayers.com/api/v2/getSearchCategoryList');
     final body = json.encode({'keywords': searchTerm});
 
     final response = await https.post(
@@ -1185,7 +1185,7 @@ Future<List<NewsItemModel>> fetchFromApi(String searchTerm) async {
         'auth-key': authKey ?? '',
         'Accept': 'application/json',
         'Content-Type': 'application/json',
-        'domain': 'coretechinfo.com'
+        'domain': SessionManager.savedDomain
       },
       body: body,
     );

@@ -2210,15 +2210,16 @@ class MovieService {
   static Future<List<Movie>> _fetchFreshMoviesList(
       SharedPreferences prefs) async {
     try {
-      String authKey = prefs.getString(_cacheKeyAuthKey) ?? '';
+            String authKey = SessionManager.authKey ;
+      var url = Uri.parse(SessionManager.baseUrl + 'getAllMovies?records=50');
 
-      final response = await https.get(
-        Uri.parse(
-            'https://dashboard.cpplayers.com/api/v2/getAllMovies?records=50'),
+      final response = await https.get(url,
+        // Uri.parse(
+        //     'https://dashboard.cpplayers.com/api/v2/getAllMovies?records=50'),
         headers: {
           'auth-key': authKey,
           'Content-Type': 'application/json',
-          'domain': 'coretechinfo.com',
+          'domain': SessionManager.savedDomain ,
         },
       );
 

@@ -1641,15 +1641,16 @@ class HorizontalVodService {
   static Future<String> fetchAndCacheRawData() async {
     print('🌐 Fetching fresh VOD data from API...');
     final prefs = await SharedPreferences.getInstance();
-    final authKey = prefs.getString('result_auth_key') ?? '';
+            String authKey = SessionManager.authKey ;
+      var url = Uri.parse(SessionManager.baseUrl + 'getNetworks');
 
-    final response = await https.post(
-      Uri.parse('https://dashboard.cpplayers.com/api/v2/getNetworks'),
+    final response = await https.post(url,
+      // Uri.parse('https://dashboard.cpplayers.com/api/v2/getNetworks'),
       headers: {
         'auth-key': authKey,
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'domain': 'coretechinfo.com'
+        'domain': SessionManager.savedDomain
       },
       body: json.encode({"network_id" :"" ,"data_for" : ""}),
     ).timeout(const Duration(seconds: 30));

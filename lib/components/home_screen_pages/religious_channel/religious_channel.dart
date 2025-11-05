@@ -2909,7 +2909,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:http/http.dart' as http;
+import 'package:http/http.dart' as https;
 import 'package:mobi_tv_entertainment/components/home_screen_pages/religious_channel/religious_channel_details_page.dart';
 // import 'package:mobi_tv_entertainment/components/home_screen_pages/webseries_screen/webseries_details_page.dart'; // Iski zaroorat nahi
 import 'package:mobi_tv_entertainment/main.dart';
@@ -3116,16 +3116,17 @@ class ReligiousChannelsService {
   static Future<List<ReligiousChannelModel>> _fetchFreshChannels(
       SharedPreferences prefs) async {
     try {
-      String authKey = prefs.getString(_cacheKeyAuthKey) ?? '';
+            String authKey = SessionManager.authKey ;
+      var url = Uri.parse(SessionManager.baseUrl + 'getReligiousChannels');
 
-      final response = await http.get(
-        Uri.parse(
-            'https://dashboard.cpplayers.com/public/api/v2/getReligiousChannels'),
+      final response = await https.get(url,
+        // Uri.parse(
+        //     'https://dashboard.cpplayers.com/public/api/v2/getReligiousChannels'),
         headers: {
           'auth-key': authKey,
           'Content-Type': 'application/json',
           'Accept': 'application/json',
-          'domain': 'coretechinfo.com',
+          'domain': SessionManager.savedDomain,
         },
       ).timeout(
             const Duration(seconds: 30), // Added timeout

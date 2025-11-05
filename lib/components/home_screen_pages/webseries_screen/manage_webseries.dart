@@ -15,7 +15,7 @@
 
 // /*
 //   Ye code istemal karne se pehle, ye dependencies aapke pubspec.yaml file mein honi chahiye:
- 
+
 //   dependencies:
 //     flutter:
 //       sdk: flutter
@@ -1937,11 +1937,6 @@
 //   }
 // }
 
-
-
-
-
-
 // import 'package:cached_network_image/cached_network_image.dart';
 // import 'package:flutter/material.dart';
 // import 'package:flutter/services.dart';
@@ -1957,7 +1952,6 @@
 // import 'dart:convert';
 // import 'dart:math' as math;
 // import 'dart:ui';
-
 
 // // ✅ Professional Color Palette (COMMON)
 // class ProfessionalColors {
@@ -2179,9 +2173,9 @@
 
 //       if (response.statusCode == 200) {
 //         final List<dynamic> jsonData = json.decode(response.body);
-        
-//         final List<dynamic> processedData = isLimited 
-//             ? jsonData.take(_limitedListSize).toList() 
+
+//         final List<dynamic> processedData = isLimited
+//             ? jsonData.take(_limitedListSize).toList()
 //             : jsonData;
 
 //         await _cacheWebSeries(prefs, processedData, isLimited: isLimited);
@@ -2316,8 +2310,6 @@
 //   //   }
 //   // }
 
-
-
 //   // Change the return type to Future<void> and add the 'async' keyword
 // Future<void> _scrollToPosition(int index) async {
 //   if (!mounted || !_scrollController.hasClients) return;
@@ -2326,7 +2318,7 @@
 //     // Calculate the scroll position to center the item if possible
 //     final screenWidth = MediaQuery.of(context).size.width;
 //     double targetPosition = (index * bannerwdth) ;
-    
+
 //     // Ensure the scroll position is within valid bounds
 //     targetPosition = math.max(0, targetPosition);
 //     targetPosition = math.min(_scrollController.position.maxScrollExtent, targetPosition);
@@ -2341,8 +2333,6 @@
 //     print('Error scrolling in webseries: $e');
 //   }
 // }
-
-
 
 // // Add this new method to _ ManageWebSeriesState
 // Future<void> _handleFocusRequestFromAbove() async {
@@ -2377,7 +2367,6 @@
 //   //   });
 //   // }
 
-
 // // In _ ManageWebSeriesState
 // void _setupFocusProvider() {
 //   WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -2398,14 +2387,12 @@
 //           _scrollToPosition(0);
 //         }
 //       });
-      
+
 //       // ✅ Pass the new handler function to the provider
 //       focusProvider.setFirstWebseriesFocusNode(_handleFocusRequestFromAbove);
 //     }
 //   });
 // }
-
-  
 
 //   Future<void> fetchWebSeriesWithCache() async {
 //     if (!mounted) return;
@@ -2852,8 +2839,6 @@
 //     super.dispose();
 //   }
 
-
-
 //   // Place this inside _ProfessionalWebSeriesCardState
 // @override
 // Widget build(BuildContext context) {
@@ -2960,7 +2945,6 @@
 //   );
 // }
 
-
 // Widget _buildHoverOverlay(Color dominantColor) { // ✅ Accept the color
 //   return Positioned.fill(
 //     child: Container(
@@ -3011,7 +2995,7 @@
 
 // //   @override
 // //   Widget build(BuildContext context) {
-    
+
 // //     return AnimatedBuilder(
 // //       animation: _scaleAnimation,
 // //       builder: (context, child) {
@@ -3153,9 +3137,6 @@
 // //     );
 // //   }
 // }
-
-
-
 
 // class ProfessionalWebSeriesViewAllButton extends StatefulWidget {
 //   final FocusNode focusNode;
@@ -3324,12 +3305,6 @@
 //   );
 // }
 // }
-
-
-
-
-
-
 
 // import 'dart:async';
 // import 'package:cached_network_image/cached_network_image.dart';
@@ -4015,7 +3990,7 @@
 //               key == LogicalKeyboardKey.arrowLeft) {
 
 //             if (_isNavigationLocked) return KeyEventResult.handled;
-          
+
 //             _isNavigationLocked = true;
 //             _navigationLockTimer = Timer(const Duration(milliseconds: 600), () {
 //               _isNavigationLocked = false;
@@ -4071,7 +4046,6 @@
 //     );
 //   }
 // }
-
 
 // // =========================================================================
 // // SUPPORTING WIDGETS for Horizontal List
@@ -4398,9 +4372,1249 @@
 //   }
 // }
 
+// import 'dart:async';
+// import 'package:cached_network_image/cached_network_image.dart';
+// import 'package:flutter/material.dart';
+// import 'package:flutter/services.dart';
+// import 'package:http/http.dart' as https;
+// import 'package:mobi_tv_entertainment/components/home_screen_pages/webseries_screen/professional_web_series_grid_page.dart';
+// import 'package:mobi_tv_entertainment/components/home_screen_pages/webseries_screen/webseries_details_page.dart';
+// import 'package:mobi_tv_entertainment/main.dart';
+// import 'package:mobi_tv_entertainment/components/provider/color_provider.dart';
+// import 'package:mobi_tv_entertainment/components/provider/focus_provider.dart';
+// import 'package:mobi_tv_entertainment/components/services/history_service.dart';
+// import 'package:provider/provider.dart';
+// import 'package:shared_preferences/shared_preferences.dart';
+// import 'dart:convert';
+// import 'dart:math' as math;
+// import 'dart:ui';
 
+// // ✅ Professional Color Palette (COMMON)
+// class ProfessionalColors {
+//   static const primaryDark = Color(0xFF0A0E1A);
+//   static const surfaceDark = Color(0xFF1A1D29);
+//   static const cardDark = Color(0xFF2A2D3A);
+//   static const accentBlue = Color(0xFF3B82F6);
+//   static const accentPurple = Color(0xFF8B5CF6);
+//   static const accentGreen = Color(0xFF10B981);
+//   static const accentRed = Color(0xFFEF4444);
+//   static const accentOrange = Color(0xFFF59E0B);
+//   static const accentPink = Color(0xFFEC4899);
+//   static const textPrimary = Color(0xFFFFFFFF);
+//   static const textSecondary = Color(0xFFB3B3B3);
+//   static const focusGlow = Color(0xFF60A5FA);
 
+//   static List<Color> gradientColors = [
+//     accentBlue,
+//     accentPurple,
+//     accentGreen,
+//     accentRed,
+//     accentOrange,
+//     accentPink,
+//   ];
+// }
 
+// // ✅ Professional Animation Durations (COMMON)
+// class AnimationTiming {
+//   static const Duration ultraFast = Duration(milliseconds: 150);
+//   static const Duration fast = Duration(milliseconds: 250);
+//   static const Duration medium = Duration(milliseconds: 400);
+//   static const Duration slow = Duration(milliseconds: 600);
+//   static const Duration focus = Duration(milliseconds: 300);
+//   static const Duration scroll = Duration(milliseconds: 800);
+// }
+
+// // ✅ NetworkModel (COMMON)
+// class NetworkModel {
+//   final int id;
+//   final String name;
+//   final String? logo;
+
+//   NetworkModel({
+//     required this.id,
+//     required this.name,
+//     this.logo,
+//   });
+
+//   factory NetworkModel.fromJson(Map<String, dynamic> json) {
+//     return NetworkModel(
+//       id: json['id'] ?? 0,
+//       name: json['name'] ?? '',
+//       logo: json['logo'],
+//     );
+//   }
+// }
+
+// // ✅ Bulletproof WebSeriesModel (COMMON)
+// class WebSeriesModel {
+//   final int id;
+//   final String name;
+//   final String updatedAt;
+//   final String? description;
+//   final String? poster;
+//   final String? banner;
+//   final String? releaseDate;
+//   final String? genres;
+//   final int seriesOrder;
+//   final List<NetworkModel> networks;
+
+//   WebSeriesModel({
+//     required this.id,
+//     required this.name,
+//     required this.updatedAt,
+//     this.description,
+//     this.poster,
+//     this.banner,
+//     this.releaseDate,
+//     this.genres,
+//     required this.seriesOrder,
+//     this.networks = const [],
+//   });
+
+//   factory WebSeriesModel.fromJson(Map<String, dynamic> json) {
+//     List<NetworkModel> parsedNetworks = [];
+//     final dynamic networksJson = json['networks'];
+//     if (networksJson != null && networksJson is List) {
+//       for (final item in networksJson) {
+//         if (item != null && item is Map<String, dynamic>) {
+//           parsedNetworks.add(NetworkModel.fromJson(item));
+//         }
+//       }
+//     }
+
+//     return WebSeriesModel(
+//       id: json['id'] ?? 0,
+//       name: json['name'] ?? '',
+//       updatedAt: json['updated_at'] ?? '',
+//       description: json['description'],
+//       poster: json['poster'],
+//       banner: json['banner'],
+//       releaseDate: json['release_date'],
+//       genres: json['genres'],
+//       seriesOrder: json['series_order'] ?? 9999,
+//       networks: parsedNetworks,
+//     );
+//   }
+// }
+
+// // 🚀 Enhanced WebSeries Service (COMMON)
+// class WebSeriesService {
+//   static const String _cacheKeyLimitedWebSeries = 'cached_limited_web_series';
+//   static const String _cacheKeyLimitedTimestamp = 'cached_limited_web_series_timestamp';
+//   static const int _cacheDurationMs = 60 * 60 * 1000;
+//   static const int _limitedListSize = 20;
+
+//   static Future<List<WebSeriesModel>> getLimitedWebSeries(
+//       {bool forceRefresh = false}) async {
+//     try {
+//       final prefs = await SharedPreferences.getInstance();
+//       if (!forceRefresh && await _shouldUseCache(prefs)) {
+//         final cachedWebSeries = await _getCachedWebSeries(prefs);
+//         if (cachedWebSeries.isNotEmpty) {
+//           _loadFreshDataInBackground();
+//           return cachedWebSeries;
+//         }
+//       }
+//       return await _fetchFreshWebSeries(prefs);
+//     } catch (e) {
+//       print('❌ Error in getLimitedWebSeries: $e');
+//       try {
+//         final prefs = await SharedPreferences.getInstance();
+//         final cachedWebSeries = await _getCachedWebSeries(prefs);
+//         if (cachedWebSeries.isNotEmpty) {
+//           return cachedWebSeries;
+//         }
+//       } catch (cacheError) {
+//         print('❌ Limited cache fallback also failed: $cacheError');
+//       }
+//       throw Exception('Failed to load limited web series: $e');
+//     }
+//   }
+
+//   static Future<bool> _shouldUseCache(SharedPreferences prefs) async {
+//     final timestampStr = prefs.getString(_cacheKeyLimitedTimestamp);
+//     if (timestampStr == null) return false;
+//     final cachedTimestamp = int.tryParse(timestampStr);
+//     if (cachedTimestamp == null) return false;
+//     final currentTimestamp = DateTime.now().millisecondsSinceEpoch;
+//     return (currentTimestamp - cachedTimestamp) < _cacheDurationMs;
+//   }
+
+//   // static Future<List<WebSeriesModel>> _getCachedWebSeries(
+//   //     SharedPreferences prefs) async {
+//   //   try {
+//   //     final cachedData = prefs.getString(_cacheKeyLimitedWebSeries);
+//   //     if (cachedData == null || cachedData.isEmpty) return [];
+//   //     final List<dynamic> jsonData = json.decode(cachedData);
+//   //     List<WebSeriesModel> webSeries = jsonData
+//   //         .map((json) => WebSeriesModel.fromJson(json as Map<String, dynamic>))
+//   //         .toList();
+//   //     webSeries.sort((a, b) => a.seriesOrder.compareTo(b.seriesOrder));
+//   //     return webSeries;
+//   //   } catch (e) {
+//   //     print('❌ Error loading cached limited web series: $e');
+//   //     return [];
+//   //   }
+//   // }
+
+//   static Future<List<WebSeriesModel>> _getCachedWebSeries(
+//       SharedPreferences prefs) async {
+//     try {
+//       final cachedData = prefs.getString(_cacheKeyLimitedWebSeries);
+//       if (cachedData == null || cachedData.isEmpty) return [];
+
+//       final List<dynamic> jsonData = json.decode(cachedData);
+
+//       // ✅ ==========================================================
+//       // ✅ CACHED DATA KO BHI FILTER KAREIN
+//       // ✅ ==========================================================
+//       final List<dynamic> filteredData = jsonData.where((item) {
+//         if (item is Map<String, dynamic> && item.containsKey('status')) {
+//           return item['status'] == 1 || item['status'] == '1';
+//         }
+//         return false;
+//       }).toList();
+//       // ✅ ==========================================================
+
+//       // Ab 'filteredData' ka istemaal karein
+//       List<WebSeriesModel> webSeries = filteredData
+//           .map((json) => WebSeriesModel.fromJson(json as Map<String, dynamic>))
+//           .toList();
+
+//       webSeries.sort((a, b) => a.seriesOrder.compareTo(b.seriesOrder));
+//       return webSeries;
+//     } catch (e) {
+//       print('❌ Error loading cached limited web series: $e');
+//       return [];
+//     }
+//   }
+
+//   // static Future<List<WebSeriesModel>> _fetchFreshWebSeries(
+//   //     SharedPreferences prefs) async {
+//   //   try {
+//   //     String authKey = prefs.getString('result_auth_key') ?? '';
+//   //     final response = await https.get(
+//   //       Uri.parse('https://dashboard.cpplayers.com/api/v2/getAllWebSeries?page1&records=11'),
+//   //       headers: {
+//   //         'auth-key': authKey,
+//   //         'Content-Type': 'application/json',
+//   //         'Accept': 'application/json',
+//   //         'domain': 'coretechinfo.com'
+//   //       },
+//   //     );
+
+//   //     if (response.statusCode == 200) {
+//   //       final List<dynamic> jsonData = json.decode(response.body);
+//   //       final List<dynamic> processedData = jsonData.take(_limitedListSize).toList();
+
+//   //       await _cacheWebSeries(prefs, processedData);
+//   //       List<WebSeriesModel> webSeries = processedData
+//   //           .map((json) => WebSeriesModel.fromJson(json as Map<String, dynamic>))
+//   //           .toList();
+//   //       webSeries.sort((a, b) => a.seriesOrder.compareTo(b.seriesOrder));
+//   //       return webSeries;
+//   //     } else {
+//   //       throw Exception('API Error: ${response.statusCode} - ${response.reasonPhrase}');
+//   //     }
+//   //   } catch (e) {
+//   //     print('❌ Error fetching fresh limited web series: $e');
+//   //     rethrow;
+//   //   }
+//   // }
+
+// static Future<List<WebSeriesModel>> _fetchFreshWebSeries(
+//       SharedPreferences prefs) async {
+//     try {
+//       String authKey = SessionManager.authKey;
+//       final response = await https.get(
+//         Uri.parse('https://dashboard.cpplayers.com/api/v2/getAllWebSeries?page1&records=11'),
+//         headers: {
+//           'auth-key': authKey,
+//           'Content-Type': 'application/json',
+//           'Accept': 'application/json',
+//           'domain': 'coretechinfo.com'
+//         },
+//       );
+
+//       if (response.statusCode == 200) {
+//         final List<dynamic> jsonData = json.decode(response.body);
+
+//         // ✅ ==========================================================
+//         // ✅ YAHAN FILTER KAREIN
+//         // ✅ ==========================================================
+//         final List<dynamic> filteredData = jsonData.where((item) {
+//           // Safety checks ki item ek map hai aur usmein status key hai
+//           if (item is Map<String, dynamic> && item.containsKey('status')) {
+//             // API '1' (string) ya 1 (int) bhej sakti hai, dono ko check karein
+//             return item['status'] == 1 || item['status'] == '1';
+//           }
+//           // Agar status nahi hai ya item map nahi hai, to use na dikhayein
+//           return false;
+//         }).toList();
+//         // ✅ ==========================================================
+
+//         // Ab 'filteredData' ka istemaal karein, 'jsonData' ka nahi
+//         final List<dynamic> processedData = filteredData.take(_limitedListSize).toList();
+
+//         await _cacheWebSeries(prefs, processedData); // Sirf filtered data cache hoga
+
+//         List<WebSeriesModel> webSeries = processedData
+//             .map((json) => WebSeriesModel.fromJson(json as Map<String, dynamic>))
+//             .toList();
+
+//         webSeries.sort((a, b) => a.seriesOrder.compareTo(b.seriesOrder));
+//         return webSeries;
+//       } else {
+//         throw Exception('API Error: ${response.statusCode} - ${response.reasonPhrase}');
+//       }
+//     } catch (e) {
+//       print('❌ Error fetching fresh limited web series: $e');
+//       rethrow;
+//     }
+//   }
+
+//   static Future<void> _cacheWebSeries(
+//       SharedPreferences prefs, List<dynamic> webSeriesData) async {
+//     try {
+//       final jsonString = json.encode(webSeriesData);
+//       final currentTimestamp = DateTime.now().millisecondsSinceEpoch.toString();
+//       await Future.wait([
+//         prefs.setString(_cacheKeyLimitedWebSeries, jsonString),
+//         prefs.setString(_cacheKeyLimitedTimestamp, currentTimestamp),
+//       ]);
+//     } catch (e) {
+//       print('❌ Error caching limited web series: $e');
+//     }
+//   }
+
+//   static void _loadFreshDataInBackground() {
+//     Future.delayed(const Duration(milliseconds: 500), () async {
+//       try {
+//         final prefs = await SharedPreferences.getInstance();
+//         await _fetchFreshWebSeries(prefs);
+//       } catch (e) {
+//         print('⚠️ WebSeries background refresh failed: $e');
+//       }
+//     });
+//   }
+// }
+
+// // 🚀 Enhanced ManageWebSeries
+// class ManageWebSeries extends StatefulWidget {
+//   const ManageWebSeries({super.key});
+//   @override
+//   _ManageWebSeriesState createState() => _ManageWebSeriesState();
+// }
+
+// class _ManageWebSeriesState extends State<ManageWebSeries>
+//     with AutomaticKeepAliveClientMixin, TickerProviderStateMixin {
+//   @override
+//   bool get wantKeepAlive => true;
+
+//   List<WebSeriesModel> webSeriesList = [];
+//   bool isLoading = true;
+//   int focusedIndex = -1;
+//   final int maxHorizontalItems = 10;
+
+//   late AnimationController _headerAnimationController;
+//   late AnimationController _listAnimationController;
+//   late Animation<Offset> _headerSlideAnimation;
+//   late Animation<double> _listFadeAnimation;
+
+//   Map<String, FocusNode> webseriesFocusNodes = {};
+//   FocusNode? _viewAllFocusNode;
+//   FocusNode? _firstWebSeriesFocusNode; // Provider mein register karne ke liye
+//   bool _hasReceivedFocusFromMovies = false;
+
+//   late ScrollController _scrollController;
+
+//   bool _isNavigationLocked = false;
+//   Timer? _navigationLockTimer;
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     _scrollController = ScrollController();
+//     _initializeAnimations();
+//     _initializeFocusNodes();
+//     fetchWebSeriesWithCache();
+//   }
+
+//   // ✅ ==========================================================
+//   // ✅ [UPDATED] Sahi dispose logic
+//   // ✅ ==========================================================
+//   @override
+//   void dispose() {
+//     _navigationLockTimer?.cancel();
+//     _headerAnimationController.dispose();
+//     _listAnimationController.dispose();
+
+//     // Sirf un nodes ko dispose karein jo provider mein register NAHI hue
+//     String? firstWebSeriesId;
+//     if (webSeriesList.isNotEmpty) {
+//       firstWebSeriesId = webSeriesList[0].id.toString();
+//     }
+
+//     for (var entry in webseriesFocusNodes.entries) {
+//       // Agar node register nahi hua hai (yaani first item nahi hai), tabhi use yahan dispose karein
+//       if (entry.key != firstWebSeriesId) {
+//         try {
+//           entry.value.removeListener(() {}); // Achi practice hai
+//           entry.value.dispose();
+//         } catch (e) {
+//           // Error ignore karein
+//         }
+//       }
+//     }
+//     // Pehle item ka node provider mein dispose hoga.
+
+//     webseriesFocusNodes.clear();
+//     _viewAllFocusNode?.dispose();
+//     _scrollController.dispose();
+//     super.dispose();
+//   }
+//   // ✅ ==========================================================
+//   // ✅ END OF [UPDATED] dispose logic
+//   // ✅ ==========================================================
+
+//   void _initializeAnimations() {
+//     _headerAnimationController =
+//         AnimationController(duration: AnimationTiming.slow, vsync: this);
+//     _listAnimationController =
+//         AnimationController(duration: AnimationTiming.slow, vsync: this);
+//     _headerSlideAnimation =
+//         Tween<Offset>(begin: const Offset(0, -1), end: Offset.zero).animate(
+//             CurvedAnimation(
+//                 parent: _headerAnimationController,
+//                 curve: Curves.easeOutCubic));
+//     _listFadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+//         CurvedAnimation(
+//             parent: _listAnimationController, curve: Curves.easeInOut));
+//   }
+
+//   void _initializeFocusNodes() {
+//     _viewAllFocusNode = FocusNode();
+//   }
+
+//   Future<void> _scrollToPosition(int index) async {
+//     if (!mounted || !_scrollController.hasClients) return;
+//     try {
+//       double itemWidth = bannerwdt + 12; // Card width + horizontal margin (6+6)
+//       double targetPosition = (index * itemWidth) - 5;
+
+//       targetPosition =
+//           targetPosition.clamp(0.0, _scrollController.position.maxScrollExtent);
+
+//       await _scrollController.animateTo(
+//         targetPosition,
+//         duration: const Duration(milliseconds: 350), // Snappier scroll
+//         curve: Curves.easeOutCubic,
+//       );
+//     } catch (e) {
+//       print('Error scrolling in webseries: $e');
+//     }
+//   }
+
+//   // // Yeh function ab seedha _firstWebSeriesFocusNode ko register karta hai
+//   // void _setupFocusProvider() {
+//   //   WidgetsBinding.instance.addPostFrameCallback((_) {
+//   //     if (mounted && webSeriesList.isNotEmpty) {
+//   //       final focusProvider =
+//   //           Provider.of<FocusProvider>(context, listen: false);
+
+//   //       // Pehle item ka ID aur node check karein
+//   //       final firstWebSeriesId = webSeriesList[0].id.toString();
+//   //       _firstWebSeriesFocusNode = webseriesFocusNodes[firstWebSeriesId];
+
+//   //       if (_firstWebSeriesFocusNode != null) {
+//   //         // Node ko provider mein 'manageWebseries' ID se register karein
+//   //         focusProvider.registerFocusNode('manageWebseries', _firstWebSeriesFocusNode!);
+//   //         print('✅ WebSeries first focus node registered');
+
+//   //         // Listener yahin add karein
+//   //         _firstWebSeriesFocusNode?.addListener(() {
+//   //           if (_firstWebSeriesFocusNode!.hasFocus &&
+//   //               !_hasReceivedFocusFromMovies) {
+//   //             _hasReceivedFocusFromMovies = true;
+//   //             setState(() => focusedIndex = 0);
+//   //             _scrollToPosition(0);
+//   //           }
+//   //         });
+//   //       }
+//   //     }
+//   //   });
+//   // }
+
+//   // Yeh function ab seedha _firstWebSeriesFocusNode ko register karta hai
+//   void _setupFocusProvider() {
+//     WidgetsBinding.instance.addPostFrameCallback((_) {
+//       if (mounted && webSeriesList.isNotEmpty) {
+//         final focusProvider =
+//             Provider.of<FocusProvider>(context, listen: false);
+
+//         // Pehle item ka ID aur node check karein
+//         final firstWebSeriesId = webSeriesList[0].id.toString();
+//         _firstWebSeriesFocusNode = webseriesFocusNodes[firstWebSeriesId];
+
+//         if (_firstWebSeriesFocusNode != null) {
+//           // Node ko provider mein 'manageWebseries' ID se register karein
+//           focusProvider.registerFocusNode('manageWebseries', _firstWebSeriesFocusNode!);
+//           print('✅ WebSeries first focus node registered');
+
+//           // Listener yahin add karein
+//           _firstWebSeriesFocusNode?.addListener(() {
+
+//             // ✅ ==========================================================
+//             // ✅ [FIXED] Listener logic
+//             // ✅ ==========================================================
+//             // Check karein ki widget mounted hai aur node ko focus mila hai
+//             if (mounted && _firstWebSeriesFocusNode!.hasFocus) {
+
+//               // _hasReceivedFocusFromMovies flag ko sirf tab set karein jab
+//               // focus pehli baar row mein aa raha hai.
+//               if (!_hasReceivedFocusFromMovies) {
+//                 _hasReceivedFocusFromMovies = true;
+//               }
+
+//               // State update aur scroll logic ko hamesha run karein
+//               // jab bhi yeh node focus mein aaye.
+//               setState(() => focusedIndex = 0);
+//               _scrollToPosition(0);
+//             }
+//             // ✅ ==========================================================
+//             // ✅ END OF [FIXED] listener logic
+//             // ✅ ==========================================================
+
+//           });
+//         }
+//       }
+//     });
+//   }
+
+//   Future<void> fetchWebSeriesWithCache() async {
+//     if (!mounted) return;
+//     setState(() => isLoading = true);
+//     try {
+//       final fetchedWebSeries = await WebSeriesService.getLimitedWebSeries();
+//       if (mounted) {
+//         setState(() {
+//           webSeriesList = fetchedWebSeries;
+//           isLoading = false;
+//         });
+//         _createFocusNodesForItems(); // Focus nodes banayein
+//         _setupFocusProvider(); // *Uske baad* provider ko setup karein
+//         _headerAnimationController.forward();
+//         _listAnimationController.forward();
+//       }
+//     } catch (e) {
+//       if (mounted) setState(() => isLoading = false);
+//       print('Error fetching Limited WebSeries with cache: $e');
+//     }
+//   }
+
+//   void _createFocusNodesForItems() {
+//     // Purane nodes ko saaf karein (naye dispose logic ke hisaab se)
+//     webseriesFocusNodes.clear();
+
+//     for (int i = 0; i < webSeriesList.length && i < maxHorizontalItems; i++) {
+//       String webSeriesId = webSeriesList[i].id.toString();
+//       webseriesFocusNodes[webSeriesId] = FocusNode(); // Naya node banayein
+
+//       // Pehle node ke alawa baaki nodes ke liye listener yahin add karein
+//       // (Pehle node ka listener _setupFocusProvider mein add hoga)
+//       if (i > 0) {
+//         webseriesFocusNodes[webSeriesId]!.addListener(() {
+//           if (mounted && webseriesFocusNodes[webSeriesId]!.hasFocus) {
+//             setState(() {
+//               focusedIndex = i;
+//               _hasReceivedFocusFromMovies = true;
+//             });
+//             _scrollToPosition(i);
+//           }
+//         });
+//       }
+//     }
+//   }
+
+//   void _navigateToWebSeriesDetails(WebSeriesModel webSeries) async {
+//     try {
+//       int? currentUserId = SessionManager.userId;
+//       final int? parsedId = webSeries.id;
+
+//       await HistoryService.updateUserHistory(
+//         userId: currentUserId!,
+//         contentType: 2,
+//         eventId: parsedId!,
+//         eventTitle: webSeries.name,
+//         url: '',
+//         categoryId: 0,
+//       );
+//     } catch (e) {
+//       print("History update failed: $e");
+//     }
+
+//     Navigator.push(
+//       context,
+//       MaterialPageRoute(
+//         builder: (context) => WebSeriesDetailsPage(
+//           id: webSeries.id,
+//           banner: webSeries.banner ?? webSeries.poster ?? '',
+//           poster: webSeries.poster ?? webSeries.banner ?? '',
+//           logo: webSeries.poster ?? webSeries.banner ?? '',
+//           name: webSeries.name,
+//           updatedAt: webSeries.updatedAt,
+//         ),
+//       ),
+//     ).then((_) {
+//       Future.delayed(const Duration(milliseconds: 300), () {
+//         if (mounted) {
+//           int currentIndex =
+//               webSeriesList.indexWhere((ws) => ws.id == webSeries.id);
+//           if (currentIndex != -1 && currentIndex < maxHorizontalItems) {
+//             String webSeriesId = webSeries.id.toString();
+//             if (webseriesFocusNodes.containsKey(webSeriesId)) {
+//               setState(() {
+//                 focusedIndex = currentIndex;
+//                 _hasReceivedFocusFromMovies = true;
+//               });
+//               webseriesFocusNodes[webSeriesId]!.requestFocus();
+//               _scrollToPosition(currentIndex);
+//             }
+//           }
+//         }
+//       });
+//     });
+//   }
+
+//   void _navigateToGridPage() {
+//     Navigator.push(
+//       context,
+//       MaterialPageRoute(
+//         builder: (context) => const ProfessionalWebSeriesGridPage(
+//           title: 'All Web Series',
+//         ),
+//       ),
+//     ).then((_) {
+//       Future.delayed(const Duration(milliseconds: 300), () {
+//         if (mounted && _viewAllFocusNode != null) {
+//           setState(() {
+//             focusedIndex = maxHorizontalItems;
+//             _hasReceivedFocusFromMovies = true;
+//           });
+//           _viewAllFocusNode!.requestFocus();
+//           _scrollToPosition(maxHorizontalItems);
+//         }
+//       });
+//     });
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     super.build(context);
+//     return Consumer<ColorProvider>(
+//       builder: (context, colorProvider, child) {
+//         final bgColor = colorProvider.isItemFocused
+//             ? colorProvider.dominantColor.withOpacity(0.1)
+//             : ProfessionalColors.primaryDark;
+//         return Scaffold(
+//           backgroundColor: Colors.transparent,
+//           body: Container(
+//             decoration: BoxDecoration(
+//               gradient: LinearGradient(
+//                 begin: Alignment.topCenter,
+//                 end: Alignment.bottomCenter,
+//                 colors: [
+//                   bgColor,
+//                   bgColor.withOpacity(0.8),
+//                   ProfessionalColors.primaryDark,
+//                 ],
+//               ),
+//             ),
+//             child: Column(
+//               children: [
+//                 const SizedBox(height: 20),
+//                 _buildProfessionalTitle(),
+//                 const SizedBox(height: 10),
+//                 Expanded(child: _buildBody()),
+//               ],
+//             ),
+//           ),
+//         );
+//       },
+//     );
+//   }
+
+//   Widget _buildProfessionalTitle() {
+//     return SlideTransition(
+//       position: _headerSlideAnimation,
+//       child: Padding(
+//         padding: const EdgeInsets.symmetric(horizontal: 25.0),
+//         child: Row(
+//           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//           children: [
+//             ShaderMask(
+//               shaderCallback: (bounds) => const LinearGradient(
+//                 colors: [
+//                   ProfessionalColors.accentPurple,
+//                   ProfessionalColors.accentBlue
+//                 ],
+//               ).createShader(bounds),
+//               child: const Text(
+//                 'WEB SERIES',
+//                 style: TextStyle(
+//                     fontSize: 24,
+//                     color: Colors.white,
+//                     fontWeight: FontWeight.w700,
+//                     letterSpacing: 2.0),
+//               ),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildBody() {
+//     if (isLoading) {
+//       return const ProfessionalWebSeriesLoadingIndicator(
+//           message: 'Loading Web Series...');
+//     } else if (webSeriesList.isEmpty) {
+//       return _buildEmptyWidget();
+//     } else {
+//       return _buildWebSeriesList();
+//     }
+//   }
+
+//   Widget _buildEmptyWidget() {
+//     return const Center(
+//       child: Column(
+//         mainAxisAlignment: MainAxisAlignment.center,
+//         children: [
+//           Icon(Icons.tv_off_outlined,
+//               size: 50, color: ProfessionalColors.textSecondary),
+//           SizedBox(height: 16),
+//           Text(
+//             'No Web Series Found',
+//             style: TextStyle(
+//                 color: ProfessionalColors.textPrimary,
+//                 fontSize: 18,
+//                 fontWeight: FontWeight.w600),
+//           ),
+//           SizedBox(height: 8),
+//           Text(
+//             'Please check back later.',
+//             style: TextStyle(
+//                 color: ProfessionalColors.textSecondary, fontSize: 14),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+
+//   Widget _buildWebSeriesList() {
+//     bool showViewAll = webSeriesList.length > maxHorizontalItems;
+//     int itemCount = math.min(webSeriesList.length, maxHorizontalItems);
+
+//     return FadeTransition(
+//       opacity: _listFadeAnimation,
+//       child: SizedBox(
+//         height: 300,
+//         child: ListView.builder(
+//           scrollDirection: Axis.horizontal,
+//           clipBehavior: Clip.none,
+//           cacheExtent:9999,
+//           controller: _scrollController,
+//           padding: const EdgeInsets.symmetric(horizontal: 20),
+//           itemCount: showViewAll ? itemCount + 1 : itemCount,
+//           itemBuilder: (context, index) {
+//             if (showViewAll && index == itemCount) {
+//               return _buildViewAllButton();
+//             }
+//             var webSeries = webSeriesList[index];
+//             return _buildWebSeriesItem(webSeries, index);
+//           },
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildViewAllButton() {
+//     return Focus(
+//       focusNode: _viewAllFocusNode,
+//       onFocusChange: (hasFocus) {
+//         if (hasFocus) {
+//           Color dominantColor = ProfessionalColors.gradientColors[
+//               math.Random().nextInt(ProfessionalColors.gradientColors.length)];
+//           context.read<ColorProvider>().updateColor(dominantColor, true);
+//         }
+//       },
+//       // ✅ ==========================================================
+//       // ✅ [UPDATED] ViewAll onKey LOGIC
+//       // ✅ ==========================================================
+//       onKey: (node, event) {
+//         if (event is RawKeyDownEvent) {
+//           if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+//             FocusScope.of(context).requestFocus(webseriesFocusNodes[
+//                 webSeriesList[maxHorizontalItems - 1].id.toString()]);
+//             return KeyEventResult.handled;
+//           } else if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
+//             return KeyEventResult.handled; // Aage nahi jaana hai
+//           }
+
+//           else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+//             // ✅ CHANGED
+//             context.read<ColorProvider>().resetColor();
+//             FocusScope.of(context).unfocus();
+//             context.read<FocusProvider>().focusPreviousRow();
+//             _hasReceivedFocusFromMovies = false;
+//             return KeyEventResult.handled;
+//           }
+
+//           else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+//             // ✅ CHANGED
+//             context.read<ColorProvider>().resetColor();
+//             FocusScope.of(context).unfocus();
+//             context.read<FocusProvider>().focusNextRow();
+//             _hasReceivedFocusFromMovies = false;
+//             return KeyEventResult.handled;
+//           }
+
+//           else if (event.logicalKey == LogicalKeyboardKey.select ||
+//               event.logicalKey == LogicalKeyboardKey.enter) {
+//             _navigateToGridPage();
+//             return KeyEventResult.handled;
+//           }
+//         }
+//         return KeyEventResult.ignored;
+//       },
+//       // ✅ ==========================================================
+//       // ✅ END OF [UPDATED] onKey LOGIC
+//       // ✅ ==========================================================
+//       child: GestureDetector(
+//         onTap: _navigateToGridPage,
+//         child: ProfessionalWebSeriesViewAllButton(
+//           focusNode: _viewAllFocusNode!,
+//           onTap: _navigateToGridPage,
+//           totalItems: webSeriesList.length,
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildWebSeriesItem(WebSeriesModel webSeries, int index) {
+//     String webSeriesId = webSeries.id.toString();
+//     FocusNode? focusNode = webseriesFocusNodes[webSeriesId];
+
+//     if (focusNode == null) return const SizedBox.shrink();
+
+//     return Focus(
+//       focusNode: focusNode,
+//       onFocusChange: (hasFocus) {
+//         if (hasFocus) {
+//           Color dominantColor = ProfessionalColors.gradientColors[
+//               math.Random().nextInt(ProfessionalColors.gradientColors.length)];
+//           context.read<ColorProvider>().updateColor(dominantColor, true);
+//         }
+//       },
+//     // ✅ ==========================================================
+//     // ✅ [UPDATED] Item onKey LOGIC
+//     // ✅ ==========================================================
+//       onKey: (node, event) {
+//         if (event is RawKeyDownEvent) {
+//           final key = event.logicalKey;
+
+//           if (key == LogicalKeyboardKey.arrowRight ||
+//               key == LogicalKeyboardKey.arrowLeft) {
+
+//             if (_isNavigationLocked) return KeyEventResult.handled;
+
+//             _isNavigationLocked = true;
+//             _navigationLockTimer = Timer(const Duration(milliseconds: 600), () {
+//               _isNavigationLocked = false;
+//             });
+
+//             if (key == LogicalKeyboardKey.arrowRight) {
+//               int nextIndex = index + 1;
+//               if (nextIndex < webSeriesList.length && nextIndex < maxHorizontalItems) {
+//                 FocusScope.of(context).requestFocus(
+//                     webseriesFocusNodes[webSeriesList[nextIndex].id.toString()]);
+//               } else if (webSeriesList.length > maxHorizontalItems) {
+//                 FocusScope.of(context).requestFocus(_viewAllFocusNode);
+//               }
+//             } else if (key == LogicalKeyboardKey.arrowLeft) {
+//               if (index > 0) {
+//                 FocusScope.of(context).requestFocus(
+//                     webseriesFocusNodes[webSeriesList[index - 1].id.toString()]);
+//               }
+//             }
+//             return KeyEventResult.handled;
+//           }
+
+//           if (key == LogicalKeyboardKey.arrowUp) {
+//             // ✅ CHANGED
+//             context.read<ColorProvider>().resetColor();
+//             FocusScope.of(context).unfocus();
+//             context.read<FocusProvider>().focusPreviousRow();
+//             _hasReceivedFocusFromMovies = false;
+//             return KeyEventResult.handled;
+//           }
+
+//           else if (key == LogicalKeyboardKey.arrowDown) {
+//             // ✅ CHANGED
+//             context.read<ColorProvider>().resetColor();
+//             FocusScope.of(context).unfocus();
+//             context.read<FocusProvider>().focusNextRow();
+//             _hasReceivedFocusFromMovies = false;
+//             return KeyEventResult.handled;
+//           }
+
+//           else if (key == LogicalKeyboardKey.select ||
+//               key == LogicalKeyboardKey.enter) {
+//             _navigateToWebSeriesDetails(webSeries);
+//             return KeyEventResult.handled;
+//           }
+//         }
+//         return KeyEventResult.ignored;
+//       },
+//     // ✅ ==========================================================
+//     // ✅ END OF [UPDATED] onKey LOGIC
+//     // ✅ ==========================================================
+//       child: GestureDetector(
+//         onTap: () => _navigateToWebSeriesDetails(webSeries),
+//         child: ProfessionalWebSeriesCard(
+//           webSeries: webSeries,
+//           focusNode: focusNode,
+//           onTap: () => _navigateToWebSeriesDetails(webSeries),
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+// // =========================================================================
+// // SUPPORTING WIDGETS (Inmein koi change nahi hai)
+// // =========================================================================
+
+// class ProfessionalWebSeriesLoadingIndicator extends StatelessWidget {
+//   final String message;
+//   const ProfessionalWebSeriesLoadingIndicator({Key? key, required this.message})
+//       : super(key: key);
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Center(
+//       child: Column(
+//         mainAxisAlignment: MainAxisAlignment.center,
+//         children: [
+//           const CircularProgressIndicator(
+//               color: ProfessionalColors.accentPurple),
+//           const SizedBox(height: 20),
+//           Text(
+//             message,
+//             style: const TextStyle(
+//                 color: ProfessionalColors.textPrimary, fontSize: 16),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }
+
+// class ProfessionalWebSeriesCard extends StatefulWidget {
+//   final WebSeriesModel webSeries;
+//   final FocusNode focusNode;
+//   final VoidCallback onTap;
+
+//   const ProfessionalWebSeriesCard({
+//     Key? key,
+//     required this.webSeries,
+//     required this.focusNode,
+//     required this.onTap,
+//   }) : super(key: key);
+
+//   @override
+//   _ProfessionalWebSeriesCardState createState() =>
+//       _ProfessionalWebSeriesCardState();
+// }
+
+// class _ProfessionalWebSeriesCardState extends State<ProfessionalWebSeriesCard>
+//     with TickerProviderStateMixin {
+//   late AnimationController _scaleController;
+//   late Animation<double> _scaleAnimation;
+//   bool _isFocused = false;
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     _scaleController =
+//         AnimationController(duration: AnimationTiming.slow, vsync: this);
+//     _scaleAnimation = Tween<double>(begin: 1.0, end: 1.06).animate(
+//         CurvedAnimation(parent: _scaleController, curve: Curves.easeOutCubic));
+//     widget.focusNode.addListener(_handleFocusChange);
+//   }
+
+//   void _handleFocusChange() {
+//     if (!mounted) return;
+//     setState(() => _isFocused = widget.focusNode.hasFocus);
+//     if (_isFocused) {
+//       _scaleController.forward();
+//       HapticFeedback.lightImpact();
+//     } else {
+//       _scaleController.reverse();
+//     }
+//   }
+
+//   @override
+//   void dispose() {
+//     widget.focusNode.removeListener(_handleFocusChange);
+//     _scaleController.dispose();
+//     super.dispose();
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final colorProvider = context.watch<ColorProvider>();
+//     final dominantColor = colorProvider.isItemFocused && _isFocused
+//         ? colorProvider.dominantColor
+//         : ProfessionalColors.accentBlue;
+
+//     return AnimatedBuilder(
+//       animation: _scaleAnimation,
+//       builder: (context, child) {
+//         return Transform.scale(
+//           scale: _scaleAnimation.value,
+//           child: Container(
+//             width: bannerwdt,
+//             margin: const EdgeInsets.symmetric(horizontal: 6),
+//             child: Column(
+//               crossAxisAlignment: CrossAxisAlignment.center,
+//               children: [
+//                 _buildProfessionalPoster(dominantColor),
+//                 _buildProfessionalTitle(dominantColor),
+//               ],
+//             ),
+//           ),
+//         );
+//       },
+//     );
+//   }
+
+//   Widget _buildProfessionalPoster(Color dominantColor) {
+//     final posterHeight = _isFocused ? focussedBannerhgt : bannerhgt;
+//     return Container(
+//       height: posterHeight,
+//       decoration: BoxDecoration(
+//         borderRadius: BorderRadius.circular(12),
+//         border: _isFocused ? Border.all(color: dominantColor, width: 3) : null,
+//         boxShadow: [
+//           if (_isFocused)
+//             BoxShadow(
+//               color: dominantColor.withOpacity(0.4),
+//               blurRadius: 25,
+//               spreadRadius: 3,
+//               offset: const Offset(0, 8),
+//             ),
+//           BoxShadow(
+//             color: Colors.black.withOpacity(0.4),
+//             blurRadius: 10,
+//             spreadRadius: 2,
+//             offset: const Offset(0, 5),
+//           ),
+//         ],
+//       ),
+//       child: ClipRRect(
+//         borderRadius: BorderRadius.circular(12),
+//         child: Stack(
+//           children: [
+//             _buildWebSeriesImage(posterHeight),
+//             if (_isFocused) _buildHoverOverlay(dominantColor),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildWebSeriesImage(double posterHeight) {
+//     final String uniqueImageUrl =
+//         "${widget.webSeries.banner}?v=${widget.webSeries.updatedAt}";
+//     final String uniqueCacheKey =
+//         "${widget.webSeries.id.toString()}_${widget.webSeries.updatedAt}";
+//     return SizedBox(
+//       width: double.infinity,
+//       height: posterHeight,
+//       child: widget.webSeries.banner != null &&
+//               widget.webSeries.banner!.isNotEmpty
+//           ? CachedNetworkImage(
+//               imageUrl: uniqueImageUrl,
+//               fit: BoxFit.cover,
+//               memCacheHeight: 300,
+//               cacheKey: uniqueCacheKey,
+//               placeholder: (context, url) => _buildImagePlaceholder(),
+//               errorWidget: (context, url, error) => _buildImagePlaceholder(),
+//             )
+//           : _buildImagePlaceholder(),
+//     );
+//   }
+
+//   Widget _buildImagePlaceholder() {
+//     return Container(
+//       decoration: const BoxDecoration(
+//         gradient: LinearGradient(
+//           begin: Alignment.topLeft,
+//           end: Alignment.bottomRight,
+//           colors: [ProfessionalColors.cardDark, ProfessionalColors.surfaceDark],
+//         ),
+//       ),
+//       child: const Center(
+//         child: Icon(Icons.tv_outlined,
+//             size: 40, color: ProfessionalColors.textSecondary),
+//       ),
+//     );
+//   }
+
+//   Widget _buildHoverOverlay(Color dominantColor) {
+//     return Positioned.fill(
+//       child: Container(
+//         decoration: BoxDecoration(
+//           borderRadius: BorderRadius.circular(12),
+//           gradient: LinearGradient(
+//             begin: Alignment.topCenter,
+//             end: Alignment.bottomCenter,
+//             colors: [Colors.transparent, dominantColor.withOpacity(0.1)],
+//           ),
+//         ),
+//         child: Center(
+//           child: Container(
+//             padding: const EdgeInsets.all(10),
+//             decoration: BoxDecoration(
+//               color: Colors.black.withOpacity(0.7),
+//               borderRadius: BorderRadius.circular(25),
+//             ),
+//             child:
+//                 Icon(Icons.play_arrow_rounded, color: dominantColor, size: 30),
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildProfessionalTitle(Color dominantColor) {
+//     return SizedBox(
+//       width: bannerwdt,
+//       child: AnimatedDefaultTextStyle(
+//         duration: AnimationTiming.medium,
+//         style: TextStyle(
+//           fontSize: _isFocused ? 13 : 11,
+//           fontWeight: FontWeight.w600,
+//           color: _isFocused ? dominantColor : ProfessionalColors.textPrimary,
+//           letterSpacing: 0.5,
+//         ),
+//         child: Text(
+//           widget.webSeries.name.toUpperCase(),
+//           textAlign: TextAlign.center,
+//           maxLines: 2,
+//           overflow: TextOverflow.ellipsis,
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+// class ProfessionalWebSeriesViewAllButton extends StatefulWidget {
+//   final FocusNode focusNode;
+//   final VoidCallback onTap;
+//   final int totalItems;
+
+//   const ProfessionalWebSeriesViewAllButton({
+//     Key? key,
+//     required this.focusNode,
+//     required this.onTap,
+//     required this.totalItems,
+//   }) : super(key: key);
+
+//   @override
+//   _ProfessionalWebSeriesViewAllButtonState createState() =>
+//       _ProfessionalWebSeriesViewAllButtonState();
+// }
+
+// class _ProfessionalWebSeriesViewAllButtonState
+//     extends State<ProfessionalWebSeriesViewAllButton> {
+//   bool _isFocused = false;
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     widget.focusNode.addListener(_handleFocusChange);
+//   }
+
+//   void _handleFocusChange() {
+//     if (mounted) setState(() => _isFocused = widget.focusNode.hasFocus);
+//   }
+
+//   @override
+//   void dispose() {
+//     widget.focusNode.removeListener(_handleFocusChange);
+//     super.dispose();
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final colorProvider = context.watch<ColorProvider>();
+//     final dominantColor = colorProvider.isItemFocused && _isFocused
+//         ? colorProvider.dominantColor
+//         : ProfessionalColors.accentPurple;
+
+//     return Container(
+//       width: bannerwdt,
+//       margin: const EdgeInsets.symmetric(horizontal: 6),
+//       child: Column(
+//         children: [
+//           AnimatedContainer(
+//             duration: AnimationTiming.fast,
+//             height: _isFocused ? focussedBannerhgt : bannerhgt,
+//             decoration: BoxDecoration(
+//               borderRadius: BorderRadius.circular(12),
+//               border: _isFocused
+//                   ? Border.all(color: dominantColor, width: 3)
+//                   : null,
+//               gradient: const LinearGradient(
+//                 colors: [
+//                   ProfessionalColors.cardDark,
+//                   ProfessionalColors.surfaceDark
+//                 ],
+//                 begin: Alignment.topLeft,
+//                 end: Alignment.bottomRight,
+//               ),
+//             ),
+//             child: Column(
+//               mainAxisAlignment: MainAxisAlignment.center,
+//               children: [
+//                 Icon(Icons.grid_view_rounded,
+//                     size: 35,
+//                     color: _isFocused ? dominantColor : Colors.white),
+//                 const SizedBox(height: 8),
+//                 Text('VIEW ALL',
+//                     style: TextStyle(
+//                         color: _isFocused ? dominantColor : Colors.white,
+//                         fontWeight: FontWeight.bold,
+//                         fontSize: 14)),
+//               ],
+//             ),
+//           ),
+//           AnimatedDefaultTextStyle(
+//             duration: AnimationTiming.medium,
+//             style: TextStyle(
+//               fontSize: _isFocused ? 13 : 11,
+//               fontWeight: FontWeight.w600,
+//               color: _isFocused ? dominantColor : ProfessionalColors.textPrimary,
+//             ),
+//             child: const Text('ALL SERIES', textAlign: TextAlign.center),
+//           )
+//         ],
+//       ),
+//     );
+//   }
+// }
 
 import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -4414,12 +5628,14 @@ import 'package:mobi_tv_entertainment/components/provider/color_provider.dart';
 import 'package:mobi_tv_entertainment/components/provider/focus_provider.dart';
 import 'package:mobi_tv_entertainment/components/services/history_service.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+// ❌ SharedPreferences import hata diya gaya hai kyonki service mein ab iski zaroorat nahi hai
+// import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'dart:math' as math;
 import 'dart:ui';
 
 // ✅ Professional Color Palette (COMMON)
+// ... (Yeh code pehle jaisa hi hai)
 class ProfessionalColors {
   static const primaryDark = Color(0xFF0A0E1A);
   static const surfaceDark = Color(0xFF1A1D29);
@@ -4445,6 +5661,7 @@ class ProfessionalColors {
 }
 
 // ✅ Professional Animation Durations (COMMON)
+// ... (Yeh code pehle jaisa hi hai)
 class AnimationTiming {
   static const Duration ultraFast = Duration(milliseconds: 150);
   static const Duration fast = Duration(milliseconds: 250);
@@ -4455,6 +5672,7 @@ class AnimationTiming {
 }
 
 // ✅ NetworkModel (COMMON)
+// ... (Yeh code pehle jaisa hi hai)
 class NetworkModel {
   final int id;
   final String name;
@@ -4476,6 +5694,7 @@ class NetworkModel {
 }
 
 // ✅ Bulletproof WebSeriesModel (COMMON)
+// ... (Yeh code pehle jaisa hi hai)
 class WebSeriesModel {
   final int id;
   final String name;
@@ -4527,147 +5746,42 @@ class WebSeriesModel {
   }
 }
 
-// 🚀 Enhanced WebSeries Service (COMMON)
+// ✅ ==========================================================
+// ✅ [UPDATED] WebSeries Service (NO CACHE)
+// ✅ ==========================================================
 class WebSeriesService {
-  static const String _cacheKeyLimitedWebSeries = 'cached_limited_web_series';
-  static const String _cacheKeyLimitedTimestamp = 'cached_limited_web_series_timestamp';
-  static const int _cacheDurationMs = 60 * 60 * 1000;
+  // ❌ Cache-related constants hata diye gaye hain
   static const int _limitedListSize = 20;
 
-  static Future<List<WebSeriesModel>> getLimitedWebSeries(
-      {bool forceRefresh = false}) async {
+  static Future<List<WebSeriesModel>> getLimitedWebSeries() async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      if (!forceRefresh && await _shouldUseCache(prefs)) {
-        final cachedWebSeries = await _getCachedWebSeries(prefs);
-        if (cachedWebSeries.isNotEmpty) {
-          _loadFreshDataInBackground();
-          return cachedWebSeries;
-        }
-      }
-      return await _fetchFreshWebSeries(prefs);
+      // Seedha fresh data fetch karein
+      return await _fetchAndFilterWebSeries();
     } catch (e) {
       print('❌ Error in getLimitedWebSeries: $e');
-      try {
-        final prefs = await SharedPreferences.getInstance();
-        final cachedWebSeries = await _getCachedWebSeries(prefs);
-        if (cachedWebSeries.isNotEmpty) {
-          return cachedWebSeries;
-        }
-      } catch (cacheError) {
-        print('❌ Limited cache fallback also failed: $cacheError');
-      }
+      // Error ko re-throw karein taaki UI handle kar sake
       throw Exception('Failed to load limited web series: $e');
     }
   }
 
-  static Future<bool> _shouldUseCache(SharedPreferences prefs) async {
-    final timestampStr = prefs.getString(_cacheKeyLimitedTimestamp);
-    if (timestampStr == null) return false;
-    final cachedTimestamp = int.tryParse(timestampStr);
-    if (cachedTimestamp == null) return false;
-    final currentTimestamp = DateTime.now().millisecondsSinceEpoch;
-    return (currentTimestamp - cachedTimestamp) < _cacheDurationMs;
-  }
+  // ❌ _shouldUseCache method hata diya gaya hai
+  // ❌ _getCachedWebSeries method hata diya gaya hai
 
-  // static Future<List<WebSeriesModel>> _getCachedWebSeries(
-  //     SharedPreferences prefs) async {
-  //   try {
-  //     final cachedData = prefs.getString(_cacheKeyLimitedWebSeries);
-  //     if (cachedData == null || cachedData.isEmpty) return [];
-  //     final List<dynamic> jsonData = json.decode(cachedData);
-  //     List<WebSeriesModel> webSeries = jsonData
-  //         .map((json) => WebSeriesModel.fromJson(json as Map<String, dynamic>))
-  //         .toList();
-  //     webSeries.sort((a, b) => a.seriesOrder.compareTo(b.seriesOrder));
-  //     return webSeries;
-  //   } catch (e) {
-  //     print('❌ Error loading cached limited web series: $e');
-  //     return [];
-  //   }
-  // }
-
-
-  static Future<List<WebSeriesModel>> _getCachedWebSeries(
-      SharedPreferences prefs) async {
+  static Future<List<WebSeriesModel>> _fetchAndFilterWebSeries() async {
     try {
-      final cachedData = prefs.getString(_cacheKeyLimitedWebSeries);
-      if (cachedData == null || cachedData.isEmpty) return [];
+      // 'prefs' argument ki zaroorat nahi, SessionManager ka istemaal ho raha hai
+      String authKey = SessionManager.authKey;
+      var url = Uri.parse(SessionManager.baseUrl + 'getAllWebSeries?page1&records=11');
       
-      final List<dynamic> jsonData = json.decode(cachedData);
-
-      // ✅ ==========================================================
-      // ✅ CACHED DATA KO BHI FILTER KAREIN
-      // ✅ ==========================================================
-      final List<dynamic> filteredData = jsonData.where((item) {
-        if (item is Map<String, dynamic> && item.containsKey('status')) {
-          return item['status'] == 1 || item['status'] == '1';
-        }
-        return false;
-      }).toList();
-      // ✅ ==========================================================
-
-      // Ab 'filteredData' ka istemaal karein
-      List<WebSeriesModel> webSeries = filteredData
-          .map((json) => WebSeriesModel.fromJson(json as Map<String, dynamic>))
-          .toList();
-          
-      webSeries.sort((a, b) => a.seriesOrder.compareTo(b.seriesOrder));
-      return webSeries;
-    } catch (e) {
-      print('❌ Error loading cached limited web series: $e');
-      return [];
-    }
-  }
-
-
-
-  // static Future<List<WebSeriesModel>> _fetchFreshWebSeries(
-  //     SharedPreferences prefs) async {
-  //   try {
-  //     String authKey = prefs.getString('result_auth_key') ?? '';
-  //     final response = await https.get(
-  //       Uri.parse('https://dashboard.cpplayers.com/api/v2/getAllWebSeries?page1&records=11'),
-  //       headers: {
-  //         'auth-key': authKey,
-  //         'Content-Type': 'application/json',
-  //         'Accept': 'application/json',
-  //         'domain': 'coretechinfo.com'
-  //       },
-  //     );
-
-  //     if (response.statusCode == 200) {
-  //       final List<dynamic> jsonData = json.decode(response.body);
-  //       final List<dynamic> processedData = jsonData.take(_limitedListSize).toList();
-
-  //       await _cacheWebSeries(prefs, processedData);
-  //       List<WebSeriesModel> webSeries = processedData
-  //           .map((json) => WebSeriesModel.fromJson(json as Map<String, dynamic>))
-  //           .toList();
-  //       webSeries.sort((a, b) => a.seriesOrder.compareTo(b.seriesOrder));
-  //       return webSeries;
-  //     } else {
-  //       throw Exception('API Error: ${response.statusCode} - ${response.reasonPhrase}');
-  //     }
-  //   } catch (e) {
-  //     print('❌ Error fetching fresh limited web series: $e');
-  //     rethrow;
-  //   }
-  // }
-
-
-
-static Future<List<WebSeriesModel>> _fetchFreshWebSeries(
-      SharedPreferences prefs) async {
-    try {
-      String authKey = prefs.getString('result_auth_key') ?? '';
-      final response = await https.get(
-        Uri.parse('https://dashboard.cpplayers.com/api/v2/getAllWebSeries?page1&records=11'),
+      final response = await https.get(url,
+        // Uri.parse(
+        //     'https://dashboard.cpplayers.com/api/v2/getAllWebSeries?page1&records=11'),
         headers: {
           'auth-key': authKey,
           'Content-Type': 'application/json',
           'Accept': 'application/json',
-          'domain': 'coretechinfo.com'
+          // 'domain': 'coretechinfo.com'
+          'domain': SessionManager.savedDomain
         },
       );
 
@@ -4675,32 +5789,32 @@ static Future<List<WebSeriesModel>> _fetchFreshWebSeries(
         final List<dynamic> jsonData = json.decode(response.body);
 
         // ✅ ==========================================================
-        // ✅ YAHAN FILTER KAREIN
+        // ✅ YAHAN FILTER KAREIN (Yeh logic aapne provide kiya tha)
         // ✅ ==========================================================
         final List<dynamic> filteredData = jsonData.where((item) {
-          // Safety checks ki item ek map hai aur usmein status key hai
           if (item is Map<String, dynamic> && item.containsKey('status')) {
-            // API '1' (string) ya 1 (int) bhej sakti hai, dono ko check karein
             return item['status'] == 1 || item['status'] == '1';
           }
-          // Agar status nahi hai ya item map nahi hai, to use na dikhayein
           return false;
         }).toList();
         // ✅ ==========================================================
-        
-        // Ab 'filteredData' ka istemaal karein, 'jsonData' ka nahi
-        final List<dynamic> processedData = filteredData.take(_limitedListSize).toList();
 
-        await _cacheWebSeries(prefs, processedData); // Sirf filtered data cache hoga
-        
+        // Ab 'filteredData' ka istemaal karein
+        final List<dynamic> processedData =
+            filteredData.take(_limitedListSize).toList();
+
+        // ❌ Cache karne ka logic hata diya gaya hai
+
         List<WebSeriesModel> webSeries = processedData
-            .map((json) => WebSeriesModel.fromJson(json as Map<String, dynamic>))
+            .map(
+                (json) => WebSeriesModel.fromJson(json as Map<String, dynamic>))
             .toList();
-            
+
         webSeries.sort((a, b) => a.seriesOrder.compareTo(b.seriesOrder));
         return webSeries;
       } else {
-        throw Exception('API Error: ${response.statusCode} - ${response.reasonPhrase}');
+        throw Exception(
+            'API Error: ${response.statusCode} - ${response.reasonPhrase}');
       }
     } catch (e) {
       print('❌ Error fetching fresh limited web series: $e');
@@ -4708,32 +5822,12 @@ static Future<List<WebSeriesModel>> _fetchFreshWebSeries(
     }
   }
 
-  
-  static Future<void> _cacheWebSeries(
-      SharedPreferences prefs, List<dynamic> webSeriesData) async {
-    try {
-      final jsonString = json.encode(webSeriesData);
-      final currentTimestamp = DateTime.now().millisecondsSinceEpoch.toString();
-      await Future.wait([
-        prefs.setString(_cacheKeyLimitedWebSeries, jsonString),
-        prefs.setString(_cacheKeyLimitedTimestamp, currentTimestamp),
-      ]);
-    } catch (e) {
-      print('❌ Error caching limited web series: $e');
-    }
-  }
-
-  static void _loadFreshDataInBackground() {
-    Future.delayed(const Duration(milliseconds: 500), () async {
-      try {
-        final prefs = await SharedPreferences.getInstance();
-        await _fetchFreshWebSeries(prefs);
-      } catch (e) {
-        print('⚠️ WebSeries background refresh failed: $e');
-      }
-    });
-  }
+  // ❌ _cacheWebSeries method hata diya gaya hai
+  // ❌ _loadFreshDataInBackground method hata diya gaya hai
 }
+// ✅ ==========================================================
+// ✅ END OF [UPDATED] WebSeries Service
+// ✅ ==========================================================
 
 // 🚀 Enhanced ManageWebSeries
 class ManageWebSeries extends StatefulWidget {
@@ -4763,7 +5857,7 @@ class _ManageWebSeriesState extends State<ManageWebSeries>
   bool _hasReceivedFocusFromMovies = false;
 
   late ScrollController _scrollController;
-  
+
   bool _isNavigationLocked = false;
   Timer? _navigationLockTimer;
 
@@ -4773,7 +5867,8 @@ class _ManageWebSeriesState extends State<ManageWebSeries>
     _scrollController = ScrollController();
     _initializeAnimations();
     _initializeFocusNodes();
-    fetchWebSeriesWithCache();
+    // ✅ MODIFIED: Function rename
+    fetchWebSeries();
   }
 
   // ✅ ==========================================================
@@ -4851,69 +5946,36 @@ class _ManageWebSeriesState extends State<ManageWebSeries>
     }
   }
 
-  // // Yeh function ab seedha _firstWebSeriesFocusNode ko register karta hai
-  // void _setupFocusProvider() {
-  //   WidgetsBinding.instance.addPostFrameCallback((_) {
-  //     if (mounted && webSeriesList.isNotEmpty) {
-  //       final focusProvider =
-  //           Provider.of<FocusProvider>(context, listen: false);
-        
-  //       // Pehle item ka ID aur node check karein
-  //       final firstWebSeriesId = webSeriesList[0].id.toString();
-  //       _firstWebSeriesFocusNode = webseriesFocusNodes[firstWebSeriesId];
-
-  //       if (_firstWebSeriesFocusNode != null) {
-  //         // Node ko provider mein 'manageWebseries' ID se register karein
-  //         focusProvider.registerFocusNode('manageWebseries', _firstWebSeriesFocusNode!);
-  //         print('✅ WebSeries first focus node registered');
-
-  //         // Listener yahin add karein
-  //         _firstWebSeriesFocusNode?.addListener(() {
-  //           if (_firstWebSeriesFocusNode!.hasFocus &&
-  //               !_hasReceivedFocusFromMovies) {
-  //             _hasReceivedFocusFromMovies = true;
-  //             setState(() => focusedIndex = 0);
-  //             _scrollToPosition(0);
-  //           }
-  //         });
-  //       }
-  //     }
-  //   });
-  // }
-
-
-
   // Yeh function ab seedha _firstWebSeriesFocusNode ko register karta hai
   void _setupFocusProvider() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted && webSeriesList.isNotEmpty) {
         final focusProvider =
             Provider.of<FocusProvider>(context, listen: false);
-        
+
         // Pehle item ka ID aur node check karein
         final firstWebSeriesId = webSeriesList[0].id.toString();
         _firstWebSeriesFocusNode = webseriesFocusNodes[firstWebSeriesId];
 
         if (_firstWebSeriesFocusNode != null) {
           // Node ko provider mein 'manageWebseries' ID se register karein
-          focusProvider.registerFocusNode('manageWebseries', _firstWebSeriesFocusNode!);
+          focusProvider.registerFocusNode(
+              'manageWebseries', _firstWebSeriesFocusNode!);
           print('✅ WebSeries first focus node registered');
 
           // Listener yahin add karein
           _firstWebSeriesFocusNode?.addListener(() {
-
             // ✅ ==========================================================
             // ✅ [FIXED] Listener logic
             // ✅ ==========================================================
             // Check karein ki widget mounted hai aur node ko focus mila hai
             if (mounted && _firstWebSeriesFocusNode!.hasFocus) {
-              
-              // _hasReceivedFocusFromMovies flag ko sirf tab set karein jab 
+              // _hasReceivedFocusFromMovies flag ko sirf tab set karein jab
               // focus pehli baar row mein aa raha hai.
               if (!_hasReceivedFocusFromMovies) {
                 _hasReceivedFocusFromMovies = true;
               }
-              
+
               // State update aur scroll logic ko hamesha run karein
               // jab bhi yeh node focus mein aaye.
               setState(() => focusedIndex = 0);
@@ -4922,17 +5984,18 @@ class _ManageWebSeriesState extends State<ManageWebSeries>
             // ✅ ==========================================================
             // ✅ END OF [FIXED] listener logic
             // ✅ ==========================================================
-
           });
         }
       }
     });
   }
 
-  Future<void> fetchWebSeriesWithCache() async {
+  // ✅ MODIFIED: Function rename
+  Future<void> fetchWebSeries() async {
     if (!mounted) return;
     setState(() => isLoading = true);
     try {
+      // ✅ MODIFIED: Service call ab seedha hai, koi 'forceRefresh' nahi
       final fetchedWebSeries = await WebSeriesService.getLimitedWebSeries();
       if (mounted) {
         setState(() {
@@ -4946,7 +6009,8 @@ class _ManageWebSeriesState extends State<ManageWebSeries>
       }
     } catch (e) {
       if (mounted) setState(() => isLoading = false);
-      print('Error fetching Limited WebSeries with cache: $e');
+      // ✅ MODIFIED: Error message
+      print('Error fetching Limited WebSeries: $e');
     }
   }
 
@@ -4973,7 +6037,6 @@ class _ManageWebSeriesState extends State<ManageWebSeries>
       }
     }
   }
-
 
   void _navigateToWebSeriesDetails(WebSeriesModel webSeries) async {
     try {
@@ -5004,25 +6067,26 @@ class _ManageWebSeriesState extends State<ManageWebSeries>
           updatedAt: webSeries.updatedAt,
         ),
       ),
-    ).then((_) {
-      Future.delayed(const Duration(milliseconds: 300), () {
-        if (mounted) {
-          int currentIndex =
-              webSeriesList.indexWhere((ws) => ws.id == webSeries.id);
-          if (currentIndex != -1 && currentIndex < maxHorizontalItems) {
-            String webSeriesId = webSeries.id.toString();
-            if (webseriesFocusNodes.containsKey(webSeriesId)) {
-              setState(() {
-                focusedIndex = currentIndex;
-                _hasReceivedFocusFromMovies = true;
-              });
-              webseriesFocusNodes[webSeriesId]!.requestFocus();
-              _scrollToPosition(currentIndex);
-            }
-          }
-        }
-      });
-    });
+    );
+    // .then((_) {
+    //   Future.delayed(const Duration(milliseconds: 300), () {
+    //     if (mounted) {
+    //       int currentIndex =
+    //       	  webSeriesList.indexWhere((ws) => ws.id == webSeries.id);
+    //       if (currentIndex != -1 && currentIndex < maxHorizontalItems) {
+    //     	String webSeriesId = webSeries.id.toString();
+    //     	if (webseriesFocusNodes.containsKey(webSeriesId)) {
+    //     	  setState(() {
+    //     		focusedIndex = currentIndex;
+    //     		_hasReceivedFocusFromMovies = true;
+    //     	  });
+    //     	  webseriesFocusNodes[webSeriesId]!.requestFocus();
+    //     	  _scrollToPosition(currentIndex);
+    //     	}
+    //   	  }
+    //   }
+    // });
+    // });
   }
 
   void _navigateToGridPage() {
@@ -5033,18 +6097,19 @@ class _ManageWebSeriesState extends State<ManageWebSeries>
           title: 'All Web Series',
         ),
       ),
-    ).then((_) {
-      Future.delayed(const Duration(milliseconds: 300), () {
-        if (mounted && _viewAllFocusNode != null) {
-          setState(() {
-            focusedIndex = maxHorizontalItems;
-            _hasReceivedFocusFromMovies = true;
-          });
-          _viewAllFocusNode!.requestFocus();
-          _scrollToPosition(maxHorizontalItems);
-        }
-      });
-    });
+    );
+    // .then((_) {
+    //   Future.delayed(const Duration(milliseconds: 300), () {
+    //     if (mounted && _viewAllFocusNode != null) {
+    //       setState(() {
+    //         focusedIndex = maxHorizontalItems;
+    //         _hasReceivedFocusFromMovies = true;
+    //       });
+    //       _viewAllFocusNode!.requestFocus();
+    //       _scrollToPosition(maxHorizontalItems);
+    //     }
+    //   });
+    // });
   }
 
   @override
@@ -5161,7 +6226,7 @@ class _ManageWebSeriesState extends State<ManageWebSeries>
         child: ListView.builder(
           scrollDirection: Axis.horizontal,
           clipBehavior: Clip.none,
-          cacheExtent:9999,
+          cacheExtent: 9999,
           controller: _scrollController,
           padding: const EdgeInsets.symmetric(horizontal: 20),
           itemCount: showViewAll ? itemCount + 1 : itemCount,
@@ -5198,27 +6263,21 @@ class _ManageWebSeriesState extends State<ManageWebSeries>
             return KeyEventResult.handled;
           } else if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
             return KeyEventResult.handled; // Aage nahi jaana hai
-          } 
-          
-          else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+          } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
             // ✅ CHANGED
             context.read<ColorProvider>().resetColor();
             FocusScope.of(context).unfocus();
-            context.read<FocusProvider>().focusPreviousRow(); 
+            context.read<FocusProvider>().focusPreviousRow();
             _hasReceivedFocusFromMovies = false;
             return KeyEventResult.handled;
-          } 
-          
-          else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+          } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
             // ✅ CHANGED
             context.read<ColorProvider>().resetColor();
             FocusScope.of(context).unfocus();
             context.read<FocusProvider>().focusNextRow();
             _hasReceivedFocusFromMovies = false;
             return KeyEventResult.handled;
-          } 
-          
-          else if (event.logicalKey == LogicalKeyboardKey.select ||
+          } else if (event.logicalKey == LogicalKeyboardKey.select ||
               event.logicalKey == LogicalKeyboardKey.enter) {
             _navigateToGridPage();
             return KeyEventResult.handled;
@@ -5255,18 +6314,17 @@ class _ManageWebSeriesState extends State<ManageWebSeries>
           context.read<ColorProvider>().updateColor(dominantColor, true);
         }
       },
-    // ✅ ==========================================================
-    // ✅ [UPDATED] Item onKey LOGIC
-    // ✅ ==========================================================
+      // ✅ ==========================================================
+      // ✅ [UPDATED] Item onKey LOGIC
+      // ✅ ==========================================================
       onKey: (node, event) {
         if (event is RawKeyDownEvent) {
           final key = event.logicalKey;
 
           if (key == LogicalKeyboardKey.arrowRight ||
               key == LogicalKeyboardKey.arrowLeft) {
-
             if (_isNavigationLocked) return KeyEventResult.handled;
-          
+
             _isNavigationLocked = true;
             _navigationLockTimer = Timer(const Duration(milliseconds: 600), () {
               _isNavigationLocked = false;
@@ -5274,16 +6332,17 @@ class _ManageWebSeriesState extends State<ManageWebSeries>
 
             if (key == LogicalKeyboardKey.arrowRight) {
               int nextIndex = index + 1;
-              if (nextIndex < webSeriesList.length && nextIndex < maxHorizontalItems) {
-                FocusScope.of(context).requestFocus(
-                    webseriesFocusNodes[webSeriesList[nextIndex].id.toString()]);
+              if (nextIndex < webSeriesList.length &&
+                  nextIndex < maxHorizontalItems) {
+                FocusScope.of(context).requestFocus(webseriesFocusNodes[
+                    webSeriesList[nextIndex].id.toString()]);
               } else if (webSeriesList.length > maxHorizontalItems) {
                 FocusScope.of(context).requestFocus(_viewAllFocusNode);
               }
             } else if (key == LogicalKeyboardKey.arrowLeft) {
               if (index > 0) {
-                FocusScope.of(context).requestFocus(
-                    webseriesFocusNodes[webSeriesList[index - 1].id.toString()]);
+                FocusScope.of(context).requestFocus(webseriesFocusNodes[
+                    webSeriesList[index - 1].id.toString()]);
               }
             }
             return KeyEventResult.handled;
@@ -5296,18 +6355,14 @@ class _ManageWebSeriesState extends State<ManageWebSeries>
             context.read<FocusProvider>().focusPreviousRow();
             _hasReceivedFocusFromMovies = false;
             return KeyEventResult.handled;
-          } 
-          
-          else if (key == LogicalKeyboardKey.arrowDown) {
+          } else if (key == LogicalKeyboardKey.arrowDown) {
             // ✅ CHANGED
             context.read<ColorProvider>().resetColor();
             FocusScope.of(context).unfocus();
             context.read<FocusProvider>().focusNextRow();
             _hasReceivedFocusFromMovies = false;
             return KeyEventResult.handled;
-          } 
-          
-          else if (key == LogicalKeyboardKey.select ||
+          } else if (key == LogicalKeyboardKey.select ||
               key == LogicalKeyboardKey.enter) {
             _navigateToWebSeriesDetails(webSeries);
             return KeyEventResult.handled;
@@ -5315,9 +6370,9 @@ class _ManageWebSeriesState extends State<ManageWebSeries>
         }
         return KeyEventResult.ignored;
       },
-    // ✅ ==========================================================
-    // ✅ END OF [UPDATED] onKey LOGIC
-    // ✅ ==========================================================
+      // ✅ ==========================================================
+      // ✅ END OF [UPDATED] onKey LOGIC
+      // ✅ ==========================================================
       child: GestureDetector(
         onTap: () => _navigateToWebSeriesDetails(webSeries),
         child: ProfessionalWebSeriesCard(
@@ -5329,7 +6384,6 @@ class _ManageWebSeriesState extends State<ManageWebSeries>
     );
   }
 }
-
 
 // =========================================================================
 // SUPPORTING WIDGETS (Inmein koi change nahi hai)
@@ -5630,8 +6684,7 @@ class _ProfessionalWebSeriesViewAllButtonState
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(Icons.grid_view_rounded,
-                    size: 35,
-                    color: _isFocused ? dominantColor : Colors.white),
+                    size: 35, color: _isFocused ? dominantColor : Colors.white),
                 const SizedBox(height: 8),
                 Text('VIEW ALL',
                     style: TextStyle(
@@ -5646,7 +6699,8 @@ class _ProfessionalWebSeriesViewAllButtonState
             style: TextStyle(
               fontSize: _isFocused ? 13 : 11,
               fontWeight: FontWeight.w600,
-              color: _isFocused ? dominantColor : ProfessionalColors.textPrimary,
+              color:
+                  _isFocused ? dominantColor : ProfessionalColors.textPrimary,
             ),
             child: const Text('ALL SERIES', textAlign: TextAlign.center),
           )
