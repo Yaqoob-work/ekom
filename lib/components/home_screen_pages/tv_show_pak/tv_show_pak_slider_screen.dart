@@ -987,9 +987,9 @@ class _TvShowPakSliderScreenState // <--- BADLAAV YAHAN
       _rebuildItemFocusNodes();
       _focusedItemIndex = -1;
 
-      if (_displayList.isNotEmpty) {
-        _focusFirstListItemWithScroll();
-      }
+      // if (_displayList.isNotEmpty) {
+      //   _focusFirstListItemWithScroll();
+      // }
     });
 
     _startAnimations();

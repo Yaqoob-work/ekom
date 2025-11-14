@@ -9099,7 +9099,7 @@ class _ManageTvShowsState extends State<ManageTvShows>
                   // Provider.of<FocusProvider>(context, listen: false)
                   //     .requestFocus('sportsCategory'); // 👈 ISSE CHECK KAREIN
                   // print('✅ Navigating DOWN from TV Shows row (View All)');
-                  context.read<FocusProvider>().focusPreviousRow();
+                  context.read<FocusProvider>().focusNextRow();
                 } catch (e) {
                   print('❌ Failed to navigate DOWN: $e');
                 }
@@ -9801,28 +9801,28 @@ class _ProfessionalTVShowNetworkLoadingIndicatorState
   }
 }
 
-// ✅ [RENAMED] Placeholder Grid Page
-class TVShowNetworksGridPage extends StatelessWidget {
-  final List<TVShowNetworkModel> networks;
-  const TVShowNetworksGridPage({Key? key, required this.networks})
-      : super(key: key);
+// // ✅ [RENAMED] Placeholder Grid Page
+// class TVShowNetworksGridPage extends StatelessWidget {
+//   final List<TVShowNetworkModel> networks;
+//   const TVShowNetworksGridPage({Key? key, required this.networks})
+//       : super(key: key);
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: ProfessionalColors.primaryDark,
-      appBar: AppBar(
-        title: Text('All TV Show Networks (${networks.length})'),
-        backgroundColor: ProfessionalColors.surfaceDark,
-      ),
-      body: Center(
-          child: Text(
-        'Yeh grid page hai.',
-        style: TextStyle(color: Colors.white, fontSize: 20),
-      )),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       backgroundColor: ProfessionalColors.primaryDark,
+//       appBar: AppBar(
+//         title: Text('All TV Show Networks (${networks.length})'),
+//         backgroundColor: ProfessionalColors.surfaceDark,
+//       ),
+//       body: Center(
+//           child: Text(
+//         'Yeh grid page hai.',
+//         style: TextStyle(color: Colors.white, fontSize: 20),
+//       )),
+//     );
+//   }
+// }
 
 // ✅ ==========================================================
 // ✅ [FIXED] CacheManager

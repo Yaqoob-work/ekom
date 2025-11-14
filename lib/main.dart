@@ -3793,7 +3793,7 @@ class _LoginScreenState extends State<LoginScreen>
 
       final response = await https
           .post(
-            Uri.parse('https://dashboard.cpplayers.com/api/v2/login'),
+            Uri.parse('https://dash.getplaybox.com/api/v3/login_new'),
             headers: {
               'Content-Type': 'application/json',
               'Accept': 'application/json',
