@@ -1084,7 +1084,7 @@ class FocusProvider extends ChangeNotifier {
     'manageMovies',
     'manageWebseries',
     'tvShows',
-    'sportsCategory',
+    'sports',
     'religiousChannels',
     'tvShowPak',
   };
@@ -1225,7 +1225,7 @@ class FocusProvider extends ChangeNotifier {
         case 'manageMovies':
         case 'manageWebseries':
         case 'tvShows':
-        case 'sportsCategory':
+        case 'sports':
         case 'religiousChannels':
         case 'tvShowPak': 
           node.requestFocus();

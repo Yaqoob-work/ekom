@@ -41,7 +41,7 @@
 //   final GlobalKey manageWebseriesKey = GlobalKey();
 //   final GlobalKey tvShowsKey = GlobalKey();
 //   final GlobalKey tvShowsPakKey = GlobalKey();
-//   final GlobalKey sportsCategoryKey = GlobalKey();
+//   final GlobalKey sportsKey = GlobalKey();
 //   final GlobalKey religiousChannelKey = GlobalKey();
 
 //   late FocusNode watchNowFocusNode;
@@ -50,7 +50,7 @@
 //   late FocusNode manageMoviesFocusNode;
 //   late FocusNode manageWebseriesFocusNode;
 //   late FocusNode tvShowsFocusNode;
-//   late FocusNode sportsCategoryFocusNode;
+//   late FocusNode sportsFocusNode;
 
 //   bool _isLoading = false;
 //   int _selectedPage = 0;
@@ -92,7 +92,7 @@
 //       focusProvider.registerElementKey('manageMovies', manageMoviesKey);
 //       focusProvider.registerElementKey('manageWebseries', manageWebseriesKey);
 //       focusProvider.registerElementKey('tvShows', tvShowsKey);
-//       focusProvider.registerElementKey('sportsCategory', sportsCategoryKey);
+//       focusProvider.registerElementKey('sports', sportsKey);
 //       focusProvider.registerElementKey(
 //           'religiousChannels', religiousChannelKey);
 //       focusProvider.registerElementKey('tvShowPak', tvShowsPakKey);
@@ -109,7 +109,7 @@
 //     focusProvider.unregisterElementKey('manageWebseries');
 //     focusProvider.unregisterElementKey('tvShows');
 //     focusProvider.unregisterElementKey('tvShowPak');
-//     focusProvider.unregisterElementKey('sportsCategory');
+//     focusProvider.unregisterElementKey('sports');
 
 //     // Clean up focus nodes
 //     watchNowFocusNode.dispose();
@@ -118,7 +118,7 @@
 //     manageMoviesFocusNode.dispose();
 //     manageWebseriesFocusNode.dispose();
 //     tvShowsFocusNode.dispose();
-//     sportsCategoryFocusNode.dispose();
+//     sportsFocusNode.dispose();
 //     // _socketService.dispose();
 //     super.dispose();
 //   }
@@ -227,13 +227,13 @@
 //                              ManageTvShows()),
 //                     SizedBox(
 //                         height: screenhgt * 0.38,
-//                         // key: sportsCategoryKey,
+//                         // key: sportsKey,
 //                         child:
 //                             // HorizontalChannelList(
 //                             //   // focusNode: manageWebseriesFocusNode,
 //                             // ),
-//                             SportsCategory(
-//                           key: sportsCategoryKey,
+//                             sports(
+//                           key: sportsKey,
 //                         )),
 //                     SizedBox(
 //                         height: screenhgt * 0.38,
@@ -299,7 +299,7 @@
 //   final GlobalKey manageWebseriesKey = GlobalKey();
 //   final GlobalKey tvShowsKey = GlobalKey();
 //   final GlobalKey tvShowsPakKey = GlobalKey();
-//   final GlobalKey sportsCategoryKey = GlobalKey();
+//   final GlobalKey sportsKey = GlobalKey();
 //   final GlobalKey religiousChannelKey = GlobalKey();
 
 //   // Focus Nodes
@@ -309,7 +309,7 @@
 //   late FocusNode manageMoviesFocusNode;
 //   late FocusNode manageWebseriesFocusNode;
 //   late FocusNode tvShowsFocusNode;
-//   late FocusNode sportsCategoryFocusNode;
+//   late FocusNode sportsFocusNode;
 
 //   // State Variables
 //   bool _isLoading = false;
@@ -345,7 +345,7 @@
 //       focusProvider.registerElementKey('manageMovies', manageMoviesKey);
 //       focusProvider.registerElementKey('manageWebseries', manageWebseriesKey);
 //       focusProvider.registerElementKey('tvShows', tvShowsKey);
-//       focusProvider.registerElementKey('sportsCategory', sportsCategoryKey);
+//       focusProvider.registerElementKey('sports', sportsKey);
 //       focusProvider.registerElementKey('religiousChannels', religiousChannelKey);
 //       focusProvider.registerElementKey('tvShowPak', tvShowsPakKey);
 //     });
@@ -456,7 +456,7 @@
 //     focusProvider.unregisterElementKey('manageWebseries');
 //     focusProvider.unregisterElementKey('tvShows');
 //     focusProvider.unregisterElementKey('tvShowPak');
-//     focusProvider.unregisterElementKey('sportsCategory');
+//     focusProvider.unregisterElementKey('sports');
 
 //     // Focus nodes clean up karein
 //     watchNowFocusNode.dispose();
@@ -465,7 +465,7 @@
 //     manageMoviesFocusNode.dispose();
 //     manageWebseriesFocusNode.dispose();
 //     tvShowsFocusNode.dispose();
-//     sportsCategoryFocusNode.dispose();
+//     sportsFocusNode.dispose();
 //     super.dispose();
 //   }
 
@@ -534,8 +534,8 @@
 //                   ),
 //                   SizedBox(
 //                       height: screenhgt * 0.38,
-//                       child: SportsCategory(
-//                         key: sportsCategoryKey,
+//                       child: sports(
+//                         key: sportsKey,
 //                       )
 //                   ),
 //                   SizedBox(
@@ -608,7 +608,7 @@
 //   final GlobalKey manageWebseriesKey = GlobalKey();
 //   final GlobalKey tvShowsKey = GlobalKey();
 //   final GlobalKey tvShowsPakKey = GlobalKey();
-//   final GlobalKey sportsCategoryKey = GlobalKey();
+//   final GlobalKey sportsKey = GlobalKey();
 //   final GlobalKey religiousChannelKey = GlobalKey();
 
 //   // Focus Nodes
@@ -616,7 +616,7 @@
 //   late FocusNode firstSubVodFocusNode;
 //   late FocusNode manageMoviesFocusNode;
 //   late FocusNode tvShowsFocusNode;
-//   late FocusNode sportsCategoryFocusNode;
+//   late FocusNode sportsFocusNode;
 //   late FocusNode manageWebseriesFocusNode;
 //   late FocusNode subLiveFocusNode;
 
@@ -628,7 +628,7 @@
 //     firstSubVodFocusNode = FocusNode();
 //     manageMoviesFocusNode = FocusNode();
 //     tvShowsFocusNode = FocusNode();
-//     sportsCategoryFocusNode = FocusNode();
+//     sportsFocusNode = FocusNode();
 //     manageWebseriesFocusNode = FocusNode();
 //     subLiveFocusNode = FocusNode();
 
@@ -652,7 +652,7 @@
 //       focusProvider.registerElementKey('manageMovies', manageMoviesKey);
 //       focusProvider.registerElementKey('manageWebseries', manageWebseriesKey);
 //       focusProvider.registerElementKey('tvShows', tvShowsKey);
-//       focusProvider.registerElementKey('sportsCategory', sportsCategoryKey);
+//       focusProvider.registerElementKey('sports', sportsKey);
 //       focusProvider.registerElementKey(
 //           'religiousChannels', religiousChannelKey);
 //       focusProvider.registerElementKey('tvShowPak', tvShowsPakKey);
@@ -776,7 +776,7 @@
 //     firstSubVodFocusNode.dispose();
 //     manageMoviesFocusNode.dispose();
 //     tvShowsFocusNode.dispose();
-//     sportsCategoryFocusNode.dispose();
+//     sportsFocusNode.dispose();
 //     manageWebseriesFocusNode.dispose();
 //     subLiveFocusNode.dispose();
 //     super.dispose();
@@ -859,8 +859,8 @@
 //                       child: const ManageTvShows()),
 //                   SizedBox(
 //                       height: screenhgt * 0.38,
-//                       child: SportsCategory(
-//                         key: sportsCategoryKey,
+//                       child: sports(
+//                         key: sportsKey,
 //                       )),
 //                   SizedBox(
 //                       height: screenhgt * 0.38,
@@ -938,7 +938,7 @@
 //   final GlobalKey manageWebseriesKey = GlobalKey();
 //   final GlobalKey tvShowsKey = GlobalKey();
 //   final GlobalKey tvShowsPakKey = GlobalKey();
-//   final GlobalKey sportsCategoryKey = GlobalKey();
+//   final GlobalKey sportsKey = GlobalKey();
 //   final GlobalKey religiousChannelKey = GlobalKey();
 
 //   // Focus Nodes
@@ -946,7 +946,7 @@
 //   late FocusNode firstSubVodFocusNode;
 //   late FocusNode manageMoviesFocusNode;
 //   late FocusNode tvShowsFocusNode;
-//   late FocusNode sportsCategoryFocusNode;
+//   late FocusNode sportsFocusNode;
 //   late FocusNode manageWebseriesFocusNode;
 //   late FocusNode subLiveFocusNode;
 
@@ -958,7 +958,7 @@
 //     firstSubVodFocusNode = FocusNode();
 //     manageMoviesFocusNode = FocusNode();
 //     tvShowsFocusNode = FocusNode();
-//     sportsCategoryFocusNode = FocusNode();
+//     sportsFocusNode = FocusNode();
 //     manageWebseriesFocusNode = FocusNode();
 //     subLiveFocusNode = FocusNode();
 
@@ -981,7 +981,7 @@
 //       focusProvider.registerElementKey('manageMovies', manageMoviesKey);
 //       focusProvider.registerElementKey('manageWebseries', manageWebseriesKey);
 //       focusProvider.registerElementKey('tvShows', tvShowsKey);
-//       focusProvider.registerElementKey('sportsCategory', sportsCategoryKey);
+//       focusProvider.registerElementKey('sports', sportsKey);
 //       focusProvider.registerElementKey(
 //           'religiousChannels', religiousChannelKey);
 //       focusProvider.registerElementKey('tvShowPak', tvShowsPakKey);
@@ -1210,8 +1210,8 @@
 //                   if (_showSports)
 //                     SizedBox(
 //                         height: screenhgt * 0.38,
-//                         child: SportsCategory(
-//                           key: sportsCategoryKey,
+//                         child: sports(
+//                           key: sportsKey,
 //                         )),
 
 //                   // API Key: "religious"
@@ -1296,7 +1296,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final GlobalKey manageWebseriesKey = GlobalKey();
   final GlobalKey tvShowsKey = GlobalKey();
   final GlobalKey tvShowsPakKey = GlobalKey();
-  final GlobalKey sportsCategoryKey = GlobalKey();
+  final GlobalKey sportsKey = GlobalKey();
   final GlobalKey religiousChannelKey = GlobalKey();
 
   // Focus Nodes
@@ -1304,7 +1304,7 @@ class _HomeScreenState extends State<HomeScreen> {
   late FocusNode firstSubVodFocusNode;
   late FocusNode manageMoviesFocusNode;
   late FocusNode tvShowsFocusNode;
-  late FocusNode sportsCategoryFocusNode;
+  late FocusNode sportsFocusNode;
   late FocusNode manageWebseriesFocusNode;
   late FocusNode subLiveFocusNode;
 
@@ -1316,7 +1316,7 @@ class _HomeScreenState extends State<HomeScreen> {
     firstSubVodFocusNode = FocusNode();
     manageMoviesFocusNode = FocusNode();
     tvShowsFocusNode = FocusNode();
-    sportsCategoryFocusNode = FocusNode();
+    sportsFocusNode = FocusNode();
     manageWebseriesFocusNode = FocusNode();
     subLiveFocusNode = FocusNode();
 
@@ -1333,7 +1333,7 @@ class _HomeScreenState extends State<HomeScreen> {
       focusProvider.registerFocusNode('tvShows', tvShowsFocusNode);
       
       // (Baaqi focus nodes bhi register karein agar zaroorat ho)
-      // focusProvider.registerFocusNode('sportsCategory', sportsCategoryFocusNode);
+      // focusProvider.registerFocusNode('sports', sportsFocusNode);
       // focusProvider.registerFocusNode('manageWebseries', manageWebseriesFocusNode);
       // focusProvider.registerFocusNode('subLive', subLiveFocusNode);
 
@@ -1345,7 +1345,7 @@ class _HomeScreenState extends State<HomeScreen> {
       focusProvider.registerElementKey('manageMovies', manageMoviesKey);
       focusProvider.registerElementKey('manageWebseries', manageWebseriesKey);
       focusProvider.registerElementKey('tvShows', tvShowsKey);
-      focusProvider.registerElementKey('sportsCategory', sportsCategoryKey);
+      focusProvider.registerElementKey('sports', sportsKey);
       focusProvider.registerElementKey('religiousChannels', religiousChannelKey); // ID check karein
       focusProvider.registerElementKey('tvShowPak', tvShowsPakKey); // ID check karein
     });
@@ -1481,7 +1481,7 @@ class _HomeScreenState extends State<HomeScreen> {
     firstSubVodFocusNode.dispose();
     manageMoviesFocusNode.dispose();
     tvShowsFocusNode.dispose();
-    sportsCategoryFocusNode.dispose();
+    sportsFocusNode.dispose();
     manageWebseriesFocusNode.dispose();
     subLiveFocusNode.dispose();
     
@@ -1514,7 +1514,7 @@ class _HomeScreenState extends State<HomeScreen> {
     if (_showMovies) visibleRows.add('manageMovies');
     if (_showWebseries) visibleRows.add('manageWebseries');
     if (_showTvShows) visibleRows.add('tvShows');
-    if (_showSports) visibleRows.add('sportsCategory');
+    if (_showSports) visibleRows.add('sports');
     if (_showReligious) visibleRows.add('religiousChannels'); // ID match karein
     if (_showTvShowsPak) visibleRows.add('tvShowPak'); // ID match karein
 
@@ -1605,8 +1605,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   if (_showSports)
                     SizedBox(
                         height: screenhgt * 0.38,
-                        child: SportsCategory(
-                          key: sportsCategoryKey,
+                        // child: SportsCategory(
+                        //   key: sportsKey,
+                        // )),
+                        child: ManageSports(
+                          key: sportsKey,
                         )),
 
                   // API Key: "religious"
