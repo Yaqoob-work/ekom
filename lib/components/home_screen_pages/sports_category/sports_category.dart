@@ -5964,6 +5964,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as https;
 import 'package:mobi_tv_entertainment/components/home_screen_pages/religious_channel/religious_channel_slider_screen.dart';
+import 'package:mobi_tv_entertainment/components/home_screen_pages/sports_category/sports_slider_screen.dart';
 // ✅ [UPDATED IMPORT] Ensure this path exists for your Sports Slider
 import 'package:mobi_tv_entertainment/components/home_screen_pages/tv_show/tv_show_second_page.dart'; 
 import 'package:mobi_tv_entertainment/components/home_screen_pages/tv_show/tv_show_slider_screen.dart'; 
@@ -6352,7 +6353,7 @@ class _ManageSportsState extends State<ManageSports>
       context,
       MaterialPageRoute(
         // ✅ Pointing to Sports Slider
-        builder: (context) => ReligiousChannelSliderScreen(
+        builder: (context) => SportsSliderScreen(
           initialNetworkId: null, 
         ),
       ),
@@ -6364,7 +6365,7 @@ class _ManageSportsState extends State<ManageSports>
       context,
       MaterialPageRoute(
         // ✅ Pointing to Sports Slider
-        builder: (context) => ReligiousChannelSliderScreen (
+        builder: (context) => SportsSliderScreen (
           initialNetworkId: network.id, 
         ),
       ),

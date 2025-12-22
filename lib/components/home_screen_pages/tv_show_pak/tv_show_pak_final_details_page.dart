@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:mobi_tv_entertainment/components/provider/device_info_provider.dart';
 import 'package:mobi_tv_entertainment/components/services/history_service.dart';
 import 'package:mobi_tv_entertainment/components/video_widget/custom_video_player.dart';
+import 'package:mobi_tv_entertainment/components/video_widget/secure_url_service.dart';
 import 'package:mobi_tv_entertainment/components/video_widget/video_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -382,7 +383,7 @@ class _TvShowPakFinalDetailsPageState extends State<TvShowPakFinalDetailsPage>
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     // _socketService.initSocket();
-
+SecureUrlService.refreshSettings();
     _initializeAnimations();
     _loadAuthKey();
   }
@@ -769,11 +770,13 @@ class _TvShowPakFinalDetailsPageState extends State<TvShowPakFinalDetailsPage>
     }
 
     try {
-      String url = episode.videoUrl;
+      // String url = episode.videoUrl;
 
       if (mounted) {
         dynamic result;
-
+      String rawUrl = episode.videoUrl;
+      print('rawurl: $rawUrl');
+      String playableUrl = await SecureUrlService.getSecureUrl(rawUrl);
         if (episode.streamingType.toLowerCase() == 'youtube') {
           final deviceInfo = context.read<DeviceInfoProvider>();
 
@@ -783,7 +786,7 @@ class _TvShowPakFinalDetailsPageState extends State<TvShowPakFinalDetailsPage>
                 context,
                 MaterialPageRoute(
                     builder: (context) => YoutubeWebviewPlayer(
-                          videoUrl: episode.videoUrl,
+                          videoUrl: playableUrl,
                           name: episode.title,
                         )));
           } else {
@@ -791,20 +794,20 @@ class _TvShowPakFinalDetailsPageState extends State<TvShowPakFinalDetailsPage>
               context,
               MaterialPageRoute(
                 builder: (context) => CustomYoutubePlayer(
-                  // videoUrl: episode.videoUrl,
+                  // videoUrl: playableUrl,
                   // name: episode.title,
                   videoData: VideoData(
-                    id: episode.videoUrl ?? '',
+                    id: playableUrl ?? '',
                     title: episode.title,
-                    youtubeUrl: episode.videoUrl ?? '',
+                    youtubeUrl: playableUrl ?? '',
                     thumbnail: episode.thumbnail ?? '',
                     description: episode.description ?? '',
                   ),
                   playlist: [
                     VideoData(
-                      id: episode.videoUrl ?? '',
+                      id: playableUrl ?? '',
                       title: episode.title,
-                      youtubeUrl: episode.videoUrl ?? '',
+                      youtubeUrl: playableUrl ?? '',
                       thumbnail: episode.thumbnail ?? '',
                       description: episode.description ?? '',
                     ),
@@ -818,7 +821,7 @@ class _TvShowPakFinalDetailsPageState extends State<TvShowPakFinalDetailsPage>
           //   context,
           //   MaterialPageRoute(
           //     builder: (context) => CustomVideoPlayer(
-          //       videoUrl: episode.videoUrl,
+          //       videoUrl: playableUrl,
           //     ),
           //   ),
           // );
@@ -826,7 +829,7 @@ class _TvShowPakFinalDetailsPageState extends State<TvShowPakFinalDetailsPage>
             context,
             MaterialPageRoute(
               builder: (context) => VideoScreen(
-                videoUrl: episode.videoUrl,
+                videoUrl: playableUrl,
                 bannerImageUrl: episode.thumbnail,
                 channelList: [],
                 // isLive: false,

@@ -1087,6 +1087,7 @@ class FocusProvider extends ChangeNotifier {
     'sports',
     'religiousChannels',
     'tvShowPak',
+    'kidchannels',
   };
 
   void updateVisibleRowIdentifiers(List<String> identifiers) {
@@ -1228,6 +1229,7 @@ class FocusProvider extends ChangeNotifier {
         case 'sports':
         case 'religiousChannels':
         case 'tvShowPak': 
+        case 'kidchannels': 
           node.requestFocus();
           scrollToElement(identifier); // Scroll function call karein
           break;

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:mobi_tv_entertainment/components/provider/device_info_provider.dart';
 import 'package:mobi_tv_entertainment/components/services/history_service.dart';
 import 'package:mobi_tv_entertainment/components/video_widget/custom_video_player.dart';
+import 'package:mobi_tv_entertainment/components/video_widget/secure_url_service.dart';
 import 'package:mobi_tv_entertainment/components/video_widget/video_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -552,6 +553,7 @@ class _TournamentFinalDetailsPageState extends State<TournamentFinalDetailsPage>
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     // _socketService.initSocket();
+SecureUrlService.refreshSettings();
 
     _initializeAnimations();
     _loadAuthKey();
@@ -1169,7 +1171,9 @@ class _TournamentFinalDetailsPageState extends State<TournamentFinalDetailsPage>
 
       if (mounted) {
         dynamic result;
-
+      String rawUrl = match.videoUrl??'';
+      print('rawurl: $rawUrl');
+      String playableUrl = await SecureUrlService.getSecureUrl(rawUrl);
         if (match.streamType == 'youtube'
             // || isYoutubeUrl(url)
             ) {
@@ -1181,7 +1185,7 @@ class _TournamentFinalDetailsPageState extends State<TournamentFinalDetailsPage>
                 context,
                 MaterialPageRoute(
                     builder: (context) => YoutubeWebviewPlayer(
-                          videoUrl: match.videoUrl ?? '',
+                          videoUrl: playableUrl,
                           name: match.matchTitle,
                         )));
           } else {
@@ -1190,17 +1194,17 @@ class _TournamentFinalDetailsPageState extends State<TournamentFinalDetailsPage>
               MaterialPageRoute(
                 builder: (context) => CustomYoutubePlayer(
                   videoData: VideoData(
-                    id: match.videoUrl ?? '',
+                    id: playableUrl,
                     title: match.matchTitle,
-                    youtubeUrl: match.videoUrl ?? '',
+                    youtubeUrl: playableUrl,
                     thumbnail: match.thumbnailUrl ?? '',
                     description: match.description ?? '',
                   ),
                   playlist: [
                     VideoData(
-                      id: match.videoUrl ?? '',
+                      id: playableUrl,
                       title: match.matchTitle,
-                      youtubeUrl: match.videoUrl ?? '',
+                      youtubeUrl: playableUrl,
                       thumbnail: match.thumbnailUrl ?? '',
                       description: match.description ?? '',
                     ),
@@ -1214,7 +1218,7 @@ class _TournamentFinalDetailsPageState extends State<TournamentFinalDetailsPage>
           //   context,
           //   MaterialPageRoute(
           //     builder: (context) => CustomVideoPlayer(
-          //       videoUrl: url,
+          //       videoUrl: playableUrl,
           //     ),
           //   ),
           // );
@@ -1222,7 +1226,7 @@ class _TournamentFinalDetailsPageState extends State<TournamentFinalDetailsPage>
             context,
             MaterialPageRoute(
               builder: (context) => VideoScreen(
-                videoUrl: url,
+                videoUrl: playableUrl,
                 bannerImageUrl: match.thumbnailUrl ?? '',
                 channelList: [],
                 source: 'isSports',

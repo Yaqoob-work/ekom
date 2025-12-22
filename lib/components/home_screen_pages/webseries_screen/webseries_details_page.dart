@@ -1946,6 +1946,7 @@ import 'dart:convert';
 import 'package:mobi_tv_entertainment/components/provider/device_info_provider.dart';
 import 'package:mobi_tv_entertainment/components/services/history_service.dart';
 import 'package:mobi_tv_entertainment/components/video_widget/custom_video_player.dart';
+import 'package:mobi_tv_entertainment/components/video_widget/secure_url_service.dart';
 import 'package:mobi_tv_entertainment/components/video_widget/video_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -2200,6 +2201,7 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
   @override
   void initState() {
     super.initState();
+    SecureUrlService.refreshSettings();
     WidgetsBinding.instance.addObserver(this);
     _initializeAnimations();
     _loadAuthKey();
@@ -2502,6 +2504,9 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
 
     try {
       if (mounted) {
+              String rawUrl = episode.url;
+      print('rawurl: $rawUrl');
+      String playableUrl = await SecureUrlService.getSecureUrl(rawUrl);
         if (episode.source == 'youtube' || isYoutubeUrl(episode.url)) {
           final deviceInfo = context.read<DeviceInfoProvider>();
           if (deviceInfo.deviceName == 'AFTSS : Amazon Fire Stick HD') {
@@ -2509,7 +2514,7 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
               context,
               MaterialPageRoute(
                 builder: (context) => YoutubeWebviewPlayer(
-                  videoUrl: episode.url,
+                  videoUrl: playableUrl,
                   name: episode.name,
                 ),
               ),
@@ -2520,17 +2525,17 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
               MaterialPageRoute(
                 builder: (context) => CustomYoutubePlayer(
                   videoData: VideoData(
-                    id: episode.url,
+                    id: playableUrl,
                     title: episode.name,
-                    youtubeUrl: episode.url,
+                    youtubeUrl: playableUrl,
                     thumbnail: episode.thumbnail ?? '',
                     description: episode.description,
                   ),
                   playlist: [
                     VideoData(
-                      id: episode.url,
+                      id: playableUrl,
                       title: episode.name,
-                      youtubeUrl: episode.url,
+                      youtubeUrl: playableUrl,
                       thumbnail: episode.thumbnail ?? '',
                       description: episode.description,
                     ),
@@ -2544,7 +2549,7 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
             context,
             MaterialPageRoute(
               builder: (context) => VideoScreen(
-                videoUrl: episode.url,
+                videoUrl: playableUrl,
                 bannerImageUrl: episode.banner,
                 channelList: [],
                 videoId: int.tryParse(episode.id),

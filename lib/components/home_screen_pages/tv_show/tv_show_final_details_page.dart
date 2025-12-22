@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:mobi_tv_entertainment/components/provider/device_info_provider.dart';
 import 'package:mobi_tv_entertainment/components/services/history_service.dart';
 import 'package:mobi_tv_entertainment/components/video_widget/custom_video_player.dart';
+import 'package:mobi_tv_entertainment/components/video_widget/secure_url_service.dart';
 import 'package:mobi_tv_entertainment/components/video_widget/video_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -383,7 +384,7 @@ class _TvShowFinalDetailsPageState extends State<TvShowFinalDetailsPage>
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     // _socketService.initSocket();
-
+    SecureUrlService.refreshSettings();
     _initializeAnimations();
     _loadAuthKey();
     _startInstructionTimer();
@@ -586,12 +587,13 @@ class _TvShowFinalDetailsPageState extends State<TvShowFinalDetailsPage>
 
   // Direct API call for seasons
   Future<List<ShowSeasonModel>?> _fetchSeasonsFromAPIDirectly() async {
-            String authKey = SessionManager.authKey ;
-      var url = Uri.parse(SessionManager.baseUrl + 'getShowSeasons/${widget.id}');
+    String authKey = SessionManager.authKey;
+    var url = Uri.parse(SessionManager.baseUrl + 'getShowSeasons/${widget.id}');
 
-    final response = await https.get(url,
+    final response = await https.get(
+      url,
       // Uri.parse(
-          // 'https://dashboard.cpplayers.com/api/v2/getShowSeasons/${widget.id}'),
+      // 'https://dashboard.cpplayers.com/api/v2/getShowSeasons/${widget.id}'),
       headers: {
         'auth-key': authKey,
         'Accept': 'application/json',
@@ -716,10 +718,12 @@ class _TvShowFinalDetailsPageState extends State<TvShowFinalDetailsPage>
   // Direct API call for episodes
   Future<List<ShowEpisodeModel>?> _fetchEpisodesFromAPIDirectly(
       int seasonId) async {
-            String authKey = SessionManager.authKey ;
-      var url = Uri.parse(SessionManager.baseUrl + 'getShowSeasonsEpisodes/$seasonId');
+    String authKey = SessionManager.authKey;
+    var url =
+        Uri.parse(SessionManager.baseUrl + 'getShowSeasonsEpisodes/$seasonId');
 
-    final response = await https.get(url,
+    final response = await https.get(
+      url,
       // Uri.parse(
       //     'https://dashboard.cpplayers.com/api/v2/getShowSeasonsEpisodes/$seasonId'),
       headers: {
@@ -780,7 +784,10 @@ class _TvShowFinalDetailsPageState extends State<TvShowFinalDetailsPage>
     }
 
     try {
-      String url = episode.videoUrl;
+      // String url = episode.videoUrl;
+      String rawUrl = episode.videoUrl;
+      print('rawurl: $rawUrl');
+      String playableUrl = await SecureUrlService.getSecureUrl(rawUrl);
 
       if (mounted) {
         dynamic result;
@@ -795,7 +802,7 @@ class _TvShowFinalDetailsPageState extends State<TvShowFinalDetailsPage>
               context,
               MaterialPageRoute(
                 builder: (context) => YoutubeWebviewPlayer(
-                  videoUrl: episode.videoUrl,
+                  videoUrl: playableUrl,
                   name: episode.title,
                 ),
               ),
@@ -808,17 +815,17 @@ class _TvShowFinalDetailsPageState extends State<TvShowFinalDetailsPage>
                   // videoUrl: episode.videoUrl,
                   // name: episode.title,
                   videoData: VideoData(
-                    id: episode.videoUrl ?? '',
+                    id: playableUrl,
                     title: episode.title,
-                    youtubeUrl: episode.videoUrl ?? '',
+                    youtubeUrl: playableUrl,
                     thumbnail: episode.thumbnail ?? '',
                     description: episode.description ?? '',
                   ),
                   playlist: [
                     VideoData(
-                      id: episode.videoUrl ?? '',
+                      id: playableUrl,
                       title: episode.title,
-                      youtubeUrl: episode.videoUrl ?? '',
+                      youtubeUrl: playableUrl,
                       thumbnail: episode.thumbnail ?? '',
                       description: episode.description ?? '',
                     ),
@@ -841,7 +848,7 @@ class _TvShowFinalDetailsPageState extends State<TvShowFinalDetailsPage>
             context,
             MaterialPageRoute(
               builder: (context) => VideoScreen(
-                videoUrl: episode.videoUrl,
+                videoUrl: playableUrl,
                 bannerImageUrl: episode.thumbnail,
                 channelList: [],
                 // isLive: false,

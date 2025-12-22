@@ -1954,6 +1954,7 @@
 import 'dart:async';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:mobi_tv_entertainment/components/video_widget/secure_url_service.dart';
 import 'package:mobi_tv_entertainment/main.dart';
 import 'package:mobi_tv_entertainment/components/provider/color_provider.dart';
 import 'package:mobi_tv_entertainment/components/provider/device_info_provider.dart';
@@ -2424,6 +2425,7 @@ class _ProfessionalMoviesHorizontalListState
   @override
   void initState() {
     super.initState();
+    SecureUrlService.refreshSettings();
     _initializeAnimations();
     // _setupFocusProvider(); // Call *after* fetch
     _fetchDisplayMovies().then((_) {
@@ -2739,6 +2741,9 @@ class _ProfessionalMoviesHorizontalListState
         Navigator.of(context, rootNavigator: true).pop();
       }
 
+            String rawUrl = movie.movieUrl;
+      String playableUrl = await SecureUrlService.getSecureUrl(rawUrl);
+
       if (movie.sourceType == 'YoutubeLive') {
         final deviceInfo = context.read<DeviceInfoProvider>();
 
@@ -2749,7 +2754,7 @@ class _ProfessionalMoviesHorizontalListState
             context,
             MaterialPageRoute(
               builder: (context) => YoutubeWebviewPlayer(
-                videoUrl: movie.movieUrl,
+                videoUrl: playableUrl,
                 name: movie.name,
               ),
             ),
@@ -2760,17 +2765,17 @@ class _ProfessionalMoviesHorizontalListState
             MaterialPageRoute(
               builder: (context) => CustomYoutubePlayer(
                 videoData: VideoData(
-                  id: movie.movieUrl,
+                  id: playableUrl,
                   title: movie.name,
-                  youtubeUrl: movie.movieUrl,
+                  youtubeUrl: playableUrl,
                   thumbnail: movie.banner ?? movie.poster ?? '',
                   description: movie.description ?? '',
                 ),
                 playlist: [
                   VideoData(
-                    id: movie.movieUrl,
+                    id: playableUrl,
                     title: movie.name,
-                    youtubeUrl: movie.movieUrl,
+                    youtubeUrl: playableUrl,
                     thumbnail: movie.banner ?? movie.poster ?? '',
                     description: movie.description ?? '',
                   ),
@@ -2784,7 +2789,7 @@ class _ProfessionalMoviesHorizontalListState
           context,
           MaterialPageRoute(
             builder: (context) => VideoScreen(
-              videoUrl: movie.movieUrl,
+              videoUrl: playableUrl,
               bannerImageUrl: movie.banner ?? movie.poster ?? '',
               channelList: [],
               source: 'isRecentlyAdded',

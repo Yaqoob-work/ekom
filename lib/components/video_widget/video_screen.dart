@@ -1912,12 +1912,6 @@
 //   }
 // }
 
-
-
-
-
-
-
 // import 'dart:async';
 // import 'package:flutter/material.dart';
 // import 'package:flutter/services.dart';
@@ -4657,10 +4651,6 @@
 //   }
 // }
 
-
-
-
-
 // import 'dart:async';
 // import 'dart:convert';
 // import 'dart:math' as math;
@@ -5436,7 +5426,7 @@
 //       }
 
 //       // --- 🔽 New "Frozen Frame" Stall Detection Logic ---
-//       // 
+//       //
 //       // यह लॉजिक तब काम करता है जब प्लेयर 'playing' दिखाता है,
 //       // लेकिन वीडियो असल में अटक (freeze) गया है।
 
@@ -6547,12 +6537,6 @@
 //   }
 // }
 
-
-
-
-
-
-
 // import 'dart:async';
 // import 'dart:convert';
 // import 'dart:math' as math;
@@ -7038,7 +7022,6 @@
 //   //   }
 //   // }
 
-
 // // 🔽 यह डिटेक्टर #1 है: यह Error, Stop, या लंबी Buffering को पकड़ता है
 //   void _vlcListener() {
 //     if (!mounted || _controller == null || !_controller!.value.isInitialized)
@@ -7416,7 +7399,7 @@
 //   //     }
 
 //   //     // --- 🔽 New "Frozen Frame" Stall Detection Logic ---
-//   //     // 
+//   //     //
 //   //     // यह लॉजिक तब काम करता है जब प्लेयर 'playing' दिखाता है,
 //   //     // लेकिन वीडियो असल में अटक (freeze) गया है।
 
@@ -7453,8 +7436,6 @@
 //   //     // --- 🔼 End of New Logic ---
 //   //   });
 //   // }
-
-
 
 // // 🔽 यह डिटेक्टर #2 है: यह "फ्रोज़न फ़्रेम" (Position Stuck) को पकड़ता है
 //   void _startPositionUpdater() {
@@ -7516,8 +7497,6 @@
 //     });
 //   }
 
-
-
 //   bool urlUpdating = false;
 
 //   String extractApiEndpoint(String url) {
@@ -7531,8 +7510,6 @@
 //       return '';
 //     }
 //   }
-
-
 
 //   // 🔽 यह फ़ंक्शन स्टॉल/एरर होने पर रीस्टार्ट करने का प्रयास करता है (VOD और LIVE)
 //   Future<void> _attemptResumeStream() async {
@@ -7671,8 +7648,6 @@
 //   //   });
 //   // }
 
-
-
 // // 🔽 स्टॉल डिटेक्टर काउंटर्स को रीसेट करने के लिए अपडेट किया गया
 //   Future<void> _initializeVLCController(int index) async {
 //     printAllStartAtPositions();
@@ -7726,7 +7701,6 @@
 //       _isVideoInitialized = true;
 //     });
 //   }
-
 
 //   // 🔽 यह _retryPlayback फ़ंक्शन है (stop() के साथ)
 //   Future<void> _retryPlayback(String url, int retries) async {
@@ -8530,9 +8504,6 @@
 //   }
 // }
 
-
-
-
 // import 'dart:async';
 // import 'dart:convert';
 // import 'dart:io';
@@ -8544,7 +8515,7 @@
 // import 'package:mobi_tv_entertainment/components/widgets/small_widgets/rainbow_page.dart';
 // import 'package:mobi_tv_entertainment/main.dart';
 // // Asegúrate de que este import sea correcto si lo estás usando.
-// // import '../widgets/models/news_item_model.dart'; 
+// // import '../widgets/models/news_item_model.dart';
 
 // class GlobalVariables {
 //   static String unUpdatedUrl = '';
@@ -8820,7 +8791,6 @@
 //   //   }
 //   // }
 
-
 // Future<void> _attemptResumeLiveStream() async {
 //     if (!mounted ||
 //         _isAttemptingResume ||
@@ -8841,7 +8811,7 @@
 //       await _controller!.pause();
 //       await Future.delayed(Duration(milliseconds: 500));
 //       await _controller!.play();
-      
+
 //       // Dale 3 segundos para ver si funciona
 //       await Future.delayed(Duration(seconds: 3));
 
@@ -9048,7 +9018,7 @@
 
 //   Future<void> _onNetworkReconnected() async {
 //     if (_controller == null || _currentModifiedUrl == null) return;
-    
+
 //     // Construye la URL completa con opciones de cache
 //     final fullUrl = _buildVlcUrl(_currentModifiedUrl!);
 //     print("Reconectando a: $fullUrl");
@@ -9175,7 +9145,7 @@
 //     });
 
 //     var selectedChannel = widget.channelList[index];
-    
+
 //     // 🚀 USA EL NUEVO HELPER
 //     _currentModifiedUrl = selectedChannel.url; // Almacena la URL base
 //     final String fullVlcUrl = _buildVlcUrl(selectedChannel.url);
@@ -9721,7 +9691,7 @@
 //   // Barra de progreso principal
 //   Widget _buildBeautifulProgressBar(Duration displayPosition, Duration totalDuration) {
 //     final totalDurationMs = totalDuration.inMilliseconds.toDouble();
-    
+
 //     // Si es Live o la duración es 0, muestra una barra simple
 //     if (totalDurationMs <= 0 || widget.liveStatus == true) {
 //       return Container(
@@ -9736,9 +9706,9 @@
 
 //     double playedProgress =
 //         (displayPosition.inMilliseconds / totalDurationMs).clamp(0.0, 1.0);
-    
+
 //     // Simula un pequeño buffer
-//     double bufferedProgress = (playedProgress + 0.005).clamp(0.0, 1.0); 
+//     double bufferedProgress = (playedProgress + 0.005).clamp(0.0, 1.0);
 
 //     return Container(
 //       padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
@@ -9808,15 +9778,6 @@
 //     );
 //   }
 // }
-
-
-
-
-
-
-
-
-
 
 // import 'dart:async';
 // import 'dart:convert';
@@ -10938,18 +10899,6 @@
 //   }
 // }
 
-
-
-
-
-
-
-
-
-
-
-
-
 // import 'dart:async';
 // import 'dart:convert';
 // import 'dart:io';
@@ -10961,7 +10910,7 @@
 // import 'package:mobi_tv_entertainment/components/widgets/small_widgets/rainbow_page.dart';
 // import 'package:mobi_tv_entertainment/main.dart';
 // // Asegúrate de que este import sea correcto si lo estás usando.
-// // import '../widgets/models/news_item_model.dart'; 
+// // import '../widgets/models/news_item_model.dart';
 
 // class GlobalVariables {
 //   static String unUpdatedUrl = '';
@@ -11413,7 +11362,7 @@
 
 //   Future<void> _onNetworkReconnected() async {
 //     if (_controller == null || _currentModifiedUrl == null) return;
-    
+
 //     // Construye la URL completa con opciones de cache
 //     final fullUrl = _buildVlcUrl(_currentModifiedUrl!);
 //     print("Reconectando a: $fullUrl");
@@ -11540,7 +11489,7 @@
 //     });
 
 //     var selectedChannel = widget.channelList[index];
-    
+
 //     // 🚀 USA EL NUEVO HELPER
 //     _currentModifiedUrl = selectedChannel.url; // Almacena la URL base
 //     final String fullVlcUrl = _buildVlcUrl(selectedChannel.url);
@@ -12086,7 +12035,7 @@
 //   // Barra de progreso principal
 //   Widget _buildBeautifulProgressBar(Duration displayPosition, Duration totalDuration) {
 //     final totalDurationMs = totalDuration.inMilliseconds.toDouble();
-    
+
 //     // Si es Live o la duración es 0, muestra una barra simple
 //     if (totalDurationMs <= 0 || widget.liveStatus == true) {
 //       return Container(
@@ -12101,9 +12050,9 @@
 
 //     double playedProgress =
 //         (displayPosition.inMilliseconds / totalDurationMs).clamp(0.0, 1.0);
-    
+
 //     // Simula un pequeño buffer
-//     double bufferedProgress = (playedProgress + 0.005).clamp(0.0, 1.0); 
+//     double bufferedProgress = (playedProgress + 0.005).clamp(0.0, 1.0);
 
 //     return Container(
 //       padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
@@ -12173,92 +12122,6 @@
 //     );
 //   }
 // }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 import 'dart:async';
 import 'dart:convert';
@@ -12343,8 +12206,7 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
   Uint8List _getCachedImage(String base64String) {
     try {
       if (!_bannerCache.containsKey(base64String)) {
-        _bannerCache[base64String] =
-            base64Decode(base64String.split(',').last);
+        _bannerCache[base64String] = base64Decode(base64String.split(',').last);
       }
       return _bannerCache[base64String]!;
     } catch (e) {
@@ -12381,7 +12243,7 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
   // 🆕 Safe disposal method
   Future<void> _safeDispose() async {
     if (_isDisposing) return;
-    
+
     _isDisposing = true;
     print("🔄 Safe disposal started...");
 
@@ -12410,7 +12272,7 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
 
     KeepScreenOn.turnOff();
     WidgetsBinding.instance.removeObserver(this);
-    
+
     print("✅ Safe disposal completed");
   }
 
@@ -12424,7 +12286,7 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
   // 🆕 Improved back button handler
   Future<bool> _onWillPop() async {
     print("🔙 Back button pressed");
-    
+
     if (_isDisposing) {
       return false;
     }
@@ -12435,7 +12297,7 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
 
     // Safe disposal और फिर navigate
     await _safeDispose();
-    
+
     return true;
   }
 
@@ -12533,7 +12395,8 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
           if (widget.liveStatus == false) {
             _seekBackward();
           }
-          if (playPauseButtonFocusNode.hasFocus && widget.channelList.isNotEmpty) {
+          if (playPauseButtonFocusNode.hasFocus &&
+              widget.channelList.isNotEmpty) {
             FocusScope.of(context).requestFocus(focusNodes[_focusedIndex]);
           }
           break;
@@ -12570,8 +12433,7 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
     print("⚠️ Detectado atasco en Live stream. Intentando resumir...");
 
     try {
-      final urlToResume = _buildVlcUrl(
-          _currentModifiedUrl ?? widget.videoUrl);
+      final urlToResume = _buildVlcUrl(_currentModifiedUrl ?? widget.videoUrl);
       await _retryPlayback(urlToResume, 3);
 
       _lastPlayingTime = DateTime.now();
@@ -12649,7 +12511,9 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
 
   void _startPositionUpdater() {
     Timer.periodic(Duration(seconds: 2), (_) {
-      if (!mounted || _controller == null || !_controller!.value.isInitialized) {
+      if (!mounted ||
+          _controller == null ||
+          !_controller!.value.isInitialized) {
         return;
       }
 
@@ -12725,7 +12589,7 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
 
   // Future<void> _onNetworkReconnected() async {
   //   if (_controller == null || _currentModifiedUrl == null) return;
-    
+
   //   final fullUrl = _buildVlcUrl(_currentModifiedUrl!);
   //   print("Reconectando a: $fullUrl");
 
@@ -12744,8 +12608,7 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
   //   }
   // }
 
-
-Future<void> _onNetworkReconnected() async {
+  Future<void> _onNetworkReconnected() async {
     if (_controller == null || _currentModifiedUrl == null) return;
 
     final fullUrl = _buildVlcUrl(_currentModifiedUrl!);
@@ -12756,17 +12619,16 @@ Future<void> _onNetworkReconnected() async {
         // --- Lógica de Live Stream (sin cambios) ---
         print("Reconexión Live Stream: Reiniciando stream...");
         await _retryPlayback(fullUrl, 3);
-
       } else {
         // --- 🆕 Lógica MEJORADA para VOD (video no-en-vivo) ---
         print("Reconexión VOD: Intentando resumir desde $_lastKnownPosition");
-        
+
         // setState(() { _loadingVisible = true; }); // Opcional: mostrar loading
 
         try {
           // Plan A: Intentar "desatascar" el player sin recargar.
           // Esto es mucho más rápido y fluido para el usuario.
-          
+
           // Pausar primero para asegurar el estado
           await _controller!.pause();
           await Future.delayed(const Duration(milliseconds: 100));
@@ -12780,17 +12642,16 @@ Future<void> _onNetworkReconnected() async {
             await _controller!.play();
           }
           print("✅ VOD Resumido (Plan A) tras reconexión.");
-
         } catch (e) {
           // Plan B: Si el Plan A falla (el controller está muy roto),
           // recurrir al método de recarga completa como último recurso.
           print("⚠️ Plan A falló. Recurriendo a Plan B (Recarga). Error: $e");
-          
+
           await _retryPlayback(fullUrl, 3);
-          
+
           // Esperar un momento a que el video se cargue después de 'setMedia'
-          await Future.delayed(const Duration(seconds: 2)); 
-          
+          await Future.delayed(const Duration(seconds: 2));
+
           if (_lastKnownPosition != Duration.zero) {
             await _seekToPosition(_lastKnownPosition);
           }
@@ -12799,12 +12660,11 @@ Future<void> _onNetworkReconnected() async {
       }
     } catch (e) {
       print("❌ Error crítico durante reconexión: $e");
-    } 
+    }
     // finally {
     //   if (mounted) setState(() { _loadingVisible = false; }); // Opcional
     // }
   }
-
 
   Future<bool> _isInternetAvailable() async {
     try {
@@ -12845,13 +12705,14 @@ Future<void> _onNetworkReconnected() async {
   }
 
   Future<void> _initializeVLCController(String baseUrl) async {
+    
     setState(() {
       _loadingVisible = true;
     });
 
     _currentModifiedUrl = baseUrl;
     final String fullVlcUrl = _buildVlcUrl(baseUrl);
-
+print('fullVlcUrl: $fullVlcUrl');
     _lastPlayingTime = DateTime.now();
     _lastPositionCheck = Duration.zero;
     _stallCounter = 0;
@@ -12906,7 +12767,7 @@ Future<void> _onNetworkReconnected() async {
     });
 
     var selectedChannel = widget.channelList[index];
-    
+
     _currentModifiedUrl = selectedChannel.url;
     final String fullVlcUrl = _buildVlcUrl(selectedChannel.url);
     print("Cambiando a URL: $fullVlcUrl");
@@ -12932,9 +12793,7 @@ Future<void> _onNetworkReconnected() async {
 
   void _togglePlayPause() {
     if (_controller != null && _controller!.value.isInitialized) {
-      _controller!.value.isPlaying
-          ? _controller!.pause()
-          : _controller!.play();
+      _controller!.value.isPlaying ? _controller!.pause() : _controller!.play();
       _lastPlayingTime = DateTime.now();
       _stallCounter = 0;
     }
@@ -12984,8 +12843,8 @@ Future<void> _onNetworkReconnected() async {
         _controller!.value.duration <= Duration.zero) return;
 
     _accumulatedSeekForward += _seekDuration;
-    final newPosition =
-        _controller!.value.position + Duration(seconds: _accumulatedSeekForward);
+    final newPosition = _controller!.value.position +
+        Duration(seconds: _accumulatedSeekForward);
 
     setState(() {
       _previewPosition = newPosition > _controller!.value.duration
@@ -13145,7 +13004,6 @@ Future<void> _onNetworkReconnected() async {
                 children: [
                   if (_isVideoInitialized && _controller != null)
                     _buildVideoPlayer(),
-
                   if (_loadingVisible ||
                       !_isVideoInitialized ||
                       _isAttemptingResume ||
@@ -13156,16 +13014,15 @@ Future<void> _onNetworkReconnected() async {
                           : Colors.transparent,
                       child: Center(
                         child: RainbowPage(
-                          backgroundColor: _loadingVisible || !_isVideoInitialized
-                              ? Colors.black
-                              : Colors.transparent,
+                          backgroundColor:
+                              _loadingVisible || !_isVideoInitialized
+                                  ? Colors.black
+                                  : Colors.transparent,
                         ),
                       ),
                     ),
-
                   if (_controlsVisible && widget.channelList.isNotEmpty)
                     _buildChannelList(),
-
                   _buildControls(),
                 ],
               ),
@@ -13286,10 +13143,11 @@ Future<void> _onNetworkReconnected() async {
   }
 
   Widget _buildControls() {
-    final Duration currentPosition =
-        _accumulatedSeekForward > 0 || _accumulatedSeekBackward > 0 || _isScrubbing
-            ? _previewPosition
-            : _controller?.value.position ?? Duration.zero;
+    final Duration currentPosition = _accumulatedSeekForward > 0 ||
+            _accumulatedSeekBackward > 0 ||
+            _isScrubbing
+        ? _previewPosition
+        : _controller?.value.position ?? Duration.zero;
     final Duration totalDuration = _controller?.value.duration ?? Duration.zero;
 
     return Positioned(
@@ -13329,7 +13187,6 @@ Future<void> _onNetworkReconnected() async {
                     ),
                   ),
                 ),
-
                 if (widget.liveStatus == false)
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 12.0),
@@ -13342,9 +13199,8 @@ Future<void> _onNetworkReconnected() async {
                       ),
                     ),
                   ),
-
                 Expanded(
-                  flex:10,
+                  flex: 10,
                   child: LayoutBuilder(
                     builder: (context, constraints) {
                       return GestureDetector(
@@ -13366,7 +13222,6 @@ Future<void> _onNetworkReconnected() async {
                     },
                   ),
                 ),
-
                 if (widget.liveStatus == false)
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 12.0),
@@ -13379,7 +13234,6 @@ Future<void> _onNetworkReconnected() async {
                       ),
                     ),
                   ),
-
                 if (widget.liveStatus == true)
                   Expanded(
                     flex: 1,
@@ -13408,9 +13262,10 @@ Future<void> _onNetworkReconnected() async {
     );
   }
 
-  Widget _buildBeautifulProgressBar(Duration displayPosition, Duration totalDuration) {
+  Widget _buildBeautifulProgressBar(
+      Duration displayPosition, Duration totalDuration) {
     final totalDurationMs = totalDuration.inMilliseconds.toDouble();
-    
+
     if (totalDurationMs <= 0 || widget.liveStatus == true) {
       return Container(
         padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
@@ -13424,7 +13279,7 @@ Future<void> _onNetworkReconnected() async {
 
     double playedProgress =
         (displayPosition.inMilliseconds / totalDurationMs).clamp(0.0, 1.0);
-    
+
     double bufferedProgress = (playedProgress + 0.005).clamp(0.0, 1.0);
 
     return Container(
@@ -13492,8 +13347,3 @@ Future<void> _onNetworkReconnected() async {
     );
   }
 }
-
-
-
-
-

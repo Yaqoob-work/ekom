@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:mobi_tv_entertainment/components/provider/device_info_provider.dart';
 import 'package:mobi_tv_entertainment/components/services/history_service.dart';
 import 'package:mobi_tv_entertainment/components/video_widget/custom_video_player.dart';
+import 'package:mobi_tv_entertainment/components/video_widget/secure_url_service.dart';
 import 'package:mobi_tv_entertainment/components/video_widget/video_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -375,7 +376,7 @@ class _ReligiousChannelDetailsPageState
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     // _socketService.initSocket();
-
+SecureUrlService.refreshSettings();
     _initializeAnimations();
     _loadAuthKey();
   }
@@ -728,7 +729,11 @@ class _ReligiousChannelDetailsPageState
     }
 
     try {
+                    String rawUrl = episode.url;
+      print('rawurl: $rawUrl');
+      String playableUrl = await SecureUrlService.getSecureUrl(rawUrl);
       if (mounted) {
+
         if (episode.source.toLowerCase() == 'youtube'
             // || isYoutubeUrl(episode.url)
             ) {
@@ -740,7 +745,7 @@ class _ReligiousChannelDetailsPageState
                 context,
                 MaterialPageRoute(
                     builder: (context) => YoutubeWebviewPlayer(
-                          videoUrl: episode.url,
+                          videoUrl: playableUrl,
                           name: episode.title,
                         )));
           } else {
@@ -749,17 +754,17 @@ class _ReligiousChannelDetailsPageState
               MaterialPageRoute(
                 builder: (context) => CustomYoutubePlayer(
                   videoData: VideoData(
-                    id: episode.url,
+                    id: playableUrl,
                     title: episode.title,
-                    youtubeUrl: episode.url,
+                    youtubeUrl: playableUrl,
                     thumbnail: episode.episodeImage,
                     description: episode.episodeDescription,
                   ),
                   playlist: [
                     VideoData(
-                      id: episode.url,
+                      id: playableUrl,
                       title: episode.title,
-                      youtubeUrl: episode.url,
+                      youtubeUrl: playableUrl,
                       thumbnail: episode.episodeImage,
                       description: episode.episodeDescription,
                     ),
@@ -774,7 +779,7 @@ class _ReligiousChannelDetailsPageState
         //   context,
         //   MaterialPageRoute(
         //     builder: (context) => CustomVideoPlayer(
-        //       videoUrl: episode.url,
+        //       videoUrl: playableUrl,
         //     ),
         //   ),
         // );
@@ -782,7 +787,7 @@ class _ReligiousChannelDetailsPageState
           context,
           MaterialPageRoute(
             builder: (context) => VideoScreen(
-              videoUrl: episode.url,
+              videoUrl: playableUrl,
               bannerImageUrl: episode.episodeImage,
               channelList: [],
               source: 'isReligious',

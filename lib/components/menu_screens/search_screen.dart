@@ -1118,6 +1118,7 @@ import 'package:mobi_tv_entertainment/components/provider/device_info_provider.d
 // InternalFocusProvider import (jaisa example mein tha)
 import 'package:mobi_tv_entertainment/components/provider/internal_focus_provider.dart';
 import 'package:mobi_tv_entertainment/components/video_widget/custom_youtube_player.dart';
+import 'package:mobi_tv_entertainment/components/video_widget/secure_url_service.dart';
 import 'package:mobi_tv_entertainment/components/video_widget/video_screen.dart';
 import 'package:mobi_tv_entertainment/components/video_widget/youtube_webview_player.dart';
 import 'package:mobi_tv_entertainment/components/widgets/models/news_item_model.dart';
@@ -1294,6 +1295,7 @@ class _SearchScreenState extends State<SearchScreen>
   @override
   void initState() {
     super.initState();
+    SecureUrlService.refreshSettings();
     _searchTriggerFocusNode = FocusNode();
     _initializeAnimations();
     _initializeFocusNodes();
@@ -1808,6 +1810,7 @@ class _SearchScreenState extends State<SearchScreen>
     setState(() => _isVideoLoading = true);
 
     try {
+
       final int? parsedContentType = int.tryParse(content.contentType ?? '');
 
       // Step 1: Handle content types that need a details page first.
@@ -1902,13 +1905,15 @@ class _SearchScreenState extends State<SearchScreen>
         return;
       }
 
+        String playableUrl = await SecureUrlService.getSecureUrl(videoUrl);
+
       // Step 3: Handle direct video playback
       if (parsedContentType == 3) {
         await Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => VideoScreen(
-              videoUrl: videoUrl,
+              videoUrl: playableUrl,
               bannerImageUrl: content.banner,
               channelList: [],
               videoId: int.tryParse(content.id),
@@ -1928,24 +1933,24 @@ class _SearchScreenState extends State<SearchScreen>
                 context,
                 MaterialPageRoute(
                     builder: (context) => YoutubeWebviewPlayer(
-                        videoUrl: content.url, name: content.name)));
+                        videoUrl: playableUrl, name: content.name)));
           } else {
             await Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) => CustomYoutubePlayer(
                   videoData: VideoData(
-                    id: content.id.toString(),
+                    id: playableUrl,
                     title: content.name,
-                    youtubeUrl: content.url,
+                    youtubeUrl: playableUrl,
                     thumbnail: content.banner ?? content.poster ?? '',
                     description: content.description ?? '',
                   ),
                   playlist: [
                     VideoData(
-                      id: content.id.toString(),
+                      id: playableUrl,
                       title: content.name,
-                      youtubeUrl: content.url,
+                      youtubeUrl: playableUrl,
                       thumbnail: content.banner ?? content.poster ?? '',
                       description: content.description ?? '',
                     ),
@@ -1959,7 +1964,7 @@ class _SearchScreenState extends State<SearchScreen>
             context,
             MaterialPageRoute(
               builder: (context) => VideoScreen(
-                videoUrl: content.url,
+                videoUrl: playableUrl,
                 bannerImageUrl: content.banner,
                 channelList: [],
                 videoId: int.tryParse(content.id),
