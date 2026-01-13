@@ -3113,10 +3113,14 @@
 //   }
 // }
 
+
+
+
+
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:ui';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as https;
@@ -3129,7 +3133,6 @@ import 'package:mobi_tv_entertainment/components/video_widget/custom_youtube_pla
 import 'package:mobi_tv_entertainment/components/video_widget/video_screen.dart';
 import 'package:mobi_tv_entertainment/components/video_widget/youtube_webview_player.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:math' as math;
 
 //==============================================================================
@@ -3835,6 +3838,7 @@ class _GenreMoviesScreenState extends State<GenreMoviesScreen>
       String rawUrl = content.getPlayableUrl();
       print('rawurl: $rawUrl');
       String playableUrl = await SecureUrlService.getSecureUrl(rawUrl);
+      print('playableUrl: $playableUrl');
       if (content.contentType == 2) {
         await Navigator.push(
           context,
@@ -3885,7 +3889,7 @@ class _GenreMoviesScreenState extends State<GenreMoviesScreen>
                 videoUrl: playableUrl,
                 bannerImageUrl: content.poster ?? content.banner ?? '',
                 videoId: content.id,
-                name: content.name,
+                name: content.name,                                                                                                                   
                 updatedAt: content.updatedAt ?? '',
                 source: 'isVod',
                 channelList: const [],
@@ -4179,6 +4183,7 @@ class _GenreMoviesScreenState extends State<GenreMoviesScreen>
         child: ListView.builder(
           controller: _genreScrollController,
           scrollDirection: Axis.horizontal,
+          cacheExtent: 9999,
           itemCount: _genres.length + 1, // +1 for Search button
           padding: EdgeInsets.symmetric(horizontal: screenwdt * 0.03),
           itemBuilder: (context, index) {
@@ -4290,6 +4295,7 @@ class _GenreMoviesScreenState extends State<GenreMoviesScreen>
         padding: const EdgeInsets.only(top: 1.0),
         child: ListView.builder(
           clipBehavior: Clip.none,
+          cacheExtent: 9999,
           controller: _movieScrollController,
           scrollDirection: Axis.horizontal,
           padding: const EdgeInsets.symmetric(horizontal: 30.0),
@@ -4711,3 +4717,7 @@ class GradientText extends StatelessWidget {
     );
   }
 }
+
+
+
+

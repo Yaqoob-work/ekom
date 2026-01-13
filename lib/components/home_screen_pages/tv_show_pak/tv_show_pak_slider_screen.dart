@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'dart:math' as math;
 import 'package:http/http.dart' as https; // Alias ko 'http' rakha gaya hai
 import 'package:mobi_tv_entertainment/components/home_screen_pages/tv_show/tv_show_final_details_page.dart';
+import 'package:mobi_tv_entertainment/components/home_screen_pages/tv_show_pak/tv_show_pak_final_details_page.dart';
 // import 'package:shared_preferences/shared_preferences.dart';
 
 // NOTE: Apne project ke anusaar neeche di gayi import lines ko aavashyakta anusaar badlein.
@@ -1237,11 +1238,11 @@ class _TvShowPakSliderScreenState // <--- BADLAAV YAHAN
     await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => TvShowFinalDetailsPage(
+        builder: (context) => TvShowPakFinalDetailsPage(
           id: item.id,
           banner: item.banner ?? item.poster ?? '',
           poster: item.poster ?? item.banner ?? '',
-          name: item.name,
+          name: item.name, updatedAt: item.updatedAt,
         ),
       ),
     );

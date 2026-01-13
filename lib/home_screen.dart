@@ -559,11 +559,6 @@
 //   }
 // }
 
-
-
-
-
-
 // // Zaroori packages import karein
 // import 'dart:convert';
 // import 'package:http/http.dart' as https;
@@ -879,10 +874,6 @@
 //     });
 //   }
 // }
-
-
-
-
 
 // // Zaroori packages import karein
 // import 'dart:convert';
@@ -1237,12 +1228,6 @@
 //   }
 // }
 
-
-
-
-
-
-
 // // Zaroori packages import karein
 // import 'dart:convert';
 // import 'package:http/http.dart' as https;
@@ -1297,7 +1282,7 @@
 //   final GlobalKey manageWebseriesKey = GlobalKey();
 //   final GlobalKey tvShowsKey = GlobalKey();
 //   final GlobalKey tvShowsPakKey = GlobalKey();
-//   final GlobalKey kidchannelsKey = GlobalKey();
+//   final GlobalKey kids_showKey = GlobalKey();
 //   final GlobalKey sportsKey = GlobalKey();
 //   final GlobalKey religiousChannelKey = GlobalKey();
 
@@ -1333,7 +1318,7 @@
 //       focusProvider.registerFocusNode('subVod', firstSubVodFocusNode);
 //       focusProvider.registerFocusNode('manageMovies', manageMoviesFocusNode);
 //       focusProvider.registerFocusNode('tvShows', tvShowsFocusNode);
-      
+
 //       // (Baaqi focus nodes bhi register karein agar zaroorat ho)
 //       // focusProvider.registerFocusNode('sports', sportsFocusNode);
 //       // focusProvider.registerFocusNode('manageWebseries', manageWebseriesFocusNode);
@@ -1350,7 +1335,7 @@
 //       focusProvider.registerElementKey('sports', sportsKey);
 //       focusProvider.registerElementKey('religiousChannels', religiousChannelKey); // ID check karein
 //       focusProvider.registerElementKey('tvShowPak', tvShowsPakKey); // ID check karein
-//       focusProvider.registerElementKey('kidchannels', kidchannelsKey); // ID check karein
+//       focusProvider.registerElementKey('kids_show', kids_showKey); // ID check karein
 //     });
 //   }
 
@@ -1413,7 +1398,7 @@
 
 //       final response = await https.get(url,
 //         // Uri.parse(
-//           // SessionManager.baseUrl + 'checkExpiryPlan' 
+//           // SessionManager.baseUrl + 'checkExpiryPlan'
 //             // 'https://dashboard.cpplayers.com/public/api/v2/checkExpiryPlan'
 //             // ),
 //         headers: {
@@ -1453,7 +1438,7 @@
 //               _showTvShowsPak = (domainContent['tvshow_pak'] ?? 0) == 1;
 //               _showSports = (domainContent['sports'] ?? 0) == 1;
 //               _showReligious = (domainContent['religious'] ?? 0) == 1;
-//               _showReligious = (domainContent['kidchannels'] ?? 0) == 1;
+//               _showReligious = (domainContent['kids_show'] ?? 0) == 1;
 //             });
 //           }
 
@@ -1488,7 +1473,7 @@
 //     sportsFocusNode.dispose();
 //     manageWebseriesFocusNode.dispose();
 //     subLiveFocusNode.dispose();
-    
+
 //     super.dispose();
 //   }
 
@@ -1521,13 +1506,12 @@
 //     if (_showSports) visibleRows.add('sports');
 //     if (_showReligious) visibleRows.add('religiousChannels'); // ID match karein
 //     if (_showTvShowsPak) visibleRows.add('tvShowPak'); // ID match karein
-//     if (_showTvShowsPak) visibleRows.add('kidchannels'); // ID match karein
+//     if (_showTvShowsPak) visibleRows.add('kids_show'); // ID match karein
 
 //     // 3. FocusProvider ko yeh list update karne ko kahein
 //     // 'read' ka istemal karein kyunki humein sirf function call karna hai.
 //     context.read<FocusProvider>().updateVisibleRowIdentifiers(visibleRows);
 //     // --- NAYA CODE KHATAM ---
-
 
 //     // Jab loading poori ho jaaye, tab asli UI dikhao
 //     return Consumer<ColorProvider>(builder: (context, colorProvider, child) {
@@ -1574,7 +1558,7 @@
 //                   ),
 
 //                   // ---- SHARTIYA WIDGETS (CONDITIONAL WIDGETS) ----
-                  
+
 //                   // API Key: "content_network"
 //                   if (_showContentNetwork)
 //                     SizedBox(
@@ -1634,7 +1618,7 @@
 //                   // if (_showTvShowsPak)
 //                     SizedBox(
 //                         height: screenhgt * 0.38,
-//                         key: kidchannelsKey,
+//                         key: kids_showKey,
 //                         child: const ManageKidsShows()),
 //                 ],
 //               ),
@@ -1653,30 +1637,469 @@
 
 
 
-// Zaroori packages import karein
-import 'dart:async'; // Future.delayed ke liye
+
+
+// // Zaroori packages import karein
+// import 'dart:async'; // Future.delayed ke liye
+// import 'dart:convert';
+// import 'package:http/http.dart' as https;
+// import 'package:mobi_tv_entertainment/components/home_screen_pages/above_18/above_eighteen.dart';
+// import 'package:mobi_tv_entertainment/components/home_screen_pages/kids_shows/kids_channels.dart';
+// import 'package:mobi_tv_entertainment/plan_expired_screen.dart';
+// import 'package:mobi_tv_entertainment/main.dart'; // SessionManager yahan hai
+// import 'package:flutter/services.dart';
+
+// // Flutter/Project ke baaki imports
+// import 'package:flutter/material.dart';
+// import 'package:mobi_tv_entertainment/exit_confirmation_screen.dart';
+// import 'package:mobi_tv_entertainment/components/home_screen_pages/religious_channel/religious_channel.dart';
+// import 'package:mobi_tv_entertainment/components/home_screen_pages/sports_category/sports_category.dart';
+// import 'package:mobi_tv_entertainment/components/home_screen_pages/sub_vod_screen/horzontal_vod.dart';
+// import 'package:mobi_tv_entertainment/components/home_screen_pages/tv_show/manage_tv_shows.dart';
+// import 'package:mobi_tv_entertainment/components/home_screen_pages/tv_show_pak/tv_show_pak.dart';
+// import 'package:mobi_tv_entertainment/components/home_screen_pages/webseries_screen/manage_webseries.dart';
+// import 'package:mobi_tv_entertainment/components/provider/color_provider.dart';
+// import 'package:mobi_tv_entertainment/components/provider/focus_provider.dart';
+// import 'package:provider/provider.dart';
+// import 'components/home_screen_pages/banner_slider_screen/banner_slider_screen.dart';
+// import 'components/home_screen_pages/movies_screen/movies.dart';
+// import 'components/home_screen_pages/sub_live_screen/live_channel_language_screen.dart';
+
+// class HomeScreen extends StatefulWidget {
+//   const HomeScreen({Key? key}) : super(key: key);
+
+//   @override
+//   _HomeScreenState createState() => _HomeScreenState();
+// }
+
+// class _HomeScreenState extends State<HomeScreen> {
+//   // State Variables
+//   bool _isLoading = true; // Shuru mein loading state true rahegi
+
+//   // NAYE STATE VARIABLES (CONTENT VISIBILITY KE LIYE)
+//   bool _showMovies = false;
+//   bool _showWebseries = false;
+//   bool _showTvShows = false;
+//   bool _showTvShowsPak = false;
+//   bool _showSports = false;
+//   bool _showReligious = false;
+//   bool _showContentNetwork =
+//       false; // "HorzontalVod" ke liye (API key: content_network)
+
+//   // Global Keys
+//   final GlobalKey watchNowKey = GlobalKey();
+//   final GlobalKey liveChannelLanguageKey = GlobalKey();
+//   final GlobalKey subVodKey = GlobalKey();
+//   final GlobalKey manageMoviesKey = GlobalKey();
+//   final GlobalKey manageWebseriesKey = GlobalKey();
+//   final GlobalKey tvShowsKey = GlobalKey();
+//   final GlobalKey tvShowsPakKey = GlobalKey();
+//   final GlobalKey kids_showKey = GlobalKey();
+//   final GlobalKey sportsKey = GlobalKey();
+//   final GlobalKey religiousChannelKey = GlobalKey();
+//   final GlobalKey aboveEighteenKey = GlobalKey();
+
+//   // Focus Nodes
+//   late FocusNode watchNowFocusNode;
+//   late FocusNode firstSubVodFocusNode;
+//   late FocusNode manageMoviesFocusNode;
+//   late FocusNode tvShowsFocusNode;
+//   late FocusNode sportsFocusNode;
+//   late FocusNode manageWebseriesFocusNode;
+//   late FocusNode subLiveFocusNode;
+//   late FocusNode aboveEighteenFocusNode;
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     // Focus nodes initialize karein
+//     watchNowFocusNode = FocusNode();
+//     firstSubVodFocusNode = FocusNode();
+//     manageMoviesFocusNode = FocusNode();
+//     tvShowsFocusNode = FocusNode();
+//     sportsFocusNode = FocusNode();
+//     manageWebseriesFocusNode = FocusNode();
+//     subLiveFocusNode = FocusNode();
+//     aboveEighteenFocusNode = FocusNode();
+
+//     WidgetsBinding.instance.addPostFrameCallback((_) {
+//       // API call karke plan ka status aur content visibility check karega
+//       _checkPlanStatus();
+
+//       // Provider setup
+//       final focusProvider = context.read<FocusProvider>();
+
+//       focusProvider.registerFocusNode('watchNow', watchNowFocusNode);
+//       focusProvider.registerFocusNode('subVod', firstSubVodFocusNode);
+//       focusProvider.registerFocusNode('manageMovies', manageMoviesFocusNode);
+//       focusProvider.registerFocusNode('tvShows', tvShowsFocusNode);
+
+//       // Element keys register karein
+//       focusProvider.registerElementKey('watchNow', watchNowKey);
+//       focusProvider.registerElementKey(
+//           'liveChannelLanguage', liveChannelLanguageKey);
+//       focusProvider.registerElementKey('subVod', subVodKey);
+//       focusProvider.registerElementKey('manageMovies', manageMoviesKey);
+//       focusProvider.registerElementKey('manageWebseries', manageWebseriesKey);
+//       focusProvider.registerElementKey('tvShows', tvShowsKey);
+//       focusProvider.registerElementKey('sports', sportsKey);
+//       focusProvider.registerElementKey(
+//           'religiousChannels', religiousChannelKey);
+//       focusProvider.registerElementKey('tvShowPak', tvShowsPakKey);
+//       focusProvider.registerElementKey('kids_show', kids_showKey);
+//       focusProvider.registerElementKey('kids_show', kids_showKey);
+//       focusProvider.registerElementKey('aboveEighteen', aboveEighteenKey);
+//     });
+//   }
+
+//   // --- UPDATED DIALOG FUNCTION ---
+//   void _showExpiryWarningDialog(String message) {
+//     showDialog(
+//       context: context,
+//       barrierDismissible: false, // User bahar click karke band na kar sake
+//       builder: (BuildContext context) {
+//         return AlertDialog(
+//           backgroundColor: Colors.grey[850], // Dark theme ke liye
+//           shape: RoundedRectangleBorder(
+//             borderRadius: BorderRadius.circular(15.0),
+//           ),
+//           icon: const Icon(Icons.warning_amber_rounded,
+//               color: Colors.amber, size: 48),
+//           title: const Text(
+//             'Plan Expiry Alert',
+//             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+//           ),
+//           content: Text(
+//             message,
+//             textAlign: TextAlign.center,
+//             style: const TextStyle(color: Colors.white70),
+//           ),
+//           actionsAlignment: MainAxisAlignment.center,
+//           actions: <Widget>[
+//             TextButton(
+//               style: TextButton.styleFrom(
+//                   backgroundColor: Colors.amber,
+//                   shape: RoundedRectangleBorder(
+//                       borderRadius: BorderRadius.circular(8.0))),
+//               child: const Text(
+//                 'O.K',
+//                 style:
+//                     TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+//               ),
+//               onPressed: () {
+//                 Navigator.of(context).pop(); // Dialog band karein
+//               },
+//             ),
+//           ],
+//         );
+//       },
+//     );
+//   }
+
+//   // --- UPDATED API FUNCTION (ISME FIX HAI) ---
+//   Future<void> _checkPlanStatus() async {
+//     final String? authKey = SessionManager.authKey;
+
+//     if (authKey == null || authKey.isEmpty) {
+//       print('Auth Key not found.');
+//       // Agar auth key nahi hai, tab bhi loading screen hatani padegi agar woh hai
+//       if (mounted && Navigator.canPop(context)) Navigator.pop(context);
+//       if (mounted) setState(() => _isLoading = false);
+//       return;
+//     }
+
+//     try {
+//       var url = Uri.parse(SessionManager.baseUrl + 'checkExpiryPlan');
+
+//       final response = await https.get(
+//         url,
+//         headers: {
+//           'auth-key': authKey,
+//           'Content-Type': 'application/json',
+//           'Accept': 'application/json',
+//           'domain': SessionManager.savedDomain,
+//         },
+//       ).timeout(const Duration(seconds: 20));
+
+//       if (!mounted) return;
+
+//       if (response.statusCode == 200) {
+//         final res = json.decode(response.body);
+
+//         // Safe type checking (kyunki API kabhi string "1" ya int 1 bhej sakti hai)
+//         final bool planExpired = (res['plan_expired'] == true ||
+//             res['plan_expired'] == 1 ||
+//             res['plan_expired'] == "1");
+//         final bool planWillExpire =
+//             (res['plan_will_expire'] == true || res['plan_will_expire'] == 1);
+//         final String message = res['message'] ?? 'Status Unknown';
+//         final domainContent = res['domain_content'];
+
+//         // 1. SCENARIO: PLAN EXPIRED
+//         if (planExpired) {
+//           // Sabse pehle woh Blur/Loading screen hatao jo MyHome ne lagayi thi
+//           if (Navigator.canPop(context)) {
+//             Navigator.pop(context);
+//           }
+
+//           // Thoda wait karein taaki pop animation complete ho
+//           await Future.delayed(const Duration(milliseconds: 100));
+
+//           if (!mounted) return;
+
+//           // Ab Plan Expired Screen par jao aur peeche ka sab clear kar do
+//           Navigator.of(context).pushAndRemoveUntil(
+//             MaterialPageRoute(
+//               builder: (context) => PlanExpiredScreen(apiMessage: message),
+//             ),
+//             (route) => false, // Isse user Back button se wapas nahi aa payega
+//           );
+//           return; // Yahan se return kar jao, aage ka code run nahi karna
+//         }
+
+//         // Agar plan expire nahi hua hai, toh UI setup karein
+//         if (domainContent != null && domainContent is Map) {
+//           setState(() {
+//             _showContentNetwork = (domainContent['content_network'] ?? 0) == 1;
+//             _showMovies = (domainContent['movies'] ?? 0) == 1;
+//             _showWebseries = (domainContent['webseries'] ?? 0) == 1;
+//             _showTvShows = (domainContent['tvshow'] ?? 0) == 1;
+//             _showTvShowsPak = (domainContent['tvshow_pak'] ?? 0) == 1;
+//             _showSports = (domainContent['sports'] ?? 0) == 1;
+//             _showReligious = (domainContent['religious'] ?? 0) == 1;
+//             _showReligious = (domainContent['kids_show'] ?? 0) == 1;
+//           });
+//         }
+
+//         // 2. SCENARIO: PLAN EXPIRING SOON (WARNING)
+//         if (planWillExpire) {
+//           // Loading band karein
+//           setState(() => _isLoading = false);
+
+//           // Warning dikhane se pehle, Blur screen hatao taaki background saaf dikhe
+//           if (Navigator.canPop(context)) {
+//             Navigator.pop(context);
+//           }
+
+//           // Ab Dialog show karein
+//           Future.delayed(const Duration(milliseconds: 200), () {
+//             if (mounted) _showExpiryWarningDialog(message);
+//           });
+//         }
+//         // 3. SCENARIO: ALL GOOD
+//         else {
+//           // Blur screen hatao taaki Home screen dikhe
+//           if (Navigator.canPop(context)) {
+//             Navigator.pop(context);
+//           }
+//           setState(() => _isLoading = false);
+//         }
+//       } else {
+//         print('Server Error: ${response.statusCode}');
+//         // Error case mein bhi Blur screen hatana zaroori hai
+//         if (Navigator.canPop(context)) Navigator.pop(context);
+//         setState(() => _isLoading = false);
+//       }
+//     } catch (e) {
+//       print('Network Error: $e');
+//       // Exception case mein bhi Blur screen hatana zaroori hai
+//       if (Navigator.canPop(context)) Navigator.pop(context);
+//       if (mounted) setState(() => _isLoading = false);
+//     }
+//   }
+
+//   @override
+//   void dispose() {
+//     watchNowFocusNode.dispose();
+//     firstSubVodFocusNode.dispose();
+//     manageMoviesFocusNode.dispose();
+//     tvShowsFocusNode.dispose();
+//     sportsFocusNode.dispose();
+//     manageWebseriesFocusNode.dispose();
+//     subLiveFocusNode.dispose();
+//     aboveEighteenFocusNode.dispose();
+
+//     super.dispose();
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     // Jab tak API call chal rahi hai, tab tak black screen ya loader
+//     // Note: Asli visual loader 'ExitConfirmationScreen' hai jo MyHome se push hua hai
+//     if (_isLoading) {
+//       return const Scaffold(
+//         backgroundColor: Colors.black, // Background black rakhein
+//         body: Center(
+//             // Optional: Double loader avoid karne ke liye yahan kuch mat dikhayein
+//             // kyunki upar already blur loader chal raha hai
+//             ),
+//       );
+//     }
+
+//     // --- VISIBILITY LOGIC ---
+//     final List<String> visibleRows = [
+//       'watchNow',
+//       'liveChannelLanguage',
+//     ];
+
+//     if (_showContentNetwork) visibleRows.add('subVod');
+//     if (_showMovies) visibleRows.add('manageMovies');
+//     if (_showWebseries) visibleRows.add('manageWebseries');
+//     if (_showTvShows) visibleRows.add('tvShows');
+//     if (_showSports) visibleRows.add('sports');
+//     if (_showReligious) visibleRows.add('religiousChannels');
+//     if (_showTvShowsPak) visibleRows.add('tvShowPak');
+//     if (_showTvShowsPak) visibleRows.add('kids_show');
+
+//     // FocusProvider update
+//     context.read<FocusProvider>().updateVisibleRowIdentifiers(visibleRows);
+
+//     // --- MAIN UI ---
+//     return Consumer<ColorProvider>(builder: (context, colorProvider, child) {
+//       Color backgroundColor = colorProvider.isItemFocused
+//           ? colorProvider.dominantColor.withOpacity(0.2)
+//           : cardColor; // Ensure cardColor is defined globally or imported
+
+//       return PopScope(
+//         canPop: false,
+//         onPopInvoked: (didPop) {
+//           if (!didPop) {
+//             Navigator.of(context).push(
+//               PageRouteBuilder(
+//                 opaque: false,
+//                 pageBuilder: (context, _, __) => const ExitConfirmationScreen(
+//                   isFromBackButton: true,
+//                 ),
+//               ),
+//             );
+//           }
+//         },
+//         child: Scaffold(
+//           backgroundColor: backgroundColor,
+//           body: Container(
+//             width: screenwdt, // Ensure these global vars are accessible
+//             height: screenhgt,
+//             color: Colors.transparent,
+//             child: SingleChildScrollView(
+//               controller: context.read<FocusProvider>().scrollController,
+//               child: Column(
+//                 crossAxisAlignment: CrossAxisAlignment.start,
+//                 children: [
+//                   // 1. Banner Slider
+//                   Container(
+//                     height: screenhgt * 0.65,
+//                     width: screenwdt,
+//                     key: watchNowKey,
+//                     child: BannerSlider(focusNode: watchNowFocusNode),
+//                   ),
+
+//                   // 2. Live Channels
+//                   Container(
+//                     height: screenhgt * 0.38,
+//                     width: screenwdt,
+//                     key: liveChannelLanguageKey,
+//                     child: const LiveChannelLanguageScreen(),
+//                   ),
+
+//                   // 3. Conditional Widgets
+//                   if (_showContentNetwork)
+//                     SizedBox(
+//                       height: screenhgt * 0.38,
+//                       key: subVodKey,
+//                       child: const HorzontalVod(),
+//                     ),
+
+//                   if (_showMovies)
+//                     SizedBox(
+//                       height: screenhgt * 0.38,
+//                       key: manageMoviesKey,
+//                       child: const MoviesScreen(),
+//                     ),
+
+//                   if (_showWebseries)
+//                     SizedBox(
+//                       height: screenhgt * 0.38,
+//                       key: manageWebseriesKey,
+//                       child: const ManageWebSeries(),
+//                     ),
+
+//                   if (_showTvShows)
+//                     SizedBox(
+//                         height: screenhgt * 0.38,
+//                         key: tvShowsKey,
+//                         child: const ManageTvShows()),
+
+//                   if (_showSports)
+//                     SizedBox(
+//                         height: screenhgt * 0.38,
+//                         child: ManageSports(
+//                           key: sportsKey,
+//                         )),
+
+//                   if (_showReligious)
+//                     SizedBox(
+//                         height: screenhgt * 0.38,
+//                         key: religiousChannelKey,
+//                         child: const ManageReligiousShows()),
+
+//                   if (_showTvShowsPak)
+//                     SizedBox(
+//                         height: screenhgt * 0.38,
+//                         key: tvShowsPakKey,
+//                         child: const TvShowsPak()),
+
+//                   // Note: Check if kids_show should be dependent on _showTvShowsPak or its own flag
+//                   SizedBox(
+//                       height: screenhgt * 0.38,
+//                       key: kids_showKey,
+//                       child: const ManageKidsShows()),
+//                   SizedBox(
+//                       height: screenhgt * 0.38,
+//                       key: aboveEighteenKey,
+//                       child: const AboveEighteen()),
+//                 ],
+//               ),
+//             ),
+//           ),
+//         ),
+//       );
+//     });
+//   }
+// }
+
+
+
+
+
+
+import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as https;
-import 'package:mobi_tv_entertainment/components/home_screen_pages/kids_shows/kids_channels.dart';
-import 'package:mobi_tv_entertainment/plan_expired_screen.dart';
-import 'package:mobi_tv_entertainment/main.dart'; // SessionManager yahan hai
-import 'package:flutter/services.dart';
-
-// Flutter/Project ke baaki imports
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
+
+// --- PROJECT IMPORTS ---
+import 'package:mobi_tv_entertainment/main.dart';
+import 'package:mobi_tv_entertainment/plan_expired_screen.dart';
 import 'package:mobi_tv_entertainment/exit_confirmation_screen.dart';
-import 'package:mobi_tv_entertainment/components/home_screen_pages/religious_channel/religious_channel.dart';
-import 'package:mobi_tv_entertainment/components/home_screen_pages/sports_category/sports_category.dart';
-import 'package:mobi_tv_entertainment/components/home_screen_pages/sub_vod_screen/horzontal_vod.dart';
-import 'package:mobi_tv_entertainment/components/home_screen_pages/tv_show/manage_tv_shows.dart';
-import 'package:mobi_tv_entertainment/components/home_screen_pages/tv_show_pak/tv_show_pak.dart';
-import 'package:mobi_tv_entertainment/components/home_screen_pages/webseries_screen/manage_webseries.dart';
 import 'package:mobi_tv_entertainment/components/provider/color_provider.dart';
 import 'package:mobi_tv_entertainment/components/provider/focus_provider.dart';
-import 'package:provider/provider.dart';
-import 'components/home_screen_pages/banner_slider_screen/banner_slider_screen.dart';
-import 'components/home_screen_pages/movies_screen/movies.dart';
-import 'components/home_screen_pages/sub_live_screen/live_channel_language_screen.dart';
+
+// --- SCREEN IMPORTS ---
+import 'package:mobi_tv_entertainment/components/home_screen_pages/banner_slider_screen/banner_slider_screen.dart';
+import 'package:mobi_tv_entertainment/components/home_screen_pages/sub_live_screen/live_channel_language_screen.dart';
+import 'package:mobi_tv_entertainment/components/home_screen_pages/sub_vod_screen/horzontal_vod.dart';
+import 'package:mobi_tv_entertainment/components/home_screen_pages/movies_screen/movies.dart';
+import 'package:mobi_tv_entertainment/components/home_screen_pages/webseries_screen/manage_webseries.dart';
+import 'package:mobi_tv_entertainment/components/home_screen_pages/tv_show/manage_tv_shows.dart';
+import 'package:mobi_tv_entertainment/components/home_screen_pages/sports_category/sports_category.dart';
+import 'package:mobi_tv_entertainment/components/home_screen_pages/religious_channel/religious_channel.dart';
+import 'package:mobi_tv_entertainment/components/home_screen_pages/tv_show_pak/tv_show_pak.dart';
+
+// --- UPDATED IMPORTS FOR KIDS & ADULT ---
+import 'package:mobi_tv_entertainment/components/home_screen_pages/kids_shows/kids_channels.dart'; // Ensure this path is correct
+import 'package:mobi_tv_entertainment/components/home_screen_pages/above_18/above_eighteen.dart'; // Ensure this path is correct
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -1686,19 +2109,21 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  // State Variables
-  bool _isLoading = true; // Shuru mein loading state true rahegi
+  // --- STATE VARIABLES ---
+  bool _isLoading = true;
 
-  // NAYE STATE VARIABLES (CONTENT VISIBILITY KE LIYE)
+  // Content Visibility Flags
+  bool _showContentNetwork = false;
   bool _showMovies = false;
   bool _showWebseries = false;
   bool _showTvShows = false;
   bool _showTvShowsPak = false;
   bool _showSports = false;
   bool _showReligious = false;
-  bool _showContentNetwork = false; // "HorzontalVod" ke liye (API key: content_network)
+  bool _showKids = false; // ✅ Fixed: New variable for Kids
+  // bool _showAdult = false; // ✅ Fixed: New variable for Above 18
 
-  // Global Keys
+  // --- GLOBAL KEYS ---
   final GlobalKey watchNowKey = GlobalKey();
   final GlobalKey liveChannelLanguageKey = GlobalKey();
   final GlobalKey subVodKey = GlobalKey();
@@ -1706,44 +2131,44 @@ class _HomeScreenState extends State<HomeScreen> {
   final GlobalKey manageWebseriesKey = GlobalKey();
   final GlobalKey tvShowsKey = GlobalKey();
   final GlobalKey tvShowsPakKey = GlobalKey();
-  final GlobalKey kidchannelsKey = GlobalKey();
   final GlobalKey sportsKey = GlobalKey();
   final GlobalKey religiousChannelKey = GlobalKey();
+  final GlobalKey kids_showKey = GlobalKey();
+  // final GlobalKey aboveEighteenKey = GlobalKey();
 
-  // Focus Nodes
+  // --- FOCUS NODES ---
   late FocusNode watchNowFocusNode;
   late FocusNode firstSubVodFocusNode;
   late FocusNode manageMoviesFocusNode;
   late FocusNode tvShowsFocusNode;
-  late FocusNode sportsFocusNode;
-  late FocusNode manageWebseriesFocusNode;
-  late FocusNode subLiveFocusNode;
+  
+  // Note: Other focus nodes are handled internally by their widgets, 
+  // but we initialize these main ones for initial entry points.
 
   @override
   void initState() {
     super.initState();
-    // Focus nodes initialize karein
+    
+    // Initialize Focus Nodes
     watchNowFocusNode = FocusNode();
     firstSubVodFocusNode = FocusNode();
     manageMoviesFocusNode = FocusNode();
     tvShowsFocusNode = FocusNode();
-    sportsFocusNode = FocusNode();
-    manageWebseriesFocusNode = FocusNode();
-    subLiveFocusNode = FocusNode();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      // API call karke plan ka status aur content visibility check karega
+      // 1. API Call
       _checkPlanStatus();
 
-      // Provider setup
+      // 2. Provider Registration
       final focusProvider = context.read<FocusProvider>();
-      
+
+      // Register entry focus nodes
       focusProvider.registerFocusNode('watchNow', watchNowFocusNode);
       focusProvider.registerFocusNode('subVod', firstSubVodFocusNode);
       focusProvider.registerFocusNode('manageMovies', manageMoviesFocusNode);
       focusProvider.registerFocusNode('tvShows', tvShowsFocusNode);
-      
-      // Element keys register karein
+
+      // Register Keys (Essential for scrolling to the widget)
       focusProvider.registerElementKey('watchNow', watchNowKey);
       focusProvider.registerElementKey('liveChannelLanguage', liveChannelLanguageKey);
       focusProvider.registerElementKey('subVod', subVodKey);
@@ -1751,63 +2176,18 @@ class _HomeScreenState extends State<HomeScreen> {
       focusProvider.registerElementKey('manageWebseries', manageWebseriesKey);
       focusProvider.registerElementKey('tvShows', tvShowsKey);
       focusProvider.registerElementKey('sports', sportsKey);
-      focusProvider.registerElementKey('religiousChannels', religiousChannelKey); 
-      focusProvider.registerElementKey('tvShowPak', tvShowsPakKey); 
-      focusProvider.registerElementKey('kidchannels', kidchannelsKey); 
+      focusProvider.registerElementKey('religiousChannels', religiousChannelKey);
+      focusProvider.registerElementKey('tvShowPak', tvShowsPakKey);
+      focusProvider.registerElementKey('kids_show', kids_showKey);
+      // focusProvider.registerElementKey('aboveEighteen', aboveEighteenKey);
     });
   }
 
-  // --- UPDATED DIALOG FUNCTION ---
-  void _showExpiryWarningDialog(String message) {
-    showDialog(
-      context: context,
-      barrierDismissible: false, // User bahar click karke band na kar sake
-      builder: (BuildContext context) {
-        return AlertDialog(
-          backgroundColor: Colors.grey[850], // Dark theme ke liye
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15.0),
-          ),
-          icon: const Icon(Icons.warning_amber_rounded,
-              color: Colors.amber, size: 48),
-          title: const Text(
-            'Plan Expiry Alert',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-          ),
-          content: Text(
-            message,
-            textAlign: TextAlign.center,
-            style: const TextStyle(color: Colors.white70),
-          ),
-          actionsAlignment: MainAxisAlignment.center,
-          actions: <Widget>[
-            TextButton(
-              style: TextButton.styleFrom(
-                  backgroundColor: Colors.amber,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.0))),
-              child: const Text(
-                'O.K',
-                style:
-                    TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-              ),
-              onPressed: () {
-                Navigator.of(context).pop(); // Dialog band karein
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  // --- UPDATED API FUNCTION (ISME FIX HAI) ---
+  // --- API CHECK FUNCTION ---
   Future<void> _checkPlanStatus() async {
     final String? authKey = SessionManager.authKey;
 
     if (authKey == null || authKey.isEmpty) {
-      print('Auth Key not found.');
-      // Agar auth key nahi hai, tab bhi loading screen hatani padegi agar woh hai
       if (mounted && Navigator.canPop(context)) Navigator.pop(context);
       if (mounted) setState(() => _isLoading = false);
       return;
@@ -1816,7 +2196,8 @@ class _HomeScreenState extends State<HomeScreen> {
     try {
       var url = Uri.parse(SessionManager.baseUrl + 'checkExpiryPlan');
 
-      final response = await https.get(url,
+      final response = await https.get(
+        url,
         headers: {
           'auth-key': authKey,
           'Content-Type': 'application/json',
@@ -1830,35 +2211,28 @@ class _HomeScreenState extends State<HomeScreen> {
       if (response.statusCode == 200) {
         final res = json.decode(response.body);
 
-        // Safe type checking (kyunki API kabhi string "1" ya int 1 bhej sakti hai)
-        final bool planExpired = (res['plan_expired'] == true || res['plan_expired'] == 1 || res['plan_expired'] == "1");
-        final bool planWillExpire = (res['plan_will_expire'] == true || res['plan_will_expire'] == 1);
+        final bool planExpired = (res['plan_expired'] == true ||
+            res['plan_expired'] == 1 ||
+            res['plan_expired'] == "1");
+        final bool planWillExpire =
+            (res['plan_will_expire'] == true || res['plan_will_expire'] == 1);
         final String message = res['message'] ?? 'Status Unknown';
         final domainContent = res['domain_content'];
 
-        // 1. SCENARIO: PLAN EXPIRED
         if (planExpired) {
-          // Sabse pehle woh Blur/Loading screen hatao jo MyHome ne lagayi thi
-          if (Navigator.canPop(context)) {
-            Navigator.pop(context);
-          }
-
-          // Thoda wait karein taaki pop animation complete ho
+          if (Navigator.canPop(context)) Navigator.pop(context);
           await Future.delayed(const Duration(milliseconds: 100));
-
           if (!mounted) return;
-
-          // Ab Plan Expired Screen par jao aur peeche ka sab clear kar do
           Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(
               builder: (context) => PlanExpiredScreen(apiMessage: message),
             ),
-            (route) => false, // Isse user Back button se wapas nahi aa payega
+            (route) => false,
           );
-          return; // Yahan se return kar jao, aage ka code run nahi karna
+          return;
         }
 
-        // Agar plan expire nahi hua hai, toh UI setup karein
+        // --- ✅ FIX: Parsing Logic Updated ---
         if (domainContent != null && domainContent is Map) {
           setState(() {
             _showContentNetwork = (domainContent['content_network'] ?? 0) == 1;
@@ -1868,46 +2242,55 @@ class _HomeScreenState extends State<HomeScreen> {
             _showTvShowsPak = (domainContent['tvshow_pak'] ?? 0) == 1;
             _showSports = (domainContent['sports'] ?? 0) == 1;
             _showReligious = (domainContent['religious'] ?? 0) == 1;
-            _showReligious = (domainContent['kidchannels'] ?? 0) == 1;
+            // Correctly assigning specific variables
+            _showKids = (domainContent['kids_show'] ?? 0) == 1; 
+            // Assuming API key is 'adult' or enabling by default if not present
+            // _showAdult = (domainContent['adult'] ?? 1) == 1; 
           });
         }
 
-        // 2. SCENARIO: PLAN EXPIRING SOON (WARNING)
         if (planWillExpire) {
-          // Loading band karein
           setState(() => _isLoading = false);
-          
-          // Warning dikhane se pehle, Blur screen hatao taaki background saaf dikhe
-          if (Navigator.canPop(context)) {
-            Navigator.pop(context);
-          }
-
-          // Ab Dialog show karein
+          if (Navigator.canPop(context)) Navigator.pop(context);
           Future.delayed(const Duration(milliseconds: 200), () {
-            if(mounted) _showExpiryWarningDialog(message);
+            if (mounted) _showExpiryWarningDialog(message);
           });
-        } 
-        // 3. SCENARIO: ALL GOOD
-        else {
-          // Blur screen hatao taaki Home screen dikhe
-          if (Navigator.canPop(context)) {
-            Navigator.pop(context);
-          }
+        } else {
+          if (Navigator.canPop(context)) Navigator.pop(context);
           setState(() => _isLoading = false);
         }
-
       } else {
-        print('Server Error: ${response.statusCode}');
-        // Error case mein bhi Blur screen hatana zaroori hai
         if (Navigator.canPop(context)) Navigator.pop(context);
         setState(() => _isLoading = false);
       }
     } catch (e) {
-      print('Network Error: $e');
-      // Exception case mein bhi Blur screen hatana zaroori hai
       if (Navigator.canPop(context)) Navigator.pop(context);
       if (mounted) setState(() => _isLoading = false);
     }
+  }
+
+  void _showExpiryWarningDialog(String message) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.grey[850],
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
+          icon: const Icon(Icons.warning_amber_rounded, color: Colors.amber, size: 48),
+          title: const Text('Plan Expiry Alert', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+          content: Text(message, textAlign: TextAlign.center, style: const TextStyle(color: Colors.white70)),
+          actionsAlignment: MainAxisAlignment.center,
+          actions: <Widget>[
+            TextButton(
+              style: TextButton.styleFrom(backgroundColor: Colors.amber),
+              child: const Text('O.K', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -1916,30 +2299,19 @@ class _HomeScreenState extends State<HomeScreen> {
     firstSubVodFocusNode.dispose();
     manageMoviesFocusNode.dispose();
     tvShowsFocusNode.dispose();
-    sportsFocusNode.dispose();
-    manageWebseriesFocusNode.dispose();
-    subLiveFocusNode.dispose();
-    
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    // Jab tak API call chal rahi hai, tab tak black screen ya loader
-    // Note: Asli visual loader 'ExitConfirmationScreen' hai jo MyHome se push hua hai
     if (_isLoading) {
-      return const Scaffold(
-        backgroundColor: Colors.black, // Background black rakhein
-        body: Center(
-          // Optional: Double loader avoid karne ke liye yahan kuch mat dikhayein
-          // kyunki upar already blur loader chal raha hai
-        ),
-      );
+      return const Scaffold(backgroundColor: Colors.black);
     }
 
-    // --- VISIBILITY LOGIC ---
+    // --- ✅ FIX: Visibility & Order Logic Updated ---
+    // The order here MUST match the Widget tree order below
     final List<String> visibleRows = [
-      'watchNow', 
+      'watchNow',
       'liveChannelLanguage',
     ];
 
@@ -1948,18 +2320,21 @@ class _HomeScreenState extends State<HomeScreen> {
     if (_showWebseries) visibleRows.add('manageWebseries');
     if (_showTvShows) visibleRows.add('tvShows');
     if (_showSports) visibleRows.add('sports');
-    if (_showReligious) visibleRows.add('religiousChannels'); 
-    if (_showTvShowsPak) visibleRows.add('tvShowPak'); 
-    if (_showTvShowsPak) visibleRows.add('kidchannels'); 
+    if (_showReligious) visibleRows.add('religiousChannels');
+    if (_showTvShowsPak) visibleRows.add('tvShowPak');
+    
+    // Explicitly adding Kids and Adult based on their own flags
+    if (_showKids) visibleRows.add('kids_show');
+    // if (_showAdult) visibleRows.add('aboveEighteen');
 
-    // FocusProvider update
+    // Update Provider
     context.read<FocusProvider>().updateVisibleRowIdentifiers(visibleRows);
 
-    // --- MAIN UI ---
     return Consumer<ColorProvider>(builder: (context, colorProvider, child) {
+      // Determine background color
       Color backgroundColor = colorProvider.isItemFocused
           ? colorProvider.dominantColor.withOpacity(0.2)
-          : cardColor; // Ensure cardColor is defined globally or imported
+          : const Color(0xFF0A0E1A); // Default dark background
 
       return PopScope(
         canPop: false,
@@ -1978,82 +2353,98 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Scaffold(
           backgroundColor: backgroundColor,
           body: Container(
-            width: screenwdt, // Ensure these global vars are accessible
-            height: screenhgt,
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height,
             color: Colors.transparent,
             child: SingleChildScrollView(
               controller: context.read<FocusProvider>().scrollController,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // 1. Banner Slider
+                  // 1. Banner
                   Container(
-                    height: screenhgt * 0.65,
-                    width: screenwdt,
+                    height: MediaQuery.of(context).size.height * 0.65,
+                    width: MediaQuery.of(context).size.width,
                     key: watchNowKey,
                     child: BannerSlider(focusNode: watchNowFocusNode),
                   ),
-                  
+
                   // 2. Live Channels
                   Container(
-                    height: screenhgt * 0.38,
-                    width: screenwdt,
+                    height: MediaQuery.of(context).size.height * 0.38,
+                    width: MediaQuery.of(context).size.width,
                     key: liveChannelLanguageKey,
                     child: const LiveChannelLanguageScreen(),
                   ),
 
-                  // 3. Conditional Widgets
+                  // 3. Dynamic Sections
                   if (_showContentNetwork)
                     SizedBox(
-                      height: screenhgt * 0.38,
+                      height: MediaQuery.of(context).size.height * 0.38,
                       key: subVodKey,
                       child: const HorzontalVod(),
                     ),
 
                   if (_showMovies)
                     SizedBox(
-                      height: screenhgt * 0.38,
+                      height: MediaQuery.of(context).size.height * 0.38,
                       key: manageMoviesKey,
                       child: const MoviesScreen(),
                     ),
 
                   if (_showWebseries)
                     SizedBox(
-                      height: screenhgt * 0.38,
+                      height: MediaQuery.of(context).size.height * 0.38,
                       key: manageWebseriesKey,
                       child: const ManageWebSeries(),
                     ),
 
                   if (_showTvShows)
                     SizedBox(
-                        height: screenhgt * 0.38,
-                        key: tvShowsKey,
-                        child: const ManageTvShows()),
+                      height: MediaQuery.of(context).size.height * 0.38,
+                      key: tvShowsKey,
+                      child: const ManageTvShows(),
+                    ),
 
                   if (_showSports)
                     SizedBox(
-                        height: screenhgt * 0.38,
-                        child: ManageSports(
-                          key: sportsKey,
-                        )),
+                      height: MediaQuery.of(context).size.height * 0.38,
+                      key: sportsKey,
+                      child: const ManageSports(),
+                    ),
 
                   if (_showReligious)
                     SizedBox(
-                        height: screenhgt * 0.38,
-                        key: religiousChannelKey,
-                        child: const ManageReligiousShows()),
+                      height: MediaQuery.of(context).size.height * 0.38,
+                      key: religiousChannelKey,
+                      child: const ManageReligiousShows(),
+                    ),
 
                   if (_showTvShowsPak)
                     SizedBox(
-                        height: screenhgt * 0.38,
-                        key: tvShowsPakKey,
-                        child: const TvShowsPak()),
-                        
-                  // Note: Check if kidchannels should be dependent on _showTvShowsPak or its own flag
-                   SizedBox(
-                        height: screenhgt * 0.38,
-                        key: kidchannelsKey,
-                        child: const ManageKidsShows()),
+                      height: MediaQuery.of(context).size.height * 0.38,
+                      key: tvShowsPakKey,
+                      child: const TvShowsPak(),
+                    ),
+
+                  // --- ✅ FIX: Kids Section ---
+                  if (_showKids)
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.38,
+                      key: kids_showKey,
+                      child: const ManageKidsShows(),
+                    ),
+
+                  // // --- ✅ FIX: Above 18 Section ---
+                  // if (_showAdult)
+                  //   SizedBox(
+                  //     height: MediaQuery.of(context).size.height * 0.38,
+                  //     key: aboveEighteenKey,
+                  //     child: const AboveEighteen(),
+                  //   ),
+                    
+                  // Extra padding at bottom for better scrolling experience
+                  SizedBox(height: 50),
                 ],
               ),
             ),
@@ -2063,3 +2454,9 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 }
+
+
+
+
+
+

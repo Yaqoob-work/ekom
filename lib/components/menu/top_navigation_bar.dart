@@ -1011,16 +1011,1048 @@
 
 
 
+// import 'dart:math';
+// import 'package:cached_network_image/cached_network_image.dart';
+// import 'package:flutter/material.dart';
+// import 'package:flutter/services.dart';
+// import 'package:mobi_tv_entertainment/components/menu_screens/search_screen.dart';
+// import 'package:mobi_tv_entertainment/components/provider/color_provider.dart';
+// import 'package:mobi_tv_entertainment/components/provider/focus_provider.dart';
+// import 'package:provider/provider.dart';
+// import '../../main.dart';
+// import '../widgets/small_widgets/app_assets.dart';
+
+// // ✅ Professional Color Palette
+// class ProfessionalColors {
+//   static const primaryDark = Color(0xFF0A0E1A);
+//   static const surfaceDark = Color(0xFF1A1D29);
+//   static const cardDark = Color(0xFF2A2D3A);
+//   static const accentBlue = Color(0xFF3B82F6);
+//   static const accentPurple = Color(0xFF8B5CF6);
+//   static const accentGreen = Color(0xFF10B981);
+//   static const accentRed = Color(0xFFEF4444);
+//   static const accentOrange = Color(0xFFF59E0B);
+//   static const accentPink = Color(0xFFEC4899);
+//   static const textPrimary = Color(0xFFFFFFFF);
+//   static const textSecondary = Color(0xFFB3B3B3);
+//   static const focusGlow = Color(0xFF60A5FA);
+
+//   static List<Color> gradientColors = [
+//     accentBlue,
+//     accentPurple,
+//     accentGreen,
+//     accentRed,
+//     accentOrange,
+//     accentPink,
+//   ];
+// }
+
+// class TopNavigationBar extends StatefulWidget {
+//   final int selectedPage;
+//   final ValueChanged<int> onPageSelected;
+//   final bool tvenableAll;
+
+//   const TopNavigationBar({
+//     required this.selectedPage,
+//     required this.onPageSelected,
+//     required this.tvenableAll,
+//   });
+
+//   @override
+//   _TopNavigationBarState createState() => _TopNavigationBarState();
+// }
+
+// class _TopNavigationBarState extends State<TopNavigationBar>
+//     with SingleTickerProviderStateMixin {
+//   late List<FocusNode> _focusNodes;
+//   final List<NavItem> navItems = [
+//     NavItem(title: 'Search', icon: Icons.search),
+//   ];
+//   String logoUrl = '';
+//   late AnimationController _animationController;
+//   int _currentColorIndex = 0;
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     logoUrl = SessionManager.logoUrl;
+//     print('logoUrl:$logoUrl');
+//     _focusNodes = List.generate(navItems.length + 1, (index) => FocusNode());
+
+//     _animationController = AnimationController(
+//       vsync: this,
+//       duration: Duration(milliseconds: 300),
+//     );
+
+//     WidgetsBinding.instance.addPostFrameCallback((_) {
+//       _focusNodes[0].requestFocus();
+//       context.read<FocusProvider>().registerFocusNode('topNavigation', _focusNodes[0]);
+//     });
+//   }
+
+//   @override
+//   void dispose() {
+//     _animationController.dispose();
+//     super.dispose();
+//   }
+
+//   Color _getNextColor() {
+//     _currentColorIndex =
+//         (_currentColorIndex + 1) % ProfessionalColors.gradientColors.length;
+//     return ProfessionalColors.gradientColors[_currentColorIndex];
+//   }
+
+
+
+
+// @override
+// Widget build(BuildContext context) {
+//   return PopScope(
+//     canPop: false,
+//     onPopInvoked: (didPop) {
+//       if (!didPop) {
+//         context.read<FocusProvider>().requestFocus('watchNow');
+//       }
+//     },
+//     child: Consumer<ColorProvider>(
+//       builder: (context, colorProvider, child) {
+//         final bool isFocused = colorProvider.isItemFocused;
+//         final Color dominantColor = colorProvider.dominantColor;
+
+//         // ✅ Jab item focused ho to ye decoration use hoga
+//         final focusedDecoration = BoxDecoration(
+//           color: dominantColor.withOpacity(0.25), // Solid color background
+//           boxShadow: [
+//             BoxShadow(
+//               color: dominantColor.withOpacity(0.4), // Background se glow effect
+//               blurRadius: 30,
+//               offset: const Offset(0, 4),
+//             ),
+//             BoxShadow(
+//               color: Colors.black.withOpacity(0.4),
+//               blurRadius: 20,
+//               offset: const Offset(0, 4),
+//             ),
+//           ],
+//         );
+
+//         // // ✅ Default decoration
+//         // final defaultDecoration = BoxDecoration(
+//         //   color: ProfessionalColors.primaryDark, // Default solid color
+//         //   boxShadow: [
+//         //     BoxShadow(
+//         //       color: Colors.black.withOpacity(0.3),
+//         //       blurRadius: 20,
+//         //       offset: const Offset(0, 4),
+//         //     ),
+//         //   ],
+//         // );
+
+
+//         // top_navigation_bar.dart ke 'build' method mein
+
+// // ✅ Default decoration
+// final defaultDecoration = BoxDecoration(
+//   // ✅ RANG KO TRANSPARENT KIYA GAYA HAI
+//   color: ProfessionalColors.primaryDark.withOpacity(0.65), // 65% opacity
+//   boxShadow: [
+//     BoxShadow(
+//       color: Colors.black.withOpacity(0.3),
+//       blurRadius: 20,
+//       offset: const Offset(0, 4),
+//     ),
+//   ],
+// );
+
+//         // ✅ Smooth transition ke liye AnimatedContainer
+//         return AnimatedContainer(
+//           duration: const Duration(milliseconds: 300),
+//           curve: Curves.easeOut,
+//           decoration: isFocused ? focusedDecoration : defaultDecoration,
+//           child: Container(
+//             padding: EdgeInsets.only(
+//               top: screenhgt * 0.03,
+//               right: screenwdt * 0.04,
+//               bottom: screenhgt * 0.015,
+//               left: screenwdt * 0.04,
+//             ),
+//             child: Row(
+//               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//               crossAxisAlignment: CrossAxisAlignment.center,
+//               children: [
+                
+//                 // Logo Section
+//                 _buildLogoItem(_focusNodes[0]),
+
+//                 // Navigation Items
+//                 Row(
+//                   children: List.generate(navItems.length, (i) {
+//                     final index = i + 1;
+//                     return _buildNavigationItem(
+//                       navItems[i],
+//                       index,
+//                       _focusNodes[index],
+//                     );
+//                   }),
+//                 ),
+//               ],
+//             ),
+//           ),
+//         );
+//       },
+//     ),
+//   );
+// }
+
+// Widget _buildLogoItem(FocusNode focusNode) {
+//   bool hasFocus = focusNode.hasFocus;
+//   // ✅ Current color ko yahan access karenge taaki decoration mein use kar sakein
+//   Color currentAccentColor = ProfessionalColors.gradientColors[_currentColorIndex];
+
+//   return AnimatedScale(
+//     scale: hasFocus ? 1.08 : 1.0,
+//     duration: const Duration(milliseconds: 250),
+//     curve: Curves.easeOut,
+//     child: Focus(
+//       focusNode: focusNode,
+//       onFocusChange: (hasFocus) {
+//         setState(() {
+//           if (hasFocus) {
+//             _animationController.forward();
+            
+//             // ✨ YAHAN BADLAV KIYA GAYA HAI ✨
+//             // Ab logo bhi naya color lega, fixed color nahi
+//             final newColor = _getNextColor();
+//             context.read<ColorProvider>().updateColor(newColor, true);
+
+//           } else {
+//             _animationController.reverse();
+//             context.read<ColorProvider>().resetColor();
+//           }
+//         });
+//       },
+//       onKeyEvent: (node, event) => _handleKeyEvent(node, event, 0),
+//       child: GestureDetector(
+//         onTap: () {
+//           widget.onPageSelected(0);
+//           focusNode.requestFocus();
+//         },
+//         child: AnimatedContainer(
+//           duration: const Duration(milliseconds: 300),
+//           curve: Curves.easeInOut,
+//           padding: EdgeInsets.symmetric(horizontal:  screenwdt * 0.012,vertical: screenhgt * 0.007),
+//           decoration: BoxDecoration(
+//             color: hasFocus
+//                 ? ProfessionalColors.surfaceDark
+//                 : Colors.transparent,
+//             borderRadius: BorderRadius.circular(12),
+//             border: Border.all(
+//               // ✨ YAHAN BHI BADLAV KIYA GAYA HAI ✨
+//               // Ab border ka color fixed nahi, dynamic hai
+//               color: hasFocus
+//                   ? currentAccentColor 
+//                   : Colors.white.withOpacity(0.1),
+//               width: hasFocus ? 2.5 : 1.5,
+//             ),
+//             boxShadow: hasFocus
+//                 ? [
+//                     BoxShadow(
+//                       // ✨ AUR YAHAN BHI ✨
+//                       // Shadow ka color bhi ab dynamic hai
+//                       color: currentAccentColor.withOpacity(0.6),
+//                       blurRadius: 20,
+//                       spreadRadius: 2,
+//                     ),
+//                     BoxShadow(
+//                       color: Colors.black.withOpacity(0.4),
+//                       blurRadius: 10,
+//                       offset: const Offset(0, 5),
+//                     ),
+//                   ]
+//                 : [],
+//           ),
+//           child: CachedNetworkImage(
+//             imageUrl: SessionManager.logoUrl,
+//             height: screenhgt * 0.05,
+//             placeholder: (context, url) => SizedBox(
+//               height: screenhgt * 0.05,
+//               width: screenhgt * 0.05,
+//               child: const Center(
+//                 child: CircularProgressIndicator(
+//                   strokeWidth: 2,
+//                   valueColor: AlwaysStoppedAnimation<Color>(
+//                     ProfessionalColors.accentBlue,
+//                   ),
+//                 ),
+//               ),
+//             ),
+//             errorWidget: (context, url, error) => 
+//             // Icon(
+//             //   Icons.broken_image,
+//             //   color: ProfessionalColors.textSecondary,
+//             //   size: screenhgt * 0.05,
+//             // ),
+//             Text('Home'),
+//           ),
+//         ),
+//       ),
+//     ),
+//   );
+// }
+
+// Widget _buildNavigationItem(
+//   NavItem item,
+//   int index,
+//   FocusNode focusNode,
+// ) {
+//   bool isSelected = widget.selectedPage == index;
+//   bool hasFocus = focusNode.hasFocus;
+  
+//   // ✅ Yahan se accent color milta hai jo poore bar ka background glow banata hai
+//   Color currentAccentColor = ProfessionalColors.gradientColors[_currentColorIndex];
+
+//   return AnimatedScale(
+//     scale: hasFocus ? 1.08 : 1.0, // Thoda subtle pop effect
+//     duration: const Duration(milliseconds: 250),
+//     curve: Curves.easeOut,
+//     child: Padding(
+//       padding: EdgeInsets.only(left: screenwdt * 0.02),
+//       child: Focus(
+//         focusNode: focusNode,
+//         onFocusChange: (hasFocus) {
+//           setState(() {
+//             if (hasFocus) {
+//               _animationController.forward();
+//               switch (index) {
+//                 case 1:
+//                   context
+//                       .read<FocusProvider>()
+//                       .registerFocusNode('searchNavigation', focusNode);
+//                   break;
+//               }
+//               // ✨ YEH IMPORTANT HAI: Ye line poore navigation bar ka color badalti hai
+//               final newColor = _getNextColor();
+//               context.read<ColorProvider>().updateColor(newColor, true);
+//             } else {
+//               _animationController.reverse();
+//               context.read<ColorProvider>().resetColor();
+//             }
+//           });
+//         },
+//         onKeyEvent: (node, event) => _handleKeyEvent(node, event, index),
+//         child: GestureDetector(
+//           // onTap: () {
+//           //   widget.onPageSelected(index);
+//           //   focusNode.requestFocus();
+//           // },
+//           onTap: () {
+//             if (index == 1) { // index 1 = Search button
+//               // Naya logic: Search page par navigate karein
+//               Navigator.push(
+//                 context,
+//                 MaterialPageRoute(builder: (context) => const SearchScreen()),
+//               );
+//             } else {
+//               // Purana logic (agar future mein aur buttons add hote hain)
+//               widget.onPageSelected(index);
+//               focusNode.requestFocus();
+//             }
+//           },
+//           child: AnimatedContainer(
+//             duration: const Duration(milliseconds: 300),
+//             curve: Curves.easeInOut,
+//             padding: EdgeInsets.symmetric(
+//               vertical: screenhgt * 0.012,
+//               horizontal: screenwdt * 0.025,
+//             ),
+//             decoration: BoxDecoration(
+//               // ✅ FOCUSED STATE: Solid background + Colored Border
+//               color: hasFocus
+//                   ? ProfessionalColors.surfaceDark // Dark solid background
+//                   : isSelected
+//                       ? ProfessionalColors.accentBlue.withOpacity(0.15)
+//                       : Colors.transparent,
+//               borderRadius: BorderRadius.circular(12),
+//               border: Border.all(
+//                 // ✅ Border focus par highlight hota hai
+//                 color: hasFocus
+//                     ? currentAccentColor
+//                     : isSelected
+//                         ? ProfessionalColors.accentBlue.withOpacity(0.4)
+//                         : Colors.white.withOpacity(0.1),
+//                 width: hasFocus ? 2.5 : 1.5,
+//               ),
+//               boxShadow: hasFocus
+//                   ? [
+//                       // ✅ Shadow bhi focus color se glow karta hai
+//                       BoxShadow(
+//                         color: currentAccentColor.withOpacity(0.5),
+//                         blurRadius: 18,
+//                         spreadRadius: 1,
+//                       ),
+//                       BoxShadow(
+//                         color: Colors.black.withOpacity(0.4),
+//                         blurRadius: 10,
+//                         offset: const Offset(0, 4),
+//                       ),
+//                     ]
+//                   : [],
+//             ),
+//             child: Row(
+//               mainAxisSize: MainAxisSize.min,
+//               children: [
+//                 Icon(
+//                   item.icon,
+//                   color: hasFocus
+//                       ? currentAccentColor // Icon bhi focus color ka hoga
+//                       : isSelected
+//                           ? ProfessionalColors.accentBlue
+//                           : ProfessionalColors.textSecondary,
+//                   size: screenhgt * 0.04,
+//                 ),
+//                 SizedBox(width: screenwdt * 0.01),
+//                 Text(
+//                   item.title,
+//                   style: TextStyle(
+//                     color: hasFocus
+//                         ? ProfessionalColors.textPrimary // Text white rahega
+//                         : isSelected
+//                             ? ProfessionalColors.accentBlue
+//                             : ProfessionalColors.textSecondary,
+//                     fontSize: menutextsz,
+//                     fontWeight:
+//                         hasFocus ? FontWeight.bold : FontWeight.w500,
+//                   ),
+//                 ),
+//               ],
+//             ),
+//           ),
+//         ),
+//       ),
+//     ),
+//   );
+// }
+
+//   KeyEventResult _handleKeyEvent(
+//     FocusNode node,
+//     KeyEvent event,
+//     int index,
+//   ) {
+//     if (event is KeyDownEvent) {
+//       if (index == 1) { 
+//         // Aur user Enter, Select, ya Arrow Down dabata hai
+//         if (event.logicalKey == LogicalKeyboardKey.enter ||
+//             event.logicalKey == LogicalKeyboardKey.select ||
+//             event.logicalKey == LogicalKeyboardKey.arrowDown) {
+          
+//           // SearchScreen par navigate karein
+//           Navigator.push(
+//             context,
+//             MaterialPageRoute(builder: (context) => const SearchScreen()),
+//           );
+//           return KeyEventResult.handled; // Event ko handle kar liya
+//         }
+//       }
+//       if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+//         if (index == widget.selectedPage) {
+//           switch (index) {
+//             case 0:
+//               context.read<FocusProvider>().requestFocus('watchNow');
+//               break;
+//             case 1:
+//               context.read<FocusProvider>().requestFocus('searchIcon');
+//               break;
+//           }
+//         } else {
+//           context.read<FocusProvider>().requestFocus('watchNow');
+//         }
+//         return KeyEventResult.handled;
+//       } else if (event.logicalKey == LogicalKeyboardKey.enter ||
+//           event.logicalKey == LogicalKeyboardKey.select) {
+//         switch (index) {
+//           case 0:
+//             context.read<FocusProvider>().requestFocus('watchNow');
+//             break;
+//           case 1:
+//             context.read<FocusProvider>().requestFocus('searchIcon');
+//             break;
+//         }
+//         widget.onPageSelected(index);
+//         return KeyEventResult.handled;
+//       } else if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
+//         _focusNodes[(index + 1) % _focusNodes.length].requestFocus();
+//         return KeyEventResult.handled;
+//       } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+//         _focusNodes[(index - 1 + _focusNodes.length) % _focusNodes.length]
+//             .requestFocus();
+//         return KeyEventResult.handled;
+//       }
+//     }
+//     return KeyEventResult.ignored;
+//   }
+// }
+
+// // Helper class for navigation items
+// class NavItem {
+//   final String title;
+//   final IconData icon;
+
+//   NavItem({required this.title, required this.icon});
+// }
+
+
+
+// import 'dart:convert';
+// import 'package:cached_network_image/cached_network_image.dart';
+// import 'package:flutter/material.dart';
+// import 'package:flutter/services.dart';
+// import 'package:http/http.dart' as http;
+// import 'package:provider/provider.dart';
+
+// // Import your app specific files
+// import 'package:mobi_tv_entertainment/components/menu_screens/search_screen.dart';
+// import 'package:mobi_tv_entertainment/components/provider/color_provider.dart';
+// import 'package:mobi_tv_entertainment/components/provider/focus_provider.dart';
+// import 'package:mobi_tv_entertainment/components/home_screen_pages/above_18/above_eighteen.dart';
+// import '../../main.dart';
+// import '../widgets/small_widgets/app_assets.dart';
+
+// // ✅ Professional Color Palette
+// class ProfessionalColors {
+//   static const primaryDark = Color(0xFF0A0E1A);
+//   static const surfaceDark = Color(0xFF1A1D29);
+//   static const cardDark = Color(0xFF2A2D3A);
+//   static const accentBlue = Color(0xFF3B82F6);
+//   static const accentPurple = Color(0xFF8B5CF6);
+//   static const accentGreen = Color(0xFF10B981);
+//   static const accentRed = Color(0xFFEF4444);
+//   static const accentOrange = Color(0xFFF59E0B);
+//   static const accentPink = Color(0xFFEC4899);
+//   static const textPrimary = Color(0xFFFFFFFF);
+//   static const textSecondary = Color(0xFFB3B3B3);
+
+//   static List<Color> gradientColors = [
+//     accentBlue,
+//     accentPurple,
+//     accentGreen,
+//     accentRed,
+//     accentOrange,
+//     accentPink,
+//   ];
+// }
+
+// class TopNavigationBar extends StatefulWidget {
+//   final int selectedPage;
+//   final ValueChanged<int> onPageSelected;
+//   final bool tvenableAll;
+
+//   const TopNavigationBar({
+//     required this.selectedPage,
+//     required this.onPageSelected,
+//     required this.tvenableAll,
+//   });
+
+//   @override
+//   _TopNavigationBarState createState() => _TopNavigationBarState();
+// }
+
+// class _TopNavigationBarState extends State<TopNavigationBar>
+//     with SingleTickerProviderStateMixin {
+//   late List<FocusNode> _focusNodes;
+  
+//   // ✅ Start with Search. ID helps us identify buttons regardless of order
+//   List<NavItem> navItems = [
+//     NavItem(title: 'Search', icon: Icons.search, id: 'search'),
+//   ];
+
+//   late AnimationController _animationController;
+//   int _currentColorIndex = 0;
+  
+//   // API State variables
+//   String _serverPin = "";
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     _animationController = AnimationController(
+//       vsync: this,
+//       duration: Duration(milliseconds: 300),
+//     );
+
+//     // Initial setup
+//     _focusNodes = List.generate(navItems.length + 1, (index) => FocusNode());
+    
+//     WidgetsBinding.instance.addPostFrameCallback((_) {
+//       if(mounted && _focusNodes.isNotEmpty) {
+//         context.read<FocusProvider>().registerFocusNode('topNavigation', _focusNodes[0]);
+//         // Default focus on logo if needed, or let system handle it
+//          _focusNodes[0].requestFocus(); 
+//       }
+//     });
+
+//     // Check API Status
+//     _check18PlusStatus();
+//   }
+
+//   // ✅ API Call Logic (New Feature)
+//   Future<void> _check18PlusStatus() async {
+//     try {
+//       final url = Uri.parse("https://dashboard.cpplayers.com/api/v3/showabove18");
+//       final headers = {
+//         "auth-key": SessionManager.authKey,
+//         "domain": SessionManager.savedDomain,
+//       };
+
+//       final response = await http.get(url, headers: headers);
+
+//       if (response.statusCode == 200) {
+//         final data = json.decode(response.body);
+//         bool status = data['status'] == true;
+
+//         if (status && mounted) {
+//            setState(() {
+//              _serverPin = data['above18_pin'].toString();
+//              // Insert 18+ button BEFORE Search
+//              navItems.insert(0, NavItem(title: '18+', icon: Icons.lock_outline, id: '18+'));
+             
+//              // Re-initialize focus nodes because list length changed
+//              // We need 1 node for Logo + nodes for items
+//              for(var node in _focusNodes) node.dispose();
+//              _focusNodes = List.generate(navItems.length + 1, (index) => FocusNode());
+             
+//              // Re-register logo focus
+//              context.read<FocusProvider>().registerFocusNode('topNavigation', _focusNodes[0]);
+//            });
+//         }
+//       }
+//     } catch (e) {
+//       print("Error fetching 18+ status: $e");
+//     }
+//   }
+
+//   @override
+//   void dispose() {
+//     _animationController.dispose();
+//     for (var node in _focusNodes) {
+//       node.dispose();
+//     }
+//     super.dispose();
+//   }
+
+//   Color _getNextColor() {
+//     _currentColorIndex =
+//         (_currentColorIndex + 1) % ProfessionalColors.gradientColors.length;
+//     return ProfessionalColors.gradientColors[_currentColorIndex];
+//   }
+
+//   // ✅ PIN Verification Dialog
+//   void _showPinDialog() {
+//     final TextEditingController _pinController = TextEditingController();
+//     final FocusNode _inputFocus = FocusNode();
+
+//     showDialog(
+//       context: context,
+//       builder: (context) {
+//         return AlertDialog(
+//           backgroundColor: ProfessionalColors.cardDark,
+//           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+//           title: const Text("Enter 18+ PIN", style: TextStyle(color: Colors.white)),
+//           content: TextField(
+//             controller: _pinController,
+//             focusNode: _inputFocus,
+//             autofocus: true,
+//             obscureText: true,
+//             keyboardType: TextInputType.number,
+//             style: const TextStyle(color: Colors.white),
+//             decoration: InputDecoration(
+//               hintText: "Enter PIN",
+//               hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
+//               enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white)),
+//               focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: ProfessionalColors.accentBlue)),
+//             ),
+//             onSubmitted: (_) => _validatePin(_pinController.text),
+//           ),
+//           actions: [
+//             TextButton(
+//               onPressed: () => Navigator.pop(context),
+//               child: const Text("Cancel", style: TextStyle(color: Colors.redAccent)),
+//             ),
+//             TextButton(
+//               onPressed: () => _validatePin(_pinController.text),
+//               child: const Text("Enter", style: TextStyle(color: ProfessionalColors.accentBlue)),
+//             ),
+//           ],
+//         );
+//       },
+//     );
+//   }
+
+//   void _validatePin(String inputPin) {
+//     if (inputPin == _serverPin) {
+//       Navigator.pop(context);
+//       Navigator.push(
+//         context,
+//         MaterialPageRoute(builder: (context) => const AboveEighteen()),
+//       );
+//     } else {
+//       ScaffoldMessenger.of(context).showSnackBar(
+//         const SnackBar(content: Text("Invalid PIN"), backgroundColor: Colors.red, duration: Duration(seconds: 2)),
+//       );
+//     }
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     double screenhgt = MediaQuery.of(context).size.height;
+//     double screenwdt = MediaQuery.of(context).size.width;
+
+//     return PopScope(
+//       canPop: false,
+//       onPopInvoked: (didPop) {
+//         if (!didPop) {
+//           context.read<FocusProvider>().requestFocus('watchNow');
+//         }
+//       },
+//       child: Consumer<ColorProvider>(
+//         builder: (context, colorProvider, child) {
+//           final bool isFocused = colorProvider.isItemFocused;
+//           final Color dominantColor = colorProvider.dominantColor;
+
+//           // ✅ ORIGINAL STYLE: Focused Decoration
+//           final focusedDecoration = BoxDecoration(
+//             color: dominantColor.withOpacity(0.25),
+//             boxShadow: [
+//               BoxShadow(
+//                 color: dominantColor.withOpacity(0.4),
+//                 blurRadius: 30,
+//                 offset: const Offset(0, 4),
+//               ),
+//               BoxShadow(
+//                 color: Colors.black.withOpacity(0.4),
+//                 blurRadius: 20,
+//                 offset: const Offset(0, 4),
+//               ),
+//             ],
+//           );
+
+//           // ✅ ORIGINAL STYLE: Default Decoration
+//           final defaultDecoration = BoxDecoration(
+//             color: ProfessionalColors.primaryDark.withOpacity(0.65),
+//             boxShadow: [
+//               BoxShadow(
+//                 color: Colors.black.withOpacity(0.3),
+//                 blurRadius: 20,
+//                 offset: const Offset(0, 4),
+//               ),
+//             ],
+//           );
+
+//           return AnimatedContainer(
+//             duration: const Duration(milliseconds: 300),
+//             curve: Curves.easeOut,
+//             decoration: isFocused ? focusedDecoration : defaultDecoration,
+//             child: Container(
+//               padding: EdgeInsets.only(
+//                 top: screenhgt * 0.03,
+//                 right: screenwdt * 0.04,
+//                 bottom: screenhgt * 0.015,
+//                 left: screenwdt * 0.04,
+//               ),
+//               child: Row(
+//                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                 crossAxisAlignment: CrossAxisAlignment.center,
+//                 children: [
+//                   // Logo Section (Index 0 in focusNodes)
+//                   _buildLogoItem(_focusNodes[0]),
+
+//                   // Navigation Items (Indices 1 to N)
+//                   Row(
+//                     children: List.generate(navItems.length, (i) {
+//                       final focusIndex = i + 1; // Offset by 1 because of Logo
+//                       return _buildNavigationItem(
+//                         navItems[i],
+//                         focusIndex,
+//                         _focusNodes[focusIndex],
+//                       );
+//                     }),
+//                   ),
+//                 ],
+//               ),
+//             ),
+//           );
+//         },
+//       ),
+//     );
+//   }
+
+//   Widget _buildLogoItem(FocusNode focusNode) {
+//     bool hasFocus = focusNode.hasFocus;
+//     Color currentAccentColor = ProfessionalColors.gradientColors[_currentColorIndex];
+//     double screenhgt = MediaQuery.of(context).size.height;
+//     double screenwdt = MediaQuery.of(context).size.width;
+
+//     return AnimatedScale(
+//       scale: hasFocus ? 1.08 : 1.0,
+//       duration: const Duration(milliseconds: 250),
+//       curve: Curves.easeOut,
+//       child: Focus(
+//         focusNode: focusNode,
+//         onFocusChange: (hasFocus) {
+//           setState(() {
+//             if (hasFocus) {
+//               _animationController.forward();
+//               final newColor = _getNextColor();
+//               context.read<ColorProvider>().updateColor(newColor, true);
+//             } else {
+//               _animationController.reverse();
+//               context.read<ColorProvider>().resetColor();
+//             }
+//           });
+//         },
+//         // Logo is index 0
+//         onKeyEvent: (node, event) => _handleKeyEvent(node, event, 0, null),
+//         child: GestureDetector(
+//           onTap: () {
+//              // Default logo action: Focus WatchNow or Home
+//              context.read<FocusProvider>().requestFocus('watchNow');
+//              widget.onPageSelected(0);
+//           },
+//           child: AnimatedContainer(
+//             duration: const Duration(milliseconds: 300),
+//             curve: Curves.easeInOut,
+//             padding: EdgeInsets.symmetric(horizontal: screenwdt * 0.012, vertical: screenhgt * 0.007),
+//             decoration: BoxDecoration(
+//               color: hasFocus ? ProfessionalColors.surfaceDark : Colors.transparent,
+//               borderRadius: BorderRadius.circular(12),
+//               border: Border.all(
+//                 color: hasFocus ? currentAccentColor : Colors.white.withOpacity(0.1),
+//                 width: hasFocus ? 2.5 : 1.5,
+//               ),
+//               boxShadow: hasFocus
+//                   ? [
+//                       BoxShadow(
+//                         color: currentAccentColor.withOpacity(0.6),
+//                         blurRadius: 20,
+//                         spreadRadius: 2,
+//                       ),
+//                       BoxShadow(
+//                         color: Colors.black.withOpacity(0.4),
+//                         blurRadius: 10,
+//                         offset: const Offset(0, 5),
+//                       ),
+//                     ]
+//                   : [],
+//             ),
+//             child: CachedNetworkImage(
+//               imageUrl: SessionManager.logoUrl,
+//               height: screenhgt * 0.05,
+//               placeholder: (context, url) => SizedBox(
+//                 height: screenhgt * 0.05,
+//                 width: screenhgt * 0.05,
+//                 child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
+//               ),
+//               errorWidget: (context, url, error) => const Text('Home', style: TextStyle(color: Colors.white)),
+//             ),
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildNavigationItem(NavItem item, int index, FocusNode focusNode) {
+//     bool isSelected = widget.selectedPage == index; 
+//     bool hasFocus = focusNode.hasFocus;
+//     Color currentAccentColor = ProfessionalColors.gradientColors[_currentColorIndex];
+//     double screenhgt = MediaQuery.of(context).size.height;
+//     double screenwdt = MediaQuery.of(context).size.width;
+//     double menutextsz = screenhgt * 0.025;
+
+//     return AnimatedScale(
+//       scale: hasFocus ? 1.08 : 1.0,
+//       duration: const Duration(milliseconds: 250),
+//       curve: Curves.easeOut,
+//       child: Padding(
+//         padding: EdgeInsets.only(left: screenwdt * 0.02),
+//         child: Focus(
+//           focusNode: focusNode,
+//           onFocusChange: (hasFocus) {
+//             setState(() {
+//               if (hasFocus) {
+//                 _animationController.forward();
+//                 // Register search specific focus if needed by other widgets
+//                 if(item.id == 'search') {
+//                    context.read<FocusProvider>().registerFocusNode('searchNavigation', focusNode);
+//                 }
+//                 final newColor = _getNextColor();
+//                 context.read<ColorProvider>().updateColor(newColor, true);
+//               } else {
+//                 _animationController.reverse();
+//                 context.read<ColorProvider>().resetColor();
+//               }
+//             });
+//           },
+//           onKeyEvent: (node, event) => _handleKeyEvent(node, event, index, item),
+//           child: GestureDetector(
+//             onTap: () => _executeItemAction(item),
+//             child: AnimatedContainer(
+//               duration: const Duration(milliseconds: 300),
+//               curve: Curves.easeInOut,
+//               padding: EdgeInsets.symmetric(
+//                 vertical: screenhgt * 0.012,
+//                 horizontal: screenwdt * 0.025,
+//               ),
+//               decoration: BoxDecoration(
+//                 color: hasFocus
+//                     ? ProfessionalColors.surfaceDark
+//                     : isSelected
+//                         ? ProfessionalColors.accentBlue.withOpacity(0.15)
+//                         : Colors.transparent,
+//                 borderRadius: BorderRadius.circular(12),
+//                 border: Border.all(
+//                   color: hasFocus
+//                       ? currentAccentColor
+//                       : isSelected
+//                           ? ProfessionalColors.accentBlue.withOpacity(0.4)
+//                           : Colors.white.withOpacity(0.1),
+//                   width: hasFocus ? 2.5 : 1.5,
+//                 ),
+//                 boxShadow: hasFocus
+//                     ? [
+//                         BoxShadow(
+//                           color: currentAccentColor.withOpacity(0.5),
+//                           blurRadius: 18,
+//                           spreadRadius: 1,
+//                         ),
+//                         BoxShadow(
+//                           color: Colors.black.withOpacity(0.4),
+//                           blurRadius: 10,
+//                           offset: const Offset(0, 4),
+//                         ),
+//                       ]
+//                     : [],
+//               ),
+//               child: Row(
+//                 mainAxisSize: MainAxisSize.min,
+//                 children: [
+//                   Icon(
+//                     item.icon,
+//                     color: hasFocus
+//                         ? currentAccentColor
+//                         : isSelected
+//                             ? ProfessionalColors.accentBlue
+//                             : ProfessionalColors.textSecondary,
+//                     size: screenhgt * 0.04,
+//                   ),
+//                   SizedBox(width: screenwdt * 0.01),
+//                   Text(
+//                     item.title,
+//                     style: TextStyle(
+//                       color: hasFocus
+//                           ? ProfessionalColors.textPrimary
+//                           : isSelected
+//                               ? ProfessionalColors.accentBlue
+//                               : ProfessionalColors.textSecondary,
+//                       fontSize: menutextsz,
+//                       fontWeight: hasFocus ? FontWeight.bold : FontWeight.w500,
+//                     ),
+//                   ),
+//                 ],
+//               ),
+//             ),
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+
+//   // Helper to execute actions based on Item ID
+//   void _executeItemAction(NavItem item) {
+//     if (item.id == '18+') {
+//       _showPinDialog();
+//     } else if (item.id == 'search') {
+//       Navigator.push(
+//         context,
+//         MaterialPageRoute(builder: (context) => const SearchScreen()),
+//       );
+//     } 
+//   }
+
+//   // ✅ RESTORED ORIGINAL TV FOCUS LOGIC
+//   KeyEventResult _handleKeyEvent(
+//     FocusNode node,
+//     KeyEvent event,
+//     int index,
+//     NavItem? item,
+//   ) {
+//     if (event is KeyDownEvent) {
+      
+//       // 1. Handle Arrow Down (Crucial: Moves focus out of TopBar to 'watchNow')
+//       if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+//         // Original logic: If current index matches selected page, or just generally down
+//         // Moves focus to the main content body
+//         context.read<FocusProvider>().requestFocus('watchNow');
+//         return KeyEventResult.handled;
+//       }
+
+//       // 2. Handle Enter / Select
+//       if (event.logicalKey == LogicalKeyboardKey.enter ||
+//           event.logicalKey == LogicalKeyboardKey.select) {
+          
+//           if (index == 0) {
+//             // Logo Click
+//             context.read<FocusProvider>().requestFocus('watchNow');
+//           } else if (item != null) {
+//             // Nav Items Click
+//             _executeItemAction(item);
+//           }
+//           return KeyEventResult.handled;
+//       }
+
+//       // 3. Handle Arrow Right (Circular Navigation)
+//       if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
+//         // (index + 1) % length ensures it goes back to 0 (Logo) after the last item
+//         _focusNodes[(index + 1) % _focusNodes.length].requestFocus();
+//         return KeyEventResult.handled;
+//       }
+
+//       // 4. Handle Arrow Left (Circular Navigation)
+//       if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+//         // (index - 1 + length) % length ensures it goes to Last Item from Logo (0)
+//         _focusNodes[(index - 1 + _focusNodes.length) % _focusNodes.length].requestFocus();
+//         return KeyEventResult.handled;
+//       }
+//     }
+    
+//     return KeyEventResult.ignored;
+//   }
+// }
+
+// class NavItem {
+//   final String title;
+//   final IconData icon;
+//   final String id; // Added ID for logic
+
+//   NavItem({required this.title, required this.icon, required this.id});
+// }
+
+
+
+
+
+import 'dart:convert';
 import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
 import 'package:mobi_tv_entertainment/components/menu_screens/search_screen.dart';
 import 'package:mobi_tv_entertainment/components/provider/color_provider.dart';
 import 'package:mobi_tv_entertainment/components/provider/focus_provider.dart';
 import 'package:provider/provider.dart';
 import '../../main.dart';
 import '../widgets/small_widgets/app_assets.dart';
+// Import the 18+ page
+import 'package:mobi_tv_entertainment/components/home_screen_pages/above_18/above_eighteen.dart';
 
 // ✅ Professional Color Palette
 class ProfessionalColors {
@@ -1065,18 +2097,27 @@ class TopNavigationBar extends StatefulWidget {
 class _TopNavigationBarState extends State<TopNavigationBar>
     with SingleTickerProviderStateMixin {
   late List<FocusNode> _focusNodes;
-  final List<NavItem> navItems = [
-    NavItem(title: 'Search', icon: Icons.search),
+  
+  // ✅ Changed to non-final to allow adding 18+ button
+  // ✅ Added 'id' to identify buttons regardless of their position
+  List<NavItem> navItems = [
+    NavItem(title: 'Search', icon: Icons.search, id: 'search'),
   ];
+  
   String logoUrl = '';
   late AnimationController _animationController;
   int _currentColorIndex = 0;
+  
+  // ✅ API Variables
+  String _serverPin = "";
 
   @override
   void initState() {
     super.initState();
     logoUrl = SessionManager.logoUrl;
     print('logoUrl:$logoUrl');
+    
+    // Initialize focus nodes (1 for logo + length of items)
     _focusNodes = List.generate(navItems.length + 1, (index) => FocusNode());
 
     _animationController = AnimationController(
@@ -1085,14 +2126,116 @@ class _TopNavigationBarState extends State<TopNavigationBar>
     );
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _focusNodes[0].requestFocus();
-      context.read<FocusProvider>().registerFocusNode('topNavigation', _focusNodes[0]);
+      if (_focusNodes.isNotEmpty) {
+        _focusNodes[0].requestFocus();
+        context.read<FocusProvider>().registerFocusNode('topNavigation', _focusNodes[0]);
+      }
     });
+
+    // ✅ Check API for 18+ content
+    _check18PlusStatus();
+  }
+
+  // // ✅ API Call Logic
+  // Future<void> _check18PlusStatus() async {
+  //   try {
+  //     final url = Uri.parse("https://dashboard.cpplayers.com/api/v3/showabove18");
+  //     final headers = {
+  //       "auth-key": SessionManager.authKey,
+  //       "domain": SessionManager.savedDomain,
+  //     };
+
+  //     final response = await http.get(url, headers: headers);
+
+  //     if (response.statusCode == 200) {
+  //       final data = json.decode(response.body);
+  //       bool status = data['status'] == true;
+
+  //       if (status && mounted) {
+  //         setState(() {
+  //           _serverPin = data['above18_pin'].toString();
+            
+  //           // ✅ Insert 18+ button BEFORE Search
+  //           // Check if it already exists to prevent duplicates
+  //           if (!navItems.any((item) => item.id == '18+')) {
+  //              navItems.insert(0, NavItem(title: '18+', icon: Icons.lock_outline, id: '18+'));
+  //           }
+
+  //           // ✅ Regenerate Focus Nodes because list length changed
+  //           for (var node in _focusNodes) {
+  //             // Don't dispose the active one immediately if possible, but safe here to rebuild
+  //             node.dispose(); 
+  //           }
+  //           _focusNodes = List.generate(navItems.length + 1, (index) => FocusNode());
+            
+  //           // Re-register logo focus
+  //           context.read<FocusProvider>().registerFocusNode('topNavigation', _focusNodes[0]);
+  //         });
+  //       }
+  //     }
+  //   } catch (e) {
+  //     print("Error fetching 18+ status: $e");
+  //   }
+  // }
+
+
+
+
+  // ✅ Updated Function with Focus Fix
+  Future<void> _check18PlusStatus() async {
+    try {
+      final url = Uri.parse("https://dashboard.cpplayers.com/api/v3/showabove18");
+      final headers = {
+        "auth-key": SessionManager.authKey,
+        "domain": SessionManager.savedDomain,
+      };
+
+      final response = await http.get(url, headers: headers);
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        bool status = data['status'] == true;
+
+        if (status && mounted) {
+          setState(() {
+            _serverPin = data['above18_pin'].toString();
+            
+            // ✅ Insert 18+ button BEFORE Search
+            if (!navItems.any((item) => item.id == '18+')) {
+               navItems.insert(0, NavItem(title: '18+', icon: Icons.lock_outline, id: '18+'));
+            }
+
+            // Purane nodes ko dispose karein
+            for (var node in _focusNodes) {
+              node.dispose(); 
+            }
+            
+            // Naye nodes create karein
+            _focusNodes = List.generate(navItems.length + 1, (index) => FocusNode());
+            
+            // Logo focus ko wapas register karein
+            context.read<FocusProvider>().registerFocusNode('topNavigation', _focusNodes[0]);
+          });
+
+          // ✨ MAIN FIX: Frame banne ke baad turant Logo (Index 0) par focus karein
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) {
+              _focusNodes[0].requestFocus();
+            }
+          });
+        }
+      }
+    } catch (e) {
+      print("Error fetching 18+ status: $e");
+    }
   }
 
   @override
   void dispose() {
     _animationController.dispose();
+    for (var node in _focusNodes) {
+      node.dispose();
+    }
     super.dispose();
   }
 
@@ -1102,387 +2245,422 @@ class _TopNavigationBarState extends State<TopNavigationBar>
     return ProfessionalColors.gradientColors[_currentColorIndex];
   }
 
+  // ✅ PIN Verification Dialog
+  void _showPinDialog() {
+    final TextEditingController _pinController = TextEditingController();
+    final FocusNode _inputFocus = FocusNode();
 
-
-
-@override
-Widget build(BuildContext context) {
-  return PopScope(
-    canPop: false,
-    onPopInvoked: (didPop) {
-      if (!didPop) {
-        context.read<FocusProvider>().requestFocus('watchNow');
-      }
-    },
-    child: Consumer<ColorProvider>(
-      builder: (context, colorProvider, child) {
-        final bool isFocused = colorProvider.isItemFocused;
-        final Color dominantColor = colorProvider.dominantColor;
-
-        // ✅ Jab item focused ho to ye decoration use hoga
-        final focusedDecoration = BoxDecoration(
-          color: dominantColor.withOpacity(0.25), // Solid color background
-          boxShadow: [
-            BoxShadow(
-              color: dominantColor.withOpacity(0.4), // Background se glow effect
-              blurRadius: 30,
-              offset: const Offset(0, 4),
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: ProfessionalColors.cardDark,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+          title: const Text("Enter 18+ PIN", style: TextStyle(color: Colors.white)),
+          content: TextField(
+            controller: _pinController,
+            focusNode: _inputFocus,
+            autofocus: true,
+            obscureText: true,
+            keyboardType: TextInputType.number,
+            style: const TextStyle(color: Colors.white),
+            decoration: InputDecoration(
+              hintText: "Enter PIN",
+              hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
+              enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white)),
+              focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: ProfessionalColors.accentBlue)),
             ),
-            BoxShadow(
-              color: Colors.black.withOpacity(0.4),
-              blurRadius: 20,
-              offset: const Offset(0, 4),
+            onSubmitted: (_) => _validatePin(_pinController.text),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Cancel", style: TextStyle(color: ProfessionalColors.accentRed)),
+            ),
+            TextButton(
+              onPressed: () => _validatePin(_pinController.text),
+              child: const Text("Enter", style: TextStyle(color: ProfessionalColors.accentBlue)),
             ),
           ],
         );
-
-        // // ✅ Default decoration
-        // final defaultDecoration = BoxDecoration(
-        //   color: ProfessionalColors.primaryDark, // Default solid color
-        //   boxShadow: [
-        //     BoxShadow(
-        //       color: Colors.black.withOpacity(0.3),
-        //       blurRadius: 20,
-        //       offset: const Offset(0, 4),
-        //     ),
-        //   ],
-        // );
-
-
-        // top_navigation_bar.dart ke 'build' method mein
-
-// ✅ Default decoration
-final defaultDecoration = BoxDecoration(
-  // ✅ RANG KO TRANSPARENT KIYA GAYA HAI
-  color: ProfessionalColors.primaryDark.withOpacity(0.65), // 65% opacity
-  boxShadow: [
-    BoxShadow(
-      color: Colors.black.withOpacity(0.3),
-      blurRadius: 20,
-      offset: const Offset(0, 4),
-    ),
-  ],
-);
-
-        // ✅ Smooth transition ke liye AnimatedContainer
-        return AnimatedContainer(
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-          decoration: isFocused ? focusedDecoration : defaultDecoration,
-          child: Container(
-            padding: EdgeInsets.only(
-              top: screenhgt * 0.03,
-              right: screenwdt * 0.04,
-              bottom: screenhgt * 0.015,
-              left: screenwdt * 0.04,
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                
-                // Logo Section
-                _buildLogoItem(_focusNodes[0]),
-
-                // Navigation Items
-                Row(
-                  children: List.generate(navItems.length, (i) {
-                    final index = i + 1;
-                    return _buildNavigationItem(
-                      navItems[i],
-                      index,
-                      _focusNodes[index],
-                    );
-                  }),
-                ),
-              ],
-            ),
-          ),
-        );
       },
-    ),
-  );
-}
+    );
+  }
 
-Widget _buildLogoItem(FocusNode focusNode) {
-  bool hasFocus = focusNode.hasFocus;
-  // ✅ Current color ko yahan access karenge taaki decoration mein use kar sakein
-  Color currentAccentColor = ProfessionalColors.gradientColors[_currentColorIndex];
+  void _validatePin(String inputPin) {
+    if (inputPin == _serverPin) {
+      Navigator.pop(context);
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const AboveEighteen()),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Invalid PIN"), backgroundColor: Colors.red, duration: Duration(seconds: 2)),
+      );
+    }
+  }
 
-  return AnimatedScale(
-    scale: hasFocus ? 1.08 : 1.0,
-    duration: const Duration(milliseconds: 250),
-    curve: Curves.easeOut,
-    child: Focus(
-      focusNode: focusNode,
-      onFocusChange: (hasFocus) {
-        setState(() {
-          if (hasFocus) {
-            _animationController.forward();
-            
-            // ✨ YAHAN BADLAV KIYA GAYA HAI ✨
-            // Ab logo bhi naya color lega, fixed color nahi
-            final newColor = _getNextColor();
-            context.read<ColorProvider>().updateColor(newColor, true);
+  // ✅ Helper to execute actions based on Item ID
+  void _executeItemAction(NavItem item) {
+    if (item.id == '18+') {
+      _showPinDialog();
+    } else if (item.id == 'search') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const SearchScreen()),
+      );
+    } 
+  }
 
-          } else {
-            _animationController.reverse();
-            context.read<ColorProvider>().resetColor();
-          }
-        });
+  @override
+  Widget build(BuildContext context) {
+    // Get screen dimensions directly to avoid repetitive calls
+    double screenhgt = MediaQuery.of(context).size.height;
+    double screenwdt = MediaQuery.of(context).size.width;
+
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) {
+        if (!didPop) {
+          context.read<FocusProvider>().requestFocus('watchNow');
+        }
       },
-      onKeyEvent: (node, event) => _handleKeyEvent(node, event, 0),
-      child: GestureDetector(
-        onTap: () {
-          widget.onPageSelected(0);
-          focusNode.requestFocus();
-        },
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeInOut,
-          padding: EdgeInsets.symmetric(horizontal:  screenwdt * 0.012,vertical: screenhgt * 0.007),
-          decoration: BoxDecoration(
-            color: hasFocus
-                ? ProfessionalColors.surfaceDark
-                : Colors.transparent,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              // ✨ YAHAN BHI BADLAV KIYA GAYA HAI ✨
-              // Ab border ka color fixed nahi, dynamic hai
-              color: hasFocus
-                  ? currentAccentColor 
-                  : Colors.white.withOpacity(0.1),
-              width: hasFocus ? 2.5 : 1.5,
-            ),
-            boxShadow: hasFocus
-                ? [
-                    BoxShadow(
-                      // ✨ AUR YAHAN BHI ✨
-                      // Shadow ka color bhi ab dynamic hai
-                      color: currentAccentColor.withOpacity(0.6),
-                      blurRadius: 20,
-                      spreadRadius: 2,
-                    ),
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.4),
-                      blurRadius: 10,
-                      offset: const Offset(0, 5),
-                    ),
-                  ]
-                : [],
-          ),
-          child: CachedNetworkImage(
-            imageUrl: SessionManager.logoUrl,
-            height: screenhgt * 0.05,
-            placeholder: (context, url) => SizedBox(
-              height: screenhgt * 0.05,
-              width: screenhgt * 0.05,
-              child: const Center(
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                    ProfessionalColors.accentBlue,
+      child: Consumer<ColorProvider>(
+        builder: (context, colorProvider, child) {
+          final bool isFocused = colorProvider.isItemFocused;
+          final Color dominantColor = colorProvider.dominantColor;
+
+          // ✅ Focused Decoration
+          final focusedDecoration = BoxDecoration(
+            color: dominantColor.withOpacity(0.25), 
+            boxShadow: [
+              BoxShadow(
+                color: dominantColor.withOpacity(0.4),
+                blurRadius: 30,
+                offset: const Offset(0, 4),
+              ),
+              BoxShadow(
+                color: Colors.black.withOpacity(0.4),
+                blurRadius: 20,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          );
+
+          // ✅ Default Decoration
+          final defaultDecoration = BoxDecoration(
+            color: ProfessionalColors.primaryDark.withOpacity(0.65),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.3),
+                blurRadius: 20,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          );
+
+          return AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOut,
+            decoration: isFocused ? focusedDecoration : defaultDecoration,
+            child: Container(
+              padding: EdgeInsets.only(
+                top: screenhgt * 0.03,
+                right: screenwdt * 0.04,
+                bottom: screenhgt * 0.015,
+                left: screenwdt * 0.04,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  
+                  // Logo Section (Index 0)
+                  _buildLogoItem(_focusNodes[0], screenwdt, screenhgt),
+
+                  // Navigation Items (Indices 1+)
+                  Row(
+                    children: List.generate(navItems.length, (i) {
+                      final index = i + 1; // +1 because logo is at 0
+                      // Safety check for focus nodes length
+                      if (index >= _focusNodes.length) return SizedBox();
+                      
+                      return _buildNavigationItem(
+                        navItems[i],
+                        index,
+                        _focusNodes[index],
+                        screenwdt,
+                        screenhgt
+                      );
+                    }),
                   ),
-                ),
+                ],
               ),
             ),
-            errorWidget: (context, url, error) => 
-            // Icon(
-            //   Icons.broken_image,
-            //   color: ProfessionalColors.textSecondary,
-            //   size: screenhgt * 0.05,
-            // ),
-            Text('Home'),
-          ),
-        ),
+          );
+        },
       ),
-    ),
-  );
-}
+    );
+  }
 
-Widget _buildNavigationItem(
-  NavItem item,
-  int index,
-  FocusNode focusNode,
-) {
-  bool isSelected = widget.selectedPage == index;
-  bool hasFocus = focusNode.hasFocus;
-  
-  // ✅ Yahan se accent color milta hai jo poore bar ka background glow banata hai
-  Color currentAccentColor = ProfessionalColors.gradientColors[_currentColorIndex];
+  Widget _buildLogoItem(FocusNode focusNode, double screenwdt, double screenhgt) {
+    bool hasFocus = focusNode.hasFocus;
+    Color currentAccentColor = ProfessionalColors.gradientColors[_currentColorIndex];
 
-  return AnimatedScale(
-    scale: hasFocus ? 1.08 : 1.0, // Thoda subtle pop effect
-    duration: const Duration(milliseconds: 250),
-    curve: Curves.easeOut,
-    child: Padding(
-      padding: EdgeInsets.only(left: screenwdt * 0.02),
+    return AnimatedScale(
+      scale: hasFocus ? 1.08 : 1.0,
+      duration: const Duration(milliseconds: 250),
+      curve: Curves.easeOut,
       child: Focus(
         focusNode: focusNode,
         onFocusChange: (hasFocus) {
           setState(() {
             if (hasFocus) {
               _animationController.forward();
-              switch (index) {
-                case 1:
-                  context
-                      .read<FocusProvider>()
-                      .registerFocusNode('searchNavigation', focusNode);
-                  break;
-              }
-              // ✨ YEH IMPORTANT HAI: Ye line poore navigation bar ka color badalti hai
               final newColor = _getNextColor();
               context.read<ColorProvider>().updateColor(newColor, true);
+
             } else {
               _animationController.reverse();
               context.read<ColorProvider>().resetColor();
             }
           });
         },
-        onKeyEvent: (node, event) => _handleKeyEvent(node, event, index),
+        // index 0 is logo, no item object
+        onKeyEvent: (node, event) => _handleKeyEvent(node, event, 0, null),
         child: GestureDetector(
-          // onTap: () {
-          //   widget.onPageSelected(index);
-          //   focusNode.requestFocus();
-          // },
           onTap: () {
-            if (index == 1) { // index 1 = Search button
-              // Naya logic: Search page par navigate karein
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const SearchScreen()),
-              );
-            } else {
-              // Purana logic (agar future mein aur buttons add hote hain)
-              widget.onPageSelected(index);
-              focusNode.requestFocus();
-            }
+            widget.onPageSelected(0);
+            focusNode.requestFocus();
           },
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 300),
             curve: Curves.easeInOut,
-            padding: EdgeInsets.symmetric(
-              vertical: screenhgt * 0.012,
-              horizontal: screenwdt * 0.025,
-            ),
+            padding: EdgeInsets.symmetric(horizontal: screenwdt * 0.012, vertical: screenhgt * 0.007),
             decoration: BoxDecoration(
-              // ✅ FOCUSED STATE: Solid background + Colored Border
               color: hasFocus
-                  ? ProfessionalColors.surfaceDark // Dark solid background
-                  : isSelected
-                      ? ProfessionalColors.accentBlue.withOpacity(0.15)
-                      : Colors.transparent,
+                  ? ProfessionalColors.surfaceDark
+                  : Colors.transparent,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                // ✅ Border focus par highlight hota hai
                 color: hasFocus
-                    ? currentAccentColor
-                    : isSelected
-                        ? ProfessionalColors.accentBlue.withOpacity(0.4)
-                        : Colors.white.withOpacity(0.1),
+                    ? currentAccentColor 
+                    : Colors.white.withOpacity(0.1),
                 width: hasFocus ? 2.5 : 1.5,
               ),
               boxShadow: hasFocus
                   ? [
-                      // ✅ Shadow bhi focus color se glow karta hai
                       BoxShadow(
-                        color: currentAccentColor.withOpacity(0.5),
-                        blurRadius: 18,
-                        spreadRadius: 1,
+                        color: currentAccentColor.withOpacity(0.6),
+                        blurRadius: 20,
+                        spreadRadius: 2,
                       ),
                       BoxShadow(
                         color: Colors.black.withOpacity(0.4),
                         blurRadius: 10,
-                        offset: const Offset(0, 4),
+                        offset: const Offset(0, 5),
                       ),
                     ]
                   : [],
             ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  item.icon,
-                  color: hasFocus
-                      ? currentAccentColor // Icon bhi focus color ka hoga
-                      : isSelected
-                          ? ProfessionalColors.accentBlue
-                          : ProfessionalColors.textSecondary,
-                  size: screenhgt * 0.04,
-                ),
-                SizedBox(width: screenwdt * 0.01),
-                Text(
-                  item.title,
-                  style: TextStyle(
-                    color: hasFocus
-                        ? ProfessionalColors.textPrimary // Text white rahega
-                        : isSelected
-                            ? ProfessionalColors.accentBlue
-                            : ProfessionalColors.textSecondary,
-                    fontSize: menutextsz,
-                    fontWeight:
-                        hasFocus ? FontWeight.bold : FontWeight.w500,
+            child: CachedNetworkImage(
+              imageUrl: SessionManager.logoUrl,
+              height: screenhgt * 0.05,
+              placeholder: (context, url) => SizedBox(
+                height: screenhgt * 0.05,
+                width: screenhgt * 0.05,
+                child: const Center(
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      ProfessionalColors.accentBlue,
+                    ),
                   ),
                 ),
-              ],
+              ),
+              errorWidget: (context, url, error) => 
+              Text('Home'),
             ),
           ),
         ),
       ),
-    ),
-  );
-}
+    );
+  }
+
+  Widget _buildNavigationItem(
+    NavItem item,
+    int index,
+    FocusNode focusNode,
+    double screenwdt,
+    double screenhgt
+  ) {
+    // Note: 'widget.selectedPage' logic might not apply to 18+ or Search if they are separate routes
+    // But we keep it for consistency if you expand main page logic later.
+    bool isSelected = widget.selectedPage == index;
+    bool hasFocus = focusNode.hasFocus;
+    double menutextsz = screenhgt * 0.025;
+    
+    Color currentAccentColor = ProfessionalColors.gradientColors[_currentColorIndex];
+
+    return AnimatedScale(
+      scale: hasFocus ? 1.08 : 1.0, 
+      duration: const Duration(milliseconds: 250),
+      curve: Curves.easeOut,
+      child: Padding(
+        padding: EdgeInsets.only(left: screenwdt * 0.02),
+        child: Focus(
+          focusNode: focusNode,
+          onFocusChange: (hasFocus) {
+            setState(() {
+              if (hasFocus) {
+                _animationController.forward();
+                // Register Search specific focus if needed
+                if (item.id == 'search') {
+                   context.read<FocusProvider>().registerFocusNode('searchNavigation', focusNode);
+                }
+                
+                final newColor = _getNextColor();
+                context.read<ColorProvider>().updateColor(newColor, true);
+              } else {
+                _animationController.reverse();
+                context.read<ColorProvider>().resetColor();
+              }
+            });
+          },
+          onKeyEvent: (node, event) => _handleKeyEvent(node, event, index, item),
+          child: GestureDetector(
+            onTap: () {
+              // ✅ Updated onTap to use ID based logic
+              _executeItemAction(item);
+            },
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut,
+              padding: EdgeInsets.symmetric(
+                vertical: screenhgt * 0.012,
+                horizontal: screenwdt * 0.025,
+              ),
+              decoration: BoxDecoration(
+                // ✅ FOCUSED STATE: Solid background + Colored Border
+                color: hasFocus
+                    ? ProfessionalColors.surfaceDark 
+                    : isSelected
+                        ? ProfessionalColors.accentBlue.withOpacity(0.15)
+                        : Colors.transparent,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  // ✅ Border focus par highlight hota hai
+                  color: hasFocus
+                      ? currentAccentColor
+                      : isSelected
+                          ? ProfessionalColors.accentBlue.withOpacity(0.4)
+                          : Colors.white.withOpacity(0.1),
+                  width: hasFocus ? 2.5 : 1.5,
+                ),
+                boxShadow: hasFocus
+                    ? [
+                        BoxShadow(
+                          color: currentAccentColor.withOpacity(0.5),
+                          blurRadius: 18,
+                          spreadRadius: 1,
+                        ),
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.4),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        ),
+                      ]
+                    : [],
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    item.icon,
+                    color: hasFocus
+                        ? currentAccentColor
+                        : isSelected
+                            ? ProfessionalColors.accentBlue
+                            : ProfessionalColors.textSecondary,
+                    size: screenhgt * 0.04,
+                  ),
+                  SizedBox(width: screenwdt * 0.01),
+                  Text(
+                    item.title,
+                    style: TextStyle(
+                      color: hasFocus
+                          ? ProfessionalColors.textPrimary 
+                          : isSelected
+                              ? ProfessionalColors.accentBlue
+                              : ProfessionalColors.textSecondary,
+                      fontSize: menutextsz,
+                      fontWeight:
+                          hasFocus ? FontWeight.bold : FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 
   KeyEventResult _handleKeyEvent(
     FocusNode node,
     KeyEvent event,
     int index,
+    NavItem? item, // Passed item to check ID
   ) {
     if (event is KeyDownEvent) {
-      if (index == 1) { 
-        // Aur user Enter, Select, ya Arrow Down dabata hai
-        if (event.logicalKey == LogicalKeyboardKey.enter ||
-            event.logicalKey == LogicalKeyboardKey.select ||
-            event.logicalKey == LogicalKeyboardKey.arrowDown) {
+      
+      // Handle ENTER or SELECT
+      if (event.logicalKey == LogicalKeyboardKey.enter ||
+          event.logicalKey == LogicalKeyboardKey.select) {
+        
+        if (index == 0) {
+          // Logo clicked
+          context.read<FocusProvider>().requestFocus('watchNow');
+          widget.onPageSelected(index);
+        } else if (item != null) {
+          // ✅ Use helper function for Items
+          _executeItemAction(item);
           
-          // SearchScreen par navigate karein
-          Navigator.push(
+          // Also trigger general selection logic if needed
+           switch (item.id) {
+            case 'search':
+               context.read<FocusProvider>().requestFocus('searchIcon');
+               break;
+           }
+        }
+        return KeyEventResult.handled;
+      }
+      
+      // Handle ARROW DOWN (Shortcuts to content)
+      if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+        // If on Search button, down goes to Search Screen (Optional UX choice from your code)
+        if (item != null && item.id == 'search') {
+           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => const SearchScreen()),
           );
-          return KeyEventResult.handled; // Event ko handle kar liya
-        }
-      }
-      if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
-        if (index == widget.selectedPage) {
-          switch (index) {
-            case 0:
-              context.read<FocusProvider>().requestFocus('watchNow');
-              break;
-            case 1:
-              context.read<FocusProvider>().requestFocus('searchIcon');
-              break;
-          }
         } else {
-          context.read<FocusProvider>().requestFocus('watchNow');
+           // Generally go down to content
+           context.read<FocusProvider>().requestFocus('watchNow');
         }
         return KeyEventResult.handled;
-      } else if (event.logicalKey == LogicalKeyboardKey.enter ||
-          event.logicalKey == LogicalKeyboardKey.select) {
-        switch (index) {
-          case 0:
-            context.read<FocusProvider>().requestFocus('watchNow');
-            break;
-          case 1:
-            context.read<FocusProvider>().requestFocus('searchIcon');
-            break;
-        }
-        widget.onPageSelected(index);
-        return KeyEventResult.handled;
-      } else if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
+      } 
+      
+      // Handle RIGHT
+      else if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
         _focusNodes[(index + 1) % _focusNodes.length].requestFocus();
         return KeyEventResult.handled;
-      } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+      } 
+      
+      // Handle LEFT
+      else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
         _focusNodes[(index - 1 + _focusNodes.length) % _focusNodes.length]
             .requestFocus();
         return KeyEventResult.handled;
@@ -1492,10 +2670,11 @@ Widget _buildNavigationItem(
   }
 }
 
-// Helper class for navigation items
+// ✅ Updated helper class with ID
 class NavItem {
   final String title;
   final IconData icon;
+  final String id; // Required for logic since index changes
 
-  NavItem({required this.title, required this.icon});
+  NavItem({required this.title, required this.icon, required this.id});
 }

@@ -2685,7 +2685,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as https;
-import 'package:mobi_tv_entertainment/components/home_screen_pages/sub_live_screen/language_channel_screen.dart' hide bannerwdt, focussedBannerhgt, bannerhgt; // Keep hide if needed
+import 'package:mobi_tv_entertainment/components/home_screen_pages/sub_live_screen/language_channel_screen.dart';
+// import 'package:mobi_tv_entertainment/components/home_screen_pages/sub_live_screen/language_channel_screen.dart' hide bannerwdt, focussedBannerhgt, bannerhgt; // Keep hide if needed
 import 'package:provider/provider.dart';
 import 'package:mobi_tv_entertainment/main.dart'; // Assuming bannerwdt, etc. are defined here
 import 'package:mobi_tv_entertainment/components/provider/color_provider.dart';
@@ -3126,7 +3127,9 @@ class _ProfessionalLanguageCardState extends State<ProfessionalLanguageCard>
         style: TextStyle(
           fontSize: _isFocused ? 13 : 11,
           fontWeight: FontWeight.w600,
-          color: _isFocused ? _dominantColor : ProfessionalColors.textPrimary,
+          // color: _isFocused ? _dominantColor : ProfessionalColors.textPrimary,
+          color: _isFocused ? _dominantColor : Colors.black,
+
           letterSpacing: 0.5,
           shadows: _isFocused
               ? [
@@ -3880,7 +3883,7 @@ class _LiveChannelLanguageScreenState extends State<LiveChannelLanguageScreen>
             : ProfessionalColors.primaryDark;
 
         return Scaffold(
-          backgroundColor: Colors.transparent,
+          backgroundColor: Colors.white,
           body: Container(
             // Use screenhgt or provide a default
             height: (screenhgt ?? MediaQuery.of(context).size.height) * 0.38,
@@ -3888,11 +3891,16 @@ class _LiveChannelLanguageScreenState extends State<LiveChannelLanguageScreen>
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [
-                  bgColor,
-                  bgColor.withOpacity(0.8),
-                  ProfessionalColors.primaryDark,
-                ],
+                colors: 
+                [
+                  Colors.white,
+                  Colors.white,
+                ]
+                // colors: [
+                //   bgColor,
+                //   bgColor.withOpacity(0.8),
+                //   ProfessionalColors.primaryDark,
+                // ],
               ),
             ),
             child: Column(

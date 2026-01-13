@@ -1095,7 +1095,6 @@ class FocusProvider extends ChangeNotifier {
   }
 
   // --- NAYE NAVIGATION METHODS ---
-
   /// ✅ [UPDATED] Agli VISIBLE aur REGISTERED row par focus karta hai.
   void focusNextRow() {
     _lastNavigationDirection = 'down';
@@ -1215,6 +1214,7 @@ class FocusProvider extends ChangeNotifier {
       // --- SWITCH CASE ---
       switch (identifier) {
         case 'topNavigation':
+        case 'aboveEighteen': 
         case 'searchNavigation':
         case 'searchIcon':
           node.requestFocus();
