@@ -1,14 +1,3 @@
-
-
-
-
-
-
-
-
-
-
-
 // import 'dart:async';
 // import 'dart:convert';
 // import 'dart:math' as math;
@@ -22,11 +11,10 @@
 // import 'package:mobi_tv_entertainment/provider/color_provider.dart';
 // import 'package:mobi_tv_entertainment/provider/focus_provider.dart';
 
-
 // //==============================================================================
 // // PROFESSIONAL UI HELPERS
 // //==============================================================================
-// class ProfessionalColors {
+// class ProfessionalColorsForHomePages {
 //   static const primaryDark = Color(0xFF0A0E1A);
 //   static const surfaceDark = Color(0xFF1A1D29);
 //   static const cardDark = Color(0xFF2A2D3A);
@@ -71,8 +59,8 @@
 
 //   factory Language.fromJson(Map<String, dynamic> json) {
 //     return Language(
-//       id: json['id'], 
-//       title: json['title'], 
+//       id: json['id'],
+//       title: json['title'],
 //       logoUrl: json['logo']
 //     );
 //   }
@@ -113,11 +101,8 @@
 //   late Animation<double> _glowAnimation;
 //   late Animation<double> _shimmerAnimation;
 
-//   Color _dominantColor = ProfessionalColors.accentBlue;
+//   Color _dominantColor = ProfessionalColorsForHomePages.accentBlue;
 //   bool _isFocused = false;
-
-
-
 
 //   @override
 //   void initState() {
@@ -167,7 +152,7 @@
 
 //   void _handleFocusChange() {
 //     if (!mounted) return;
-    
+
 //     setState(() {
 //       _isFocused = widget.focusNode.hasFocus;
 //     });
@@ -185,7 +170,7 @@
 //   }
 
 //   void _generateDominantColor() {
-//     final colors = ProfessionalColors.gradientColors;
+//     final colors = ProfessionalColorsForHomePages.gradientColors;
 //     setState(() {
 //       _dominantColor = colors[math.Random().nextInt(colors.length)];
 //     });
@@ -272,9 +257,6 @@
 //     );
 //   }
 
-
-
-
 //   // // ✅✅✅ FIX START: The problem was here ✅✅✅
 //   // // We now use a stable imageUrl and cacheKey to prevent reloading on every focus change.
 //   // Widget _buildLanguageImage(double screenWidth, double posterHeight) {
@@ -282,7 +264,7 @@
 //   //   final String imageUrl = widget.language.logoUrl;
 //   //   // A stable and unique cache key based on the language ID.
 //   //   final String cacheKey = widget.language.id.toString();
-    
+
 //   //   return SizedBox(
 //   //     width: double.infinity,
 //   //     height: posterHeight,
@@ -299,8 +281,6 @@
 //   //   );
 //   // }
 //   // // ✅✅✅ FIX END ✅✅✅
-
-
 
 //   Widget _buildLanguageImage(double screenWidth, double posterHeight) {
 //   final String imageUrl = widget.language.logoUrl;
@@ -336,8 +316,8 @@
 //           begin: Alignment.topLeft,
 //           end: Alignment.bottomRight,
 //           colors: [
-//             ProfessionalColors.cardDark,
-//             ProfessionalColors.surfaceDark,
+//             ProfessionalColorsForHomePages.cardDark,
+//             ProfessionalColorsForHomePages.surfaceDark,
 //           ],
 //         ),
 //       ),
@@ -347,13 +327,13 @@
 //           Icon(
 //             Icons.language,
 //             size: height * 0.25,
-//             color: ProfessionalColors.textSecondary,
+//             color: ProfessionalColorsForHomePages.textSecondary,
 //           ),
 //           const SizedBox(height: 8),
 //           const Text(
 //             "LANGUAGE",
 //             style: TextStyle(
-//               color: ProfessionalColors.textSecondary,
+//               color: ProfessionalColorsForHomePages.textSecondary,
 //               fontSize: 10,
 //               fontWeight: FontWeight.bold,
 //             ),
@@ -362,13 +342,13 @@
 //           Container(
 //             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
 //             decoration: BoxDecoration(
-//               color: ProfessionalColors.accentBlue.withOpacity(0.2),
+//               color: ProfessionalColorsForHomePages.accentBlue.withOpacity(0.2),
 //               borderRadius: BorderRadius.circular(6),
 //             ),
 //             child: const Text(
 //               'HD',
 //               style: TextStyle(
-//                 color: ProfessionalColors.accentBlue,
+//                 color: ProfessionalColorsForHomePages.accentBlue,
 //                 fontSize: 8,
 //                 fontWeight: FontWeight.bold,
 //               ),
@@ -420,8 +400,7 @@
 
 //   Widget _buildLanguageBadge() {
 //     String languageType = 'LIVE';
-//     Color badgeColor = ProfessionalColors.accentRed;
-
+//     Color badgeColor = ProfessionalColorsForHomePages.accentRed;
 
 //     return Positioned(
 //       top: 8,
@@ -476,8 +455,6 @@
 //   //   );
 //   // }
 
-
-
 //   // In lib/home_screen_pages/sub_live_screen/live_channel_language_screen.dart
 // // Inside the _ProfessionalLanguageCardState class
 
@@ -504,7 +481,7 @@
 //           ),
 //           // ✅✅✅ CHANGE WAS MADE HERE ✅✅✅
 //           // The 'const' is removed and color is changed from Colors.white to _dominantColor.
-//           child: Icon( 
+//           child: Icon(
 //             Icons.play_arrow_rounded,
 //             color: _dominantColor, // Use the dynamic dominant color
 //             size: 30,
@@ -525,7 +502,7 @@
 //         style: TextStyle(
 //           fontSize: _isFocused ? 13 : 11,
 //           fontWeight: FontWeight.w600,
-//           color: _isFocused ? _dominantColor : ProfessionalColors.textPrimary,
+//           color: _isFocused ? _dominantColor : ProfessionalColorsForHomePages.textPrimary,
 //           letterSpacing: 0.5,
 //           shadows: _isFocused
 //               ? [
@@ -563,7 +540,7 @@
 //   _ProfessionalLoadingIndicatorState createState() => _ProfessionalLoadingIndicatorState();
 // }
 
-// class _ProfessionalLoadingIndicatorState extends State<ProfessionalLoadingIndicator> 
+// class _ProfessionalLoadingIndicatorState extends State<ProfessionalLoadingIndicator>
 //     with TickerProviderStateMixin {
 //   late AnimationController _controller;
 //   late Animation<double> _animation;
@@ -604,10 +581,10 @@
 //                   shape: BoxShape.circle,
 //                   gradient: SweepGradient(
 //                     colors: const [
-//                       ProfessionalColors.accentBlue,
-//                       ProfessionalColors.accentPurple,
-//                       ProfessionalColors.accentGreen,
-//                       ProfessionalColors.accentBlue,
+//                       ProfessionalColorsForHomePages.accentBlue,
+//                       ProfessionalColorsForHomePages.accentPurple,
+//                       ProfessionalColorsForHomePages.accentGreen,
+//                       ProfessionalColorsForHomePages.accentBlue,
 //                     ],
 //                     stops: const [0.0, 0.3, 0.7, 1.0],
 //                     transform: GradientRotation(_animation.value * 2 * math.pi),
@@ -617,11 +594,11 @@
 //                   margin: const EdgeInsets.all(5),
 //                   decoration: const BoxDecoration(
 //                     shape: BoxShape.circle,
-//                     color: ProfessionalColors.primaryDark,
+//                     color: ProfessionalColorsForHomePages.primaryDark,
 //                   ),
 //                   child: const Icon(
 //                     Icons.language,
-//                     color: ProfessionalColors.textPrimary,
+//                     color: ProfessionalColorsForHomePages.textPrimary,
 //                     size: 28,
 //                   ),
 //                 ),
@@ -632,7 +609,7 @@
 //           Text(
 //             widget.message,
 //             style: const TextStyle(
-//               color: ProfessionalColors.textPrimary,
+//               color: ProfessionalColorsForHomePages.textPrimary,
 //               fontSize: 16,
 //               fontWeight: FontWeight.w500,
 //             ),
@@ -643,7 +620,7 @@
 //             height: 3,
 //             decoration: BoxDecoration(
 //               borderRadius: BorderRadius.circular(2),
-//               color: ProfessionalColors.surfaceDark,
+//               color: ProfessionalColorsForHomePages.surfaceDark,
 //             ),
 //             child: AnimatedBuilder(
 //               animation: _animation,
@@ -652,7 +629,7 @@
 //                   value: _animation.value,
 //                   backgroundColor: Colors.transparent,
 //                   valueColor: const AlwaysStoppedAnimation<Color>(
-//                     ProfessionalColors.accentBlue,
+//                     ProfessionalColorsForHomePages.accentBlue,
 //                   ),
 //                 );
 //               },
@@ -692,19 +669,16 @@
 
 //   // Focus management
 //   Map<String, FocusNode> languageFocusNodes = {};
-//   Color _currentAccentColor = ProfessionalColors.accentBlue;
+//   Color _currentAccentColor = ProfessionalColorsForHomePages.accentBlue;
 
 //   final ScrollController _scrollController = ScrollController();
 //   final FocusNode _listFocusNode = FocusNode();
-  
+
 //   // Navigation index for FocusProvider
 //   final int navigationIndex = 2;
 
-
-
 //       bool _isNavigationLocked = false;
 //   Timer? _navigationLockTimer;
-
 
 //   @override
 //   void initState() {
@@ -720,10 +694,10 @@
 //       if (mounted) {
 //         try {
 //           final focusProvider = Provider.of<FocusProvider>(context, listen: false);
-          
+
 //           focusProvider.registerGenericChannelFocus(
-//             navigationIndex, 
-//             _scrollController, 
+//             navigationIndex,
+//             _scrollController,
 //             _listFocusNode
 //           );
 
@@ -794,7 +768,7 @@
 //       if (mounted && response.statusCode == 200) {
 //         final data = json.decode(response.body);
 //         final List<dynamic> languagesJson = data['languages'] ?? [];
-        
+
 //         setState(() {
 //           _languages = languagesJson.map((json) => Language.fromJson(json)).toList();
 //           _isLoading = false;
@@ -871,7 +845,7 @@
 //   // ✅ MODIFIED: This function now handles navigation to the LanguageChannelsScreen.
 //   void _handleLanguageTap(Language language) async {
 //     if (_isNavigating) return;
-    
+
 //     // Immediately set the flag to prevent multiple navigations
 //     setState(() {
 //       _isNavigating = true;
@@ -914,8 +888,8 @@
 //   //     onFocusChange: (hasFocus) async {
 //   //       if (hasFocus && mounted) {
 //   //         try {
-//   //           Color dominantColor = ProfessionalColors.gradientColors[
-//   //               math.Random().nextInt(ProfessionalColors.gradientColors.length)];
+//   //           Color dominantColor = ProfessionalColorsForHomePages.gradientColors[
+//   //               math.Random().nextInt(ProfessionalColorsForHomePages.gradientColors.length)];
 
 //   //           setState(() {
 //   //             _currentAccentColor = dominantColor;
@@ -959,7 +933,7 @@
 //   //         //     }
 //   //         //   });
 //   //         //   return KeyEventResult.handled;
-//   //         // } 
+//   //         // }
 //   //         else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
 //   //           context.read<ColorProvider>().resetColor();
 //   //           FocusScope.of(context).unfocus();
@@ -1001,9 +975,6 @@
 //   //   );
 //   // }
 
-
-
-
 //   // Ye function live_channel_language_screen.dart mein hai.
 // // Puraane function ko is naye function se replace karein.
 // Widget _buildLanguageItem(Language language, int index, double screenWidth, double screenHeight) {
@@ -1024,8 +995,8 @@
 //     onFocusChange: (hasFocus) async {
 //       if (hasFocus && mounted) {
 //         try {
-//           Color dominantColor = ProfessionalColors.gradientColors[
-//               math.Random().nextInt(ProfessionalColors.gradientColors.length)];
+//           Color dominantColor = ProfessionalColorsForHomePages.gradientColors[
+//               math.Random().nextInt(ProfessionalColorsForHomePages.gradientColors.length)];
 //           setState(() {
 //             _currentAccentColor = dominantColor;
 //           });
@@ -1052,7 +1023,7 @@
 //     //         FocusScope.of(context).requestFocus(languageFocusNodes[prevLanguageId]);
 //     //       }
 //     //       return KeyEventResult.handled;
-//     //     } 
+//     //     }
 //     //     // ✅ Naya logic: Arrow Up ke liye
 //     //     else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
 //     //       context.read<ColorProvider>().resetColor();
@@ -1068,7 +1039,7 @@
 //     //         }
 //     //       });
 //     //       return KeyEventResult.handled;
-//     //     } 
+//     //     }
 //     //     else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
 //     //       context.read<ColorProvider>().resetColor();
 //     //       FocusScope.of(context).unfocus();
@@ -1098,7 +1069,7 @@
 //         // --- हॉरिजॉन्टल मूवमेंट (लेफ्ट/राइट) के लिए थ्रॉटलिंग ---
 //         if (key == LogicalKeyboardKey.arrowRight ||
 //             key == LogicalKeyboardKey.arrowLeft) {
-              
+
 //           // 1. अगर नेविगेशन लॉक्ड है, तो कुछ न करें
 //           if (_isNavigationLocked) return KeyEventResult.handled;
 
@@ -1218,8 +1189,8 @@
 //             ShaderMask(
 //               shaderCallback: (bounds) => const LinearGradient(
 //                 colors: [
-//                   ProfessionalColors.accentBlue,
-//                   ProfessionalColors.accentPurple,
+//                   ProfessionalColorsForHomePages.accentBlue,
+//                   ProfessionalColorsForHomePages.accentPurple,
 //                 ],
 //               ).createShader(bounds),
 //               child: const Text(
@@ -1262,22 +1233,22 @@
 //               shape: BoxShape.circle,
 //               gradient: LinearGradient(
 //                 colors: [
-//                   ProfessionalColors.accentRed.withOpacity(0.2),
-//                   ProfessionalColors.accentRed.withOpacity(0.1),
+//                   ProfessionalColorsForHomePages.accentRed.withOpacity(0.2),
+//                   ProfessionalColorsForHomePages.accentRed.withOpacity(0.1),
 //                 ],
 //               ),
 //             ),
 //             child: const Icon(
 //               Icons.error_outline_rounded,
 //               size: 40,
-//               color: ProfessionalColors.accentRed,
+//               color: ProfessionalColorsForHomePages.accentRed,
 //             ),
 //           ),
 //           const SizedBox(height: 24),
 //           const Text(
 //             'Oops! Something went wrong',
 //             style: TextStyle(
-//               color: ProfessionalColors.textPrimary,
+//               color: ProfessionalColorsForHomePages.textPrimary,
 //               fontSize: 18,
 //               fontWeight: FontWeight.w600,
 //             ),
@@ -1286,7 +1257,7 @@
 //           Text(
 //             _errorMessage,
 //             style: const TextStyle(
-//               color: ProfessionalColors.textSecondary,
+//               color: ProfessionalColorsForHomePages.textSecondary,
 //               fontSize: 14,
 //             ),
 //             textAlign: TextAlign.center,
@@ -1295,7 +1266,7 @@
 //           ElevatedButton(
 //             onPressed: _fetchLanguages,
 //             style: ElevatedButton.styleFrom(
-//               backgroundColor: ProfessionalColors.accentBlue,
+//               backgroundColor: ProfessionalColorsForHomePages.accentBlue,
 //               foregroundColor: Colors.white,
 //               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
 //               shape: RoundedRectangleBorder(
@@ -1324,22 +1295,22 @@
 //               shape: BoxShape.circle,
 //               gradient: LinearGradient(
 //                 colors: [
-//                   ProfessionalColors.accentBlue.withOpacity(0.2),
-//                   ProfessionalColors.accentBlue.withOpacity(0.1),
+//                   ProfessionalColorsForHomePages.accentBlue.withOpacity(0.2),
+//                   ProfessionalColorsForHomePages.accentBlue.withOpacity(0.1),
 //                 ],
 //               ),
 //             ),
 //             child: const Icon(
 //               Icons.language,
 //               size: 40,
-//               color: ProfessionalColors.accentBlue,
+//               color: ProfessionalColorsForHomePages.accentBlue,
 //             ),
 //           ),
 //           const SizedBox(height: 24),
 //           const Text(
 //             'No Languages Available',
 //             style: TextStyle(
-//               color: ProfessionalColors.textPrimary,
+//               color: ProfessionalColorsForHomePages.textPrimary,
 //               fontSize: 18,
 //               fontWeight: FontWeight.w600,
 //             ),
@@ -1348,7 +1319,7 @@
 //           const Text(
 //             'Check back later for language options',
 //             style: TextStyle(
-//               color: ProfessionalColors.textSecondary,
+//               color: ProfessionalColorsForHomePages.textSecondary,
 //               fontSize: 14,
 //             ),
 //           ),
@@ -1391,13 +1362,13 @@
 //       builder: (context, colorProvider, child) {
 //         final bgColor = colorProvider.isItemFocused
 //             ? colorProvider.dominantColor.withOpacity(0.1)
-//             : ProfessionalColors.primaryDark;
+//             : ProfessionalColorsForHomePages.primaryDark;
 
 //         return Scaffold(
 //           backgroundColor: Colors.transparent,
 //           body: Container(
 //              // ✅ FIX: Replaced undefined variable `screenhgt` with `screenHeight`.
-//             height: screenHeight * 0.38, 
+//             height: screenHeight * 0.38,
 //             decoration: BoxDecoration(
 //               gradient: LinearGradient(
 //                 begin: Alignment.topCenter,
@@ -1405,7 +1376,7 @@
 //                 colors: [
 //                   bgColor,
 //                   bgColor.withOpacity(0.8),
-//                   ProfessionalColors.primaryDark,
+//                   ProfessionalColorsForHomePages.primaryDark,
 //                 ],
 //               ),
 //             ),
@@ -1417,7 +1388,7 @@
 //                 SizedBox(height: screenHeight * 0.01),
 //                 Expanded(
 //                   child: _buildBody(screenWidth, screenHeight),
-//                 ), 
+//                 ),
 //               ],
 //             ),
 //           ),
@@ -1426,11 +1397,6 @@
 //     );
 //   }
 // }
-
-
-
-
-
 
 // import 'dart:async';
 // import 'dart:convert';
@@ -1445,11 +1411,10 @@
 // import 'package:mobi_tv_entertainment/components/provider/color_provider.dart';
 // import 'package:mobi_tv_entertainment/components/provider/focus_provider.dart';
 
-
 // //==============================================================================
 // // PROFESSIONAL UI HELPERS
 // //==============================================================================
-// class ProfessionalColors {
+// class ProfessionalColorsForHomePages {
 //   static const primaryDark = Color(0xFF0A0E1A);
 //   static const surfaceDark = Color(0xFF1A1D29);
 //   static const cardDark = Color(0xFF2A2D3A);
@@ -1494,8 +1459,8 @@
 
 //   factory Language.fromJson(Map<String, dynamic> json) {
 //     return Language(
-//       id: json['id'], 
-//       title: json['title'], 
+//       id: json['id'],
+//       title: json['title'],
 //       logoUrl: json['logo']
 //     );
 //   }
@@ -1536,7 +1501,7 @@
 //   late Animation<double> _glowAnimation;
 //   late Animation<double> _shimmerAnimation;
 
-//   Color _dominantColor = ProfessionalColors.accentBlue;
+//   Color _dominantColor = ProfessionalColorsForHomePages.accentBlue;
 //   bool _isFocused = false;
 
 //   @override
@@ -1587,7 +1552,7 @@
 
 //   void _handleFocusChange() {
 //     if (!mounted) return;
-    
+
 //     setState(() {
 //       _isFocused = widget.focusNode.hasFocus;
 //     });
@@ -1605,7 +1570,7 @@
 //   }
 
 //   void _generateDominantColor() {
-//     final colors = ProfessionalColors.gradientColors;
+//     final colors = ProfessionalColorsForHomePages.gradientColors;
 //     setState(() {
 //       _dominantColor = colors[math.Random().nextInt(colors.length)];
 //     });
@@ -1711,7 +1676,6 @@
 //     );
 //   }
 
-
 //   Widget _buildImagePlaceholder(double height) {
 //     return Container(
 //       height: height,
@@ -1720,8 +1684,8 @@
 //           begin: Alignment.topLeft,
 //           end: Alignment.bottomRight,
 //           colors: [
-//             ProfessionalColors.cardDark,
-//             ProfessionalColors.surfaceDark,
+//             ProfessionalColorsForHomePages.cardDark,
+//             ProfessionalColorsForHomePages.surfaceDark,
 //           ],
 //         ),
 //       ),
@@ -1731,13 +1695,13 @@
 //           Icon(
 //             Icons.language,
 //             size: height * 0.25,
-//             color: ProfessionalColors.textSecondary,
+//             color: ProfessionalColorsForHomePages.textSecondary,
 //           ),
 //           const SizedBox(height: 8),
 //           const Text(
 //             "LANGUAGE",
 //             style: TextStyle(
-//               color: ProfessionalColors.textSecondary,
+//               color: ProfessionalColorsForHomePages.textSecondary,
 //               fontSize: 10,
 //               fontWeight: FontWeight.bold,
 //             ),
@@ -1746,13 +1710,13 @@
 //           Container(
 //             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
 //             decoration: BoxDecoration(
-//               color: ProfessionalColors.accentBlue.withOpacity(0.2),
+//               color: ProfessionalColorsForHomePages.accentBlue.withOpacity(0.2),
 //               borderRadius: BorderRadius.circular(6),
 //             ),
 //             child: const Text(
 //               'HD',
 //               style: TextStyle(
-//                 color: ProfessionalColors.accentBlue,
+//                 color: ProfessionalColorsForHomePages.accentBlue,
 //                 fontSize: 8,
 //                 fontWeight: FontWeight.bold,
 //               ),
@@ -1804,8 +1768,7 @@
 
 //   Widget _buildLanguageBadge() {
 //     String languageType = 'LIVE';
-//     Color badgeColor = ProfessionalColors.accentRed;
-
+//     Color badgeColor = ProfessionalColorsForHomePages.accentRed;
 
 //     return Positioned(
 //       top: 8,
@@ -1849,7 +1812,7 @@
 //               color: Colors.black.withOpacity(0.7),
 //               borderRadius: BorderRadius.circular(25),
 //             ),
-//             child: Icon( 
+//             child: Icon(
 //               Icons.play_arrow_rounded,
 //               color: _dominantColor,
 //               size: 30,
@@ -1870,7 +1833,7 @@
 //         style: TextStyle(
 //           fontSize: _isFocused ? 13 : 11,
 //           fontWeight: FontWeight.w600,
-//           color: _isFocused ? _dominantColor : ProfessionalColors.textPrimary,
+//           color: _isFocused ? _dominantColor : ProfessionalColorsForHomePages.textPrimary,
 //           letterSpacing: 0.5,
 //           shadows: _isFocused
 //               ? [
@@ -1908,7 +1871,7 @@
 //   _ProfessionalLoadingIndicatorState createState() => _ProfessionalLoadingIndicatorState();
 // }
 
-// class _ProfessionalLoadingIndicatorState extends State<ProfessionalLoadingIndicator> 
+// class _ProfessionalLoadingIndicatorState extends State<ProfessionalLoadingIndicator>
 //     with TickerProviderStateMixin {
 //   late AnimationController _controller;
 //   late Animation<double> _animation;
@@ -1949,10 +1912,10 @@
 //                   shape: BoxShape.circle,
 //                   gradient: SweepGradient(
 //                     colors: const [
-//                       ProfessionalColors.accentBlue,
-//                       ProfessionalColors.accentPurple,
-//                       ProfessionalColors.accentGreen,
-//                       ProfessionalColors.accentBlue,
+//                       ProfessionalColorsForHomePages.accentBlue,
+//                       ProfessionalColorsForHomePages.accentPurple,
+//                       ProfessionalColorsForHomePages.accentGreen,
+//                       ProfessionalColorsForHomePages.accentBlue,
 //                     ],
 //                     stops: const [0.0, 0.3, 0.7, 1.0],
 //                     transform: GradientRotation(_animation.value * 2 * math.pi),
@@ -1962,11 +1925,11 @@
 //                   margin: const EdgeInsets.all(5),
 //                   decoration: const BoxDecoration(
 //                     shape: BoxShape.circle,
-//                     color: ProfessionalColors.primaryDark,
+//                     color: ProfessionalColorsForHomePages.primaryDark,
 //                   ),
 //                   child: const Icon(
 //                     Icons.language,
-//                     color: ProfessionalColors.textPrimary,
+//                     color: ProfessionalColorsForHomePages.textPrimary,
 //                     size: 28,
 //                   ),
 //                 ),
@@ -1977,7 +1940,7 @@
 //           Text(
 //             widget.message,
 //             style: const TextStyle(
-//               color: ProfessionalColors.textPrimary,
+//               color: ProfessionalColorsForHomePages.textPrimary,
 //               fontSize: 16,
 //               fontWeight: FontWeight.w500,
 //             ),
@@ -1988,7 +1951,7 @@
 //             height: 3,
 //             decoration: BoxDecoration(
 //               borderRadius: BorderRadius.circular(2),
-//               color: ProfessionalColors.surfaceDark,
+//               color: ProfessionalColorsForHomePages.surfaceDark,
 //             ),
 //             child: AnimatedBuilder(
 //               animation: _animation,
@@ -1997,7 +1960,7 @@
 //                   value: _animation.value,
 //                   backgroundColor: Colors.transparent,
 //                   valueColor: const AlwaysStoppedAnimation<Color>(
-//                     ProfessionalColors.accentBlue,
+//                     ProfessionalColorsForHomePages.accentBlue,
 //                   ),
 //                 );
 //               },
@@ -2037,17 +2000,16 @@
 
 //   // Focus management
 //   Map<String, FocusNode> languageFocusNodes = {};
-//   Color _currentAccentColor = ProfessionalColors.accentBlue;
+//   Color _currentAccentColor = ProfessionalColorsForHomePages.accentBlue;
 
 //   final ScrollController _scrollController = ScrollController();
 //   final FocusNode _listFocusNode = FocusNode();
-  
+
 //   final int navigationIndex = 2;
 
 //   // ✅ NEW: State variables for navigation throttling
 //   bool _isNavigationLocked = false;
 //   Timer? _navigationLockTimer;
-
 
 //   @override
 //   void initState() {
@@ -2063,9 +2025,9 @@
 //       if (mounted) {
 //         try {
 // final focusProvider = Provider.of<FocusProvider>(context, listen: false);
-          
+
 //           // ❗️ BADLAV 1: Naya requestFocus method
-//           focusProvider.requestFocus('liveChannelLanguage'); 
+//           focusProvider.requestFocus('liveChannelLanguage');
 //           // focusProvider.registerGenericChannelFocus(...);
 
 //           if (_languages.isNotEmpty) {
@@ -2073,7 +2035,7 @@
 //             if (languageFocusNodes.containsKey(firstLanguageId)) {
 //               // ❗️ BADLAV 2: Naya registerFocusNode method
 //               focusProvider.registerFocusNode(
-//                 'liveChannelLanguage', 
+//                 'liveChannelLanguage',
 //                 languageFocusNodes[firstLanguageId]!
 //               );
 //             }
@@ -2137,7 +2099,7 @@
 //       if (mounted && response.statusCode == 200) {
 //         final data = json.decode(response.body);
 //         final List<dynamic> languagesJson = data['languages'] ?? [];
-        
+
 //         setState(() {
 //           _languages = languagesJson.map((json) => Language.fromJson(json)).toList();
 //           _isLoading = false;
@@ -2212,7 +2174,7 @@
 
 //   void _handleLanguageTap(Language language) async {
 //     if (_isNavigating) return;
-    
+
 //     setState(() {
 //       _isNavigating = true;
 //     });
@@ -2253,8 +2215,8 @@
 //       onFocusChange: (hasFocus) async {
 //         if (hasFocus && mounted) {
 //           try {
-//             Color dominantColor = ProfessionalColors.gradientColors[
-//                 math.Random().nextInt(ProfessionalColors.gradientColors.length)];
+//             Color dominantColor = ProfessionalColorsForHomePages.gradientColors[
+//                 math.Random().nextInt(ProfessionalColorsForHomePages.gradientColors.length)];
 //             setState(() {
 //               _currentAccentColor = dominantColor;
 //             });
@@ -2273,7 +2235,7 @@
 //           // --- Throttling for Horizontal Movement (Left/Right) ---
 //           if (key == LogicalKeyboardKey.arrowRight ||
 //               key == LogicalKeyboardKey.arrowLeft) {
-                
+
 //             // 1. If navigation is locked, do nothing.
 //             if (_isNavigationLocked) return KeyEventResult.handled;
 
@@ -2336,7 +2298,7 @@
 //           //   });
 //           //   return KeyEventResult.handled;
 //           // }
-          
+
 // if (key == LogicalKeyboardKey.arrowUp) {
 //             context.read<ColorProvider>().resetColor();
 //             FocusScope.of(context).unfocus();
@@ -2344,7 +2306,7 @@
 //               if (mounted) {
 //                 try {
 //                   // ❗️ BADLAV 1: Naya requestFocus method
-//                   // context.read<FocusProvider>().requestFocus('watchNow'); 
+//                   // context.read<FocusProvider>().requestFocus('watchNow');
 //                   context.read<FocusProvider>().focusPreviousRow();
 //                 } catch (e) {
 //                   print('Arrow up focus request failed: $e');
@@ -2361,7 +2323,7 @@
 //                   // ❗️ BADLAV 2: Naya requestFocus method ('subVod' key ke saath)
 //                   // context
 //                   //     .read<FocusProvider>()
-//                   //     .requestFocus('subVod'); 
+//                   //     .requestFocus('subVod');
 //                   context.read<FocusProvider>().focusNextRow();
 //                 } catch (e) {
 //                   print('Next section focus request failed: $e');
@@ -2369,10 +2331,9 @@
 //               }
 //             });
 //             return KeyEventResult.handled;
-//           } 
+//           }
 // // ...
-          
-          
+
 //            else if (key == LogicalKeyboardKey.select || key == LogicalKeyboardKey.enter) {
 //             _handleLanguageTap(language);
 //             return KeyEventResult.handled;
@@ -2430,8 +2391,8 @@
 //             ShaderMask(
 //               shaderCallback: (bounds) => const LinearGradient(
 //                 colors: [
-//                   ProfessionalColors.accentBlue,
-//                   ProfessionalColors.accentPurple,
+//                   ProfessionalColorsForHomePages.accentBlue,
+//                   ProfessionalColorsForHomePages.accentPurple,
 //                 ],
 //               ).createShader(bounds),
 //               child: const Text(
@@ -2474,22 +2435,22 @@
 //               shape: BoxShape.circle,
 //               gradient: LinearGradient(
 //                 colors: [
-//                   ProfessionalColors.accentRed.withOpacity(0.2),
-//                   ProfessionalColors.accentRed.withOpacity(0.1),
+//                   ProfessionalColorsForHomePages.accentRed.withOpacity(0.2),
+//                   ProfessionalColorsForHomePages.accentRed.withOpacity(0.1),
 //                 ],
 //               ),
 //             ),
 //             child: const Icon(
 //               Icons.error_outline_rounded,
 //               size: 40,
-//               color: ProfessionalColors.accentRed,
+//               color: ProfessionalColorsForHomePages.accentRed,
 //             ),
 //           ),
 //           const SizedBox(height: 24),
 //           const Text(
 //             'Oops! Something went wrong',
 //             style: TextStyle(
-//               color: ProfessionalColors.textPrimary,
+//               color: ProfessionalColorsForHomePages.textPrimary,
 //               fontSize: 18,
 //               fontWeight: FontWeight.w600,
 //             ),
@@ -2498,7 +2459,7 @@
 //           Text(
 //             _errorMessage,
 //             style: const TextStyle(
-//               color: ProfessionalColors.textSecondary,
+//               color: ProfessionalColorsForHomePages.textSecondary,
 //               fontSize: 14,
 //             ),
 //             textAlign: TextAlign.center,
@@ -2507,7 +2468,7 @@
 //           ElevatedButton(
 //             onPressed: _fetchLanguages,
 //             style: ElevatedButton.styleFrom(
-//               backgroundColor: ProfessionalColors.accentBlue,
+//               backgroundColor: ProfessionalColorsForHomePages.accentBlue,
 //               foregroundColor: Colors.white,
 //               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
 //               shape: RoundedRectangleBorder(
@@ -2536,22 +2497,22 @@
 //               shape: BoxShape.circle,
 //               gradient: LinearGradient(
 //                 colors: [
-//                   ProfessionalColors.accentBlue.withOpacity(0.2),
-//                   ProfessionalColors.accentBlue.withOpacity(0.1),
+//                   ProfessionalColorsForHomePages.accentBlue.withOpacity(0.2),
+//                   ProfessionalColorsForHomePages.accentBlue.withOpacity(0.1),
 //                 ],
 //               ),
 //             ),
 //             child: const Icon(
 //               Icons.language,
 //               size: 40,
-//               color: ProfessionalColors.accentBlue,
+//               color: ProfessionalColorsForHomePages.accentBlue,
 //             ),
 //           ),
 //           const SizedBox(height: 24),
 //           const Text(
 //             'No Languages Available',
 //             style: TextStyle(
-//               color: ProfessionalColors.textPrimary,
+//               color: ProfessionalColorsForHomePages.textPrimary,
 //               fontSize: 18,
 //               fontWeight: FontWeight.w600,
 //             ),
@@ -2560,7 +2521,7 @@
 //           const Text(
 //             'Check back later for language options',
 //             style: TextStyle(
-//               color: ProfessionalColors.textSecondary,
+//               color: ProfessionalColorsForHomePages.textSecondary,
 //               fontSize: 14,
 //             ),
 //           ),
@@ -2593,9 +2554,6 @@
 //   //   super.dispose();
 //   // }
 
-
-
-
 //   @override
 //   void dispose() {
 //     // ✅ MODIFIED: Cancel the timer on dispose
@@ -2623,7 +2581,7 @@
 //     try {
 //       _scrollController.dispose();
 //       // _listFocusNode provider mein register nahi hua tha, isliye use dispose karna theek hai
-//       _listFocusNode.dispose(); 
+//       _listFocusNode.dispose();
 //     } catch (e) {}
 
 //     _isNavigating = false;
@@ -2640,12 +2598,12 @@
 //       builder: (context, colorProvider, child) {
 //         final bgColor = colorProvider.isItemFocused
 //             ? colorProvider.dominantColor.withOpacity(0.1)
-//             : ProfessionalColors.primaryDark;
+//             : ProfessionalColorsForHomePages.primaryDark;
 
 //         return Scaffold(
 //           backgroundColor: Colors.transparent,
 //           body: Container(
-//             height: screenHeight * 0.38, 
+//             height: screenHeight * 0.38,
 //             decoration: BoxDecoration(
 //               gradient: LinearGradient(
 //                 begin: Alignment.topCenter,
@@ -2653,7 +2611,7 @@
 //                 colors: [
 //                   bgColor,
 //                   bgColor.withOpacity(0.8),
-//                   ProfessionalColors.primaryDark,
+//                   ProfessionalColorsForHomePages.primaryDark,
 //                 ],
 //               ),
 //             ),
@@ -2664,7 +2622,1250 @@
 //                 SizedBox(height: screenHeight * 0.01),
 //                 Expanded(
 //                   child: _buildBody(screenWidth, screenHeight),
-//                 ), 
+//                 ),
+//               ],
+//             ),
+//           ),
+//         );
+//       },
+//     );
+//   }
+// }
+
+// import 'dart:async';
+// import 'dart:convert';
+// import 'dart:math' as math;
+// import 'package:cached_network_image/cached_network_image.dart';
+// import 'package:flutter/material.dart';
+// import 'package:flutter/services.dart';
+// import 'package:http/http.dart' as https;
+// import 'package:mobi_tv_entertainment/components/home_screen_pages/sub_live_screen/language_channel_screen.dart';
+// import 'package:mobi_tv_entertainment/components/services/professional_colors_for_home_pages.dart';
+// // import 'package:mobi_tv_entertainment/components/home_screen_pages/sub_live_screen/language_channel_screen.dart';
+// // import 'package:mobi_tv_entertainment/components/home_screen_pages/sub_live_screen/language_channel_screen.dart' hide bannerwdt, focussedBannerhgt, bannerhgt; // Keep hide if needed
+// import 'package:provider/provider.dart';
+// import 'package:mobi_tv_entertainment/main.dart'; // Assuming bannerwdt, etc. are defined here
+// import 'package:mobi_tv_entertainment/components/provider/color_provider.dart';
+// import 'package:mobi_tv_entertainment/components/provider/focus_provider.dart';
+
+// // //==============================================================================
+// // // PROFESSIONAL UI HELPERS
+// // //==============================================================================
+// // class ProfessionalColorsForHomePages {
+// //   static const primaryDark = Color(0xFF0A0E1A);
+// //   static const surfaceDark = Color(0xFF1A1D29);
+// //   static const cardDark = Color(0xFF2A2D3A);
+// //   static const accentBlue = Color(0xFF3B82F6);
+// //   static const accentPurple = Color(0xFF8B5CF6);
+// //   static const accentGreen = Color(0xFF10B981);
+// //   static const accentRed = Color(0xFFEF4444);
+// //   static const accentOrange = Color(0xFFF59E0B);
+// //   static const accentPink = Color(0xFFEC4899);
+// //   static const textPrimary = Color(0xFFFFFFFF);
+// //   static const textSecondary = Color(0xFFB3B3B3);
+// //   static const focusGlow = Color(0xFF60A5FA);
+
+// //   static List<Color> gradientColors = [
+// //     accentBlue,
+// //     accentPurple,
+// //     accentGreen,
+// //     accentRed,
+// //     accentOrange,
+// //     accentPink,
+// //   ];
+// // }
+
+// class AnimationTiming {
+//   static const Duration ultraFast = Duration(milliseconds: 150);
+//   static const Duration fast = Duration(milliseconds: 250);
+//   static const Duration medium = Duration(milliseconds: 400);
+//   static const Duration slow = Duration(milliseconds: 600);
+//   static const Duration focus = Duration(milliseconds: 300);
+//   static const Duration scroll = Duration(milliseconds: 800);
+// }
+
+// //==============================================================================
+// // DATA MODEL
+// //==============================================================================
+// class Language {
+//   final int id;
+//   final String title;
+//   final String logoUrl;
+
+//   Language({required this.id, required this.title, required this.logoUrl});
+
+//   factory Language.fromJson(Map<String, dynamic> json) {
+//     return Language(
+//       id: json['id'] ?? 0, // Add default value
+//       title: json['title'] ?? '', // Add default value
+//       logoUrl: json['logo'] ?? '' // Add default value
+//     );
+//   }
+// }
+
+// //==============================================================================
+// // PROFESSIONAL LANGUAGE CARD WIDGET (No changes needed here)
+// //==============================================================================
+// class ProfessionalLanguageCard extends StatefulWidget {
+//   final Language language;
+//   final FocusNode focusNode;
+//   final VoidCallback onTap;
+//   final Function(Color) onColorChange;
+//   final int index;
+//   final String categoryTitle;
+
+//   const ProfessionalLanguageCard({
+//     Key? key,
+//     required this.language,
+//     required this.focusNode,
+//     required this.onTap,
+//     required this.onColorChange,
+//     required this.index,
+//     required this.categoryTitle,
+//   }) : super(key: key);
+
+//   @override
+//   _ProfessionalLanguageCardState createState() => _ProfessionalLanguageCardState();
+// }
+
+// class _ProfessionalLanguageCardState extends State<ProfessionalLanguageCard>
+//     with TickerProviderStateMixin {
+//   late AnimationController _scaleController;
+//   late AnimationController _glowController;
+//   late AnimationController _shimmerController;
+
+//   late Animation<double> _scaleAnimation;
+//   late Animation<double> _glowAnimation;
+//   late Animation<double> _shimmerAnimation;
+
+//   Color _dominantColor = ProfessionalColorsForHomePages.accentBlue;
+//   bool _isFocused = false;
+
+//   @override
+//   void initState() {
+//     super.initState();
+
+//     _scaleController = AnimationController(
+//       duration: AnimationTiming.slow,
+//       vsync: this,
+//     );
+
+//     _glowController = AnimationController(
+//       duration: AnimationTiming.medium,
+//       vsync: this,
+//     );
+
+//     _shimmerController = AnimationController(
+//       duration: const Duration(milliseconds: 1500),
+//       vsync: this,
+//     )..repeat();
+
+//     _scaleAnimation = Tween<double>(
+//       begin: 1.0,
+//       end: 1.06,
+//     ).animate(CurvedAnimation(
+//       parent: _scaleController,
+//       curve: Curves.easeOutCubic,
+//     ));
+
+//     _glowAnimation = Tween<double>(
+//       begin: 0.0,
+//       end: 1.0,
+//     ).animate(CurvedAnimation(
+//       parent: _glowController,
+//       curve: Curves.easeInOut,
+//     ));
+
+//     _shimmerAnimation = Tween<double>(
+//       begin: -1.0,
+//       end: 2.0,
+//     ).animate(CurvedAnimation(
+//       parent: _shimmerController,
+//       curve: Curves.easeInOut,
+//     ));
+
+//     widget.focusNode.addListener(_handleFocusChange);
+//   }
+
+//   void _handleFocusChange() {
+//     if (!mounted) return;
+
+//     setState(() {
+//       _isFocused = widget.focusNode.hasFocus;
+//     });
+
+//     if (_isFocused) {
+//       _scaleController.forward();
+//       _glowController.forward();
+//       _generateDominantColor();
+//       widget.onColorChange(_dominantColor);
+//       HapticFeedback.lightImpact();
+//     } else {
+//       _scaleController.reverse();
+//       _glowController.reverse();
+//     }
+//   }
+
+//   void _generateDominantColor() {
+//     // final colors = ProfessionalColorsForHomePages.gradientColors;
+//     //  if (!mounted) return; // Add mount check before setState
+//     // setState(() {
+//     //   _dominantColor = colors[math.Random().nextInt(colors.length)];
+//     // });
+//     _dominantColor = ProfessionalColorsForHomePages.accentBlue;
+
+//   }
+
+//    @override
+//   void dispose() {
+//     // Remove listener first to avoid potential errors during disposal
+//     widget.focusNode.removeListener(_handleFocusChange);
+//     _scaleController.dispose();
+//     _glowController.dispose();
+//     _shimmerController.dispose();
+//     super.dispose();
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final screenWidth = MediaQuery.of(context).size.width;
+//     final screenHeight = MediaQuery.of(context).size.height;
+
+//     // Use bannerwdt defined in main.dart or provide a default
+//     double effectiveBannerWdt = bannerwdt ?? screenWidth * 0.18; // Example default
+
+//     return AnimatedBuilder(
+//       animation: Listenable.merge([_scaleAnimation, _glowAnimation]),
+//       builder: (context, child) {
+//         return Transform.scale(
+//           scale: _scaleAnimation.value,
+//           child: Container(
+//             width: effectiveBannerWdt,
+//             margin: const EdgeInsets.symmetric(horizontal: 6),
+//             child: Column(
+//               crossAxisAlignment: CrossAxisAlignment.center,
+//               children: [
+//                 _buildProfessionalPoster(screenWidth, screenHeight),
+//                 _buildProfessionalTitle(screenWidth, effectiveBannerWdt), // Pass width
+//               ],
+//             ),
+//           ),
+//         );
+//       },
+//     );
+//   }
+
+//   Widget _buildProfessionalPoster(double screenWidth, double screenHeight) {
+//     // Use focussedBannerhgt/bannerhgt defined in main.dart or provide defaults
+//     final posterHeight = _isFocused ? (focussedBannerhgt ?? screenHeight * 0.22) : (bannerhgt ?? screenHeight * 0.2); // Example defaults
+
+//     return Container(
+//       height: posterHeight,
+//       decoration: BoxDecoration(
+//         borderRadius: BorderRadius.circular(12),
+//         boxShadow: [
+//           if (_isFocused) ...[
+//             BoxShadow(
+//               color: _dominantColor.withOpacity(0.4),
+//               blurRadius: 25,
+//               spreadRadius: 3,
+//               offset: const Offset(0, 8),
+//             ),
+//             BoxShadow(
+//               color: _dominantColor.withOpacity(0.2),
+//               blurRadius: 45,
+//               spreadRadius: 6,
+//               offset: const Offset(0, 15),
+//             ),
+//           ] else ...[
+//             BoxShadow(
+//               color: Colors.black.withOpacity(0.4),
+//               blurRadius: 10,
+//               spreadRadius: 2,
+//               offset: const Offset(0, 5),
+//             ),
+//           ],
+//         ],
+//       ),
+//       child: ClipRRect(
+//         borderRadius: BorderRadius.circular(12),
+//         child: Stack(
+//           children: [
+//             _buildLanguageImage(screenWidth, posterHeight),
+//             if (_isFocused) _buildFocusBorder(),
+//             if (_isFocused) _buildShimmerEffect(),
+//             _buildLanguageBadge(),
+//             if (_isFocused) _buildHoverOverlay(),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildLanguageImage(double screenWidth, double posterHeight) {
+//     final String imageUrl = widget.language.logoUrl;
+//     final String cacheKey = widget.language.id.toString();
+
+//     return SizedBox(
+//       width: double.infinity,
+//       height: posterHeight,
+//       child: imageUrl.isNotEmpty
+//           ? CachedNetworkImage(
+//               imageUrl: imageUrl,
+//               cacheKey: cacheKey, // Use ID as cache key for better updates if URL changes
+//               fit: BoxFit.cover,
+//               placeholder: (context, url) => _buildImagePlaceholder(posterHeight),
+//               errorWidget: (context, url, error){
+//                  print("Error loading image $url: $error"); // Log error
+//                  return _buildImagePlaceholder(posterHeight);
+//               }
+//             )
+//           : _buildImagePlaceholder(posterHeight),
+//     );
+//   }
+
+//   Widget _buildImagePlaceholder(double height) {
+//     return Container(
+//       height: height,
+//       decoration: const BoxDecoration(
+//         gradient: LinearGradient(
+//           begin: Alignment.topLeft,
+//           end: Alignment.bottomRight,
+//           colors: [
+//             ProfessionalColorsForHomePages.cardDark,
+//             ProfessionalColorsForHomePages.surfaceDark,
+//           ],
+//         ),
+//       ),
+//       child: Column(
+//         mainAxisAlignment: MainAxisAlignment.center,
+//         children: [
+//           Icon(
+//             Icons.language,
+//             size: height * 0.25,
+//             color: ProfessionalColorsForHomePages.textSecondary,
+//           ),
+//           const SizedBox(height: 8),
+//           const Text(
+//             "LANGUAGE",
+//             style: TextStyle(
+//               color: ProfessionalColorsForHomePages.textSecondary,
+//               fontSize: 10,
+//               fontWeight: FontWeight.bold,
+//             ),
+//           ),
+//           const SizedBox(height: 4),
+//           Container(
+//             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+//             decoration: BoxDecoration(
+//               color: ProfessionalColorsForHomePages.accentBlue.withOpacity(0.2),
+//               borderRadius: BorderRadius.circular(6),
+//             ),
+//             child: const Text(
+//               'LIVE', // Changed HD to LIVE
+//               style: TextStyle(
+//                 color: ProfessionalColorsForHomePages.accentBlue,
+//                 fontSize: 8,
+//                 fontWeight: FontWeight.bold,
+//               ),
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+
+//   Widget _buildFocusBorder() {
+//     return Positioned.fill(
+//       child: Container(
+//         decoration: BoxDecoration(
+//           borderRadius: BorderRadius.circular(12),
+//           border: Border.all(
+//             width: 3,
+//             color: _dominantColor,
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildShimmerEffect() {
+//     return AnimatedBuilder(
+//       animation: _shimmerAnimation,
+//       builder: (context, child) {
+//         return Positioned.fill(
+//           child: Container(
+//             decoration: BoxDecoration(
+//               borderRadius: BorderRadius.circular(12),
+//               gradient: LinearGradient(
+//                 begin: Alignment(-1.0 + _shimmerAnimation.value, -1.0),
+//                 end: Alignment(1.0 + _shimmerAnimation.value, 1.0),
+//                 colors: [
+//                   Colors.transparent,
+//                   _dominantColor.withOpacity(0.15),
+//                   Colors.transparent,
+//                 ],
+//                 stops: const [0.0, 0.5, 1.0],
+//               ),
+//             ),
+//           ),
+//         );
+//       },
+//     );
+//   }
+
+//   Widget _buildLanguageBadge() {
+//     String languageType = 'LIVE';
+//     Color badgeColor = ProfessionalColorsForHomePages.accentRed;
+
+//     return Positioned(
+//       top: 8,
+//       right: 8,
+//       child: Container(
+//         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+//         decoration: BoxDecoration(
+//           color: badgeColor.withOpacity(0.9),
+//           borderRadius: BorderRadius.circular(6),
+//         ),
+//         child: Text(
+//           languageType,
+//           style: const TextStyle(
+//             color: Colors.white,
+//             fontSize: 8,
+//             fontWeight: FontWeight.bold,
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildHoverOverlay() {
+//     return Positioned.fill(
+//       child: Container(
+//         decoration: BoxDecoration(
+//           borderRadius: BorderRadius.circular(12),
+//           gradient: LinearGradient(
+//             begin: Alignment.topCenter,
+//             end: Alignment.bottomCenter,
+//             colors: [
+//               Colors.transparent,
+//               _dominantColor.withOpacity(0.1),
+//             ],
+//           ),
+//         ),
+//         child: Center(
+//           child: Container(
+//             padding: const EdgeInsets.all(10),
+//             decoration: BoxDecoration(
+//               color: Colors.black.withOpacity(0.7),
+//               borderRadius: BorderRadius.circular(25),
+//             ),
+//             child: Icon(
+//               Icons.play_arrow_rounded,
+//               color: _dominantColor,
+//               size: 30,
+//             ),
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildProfessionalTitle(double screenWidth, double cardWidth) {
+//     final languageName = widget.language.title.toUpperCase();
+
+//     return SizedBox(
+//       width: cardWidth, // Use passed card width
+//       child: AnimatedDefaultTextStyle(
+//         duration: AnimationTiming.medium,
+//         style: TextStyle(
+//           fontSize: _isFocused ? 13 : 11,
+//           fontWeight: FontWeight.w600,
+//           // color: _isFocused ? _dominantColor : ProfessionalColorsForHomePages.textPrimary,
+//           color: _isFocused ? _dominantColor : Colors.black,
+
+//           letterSpacing: 0.5,
+//           shadows: _isFocused
+//               ? [
+//                   Shadow(
+//                     color: _dominantColor.withOpacity(0.6),
+//                     blurRadius: 10,
+//                     offset: const Offset(0, 2),
+//                   ),
+//                 ]
+//               : [],
+//         ),
+//         child: Text(
+//           languageName,
+//           textAlign: TextAlign.center,
+//           maxLines: 2,
+//           overflow: TextOverflow.ellipsis,
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+// //==============================================================================
+// // PROFESSIONAL LOADING INDICATOR
+// //==============================================================================
+// class ProfessionalLoadingIndicator extends StatefulWidget {
+//   final String message;
+
+//   const ProfessionalLoadingIndicator({
+//     Key? key,
+//     this.message = 'Loading...',
+//   }) : super(key: key);
+
+//   @override
+//   _ProfessionalLoadingIndicatorState createState() => _ProfessionalLoadingIndicatorState();
+// }
+
+// class _ProfessionalLoadingIndicatorState extends State<ProfessionalLoadingIndicator>
+//     with TickerProviderStateMixin {
+//   late AnimationController _controller;
+//   late Animation<double> _animation;
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     _controller = AnimationController(
+//       duration: const Duration(milliseconds: 1500),
+//       vsync: this,
+//     )..repeat();
+
+//     _animation = Tween<double>(
+//       begin: 0.0,
+//       end: 1.0,
+//     ).animate(_controller);
+//   }
+
+//   @override
+//   void dispose() {
+//     _controller.dispose();
+//     super.dispose();
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Center(
+//       child: Column(
+//         mainAxisAlignment: MainAxisAlignment.center,
+//         children: [
+//           AnimatedBuilder(
+//             animation: _animation,
+//             builder: (context, child) {
+//               return Container(
+//                 width: 70,
+//                 height: 70,
+//                 decoration: BoxDecoration(
+//                   shape: BoxShape.circle,
+//                   gradient: SweepGradient(
+//                     colors: const [
+//                       ProfessionalColorsForHomePages.accentBlue,
+//                       ProfessionalColorsForHomePages.accentPurple,
+//                       ProfessionalColorsForHomePages.accentGreen,
+//                       ProfessionalColorsForHomePages.accentBlue,
+//                     ],
+//                     stops: const [0.0, 0.3, 0.7, 1.0],
+//                     transform: GradientRotation(_animation.value * 2 * math.pi),
+//                   ),
+//                 ),
+//                 child: Container(
+//                   margin: const EdgeInsets.all(5),
+//                   decoration: const BoxDecoration(
+//                     shape: BoxShape.circle,
+//                     color: ProfessionalColorsForHomePages.primaryDark,
+//                   ),
+//                   child: const Icon(
+//                     Icons.language,
+//                     color: ProfessionalColorsForHomePages.textPrimary,
+//                     size: 28,
+//                   ),
+//                 ),
+//               );
+//             },
+//           ),
+//           const SizedBox(height: 24),
+//           Text(
+//             widget.message,
+//             style: const TextStyle(
+//               color: ProfessionalColorsForHomePages.textPrimary,
+//               fontSize: 16,
+//               fontWeight: FontWeight.w500,
+//             ),
+//           ),
+//           const SizedBox(height: 12),
+//           Container(
+//             width: 200,
+//             height: 3,
+//             decoration: BoxDecoration(
+//               borderRadius: BorderRadius.circular(2),
+//               color: ProfessionalColorsForHomePages.surfaceDark,
+//             ),
+//             child: AnimatedBuilder(
+//               animation: _animation,
+//               builder: (context, child) {
+//                 return LinearProgressIndicator(
+//                   value: _animation.value,
+//                   backgroundColor: Colors.transparent,
+//                   valueColor: const AlwaysStoppedAnimation<Color>(
+//                     ProfessionalColorsForHomePages.accentBlue,
+//                   ),
+//                 );
+//               },
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }
+
+// //==============================================================================
+// // MAIN LIVE CHANNEL LANGUAGE SCREEN
+// //==============================================================================
+// class LiveChannelLanguageScreen extends StatefulWidget {
+//   const LiveChannelLanguageScreen({Key? key}) : super(key: key);
+
+//   @override
+//   State<LiveChannelLanguageScreen> createState() => _LiveChannelLanguageScreenState();
+// }
+
+// class _LiveChannelLanguageScreenState extends State<LiveChannelLanguageScreen>
+//     with AutomaticKeepAliveClientMixin, TickerProviderStateMixin {
+//   @override
+//   bool get wantKeepAlive => true;
+
+//   List<Language> _languages = [];
+//   bool _isLoading = true;
+//   String _errorMessage = '';
+//   bool _isNavigating = false;
+
+//   // Animation Controllers
+//   late AnimationController _headerAnimationController;
+//   late AnimationController _listAnimationController;
+//   late Animation<Offset> _headerSlideAnimation;
+//   late Animation<double> _listFadeAnimation;
+
+//   // Focus management
+//   Map<String, FocusNode> languageFocusNodes = {};
+//   Color _currentAccentColor = ProfessionalColorsForHomePages.accentBlue;
+//   FocusNode? _firstLanguageFocusNode; // To register with provider
+
+//   final ScrollController _scrollController = ScrollController();
+
+//   final int navigationIndex = 1; // Assuming index is 1 (after Banner)
+
+//   // ✅ NEW: State variables for navigation throttling
+//   bool _isNavigationLocked = false;
+//   Timer? _navigationLockTimer;
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     _initializeAnimations();
+//     _fetchLanguages().then((_) {
+//       _setupFocusProvider(); // Call setup *after* data is fetched and nodes are created
+//     });
+//   }
+
+//  // ✅ ==========================================================
+//  // ✅ [UPDATED] Sahi dispose logic
+//  // ✅ ==========================================================
+//  @override
+//   void dispose() {
+//     _navigationLockTimer?.cancel();
+//     _headerAnimationController.dispose();
+//     _listAnimationController.dispose();
+
+//     // Sirf un nodes ko dispose karein jo provider mein register NAHI hue
+//     String? firstLanguageId;
+//     if (_languages.isNotEmpty) {
+//       firstLanguageId = _languages[0].id.toString();
+//     }
+
+//     for (var entry in languageFocusNodes.entries) {
+//       // Agar node register nahi hua hai (yaani first language nahi hai), tabhi use yahan dispose karein
+//       if (entry.key != firstLanguageId) {
+//         try {
+//           entry.value.removeListener(() {}); // Achi practice hai
+//           entry.value.dispose();
+//         } catch (e) {}
+//       }
+//     }
+//     // Pehle item ka node provider mein dispose hoga.
+
+//     languageFocusNodes.clear();
+//     _scrollController.dispose();
+//     _isNavigating = false; // Reset navigation flag
+//     super.dispose();
+//   }
+//  // ✅ ==========================================================
+//  // ✅ END OF [UPDATED] dispose logic
+//  // ✅ ==========================================================
+
+//   void _setupFocusProvider() {
+//     WidgetsBinding.instance.addPostFrameCallback((_) {
+//       if (mounted) {
+//         try {
+//           final focusProvider = Provider.of<FocusProvider>(context, listen: false);
+
+//           // Register the first language item's node with the provider
+//           if (_languages.isNotEmpty) {
+//             final firstLanguageId = _languages[0].id.toString();
+//              // Ensure node exists before assigning
+//             if (languageFocusNodes.containsKey(firstLanguageId)) {
+//                 _firstLanguageFocusNode = languageFocusNodes[firstLanguageId];
+//             } else {
+//                  _firstLanguageFocusNode = FocusNode(); // Create if missing (should not happen with current logic)
+//                  languageFocusNodes[firstLanguageId] = _firstLanguageFocusNode!;
+//                  print("⚠️ Warning: First language node was missing, created a new one.");
+//             }
+
+//             if (_firstLanguageFocusNode != null) {
+//               focusProvider.registerFocusNode(
+//                 'liveChannelLanguage', // Use the correct ID from HomeScreen
+//                 _firstLanguageFocusNode!
+//               );
+//                print('✅ LiveChannelLanguageScreen first focus node registered: ${_languages[0].title}');
+
+//                // Add listener for scrolling *after* registering
+//                 _firstLanguageFocusNode!.addListener(() {
+//                     if (!mounted) return; // Add mount check
+//                     if (_firstLanguageFocusNode!.hasFocus) {
+//                        _scrollToFocusedItem(firstLanguageId);
+//                     }
+//                 });
+
+// focusProvider.updateLastFocusedIdentifier('liveChannelLanguage');
+//                 // ✅ ADD THIS BLOCK HERE ==========================
+//               // This forces focus onto the first language card
+//               // immediately after the data is loaded and nodes are registered.
+//               print('⚡ Setting Initial Focus to LiveChannelLanguageScreen');
+//               _firstLanguageFocusNode!.requestFocus();
+//               // ===============================================
+
+//             } else {
+//                print('❌ First language focus node is null after creation attempt!');
+//             }
+//           } else {
+//              print('⚠️ Cannot register first language node: _languages list is empty.');
+//           }
+//            print('✅ Generic focus registered for Languages List (index: $navigationIndex)'); // Keep if needed
+//         } catch (e) {
+//           print('❌ Language Screen Focus provider setup failed: $e');
+//         }
+//       }
+//     });
+//   }
+
+//   void _initializeAnimations() {
+//     _headerAnimationController = AnimationController(
+//       duration: AnimationTiming.slow,
+//       vsync: this,
+//     );
+//     _listAnimationController = AnimationController(
+//       duration: AnimationTiming.slow,
+//       vsync: this,
+//     );
+//     _headerSlideAnimation = Tween<Offset>(
+//       begin: const Offset(0, -1),
+//       end: Offset.zero,
+//     ).animate(CurvedAnimation(
+//       parent: _headerAnimationController,
+//       curve: Curves.easeOutCubic,
+//     ));
+//     _listFadeAnimation = Tween<double>(
+//       begin: 0.0,
+//       end: 1.0,
+//     ).animate(CurvedAnimation(
+//       parent: _listAnimationController,
+//       curve: Curves.easeInOut,
+//     ));
+//   }
+
+//   Future<void> _fetchLanguages() async {
+//     if (!mounted) return;
+//     setState(() { _isLoading = true; _errorMessage = ''; });
+
+//     try {
+//             String authKey = SessionManager.authKey ;
+//       var url = Uri.parse(SessionManager.baseUrl + 'getAllLanguages');
+//       final response = await https.get(url,
+//         // Uri.parse(
+//         //   // SessionManager.baseUrl + 'getAllLanguages'
+//         //   'https://dashboard.cpplayers.com/api/v2/getAllLanguages'
+//         //   ),
+//         headers: {
+//           'auth-key': authKey,
+//           'Content-Type': 'application/json',
+//           // 'domain': 'coretechinfo.com'
+//           'domain': SessionManager.savedDomain
+//         },
+//       ).timeout(const Duration(seconds: 20)); // Added timeout
+
+//       if (mounted && response.statusCode == 200) {
+//         final data = json.decode(response.body);
+//         final List<dynamic> languagesJson = data['languages'] ?? [];
+
+//          if (!mounted) return; // Re-check mount before setState
+//         setState(() {
+//           _languages = languagesJson.map((json) => Language.fromJson(json)).toList();
+//            // Sort languages alphabetically by title
+//           //  _languages.sort((a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()));
+//           _languages.sort((a, b) => a.id.compareTo(b.id));
+//           _isLoading = false;
+//           _initializeLanguageFocusNodes(); // Create nodes AFTER data is fetched
+//         });
+
+//         _headerAnimationController.forward();
+//         _listAnimationController.forward();
+//       } else if (mounted) {
+//         setState(() {
+//           _errorMessage = "Failed to load languages. Status: ${response.statusCode}";
+//           _isLoading = false;
+//         });
+//       }
+//     } on TimeoutException catch (_) {
+//          if (mounted) {
+//              setState(() {
+//                  _errorMessage = "Request timed out. Please check your connection.";
+//                  _isLoading = false;
+//              });
+//          }
+//      } catch (e) {
+//       if (mounted) {
+//         setState(() {
+//           _errorMessage = "Network error: $e"; // Show more specific error
+//           _isLoading = false;
+//         });
+//       }
+//       print('❌ Error fetching languages: $e');
+//     }
+//   }
+
+//   void _initializeLanguageFocusNodes() {
+//     // Clear old nodes first (using the updated dispose logic)
+//     languageFocusNodes.clear();
+
+//     for (int i = 0; i < _languages.length; i++) { // Iterate using index
+//       var language = _languages[i];
+//       try {
+//         String languageId = language.id.toString();
+//         languageFocusNodes[languageId] = FocusNode(); // Naya node banayein
+
+//         // Pehle node ke alawa baaki nodes ke liye listener yahin add karein
+//         // (Pehle node ka listener _setupFocusProvider mein add hoga)
+//         if (i > 0) { // Check index instead of ID comparison
+//           languageFocusNodes[languageId]!.addListener(() {
+//               if (!mounted) return; // Add mount check
+//               if (languageFocusNodes[languageId]!.hasFocus) {
+//                   _scrollToFocusedItem(languageId);
+//               }
+//           });
+//         }
+
+//       } catch (e) {
+//          print("Error creating focus node for language ${language.id}: $e");
+//       }
+//     }
+//      print("✅ Initialized ${languageFocusNodes.length} language focus nodes.");
+//   }
+
+//   void _scrollToFocusedItem(String itemId) {
+//     if (!mounted || !_scrollController.hasClients) return;
+//     try {
+//       int index = _languages.indexWhere((language) => language.id.toString() == itemId);
+//       if (index == -1) return;
+
+//       // Use bannerwdt defined in main.dart or provide a default
+//       double itemWidth = (bannerwdt ?? MediaQuery.of(context).size.width * 0.18) + 12; // Including margin
+
+//       double targetScrollPosition = (index * itemWidth);
+
+//       targetScrollPosition = targetScrollPosition.clamp(
+//         0.0,
+//         _scrollController.position.maxScrollExtent,
+//       );
+
+//       _scrollController.animateTo(
+//         targetScrollPosition,
+//         duration: const Duration(milliseconds: 400),
+//         curve: Curves.easeOutCubic,
+//       );
+//     } catch (e) {
+//       print('Error scrolling to language item: $e');
+//     }
+//   }
+
+//   void _handleLanguageTap(Language language) async {
+//     if (_isNavigating) return;
+//      if (!mounted) return; // Add mount check before setState
+//     setState(() { _isNavigating = true; });
+
+//     await Navigator.push(
+//       context,
+//       MaterialPageRoute(
+//         builder: (context) => LanguageChannelsScreen(
+//           languageId: language.id.toString(),
+//           languageName: language.title,
+//         ),
+//       ),
+//     );
+
+//      // Restore focus after returning
+//      Future.delayed(Duration(milliseconds: 200), () { // Added delay
+//        if (mounted) {
+//            setState(() { _isNavigating = false; });
+//           //  String langId = language.id.toString();
+//           //  if(languageFocusNodes.containsKey(langId)){
+//           //     languageFocusNodes[langId]?.requestFocus();
+//           //     _scrollToFocusedItem(langId); // Ensure it scrolls back
+//           //  }
+//        }
+//      });
+
+//   }
+
+//   Widget _buildLanguageItem(Language language, int index, double screenWidth, double screenHeight) {
+//     String languageId = language.id.toString();
+//     FocusNode? focusNode = languageFocusNodes[languageId]; // Use nullable FocusNode
+
+//     if (focusNode == null) return const SizedBox.shrink(); // Safety check
+
+//     return Focus(
+//       focusNode: focusNode,
+//       onFocusChange: (hasFocus) async {
+//          if (!mounted) return; // Add mount check
+//         if (hasFocus) {
+//           try {
+//             Color dominantColor = ProfessionalColorsForHomePages.gradientColors[
+//                 math.Random().nextInt(ProfessionalColorsForHomePages.gradientColors.length)];
+//              if (!mounted) return; // Check mount again before setState
+//             setState(() { _currentAccentColor = dominantColor; });
+//             context.read<ColorProvider>().updateColor(dominantColor, true);
+//           } catch (e) { print('Focus change handling failed: $e'); }
+//         } else {
+//           context.read<ColorProvider>().resetColor();
+//         }
+//       },
+//     // ✅ ==========================================================
+//     // ✅ [UPDATED] Item onKey LOGIC
+//     // ✅ ==========================================================
+//       onKey: (FocusNode node, RawKeyEvent event) {
+//         if (event is RawKeyDownEvent) {
+//           final key = event.logicalKey;
+
+//           // --- Throttling for Horizontal Movement (Left/Right) ---
+//           if (key == LogicalKeyboardKey.arrowRight ||
+//               key == LogicalKeyboardKey.arrowLeft) {
+//             if (_isNavigationLocked) return KeyEventResult.handled;
+//              if (!mounted) return KeyEventResult.ignored; // Add mount check before setState
+//             setState(() => _isNavigationLocked = true);
+//             _navigationLockTimer = Timer(const Duration(milliseconds: 600), () {
+//               if (mounted) setState(() => _isNavigationLocked = false);
+//             });
+
+//             if (key == LogicalKeyboardKey.arrowRight) {
+//               if (index < _languages.length - 1) {
+//                 String nextLanguageId = _languages[index + 1].id.toString();
+//                  if (languageFocusNodes.containsKey(nextLanguageId)) {
+//                    FocusScope.of(context).requestFocus(languageFocusNodes[nextLanguageId]);
+//                  } else {
+//                      _navigationLockTimer?.cancel();
+//                      if (mounted) setState(() => _isNavigationLocked = false);
+//                  }
+//               } else {
+//                 _navigationLockTimer?.cancel();
+//                 if (mounted) setState(() => _isNavigationLocked = false);
+//               }
+//             } else if (key == LogicalKeyboardKey.arrowLeft) {
+//               if (index > 0) {
+//                 String prevLanguageId = _languages[index - 1].id.toString();
+//                  if (languageFocusNodes.containsKey(prevLanguageId)) {
+//                    FocusScope.of(context).requestFocus(languageFocusNodes[prevLanguageId]);
+//                  } else {
+//                      _navigationLockTimer?.cancel();
+//                      if (mounted) setState(() => _isNavigationLocked = false);
+//                  }
+//               } else {
+//                 _navigationLockTimer?.cancel();
+//                 if (mounted) setState(() => _isNavigationLocked = false);
+//               }
+//             }
+//             return KeyEventResult.handled;
+//           }
+
+//           // --- Vertical Movement (Up/Down) ---
+//           if (key == LogicalKeyboardKey.arrowUp) {
+//             // ✅ CHANGED: Use focusPreviousRow
+//             context.read<ColorProvider>().resetColor();
+//             FocusScope.of(context).unfocus();
+//             context.read<FocusProvider>().focusPreviousRow(); // Ask provider
+//             return KeyEventResult.handled;
+//           }
+
+//           else if (key == LogicalKeyboardKey.arrowDown) {
+//             // ✅ CHANGED: Use focusNextRow
+//             context.read<ColorProvider>().resetColor();
+//             FocusScope.of(context).unfocus();
+//             context.read<FocusProvider>().focusNextRow(); // Ask provider
+//             return KeyEventResult.handled;
+//           }
+
+//           else if (key == LogicalKeyboardKey.select || key == LogicalKeyboardKey.enter) {
+//             _handleLanguageTap(language);
+//             return KeyEventResult.handled;
+//           }
+//         }
+//         return KeyEventResult.ignored;
+//       },
+//     // ✅ ==========================================================
+//     // ✅ END OF [UPDATED] onKey LOGIC
+//     // ✅ ==========================================================
+//       child: GestureDetector(
+//         onTap: () => _handleLanguageTap(language),
+//         child: ProfessionalLanguageCard(
+//           language: language,
+//           focusNode: focusNode, // Pass the non-nullable focusNode here
+//           onTap: () => _handleLanguageTap(language),
+//           onColorChange: (color) {
+//              if(mounted) {
+//                setState(() { _currentAccentColor = color; });
+//                context.read<ColorProvider>().updateColor(color, true);
+//              }
+//           },
+//           index: index,
+//           categoryTitle: "LANGUAGES",
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildLanguagesList(double screenWidth, double screenHeight) {
+//     return FadeTransition(
+//       opacity: _listFadeAnimation,
+//       child: ListView.builder(
+//         scrollDirection: Axis.horizontal,
+//         clipBehavior: Clip.none,
+//         controller: _scrollController,
+//         padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.025),
+//         cacheExtent: 9999, // Keep high cache extent
+//         itemCount: _languages.length,
+//         itemBuilder: (context, index) {
+//           var language = _languages[index];
+//           return _buildLanguageItem(language, index, screenWidth, screenHeight);
+//         },
+//       ),
+//     );
+//   }
+
+//   Widget _buildProfessionalTitle(double screenWidth) {
+//     return SlideTransition(
+//       position: _headerSlideAnimation, // Corrected
+//       child: Container(
+//         padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.025),
+//         child: Row(
+//           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//           children: [
+//             ShaderMask(
+//               shaderCallback: (bounds) => const LinearGradient(
+//                 colors: [
+//                   ProfessionalColorsForHomePages.accentBlue,
+//                   ProfessionalColorsForHomePages.accentPurple,
+//                 ],
+//               ).createShader(bounds),
+//               child: const Text(
+//                 "LIVE CHANNELS",
+//                 style: TextStyle(
+//                   fontSize: 24,
+//                   color: Colors.white,
+//                   fontWeight: FontWeight.w700,
+//                   letterSpacing: 2.0,
+//                 ),
+//               ),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildBody(double screenWidth, double screenHeight) {
+//     if (_isLoading) {
+//       return ProfessionalLoadingIndicator(message: 'Loading Languages...');
+//     } else if (_errorMessage.isNotEmpty) {
+//       return _buildErrorWidget();
+//     } else if (_languages.isEmpty) {
+//       return _buildEmptyWidget();
+//     } else {
+//       return _buildLanguagesList(screenWidth, screenHeight);
+//     }
+//   }
+
+//   Widget _buildErrorWidget() {
+//     // Use screen dimensions safely with defaults
+//     double effectiveScreenWidth = screenwdt ?? MediaQuery.of(context).size.width;
+//     double effectiveScreenHeight = screenhgt ?? MediaQuery.of(context).size.height;
+//     double effectiveBannerWdt = bannerwdt ?? effectiveScreenWidth * 0.18;
+//     double effectiveBannerHgt = bannerhgt ?? effectiveScreenHeight * 0.2;
+//     double effectiveNameTextSz = nametextsz ?? 14.0;
+
+//     return Center(
+//       child: Column(
+//         mainAxisAlignment: MainAxisAlignment.center,
+//         children: [
+//           Container(
+//              width: effectiveBannerWdt,
+//              height: effectiveBannerHgt,
+//             decoration: BoxDecoration(
+//               shape: BoxShape.circle,
+//               gradient: LinearGradient(
+//                 colors: [
+//                   ProfessionalColorsForHomePages.accentRed.withOpacity(0.2),
+//                   ProfessionalColorsForHomePages.accentRed.withOpacity(0.1),
+//                 ],
+//               ),
+//             ),
+//             child: const Icon(
+//               Icons.error_outline_rounded,
+//               size: 40,
+//               color: ProfessionalColorsForHomePages.accentRed,
+//             ),
+//           ),
+//           const SizedBox(height: 24),
+//           const Text(
+//             'Oops! Something went wrong',
+//             style: TextStyle(
+//               color: ProfessionalColorsForHomePages.textPrimary,
+//               fontSize: 18,
+//               fontWeight: FontWeight.w600,
+//             ),
+//           ),
+//           const SizedBox(height: 8),
+//           Text(
+//             _errorMessage,
+//             style: TextStyle(
+//               color: ProfessionalColorsForHomePages.textSecondary,
+//               fontSize: effectiveNameTextSz * 0.8, // Adjust based on nametextsz
+//             ),
+//             textAlign: TextAlign.center,
+//           ),
+//           const SizedBox(height: 24),
+//           ElevatedButton(
+//             onPressed: _fetchLanguages,
+//             style: ElevatedButton.styleFrom(
+//               backgroundColor: ProfessionalColorsForHomePages.accentBlue,
+//               foregroundColor: Colors.white,
+//               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+//               shape: RoundedRectangleBorder(
+//                 borderRadius: BorderRadius.circular(8),
+//               ),
+//             ),
+//             child: const Text(
+//               'Try Again',
+//               style: TextStyle(fontWeight: FontWeight.w600),
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+
+//   Widget _buildEmptyWidget() {
+//     // Use screen dimensions safely with defaults
+//     double effectiveScreenWidth = screenwdt ?? MediaQuery.of(context).size.width;
+//     double effectiveScreenHeight = screenhgt ?? MediaQuery.of(context).size.height;
+//     double effectiveBannerWdt = bannerwdt ?? effectiveScreenWidth * 0.18;
+//     double effectiveBannerHgt = bannerhgt ?? effectiveScreenHeight * 0.2;
+//     double effectiveNameTextSz = nametextsz ?? 14.0;
+
+//     return Center(
+//       child: Column(
+//         mainAxisAlignment: MainAxisAlignment.center,
+//         children: [
+//           Container(
+//              width: effectiveBannerWdt,
+//              height: effectiveBannerHgt,
+//             decoration: BoxDecoration(
+//               shape: BoxShape.circle,
+//               gradient: LinearGradient(
+//                 colors: [
+//                   ProfessionalColorsForHomePages.accentBlue.withOpacity(0.2),
+//                   ProfessionalColorsForHomePages.accentBlue.withOpacity(0.1),
+//                 ],
+//               ),
+//             ),
+//             child: const Icon(
+//               Icons.language,
+//               size: 40,
+//               color: ProfessionalColorsForHomePages.accentBlue,
+//             ),
+//           ),
+//           const SizedBox(height: 24),
+//           const Text(
+//             'No Languages Available',
+//             style: TextStyle(
+//               color: ProfessionalColorsForHomePages.textPrimary,
+//               fontSize: 18,
+//               fontWeight: FontWeight.w600,
+//             ),
+//           ),
+//           const SizedBox(height: 8),
+//            Text(
+//             'Check back later for language options',
+//             style: TextStyle(
+//               color: ProfessionalColorsForHomePages.textSecondary,
+//               fontSize: effectiveNameTextSz * 0.9, // Adjust based on nametextsz
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//      super.build(context); // ✅ ADD THIS LINE
+//     final screenWidth = MediaQuery.of(context).size.width;
+//     final screenHeight = MediaQuery.of(context).size.height;
+
+//     return Consumer<ColorProvider>(
+//       builder: (context, colorProvider, child) {
+//         final bgColor = colorProvider.isItemFocused
+//             ? colorProvider.dominantColor.withOpacity(0.1)
+//             : ProfessionalColorsForHomePages.primaryDark;
+
+//         return Scaffold(
+//           backgroundColor: Colors.white,
+//           body: Container(
+//             // Use screenhgt or provide a default
+//             height: (screenhgt ?? MediaQuery.of(context).size.height) * 0.38,
+//             decoration: BoxDecoration(
+//               gradient: LinearGradient(
+//                 begin: Alignment.topCenter,
+//                 end: Alignment.bottomCenter,
+//                 colors:
+//                 [
+//                   Colors.white,
+//                   Colors.white,
+//                 ]
+//                 // colors: [
+//                 //   bgColor,
+//                 //   bgColor.withOpacity(0.8),
+//                 //   ProfessionalColorsForHomePages.primaryDark,
+//                 // ],
+//               ),
+//             ),
+//             child: Column(
+//               children: [
+//                 SizedBox(height: (screenhgt ?? MediaQuery.of(context).size.height) * 0.02),
+//                 _buildProfessionalTitle(screenWidth),
+//                 SizedBox(height: (screenhgt ?? MediaQuery.of(context).size.height) * 0.01),
+//                 Expanded(
+//                   child: _buildBody(screenWidth, screenHeight),
+//                 ),
 //               ],
 //             ),
 //           ),
@@ -2678,6 +3879,1170 @@
 
 
 
+
+
+// import 'dart:async';
+// import 'dart:convert';
+// import 'dart:math' as math;
+// import 'package:cached_network_image/cached_network_image.dart';
+// import 'package:flutter/material.dart';
+// import 'package:flutter/services.dart';
+// import 'package:http/http.dart' as https;
+// import 'package:mobi_tv_entertainment/components/home_screen_pages/sub_live_screen/language_channel_screen.dart';
+// import 'package:mobi_tv_entertainment/components/services/professional_colors_for_home_pages.dart';
+// import 'package:provider/provider.dart';
+// import 'package:mobi_tv_entertainment/main.dart';
+// import 'package:mobi_tv_entertainment/components/provider/color_provider.dart';
+// import 'package:mobi_tv_entertainment/components/provider/focus_provider.dart';
+
+// class AnimationTiming {
+//   static const Duration ultraFast = Duration(milliseconds: 150);
+//   static const Duration fast = Duration(milliseconds: 250);
+//   static const Duration medium = Duration(milliseconds: 400);
+//   static const Duration slow = Duration(milliseconds: 600);
+//   static const Duration focus = Duration(milliseconds: 300);
+//   static const Duration scroll = Duration(milliseconds: 800);
+// }
+
+// // ... (Language Class, SmartLoadingWidget, SmartRetryWidget classes remain SAME) ...
+// // Copy them from previous code if needed, no changes there.
+
+// // Keep Language Model
+// class Language {
+//   final int id;
+//   final String title;
+//   final String logoUrl;
+//   Language({required this.id, required this.title, required this.logoUrl});
+//   factory Language.fromJson(Map<String, dynamic> json) {
+//     return Language(
+//         id: json['id'] ?? 0,
+//         title: json['title'] ?? '',
+//         logoUrl: json['logo'] ?? '');
+//   }
+// }
+
+// // Keep SmartLoadingWidget
+// class SmartLoadingWidget extends StatefulWidget {
+//   final double itemWidth;
+//   final double itemHeight;
+//   const SmartLoadingWidget(
+//       {Key? key, required this.itemWidth, required this.itemHeight})
+//       : super(key: key);
+//   @override
+//   _SmartLoadingWidgetState createState() => _SmartLoadingWidgetState();
+// }
+
+// class _SmartLoadingWidgetState extends State<SmartLoadingWidget>
+//     with SingleTickerProviderStateMixin {
+//   late AnimationController _controller;
+//   late Animation<double> _animation;
+//   @override
+//   void initState() {
+//     super.initState();
+//     _controller = AnimationController(
+//         duration: const Duration(milliseconds: 1500), vsync: this)
+//       ..repeat();
+//     _animation = Tween<double>(begin: -1.0, end: 2.0)
+//         .animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+//   }
+
+//   @override
+//   void dispose() {
+//     _controller.dispose();
+//     super.dispose();
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return ListView.builder(
+//       scrollDirection: Axis.horizontal,
+//       padding: EdgeInsets.symmetric(
+//           horizontal: MediaQuery.of(context).size.width * 0.025),
+//       itemCount: 6,
+//       physics: const NeverScrollableScrollPhysics(),
+//       itemBuilder: (context, index) {
+//         return Container(
+//           width: widget.itemWidth,
+//           margin: const EdgeInsets.symmetric(horizontal: 6),
+//           child: Column(
+//             children: [
+//               AnimatedBuilder(
+//                 animation: _animation,
+//                 builder: (context, child) {
+//                   return Container(
+//                     height: widget.itemHeight,
+//                     decoration: BoxDecoration(
+//                       borderRadius: BorderRadius.circular(12),
+//                       gradient: LinearGradient(
+//                         begin: Alignment(-1.0 + _animation.value, -0.3),
+//                         end: Alignment(1.0 + _animation.value, 0.3),
+//                         colors: [
+//                           Colors.grey[200]!,
+//                           Colors.grey[300]!,
+//                           Colors.grey[200]!
+//                         ],
+//                         stops: const [0.0, 0.5, 1.0],
+//                       ),
+//                     ),
+//                   );
+//                 },
+//               ),
+//               const SizedBox(height: 8),
+//               Container(
+//                   height: 10,
+//                   width: widget.itemWidth * 0.7,
+//                   decoration: BoxDecoration(
+//                       color: Colors.grey[200],
+//                       borderRadius: BorderRadius.circular(5))),
+//             ],
+//           ),
+//         );
+//       },
+//     );
+//   }
+// }
+
+// // Keep SmartRetryWidget
+// class SmartRetryWidget extends StatefulWidget {
+//   final String errorMessage;
+//   final VoidCallback onRetry;
+//   final FocusNode focusNode;
+//   final Function(bool) onFocusChange; // ✅ Add callback
+
+//   const SmartRetryWidget({
+//     Key? key,
+//     required this.errorMessage,
+//     required this.onRetry,
+//     required this.focusNode,
+//     required this.onFocusChange, // ✅ Require callback
+//   }) : super(key: key);
+
+//   @override
+//   _SmartRetryWidgetState createState() => _SmartRetryWidgetState();
+// }
+
+// class _SmartRetryWidgetState extends State<SmartRetryWidget> {
+//   bool _hasFocus = false;
+//   @override
+//   void initState() {
+//     super.initState();
+//     widget.focusNode.addListener(() {
+//       if (mounted) {
+//         setState(() => _hasFocus = widget.focusNode.hasFocus);
+//         widget.onFocusChange(widget.focusNode.hasFocus); // ✅ Notify Parent
+//       }
+//     });
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Center(
+//       child: Focus(
+//         focusNode: widget.focusNode,
+//         onKey: (node, event) {
+//           if (event is RawKeyDownEvent) {
+//             if (event.logicalKey == LogicalKeyboardKey.enter ||
+//                 event.logicalKey == LogicalKeyboardKey.select) {
+//               widget.onRetry();
+//               return KeyEventResult.handled;
+//             }
+//             if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+//               context
+//                   .read<FocusProvider>()
+//                   .updateLastFocusedIdentifier('liveChannelLanguage');
+//               context.read<FocusProvider>().focusPreviousRow();
+//               return KeyEventResult.handled;
+//             }
+//             if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+//               context
+//                   .read<FocusProvider>()
+//                   .updateLastFocusedIdentifier('liveChannelLanguage');
+//               context.read<FocusProvider>().focusNextRow();
+//               return KeyEventResult.handled;
+//             }
+//           }
+//           return KeyEventResult.ignored;
+//         },
+//         child: GestureDetector(
+//           onTap: widget.onRetry,
+//           child: AnimatedContainer(
+//             duration: const Duration(milliseconds: 300),
+//             curve: Curves.easeOutBack,
+//             transform: Matrix4.identity()..scale(_hasFocus ? 1.1 : 1.0),
+//             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+//             decoration: BoxDecoration(
+//               color: _hasFocus
+//                   ? ProfessionalColorsForHomePages.accentBlue
+//                   : Colors.white,
+//               borderRadius: BorderRadius.circular(30),
+//               border: Border.all(
+//                   color: _hasFocus ? Colors.white : Colors.grey.shade300,
+//                   width: 2),
+//               boxShadow: [
+//                 if (_hasFocus)
+//                   BoxShadow(
+//                       color: ProfessionalColorsForHomePages.accentBlue
+//                           .withOpacity(0.5),
+//                       blurRadius: 20,
+//                       spreadRadius: 2)
+//                 else
+//                   BoxShadow(
+//                       color: Colors.grey.withOpacity(0.2),
+//                       blurRadius: 10,
+//                       offset: const Offset(0, 4))
+//               ],
+//             ),
+//             child: Row(
+//               mainAxisSize: MainAxisSize.min,
+//               children: [
+//                 Icon(Icons.refresh_rounded,
+//                     color: _hasFocus
+//                         ? Colors.white
+//                         : ProfessionalColorsForHomePages.accentRed,
+//                     size: 20),
+//                 const SizedBox(width: 10),
+//                 Text("RETRY CONNECTION",
+//                     style: TextStyle(
+//                         fontSize: 12,
+//                         fontWeight: FontWeight.bold,
+//                         letterSpacing: 1.0,
+//                         color: _hasFocus ? Colors.white : Colors.black87))
+//               ],
+//             ),
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+// //==============================================================================
+// // MAIN SCREEN
+// //==============================================================================
+// class LiveChannelLanguageScreen extends StatefulWidget {
+//   const LiveChannelLanguageScreen({Key? key}) : super(key: key);
+
+//   @override
+//   State<LiveChannelLanguageScreen> createState() =>
+//       _LiveChannelLanguageScreenState();
+// }
+
+// class _LiveChannelLanguageScreenState extends State<LiveChannelLanguageScreen>
+//     with AutomaticKeepAliveClientMixin, TickerProviderStateMixin {
+//   @override
+//   bool get wantKeepAlive => true;
+
+//   List<Language> _languages = [];
+//   bool _isLoading = true;
+//   String _errorMessage = '';
+//   bool _isNavigating = false;
+
+//   // ✅ NEW: LOCAL FOCUS STATE
+//   bool _isSectionFocused = false;
+
+//   late AnimationController _headerAnimationController;
+//   late AnimationController _listAnimationController;
+//   late Animation<Offset> _headerSlideAnimation;
+//   late Animation<double> _listFadeAnimation;
+
+//   Map<String, FocusNode> languageFocusNodes = {};
+//   Color _currentAccentColor = ProfessionalColorsForHomePages.accentBlue;
+//   FocusNode? _firstLanguageFocusNode;
+
+//   final FocusNode _retryFocusNode = FocusNode();
+//   final ScrollController _scrollController = ScrollController();
+
+//   bool _isNavigationLocked = false;
+//   Timer? _navigationLockTimer;
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     _initializeAnimations();
+//     _fetchLanguages();
+//   }
+
+//   @override
+//   void dispose() {
+//     _navigationLockTimer?.cancel();
+//     _headerAnimationController.dispose();
+//     _listAnimationController.dispose();
+//     _retryFocusNode.dispose();
+
+//     String? firstLanguageId;
+//     if (_languages.isNotEmpty) {
+//       firstLanguageId = _languages[0].id.toString();
+//     }
+
+//     for (var entry in languageFocusNodes.entries) {
+//       if (entry.key != firstLanguageId) {
+//         try {
+//           entry.value.dispose();
+//         } catch (e) {}
+//       }
+//     }
+//     languageFocusNodes.clear();
+//     _scrollController.dispose();
+//     _isNavigating = false;
+//     super.dispose();
+//   }
+
+//   // ... (setupFocusProvider, fetchLanguages, initializeLanguageFocusNodes logic remains same) ...
+//   // ... (Just reusing standard methods provided earlier) ...
+//   void _setupFocusProvider() {
+//     WidgetsBinding.instance.addPostFrameCallback((_) {
+//       if (mounted) {
+//         try {
+//           final focusProvider =
+//               Provider.of<FocusProvider>(context, listen: false);
+//           if (_languages.isNotEmpty) {
+//             final firstLanguageId = _languages[0].id.toString();
+//             if (languageFocusNodes.containsKey(firstLanguageId)) {
+//               _firstLanguageFocusNode = languageFocusNodes[firstLanguageId];
+//             } else {
+//               _firstLanguageFocusNode = FocusNode();
+//               languageFocusNodes[firstLanguageId] = _firstLanguageFocusNode!;
+//             }
+//             if (_firstLanguageFocusNode != null) {
+//               focusProvider.registerFocusNode(
+//                   'liveChannelLanguage', _firstLanguageFocusNode!);
+//               _firstLanguageFocusNode!.addListener(() {
+//                 if (!mounted) return;
+//                 if (_firstLanguageFocusNode!.hasFocus) {
+//                   _scrollToFocusedItem(firstLanguageId);
+//                 }
+//               });
+//               focusProvider.updateLastFocusedIdentifier('liveChannelLanguage');
+//               _firstLanguageFocusNode!.requestFocus();
+//             }
+//           } else if (_errorMessage.isNotEmpty) {
+//             focusProvider.registerFocusNode(
+//                 'liveChannelLanguage', _retryFocusNode);
+//             focusProvider.updateLastFocusedIdentifier('liveChannelLanguage');
+//             _retryFocusNode.requestFocus();
+//           }
+//         } catch (e) {
+//           print('❌ Focus provider setup failed: $e');
+//         }
+//       }
+//     });
+//   }
+
+//   void _initializeAnimations() {
+//     _headerAnimationController =
+//         AnimationController(duration: AnimationTiming.slow, vsync: this);
+//     _listAnimationController =
+//         AnimationController(duration: AnimationTiming.slow, vsync: this);
+//     _headerSlideAnimation =
+//         Tween<Offset>(begin: const Offset(0, -1), end: Offset.zero).animate(
+//             CurvedAnimation(
+//                 parent: _headerAnimationController,
+//                 curve: Curves.easeOutCubic));
+//     _listFadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+//         CurvedAnimation(
+//             parent: _listAnimationController, curve: Curves.easeInOut));
+//   }
+
+//   Future<void> _fetchLanguages() async {
+//     if (!mounted) return;
+//     setState(() {
+//       _isLoading = true;
+//       _errorMessage = '';
+//     });
+//     try {
+//       String authKey = SessionManager.authKey;
+//       var url = Uri.parse(SessionManager.baseUrl + 'getAllLanguagess');
+//       final response = await https.get(url, headers: {
+//         'auth-key': authKey,
+//         'Content-Type': 'application/json',
+//         'domain': SessionManager.savedDomain
+//       }).timeout(const Duration(seconds: 20));
+//       if (mounted && response.statusCode == 200) {
+//         final data = json.decode(response.body);
+//         final List<dynamic> languagesJson = data['languages'] ?? [];
+//         if (!mounted) return;
+//         setState(() {
+//           _languages =
+//               languagesJson.map((json) => Language.fromJson(json)).toList();
+//           _languages.sort((a, b) => a.id.compareTo(b.id));
+//           _isLoading = false;
+//           _initializeLanguageFocusNodes();
+//         });
+//         _headerAnimationController.forward();
+//         _listAnimationController.forward();
+//         _setupFocusProvider();
+//       } else if (mounted) {
+//         setState(() {
+//           _errorMessage = "Failed: ${response.statusCode}";
+//           _isLoading = false;
+//         });
+//         _setupFocusProvider();
+//       }
+//     } catch (e) {
+//       if (mounted) {
+//         setState(() {
+//           _errorMessage = "Network error";
+//           _isLoading = false;
+//         });
+//         _setupFocusProvider();
+//       }
+//     }
+//   }
+
+//   void _initializeLanguageFocusNodes() {
+//     languageFocusNodes.clear();
+//     for (int i = 0; i < _languages.length; i++) {
+//       var language = _languages[i];
+//       try {
+//         String languageId = language.id.toString();
+//         languageFocusNodes[languageId] = FocusNode();
+//         if (i > 0) {
+//           languageFocusNodes[languageId]!.addListener(() {
+//             if (!mounted) return;
+//             if (languageFocusNodes[languageId]!.hasFocus) {
+//               _scrollToFocusedItem(languageId);
+//             }
+//           });
+//         }
+//       } catch (e) {}
+//     }
+//   }
+
+//   void _scrollToFocusedItem(String itemId) {
+//     if (!mounted || !_scrollController.hasClients) return;
+//     try {
+//       int index =
+//           _languages.indexWhere((language) => language.id.toString() == itemId);
+//       if (index == -1) return;
+//       double itemWidth =
+//           (bannerwdt ?? MediaQuery.of(context).size.width * 0.18) + 12;
+//       double targetScrollPosition = (index * itemWidth);
+//       targetScrollPosition = targetScrollPosition.clamp(
+//           0.0, _scrollController.position.maxScrollExtent);
+//       _scrollController.animateTo(targetScrollPosition,
+//           duration: const Duration(milliseconds: 400),
+//           curve: Curves.easeOutCubic);
+//     } catch (e) {}
+//   }
+
+//   void _handleLanguageTap(Language language) async {
+//     if (_isNavigating) return;
+//     if (!mounted) return;
+//     setState(() {
+//       _isNavigating = true;
+//     });
+//     await Navigator.push(
+//         context,
+//         MaterialPageRoute(
+//             builder: (context) => LanguageChannelsScreen(
+//                 languageId: language.id.toString(),
+//                 languageName: language.title)));
+//     Future.delayed(Duration(milliseconds: 200), () {
+//       if (mounted)
+//         setState(() {
+//           _isNavigating = false;
+//         });
+//     });
+//   }
+
+//   Widget _buildLanguageItem(
+//       Language language, int index, double screenWidth, double screenHeight) {
+//     String languageId = language.id.toString();
+//     FocusNode? focusNode = languageFocusNodes[languageId];
+//     if (focusNode == null) return const SizedBox.shrink();
+
+//     return Focus(
+//       focusNode: focusNode,
+//       onFocusChange: (hasFocus) async {
+//         if (!mounted) return;
+//         // ✅ FIX: Update Local State for Shadow
+//         setState(() {
+//           _isSectionFocused = hasFocus;
+//         });
+
+//         if (hasFocus) {
+//           try {
+//             Color dominantColor = ProfessionalColorsForHomePages.gradientColors[
+//                 math.Random().nextInt(
+//                     ProfessionalColorsForHomePages.gradientColors.length)];
+//             if (!mounted) return;
+//             setState(() {
+//               _currentAccentColor = dominantColor;
+//             });
+//             context.read<ColorProvider>().updateColor(dominantColor, true);
+//           } catch (e) {}
+//         } else {
+//           context.read<ColorProvider>().resetColor();
+//         }
+//       },
+//       onKey: (FocusNode node, RawKeyEvent event) {
+//         if (event is RawKeyDownEvent) {
+//           final key = event.logicalKey;
+//           if (key == LogicalKeyboardKey.arrowRight ||
+//               key == LogicalKeyboardKey.arrowLeft) {
+//             if (_isNavigationLocked) return KeyEventResult.handled;
+//             if (!mounted) return KeyEventResult.ignored;
+//             setState(() => _isNavigationLocked = true);
+//             _navigationLockTimer = Timer(const Duration(milliseconds: 600), () {
+//               if (mounted) setState(() => _isNavigationLocked = false);
+//             });
+//             if (key == LogicalKeyboardKey.arrowRight) {
+//               if (index < _languages.length - 1) {
+//                 String nextLanguageId = _languages[index + 1].id.toString();
+//                 if (languageFocusNodes.containsKey(nextLanguageId))
+//                   FocusScope.of(context)
+//                       .requestFocus(languageFocusNodes[nextLanguageId]);
+//                 else {
+//                   _navigationLockTimer?.cancel();
+//                   if (mounted) setState(() => _isNavigationLocked = false);
+//                 }
+//               } else {
+//                 _navigationLockTimer?.cancel();
+//                 if (mounted) setState(() => _isNavigationLocked = false);
+//               }
+//             } else if (key == LogicalKeyboardKey.arrowLeft) {
+//               if (index > 0) {
+//                 String prevLanguageId = _languages[index - 1].id.toString();
+//                 if (languageFocusNodes.containsKey(prevLanguageId))
+//                   FocusScope.of(context)
+//                       .requestFocus(languageFocusNodes[prevLanguageId]);
+//                 else {
+//                   _navigationLockTimer?.cancel();
+//                   if (mounted) setState(() => _isNavigationLocked = false);
+//                 }
+//               } else {
+//                 _navigationLockTimer?.cancel();
+//                 if (mounted) setState(() => _isNavigationLocked = false);
+//               }
+//             }
+//             return KeyEventResult.handled;
+//           }
+//           if (key == LogicalKeyboardKey.arrowUp) {
+//             context.read<ColorProvider>().resetColor();
+//             FocusScope.of(context).unfocus();
+//             context.read<FocusProvider>().focusPreviousRow();
+//             return KeyEventResult.handled;
+//           } else if (key == LogicalKeyboardKey.arrowDown) {
+//             context.read<ColorProvider>().resetColor();
+//             FocusScope.of(context).unfocus();
+//             context.read<FocusProvider>().focusNextRow();
+//             return KeyEventResult.handled;
+//           } else if (key == LogicalKeyboardKey.select ||
+//               key == LogicalKeyboardKey.enter) {
+//             _handleLanguageTap(language);
+//             return KeyEventResult.handled;
+//           }
+//         }
+//         return KeyEventResult.ignored;
+//       },
+//       child: GestureDetector(
+//         onTap: () => _handleLanguageTap(language),
+//         child: ProfessionalLanguageCard(
+//           language: language,
+//           focusNode: focusNode,
+//           onTap: () => _handleLanguageTap(language),
+//           onColorChange: (color) {
+//             if (mounted) {
+//               setState(() {
+//                 _currentAccentColor = color;
+//               });
+//               context.read<ColorProvider>().updateColor(color, true);
+//             }
+//           },
+//           index: index,
+//           categoryTitle: "LANGUAGES",
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildLanguagesList(double screenWidth, double screenHeight) {
+//     return FadeTransition(
+//       opacity: _listFadeAnimation,
+//       child: ListView.builder(
+//         scrollDirection: Axis.horizontal,
+//         clipBehavior: Clip.none,
+//         controller: _scrollController,
+//         padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.025),
+//         cacheExtent: 9999,
+//         itemCount: _languages.length,
+//         itemBuilder: (context, index) {
+//           var language = _languages[index];
+//           return _buildLanguageItem(language, index, screenWidth, screenHeight);
+//         },
+//       ),
+//     );
+//   }
+
+//   Widget _buildProfessionalTitle(double screenWidth) {
+//     return SlideTransition(
+//       position: _headerSlideAnimation,
+//       child: Container(
+//         padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.025),
+//         child: Row(
+//           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//           children: [
+//             ShaderMask(
+//               shaderCallback: (bounds) => const LinearGradient(
+//                 colors: [
+//                   ProfessionalColorsForHomePages.accentBlue,
+//                   ProfessionalColorsForHomePages.accentPurple
+//                 ],
+//               ).createShader(bounds),
+//               child: const Text("LIVE CHANNELS",
+//                   style: TextStyle(
+//                       fontSize: 24,
+//                       color: Colors.white,
+//                       fontWeight: FontWeight.w700,
+//                       letterSpacing: 2.0)),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildErrorWidget(double height) {
+//     return SizedBox(
+//       height: height,
+//       child: Center(
+//         child: Container(
+//           margin: const EdgeInsets.symmetric(horizontal: 10),
+//           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+//           decoration: BoxDecoration(
+//               color: ProfessionalColorsForHomePages.cardDark.withOpacity(0.3),
+//               borderRadius: BorderRadius.circular(50),
+//               border: Border.all(
+//                   color: ProfessionalColorsForHomePages.accentRed
+//                       .withOpacity(0.3))),
+//           child: Row(
+//             mainAxisSize: MainAxisSize.min,
+//             mainAxisAlignment: MainAxisAlignment.center,
+//             children: [
+//               Icon(Icons.error_outline_rounded,
+//                   size: 20, color: ProfessionalColorsForHomePages.accentRed),
+//               const SizedBox(width: 10),
+//               Flexible(
+//                   child: Text(
+//                       _errorMessage.isNotEmpty ? _errorMessage : "Error",
+//                       style: const TextStyle(
+//                           color: ProfessionalColorsForHomePages.textPrimary,
+//                           fontSize: 11,
+//                           fontWeight: FontWeight.w600),
+//                       maxLines: 1,
+//                       overflow: TextOverflow.ellipsis)),
+//               const SizedBox(width: 15),
+//               // ✅ Updated Retry Widget call with Callback
+//               SmartRetryWidget(
+//                 errorMessage: _errorMessage,
+//                 onRetry: _fetchLanguages,
+//                 focusNode: _retryFocusNode,
+//                 onFocusChange: (hasFocus) {
+//                   // ✅ Update Local State for Shadow
+//                   if (mounted) setState(() => _isSectionFocused = hasFocus);
+//                 },
+//               ),
+//             ],
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildBody(double screenWidth, double screenHeight) {
+//     double effectiveBannerHgt = bannerhgt ?? screenHeight * 0.2;
+//     double effectiveBannerWdt = bannerwdt ?? screenWidth * 0.18;
+//     if (_isLoading)
+//       return SmartLoadingWidget(
+//           itemWidth: effectiveBannerWdt, itemHeight: effectiveBannerHgt);
+//     else if (_errorMessage.isNotEmpty)
+//       return _buildErrorWidget(effectiveBannerHgt);
+//     else if (_languages.isEmpty)
+//       return const Center(
+//           child: Text("No Languages Available",
+//               style: TextStyle(color: Colors.white, fontSize: 12)));
+//     else
+//       return _buildLanguagesList(screenWidth, screenHeight);
+//   }
+
+
+
+// @override
+//   Widget build(BuildContext context) {
+//     super.build(context);
+//     final screenWidth = MediaQuery.of(context).size.width;
+//     final screenHeight = MediaQuery.of(context).size.height;
+
+//     // Default Height fallback
+//     double containerHeight = (screenhgt ?? screenHeight) * 0.38;
+
+//     return Consumer<ColorProvider>(
+//       builder: (context, colorProvider, child) {
+        
+//         // ✅ Local state controls the shadow visibility
+//         bool showShadow = _isSectionFocused; 
+
+//         return Scaffold(
+//           backgroundColor: Colors.white, 
+          
+//           body: ClipRect(
+//             child: SizedBox(
+//               height: containerHeight,
+//               child: Stack(
+//                 children: [
+//                   // 1. CONTENT
+//                   Column(
+//                     crossAxisAlignment: CrossAxisAlignment.start,
+//                     children: [
+//                       SizedBox(height: (screenhgt ?? screenHeight) * 0.01),
+//                       Padding(
+//                         padding: const EdgeInsets.symmetric(horizontal: 10),
+//                         child: _buildProfessionalTitle(screenWidth),
+//                       ),
+//                       Expanded(
+//                         child: _buildBody(screenWidth, screenHeight),
+//                       ),
+//                     ],
+//                   ),
+
+//                   // 2. CINEMATIC SHADOW OVERLAY (Updated Opacity)
+//                   Positioned.fill(
+//                     child: IgnorePointer(
+//                       child: AnimatedContainer(
+//                         duration: const Duration(milliseconds: 300),
+//                         curve: Curves.easeOut,
+//                         decoration: BoxDecoration(
+//                           gradient: showShadow
+//                               ? LinearGradient(
+//                                   begin: Alignment.topCenter,
+//                                   end: Alignment.bottomCenter,
+//                                   colors: [
+//                                     // ⬆️ Top Shadow (Opacity 0.8)
+//                                     Colors.black.withOpacity(0.8), 
+                                    
+//                                     // ⬜ Transparent Center
+//                                     Colors.transparent,             
+//                                     Colors.transparent,             
+                                    
+//                                     // ⬇️ Bottom Shadow (Opacity 0.8)
+//                                     Colors.black.withOpacity(0.8), 
+//                                   ],
+//                                   // Stops ensure the shadow stays at the edges
+//                                   stops: const [0.0, 0.25, 0.75, 1.0], 
+//                                 )
+//                               : null,
+//                         ),
+//                       ),
+//                     ),
+//                   ),
+//                 ],
+//               ),
+//             ),
+//           ),
+//         );
+//       },
+//     );
+//   }
+// }
+
+// // ... (ProfessionalLanguageCard remains the same) ...
+// class ProfessionalLanguageCard extends StatefulWidget {
+//   final Language language;
+//   final FocusNode focusNode;
+//   final VoidCallback onTap;
+//   final Function(Color) onColorChange;
+//   final int index;
+//   final String categoryTitle;
+
+//   const ProfessionalLanguageCard({
+//     Key? key,
+//     required this.language,
+//     required this.focusNode,
+//     required this.onTap,
+//     required this.onColorChange,
+//     required this.index,
+//     required this.categoryTitle,
+//   }) : super(key: key);
+
+//   @override
+//   _ProfessionalLanguageCardState createState() =>
+//       _ProfessionalLanguageCardState();
+// }
+
+// class _ProfessionalLanguageCardState extends State<ProfessionalLanguageCard>
+//     with TickerProviderStateMixin {
+//   late AnimationController _scaleController;
+//   late AnimationController _glowController;
+//   late AnimationController _shimmerController;
+
+//   late Animation<double> _scaleAnimation;
+//   late Animation<double> _glowAnimation;
+//   late Animation<double> _shimmerAnimation;
+
+//   Color _dominantColor = ProfessionalColorsForHomePages.accentBlue;
+//   bool _isFocused = false;
+
+//   @override
+//   void initState() {
+//     super.initState();
+
+//     _scaleController = AnimationController(
+//       duration: AnimationTiming.slow,
+//       vsync: this,
+//     );
+
+//     _glowController = AnimationController(
+//       duration: AnimationTiming.medium,
+//       vsync: this,
+//     );
+
+//     _shimmerController = AnimationController(
+//       duration: const Duration(milliseconds: 1500),
+//       vsync: this,
+//     )..repeat();
+
+//     _scaleAnimation = Tween<double>(
+//       begin: 1.0,
+//       end: 1.06,
+//     ).animate(CurvedAnimation(
+//       parent: _scaleController,
+//       curve: Curves.easeOutCubic,
+//     ));
+
+//     _glowAnimation = Tween<double>(
+//       begin: 0.0,
+//       end: 1.0,
+//     ).animate(CurvedAnimation(
+//       parent: _glowController,
+//       curve: Curves.easeInOut,
+//     ));
+
+//     _shimmerAnimation = Tween<double>(
+//       begin: -1.0,
+//       end: 2.0,
+//     ).animate(CurvedAnimation(
+//       parent: _shimmerController,
+//       curve: Curves.easeInOut,
+//     ));
+
+//     widget.focusNode.addListener(_handleFocusChange);
+//   }
+
+//   void _handleFocusChange() {
+//     if (!mounted) return;
+
+//     setState(() {
+//       _isFocused = widget.focusNode.hasFocus;
+//     });
+
+//     if (_isFocused) {
+//       _scaleController.forward();
+//       _glowController.forward();
+//       _generateDominantColor();
+//       widget.onColorChange(_dominantColor);
+//       HapticFeedback.lightImpact();
+//     } else {
+//       _scaleController.reverse();
+//       _glowController.reverse();
+//     }
+//   }
+
+//   void _generateDominantColor() {
+//     _dominantColor = ProfessionalColorsForHomePages.accentBlue;
+//   }
+
+//   @override
+//   void dispose() {
+//     widget.focusNode.removeListener(_handleFocusChange);
+//     _scaleController.dispose();
+//     _glowController.dispose();
+//     _shimmerController.dispose();
+//     super.dispose();
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final screenWidth = MediaQuery.of(context).size.width;
+//     final screenHeight = MediaQuery.of(context).size.height;
+//     double effectiveBannerWdt = bannerwdt ?? screenWidth * 0.18;
+
+//     return AnimatedBuilder(
+//       animation: Listenable.merge([_scaleAnimation, _glowAnimation]),
+//       builder: (context, child) {
+//         return Transform.scale(
+//           scale: _scaleAnimation.value,
+//           child: Container(
+//             width: effectiveBannerWdt,
+//             margin: const EdgeInsets.symmetric(horizontal: 6),
+//             child: Column(
+//               crossAxisAlignment: CrossAxisAlignment.center,
+//               children: [
+//                 _buildProfessionalPoster(screenWidth, screenHeight),
+//                 _buildProfessionalTitle(screenWidth, effectiveBannerWdt),
+//               ],
+//             ),
+//           ),
+//         );
+//       },
+//     );
+//   }
+
+//   Widget _buildProfessionalPoster(double screenWidth, double screenHeight) {
+//     final posterHeight = _isFocused
+//         ? (focussedBannerhgt ?? screenHeight * 0.22)
+//         : (bannerhgt ?? screenHeight * 0.2);
+
+//     return Container(
+//       height: posterHeight,
+//       decoration: BoxDecoration(
+//         borderRadius: BorderRadius.circular(12),
+//         boxShadow: [
+//           if (_isFocused) ...[
+//             BoxShadow(
+//               color: _dominantColor.withOpacity(0.4),
+//               blurRadius: 25,
+//               spreadRadius: 3,
+//               offset: const Offset(0, 8),
+//             ),
+//             BoxShadow(
+//               color: _dominantColor.withOpacity(0.2),
+//               blurRadius: 45,
+//               spreadRadius: 6,
+//               offset: const Offset(0, 15),
+//             ),
+//           ] else ...[
+//             BoxShadow(
+//               color: Colors.black.withOpacity(0.4),
+//               blurRadius: 10,
+//               spreadRadius: 2,
+//               offset: const Offset(0, 5),
+//             ),
+//           ],
+//         ],
+//       ),
+//       child: ClipRRect(
+//         borderRadius: BorderRadius.circular(12),
+//         child: Stack(
+//           children: [
+//             _buildLanguageImage(screenWidth, posterHeight),
+//             if (_isFocused) _buildFocusBorder(),
+//             if (_isFocused) _buildShimmerEffect(),
+//             _buildLanguageBadge(),
+//             if (_isFocused) _buildHoverOverlay(),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildLanguageImage(double screenWidth, double posterHeight) {
+//     final String imageUrl = widget.language.logoUrl;
+//     final String cacheKey = widget.language.id.toString();
+
+//     return SizedBox(
+//       width: double.infinity,
+//       height: posterHeight,
+//       child: imageUrl.isNotEmpty
+//           ? CachedNetworkImage(
+//               imageUrl: imageUrl,
+//               cacheKey: cacheKey,
+//               fit: BoxFit.cover,
+//               placeholder: (context, url) =>
+//                   _buildImagePlaceholder(posterHeight),
+//               errorWidget: (context, url, error) {
+//                 return _buildImagePlaceholder(posterHeight);
+//               })
+//           : _buildImagePlaceholder(posterHeight),
+//     );
+//   }
+
+//   Widget _buildImagePlaceholder(double height) {
+//     return Container(
+//       height: height,
+//       decoration: const BoxDecoration(
+//         gradient: LinearGradient(
+//           begin: Alignment.topLeft,
+//           end: Alignment.bottomRight,
+//           colors: [
+//             ProfessionalColorsForHomePages.cardDark,
+//             ProfessionalColorsForHomePages.surfaceDark,
+//           ],
+//         ),
+//       ),
+//       child: Column(
+//         mainAxisAlignment: MainAxisAlignment.center,
+//         children: [
+//           Icon(
+//             Icons.language,
+//             size: height * 0.25,
+//             color: ProfessionalColorsForHomePages.textSecondary,
+//           ),
+//           const SizedBox(height: 8),
+//           const Text(
+//             "LANGUAGE",
+//             style: TextStyle(
+//               color: ProfessionalColorsForHomePages.textSecondary,
+//               fontSize: 10,
+//               fontWeight: FontWeight.bold,
+//             ),
+//           ),
+//           const SizedBox(height: 4),
+//           Container(
+//             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+//             decoration: BoxDecoration(
+//               color: ProfessionalColorsForHomePages.accentBlue.withOpacity(0.2),
+//               borderRadius: BorderRadius.circular(6),
+//             ),
+//             child: const Text(
+//               'LIVE',
+//               style: TextStyle(
+//                 color: ProfessionalColorsForHomePages.accentBlue,
+//                 fontSize: 8,
+//                 fontWeight: FontWeight.bold,
+//               ),
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+
+//   Widget _buildFocusBorder() {
+//     return Positioned.fill(
+//       child: Container(
+//         decoration: BoxDecoration(
+//           borderRadius: BorderRadius.circular(12),
+//           border: Border.all(
+//             width: 3,
+//             color: _dominantColor,
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildShimmerEffect() {
+//     return AnimatedBuilder(
+//       animation: _shimmerAnimation,
+//       builder: (context, child) {
+//         return Positioned.fill(
+//           child: Container(
+//             decoration: BoxDecoration(
+//               borderRadius: BorderRadius.circular(12),
+//               gradient: LinearGradient(
+//                 begin: Alignment(-1.0 + _shimmerAnimation.value, -1.0),
+//                 end: Alignment(1.0 + _shimmerAnimation.value, 1.0),
+//                 colors: [
+//                   Colors.transparent,
+//                   _dominantColor.withOpacity(0.15),
+//                   Colors.transparent,
+//                 ],
+//                 stops: const [0.0, 0.5, 1.0],
+//               ),
+//             ),
+//           ),
+//         );
+//       },
+//     );
+//   }
+
+//   Widget _buildLanguageBadge() {
+//     String languageType = 'LIVE';
+//     Color badgeColor = ProfessionalColorsForHomePages.accentRed;
+
+//     return Positioned(
+//       top: 8,
+//       right: 8,
+//       child: Container(
+//         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+//         decoration: BoxDecoration(
+//           color: badgeColor.withOpacity(0.9),
+//           borderRadius: BorderRadius.circular(6),
+//         ),
+//         child: Text(
+//           languageType,
+//           style: const TextStyle(
+//             color: Colors.white,
+//             fontSize: 8,
+//             fontWeight: FontWeight.bold,
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildHoverOverlay() {
+//     return Positioned.fill(
+//       child: Container(
+//         decoration: BoxDecoration(
+//           borderRadius: BorderRadius.circular(12),
+//           gradient: LinearGradient(
+//             begin: Alignment.topCenter,
+//             end: Alignment.bottomCenter,
+//             colors: [
+//               Colors.transparent,
+//               _dominantColor.withOpacity(0.1),
+//             ],
+//           ),
+//         ),
+//         child: Center(
+//           child: Container(
+//             padding: const EdgeInsets.all(10),
+//             decoration: BoxDecoration(
+//               color: Colors.black.withOpacity(0.7),
+//               borderRadius: BorderRadius.circular(25),
+//             ),
+//             child: Icon(
+//               Icons.play_arrow_rounded,
+//               color: _dominantColor,
+//               size: 30,
+//             ),
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildProfessionalTitle(double screenWidth, double cardWidth) {
+//     final languageName = widget.language.title.toUpperCase();
+
+//     return SizedBox(
+//       width: cardWidth,
+//       child: AnimatedDefaultTextStyle(
+//         duration: AnimationTiming.medium,
+//         style: TextStyle(
+//           fontSize: _isFocused ? 13 : 11,
+//           fontWeight: FontWeight.w600,
+//           color: _isFocused ? _dominantColor : Colors.black,
+//           letterSpacing: 0.5,
+//           shadows: _isFocused
+//               ? [
+//                   Shadow(
+//                     color: _dominantColor.withOpacity(0.6),
+//                     blurRadius: 10,
+//                     offset: const Offset(0, 2),
+//                   ),
+//                 ]
+//               : [],
+//         ),
+//         child: Text(
+//           languageName,
+//           textAlign: TextAlign.center,
+//           maxLines: 2,
+//           overflow: TextOverflow.ellipsis,
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+
+
+
+
+
+
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math' as math;
@@ -2686,39 +5051,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as https;
 import 'package:mobi_tv_entertainment/components/home_screen_pages/sub_live_screen/language_channel_screen.dart';
-// import 'package:mobi_tv_entertainment/components/home_screen_pages/sub_live_screen/language_channel_screen.dart' hide bannerwdt, focussedBannerhgt, bannerhgt; // Keep hide if needed
+import 'package:mobi_tv_entertainment/components/services/professional_colors_for_home_pages.dart';
+import 'package:mobi_tv_entertainment/components/widgets/small_widgets/smart_loading_widget.dart';
+import 'package:mobi_tv_entertainment/components/widgets/small_widgets/smart_retry_widget.dart';
+// ✅ Import Smart Widgets
 import 'package:provider/provider.dart';
-import 'package:mobi_tv_entertainment/main.dart'; // Assuming bannerwdt, etc. are defined here
+import 'package:mobi_tv_entertainment/main.dart'; 
 import 'package:mobi_tv_entertainment/components/provider/color_provider.dart';
 import 'package:mobi_tv_entertainment/components/provider/focus_provider.dart';
-
-
-//==============================================================================
-// PROFESSIONAL UI HELPERS
-//==============================================================================
-class ProfessionalColors {
-  static const primaryDark = Color(0xFF0A0E1A);
-  static const surfaceDark = Color(0xFF1A1D29);
-  static const cardDark = Color(0xFF2A2D3A);
-  static const accentBlue = Color(0xFF3B82F6);
-  static const accentPurple = Color(0xFF8B5CF6);
-  static const accentGreen = Color(0xFF10B981);
-  static const accentRed = Color(0xFFEF4444);
-  static const accentOrange = Color(0xFFF59E0B);
-  static const accentPink = Color(0xFFEC4899);
-  static const textPrimary = Color(0xFFFFFFFF);
-  static const textSecondary = Color(0xFFB3B3B3);
-  static const focusGlow = Color(0xFF60A5FA);
-
-  static List<Color> gradientColors = [
-    accentBlue,
-    accentPurple,
-    accentGreen,
-    accentRed,
-    accentOrange,
-    accentPink,
-  ];
-}
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AnimationTiming {
   static const Duration ultraFast = Duration(milliseconds: 150);
@@ -2729,28 +5070,592 @@ class AnimationTiming {
   static const Duration scroll = Duration(milliseconds: 800);
 }
 
-//==============================================================================
-// DATA MODEL
-//==============================================================================
 class Language {
   final int id;
   final String title;
   final String logoUrl;
-
   Language({required this.id, required this.title, required this.logoUrl});
-
   factory Language.fromJson(Map<String, dynamic> json) {
-    return Language(
-      id: json['id'] ?? 0, // Add default value
-      title: json['title'] ?? '', // Add default value
-      logoUrl: json['logo'] ?? '' // Add default value
+    return Language(id: json['id'] ?? 0, title: json['title'] ?? '', logoUrl: json['logo'] ?? '');
+  }
+}
+
+class LiveChannelLanguageScreen extends StatefulWidget {
+  const LiveChannelLanguageScreen({Key? key}) : super(key: key);
+  @override
+  State<LiveChannelLanguageScreen> createState() => _LiveChannelLanguageScreenState();
+}
+
+class _LiveChannelLanguageScreenState extends State<LiveChannelLanguageScreen>
+    with AutomaticKeepAliveClientMixin, TickerProviderStateMixin {
+  @override
+  bool get wantKeepAlive => true;
+
+  List<Language> _languages = [];
+  bool _isLoading = true;
+  String _errorMessage = '';
+  bool _isNavigating = false;
+  
+  // ✅ Shadow State
+  bool _isSectionFocused = false; 
+
+  late AnimationController _headerAnimationController;
+  late AnimationController _listAnimationController;
+  late Animation<Offset> _headerSlideAnimation;
+  late Animation<double> _listFadeAnimation;
+
+  Map<String, FocusNode> languageFocusNodes = {};
+  Color _currentAccentColor = ProfessionalColorsForHomePages.accentBlue;
+  FocusNode? _firstLanguageFocusNode;
+  
+  final FocusNode _retryFocusNode = FocusNode();
+  final ScrollController _scrollController = ScrollController();
+  
+  bool _isNavigationLocked = false;
+  Timer? _navigationLockTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeAnimations();
+    _fetchLanguages(); 
+  }
+
+  @override
+  void dispose() {
+    _navigationLockTimer?.cancel();
+    _headerAnimationController.dispose();
+    _listAnimationController.dispose();
+    _retryFocusNode.dispose(); 
+
+    String? firstLanguageId;
+    if (_languages.isNotEmpty) {
+      firstLanguageId = _languages[0].id.toString();
+    }
+
+    for (var entry in languageFocusNodes.entries) {
+      if (entry.key != firstLanguageId) {
+        try { entry.value.dispose(); } catch (e) {}
+      }
+    }
+    languageFocusNodes.clear();
+    _scrollController.dispose();
+    _isNavigating = false;
+    super.dispose();
+  }
+
+  void _setupFocusProvider() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        try {
+          final focusProvider = Provider.of<FocusProvider>(context, listen: false);
+          if (_languages.isNotEmpty) {
+            final firstLanguageId = _languages[0].id.toString();
+            if (languageFocusNodes.containsKey(firstLanguageId)) {
+              _firstLanguageFocusNode = languageFocusNodes[firstLanguageId];
+            } else {
+               _firstLanguageFocusNode = FocusNode();
+               languageFocusNodes[firstLanguageId] = _firstLanguageFocusNode!;
+            }
+            if (_firstLanguageFocusNode != null) {
+              focusProvider.registerFocusNode('liveChannelLanguage', _firstLanguageFocusNode!);
+              _firstLanguageFocusNode!.addListener(() {
+                  if (!mounted) return; 
+                  if (_firstLanguageFocusNode!.hasFocus) {
+                     _scrollToFocusedItem(firstLanguageId);
+                  }
+              });
+              
+              // ✅ FORCE FOCUS FOR LIVE SCREEN (As requested for initial focus)
+              focusProvider.updateLastFocusedIdentifier('liveChannelLanguage');
+              _firstLanguageFocusNode!.requestFocus();
+            } 
+          } else if (_errorMessage.isNotEmpty) {
+            focusProvider.registerFocusNode('liveChannelLanguage', _retryFocusNode);
+            focusProvider.updateLastFocusedIdentifier('liveChannelLanguage');
+            _retryFocusNode.requestFocus();
+          }
+        } catch (e) {
+          print('❌ Focus provider setup failed: $e');
+        }
+      }
+    });
+  }
+
+  void _initializeAnimations() {
+    _headerAnimationController = AnimationController(duration: AnimationTiming.slow, vsync: this);
+    _listAnimationController = AnimationController(duration: AnimationTiming.slow, vsync: this);
+    _headerSlideAnimation = Tween<Offset>(begin: const Offset(0, -1), end: Offset.zero).animate(CurvedAnimation(parent: _headerAnimationController, curve: Curves.easeOutCubic));
+    _listFadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(parent: _listAnimationController, curve: Curves.easeInOut));
+  }
+
+  Future<void> _fetchLanguages() async {
+    if (!mounted) return;
+    setState(() { _isLoading = true; _errorMessage = ''; });
+    try {
+      String authKey = SessionManager.authKey;
+      var url = Uri.parse(SessionManager.baseUrl + 'getAllLanguages');
+      final response = await https.get(url, headers: {'auth-key': authKey, 'Content-Type': 'application/json', 'domain': SessionManager.savedDomain}).timeout(const Duration(seconds: 20));
+      if (mounted && response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final List<dynamic> languagesJson = data['languages'] ?? [];
+        if (!mounted) return;
+        setState(() {
+          _languages = languagesJson.map((json) => Language.fromJson(json)).toList();
+          _languages.sort((a, b) => a.id.compareTo(b.id));
+          _isLoading = false;
+          _initializeLanguageFocusNodes();
+        });
+        _headerAnimationController.forward();
+        _listAnimationController.forward();
+        _setupFocusProvider(); 
+      } else if (mounted) {
+        setState(() { _errorMessage = "Failed: ${response.statusCode}"; _isLoading = false; });
+        _setupFocusProvider();
+      }
+    } catch (e) {
+      if (mounted) { setState(() { _errorMessage = "Network error"; _isLoading = false; }); _setupFocusProvider(); }
+    }
+  }
+
+  void _initializeLanguageFocusNodes() {
+    languageFocusNodes.clear();
+    for (int i = 0; i < _languages.length; i++) {
+      var language = _languages[i];
+      try {
+        String languageId = language.id.toString();
+        languageFocusNodes[languageId] = FocusNode(); 
+        if (i > 0) { 
+          languageFocusNodes[languageId]!.addListener(() {
+              if (!mounted) return; 
+              if (languageFocusNodes[languageId]!.hasFocus) {
+                  _scrollToFocusedItem(languageId);
+              }
+          });
+        }
+      } catch (e) {}
+    }
+  }
+
+  void _scrollToFocusedItem(String itemId) {
+    if (!mounted || !_scrollController.hasClients) return;
+    try {
+      int index = _languages.indexWhere((language) => language.id.toString() == itemId);
+      if (index == -1) return;
+      double itemWidth = (bannerwdt ?? MediaQuery.of(context).size.width * 0.18) + 12;
+      double targetScrollPosition = (index * itemWidth);
+      targetScrollPosition = targetScrollPosition.clamp(0.0, _scrollController.position.maxScrollExtent);
+      _scrollController.animateTo(targetScrollPosition, duration: const Duration(milliseconds: 400), curve: Curves.easeOutCubic);
+    } catch (e) {}
+  }
+
+  // void _handleLanguageTap(Language language) async {
+  //   if (_isNavigating) return;
+  //   if (!mounted) return;
+  //   setState(() { _isNavigating = true; });
+  //   await Navigator.push(context, MaterialPageRoute(builder: (context) => LanguageChannelsScreen(languageId: language.id.toString(), languageName: language.title)));
+  //   Future.delayed(Duration(milliseconds: 200), () { if (mounted) setState(() { _isNavigating = false; }); });
+  // }
+
+
+void _handleLanguageTap(Language language) async {
+  if (_isNavigating || !mounted) return;
+
+final focusProvider = Provider.of<FocusProvider>(context, listen: false);
+  
+  // ✅ Save current state in Provider
+  focusProvider.updateLastFocusedIdentifier('liveChannelLanguage');
+  focusProvider.updateLastFocusedItemId(language.id.toString());
+  
+  setState(() => _isNavigating = true);
+
+  await Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => LanguageChannelsScreen(
+        languageId: language.id.toString(),
+        languageName: language.title,
+      ),
+    ),
+  );
+
+    
+if (!mounted) return;
+  setState(() => _isNavigating = false);
+  
+  // ✅ Restore focus when coming back
+  _restoreFocusAfterNavigation();
+
+
+}
+
+  // Widget _buildLanguageItem(Language language, int index, double screenWidth, double screenHeight) {
+  //   String languageId = language.id.toString();
+  //   FocusNode? focusNode = languageFocusNodes[languageId];
+  //   if (focusNode == null) return const SizedBox.shrink();
+
+  //   return Focus(
+  //     focusNode: focusNode,
+  //     onFocusChange: (hasFocus) async {
+  //        if (!mounted) return;
+  //        // ✅ Update Shadow
+  //        setState(() => _isSectionFocused = hasFocus);
+
+  //       if (hasFocus) {
+  //         try {
+  //           Color dominantColor = ProfessionalColorsForHomePages.gradientColors[math.Random().nextInt(ProfessionalColorsForHomePages.gradientColors.length)];
+  //            if (!mounted) return;
+  //           setState(() { _currentAccentColor = dominantColor; });
+  //           context.read<ColorProvider>().updateColor(dominantColor, true);
+  //         } catch (e) {}
+  //       } else {
+  //         context.read<ColorProvider>().resetColor();
+  //       }
+  //     },
+  //     onKey: (FocusNode node, RawKeyEvent event) {
+  //       if (event is RawKeyDownEvent) {
+  //         final key = event.logicalKey;
+  //         if (key == LogicalKeyboardKey.arrowRight || key == LogicalKeyboardKey.arrowLeft) {
+  //           if (_isNavigationLocked) return KeyEventResult.handled;
+  //            if (!mounted) return KeyEventResult.ignored;
+  //           setState(() => _isNavigationLocked = true);
+  //           _navigationLockTimer = Timer(const Duration(milliseconds: 600), () { if (mounted) setState(() => _isNavigationLocked = false); });
+  //           if (key == LogicalKeyboardKey.arrowRight) {
+  //             if (index < _languages.length - 1) {
+  //               String nextLanguageId = _languages[index + 1].id.toString();
+  //                if (languageFocusNodes.containsKey(nextLanguageId)) FocusScope.of(context).requestFocus(languageFocusNodes[nextLanguageId]);
+  //                else { _navigationLockTimer?.cancel(); if (mounted) setState(() => _isNavigationLocked = false); }
+  //             } else { _navigationLockTimer?.cancel(); if (mounted) setState(() => _isNavigationLocked = false); }
+  //           } else if (key == LogicalKeyboardKey.arrowLeft) {
+  //             if (index > 0) {
+  //               String prevLanguageId = _languages[index - 1].id.toString();
+  //                if (languageFocusNodes.containsKey(prevLanguageId)) FocusScope.of(context).requestFocus(languageFocusNodes[prevLanguageId]);
+  //                else { _navigationLockTimer?.cancel(); if (mounted) setState(() => _isNavigationLocked = false); }
+  //             } else { _navigationLockTimer?.cancel(); if (mounted) setState(() => _isNavigationLocked = false); }
+  //           }
+  //           return KeyEventResult.handled;
+  //         }
+  //         if (key == LogicalKeyboardKey.arrowUp) {
+  //           context.read<ColorProvider>().resetColor();
+  //           FocusScope.of(context).unfocus();
+  //           context.read<FocusProvider>().focusPreviousRow();
+  //           return KeyEventResult.handled;
+  //         } else if (key == LogicalKeyboardKey.arrowDown) {
+  //           context.read<ColorProvider>().resetColor();
+  //           FocusScope.of(context).unfocus();
+  //           context.read<FocusProvider>().focusNextRow();
+  //           return KeyEventResult.handled;
+  //         } else if (key == LogicalKeyboardKey.select || key == LogicalKeyboardKey.enter) {
+  //           _handleLanguageTap(language);
+  //           return KeyEventResult.handled;
+  //         }
+  //       }
+  //       return KeyEventResult.ignored;
+  //     },
+  //     child: GestureDetector(
+  //       onTap: () => _handleLanguageTap(language),
+  //       child: ProfessionalLanguageCard(
+  //         language: language,
+  //         focusNode: focusNode,
+  //         onTap: () => _handleLanguageTap(language),
+  //         onColorChange: (color) {
+  //            if(mounted) {
+  //              setState(() { _currentAccentColor = color; });
+  //              context.read<ColorProvider>().updateColor(color, true);
+  //            }
+  //         },
+  //         index: index,
+  //         categoryTitle: "LANGUAGES",
+  //       ),
+  //     ),
+  //   );
+  // }
+
+
+
+  void _restoreFocusAfterNavigation() {
+  WidgetsBinding.instance.addPostFrameCallback((_) async {
+    if (!mounted) return;
+    
+    // Thoda delay taaki transition khatam ho jaye
+    await Future.delayed(const Duration(milliseconds: 200));
+    
+    final focusProvider = Provider.of<FocusProvider>(context, listen: false);
+    final lastId = focusProvider.lastFocusedItemId;
+
+    if (lastId != null && languageFocusNodes.containsKey(lastId)) {
+      FocusNode targetNode = languageFocusNodes[lastId]!;
+      _scrollToFocusedItem(lastId);
+      targetNode.requestFocus();
+    }
+  });
+}
+
+
+
+  Widget _buildLanguageItem(Language language, int index, double screenWidth, double screenHeight) {
+    String languageId = language.id.toString();
+    FocusNode? focusNode = languageFocusNodes[languageId];
+    if (focusNode == null) return const SizedBox.shrink();
+
+    return Focus(
+      focusNode: focusNode,
+      // onFocusChange: (hasFocus) async {
+      //   if (!mounted) return;
+        
+      //   // ✅ CRITICAL FIX: Sirf tab setState karein jab value actually change ho rahi ho
+      //   // Ye focus flickering aur gayab hone se bachayega
+      //   if (_isSectionFocused != hasFocus) {
+      //      setState(() => _isSectionFocused = hasFocus);
+      //   }
+
+      //   if (hasFocus) {
+      //     try {
+      //       Color dominantColor = ProfessionalColorsForHomePages.gradientColors[math.Random().nextInt(ProfessionalColorsForHomePages.gradientColors.length)];
+      //       if (!mounted) return;
+      //       setState(() { _currentAccentColor = dominantColor; });
+      //       context.read<ColorProvider>().updateColor(dominantColor, true);
+      //     } catch (e) {}
+      //   } else {
+      //     // Optional: Reset logic if needed, but carefully
+      //     // context.read<ColorProvider>().resetColor();
+      //   }
+      // },
+
+      // _buildLanguageItem ke andar onFocusChange mein:
+onFocusChange: (hasFocus) async {
+  if (!mounted) return;
+  
+  if (_isSectionFocused != hasFocus) {
+     setState(() => _isSectionFocused = hasFocus);
+  }
+
+  if (hasFocus) {
+    // 🔥 Color update ko frame ke baad karein taaki focus set hone mein rukawat na aaye
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        final focusProvider = Provider.of<FocusProvider>(context, listen: false);
+            focusProvider.updateLastFocusedItemId(languageId);
+        try {
+          Color dominantColor = ProfessionalColorsForHomePages.gradientColors[math.Random().nextInt(ProfessionalColorsForHomePages.gradientColors.length)];
+          setState(() { _currentAccentColor = dominantColor; });
+          context.read<ColorProvider>().updateColor(dominantColor, true);
+        } catch (e) {}
+      }
+    });
+  }
+},
+      onKey: (FocusNode node, RawKeyEvent event) {
+        // ... (Baaki code same rahega aapka key handling ka) ...
+        if (event is RawKeyDownEvent) {
+          final key = event.logicalKey;
+          if (key == LogicalKeyboardKey.arrowRight || key == LogicalKeyboardKey.arrowLeft) {
+            if (_isNavigationLocked) return KeyEventResult.handled;
+            if (!mounted) return KeyEventResult.ignored;
+            setState(() => _isNavigationLocked = true);
+            _navigationLockTimer = Timer(const Duration(milliseconds: 600), () { if (mounted) setState(() => _isNavigationLocked = false); });
+            if (key == LogicalKeyboardKey.arrowRight) {
+              if (index < _languages.length - 1) {
+                String nextLanguageId = _languages[index + 1].id.toString();
+                if (languageFocusNodes.containsKey(nextLanguageId)) FocusScope.of(context).requestFocus(languageFocusNodes[nextLanguageId]);
+                else { _navigationLockTimer?.cancel(); if (mounted) setState(() => _isNavigationLocked = false); }
+              } else { _navigationLockTimer?.cancel(); if (mounted) setState(() => _isNavigationLocked = false); }
+            } else if (key == LogicalKeyboardKey.arrowLeft) {
+              if (index > 0) {
+                String prevLanguageId = _languages[index - 1].id.toString();
+                if (languageFocusNodes.containsKey(prevLanguageId)) FocusScope.of(context).requestFocus(languageFocusNodes[prevLanguageId]);
+                else { _navigationLockTimer?.cancel(); if (mounted) setState(() => _isNavigationLocked = false); }
+              } else { _navigationLockTimer?.cancel(); if (mounted) setState(() => _isNavigationLocked = false); }
+            }
+            return KeyEventResult.handled;
+          }
+          if (key == LogicalKeyboardKey.arrowUp) {
+            context.read<ColorProvider>().resetColor();
+            FocusScope.of(context).unfocus();
+            context.read<FocusProvider>().focusPreviousRow();
+            return KeyEventResult.handled;
+          } else if (key == LogicalKeyboardKey.arrowDown) {
+            context.read<ColorProvider>().resetColor();
+            FocusScope.of(context).unfocus();
+            context.read<FocusProvider>().focusNextRow();
+            return KeyEventResult.handled;
+          } else if (key == LogicalKeyboardKey.select || key == LogicalKeyboardKey.enter) {
+            _handleLanguageTap(language);
+            return KeyEventResult.handled;
+          }
+        }
+        return KeyEventResult.ignored;
+      },
+      child: GestureDetector(
+        onTap: () => _handleLanguageTap(language),
+        child: ProfessionalLanguageCard(
+          language: language,
+          focusNode: focusNode,
+          onTap: () => _handleLanguageTap(language),
+          onColorChange: (color) {
+             if(mounted) {
+               setState(() { _currentAccentColor = color; });
+               context.read<ColorProvider>().updateColor(color, true);
+             }
+          },
+          index: index,
+          categoryTitle: "LANGUAGES",
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLanguagesList(double screenWidth, double screenHeight) {
+    return FadeTransition(
+      opacity: _listFadeAnimation,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        clipBehavior: Clip.none,
+        controller: _scrollController,
+        padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.025),
+        cacheExtent: 9999,
+        itemCount: _languages.length,
+        itemBuilder: (context, index) {
+          var language = _languages[index];
+          return _buildLanguageItem(language, index, screenWidth, screenHeight);
+        },
+      ),
+    );
+  }
+
+  Widget _buildProfessionalTitle(double screenWidth) {
+    return SlideTransition(
+      position: _headerSlideAnimation,
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.025),
+        child: Row(
+          children: [
+            ShaderMask(
+              shaderCallback: (bounds) => const LinearGradient(
+                colors: [ProfessionalColorsForHomePages.accentBlue, ProfessionalColorsForHomePages.accentPurple],
+              ).createShader(bounds),
+              child: const Text("LIVE CHANNELS", style: TextStyle(fontSize: 24, color: Colors.white, fontWeight: FontWeight.w700, letterSpacing: 2.0)),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildErrorWidget(double height) {
+    return SizedBox(
+      height: height,
+      child: Center(
+        child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          decoration: BoxDecoration(color: ProfessionalColorsForHomePages.cardDark.withOpacity(0.3), borderRadius: BorderRadius.circular(50), border: Border.all(color: ProfessionalColorsForHomePages.accentRed.withOpacity(0.3))),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.error_outline_rounded, size: 20, color: ProfessionalColorsForHomePages.accentRed),
+              const SizedBox(width: 10),
+              Flexible(child: Text(_errorMessage.isNotEmpty ? _errorMessage : "Error", style: const TextStyle(color: ProfessionalColorsForHomePages.textPrimary, fontSize: 11, fontWeight: FontWeight.w600), maxLines: 1, overflow: TextOverflow.ellipsis)),
+              const SizedBox(width: 15),
+              // ✅ REUSABLE SMART RETRY
+              SmartRetryWidget(
+                errorMessage: _errorMessage,
+                onRetry: _fetchLanguages,
+                focusNode: _retryFocusNode,
+                providerIdentifier: 'liveChannelLanguage',
+                onFocusChange: (hasFocus) {
+                   if(mounted) setState(() => _isSectionFocused = hasFocus);
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBody(double screenWidth, double screenHeight) {
+    double effectiveBannerHgt = bannerhgt ?? screenHeight * 0.2;
+    double effectiveBannerWdt = bannerwdt ?? screenWidth * 0.18;
+    
+    // ✅ REUSABLE SMART LOADING
+    if (_isLoading) return SmartLoadingWidget(itemWidth: effectiveBannerWdt, itemHeight: effectiveBannerHgt);
+    else if (_errorMessage.isNotEmpty) return _buildErrorWidget(effectiveBannerHgt);
+    else if (_languages.isEmpty) return const Center(child: Text("No Languages Available", style: TextStyle(color: Colors.white, fontSize: 12)));
+    else return _buildLanguagesList(screenWidth, screenHeight);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    double containerHeight = (screenhgt ?? screenHeight) * 0.38;
+
+    return Consumer<ColorProvider>(
+      builder: (context, colorProvider, child) {
+        
+        bool showShadow = _isSectionFocused; 
+
+        return FocusScope (
+          child: Scaffold(
+            backgroundColor: Colors.white, 
+            body: ClipRect(
+              child: SizedBox(
+                height: containerHeight,
+                child: Stack(
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(height: (screenhgt ?? screenHeight) * 0.01),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          child: _buildProfessionalTitle(screenWidth),
+                        ),
+                        Expanded(
+                          child: _buildBody(screenWidth, screenHeight),
+                        ),
+                      ],
+                    ),
+                    
+                    // ✅ CINEMATIC SHADOW OVERLAY
+                    Positioned.fill(
+                      child: IgnorePointer(
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeOut,
+                          decoration: BoxDecoration(
+                            gradient: showShadow
+                                ? LinearGradient(
+                                    begin: Alignment.topCenter,
+                                    end: Alignment.bottomCenter,
+                                    colors: [
+                                      Colors.black.withOpacity(0.8), // Shadow Top
+                                      Colors.transparent,             
+                                      Colors.transparent,             
+                                      Colors.black.withOpacity(0.8), // Shadow Bottom
+                                    ],
+                                    stops: const [0.0, 0.25, 0.75, 1.0], 
+                                  )
+                                : null,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }
 
-//==============================================================================
-// PROFESSIONAL LANGUAGE CARD WIDGET (No changes needed here)
-//==============================================================================
+// ... ProfessionalLanguageCard Class (Same as before) ...
 class ProfessionalLanguageCard extends StatefulWidget {
   final Language language;
   final FocusNode focusNode;
@@ -2783,7 +5688,7 @@ class _ProfessionalLanguageCardState extends State<ProfessionalLanguageCard>
   late Animation<double> _glowAnimation;
   late Animation<double> _shimmerAnimation;
 
-  Color _dominantColor = ProfessionalColors.accentBlue;
+  Color _dominantColor = ProfessionalColorsForHomePages.accentBlue;
   bool _isFocused = false;
 
   @override
@@ -2852,16 +5757,11 @@ class _ProfessionalLanguageCardState extends State<ProfessionalLanguageCard>
   }
 
   void _generateDominantColor() {
-    final colors = ProfessionalColors.gradientColors;
-     if (!mounted) return; // Add mount check before setState
-    setState(() {
-      _dominantColor = colors[math.Random().nextInt(colors.length)];
-    });
+    _dominantColor = ProfessionalColorsForHomePages.accentBlue;
   }
 
    @override
   void dispose() {
-    // Remove listener first to avoid potential errors during disposal
     widget.focusNode.removeListener(_handleFocusChange);
     _scaleController.dispose();
     _glowController.dispose();
@@ -2869,14 +5769,11 @@ class _ProfessionalLanguageCardState extends State<ProfessionalLanguageCard>
     super.dispose();
   }
 
-
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-
-    // Use bannerwdt defined in main.dart or provide a default
-    double effectiveBannerWdt = bannerwdt ?? screenWidth * 0.18; // Example default
+    double effectiveBannerWdt = bannerwdt ?? screenWidth * 0.18;
 
     return AnimatedBuilder(
       animation: Listenable.merge([_scaleAnimation, _glowAnimation]),
@@ -2890,7 +5787,7 @@ class _ProfessionalLanguageCardState extends State<ProfessionalLanguageCard>
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 _buildProfessionalPoster(screenWidth, screenHeight),
-                _buildProfessionalTitle(screenWidth, effectiveBannerWdt), // Pass width
+                _buildProfessionalTitle(screenWidth, effectiveBannerWdt),
               ],
             ),
           ),
@@ -2900,8 +5797,7 @@ class _ProfessionalLanguageCardState extends State<ProfessionalLanguageCard>
   }
 
   Widget _buildProfessionalPoster(double screenWidth, double screenHeight) {
-    // Use focussedBannerhgt/bannerhgt defined in main.dart or provide defaults
-    final posterHeight = _isFocused ? (focussedBannerhgt ?? screenHeight * 0.22) : (bannerhgt ?? screenHeight * 0.2); // Example defaults
+    final posterHeight = _isFocused ? (focussedBannerhgt ?? screenHeight * 0.22) : (bannerhgt ?? screenHeight * 0.2);
 
     return Container(
       height: posterHeight,
@@ -2956,18 +5852,16 @@ class _ProfessionalLanguageCardState extends State<ProfessionalLanguageCard>
       child: imageUrl.isNotEmpty
           ? CachedNetworkImage(
               imageUrl: imageUrl,
-              cacheKey: cacheKey, // Use ID as cache key for better updates if URL changes
+              cacheKey: cacheKey, 
               fit: BoxFit.cover,
               placeholder: (context, url) => _buildImagePlaceholder(posterHeight),
               errorWidget: (context, url, error){
-                 print("Error loading image $url: $error"); // Log error
                  return _buildImagePlaceholder(posterHeight);
               }
             )
           : _buildImagePlaceholder(posterHeight),
     );
   }
-
 
   Widget _buildImagePlaceholder(double height) {
     return Container(
@@ -2977,8 +5871,8 @@ class _ProfessionalLanguageCardState extends State<ProfessionalLanguageCard>
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            ProfessionalColors.cardDark,
-            ProfessionalColors.surfaceDark,
+            ProfessionalColorsForHomePages.cardDark,
+            ProfessionalColorsForHomePages.surfaceDark,
           ],
         ),
       ),
@@ -2988,13 +5882,13 @@ class _ProfessionalLanguageCardState extends State<ProfessionalLanguageCard>
           Icon(
             Icons.language,
             size: height * 0.25,
-            color: ProfessionalColors.textSecondary,
+            color: ProfessionalColorsForHomePages.textSecondary,
           ),
           const SizedBox(height: 8),
           const Text(
             "LANGUAGE",
             style: TextStyle(
-              color: ProfessionalColors.textSecondary,
+              color: ProfessionalColorsForHomePages.textSecondary,
               fontSize: 10,
               fontWeight: FontWeight.bold,
             ),
@@ -3003,13 +5897,13 @@ class _ProfessionalLanguageCardState extends State<ProfessionalLanguageCard>
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
             decoration: BoxDecoration(
-              color: ProfessionalColors.accentBlue.withOpacity(0.2),
+              color: ProfessionalColorsForHomePages.accentBlue.withOpacity(0.2),
               borderRadius: BorderRadius.circular(6),
             ),
             child: const Text(
-              'LIVE', // Changed HD to LIVE
+              'LIVE',
               style: TextStyle(
-                color: ProfessionalColors.accentBlue,
+                color: ProfessionalColorsForHomePages.accentBlue,
                 fontSize: 8,
                 fontWeight: FontWeight.bold,
               ),
@@ -3061,8 +5955,7 @@ class _ProfessionalLanguageCardState extends State<ProfessionalLanguageCard>
 
   Widget _buildLanguageBadge() {
     String languageType = 'LIVE';
-    Color badgeColor = ProfessionalColors.accentRed;
-
+    Color badgeColor = ProfessionalColorsForHomePages.accentRed;
 
     return Positioned(
       top: 8,
@@ -3121,15 +6014,13 @@ class _ProfessionalLanguageCardState extends State<ProfessionalLanguageCard>
     final languageName = widget.language.title.toUpperCase();
 
     return SizedBox(
-      width: cardWidth, // Use passed card width
+      width: cardWidth,
       child: AnimatedDefaultTextStyle(
         duration: AnimationTiming.medium,
         style: TextStyle(
           fontSize: _isFocused ? 13 : 11,
           fontWeight: FontWeight.w600,
-          // color: _isFocused ? _dominantColor : ProfessionalColors.textPrimary,
           color: _isFocused ? _dominantColor : Colors.black,
-
           letterSpacing: 0.5,
           shadows: _isFocused
               ? [
@@ -3148,774 +6039,6 @@ class _ProfessionalLanguageCardState extends State<ProfessionalLanguageCard>
           overflow: TextOverflow.ellipsis,
         ),
       ),
-    );
-  }
-}
-
-
-//==============================================================================
-// PROFESSIONAL LOADING INDICATOR
-//==============================================================================
-class ProfessionalLoadingIndicator extends StatefulWidget {
-  final String message;
-
-  const ProfessionalLoadingIndicator({
-    Key? key,
-    this.message = 'Loading...',
-  }) : super(key: key);
-
-  @override
-  _ProfessionalLoadingIndicatorState createState() => _ProfessionalLoadingIndicatorState();
-}
-
-class _ProfessionalLoadingIndicatorState extends State<ProfessionalLoadingIndicator>
-    with TickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _animation;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      duration: const Duration(milliseconds: 1500),
-      vsync: this,
-    )..repeat();
-
-    _animation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(_controller);
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          AnimatedBuilder(
-            animation: _animation,
-            builder: (context, child) {
-              return Container(
-                width: 70,
-                height: 70,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: SweepGradient(
-                    colors: const [
-                      ProfessionalColors.accentBlue,
-                      ProfessionalColors.accentPurple,
-                      ProfessionalColors.accentGreen,
-                      ProfessionalColors.accentBlue,
-                    ],
-                    stops: const [0.0, 0.3, 0.7, 1.0],
-                    transform: GradientRotation(_animation.value * 2 * math.pi),
-                  ),
-                ),
-                child: Container(
-                  margin: const EdgeInsets.all(5),
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: ProfessionalColors.primaryDark,
-                  ),
-                  child: const Icon(
-                    Icons.language,
-                    color: ProfessionalColors.textPrimary,
-                    size: 28,
-                  ),
-                ),
-              );
-            },
-          ),
-          const SizedBox(height: 24),
-          Text(
-            widget.message,
-            style: const TextStyle(
-              color: ProfessionalColors.textPrimary,
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          const SizedBox(height: 12),
-          Container(
-            width: 200,
-            height: 3,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(2),
-              color: ProfessionalColors.surfaceDark,
-            ),
-            child: AnimatedBuilder(
-              animation: _animation,
-              builder: (context, child) {
-                return LinearProgressIndicator(
-                  value: _animation.value,
-                  backgroundColor: Colors.transparent,
-                  valueColor: const AlwaysStoppedAnimation<Color>(
-                    ProfessionalColors.accentBlue,
-                  ),
-                );
-              },
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-//==============================================================================
-// MAIN LIVE CHANNEL LANGUAGE SCREEN
-//==============================================================================
-class LiveChannelLanguageScreen extends StatefulWidget {
-  const LiveChannelLanguageScreen({Key? key}) : super(key: key);
-
-  @override
-  State<LiveChannelLanguageScreen> createState() => _LiveChannelLanguageScreenState();
-}
-
-class _LiveChannelLanguageScreenState extends State<LiveChannelLanguageScreen>
-    with AutomaticKeepAliveClientMixin, TickerProviderStateMixin {
-  @override
-  bool get wantKeepAlive => true;
-
-  List<Language> _languages = [];
-  bool _isLoading = true;
-  String _errorMessage = '';
-  bool _isNavigating = false;
-
-  // Animation Controllers
-  late AnimationController _headerAnimationController;
-  late AnimationController _listAnimationController;
-  late Animation<Offset> _headerSlideAnimation;
-  late Animation<double> _listFadeAnimation;
-
-  // Focus management
-  Map<String, FocusNode> languageFocusNodes = {};
-  Color _currentAccentColor = ProfessionalColors.accentBlue;
-  FocusNode? _firstLanguageFocusNode; // To register with provider
-
-  final ScrollController _scrollController = ScrollController();
-
-  final int navigationIndex = 1; // Assuming index is 1 (after Banner)
-
-  // ✅ NEW: State variables for navigation throttling
-  bool _isNavigationLocked = false;
-  Timer? _navigationLockTimer;
-
-
-  @override
-  void initState() {
-    super.initState();
-    _initializeAnimations();
-    _fetchLanguages().then((_) {
-      _setupFocusProvider(); // Call setup *after* data is fetched and nodes are created
-    });
-  }
-
- // ✅ ==========================================================
- // ✅ [UPDATED] Sahi dispose logic
- // ✅ ==========================================================
- @override
-  void dispose() {
-    _navigationLockTimer?.cancel();
-    _headerAnimationController.dispose();
-    _listAnimationController.dispose();
-
-    // Sirf un nodes ko dispose karein jo provider mein register NAHI hue
-    String? firstLanguageId;
-    if (_languages.isNotEmpty) {
-      firstLanguageId = _languages[0].id.toString();
-    }
-
-    for (var entry in languageFocusNodes.entries) {
-      // Agar node register nahi hua hai (yaani first language nahi hai), tabhi use yahan dispose karein
-      if (entry.key != firstLanguageId) {
-        try {
-          entry.value.removeListener(() {}); // Achi practice hai
-          entry.value.dispose();
-        } catch (e) {}
-      }
-    }
-    // Pehle item ka node provider mein dispose hoga.
-
-    languageFocusNodes.clear();
-    _scrollController.dispose();
-    _isNavigating = false; // Reset navigation flag
-    super.dispose();
-  }
- // ✅ ==========================================================
- // ✅ END OF [UPDATED] dispose logic
- // ✅ ==========================================================
-
-
-  void _setupFocusProvider() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        try {
-          final focusProvider = Provider.of<FocusProvider>(context, listen: false);
-
-          // Register the first language item's node with the provider
-          if (_languages.isNotEmpty) {
-            final firstLanguageId = _languages[0].id.toString();
-             // Ensure node exists before assigning
-            if (languageFocusNodes.containsKey(firstLanguageId)) {
-                _firstLanguageFocusNode = languageFocusNodes[firstLanguageId];
-            } else {
-                 _firstLanguageFocusNode = FocusNode(); // Create if missing (should not happen with current logic)
-                 languageFocusNodes[firstLanguageId] = _firstLanguageFocusNode!;
-                 print("⚠️ Warning: First language node was missing, created a new one.");
-            }
-
-
-            if (_firstLanguageFocusNode != null) {
-              focusProvider.registerFocusNode(
-                'liveChannelLanguage', // Use the correct ID from HomeScreen
-                _firstLanguageFocusNode!
-              );
-               print('✅ LiveChannelLanguageScreen first focus node registered: ${_languages[0].title}');
-
-               // Add listener for scrolling *after* registering
-                _firstLanguageFocusNode!.addListener(() {
-                    if (!mounted) return; // Add mount check
-                    if (_firstLanguageFocusNode!.hasFocus) {
-                       _scrollToFocusedItem(firstLanguageId);
-                    }
-                });
-
-            } else {
-               print('❌ First language focus node is null after creation attempt!');
-            }
-          } else {
-             print('⚠️ Cannot register first language node: _languages list is empty.');
-          }
-           print('✅ Generic focus registered for Languages List (index: $navigationIndex)'); // Keep if needed
-        } catch (e) {
-          print('❌ Language Screen Focus provider setup failed: $e');
-        }
-      }
-    });
-  }
-
-  void _initializeAnimations() {
-    _headerAnimationController = AnimationController(
-      duration: AnimationTiming.slow,
-      vsync: this,
-    );
-    _listAnimationController = AnimationController(
-      duration: AnimationTiming.slow,
-      vsync: this,
-    );
-    _headerSlideAnimation = Tween<Offset>(
-      begin: const Offset(0, -1),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _headerAnimationController,
-      curve: Curves.easeOutCubic,
-    ));
-    _listFadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _listAnimationController,
-      curve: Curves.easeInOut,
-    ));
-  }
-
-  Future<void> _fetchLanguages() async {
-    if (!mounted) return;
-    setState(() { _isLoading = true; _errorMessage = ''; });
-
-    try {
-            String authKey = SessionManager.authKey ;
-      var url = Uri.parse(SessionManager.baseUrl + 'getAllLanguages');
-      final response = await https.get(url,
-        // Uri.parse(
-        //   // SessionManager.baseUrl + 'getAllLanguages'
-        //   'https://dashboard.cpplayers.com/api/v2/getAllLanguages'
-        //   ),
-        headers: {
-          'auth-key': authKey,
-          'Content-Type': 'application/json',
-          // 'domain': 'coretechinfo.com'
-          'domain': SessionManager.savedDomain
-        },
-      ).timeout(const Duration(seconds: 20)); // Added timeout
-
-      if (mounted && response.statusCode == 200) {
-        final data = json.decode(response.body);
-        final List<dynamic> languagesJson = data['languages'] ?? [];
-
-         if (!mounted) return; // Re-check mount before setState
-        setState(() {
-          _languages = languagesJson.map((json) => Language.fromJson(json)).toList();
-           // Sort languages alphabetically by title
-          //  _languages.sort((a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()));
-          _languages.sort((a, b) => a.id.compareTo(b.id));
-          _isLoading = false;
-          _initializeLanguageFocusNodes(); // Create nodes AFTER data is fetched
-        });
-
-        _headerAnimationController.forward();
-        _listAnimationController.forward();
-      } else if (mounted) {
-        setState(() {
-          _errorMessage = "Failed to load languages. Status: ${response.statusCode}";
-          _isLoading = false;
-        });
-      }
-    } on TimeoutException catch (_) {
-         if (mounted) {
-             setState(() {
-                 _errorMessage = "Request timed out. Please check your connection.";
-                 _isLoading = false;
-             });
-         }
-     } catch (e) {
-      if (mounted) {
-        setState(() {
-          _errorMessage = "Network error: $e"; // Show more specific error
-          _isLoading = false;
-        });
-      }
-      print('❌ Error fetching languages: $e');
-    }
-  }
-
-  void _initializeLanguageFocusNodes() {
-    // Clear old nodes first (using the updated dispose logic)
-    languageFocusNodes.clear();
-
-    for (int i = 0; i < _languages.length; i++) { // Iterate using index
-      var language = _languages[i];
-      try {
-        String languageId = language.id.toString();
-        languageFocusNodes[languageId] = FocusNode(); // Naya node banayein
-
-        // Pehle node ke alawa baaki nodes ke liye listener yahin add karein
-        // (Pehle node ka listener _setupFocusProvider mein add hoga)
-        if (i > 0) { // Check index instead of ID comparison
-          languageFocusNodes[languageId]!.addListener(() {
-              if (!mounted) return; // Add mount check
-              if (languageFocusNodes[languageId]!.hasFocus) {
-                  _scrollToFocusedItem(languageId);
-              }
-          });
-        }
-
-      } catch (e) {
-         print("Error creating focus node for language ${language.id}: $e");
-      }
-    }
-     print("✅ Initialized ${languageFocusNodes.length} language focus nodes.");
-  }
-
-
-  void _scrollToFocusedItem(String itemId) {
-    if (!mounted || !_scrollController.hasClients) return;
-    try {
-      int index = _languages.indexWhere((language) => language.id.toString() == itemId);
-      if (index == -1) return;
-
-      // Use bannerwdt defined in main.dart or provide a default
-      double itemWidth = (bannerwdt ?? MediaQuery.of(context).size.width * 0.18) + 12; // Including margin
-
-      double targetScrollPosition = (index * itemWidth);
-
-      targetScrollPosition = targetScrollPosition.clamp(
-        0.0,
-        _scrollController.position.maxScrollExtent,
-      );
-
-      _scrollController.animateTo(
-        targetScrollPosition,
-        duration: const Duration(milliseconds: 400),
-        curve: Curves.easeOutCubic,
-      );
-    } catch (e) {
-      print('Error scrolling to language item: $e');
-    }
-  }
-
-  void _handleLanguageTap(Language language) async {
-    if (_isNavigating) return;
-     if (!mounted) return; // Add mount check before setState
-    setState(() { _isNavigating = true; });
-
-    await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => LanguageChannelsScreen(
-          languageId: language.id.toString(),
-          languageName: language.title,
-        ),
-      ),
-    );
-
-     // Restore focus after returning
-     Future.delayed(Duration(milliseconds: 200), () { // Added delay
-       if (mounted) {
-           setState(() { _isNavigating = false; });
-          //  String langId = language.id.toString();
-          //  if(languageFocusNodes.containsKey(langId)){
-          //     languageFocusNodes[langId]?.requestFocus();
-          //     _scrollToFocusedItem(langId); // Ensure it scrolls back
-          //  }
-       }
-     });
-
-  }
-
-
-  Widget _buildLanguageItem(Language language, int index, double screenWidth, double screenHeight) {
-    String languageId = language.id.toString();
-    FocusNode? focusNode = languageFocusNodes[languageId]; // Use nullable FocusNode
-
-    if (focusNode == null) return const SizedBox.shrink(); // Safety check
-
-    return Focus(
-      focusNode: focusNode,
-      onFocusChange: (hasFocus) async {
-         if (!mounted) return; // Add mount check
-        if (hasFocus) {
-          try {
-            Color dominantColor = ProfessionalColors.gradientColors[
-                math.Random().nextInt(ProfessionalColors.gradientColors.length)];
-             if (!mounted) return; // Check mount again before setState
-            setState(() { _currentAccentColor = dominantColor; });
-            context.read<ColorProvider>().updateColor(dominantColor, true);
-          } catch (e) { print('Focus change handling failed: $e'); }
-        } else {
-          context.read<ColorProvider>().resetColor();
-        }
-      },
-    // ✅ ==========================================================
-    // ✅ [UPDATED] Item onKey LOGIC
-    // ✅ ==========================================================
-      onKey: (FocusNode node, RawKeyEvent event) {
-        if (event is RawKeyDownEvent) {
-          final key = event.logicalKey;
-
-          // --- Throttling for Horizontal Movement (Left/Right) ---
-          if (key == LogicalKeyboardKey.arrowRight ||
-              key == LogicalKeyboardKey.arrowLeft) {
-            if (_isNavigationLocked) return KeyEventResult.handled;
-             if (!mounted) return KeyEventResult.ignored; // Add mount check before setState
-            setState(() => _isNavigationLocked = true);
-            _navigationLockTimer = Timer(const Duration(milliseconds: 600), () {
-              if (mounted) setState(() => _isNavigationLocked = false);
-            });
-
-            if (key == LogicalKeyboardKey.arrowRight) {
-              if (index < _languages.length - 1) {
-                String nextLanguageId = _languages[index + 1].id.toString();
-                 if (languageFocusNodes.containsKey(nextLanguageId)) {
-                   FocusScope.of(context).requestFocus(languageFocusNodes[nextLanguageId]);
-                 } else {
-                     _navigationLockTimer?.cancel();
-                     if (mounted) setState(() => _isNavigationLocked = false);
-                 }
-              } else {
-                _navigationLockTimer?.cancel();
-                if (mounted) setState(() => _isNavigationLocked = false);
-              }
-            } else if (key == LogicalKeyboardKey.arrowLeft) {
-              if (index > 0) {
-                String prevLanguageId = _languages[index - 1].id.toString();
-                 if (languageFocusNodes.containsKey(prevLanguageId)) {
-                   FocusScope.of(context).requestFocus(languageFocusNodes[prevLanguageId]);
-                 } else {
-                     _navigationLockTimer?.cancel();
-                     if (mounted) setState(() => _isNavigationLocked = false);
-                 }
-              } else {
-                _navigationLockTimer?.cancel();
-                if (mounted) setState(() => _isNavigationLocked = false);
-              }
-            }
-            return KeyEventResult.handled;
-          }
-
-          // --- Vertical Movement (Up/Down) ---
-          if (key == LogicalKeyboardKey.arrowUp) {
-            // ✅ CHANGED: Use focusPreviousRow
-            context.read<ColorProvider>().resetColor();
-            FocusScope.of(context).unfocus();
-            context.read<FocusProvider>().focusPreviousRow(); // Ask provider
-            return KeyEventResult.handled;
-          }
-
-          else if (key == LogicalKeyboardKey.arrowDown) {
-            // ✅ CHANGED: Use focusNextRow
-            context.read<ColorProvider>().resetColor();
-            FocusScope.of(context).unfocus();
-            context.read<FocusProvider>().focusNextRow(); // Ask provider
-            return KeyEventResult.handled;
-          }
-
-          else if (key == LogicalKeyboardKey.select || key == LogicalKeyboardKey.enter) {
-            _handleLanguageTap(language);
-            return KeyEventResult.handled;
-          }
-        }
-        return KeyEventResult.ignored;
-      },
-    // ✅ ==========================================================
-    // ✅ END OF [UPDATED] onKey LOGIC
-    // ✅ ==========================================================
-      child: GestureDetector(
-        onTap: () => _handleLanguageTap(language),
-        child: ProfessionalLanguageCard(
-          language: language,
-          focusNode: focusNode, // Pass the non-nullable focusNode here
-          onTap: () => _handleLanguageTap(language),
-          onColorChange: (color) {
-             if(mounted) {
-               setState(() { _currentAccentColor = color; });
-               context.read<ColorProvider>().updateColor(color, true);
-             }
-          },
-          index: index,
-          categoryTitle: "LANGUAGES",
-        ),
-      ),
-    );
-  }
-
-
-  Widget _buildLanguagesList(double screenWidth, double screenHeight) {
-    return FadeTransition(
-      opacity: _listFadeAnimation,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        clipBehavior: Clip.none,
-        controller: _scrollController,
-        padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.025),
-        cacheExtent: 9999, // Keep high cache extent
-        itemCount: _languages.length,
-        itemBuilder: (context, index) {
-          var language = _languages[index];
-          return _buildLanguageItem(language, index, screenWidth, screenHeight);
-        },
-      ),
-    );
-  }
-
-  Widget _buildProfessionalTitle(double screenWidth) {
-    return SlideTransition(
-      position: _headerSlideAnimation, // Corrected
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.025),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            ShaderMask(
-              shaderCallback: (bounds) => const LinearGradient(
-                colors: [
-                  ProfessionalColors.accentBlue,
-                  ProfessionalColors.accentPurple,
-                ],
-              ).createShader(bounds),
-              child: const Text(
-                "LIVE CHANNELS",
-                style: TextStyle(
-                  fontSize: 24,
-                  color: Colors.white,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 2.0,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildBody(double screenWidth, double screenHeight) {
-    if (_isLoading) {
-      return ProfessionalLoadingIndicator(message: 'Loading Languages...');
-    } else if (_errorMessage.isNotEmpty) {
-      return _buildErrorWidget();
-    } else if (_languages.isEmpty) {
-      return _buildEmptyWidget();
-    } else {
-      return _buildLanguagesList(screenWidth, screenHeight);
-    }
-  }
-
-  Widget _buildErrorWidget() {
-    // Use screen dimensions safely with defaults
-    double effectiveScreenWidth = screenwdt ?? MediaQuery.of(context).size.width;
-    double effectiveScreenHeight = screenhgt ?? MediaQuery.of(context).size.height;
-    double effectiveBannerWdt = bannerwdt ?? effectiveScreenWidth * 0.18;
-    double effectiveBannerHgt = bannerhgt ?? effectiveScreenHeight * 0.2;
-    double effectiveNameTextSz = nametextsz ?? 14.0;
-
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-             width: effectiveBannerWdt,
-             height: effectiveBannerHgt,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: LinearGradient(
-                colors: [
-                  ProfessionalColors.accentRed.withOpacity(0.2),
-                  ProfessionalColors.accentRed.withOpacity(0.1),
-                ],
-              ),
-            ),
-            child: const Icon(
-              Icons.error_outline_rounded,
-              size: 40,
-              color: ProfessionalColors.accentRed,
-            ),
-          ),
-          const SizedBox(height: 24),
-          const Text(
-            'Oops! Something went wrong',
-            style: TextStyle(
-              color: ProfessionalColors.textPrimary,
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            _errorMessage,
-            style: TextStyle(
-              color: ProfessionalColors.textSecondary,
-              fontSize: effectiveNameTextSz * 0.8, // Adjust based on nametextsz
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 24),
-          ElevatedButton(
-            onPressed: _fetchLanguages,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: ProfessionalColors.accentBlue,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-            child: const Text(
-              'Try Again',
-              style: TextStyle(fontWeight: FontWeight.w600),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildEmptyWidget() {
-    // Use screen dimensions safely with defaults
-    double effectiveScreenWidth = screenwdt ?? MediaQuery.of(context).size.width;
-    double effectiveScreenHeight = screenhgt ?? MediaQuery.of(context).size.height;
-    double effectiveBannerWdt = bannerwdt ?? effectiveScreenWidth * 0.18;
-    double effectiveBannerHgt = bannerhgt ?? effectiveScreenHeight * 0.2;
-    double effectiveNameTextSz = nametextsz ?? 14.0;
-
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-             width: effectiveBannerWdt,
-             height: effectiveBannerHgt,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: LinearGradient(
-                colors: [
-                  ProfessionalColors.accentBlue.withOpacity(0.2),
-                  ProfessionalColors.accentBlue.withOpacity(0.1),
-                ],
-              ),
-            ),
-            child: const Icon(
-              Icons.language,
-              size: 40,
-              color: ProfessionalColors.accentBlue,
-            ),
-          ),
-          const SizedBox(height: 24),
-          const Text(
-            'No Languages Available',
-            style: TextStyle(
-              color: ProfessionalColors.textPrimary,
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: 8),
-           Text(
-            'Check back later for language options',
-            style: TextStyle(
-              color: ProfessionalColors.textSecondary,
-              fontSize: effectiveNameTextSz * 0.9, // Adjust based on nametextsz
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-     super.build(context); // ✅ ADD THIS LINE
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
-
-    return Consumer<ColorProvider>(
-      builder: (context, colorProvider, child) {
-        final bgColor = colorProvider.isItemFocused
-            ? colorProvider.dominantColor.withOpacity(0.1)
-            : ProfessionalColors.primaryDark;
-
-        return Scaffold(
-          backgroundColor: Colors.white,
-          body: Container(
-            // Use screenhgt or provide a default
-            height: (screenhgt ?? MediaQuery.of(context).size.height) * 0.38,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: 
-                [
-                  Colors.white,
-                  Colors.white,
-                ]
-                // colors: [
-                //   bgColor,
-                //   bgColor.withOpacity(0.8),
-                //   ProfessionalColors.primaryDark,
-                // ],
-              ),
-            ),
-            child: Column(
-              children: [
-                SizedBox(height: (screenhgt ?? MediaQuery.of(context).size.height) * 0.02),
-                _buildProfessionalTitle(screenWidth),
-                SizedBox(height: (screenhgt ?? MediaQuery.of(context).size.height) * 0.01),
-                Expanded(
-                  child: _buildBody(screenWidth, screenHeight),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
     );
   }
 }

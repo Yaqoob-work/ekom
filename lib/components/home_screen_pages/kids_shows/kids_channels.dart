@@ -2,69 +2,38 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as https;
-// ⚠️ ENSURE YOU HAVE THIS FILE OR RENAME THE IMPORT TO YOUR KIDS SLIDER SCREEN
-// import 'package:mobi_tv_entertainment/components/home_screen_pages/kids_channel/kids_channel_slider_screen.dart';
-import 'package:mobi_tv_entertainment/components/home_screen_pages/kids_shows/kid_channels_slider_screen.dart'; 
-import 'package:mobi_tv_entertainment/components/home_screen_pages/tv_show/tv_show_second_page.dart'; 
+import 'package:mobi_tv_entertainment/components/home_screen_pages/kids_shows/kid_channels_slider_screen.dart';
+import 'package:mobi_tv_entertainment/components/home_screen_pages/sub_vod_screen/genre_movies_screen.dart';
+import 'package:mobi_tv_entertainment/components/services/professional_colors_for_home_pages.dart';
+import 'package:mobi_tv_entertainment/components/widgets/small_widgets/smart_loading_widget.dart';
+import 'package:mobi_tv_entertainment/components/widgets/small_widgets/smart_retry_widget.dart';
 import 'dart:math' as math;
 import 'package:mobi_tv_entertainment/main.dart';
 import 'package:mobi_tv_entertainment/components/provider/color_provider.dart';
 import 'package:mobi_tv_entertainment/components/provider/focus_provider.dart';
 import 'package:mobi_tv_entertainment/components/services/history_service.dart';
+// ✅ Import Smart Widgets
 import 'package:provider/provider.dart';
 import 'dart:convert';
 import 'dart:ui';
 
-// ✅ Professional Color Palette (Kept same for consistency)
-class ProfessionalColors {
-  static const primaryDark = Color(0xFF0A0E1A);
-  static const surfaceDark = Color(0xFF1A1D29);
-  static const cardDark = Color(0xFF2A2D3A);
-  static const accentBlue = Color(0xFF3B82F6);
-  static const accentPurple = Color(0xFF8B5CF6);
-  static const accentGreen = Color(0xFF10B981);
-  static const accentRed = Color(0xFFEF4444);
-  static const accentOrange = Color(0xFFF59E0B);
-  static const accentPink = Color(0xFFEC4899);
-  static const textPrimary = Color(0xFFFFFFFF);
-  static const textSecondary = Color(0xFFB3B3B3);
-  static const focusGlow = Color(0xFF60A5FA);
-
-  static List<Color> gradientColors = [
-    accentPink, // Prioritized Pink/Blue for Kids theme
-    accentBlue,
-    accentOrange,
-    accentGreen,
-    accentPurple,
-    accentRed,
-  ];
-}
-
-// ✅ Animation Durations
+// ✅ ==========================================================
+// MODELS & CONSTANTS
+// ✅ ==========================================================
 class AnimationTiming {
-  static const Duration ultraFast = Duration(milliseconds: 150);
   static const Duration fast = Duration(milliseconds: 250);
   static const Duration medium = Duration(milliseconds: 400);
   static const Duration slow = Duration(milliseconds: 600);
-  static const Duration focus = Duration(milliseconds: 300);
   static const Duration scroll = Duration(milliseconds: 800);
 }
 
-// ✅ ==========================================================
-// ✅ [RENAMED] Kids Network Model
-// ✅ ==========================================================
 class KidsNetworkModel {
   final int id;
   final String name;
   final String? logo;
   final int status;
 
-  KidsNetworkModel({
-    required this.id,
-    required this.name,
-    this.logo,
-    required this.status,
-  });
+  KidsNetworkModel({required this.id, required this.name, this.logo, required this.status});
 
   factory KidsNetworkModel.fromJson(Map<String, dynamic> json) {
     return KidsNetworkModel(
@@ -77,14 +46,11 @@ class KidsNetworkModel {
 }
 
 // ✅ ==========================================================
-// ✅ [RENAMED & MODIFIED] KidsNetworkService
+// KIDS NETWORK SERVICE
 // ✅ ==========================================================
 class KidsNetworkService {
-  
-  /// Main method to get all Kids Networks (Direct API Call)
   static Future<List<KidsNetworkModel>> getAllKidsNetworks() async {
     try {
-      print('🧸 Loading Fresh Kids Networks from API...'); 
       return await _fetchKidsNetworksFromApi();
     } catch (e) {
       print('❌ Error in getAllKidsNetworks: $e');
@@ -92,55 +58,23 @@ class KidsNetworkService {
     }
   }
 
-  /// Fetch data from API
   static Future<List<KidsNetworkModel>> _fetchKidsNetworksFromApi() async {
     try {
       String authKey = SessionManager.authKey;
       var url = Uri.parse(SessionManager.baseUrl + 'getNetworks');
 
-      final response = await https
-          .post(url,
-            headers: {
-              'auth-key': authKey,
-              'Content-Type': 'application/json',
-              'Accept': 'application/json',
-              'domain': SessionManager.savedDomain,
-            },
-            // ✅ [CRITICAL CHANGE] "data_for" set to "kidchannels"
-            body: json.encode({"network_id": "", "data_for": "kidchannels"}),
-          )
-          .timeout(
-            const Duration(seconds: 30),
-            onTimeout: () => throw Exception('Request timeout'),
-          );
+      final response = await https.post(url, headers: {'auth-key': authKey, 'Content-Type': 'application/json', 'Accept': 'application/json', 'domain': SessionManager.savedDomain}, body: json.encode({"network_id": "", "data_for": "kidchannels"})).timeout(const Duration(seconds: 30));
 
       if (response.statusCode == 200) {
         final List<dynamic> jsonData = json.decode(response.body);
-
-        final allNetworks = jsonData
-            .map((json) =>
-                KidsNetworkModel.fromJson(json as Map<String, dynamic>))
-            .toList();
-
-        final activeNetworks =
-            allNetworks.where((network) => network.status == 1).toList();
-
-        print(
-            '✅ Successfully loaded ${activeNetworks.length} active Kids networks');
-        return activeNetworks;
-      } else {
-        throw Exception(
-            'API Error: ${response.statusCode} - ${response.reasonPhrase}');
-      }
-    } catch (e) {
-      print('❌ Error fetching kids networks: $e');
-      rethrow;
-    }
+        return jsonData.map((json) => KidsNetworkModel.fromJson(json)).where((n) => n.status == 1).toList();
+      } else { throw Exception('API Error: ${response.statusCode}'); }
+    } catch (e) { rethrow; }
   }
 }
 
 // ✅ ==========================================================
-// ✅ [RENAMED] Main Widget: ManageKidsShows
+// MAIN WIDGET: ManageKidsShows
 // ✅ ==========================================================
 class ManageKidsShows extends StatefulWidget {
   const ManageKidsShows({super.key});
@@ -153,26 +87,30 @@ class _ManageKidsShowsState extends State<ManageKidsShows>
   @override
   bool get wantKeepAlive => true;
 
-  // ✅ [RENAMED] State variables
   List<KidsNetworkModel> _fullKidsList = [];
   List<KidsNetworkModel> _displayedKidsList = [];
   bool _showViewAll = false;
   bool isLoading = true;
+  String _errorMessage = ''; // ✅ Error State
   int focusedIndex = -1;
-  Color _currentAccentColor = ProfessionalColors.accentPink;
+  Color _currentAccentColor = ProfessionalColorsForHomePages.accentPink;
+  
+  // ✅ Shadow State
+  bool _isSectionFocused = false;
 
-  // Animation Controllers
   late AnimationController _headerAnimationController;
   late AnimationController _listAnimationController;
   late Animation<Offset> _headerSlideAnimation;
   late Animation<double> _listFadeAnimation;
 
-  // ✅ [RENAMED] Focus variables
   Map<String, FocusNode> kidsFocusNodes = {};
   FocusNode? _firstKidsFocusNode;
   late FocusNode _viewAllFocusNode;
+  
+  // ✅ Retry Focus Node
+  final FocusNode _retryFocusNode = FocusNode();
+  
   bool _hasReceivedFocus = false;
-
   late ScrollController _scrollController;
 
   @override
@@ -182,29 +120,22 @@ class _ManageKidsShowsState extends State<ManageKidsShows>
     _viewAllFocusNode = FocusNode();
     _initializeAnimations();
     _initializeFocusListeners();
-    fetchKidsNetworks(); // ✅ Direct Fetch
+    fetchKidsNetworks(); 
   }
 
   @override
   void dispose() {
     _headerAnimationController.dispose();
     _listAnimationController.dispose();
-
-    _viewAllFocusNode.removeListener(_onViewAllFocusChange);
     _viewAllFocusNode.dispose();
+    _retryFocusNode.dispose();
 
-    // Dispose logic
     String? firstNetworkId;
-    if (_fullKidsList.isNotEmpty) {
-      firstNetworkId = _fullKidsList[0].id.toString();
-    }
+    if (_fullKidsList.isNotEmpty) firstNetworkId = _fullKidsList[0].id.toString();
 
     for (var entry in kidsFocusNodes.entries) {
       if (entry.key != firstNetworkId) {
-        try {
-          entry.value.removeListener(() {});
-          entry.value.dispose();
-        } catch (e) {}
+        try { entry.value.dispose(); } catch (e) {}
       }
     }
     kidsFocusNodes.clear();
@@ -213,20 +144,10 @@ class _ManageKidsShowsState extends State<ManageKidsShows>
   }
 
   void _initializeAnimations() {
-    _headerAnimationController =
-        AnimationController(duration: AnimationTiming.slow, vsync: this);
-    _listAnimationController =
-        AnimationController(duration: AnimationTiming.slow, vsync: this);
-
-    _headerSlideAnimation = Tween<Offset>(
-      begin: const Offset(0, -1),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(
-        parent: _headerAnimationController, curve: Curves.easeOutCubic));
-
-    _listFadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-        CurvedAnimation(
-            parent: _listAnimationController, curve: Curves.easeInOut));
+    _headerAnimationController = AnimationController(duration: AnimationTiming.slow, vsync: this);
+    _listAnimationController = AnimationController(duration: AnimationTiming.slow, vsync: this);
+    _headerSlideAnimation = Tween<Offset>(begin: const Offset(0, -1), end: Offset.zero).animate(CurvedAnimation(parent: _headerAnimationController, curve: Curves.easeOutCubic));
+    _listFadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(parent: _listAnimationController, curve: Curves.easeInOut));
   }
 
   void _initializeFocusListeners() {
@@ -235,9 +156,8 @@ class _ManageKidsShowsState extends State<ManageKidsShows>
 
   void _onViewAllFocusChange() {
     if (mounted && _viewAllFocusNode.hasFocus) {
-      setState(() {
-        focusedIndex = _displayedKidsList.length; 
-      });
+      setState(() => _isSectionFocused = true); // ✅ Shadow Update
+      setState(() => focusedIndex = _displayedKidsList.length);
       _scrollToPosition(focusedIndex);
     }
   }
@@ -247,76 +167,55 @@ class _ManageKidsShowsState extends State<ManageKidsShows>
     try {
       double itemWidth = bannerwdt + 12;
       double targetPosition = index * itemWidth;
-      targetPosition =
-          targetPosition.clamp(0.0, _scrollController.position.maxScrollExtent);
-
-      _scrollController.animateTo(
-        targetPosition,
-        duration: const Duration(milliseconds: 350),
-        curve: Curves.easeOutCubic,
-      );
-    } catch (e) {
-      print('Error scrolling in kids list: $e');
-    }
+      targetPosition = targetPosition.clamp(0.0, _scrollController.position.maxScrollExtent);
+      _scrollController.animateTo(targetPosition, duration: const Duration(milliseconds: 350), curve: Curves.easeOutCubic);
+    } catch (e) {}
   }
 
-  // ✅ [RENAMED & UPDATED KEY]
   void _setupKidsFocusProvider() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted && _displayedKidsList.isNotEmpty) {
-        try {
-          final focusProvider =
-              Provider.of<FocusProvider>(context, listen: false);
+      if (mounted) {
+        final focusProvider = Provider.of<FocusProvider>(context, listen: false);
+        
+        if (_displayedKidsList.isNotEmpty) {
+          // Success Case
           final firstNetworkId = _displayedKidsList[0].id.toString();
-          _firstKidsFocusNode =
-              kidsFocusNodes[firstNetworkId];
+          _firstKidsFocusNode = kidsFocusNodes[firstNetworkId];
 
           if (_firstKidsFocusNode != null) {
-            // ✅ [UPDATED KEY] 'kidsChannels'
-            focusProvider.registerFocusNode(
-                'kidchannels', _firstKidsFocusNode!);
+            focusProvider.registerFocusNode('kids_show', _firstKidsFocusNode!);
             
             _firstKidsFocusNode!.addListener(() {
               if (mounted && _firstKidsFocusNode!.hasFocus) {
-                if (!_hasReceivedFocus) {
-                  _hasReceivedFocus = true;
-                }
+                if (!_hasReceivedFocus) _hasReceivedFocus = true;
                 setState(() => focusedIndex = 0);
                 _scrollToPosition(0);
               }
             });
           }
-        } catch (e) {
-          print('❌ Kids focus provider setup failed: $e');
+        } else if (_errorMessage.isNotEmpty) {
+           // Error Case
+           focusProvider.registerFocusNode('kids_show', _retryFocusNode);
         }
       }
     });
   }
 
-  // ✅ [RENAMED] No Cache Logic
   Future<void> fetchKidsNetworks() async {
     if (!mounted) return;
-    setState(() {
-      isLoading = true;
-    });
+    setState(() { isLoading = true; _errorMessage = ''; });
     try {
-      // ✅ Calling the new Service
       final fetchedNetworks = await KidsNetworkService.getAllKidsNetworks();
-
       if (mounted) {
         _fullKidsList = fetchedNetworks;
-        
         if (_fullKidsList.length > 10) {
           _displayedKidsList = _fullKidsList.sublist(0, 10);
         } else {
           _displayedKidsList = _fullKidsList;
         }
         _showViewAll = _fullKidsList.isNotEmpty;
-
-        setState(() {
-          isLoading = false;
-        });
-
+        
+        setState(() => isLoading = false);
         if (_fullKidsList.isNotEmpty) {
           _createFocusNodesForItems();
           _setupKidsFocusProvider(); 
@@ -325,22 +224,16 @@ class _ManageKidsShowsState extends State<ManageKidsShows>
         }
       }
     } catch (e) {
-      if (mounted) {
-        setState(() {
-          isLoading = false;
-        });
-      }
-      print('Error fetching Kids Networks: $e');
+      if (mounted) setState(() { isLoading = false; _errorMessage = 'Failed to load Kids Channels'; });
+      _setupKidsFocusProvider();
     }
   }
 
   void _createFocusNodesForItems() {
     kidsFocusNodes.clear();
-
     for (int i = 0; i < _displayedKidsList.length; i++) {
       String networkId = _displayedKidsList[i].id.toString();
       kidsFocusNodes[networkId] = FocusNode();
-
       if (i > 0) {
         kidsFocusNodes[networkId]!.addListener(() {
           if (mounted && kidsFocusNodes[networkId]!.hasFocus) {
@@ -355,183 +248,155 @@ class _ManageKidsShowsState extends State<ManageKidsShows>
     }
   }
 
-  // ✅ [RENAMED] Navigation
-  void _navigateToKidsDetails(KidsNetworkModel network) async {
-    print('🎬 Navigating to Kids Details: ${network.name}');
+  void _navigateToGridPage() {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => KidChannelsSliderScreen(initialNetworkId: null)));
+  }
 
+  void _navigateToGridPageWithNetwork(KidsNetworkModel network) async {
     try {
       int? currentUserId = SessionManager.userId;
-      await HistoryService.updateUserHistory(
-        userId: currentUserId!,
-        contentType: 4, 
-        eventId: network.id,
-        eventTitle: network.name,
-        url: '',
-        categoryId: 0, 
-      );
-    } catch (e) {
-      print("History update failed: $e");
-    }
-
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        // ✅ Reusing the same details page structure
-        builder: (context) => TVShowDetailsPage(
-          tvChannelId: network.id,
-          channelName: network.name,
-          channelLogo: network.logo,
-        ),
-      ),
-    );
+      await HistoryService.updateUserHistory(userId: currentUserId!, contentType: 4, eventId: network.id, eventTitle: network.name, url: '', categoryId: 0);
+    } catch (e) {}
+    Navigator.push(context, MaterialPageRoute(builder: (context) => KidChannelsSliderScreen(initialNetworkId: network.id)));
   }
 
-  void _navigateToGridPage() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => KidChannelsSliderScreen(
-          initialNetworkId: null, 
-        ),
-      ),
-    );
-  }
-
-  void _navigateToGridPageWithNetwork(KidsNetworkModel network) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => KidChannelsSliderScreen (
-          initialNetworkId: network.id, 
-        ),
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    super.build(context);
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
-
-    return Consumer<ColorProvider>(
-      builder: (context, colorProvider, child) {
-        final bgColor = colorProvider.isItemFocused
-            ? colorProvider.dominantColor.withOpacity(0.1)
-            : ProfessionalColors.primaryDark;
-
-        return Scaffold(
-          backgroundColor: Colors.transparent,
-          body: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  bgColor,
-                  bgColor.withOpacity(0.8),
-                  ProfessionalColors.primaryDark,
-                ],
+  // ✅ ERROR WIDGET (Smart UI)
+  Widget _buildErrorWidget(double height) {
+    return SizedBox(
+      height: height,
+      child: Center(
+        child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          decoration: BoxDecoration(color: ProfessionalColorsForHomePages.cardDark.withOpacity(0.3), borderRadius: BorderRadius.circular(50), border: Border.all(color: ProfessionalColorsForHomePages.accentRed.withOpacity(0.3))),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.error_outline_rounded, size: 20, color: ProfessionalColorsForHomePages.accentRed),
+              const SizedBox(width: 10),
+              Flexible(child: Text("Connection Failed", style: const TextStyle(color: ProfessionalColorsForHomePages.textPrimary, fontSize: 11, fontWeight: FontWeight.w600), maxLines: 1, overflow: TextOverflow.ellipsis)),
+              const SizedBox(width: 15),
+              // ✅ Smart Retry Widget
+              SmartRetryWidget(
+                errorMessage: _errorMessage,
+                onRetry: fetchKidsNetworks,
+                focusNode: _retryFocusNode,
+                providerIdentifier: 'kids_show',
+                onFocusChange: (hasFocus) {
+                   if(mounted) setState(() => _isSectionFocused = hasFocus);
+                },
               ),
-            ),
-            child: Column(
-              children: [
-                SizedBox(height: screenHeight * 0.02),
-                _buildProfessionalTitle(screenWidth),
-                SizedBox(height: screenHeight * 0.01),
-                Expanded(child: _buildBody(screenWidth, screenHeight)),
-              ],
-            ),
+            ],
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 
-  Widget _buildKidsItem(KidsNetworkModel network, int index,
-      double screenWidth, double screenHeight) {
+  Widget _buildBody(double screenWidth, double screenHeight) {
+    double effectiveBannerHgt = bannerhgt ?? screenHeight * 0.2;
+    double effectiveBannerWdt = bannerwdt ?? screenWidth * 0.18;
+
+    if (isLoading) {
+      // ✅ Smart Loading
+      return SmartLoadingWidget(itemWidth: effectiveBannerWdt, itemHeight: effectiveBannerHgt);
+    } else if (_errorMessage.isNotEmpty) {
+      // ✅ Smart Error
+      return _buildErrorWidget(effectiveBannerHgt);
+    } else if (_fullKidsList.isEmpty) {
+      return _buildEmptyWidget();
+    } else {
+      return _buildKidsList(screenWidth, screenHeight);
+    }
+  }
+
+  Widget _buildEmptyWidget() {
+    return const Center(child: Text("No Kids Channels Found", style: TextStyle(color: Colors.white, fontSize: 12)));
+  }
+
+  Widget _buildKidsList(double screenWidth, double screenHeight) {
+    return FadeTransition(
+      opacity: _listFadeAnimation,
+      child: Container(
+        height: screenHeight * 0.38,
+        child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          clipBehavior: Clip.none,
+          controller: _scrollController,
+          padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.025),
+          cacheExtent: 9999,
+          itemCount: _displayedKidsList.length + (_showViewAll ? 1 : 0),
+          itemBuilder: (context, index) {
+            if (index < _displayedKidsList.length) {
+              var network = _displayedKidsList[index];
+              return _buildKidsItem(network, index, screenWidth, screenHeight);
+            } else {
+              return _buildViewAllButton(screenWidth, screenHeight);
+            }
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildKidsItem(KidsNetworkModel network, int index, double screenWidth, double screenHeight) {
     String networkId = network.id.toString();
     FocusNode? focusNode = kidsFocusNodes[networkId];
-
     if (focusNode == null) return const SizedBox.shrink();
 
     return Focus(
       focusNode: focusNode,
       onFocusChange: (hasFocus) async {
-        if (!mounted) return;
+        if (mounted) setState(() => _isSectionFocused = hasFocus); // ✅ Shadow Update
         if (hasFocus) {
-          try {
-            Color dominantColor = ProfessionalColors.gradientColors[
-                math.Random().nextInt(ProfessionalColors.gradientColors.length)];
-            setState(() {
-              _currentAccentColor = dominantColor;
-              focusedIndex = index;
-              _hasReceivedFocus = true;
-            });
-            context.read<ColorProvider>().updateColor(dominantColor, true);
-            _scrollToPosition(index);
-          } catch (e) {
-            print('Focus change handling failed: $e');
-          }
+          Color dominantColor = ProfessionalColorsForHomePages.accentPink;
+          setState(() {
+            _currentAccentColor = dominantColor;
+            focusedIndex = index;
+            _hasReceivedFocus = true;
+          });
+          context.read<ColorProvider>().updateColor(dominantColor, true);
         } else {
-          bool isAnyItemFocused =
-              kidsFocusNodes.values.any((node) => node.hasFocus);
+          bool isAnyItemFocused = kidsFocusNodes.values.any((node) => node.hasFocus);
           if (!mounted) return;
           if (!isAnyItemFocused && !_viewAllFocusNode.hasFocus) {
             context.read<ColorProvider>().resetColor();
           }
         }
       },
-      onKey: (FocusNode node, RawKeyEvent event) {
+      onKey: (node, event) {
         if (event is RawKeyDownEvent) {
           final key = event.logicalKey;
-
           if (key == LogicalKeyboardKey.arrowRight) {
             if (index < _displayedKidsList.length - 1) {
-              String nextNetworkId =
-                  _displayedKidsList[index + 1].id.toString();
-              FocusScope.of(context)
-                  .requestFocus(kidsFocusNodes[nextNetworkId]);
+              String nextNetworkId = _displayedKidsList[index + 1].id.toString();
+              FocusScope.of(context).requestFocus(kidsFocusNodes[nextNetworkId]);
             } else if (_showViewAll) {
               FocusScope.of(context).requestFocus(_viewAllFocusNode);
             }
             return KeyEventResult.handled;
           } else if (key == LogicalKeyboardKey.arrowLeft) {
             if (index > 0) {
-              String prevNetworkId =
-                  _displayedKidsList[index - 1].id.toString();
-              FocusScope.of(context)
-                  .requestFocus(kidsFocusNodes[prevNetworkId]);
+              String prevNetworkId = _displayedKidsList[index - 1].id.toString();
+              FocusScope.of(context).requestFocus(kidsFocusNodes[prevNetworkId]);
             }
             return KeyEventResult.handled;
           } else if (key == LogicalKeyboardKey.arrowUp) {
-            setState(() {
-              focusedIndex = -1;
-              _hasReceivedFocus = false;
-            });
+            setState(() { focusedIndex = -1; _hasReceivedFocus = false; });
             context.read<ColorProvider>().resetColor();
             FocusScope.of(context).unfocus();
-            Future.delayed(const Duration(milliseconds: 50), () {
-              if (mounted) {
-                 context.read<FocusProvider>().focusPreviousRow();
-              }
-            });
+            context.read<FocusProvider>().updateLastFocusedIdentifier('kids_show');
+            context.read<FocusProvider>().focusPreviousRow();
             return KeyEventResult.handled;
           } else if (key == LogicalKeyboardKey.arrowDown) {
-            setState(() {
-              focusedIndex = -1;
-              _hasReceivedFocus = false;
-            });
+            setState(() { focusedIndex = -1; _hasReceivedFocus = false; });
             context.read<ColorProvider>().resetColor();
             FocusScope.of(context).unfocus();
-            Future.delayed(const Duration(milliseconds: 50), () {
-              if (mounted) {
-                 context.read<FocusProvider>().focusNextRow();
-              }
-            });
+            context.read<FocusProvider>().updateLastFocusedIdentifier('kids_show');
+            context.read<FocusProvider>().focusNextRow();
             return KeyEventResult.handled;
-          } else if (key == LogicalKeyboardKey.enter ||
-              key == LogicalKeyboardKey.select) {
+          } else if (key == LogicalKeyboardKey.enter || key == LogicalKeyboardKey.select) {
             _navigateToGridPageWithNetwork(network);
             return KeyEventResult.handled;
           }
@@ -545,10 +410,7 @@ class _ManageKidsShowsState extends State<ManageKidsShows>
           focusNode: focusNode,
           onTap: () => _navigateToGridPageWithNetwork(network),
           onColorChange: (color) {
-            if (!mounted) return;
-            setState(() {
-              _currentAccentColor = color;
-            });
+            if (mounted) setState(() => _currentAccentColor = color);
             context.read<ColorProvider>().updateColor(color, true);
           },
         ),
@@ -560,65 +422,41 @@ class _ManageKidsShowsState extends State<ManageKidsShows>
     return Focus(
       focusNode: _viewAllFocusNode,
       onFocusChange: (hasFocus) {
-        if (!mounted) return;
+        if (mounted) setState(() => _isSectionFocused = hasFocus); // ✅ Shadow Update
         if (hasFocus) {
-          setState(() {
-            focusedIndex = _displayedKidsList.length;
-            _hasReceivedFocus = true;
-          });
-          context
-              .read<ColorProvider>()
-              .updateColor(ProfessionalColors.accentPurple, true);
+          setState(() { focusedIndex = _displayedKidsList.length; _hasReceivedFocus = true; });
+          context.read<ColorProvider>().updateColor(ProfessionalColorsForHomePages.accentPink, true);
           _scrollToPosition(focusedIndex);
         } else {
-          bool isAnyItemFocused =
-              kidsFocusNodes.values.any((node) => node.hasFocus);
+          bool isAnyItemFocused = kidsFocusNodes.values.any((node) => node.hasFocus);
           if (!mounted) return;
-          if (!isAnyItemFocused) {
-            context.read<ColorProvider>().resetColor();
-          }
+          if (!isAnyItemFocused) context.read<ColorProvider>().resetColor();
         }
       },
-      onKey: (FocusNode node, RawKeyEvent event) {
+      onKey: (node, event) {
         if (event is RawKeyDownEvent) {
           final key = event.logicalKey;
-
           if (key == LogicalKeyboardKey.arrowLeft) {
             if (_displayedKidsList.isNotEmpty) {
-              String prevNetworkId =
-                  _displayedKidsList.last.id.toString();
-              FocusScope.of(context)
-                  .requestFocus(kidsFocusNodes[prevNetworkId]);
+              String prevNetworkId = _displayedKidsList.last.id.toString();
+              FocusScope.of(context).requestFocus(kidsFocusNodes[prevNetworkId]);
             }
             return KeyEventResult.handled;
           } else if (key == LogicalKeyboardKey.arrowUp) {
-             setState(() {
-              focusedIndex = -1;
-              _hasReceivedFocus = false;
-            });
+            setState(() { focusedIndex = -1; _hasReceivedFocus = false; });
             context.read<ColorProvider>().resetColor();
             FocusScope.of(context).unfocus();
-            Future.delayed(const Duration(milliseconds: 50), () {
-              if (mounted) {
-                 context.read<FocusProvider>().focusPreviousRow();
-              }
-            });
+            context.read<FocusProvider>().updateLastFocusedIdentifier('kids_show');
+            context.read<FocusProvider>().focusPreviousRow();
             return KeyEventResult.handled;
           } else if (key == LogicalKeyboardKey.arrowDown) {
-             setState(() {
-              focusedIndex = -1;
-              _hasReceivedFocus = false;
-            });
+            setState(() { focusedIndex = -1; _hasReceivedFocus = false; });
             context.read<ColorProvider>().resetColor();
             FocusScope.of(context).unfocus();
-            Future.delayed(const Duration(milliseconds: 50), () {
-              if (mounted) {
-                 context.read<FocusProvider>().focusNextRow();
-              }
-            });
+            context.read<FocusProvider>().updateLastFocusedIdentifier('kids_show');
+            context.read<FocusProvider>().focusNextRow();
             return KeyEventResult.handled;
-          } else if (key == LogicalKeyboardKey.enter ||
-              key == LogicalKeyboardKey.select) {
+          } else if (key == LogicalKeyboardKey.enter || key == LogicalKeyboardKey.select) {
             _navigateToGridPage();
             return KeyEventResult.handled;
           }
@@ -635,120 +473,87 @@ class _ManageKidsShowsState extends State<ManageKidsShows>
     );
   }
 
-  Widget _buildKidsList(double screenWidth, double screenHeight) {
-    return FadeTransition(
-      opacity: _listFadeAnimation,
-      child: Container(
-        height: screenHeight * 0.38,
-        child: ListView.builder(
-          scrollDirection: Axis.horizontal,
-          clipBehavior: Clip.none,
-          controller: _scrollController,
-          padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.025),
-          cacheExtent: 9999,
-          itemCount:
-              _displayedKidsList.length + (_showViewAll ? 1 : 0),
-          itemBuilder: (context, index) {
-            if (index < _displayedKidsList.length) {
-              var network = _displayedKidsList[index];
-              return _buildKidsItem(
-                  network, index, screenWidth, screenHeight);
-            } else {
-              return _buildViewAllButton(screenWidth, screenHeight);
-            }
-          },
-        ),
-      ),
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    double containerHeight = (screenhgt ?? screenHeight) * 0.38;
+
+    return Consumer<ColorProvider>(
+      builder: (context, colorProvider, child) {
+        
+        bool showShadow = _isSectionFocused;
+
+        return Scaffold(
+          backgroundColor: Colors.white,
+          body: ClipRect(
+            child: SizedBox(
+              height: containerHeight,
+              child: Stack(
+                children: [
+                  Column(
+                    children: [
+                      SizedBox(height: (screenhgt ?? screenHeight) * 0.02),
+                      _buildProfessionalTitle(screenWidth),
+                      SizedBox(height: (screenhgt ?? screenHeight) * 0.01),
+                      Expanded(child: _buildBody(screenWidth, screenHeight)),
+                    ],
+                  ),
+                  
+                  // ✅ SHADOW OVERLAY
+                  Positioned.fill(
+                    child: IgnorePointer(
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeOut,
+                        decoration: BoxDecoration(
+                          gradient: showShadow
+                              ? LinearGradient(
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                  colors: [
+                                    Colors.black.withOpacity(0.8), 
+                                    Colors.transparent,             
+                                    Colors.transparent,             
+                                    Colors.black.withOpacity(0.8), 
+                                  ],
+                                  stops: const [0.0, 0.25, 0.75, 1.0], 
+                                )
+                              : null,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 
   Widget _buildProfessionalTitle(double screenWidth) {
     return SlideTransition(
       position: _headerSlideAnimation,
-      child: Container(
+      child: Padding(
         padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.025),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             ShaderMask(
               shaderCallback: (bounds) => const LinearGradient(
-                colors: [
-                  ProfessionalColors.accentPink, // Playful colors
-                  ProfessionalColors.accentBlue,
-                ],
+                colors: [ProfessionalColorsForHomePages.accentPink, ProfessionalColorsForHomePages.accentBlue],
               ).createShader(bounds),
-              child: const Text(
-                'KIDS ZONE', // ✅ Title Updated
-                style: TextStyle(
-                  fontSize: 24,
-                  color: Colors.white,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 2.0,
-                ),
-              ),
+              child: const Text('KIDS ZONE', style: TextStyle(fontSize: 24, color: Colors.white, fontWeight: FontWeight.w700, letterSpacing: 2.0)),
             ),
           ],
         ),
       ),
     );
   }
-
-  Widget _buildBody(double screenWidth, double screenHeight) {
-    if (isLoading) {
-      return ProfessionalKidsLoadingIndicator(
-          message: 'Loading Kids Channels...');
-    } else if (_fullKidsList.isEmpty) {
-      return _buildEmptyWidget();
-    } else {
-      return _buildKidsList(screenWidth, screenHeight);
-    }
-  }
-
-  Widget _buildEmptyWidget() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            width: 80,
-            height: 80,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: LinearGradient(
-                colors: [
-                  ProfessionalColors.accentPink.withOpacity(0.2),
-                  ProfessionalColors.accentPink.withOpacity(0.1),
-                ],
-              ),
-            ),
-            child: const Icon(
-              Icons.toys_rounded, // ✅ Icon Updated for Kids theme
-              size: 40,
-              color: ProfessionalColors.accentPink,
-            ),
-          ),
-          const SizedBox(height: 24),
-          const Text(
-            'No Kids Channels Found', // ✅ Text Updated
-            style: TextStyle(
-              color: ProfessionalColors.textPrimary,
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: 8),
-          const Text(
-            'Check back later for cartoons',
-            style: TextStyle(
-              color: ProfessionalColors.textSecondary,
-              fontSize: 14,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }
+
 
 // ✅ ==========================================================
 // ✅ Supporting Widgets (Adapted for Kids Theme)
@@ -783,7 +588,7 @@ class _ProfessionalKidsCardState
   late Animation<double> _glowAnimation;
   late Animation<double> _shimmerAnimation;
 
-  Color _dominantColor = ProfessionalColors.accentPink;
+  Color _dominantColor = ProfessionalColorsForHomePages.accentBlue;
   bool _isFocused = false;
 
   @override
@@ -826,8 +631,10 @@ class _ProfessionalKidsCardState
   }
 
   void _generateDominantColor() {
-    final colors = ProfessionalColors.gradientColors;
-    _dominantColor = colors[math.Random().nextInt(colors.length)];
+    // final colors = ProfessionalColorsForHomePages.gradientColors;
+    // _dominantColor = colors[math.Random().nextInt(colors.length)];
+       _dominantColor = ProfessionalColorsForHomePages.accentBlue;
+
   }
 
   @override
@@ -931,8 +738,8 @@ class _ProfessionalKidsCardState
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            ProfessionalColors.cardDark,
-            ProfessionalColors.surfaceDark,
+            ProfessionalColorsForHomePages.cardDark,
+            ProfessionalColorsForHomePages.surfaceDark,
           ],
         ),
       ),
@@ -942,13 +749,13 @@ class _ProfessionalKidsCardState
           Icon(
             Icons.toys_rounded, // ✅ Updated Icon
             size: height * 0.25,
-            color: ProfessionalColors.textSecondary,
+            color: ProfessionalColorsForHomePages.textSecondary,
           ),
           const SizedBox(height: 8),
           const Text(
             'KIDS',
             style: TextStyle(
-              color: ProfessionalColors.textSecondary,
+              color: ProfessionalColorsForHomePages.textSecondary,
               fontSize: 10,
               fontWeight: FontWeight.bold,
             ),
@@ -1039,7 +846,7 @@ class _ProfessionalKidsCardState
         style: TextStyle(
           fontSize: _isFocused ? 13 : 11,
           fontWeight: FontWeight.w600,
-          color: _isFocused ? _dominantColor : ProfessionalColors.textPrimary,
+          color: _isFocused ? _dominantColor : ProfessionalColorsForHomePages.primaryDark,
           letterSpacing: 0.5,
           shadows: _isFocused
               ? [
@@ -1083,7 +890,7 @@ class _ProfessionalKidsViewAllButtonState
   late AnimationController _scaleController;
   late Animation<double> _scaleAnimation;
   bool _isFocused = false;
-  final Color _focusColor = ProfessionalColors.accentPurple;
+  final Color _focusColor = ProfessionalColorsForHomePages.accentBlue;
 
   @override
   void initState() {
@@ -1150,8 +957,8 @@ class _ProfessionalKidsViewAllButtonState
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            ProfessionalColors.cardDark.withOpacity(0.8),
-            ProfessionalColors.surfaceDark.withOpacity(0.8),
+            ProfessionalColorsForHomePages.cardDark.withOpacity(0.8),
+            ProfessionalColorsForHomePages.surfaceDark.withOpacity(0.8),
           ],
         ),
         border: Border.all(
@@ -1178,14 +985,14 @@ class _ProfessionalKidsViewAllButtonState
                 Icons.arrow_forward_ios_rounded,
                 size: 30,
                 color:
-                    _isFocused ? _focusColor : ProfessionalColors.textPrimary,
+                    _isFocused ? _focusColor : ProfessionalColorsForHomePages.textPrimary,
               ),
               const SizedBox(height: 8),
               Text(
                 'VIEW ALL',
                 style: TextStyle(
                   color:
-                      _isFocused ? _focusColor : ProfessionalColors.textPrimary,
+                      _isFocused ? _focusColor : ProfessionalColorsForHomePages.textPrimary,
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
                 ),
@@ -1205,7 +1012,7 @@ class _ProfessionalKidsViewAllButtonState
         style: TextStyle(
           fontSize: _isFocused ? 13 : 11,
           fontWeight: FontWeight.w600,
-          color: _isFocused ? _focusColor : ProfessionalColors.textPrimary,
+          color: _isFocused ? _focusColor : ProfessionalColorsForHomePages.textPrimary,
         ),
         child: const Text(
           'SEE ALL',
@@ -1267,11 +1074,11 @@ class _ProfessionalKidsLoadingIndicatorState
                   shape: BoxShape.circle,
                   gradient: SweepGradient(
                     colors: const [
-                      ProfessionalColors.accentPink,
-                      ProfessionalColors.accentBlue,
-                      ProfessionalColors.accentOrange,
-                      ProfessionalColors.accentGreen,
-                      ProfessionalColors.accentPink,
+                      ProfessionalColorsForHomePages.accentPink,
+                      ProfessionalColorsForHomePages.accentBlue,
+                      ProfessionalColorsForHomePages.accentOrange,
+                      ProfessionalColorsForHomePages.accentGreen,
+                      ProfessionalColorsForHomePages.accentPink,
                     ],
                     stops: [0.0, 0.25, 0.5, 0.75, 1.0],
                     transform: GradientRotation(_animation.value * 2 * math.pi),
@@ -1281,11 +1088,11 @@ class _ProfessionalKidsLoadingIndicatorState
                   margin: const EdgeInsets.all(5),
                   decoration: const BoxDecoration(
                     shape: BoxShape.circle,
-                    color: ProfessionalColors.primaryDark,
+                    color: ProfessionalColorsForHomePages.primaryDark,
                   ),
                   child: const Icon(
                     Icons.toys_rounded,
-                    color: ProfessionalColors.textPrimary,
+                    color: ProfessionalColorsForHomePages.textPrimary,
                     size: 28,
                   ),
                 ),
@@ -1296,7 +1103,7 @@ class _ProfessionalKidsLoadingIndicatorState
           Text(
             widget.message,
             style: const TextStyle(
-              color: ProfessionalColors.textPrimary,
+              color: ProfessionalColorsForHomePages.textPrimary,
               fontSize: 16,
               fontWeight: FontWeight.w500,
             ),

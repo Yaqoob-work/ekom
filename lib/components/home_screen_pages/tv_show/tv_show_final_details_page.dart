@@ -787,7 +787,7 @@
 //       // String url = episode.videoUrl;
 //       String rawUrl = episode.videoUrl;
 //       print('rawurl: $rawUrl');
-//       String playableUrl = await SecureUrlService.getSecureUrl(rawUrl);
+//       String rawUrl = await SecureUrlService.getSecureUrl(rawUrl);
 
 //       if (mounted) {
 //         dynamic result;
@@ -802,7 +802,7 @@
 //               context,
 //               MaterialPageRoute(
 //                 builder: (context) => YoutubeWebviewPlayer(
-//                   videoUrl: playableUrl,
+//                   videoUrl: rawUrl,
 //                   name: episode.title,
 //                 ),
 //               ),
@@ -815,17 +815,17 @@
 //                   // videoUrl: episode.videoUrl,
 //                   // name: episode.title,
 //                   videoData: VideoData(
-//                     id: playableUrl,
+//                     id: rawUrl,
 //                     title: episode.title,
-//                     youtubeUrl: playableUrl,
+//                     youtubeUrl: rawUrl,
 //                     thumbnail: episode.thumbnail ?? '',
 //                     description: episode.description ?? '',
 //                   ),
 //                   playlist: [
 //                     VideoData(
-//                       id: playableUrl,
+//                       id: rawUrl,
 //                       title: episode.title,
-//                       youtubeUrl: playableUrl,
+//                       youtubeUrl: rawUrl,
 //                       thumbnail: episode.thumbnail ?? '',
 //                       description: episode.description ?? '',
 //                     ),
@@ -848,7 +848,7 @@
 //             context,
 //             MaterialPageRoute(
 //               builder: (context) => VideoScreen(
-//                 videoUrl: playableUrl,
+//                 videoUrl: rawUrl,
 //                 bannerImageUrl: episode.thumbnail,
 //                 channelList: [],
 //                 // isLive: false,
@@ -3591,7 +3591,7 @@ class _TvShowFinalDetailsPageState extends State<TvShowFinalDetailsPage>
     try {
       String rawUrl = episode.videoUrl;
       print('rawurl: $rawUrl');
-      String playableUrl = await SecureUrlService.getSecureUrl(rawUrl);
+      // String rawUrl = await SecureUrlService.getSecureUrl(rawUrl);
 
       if (mounted) {
         dynamic result;
@@ -3606,7 +3606,7 @@ class _TvShowFinalDetailsPageState extends State<TvShowFinalDetailsPage>
               context,
               MaterialPageRoute(
                 builder: (context) => YoutubeWebviewPlayer(
-                  videoUrl: playableUrl,
+                  videoUrl: rawUrl,
                   name: episode.title,
                 ),
               ),
@@ -3617,17 +3617,17 @@ class _TvShowFinalDetailsPageState extends State<TvShowFinalDetailsPage>
               MaterialPageRoute(
                 builder: (context) => CustomYoutubePlayer(
                   videoData: VideoData(
-                    id: playableUrl,
+                    id: rawUrl,
                     title: episode.title,
-                    youtubeUrl: playableUrl,
+                    youtubeUrl: rawUrl,
                     thumbnail: episode.thumbnail ?? '',
                     description: episode.description ?? '',
                   ),
                   playlist: [
                     VideoData(
-                      id: playableUrl,
+                      id: rawUrl,
                       title: episode.title,
-                      youtubeUrl: playableUrl,
+                      youtubeUrl: rawUrl,
                       thumbnail: episode.thumbnail ?? '',
                       description: episode.description ?? '',
                     ),
@@ -3641,7 +3641,7 @@ class _TvShowFinalDetailsPageState extends State<TvShowFinalDetailsPage>
             context,
             MaterialPageRoute(
               builder: (context) => VideoScreen(
-                videoUrl: playableUrl,
+                videoUrl: rawUrl,
                 bannerImageUrl: episode.thumbnail,
                 channelList: [],
                 videoId: episode.id,

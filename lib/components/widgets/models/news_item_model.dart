@@ -519,7 +519,7 @@ class NewsItemModel {
       url: safeToString(json['channel_link']??json['url']??json['movie_url']??json['video_url']??'' ),
       videoId: safeToString(json['videoId']),
       streamType: safeToString(json['stream_type']),
-      sourceType: safeToString(json['source_type']),
+      sourceType: safeToString(json['source_type']??json['stream_type']),
       streamingType: safeToString(json['streaming_type']),
       type: safeToString(json['type']),
       genres: safeToString(json['genres']),

@@ -1413,9 +1413,7 @@
 
 
 
-
 import 'dart:async';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -1423,64 +1421,34 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:http/http.dart' as https;
 import 'package:mobi_tv_entertainment/components/home_screen_pages/sub_vod_screen/genre_movies_screen.dart';
-import 'package:mobi_tv_entertainment/components/home_screen_pages/sub_vod_screen/horizontal_list_details_page.dart';
+import 'package:mobi_tv_entertainment/components/widgets/small_widgets/smart_loading_widget.dart';
+import 'package:mobi_tv_entertainment/components/widgets/small_widgets/smart_retry_widget.dart';
 import 'dart:math' as math;
-import 'package:mobi_tv_entertainment/components/home_screen_pages/tv_show/tv_show_second_page.dart';
 import 'package:mobi_tv_entertainment/main.dart';
 import 'package:mobi_tv_entertainment/components/provider/color_provider.dart';
 import 'package:mobi_tv_entertainment/components/provider/focus_provider.dart';
 import 'package:mobi_tv_entertainment/components/services/history_service.dart';
+import 'package:mobi_tv_entertainment/components/services/professional_colors_for_home_pages.dart';
+// ✅ Import Smart Widgets
 import 'package:provider/provider.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:ui';
 
 // ✅ ==========================================================
-// DATA PARSING (Isolate Function)
+// DATA PARSING
 // ==========================================================
-
 List<HorizontalVodModel> _parseAndSortVod(String jsonString) {
   final List<dynamic> jsonData = json.decode(jsonString);
-
   final vodList = jsonData
       .map((json) => HorizontalVodModel.fromJson(json as Map<String, dynamic>))
-      .where((show) => show.status == 1) // First, filter by status
+      .where((show) => show.status == 1)
       .toList()
-    ..sort((a, b) =>
-        a.networks_order.compareTo(b.networks_order)); // Then, sort the list
-
+    ..sort((a, b) => a.networks_order.compareTo(b.networks_order));
   return vodList;
 }
 
-// ✅ ==========================================================
-// MODELS, CONSTANTS, AND HELPERS
-// ==========================================================
-
 enum LoadingState { initial, loading, rebuilding, loaded, error }
-
-class ProfessionalColors {
-  static const primaryDark = Color(0xFF0A0E1A);
-  static const surfaceDark = Color(0xFF1A1D29);
-  static const cardDark = Color(0xFF2A2D3A);
-  static const accentBlue = Color(0xFF3B82F6);
-  static const accentPurple = Color(0xFF8B5CF6);
-  static const accentGreen = Color(0xFF10B981);
-  static const accentRed = Color(0xFFEF4444);
-  static const accentOrange = Color(0xFFF59E0B);
-  static const accentPink = Color(0xFFEC4899);
-  static const textPrimary = Color(0xFFFFFFFF);
-  static const textSecondary = Color(0xFFB3B3B3);
-  static const focusGlow = Color(0xFF60A5FA);
-
-  static List<Color> gradientColors = [
-    accentBlue,
-    accentPurple,
-    accentGreen,
-    accentRed,
-    accentOrange,
-    accentPink,
-  ];
-}
 
 class AnimationTiming {
   static const Duration fast = Duration(milliseconds: 250);
@@ -1530,94 +1498,29 @@ class HorizontalVodModel {
   }
 }
 
-Widget displayImage(
-  String imageUrl, {
-  double? width,
-  double? height,
-  BoxFit fit = BoxFit.fill,
-}) {
-  if (imageUrl.isEmpty ||
-      imageUrl == 'localImage' ||
-      imageUrl.contains('localhost')) {
-    return _buildErrorWidget(width, height);
-  }
-
+// ✅ Image Helpers
+Widget displayImage(String imageUrl, {double? width, double? height, BoxFit fit = BoxFit.fill}) {
+  if (imageUrl.isEmpty || imageUrl == 'localImage' || imageUrl.contains('localhost')) return _buildImgError(width, height);
   if (imageUrl.startsWith('data:image')) {
     try {
-      Uint8List imageBytes = _getImageFromBase64String(imageUrl);
-      return Image.memory(
-        imageBytes,
-        fit: fit,
-        width: width,
-        height: height,
-        errorBuilder: (context, error, stackTrace) =>
-            _buildErrorWidget(width, height),
-      );
-    } catch (e) {
-      return _buildErrorWidget(width, height);
-    }
+      Uint8List imageBytes = base64Decode(imageUrl.split(',').last);
+      return Image.memory(imageBytes, fit: fit, width: width, height: height, errorBuilder: (c, e, s) => _buildImgError(width, height));
+    } catch (e) { return _buildImgError(width, height); }
   } else if (imageUrl.startsWith('http')) {
     if (imageUrl.toLowerCase().endsWith('.svg')) {
-      return SvgPicture.network(
-        imageUrl,
-        width: width,
-        height: height,
-        fit: fit,
-        placeholderBuilder: (context) => _buildLoadingWidget(width, height),
-      );
+      return SvgPicture.network(imageUrl, width: width, height: height, fit: fit, placeholderBuilder: (c) => _buildImgLoader(width, height));
     } else {
-      return Image.network(
-        imageUrl,
-        width: width,
-        height: height,
-        fit: fit,
-        headers: const {'User-Agent': 'Flutter App'},
-        loadingBuilder: (context, child, progress) =>
-            progress == null ? child : _buildLoadingWidget(width, height),
-        errorBuilder: (context, error, stackTrace) =>
-            _buildErrorWidget(width, height),
-      );
+      return Image.network(imageUrl, width: width, height: height, fit: fit, headers: const {'User-Agent': 'Flutter App'}, loadingBuilder: (c, child, progress) => progress == null ? child : _buildImgLoader(width, height), errorBuilder: (c, e, s) => _buildImgError(width, height));
     }
-  } else {
-    return _buildErrorWidget(width, height);
-  }
+  } else { return _buildImgError(width, height); }
 }
+Widget _buildImgLoader(double? width, double? height) => SizedBox(width: width, height: height, child: const Center(child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation<Color>(Colors.white))));
+Widget _buildImgError(double? width, double? height) => Container(width: width, height: height, decoration: const BoxDecoration(gradient: LinearGradient(colors: [ProfessionalColorsForHomePages.accentGreen, ProfessionalColorsForHomePages.accentBlue])), child: const Icon(Icons.broken_image, color: Colors.white, size: 24));
 
-Widget _buildLoadingWidget(double? width, double? height) {
-  return SizedBox(
-    width: width,
-    height: height,
-    child: const Center(
-      child: CircularProgressIndicator(
-        strokeWidth: 2,
-        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-      ),
-    ),
-  );
-}
-
-Widget _buildErrorWidget(double? width, double? height) {
-  return Container(
-    width: width,
-    height: height,
-    decoration: const BoxDecoration(
-      gradient: LinearGradient(colors: [
-        ProfessionalColors.accentGreen,
-        ProfessionalColors.accentBlue
-      ]),
-    ),
-    child: const Icon(Icons.broken_image, color: Colors.white, size: 24),
-  );
-}
-
-Uint8List _getImageFromBase64String(String base64String) {
-  return base64Decode(base64String.split(',').last);
-}
 
 // ✅ ==========================================================
-// OPTIMIZED VOD SERVICE
+// VOD SERVICE
 // ==========================================================
-
 class HorizontalVodService {
   static const String _cacheKeyHorizontalVod = 'cached_horizontal_vod';
   static const String _cacheKeyTimestamp = 'cached_horizontal_vod_timestamp';
@@ -1627,40 +1530,20 @@ class HorizontalVodService {
     final prefs = await SharedPreferences.getInstance();
     final timestampStr = prefs.getString(_cacheKeyTimestamp);
     if (timestampStr == null) return null;
-
     final cacheTime = DateTime.parse(timestampStr);
-    if (DateTime.now().difference(cacheTime) > _cacheValidity) {
-      print('📦 VOD cache is expired.');
-      return null;
-    }
-
-    print('📦 VOD cache is valid.');
+    if (DateTime.now().difference(cacheTime) > _cacheValidity) return null;
     return prefs.getString(_cacheKeyHorizontalVod);
   }
 
   static Future<String> fetchAndCacheRawData() async {
-    print('🌐 Fetching fresh VOD data from API...');
     final prefs = await SharedPreferences.getInstance();
-            String authKey = SessionManager.authKey ;
-      var url = Uri.parse(SessionManager.baseUrl + 'getNetworks');
-
-    final response = await https.post(url,
-      // Uri.parse('https://dashboard.cpplayers.com/api/v2/getNetworks'),
-      headers: {
-        'auth-key': authKey,
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'domain': SessionManager.savedDomain
-      },
-      body: json.encode({"network_id" :"" ,"data_for" : ""}),
-    ).timeout(const Duration(seconds: 30));
-
+    String authKey = SessionManager.authKey;
+    var url = Uri.parse(SessionManager.baseUrl + 'getNetworks');
+    final response = await https.post(url, headers: {'auth-key': authKey, 'Content-Type': 'application/json', 'Accept': 'application/json', 'domain': SessionManager.savedDomain}, body: json.encode({"network_id" :"" ,"data_for" : ""})).timeout(const Duration(seconds: 30));
     if (response.statusCode == 200) {
       final rawData = response.body;
       await prefs.setString(_cacheKeyHorizontalVod, rawData);
-      await prefs.setString(
-          _cacheKeyTimestamp, DateTime.now().toIso8601String());
-      print('💾 VOD data fetched and cached successfully.');
+      await prefs.setString(_cacheKeyTimestamp, DateTime.now().toIso8601String());
       return rawData;
     } else {
       throw Exception('API Error: ${response.statusCode}');
@@ -1671,35 +1554,33 @@ class HorizontalVodService {
 // ✅ ==========================================================
 // MAIN WIDGET: HorzontalVod
 // ==========================================================
-
 class HorzontalVod extends StatefulWidget {
   const HorzontalVod({super.key});
   @override
   _HorzontalVodState createState() => _HorzontalVodState();
 }
 
-class _HorzontalVodState extends State<HorzontalVod>
-    with AutomaticKeepAliveClientMixin, TickerProviderStateMixin {
+class _HorzontalVodState extends State<HorzontalVod> with AutomaticKeepAliveClientMixin, TickerProviderStateMixin {
   @override
   bool get wantKeepAlive => true;
 
-  // ✅ State variables
   LoadingState _loadingState = LoadingState.initial;
   String? _error;
   List<HorizontalVodModel> _vodList = [];
-
   int focusedIndex = -1;
+  
+  // ✅ Shadow State
+  bool _isSectionFocused = false;
 
-  // Animation Controllers
   late AnimationController _headerAnimationController;
   late AnimationController _listAnimationController;
   late Animation<Offset> _headerSlideAnimation;
   late Animation<double> _listFadeAnimation;
 
-  // Focus and Scroll Controllers
   Map<String, FocusNode> _vodFocusNodes = {};
+  final FocusNode _retryFocusNode = FocusNode();
   late ScrollController _scrollController;
-  final double _itemWidth = bannerwdt;
+  final double _itemWidth = bannerwdt; 
   bool _isNavigationLocked = false;
   Timer? _navigationLockTimer;
 
@@ -1708,7 +1589,7 @@ class _HorzontalVodState extends State<HorzontalVod>
     super.initState();
     _scrollController = ScrollController();
     _initializeAnimations();
-    _loadInitialData(); // ✅ Data loading entry point
+    _loadInitialData();
   }
 
   @override
@@ -1717,140 +1598,138 @@ class _HorzontalVodState extends State<HorzontalVod>
     _headerAnimationController.dispose();
     _listAnimationController.dispose();
     _scrollController.dispose();
-    _cleanupFocusNodes(); // ✅ Call updated cleanup
+    _retryFocusNode.dispose();
+    _cleanupFocusNodes();
     super.dispose();
   }
 
+
+void _restoreInternalFocus() {
+  WidgetsBinding.instance.addPostFrameCallback((_) async {
+    if (!mounted) return;
+
+    // 1. Pehle thoda wait karein taaki screen transition finish ho jaye
+    await Future.delayed(const Duration(milliseconds: 300));
+
+    final focusProvider = Provider.of<FocusProvider>(context, listen: false);
+    final savedItemId = focusProvider.lastFocusedItemId;
+
+    if (savedItemId != null && _vodFocusNodes.containsKey(savedItemId)) {
+      final targetNode = _vodFocusNodes[savedItemId]!;
+      
+      // 2. Focus request karein
+      targetNode.requestFocus();
+      
+      // 3. Scroll position sync karein
+      int index = _vodList.indexWhere((v) => v.id.toString() == savedItemId);
+      if (index != -1) {
+        _scrollToPosition(index);
+        if (mounted) setState(() => focusedIndex = index);
+      }
+
+      // 4. Sabse important: Agar focus kahin aur chala jaye toh usse wapas kheechein
+      // Yeh ensure karta hai ki 'focus gaayab' na ho
+      Future.delayed(const Duration(milliseconds: 100), () {
+        if (mounted && !targetNode.hasFocus) {
+          targetNode.requestFocus();
+        }
+      });
+    }
+  });
+}
+
   void _initializeAnimations() {
-    _headerAnimationController = AnimationController(
-      duration: AnimationTiming.slow,
-      vsync: this,
-    );
-
-    _listAnimationController = AnimationController(
-      duration: AnimationTiming.slow,
-      vsync: this,
-    );
-
-    _headerSlideAnimation = Tween<Offset>(
-      begin: const Offset(0, -1),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _headerAnimationController,
-      curve: Curves.easeOutCubic,
-    ));
-
-    _listFadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _listAnimationController,
-      curve: Curves.easeInOut,
-    ));
+    _headerAnimationController = AnimationController(duration: AnimationTiming.slow, vsync: this);
+    _listAnimationController = AnimationController(duration: AnimationTiming.slow, vsync: this);
+    _headerSlideAnimation = Tween<Offset>(begin: const Offset(0, -1), end: Offset.zero).animate(CurvedAnimation(parent: _headerAnimationController, curve: Curves.easeOutCubic));
+    _listFadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(parent: _listAnimationController, curve: Curves.easeInOut));
   }
 
-  // ✅ Data loading orchestration method
   Future<void> _loadInitialData() async {
     final cachedRawData = await HorizontalVodService.getCachedRawData();
-
     if (cachedRawData != null && cachedRawData.isNotEmpty) {
-      print('🚀 Loading VOD from valid cache...');
       final parsedData = await compute(_parseAndSortVod, cachedRawData);
       _applyDataToState(parsedData);
       return;
     }
-
-    print('📡 No valid VOD cache found, fetching fresh data...');
     await _fetchDataWithLoading();
   }
 
-  // ✅ Method for fetching data and showing a loading indicator
   Future<void> _fetchDataWithLoading() async {
-    if (mounted)
-      setState(() {
-        _loadingState = LoadingState.loading;
-        _error = null;
-      });
-
+    if (mounted) setState(() { _loadingState = LoadingState.loading; _error = null; });
     try {
       final freshRawData = await HorizontalVodService.fetchAndCacheRawData();
       if (freshRawData.isNotEmpty) {
         final parsedData = await compute(_parseAndSortVod, freshRawData);
         _applyDataToState(parsedData);
       } else {
-        throw Exception('Failed to load data: API returned empty.');
+        throw Exception('Failed to load data: Empty response');
       }
     } catch (e) {
-      if (mounted) {
-        setState(() {
-          _error = e.toString();
-          _loadingState = LoadingState.error;
-        });
-      }
+      if (mounted) setState(() { _error = e.toString(); _loadingState = LoadingState.error; });
+      _setupFocusProvider(); 
     }
   }
 
-  // ✅ [UPDATED] Cleanly disposes old focus nodes
-  // Yeh function ab sirf un nodes ko dispose karega jo provider mein register NAHI hue
   void _cleanupFocusNodes() {
     String? firstVodId;
-    if (_vodList.isNotEmpty) {
-      firstVodId = _vodList[0].id.toString();
-    }
-
+    if (_vodList.isNotEmpty) firstVodId = _vodList[0].id.toString();
     for (var entry in _vodFocusNodes.entries) {
-      // Agar node register nahi hua hai (yaani first VOD item nahi hai), tabhi use yahan dispose karein
       if (entry.key != firstVodId) {
-        try {
-          // Listener hatana zaroori nahi hai kyunki node dispose ho raha hai
-          entry.value.dispose();
-        } catch (e) {}
+        try { entry.value.dispose(); } catch (e) {}
       }
     }
     _vodFocusNodes.clear();
   }
 
-  // ✅ Method to apply parsed data to the state
+  // void _applyDataToState(List<HorizontalVodModel> vodList) {
+  //   if (!mounted) return;
+  //   setState(() { _loadingState = LoadingState.rebuilding; });
+  //   _cleanupFocusNodes();
+  //   _vodList = vodList;
+  //   for (final vod in _vodList) {
+  //     _vodFocusNodes[vod.id.toString()] = FocusNode();
+  //   }
+  //   setState(() { _loadingState = LoadingState.loaded; });
+  //   _setupFocusProvider();
+  //   _headerAnimationController.forward();
+  //   _listAnimationController.forward();
+  // }
+
+
   void _applyDataToState(List<HorizontalVodModel> vodList) {
-    if (!mounted) return;
-
-    setState(() {
-      _loadingState = LoadingState.rebuilding;
-    });
-
-    _cleanupFocusNodes(); // Purane nodes hatayein
-
-    _vodList = vodList;
-
-    // Create new focus nodes for all items
-    for (final vod in _vodList) {
-      String vodId = vod.id.toString();
-      _vodFocusNodes[vodId] = FocusNode();
-    }
-
-    setState(() {
-      _loadingState = LoadingState.loaded;
-    });
-
-    // Setup focus provider for navigation from other sections
-    _setupFocusProvider();
-
-    // Start UI animations
-    _headerAnimationController.forward();
-    _listAnimationController.forward();
+  if (!mounted) return;
+  setState(() { _loadingState = LoadingState.rebuilding; });
+  _cleanupFocusNodes();
+  _vodList = vodList;
+  for (final vod in _vodList) {
+    _vodFocusNodes[vod.id.toString()] = FocusNode();
   }
+  setState(() { _loadingState = LoadingState.loaded; });
+  _setupFocusProvider();
+  _headerAnimationController.forward();
+  _listAnimationController.forward();
+
+  // NAYA: Data aane ke baad check karein ki kya koi purana focus restore karna hai
+  _restoreInternalFocus(); 
+}
 
   void _setupFocusProvider() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted && _vodList.isNotEmpty) {
-        final focusProvider =
-            Provider.of<FocusProvider>(context, listen: false);
-        final firstVodId = _vodList[0].id.toString();
-        final firstNode = _vodFocusNodes[firstVodId];
-
-        if (firstNode != null) {
-          focusProvider.registerFocusNode('subVod', firstNode);
-          print('✅ VOD first focus node registered: ${_vodList[0].name}');
+      if (mounted) {
+        final focusProvider = Provider.of<FocusProvider>(context, listen: false);
+        
+        if (_vodList.isNotEmpty) {
+          // Success Case
+          final firstVodId = _vodList[0].id.toString();
+          final firstNode = _vodFocusNodes[firstVodId];
+          if (firstNode != null) {
+            focusProvider.registerFocusNode('subVod', firstNode);
+            // NOTE: We do NOT request focus here automatically (as requested)
+          }
+        } else if (_loadingState == LoadingState.error) {
+          // Error Case
+          focusProvider.registerFocusNode('subVod', _retryFocusNode);
         }
       }
     });
@@ -1858,201 +1737,98 @@ class _HorzontalVodState extends State<HorzontalVod>
 
   void _scrollToPosition(int index) {
     if (!_scrollController.hasClients) return;
-    final double targetOffset = index * (_itemWidth + 12); // item width + margin
-
-    _scrollController.animateTo(
-      targetOffset.clamp(0.0, _scrollController.position.maxScrollExtent),
-      duration: AnimationTiming.scroll,
-      curve: Curves.easeOutCubic,
-    );
+    final double targetOffset = index * (_itemWidth + 12);
+    _scrollController.animateTo(targetOffset.clamp(0.0, _scrollController.position.maxScrollExtent), duration: AnimationTiming.scroll, curve: Curves.easeOutCubic);
   }
 
   void _navigateToHorizontalVodDetails(HorizontalVodModel vod) async {
-    print('🎬 Navigating to TV Show Details: ${vod.name}');
-
+    final focusProvider = Provider.of<FocusProvider>(context, listen: false);
+  
+  // 1. Row identifier save karein (subVod)
+  focusProvider.updateLastFocusedIdentifier('subVod');
+  
+  // 2. SPECIFIC BANNER ID save karein
+  focusProvider.updateLastFocusedItemId(vod.id.toString());
     try {
-      print('Updating user history for: ${vod.name}');
       int? currentUserId = SessionManager.userId;
       final int? parsedId = vod.id;
-
-      await HistoryService.updateUserHistory(
-        userId: currentUserId!,
-        contentType: 0,
-        eventId: parsedId!,
-        eventTitle: vod.name,
-        url: '',
-        categoryId: 0,
-      );
-    } catch (e) {
-      print("History update failed, but proceeding. Error: $e");
-    }
-
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => GenreMoviesScreen(
-          tvChannelId: (vod.id).toString(),
-          logoUrl: vod.logo ?? '',
-          title: vod.name,
-        ),
-      ),
-    ).then((_) {
-      print('🔙 Returned from TV Show Details');
-    });
+      await HistoryService.updateUserHistory(userId: currentUserId!, contentType: 0, eventId: parsedId!, eventTitle: vod.name, url: '', categoryId: 0);
+    } catch (e) {}
+   await Navigator.push(context, MaterialPageRoute(builder: (context) => GenreMoviesScreen(tvChannelId: (vod.id).toString(), logoUrl: vod.logo ?? '', title: vod.name)));
+  if (mounted) {
+    _restoreInternalFocus();
+  }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    super.build(context);
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
-
-    return Consumer<ColorProvider>(
-      builder: (context, colorProvider, child) {
-        final bgColor = colorProvider.isItemFocused
-            ? colorProvider.dominantColor.withOpacity(0.1)
-            : ProfessionalColors.primaryDark;
-
-        return Scaffold(
-          backgroundColor: Colors.transparent,
-          body: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  bgColor,
-                  bgColor.withOpacity(0.8),
-                  ProfessionalColors.primaryDark,
-                ],
+  // ✅ UPDATED ERROR WIDGET (Using Smart Widget)
+  Widget _buildErrorWidget(double height) {
+    return SizedBox(
+      height: height,
+      child: Center(
+        child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          decoration: BoxDecoration(color: ProfessionalColorsForHomePages.cardDark.withOpacity(0.3), borderRadius: BorderRadius.circular(50), border: Border.all(color: ProfessionalColorsForHomePages.accentRed.withOpacity(0.3))),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.error_outline_rounded, size: 20, color: ProfessionalColorsForHomePages.accentRed),
+              const SizedBox(width: 10),
+              Flexible(child: Text("Connection Failed", style: const TextStyle(color: ProfessionalColorsForHomePages.textPrimary, fontSize: 11, fontWeight: FontWeight.w600), maxLines: 1, overflow: TextOverflow.ellipsis)),
+              const SizedBox(width: 15),
+              // ✅ Smart Retry Widget
+              SmartRetryWidget(
+                errorMessage: _error ?? "Error",
+                onRetry: _fetchDataWithLoading,
+                focusNode: _retryFocusNode,
+                providerIdentifier: 'subVod',
+                onFocusChange: (hasFocus) {
+                   if(mounted) setState(() => _isSectionFocused = hasFocus);
+                },
               ),
-            ),
-            child: Column(
-              children: [
-                SizedBox(height: screenHeight * 0.02),
-                _buildProfessionalTitle(screenWidth),
-                SizedBox(height: screenHeight * 0.01),
-                Expanded(child: _buildBody(screenWidth, screenHeight)),
-              ],
-            ),
+            ],
           ),
-        );
-      },
-    );
-  }
-
-  Widget _buildProfessionalTitle(double screenWidth) {
-    return SlideTransition(
-      position: _headerSlideAnimation,
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.025),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            ShaderMask(
-              shaderCallback: (bounds) => const LinearGradient(
-                colors: [
-                  ProfessionalColors.accentGreen,
-                  ProfessionalColors.accentBlue,
-                ],
-              ).createShader(bounds),
-              child: Text(
-                'CONTENTS',
-                style: TextStyle(
-                  fontSize: 24,
-                  color: Colors.white,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 2.0,
-                ),
-              ),
-            ),
-          ],
         ),
       ),
     );
   }
 
-  // ✅ Updated _buildBody to use the LoadingState enum
   Widget _buildBody(double screenWidth, double screenHeight) {
+    double effectiveBannerHgt = bannerhgt ?? screenHeight * 0.2;
+    double effectiveBannerWdt = bannerwdt ?? screenWidth * 0.18;
+
     switch (_loadingState) {
       case LoadingState.initial:
       case LoadingState.loading:
-        return const ProfessionalHorizontalVodLoadingIndicator(
-            message: 'Loading Contents...');
-
+        // ✅ Smart Loading
+        return SmartLoadingWidget(itemWidth: effectiveBannerWdt, itemHeight: effectiveBannerHgt);
       case LoadingState.error:
-        return Center(
-            child:
-                Text('Error: $_error', style: const TextStyle(color: Colors.red)));
-
+        // ✅ Smart Error
+        return _buildErrorWidget(effectiveBannerHgt);
       case LoadingState.rebuilding:
       case LoadingState.loaded:
-        if (_vodList.isEmpty) {
-          return _buildEmptyWidget();
-        } else {
-          return _buildHorizontalVodList(screenWidth, screenHeight);
-        }
+        if (_vodList.isEmpty) return _buildEmptyWidget();
+        else return _buildHorizontalVodList(screenWidth, screenHeight);
     }
   }
 
   Widget _buildEmptyWidget() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            width: 80,
-            height: 80,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: LinearGradient(
-                colors: [
-                  ProfessionalColors.accentGreen.withOpacity(0.2),
-                  ProfessionalColors.accentGreen.withOpacity(0.1),
-                ],
-              ),
-            ),
-            child: const Icon(
-              Icons.live_tv_outlined,
-              size: 40,
-              color: ProfessionalColors.accentGreen,
-            ),
-          ),
-          const SizedBox(height: 24),
-          const Text(
-            'No Content Found',
-            style: TextStyle(
-              color: ProfessionalColors.textPrimary,
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: 8),
-          const Text(
-            'Check back later for new shows',
-            style: TextStyle(
-              color: ProfessionalColors.textSecondary,
-              fontSize: 14,
-            ),
-          ),
-        ],
-      ),
-    );
+    return Center(child: Row(mainAxisAlignment: MainAxisAlignment.center, children: const [Icon(Icons.live_tv_outlined, size: 24, color: Colors.grey), SizedBox(width: 10), Text("No Content Found", style: TextStyle(color: Colors.white, fontSize: 12))]));
   }
 
-  // ✅ REFACTORED: Removed "View All" button and logic to display all items.
   Widget _buildHorizontalVodList(double screenWidth, double screenHeight) {
     return FadeTransition(
       opacity: _listFadeAnimation,
       child: SizedBox(
-        height: screenHeight * 0.38,
+        height: (screenhgt ?? MediaQuery.of(context).size.height) * 0.38,
         child: ListView.builder(
           scrollDirection: Axis.horizontal,
           clipBehavior: Clip.none,
           controller: _scrollController,
           padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.025),
           cacheExtent: 9999,
-          itemCount: _vodList.length, // Display all items from the list
+          itemCount: _vodList.length,
           itemBuilder: (context, index) {
             var vod = _vodList[index];
             return _buildHorizontalVodItem(vod, index, screenWidth, screenHeight);
@@ -2062,237 +1838,154 @@ class _HorzontalVodState extends State<HorzontalVod>
     );
   }
 
-  Widget _buildHorizontalVodItem(
-      HorizontalVodModel vod, int index, double screenWidth, double screenHeight) {
+  Widget _buildHorizontalVodItem(HorizontalVodModel vod, int index, double screenWidth, double screenHeight) {
     String vodId = vod.id.toString();
     FocusNode? focusNode = _vodFocusNodes[vodId];
-
-    // Safety check if focus node doesn't exist
     if (focusNode == null) return const SizedBox.shrink();
 
     return Focus(
       focusNode: focusNode,
       onFocusChange: (hasFocus) {
+        if (mounted) setState(() => _isSectionFocused = hasFocus); // ✅ Shadow Update
         if (hasFocus && mounted) {
+          context.read<FocusProvider>().updateLastFocusedItemId(vodId);
           _scrollToPosition(index);
           setState(() => focusedIndex = index);
-          context.read<ColorProvider>().updateColor(
-              ProfessionalColors.gradientColors[
-                  math.Random().nextInt(ProfessionalColors.gradientColors.length)],
-              true);
+          context.read<ColorProvider>().updateColor(ProfessionalColorsForHomePages.accentBlue, true);
         } else if (mounted) {
           context.read<ColorProvider>().resetColor();
         }
       },
-    // ✅ ==========================================================
-    // ✅ [UPDATED] onKey LOGIC
-    // ✅ ==========================================================
       onKey: (node, event) {
         if (event is RawKeyDownEvent) {
           final key = event.logicalKey;
-
-          // --- हॉरिजॉन्टल मूवमेंट (लेफ्ट/राइट) के लिए थ्रॉटलिंग ---
-          if (key == LogicalKeyboardKey.arrowRight ||
-              key == LogicalKeyboardKey.arrowLeft) {
-            
+          if (key == LogicalKeyboardKey.arrowRight || key == LogicalKeyboardKey.arrowLeft) {
             if (_isNavigationLocked) return KeyEventResult.handled;
-
             setState(() => _isNavigationLocked = true);
-            _navigationLockTimer = Timer(const Duration(milliseconds: 600), () {
-              if (mounted) setState(() => _isNavigationLocked = false);
-            });
-
+            _navigationLockTimer = Timer(const Duration(milliseconds: 600), () { if (mounted) setState(() => _isNavigationLocked = false); });
             if (key == LogicalKeyboardKey.arrowRight) {
-              if (index < _vodList.length - 1) {
-                String nextVodId = _vodList[index + 1].id.toString();
-                FocusScope.of(context).requestFocus(_vodFocusNodes[nextVodId]);
-              } else {
-                _navigationLockTimer?.cancel();
-                if (mounted) setState(() => _isNavigationLocked = false);
-              }
+              if (index < _vodList.length - 1) { String nextVodId = _vodList[index + 1].id.toString(); FocusScope.of(context).requestFocus(_vodFocusNodes[nextVodId]); } 
+              else { _navigationLockTimer?.cancel(); if (mounted) setState(() => _isNavigationLocked = false); }
             } else if (key == LogicalKeyboardKey.arrowLeft) {
-              if (index > 0) {
-                String prevVodId = _vodList[index - 1].id.toString();
-                FocusScope.of(context).requestFocus(_vodFocusNodes[prevVodId]);
-              } else {
-                _navigationLockTimer?.cancel();
-                if (mounted) setState(() => _isNavigationLocked = false);
-              }
+              if (index > 0) { String prevVodId = _vodList[index - 1].id.toString(); FocusScope.of(context).requestFocus(_vodFocusNodes[prevVodId]); } 
+              else { _navigationLockTimer?.cancel(); if (mounted) setState(() => _isNavigationLocked = false); }
             }
             return KeyEventResult.handled;
           }
-
-          // --- वर्टिकल मूवमेंट (अप/डाउन) ---
+          // ✅ Vertical Navigation calling Provider
           if (key == LogicalKeyboardKey.arrowUp) {
-            context.read<ColorProvider>().resetColor();
-            // Naya method call karein
-            context.read<FocusProvider>().focusPreviousRow(); 
+            context.read<FocusProvider>().updateLastFocusedIdentifier('subVod');
+            context.read<FocusProvider>().focusPreviousRow();
             return KeyEventResult.handled;
-          } 
-          
-          else if (key == LogicalKeyboardKey.arrowDown) {
-            context.read<ColorProvider>().resetColor();
-            // Naya method call karein
+          } else if (key == LogicalKeyboardKey.arrowDown) {
+            context.read<FocusProvider>().updateLastFocusedIdentifier('subVod');
             context.read<FocusProvider>().focusNextRow();
             return KeyEventResult.handled;
-          } 
-          
-          else if (key == LogicalKeyboardKey.enter ||
-              key == LogicalKeyboardKey.select) {
+          } else if (key == LogicalKeyboardKey.enter || key == LogicalKeyboardKey.select) {
             _navigateToHorizontalVodDetails(vod);
             return KeyEventResult.handled;
           }
         }
         return KeyEventResult.ignored;
       },
-    // ✅ ==========================================================
-    // ✅ END OF [UPDATED] onKey LOGIC
-    // ✅ ==========================================================
       child: GestureDetector(
         onTap: () => _navigateToHorizontalVodDetails(vod),
         child: ProfessionalHorizontalVodCard(
           HorizontalVod: vod,
           focusNode: focusNode,
           onTap: () => _navigateToHorizontalVodDetails(vod),
-          onColorChange: (color) {
-            if (focusNode.hasFocus) {
-              context.read<ColorProvider>().updateColor(color, true);
-            }
-          },
+          onColorChange: (color) {},
           index: index,
           categoryTitle: 'CONTENTS',
         ),
       ),
     );
   }
-}
-
-// ✅ ==========================================================
-// SUPPORTING WIDGETS (ProfessionalHorizontalVodLoadingIndicator, ProfessionalHorizontalVodCard)
-// In widgets mein koi badlav nahi hai, isliye main inhein dobara paste nahi kar raha hoon.
-// ... (Aapka baaki ka code... ProfessionalHorizontalVodLoadingIndicator... ProfessionalHorizontalVodCard... etc.)
-// ...
-// ...
-// ✅ ==========================================================
-
-
-// ✅ Professional Loading Indicator
-class ProfessionalHorizontalVodLoadingIndicator extends StatefulWidget {
-  final String message;
-
-  const ProfessionalHorizontalVodLoadingIndicator({
-    Key? key,
-    this.message = 'Loading Vod...',
-  }) : super(key: key);
-
-  @override
-  _ProfessionalHorizontalVodLoadingIndicatorState createState() =>
-      _ProfessionalHorizontalVodLoadingIndicatorState();
-}
-
-class _ProfessionalHorizontalVodLoadingIndicatorState
-    extends State<ProfessionalHorizontalVodLoadingIndicator>
-    with TickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _animation;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      duration: const Duration(milliseconds: 1500),
-      vsync: this,
-    )..repeat();
-
-    _animation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(_controller);
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          AnimatedBuilder(
-            animation: _animation,
-            builder: (context, child) {
-              return Container(
-                width: 70,
-                height: 70,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: SweepGradient(
-                    colors: [
-                      ProfessionalColors.accentGreen,
-                      ProfessionalColors.accentBlue,
-                      ProfessionalColors.accentOrange,
-                      ProfessionalColors.accentGreen,
-                    ],
-                    stops: [0.0, 0.3, 0.7, 1.0],
-                    transform: GradientRotation(_animation.value * 2 * math.pi),
-                  ),
+    super.build(context);
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    double containerHeight = (screenhgt ?? screenHeight) * 0.38;
+
+    return Consumer<ColorProvider>(
+      builder: (context, colorProvider, child) {
+        
+        // ✅ CINEMATIC SHADOW LOGIC
+        bool showShadow = _isSectionFocused;
+
+        return FocusScope(
+          child: Scaffold(
+            backgroundColor: Colors.white,
+            body: ClipRect(
+              child: SizedBox(
+                height: containerHeight,
+                child: Stack(
+                  children: [
+                    Column(
+                      children: [
+                        SizedBox(height: (screenhgt ?? screenHeight) * 0.01),
+                        _buildProfessionalTitle(screenWidth),
+                        Expanded(child: _buildBody(screenWidth, screenHeight)),
+                      ],
+                    ),
+                    
+                    // ✅ SHADOW OVERLAY
+                    Positioned.fill(
+                      child: IgnorePointer(
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeOut,
+                          decoration: BoxDecoration(
+                            gradient: showShadow
+                                ? LinearGradient(
+                                    begin: Alignment.topCenter,
+                                    end: Alignment.bottomCenter,
+                                    colors: [
+                                      Colors.black.withOpacity(0.8), // Top Shadow
+                                      Colors.transparent,
+                                      Colors.transparent,
+                                      Colors.black.withOpacity(0.8), // Bottom Shadow
+                                    ],
+                                    stops: const [0.0, 0.25, 0.75, 1.0],
+                                  )
+                                : null,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-                child: Container(
-                  margin: const EdgeInsets.all(5),
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: ProfessionalColors.primaryDark,
-                  ),
-                  child: const Icon(
-                    Icons.live_tv_rounded,
-                    color: ProfessionalColors.textPrimary,
-                    size: 28,
-                  ),
-                ),
-              );
-            },
-          ),
-          const SizedBox(height: 24),
-          Text(
-            widget.message,
-            style: const TextStyle(
-              color: ProfessionalColors.textPrimary,
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
+              ),
             ),
           ),
-          const SizedBox(height: 12),
-          Container(
-            width: 200,
-            height: 3,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(2),
-              color: ProfessionalColors.surfaceDark,
+        );
+      },
+    );
+  }
+  
+  Widget _buildProfessionalTitle(double screenWidth) {
+    return SlideTransition(
+      position: _headerSlideAnimation,
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.025),
+        child: Row(
+          children: [
+            ShaderMask(
+              shaderCallback: (bounds) => const LinearGradient(
+                colors: [ProfessionalColorsForHomePages.accentGreen, ProfessionalColorsForHomePages.accentBlue],
+              ).createShader(bounds),
+              child: const Text("CONTENTS", style: TextStyle(fontSize: 24, color: Colors.white, fontWeight: FontWeight.w700, letterSpacing: 2.0)),
             ),
-            child: AnimatedBuilder(
-              animation: _animation,
-              builder: (context, child) {
-                return LinearProgressIndicator(
-                  value: _animation.value,
-                  backgroundColor: Colors.transparent,
-                  valueColor: const AlwaysStoppedAnimation<Color>(
-                    ProfessionalColors.accentGreen,
-                  ),
-                );
-              },
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 }
 
-// ✅ Professional TV Show Card
+// ✅ Professional TV Show Card (Unchanged)
 class ProfessionalHorizontalVodCard extends StatefulWidget {
   final HorizontalVodModel HorizontalVod;
   final FocusNode focusNode;
@@ -2326,7 +2019,7 @@ class _ProfessionalHorizontalVodCardState
   late Animation<double> _glowAnimation;
   late Animation<double> _shimmerAnimation;
 
-  Color _dominantColor = ProfessionalColors.accentGreen;
+  Color _dominantColor = ProfessionalColorsForHomePages.accentBlue;
   bool _isFocused = false;
 
   @override
@@ -2393,8 +2086,7 @@ class _ProfessionalHorizontalVodCardState
   }
 
   void _generateDominantColor() {
-    final colors = ProfessionalColors.gradientColors;
-    _dominantColor = colors[math.Random().nextInt(colors.length)];
+    _dominantColor = ProfessionalColorsForHomePages.accentBlue;
   }
 
   @override
@@ -2500,8 +2192,8 @@ class _ProfessionalHorizontalVodCardState
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            ProfessionalColors.cardDark,
-            ProfessionalColors.surfaceDark,
+            ProfessionalColorsForHomePages.cardDark,
+            ProfessionalColorsForHomePages.surfaceDark,
           ],
         ),
       ),
@@ -2511,13 +2203,13 @@ class _ProfessionalHorizontalVodCardState
           Icon(
             Icons.live_tv_rounded,
             size: height * 0.25,
-            color: ProfessionalColors.textSecondary,
+            color: ProfessionalColorsForHomePages.textSecondary,
           ),
           const SizedBox(height: 8),
           const Text(
             'TV SHOW',
             style: TextStyle(
-              color: ProfessionalColors.textSecondary,
+              color: ProfessionalColorsForHomePages.textSecondary,
               fontSize: 10,
               fontWeight: FontWeight.bold,
             ),
@@ -2526,13 +2218,13 @@ class _ProfessionalHorizontalVodCardState
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
             decoration: BoxDecoration(
-              color: ProfessionalColors.accentGreen.withOpacity(0.2),
+              color: ProfessionalColorsForHomePages.accentGreen.withOpacity(0.2),
               borderRadius: BorderRadius.circular(6),
             ),
             child: const Text(
               'LIVE',
               style: TextStyle(
-                color: ProfessionalColors.accentGreen,
+                color: ProfessionalColorsForHomePages.accentGreen,
                 fontSize: 8,
                 fontWeight: FontWeight.bold,
               ),
@@ -2584,27 +2276,27 @@ class _ProfessionalHorizontalVodCardState
 
   Widget _buildGenreBadge() {
     String genre = 'CONTENTS';
-    Color badgeColor = ProfessionalColors.accentGreen;
+    Color badgeColor = ProfessionalColorsForHomePages.accentGreen;
 
     if (widget.HorizontalVod.genres != null) {
       if (widget.HorizontalVod.genres!.toLowerCase().contains('news')) {
         genre = 'NEWS';
-        badgeColor = ProfessionalColors.accentRed;
+        badgeColor = ProfessionalColorsForHomePages.accentRed;
       } else if (widget.HorizontalVod.genres!
           .toLowerCase()
           .contains('sports')) {
         genre = 'SPORTS';
-        badgeColor = ProfessionalColors.accentOrange;
+        badgeColor = ProfessionalColorsForHomePages.accentOrange;
       } else if (widget.HorizontalVod.genres!
           .toLowerCase()
           .contains('entertainment')) {
         genre = 'ENTERTAINMENT';
-        badgeColor = ProfessionalColors.accentPink;
+        badgeColor = ProfessionalColorsForHomePages.accentPink;
       } else if (widget.HorizontalVod.genres!
           .toLowerCase()
           .contains('documentary')) {
         genre = 'DOCUMENTARY';
-        badgeColor = ProfessionalColors.accentBlue;
+        badgeColor = ProfessionalColorsForHomePages.accentBlue;
       }
     }
 
@@ -2671,7 +2363,7 @@ class _ProfessionalHorizontalVodCardState
         style: TextStyle(
           fontSize: _isFocused ? 13 : 11,
           fontWeight: FontWeight.w600,
-          color: _isFocused ? _dominantColor : ProfessionalColors.textPrimary,
+          color: _isFocused ? _dominantColor : ProfessionalColorsForHomePages.primaryDark,
           letterSpacing: 0.5,
           shadows: _isFocused
               ? [
@@ -2693,3 +2385,7 @@ class _ProfessionalHorizontalVodCardState
     );
   }
 }
+
+
+
+

@@ -2127,7 +2127,7 @@ class _TopNavigationBarState extends State<TopNavigationBar>
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_focusNodes.isNotEmpty) {
-        _focusNodes[0].requestFocus();
+        // _focusNodes[0].requestFocus();
         context.read<FocusProvider>().registerFocusNode('topNavigation', _focusNodes[0]);
       }
     });
@@ -2292,7 +2292,7 @@ class _TopNavigationBarState extends State<TopNavigationBar>
       Navigator.pop(context);
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => const AboveEighteen()),
+        MaterialPageRoute(builder: (context) => const AdultMoviesScreen()),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -2333,7 +2333,8 @@ class _TopNavigationBarState extends State<TopNavigationBar>
 
           // ✅ Focused Decoration
           final focusedDecoration = BoxDecoration(
-            color: dominantColor.withOpacity(0.25), 
+            // color: dominantColor.withOpacity(0.25), 
+            color: Colors.white54, 
             boxShadow: [
               BoxShadow(
                 color: dominantColor.withOpacity(0.4),
@@ -2350,7 +2351,8 @@ class _TopNavigationBarState extends State<TopNavigationBar>
 
           // ✅ Default Decoration
           final defaultDecoration = BoxDecoration(
-            color: ProfessionalColors.primaryDark.withOpacity(0.65),
+            // color: ProfessionalColors.primaryDark.withOpacity(0.65),
+            color: Colors.white54,
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.3),
@@ -2547,7 +2549,7 @@ class _TopNavigationBarState extends State<TopNavigationBar>
                     ? ProfessionalColors.surfaceDark 
                     : isSelected
                         ? ProfessionalColors.accentBlue.withOpacity(0.15)
-                        : Colors.transparent,
+                        : Colors.black87,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
                   // ✅ Border focus par highlight hota hai
@@ -2582,7 +2584,8 @@ class _TopNavigationBarState extends State<TopNavigationBar>
                         ? currentAccentColor
                         : isSelected
                             ? ProfessionalColors.accentBlue
-                            : ProfessionalColors.textSecondary,
+                            // : ProfessionalColors.textSecondary,
+                            : Colors.white,
                     size: screenhgt * 0.04,
                   ),
                   SizedBox(width: screenwdt * 0.01),
@@ -2593,7 +2596,8 @@ class _TopNavigationBarState extends State<TopNavigationBar>
                           ? ProfessionalColors.textPrimary 
                           : isSelected
                               ? ProfessionalColors.accentBlue
-                              : ProfessionalColors.textSecondary,
+                              // : ProfessionalColors.textSecondary,
+                              : Colors.white,
                       fontSize: menutextsz,
                       fontWeight:
                           hasFocus ? FontWeight.bold : FontWeight.w500,
@@ -2678,3 +2682,7 @@ class NavItem {
 
   NavItem({required this.title, required this.icon, required this.id});
 }
+
+
+
+

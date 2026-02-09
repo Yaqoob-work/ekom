@@ -1905,7 +1905,7 @@ class _SearchScreenState extends State<SearchScreen>
         return;
       }
 
-        String playableUrl = await SecureUrlService.getSecureUrl(videoUrl);
+        // String videoUrl = await SecureUrlService.getSecureUrl(videoUrl);
 
       // Step 3: Handle direct video playback
       if (parsedContentType == 3) {
@@ -1913,7 +1913,7 @@ class _SearchScreenState extends State<SearchScreen>
           context,
           MaterialPageRoute(
             builder: (context) => VideoScreen(
-              videoUrl: playableUrl,
+              videoUrl: videoUrl,
               bannerImageUrl: content.banner,
               channelList: [],
               videoId: int.tryParse(content.id),
@@ -1933,24 +1933,24 @@ class _SearchScreenState extends State<SearchScreen>
                 context,
                 MaterialPageRoute(
                     builder: (context) => YoutubeWebviewPlayer(
-                        videoUrl: playableUrl, name: content.name)));
+                        videoUrl: videoUrl, name: content.name)));
           } else {
             await Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) => CustomYoutubePlayer(
                   videoData: VideoData(
-                    id: playableUrl,
+                    id: videoUrl,
                     title: content.name,
-                    youtubeUrl: playableUrl,
+                    youtubeUrl: videoUrl,
                     thumbnail: content.banner ?? content.poster ?? '',
                     description: content.description ?? '',
                   ),
                   playlist: [
                     VideoData(
-                      id: playableUrl,
+                      id: videoUrl,
                       title: content.name,
-                      youtubeUrl: playableUrl,
+                      youtubeUrl: videoUrl,
                       thumbnail: content.banner ?? content.poster ?? '',
                       description: content.description ?? '',
                     ),
@@ -1964,7 +1964,7 @@ class _SearchScreenState extends State<SearchScreen>
             context,
             MaterialPageRoute(
               builder: (context) => VideoScreen(
-                videoUrl: playableUrl,
+                videoUrl: videoUrl,
                 bannerImageUrl: content.banner,
                 channelList: [],
                 videoId: int.tryParse(content.id),

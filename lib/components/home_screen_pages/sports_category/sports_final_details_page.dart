@@ -1173,7 +1173,7 @@
 //         dynamic result;
 //       String rawUrl = match.videoUrl??'';
 //       print('rawurl: $rawUrl');
-//       String playableUrl = await SecureUrlService.getSecureUrl(rawUrl);
+//       String rawUrl = await SecureUrlService.getSecureUrl(rawUrl);
 //         if (match.streamType == 'youtube'
 //             // || isYoutubeUrl(url)
 //             ) {
@@ -1185,7 +1185,7 @@
 //                 context,
 //                 MaterialPageRoute(
 //                     builder: (context) => YoutubeWebviewPlayer(
-//                           videoUrl: playableUrl,
+//                           videoUrl: rawUrl,
 //                           name: match.matchTitle,
 //                         )));
 //           } else {
@@ -1194,17 +1194,17 @@
 //               MaterialPageRoute(
 //                 builder: (context) => CustomYoutubePlayer(
 //                   videoData: VideoData(
-//                     id: playableUrl,
+//                     id: rawUrl,
 //                     title: match.matchTitle,
-//                     youtubeUrl: playableUrl,
+//                     youtubeUrl: rawUrl,
 //                     thumbnail: match.thumbnailUrl ?? '',
 //                     description: match.description ?? '',
 //                   ),
 //                   playlist: [
 //                     VideoData(
-//                       id: playableUrl,
+//                       id: rawUrl,
 //                       title: match.matchTitle,
-//                       youtubeUrl: playableUrl,
+//                       youtubeUrl: rawUrl,
 //                       thumbnail: match.thumbnailUrl ?? '',
 //                       description: match.description ?? '',
 //                     ),
@@ -1218,7 +1218,7 @@
 //           //   context,
 //           //   MaterialPageRoute(
 //           //     builder: (context) => CustomVideoPlayer(
-//           //       videoUrl: playableUrl,
+//           //       videoUrl: rawUrl,
 //           //     ),
 //           //   ),
 //           // );
@@ -1226,7 +1226,7 @@
 //             context,
 //             MaterialPageRoute(
 //               builder: (context) => VideoScreen(
-//                 videoUrl: playableUrl,
+//                 videoUrl: rawUrl,
 //                 bannerImageUrl: match.thumbnailUrl ?? '',
 //                 channelList: [],
 //                 source: 'isSports',
@@ -3413,7 +3413,7 @@ class _TournamentFinalDetailsPageState extends State<TournamentFinalDetailsPage>
     try {
       String rawUrl = match.videoUrl ?? '';
       print('rawurl: $rawUrl');
-      String playableUrl = await SecureUrlService.getSecureUrl(rawUrl);
+      // String rawUrl = await SecureUrlService.getSecureUrl(rawUrl);
 
       if (mounted) {
         if (match.streamType == 'youtube') {
@@ -3424,7 +3424,7 @@ class _TournamentFinalDetailsPageState extends State<TournamentFinalDetailsPage>
                 context,
                 MaterialPageRoute(
                     builder: (context) => YoutubeWebviewPlayer(
-                          videoUrl: playableUrl,
+                          videoUrl: rawUrl,
                           name: match.matchTitle,
                         )));
           } else {
@@ -3433,17 +3433,17 @@ class _TournamentFinalDetailsPageState extends State<TournamentFinalDetailsPage>
               MaterialPageRoute(
                 builder: (context) => CustomYoutubePlayer(
                   videoData: VideoData(
-                    id: playableUrl,
+                    id: rawUrl,
                     title: match.matchTitle,
-                    youtubeUrl: playableUrl,
+                    youtubeUrl: rawUrl,
                     thumbnail: match.thumbnailUrl ?? '',
                     description: match.description,
                   ),
                   playlist: [
                     VideoData(
-                      id: playableUrl,
+                      id: rawUrl,
                       title: match.matchTitle,
-                      youtubeUrl: playableUrl,
+                      youtubeUrl: rawUrl,
                       thumbnail: match.thumbnailUrl ?? '',
                       description: match.description,
                     ),
@@ -3457,7 +3457,7 @@ class _TournamentFinalDetailsPageState extends State<TournamentFinalDetailsPage>
             context,
             MaterialPageRoute(
               builder: (context) => VideoScreen(
-                videoUrl: playableUrl,
+                videoUrl: rawUrl,
                 bannerImageUrl: match.thumbnailUrl ?? '',
                 channelList: [],
                 source: 'isSports',

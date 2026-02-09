@@ -26,7 +26,7 @@
 // */
 
 // // ✅ Professional Color Palette
-// class ProfessionalColors {
+// class ProfessionalColorsForHomePages {
 //   static const primaryDark = Color(0xFF0A0E1A);
 //   static const surfaceDark = Color(0xFF1A1D29);
 //   static const cardDark = Color(0xFF2A2D3A);
@@ -475,7 +475,7 @@
 //       builder: (context, colorProvider, child) {
 //         final bgColor = colorProvider.isItemFocused
 //             ? colorProvider.dominantColor.withOpacity(0.1)
-//             : ProfessionalColors.primaryDark;
+//             : ProfessionalColorsForHomePages.primaryDark;
 //         return Scaffold(
 //           backgroundColor: Colors.transparent,
 //           body: Container(
@@ -486,7 +486,7 @@
 //                 colors: [
 //                   bgColor,
 //                   bgColor.withOpacity(0.8),
-//                   ProfessionalColors.primaryDark,
+//                   ProfessionalColorsForHomePages.primaryDark,
 //                 ],
 //               ),
 //             ),
@@ -515,8 +515,8 @@
 //             ShaderMask(
 //               shaderCallback: (bounds) => const LinearGradient(
 //                 colors: [
-//                   ProfessionalColors.accentPurple,
-//                   ProfessionalColors.accentBlue
+//                   ProfessionalColorsForHomePages.accentPurple,
+//                   ProfessionalColorsForHomePages.accentBlue
 //                 ],
 //               ).createShader(bounds),
 //               child: const Text(
@@ -534,18 +534,18 @@
 //             //         const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
 //             //     decoration: BoxDecoration(
 //             //       gradient: LinearGradient(colors: [
-//             //         ProfessionalColors.accentPurple.withOpacity(0.2),
-//             //         ProfessionalColors.accentBlue.withOpacity(0.2),
+//             //         ProfessionalColorsForHomePages.accentPurple.withOpacity(0.2),
+//             //         ProfessionalColorsForHomePages.accentBlue.withOpacity(0.2),
 //             //       ]),
 //             //       borderRadius: BorderRadius.circular(20),
 //             //       border: Border.all(
-//             //           color: ProfessionalColors.accentPurple.withOpacity(0.3),
+//             //           color: ProfessionalColorsForHomePages.accentPurple.withOpacity(0.3),
 //             //           width: 1),
 //             //     ),
 //             //     child: Text(
 //             //       '${webSeriesList.length} Series Available',
 //             //       style: const TextStyle(
-//             //           color: ProfessionalColors.textSecondary,
+//             //           color: ProfessionalColorsForHomePages.textSecondary,
 //             //           fontSize: 12,
 //             //           fontWeight: FontWeight.w500),
 //             //     ),
@@ -573,12 +573,12 @@
 //         mainAxisAlignment: MainAxisAlignment.center,
 //         children: [
 //           Icon(Icons.tv_off_outlined,
-//               size: 50, color: ProfessionalColors.textSecondary),
+//               size: 50, color: ProfessionalColorsForHomePages.textSecondary),
 //           SizedBox(height: 16),
 //           Text(
 //             'No Web Series Found',
 //             style: TextStyle(
-//                 color: ProfessionalColors.textPrimary,
+//                 color: ProfessionalColorsForHomePages.textPrimary,
 //                 fontSize: 18,
 //                 fontWeight: FontWeight.w600),
 //           ),
@@ -586,7 +586,7 @@
 //           Text(
 //             'Please check back later.',
 //             style: TextStyle(
-//                 color: ProfessionalColors.textSecondary, fontSize: 14),
+//                 color: ProfessionalColorsForHomePages.textSecondary, fontSize: 14),
 //           ),
 //         ],
 //       ),
@@ -666,8 +666,8 @@
 //       focusNode: focusNode,
 //       onFocusChange: (hasFocus) {
 //         if (hasFocus) {
-//           Color dominantColor = ProfessionalColors.gradientColors[
-//               math.Random().nextInt(ProfessionalColors.gradientColors.length)];
+//           Color dominantColor = ProfessionalColorsForHomePages.gradientColors[
+//               math.Random().nextInt(ProfessionalColorsForHomePages.gradientColors.length)];
 //           context.read<ColorProvider>().updateColor(dominantColor, true);
 //         } else {
 //           context.read<ColorProvider>().resetColor();
@@ -891,16 +891,16 @@
 // //   @override
 // //   Widget build(BuildContext context) {
 // //     return Scaffold(
-// //       backgroundColor: ProfessionalColors.primaryDark,
+// //       backgroundColor: ProfessionalColorsForHomePages.primaryDark,
 // //       body: Container(
 // //         decoration: BoxDecoration(
 // //           gradient: LinearGradient(
 // //             begin: Alignment.topCenter,
 // //             end: Alignment.bottomCenter,
 // //             colors: [
-// //               ProfessionalColors.primaryDark,
-// //               ProfessionalColors.surfaceDark.withOpacity(0.8),
-// //               ProfessionalColors.primaryDark,
+// //               ProfessionalColorsForHomePages.primaryDark,
+// //               ProfessionalColorsForHomePages.surfaceDark.withOpacity(0.8),
+// //               ProfessionalColorsForHomePages.primaryDark,
 // //             ],
 // //           ),
 // //         ),
@@ -943,7 +943,7 @@
 // //       decoration: BoxDecoration(
 // //         border: Border(
 // //             bottom: BorderSide(
-// //                 color: ProfessionalColors.accentPurple.withOpacity(0.3),
+// //                 color: ProfessionalColorsForHomePages.accentPurple.withOpacity(0.3),
 // //                 width: 1)),
 // //         boxShadow: [
 // //           BoxShadow(
@@ -968,8 +968,8 @@
 // //                   decoration: BoxDecoration(
 // //                     shape: BoxShape.circle,
 // //                     gradient: LinearGradient(colors: [
-// //                       ProfessionalColors.accentPurple.withOpacity(0.4),
-// //                       ProfessionalColors.accentBlue.withOpacity(0.4),
+// //                       ProfessionalColorsForHomePages.accentPurple.withOpacity(0.4),
+// //                       ProfessionalColorsForHomePages.accentBlue.withOpacity(0.4),
 // //                     ]),
 // //                   ),
 // //                   child: IconButton(
@@ -986,8 +986,8 @@
 // //                       ShaderMask(
 // //                         shaderCallback: (bounds) => const LinearGradient(
 // //                           colors: [
-// //                             ProfessionalColors.accentPurple,
-// //                             ProfessionalColors.accentBlue
+// //                             ProfessionalColorsForHomePages.accentPurple,
+// //                             ProfessionalColorsForHomePages.accentBlue
 // //                           ],
 // //                         ).createShader(bounds),
 // //                         child: Text(
@@ -1005,12 +1005,12 @@
 // //                             horizontal: 12, vertical: 6),
 // //                         decoration: BoxDecoration(
 // //                           gradient: LinearGradient(colors: [
-// //                             ProfessionalColors.accentPurple.withOpacity(0.4),
-// //                             ProfessionalColors.accentBlue.withOpacity(0.3),
+// //                             ProfessionalColorsForHomePages.accentPurple.withOpacity(0.4),
+// //                             ProfessionalColorsForHomePages.accentBlue.withOpacity(0.3),
 // //                           ]),
 // //                           borderRadius: BorderRadius.circular(15),
 // //                           border: Border.all(
-// //                               color: ProfessionalColors.accentPurple
+// //                               color: ProfessionalColorsForHomePages.accentPurple
 // //                                   .withOpacity(0.6),
 // //                               width: 1),
 // //                         ),
@@ -1038,7 +1038,7 @@
 // //       return const Center(
 // //         child: Text(
 // //           'No Web Series Found',
-// //           style: TextStyle(color: ProfessionalColors.textSecondary, fontSize: 18),
+// //           style: TextStyle(color: ProfessionalColorsForHomePages.textSecondary, fontSize: 18),
 // //         ),
 // //       );
 // //     } else {
@@ -1273,16 +1273,16 @@
 //   @override
 //   Widget build(BuildContext context) {
 //     return Scaffold(
-//       backgroundColor: ProfessionalColors.primaryDark,
+//       backgroundColor: ProfessionalColorsForHomePages.primaryDark,
 //       body: Container(
 //         decoration: BoxDecoration(
 //           gradient: LinearGradient(
 //             begin: Alignment.topCenter,
 //             end: Alignment.bottomCenter,
 //             colors: [
-//               ProfessionalColors.primaryDark,
-//               ProfessionalColors.surfaceDark.withOpacity(0.8),
-//               ProfessionalColors.primaryDark,
+//               ProfessionalColorsForHomePages.primaryDark,
+//               ProfessionalColorsForHomePages.surfaceDark.withOpacity(0.8),
+//               ProfessionalColorsForHomePages.primaryDark,
 //             ],
 //           ),
 //         ),
@@ -1325,7 +1325,7 @@
 //       decoration: BoxDecoration(
 //         border: Border(
 //             bottom: BorderSide(
-//                 color: ProfessionalColors.accentPurple.withOpacity(0.3),
+//                 color: ProfessionalColorsForHomePages.accentPurple.withOpacity(0.3),
 //                 width: 1)),
 //         boxShadow: [
 //           BoxShadow(
@@ -1350,8 +1350,8 @@
 //                   decoration: BoxDecoration(
 //                     shape: BoxShape.circle,
 //                     gradient: LinearGradient(colors: [
-//                       ProfessionalColors.accentPurple.withOpacity(0.4),
-//                       ProfessionalColors.accentBlue.withOpacity(0.4),
+//                       ProfessionalColorsForHomePages.accentPurple.withOpacity(0.4),
+//                       ProfessionalColorsForHomePages.accentBlue.withOpacity(0.4),
 //                     ]),
 //                   ),
 //                   child: IconButton(
@@ -1368,8 +1368,8 @@
 //                       ShaderMask(
 //                         shaderCallback: (bounds) => const LinearGradient(
 //                           colors: [
-//                             ProfessionalColors.accentPurple,
-//                             ProfessionalColors.accentBlue
+//                             ProfessionalColorsForHomePages.accentPurple,
+//                             ProfessionalColorsForHomePages.accentBlue
 //                           ],
 //                         ).createShader(bounds),
 //                         child: Text(
@@ -1387,12 +1387,12 @@
 //                       //       horizontal: 12, vertical: 6),
 //                       //   decoration: BoxDecoration(
 //                       //     gradient: LinearGradient(colors: [
-//                       //       ProfessionalColors.accentPurple.withOpacity(0.4),
-//                       //       ProfessionalColors.accentBlue.withOpacity(0.3),
+//                       //       ProfessionalColorsForHomePages.accentPurple.withOpacity(0.4),
+//                       //       ProfessionalColorsForHomePages.accentBlue.withOpacity(0.3),
 //                       //     ]),
 //                       //     borderRadius: BorderRadius.circular(15),
 //                       //     border: Border.all(
-//                       //         color: ProfessionalColors.accentPurple
+//                       //         color: ProfessionalColorsForHomePages.accentPurple
 //                       //             .withOpacity(0.6),
 //                       //         width: 1),
 //                       //   ),
@@ -1421,7 +1421,7 @@
 //         child: Text(
 //           'No Web Series Found',
 //           style:
-//               TextStyle(color: ProfessionalColors.textSecondary, fontSize: 18),
+//               TextStyle(color: ProfessionalColorsForHomePages.textSecondary, fontSize: 18),
 //         ),
 //       );
 //     } else {
@@ -1493,7 +1493,7 @@
 //     with TickerProviderStateMixin {
 //   late AnimationController _scaleController;
 //   late Animation<double> _scaleAnimation;
-//   Color _dominantColor = ProfessionalColors.accentBlue;
+//   Color _dominantColor = ProfessionalColorsForHomePages.accentBlue;
 //   bool _isFocused = false;
 
 //   @override
@@ -1511,8 +1511,8 @@
 //     setState(() => _isFocused = widget.focusNode.hasFocus);
 //     if (_isFocused) {
 //       _scaleController.forward();
-//       _dominantColor = ProfessionalColors.gradientColors[
-//           math.Random().nextInt(ProfessionalColors.gradientColors.length)];
+//       _dominantColor = ProfessionalColorsForHomePages.gradientColors[
+//           math.Random().nextInt(ProfessionalColorsForHomePages.gradientColors.length)];
 //       HapticFeedback.lightImpact();
 //     } else {
 //       _scaleController.reverse();
@@ -1613,12 +1613,12 @@
 //         gradient: LinearGradient(
 //           begin: Alignment.topLeft,
 //           end: Alignment.bottomRight,
-//           colors: [ProfessionalColors.cardDark, ProfessionalColors.surfaceDark],
+//           colors: [ProfessionalColorsForHomePages.cardDark, ProfessionalColorsForHomePages.surfaceDark],
 //         ),
 //       ),
 //       child: const Center(
 //         child: Icon(Icons.tv_outlined,
-//             size: 40, color: ProfessionalColors.textSecondary),
+//             size: 40, color: ProfessionalColorsForHomePages.textSecondary),
 //       ),
 //     );
 //   }
@@ -1657,7 +1657,7 @@
 //         style: TextStyle(
 //           fontSize: _isFocused ? 13 : 11,
 //           fontWeight: FontWeight.w600,
-//           color: _isFocused ? _dominantColor : ProfessionalColors.textPrimary,
+//           color: _isFocused ? _dominantColor : ProfessionalColorsForHomePages.textPrimary,
 //           letterSpacing: 0.5,
 //         ),
 //         child: Text(
@@ -1684,7 +1684,7 @@
 //   }) : super(key: key);
 
 //   Color _getDominantColor() {
-//     final colors = ProfessionalColors.gradientColors;
+//     final colors = ProfessionalColorsForHomePages.gradientColors;
 //     return colors[math.Random(webSeries.id).nextInt(colors.length)];
 //   }
 
@@ -1750,10 +1750,10 @@
 
 //   Widget _buildImagePlaceholder() {
 //     return Container(
-//       color: ProfessionalColors.cardDark,
+//       color: ProfessionalColorsForHomePages.cardDark,
 //       child: const Center(
 //         child: Icon(Icons.tv_outlined,
-//             size: 40, color: ProfessionalColors.textSecondary),
+//             size: 40, color: ProfessionalColorsForHomePages.textSecondary),
 //       ),
 //     );
 //   }
@@ -1861,12 +1861,12 @@
 //             decoration: BoxDecoration(
 //               borderRadius: BorderRadius.circular(12),
 //               border: _isFocused
-//                   ? Border.all(color: ProfessionalColors.accentPurple, width: 3)
+//                   ? Border.all(color: ProfessionalColorsForHomePages.accentPurple, width: 3)
 //                   : null,
 //               gradient: const LinearGradient(
 //                 colors: [
-//                   ProfessionalColors.cardDark,
-//                   ProfessionalColors.surfaceDark
+//                   ProfessionalColorsForHomePages.cardDark,
+//                   ProfessionalColorsForHomePages.surfaceDark
 //                 ],
 //                 begin: Alignment.topLeft,
 //                 end: Alignment.bottomRight,
@@ -1878,20 +1878,20 @@
 //                 Icon(Icons.grid_view_rounded,
 //                     size: 35,
 //                     color: _isFocused
-//                         ? ProfessionalColors.accentPurple
+//                         ? ProfessionalColorsForHomePages.accentPurple
 //                         : Colors.white),
 //                 const SizedBox(height: 8),
 //                 Text('VIEW ALL',
 //                     style: TextStyle(
 //                         color: _isFocused
-//                             ? ProfessionalColors.accentPurple
+//                             ? ProfessionalColorsForHomePages.accentPurple
 //                             : Colors.white,
 //                         fontWeight: FontWeight.bold,
 //                         fontSize: 14)),
 //                 const SizedBox(height: 6),
 //                 // Text('${widget.totalItems}',
 //                 //     style: const TextStyle(
-//                 //         color: ProfessionalColors.textSecondary, fontSize: 12)),
+//                 //         color: ProfessionalColorsForHomePages.textSecondary, fontSize: 12)),
 //               ],
 //             ),
 //           ),
@@ -1901,8 +1901,8 @@
 //               fontSize: _isFocused ? 13 : 11,
 //               fontWeight: FontWeight.w600,
 //               color: _isFocused
-//                   ? ProfessionalColors.accentPurple
-//                   : ProfessionalColors.textPrimary,
+//                   ? ProfessionalColorsForHomePages.accentPurple
+//                   : ProfessionalColorsForHomePages.textPrimary,
 //             ),
 //             child: const Text('ALL SERIES', textAlign: TextAlign.center),
 //           )
@@ -1924,12 +1924,12 @@
 //         mainAxisAlignment: MainAxisAlignment.center,
 //         children: [
 //           const CircularProgressIndicator(
-//               color: ProfessionalColors.accentPurple),
+//               color: ProfessionalColorsForHomePages.accentPurple),
 //           const SizedBox(height: 20),
 //           Text(
 //             message,
 //             style: const TextStyle(
-//                 color: ProfessionalColors.textPrimary, fontSize: 16),
+//                 color: ProfessionalColorsForHomePages.textPrimary, fontSize: 16),
 //           ),
 //         ],
 //       ),
@@ -1954,7 +1954,7 @@
 // import 'dart:ui';
 
 // // ✅ Professional Color Palette (COMMON)
-// class ProfessionalColors {
+// class ProfessionalColorsForHomePages {
 //   static const primaryDark = Color(0xFF0A0E1A);
 //   static const surfaceDark = Color(0xFF1A1D29);
 //   static const cardDark = Color(0xFF2A2D3A);
@@ -2514,7 +2514,7 @@
 //       builder: (context, colorProvider, child) {
 //         final bgColor = colorProvider.isItemFocused
 //             ? colorProvider.dominantColor.withOpacity(0.1)
-//             : ProfessionalColors.primaryDark;
+//             : ProfessionalColorsForHomePages.primaryDark;
 //         return Scaffold(
 //           backgroundColor: Colors.transparent,
 //           body: Container(
@@ -2525,7 +2525,7 @@
 //                 colors: [
 //                   bgColor,
 //                   bgColor.withOpacity(0.8),
-//                   ProfessionalColors.primaryDark,
+//                   ProfessionalColorsForHomePages.primaryDark,
 //                 ],
 //               ),
 //             ),
@@ -2554,8 +2554,8 @@
 //             ShaderMask(
 //               shaderCallback: (bounds) => const LinearGradient(
 //                 colors: [
-//                   ProfessionalColors.accentPurple,
-//                   ProfessionalColors.accentBlue
+//                   ProfessionalColorsForHomePages.accentPurple,
+//                   ProfessionalColorsForHomePages.accentBlue
 //                 ],
 //               ).createShader(bounds),
 //               child: const Text(
@@ -2590,12 +2590,12 @@
 //         mainAxisAlignment: MainAxisAlignment.center,
 //         children: [
 //           Icon(Icons.tv_off_outlined,
-//               size: 50, color: ProfessionalColors.textSecondary),
+//               size: 50, color: ProfessionalColorsForHomePages.textSecondary),
 //           SizedBox(height: 16),
 //           Text(
 //             'No Web Series Found',
 //             style: TextStyle(
-//                 color: ProfessionalColors.textPrimary,
+//                 color: ProfessionalColorsForHomePages.textPrimary,
 //                 fontSize: 18,
 //                 fontWeight: FontWeight.w600),
 //           ),
@@ -2603,7 +2603,7 @@
 //           Text(
 //             'Please check back later.',
 //             style: TextStyle(
-//                 color: ProfessionalColors.textSecondary, fontSize: 14),
+//                 color: ProfessionalColorsForHomePages.textSecondary, fontSize: 14),
 //           ),
 //         ],
 //       ),
@@ -2642,8 +2642,8 @@
 //             onFocusChange: (hasFocus) {
 //         if (hasFocus) {
 //           // This logic is the same as the other cards.
-//           Color dominantColor = ProfessionalColors.gradientColors[
-//               math.Random().nextInt(ProfessionalColors.gradientColors.length)];
+//           Color dominantColor = ProfessionalColorsForHomePages.gradientColors[
+//               math.Random().nextInt(ProfessionalColorsForHomePages.gradientColors.length)];
 //           context.read<ColorProvider>().updateColor(dominantColor, true);
 //         }
 //       },
@@ -2692,8 +2692,8 @@
 //       focusNode: focusNode,
 //       // onFocusChange: (hasFocus) {
 //       //   if (hasFocus) {
-//       //     Color dominantColor = ProfessionalColors.gradientColors[
-//       //         math.Random().nextInt(ProfessionalColors.gradientColors.length)];
+//       //     Color dominantColor = ProfessionalColorsForHomePages.gradientColors[
+//       //         math.Random().nextInt(ProfessionalColorsForHomePages.gradientColors.length)];
 //       //     context.read<ColorProvider>().updateColor(dominantColor, true);
 //       //   } else {
 //       //     context.read<ColorProvider>().resetColor();
@@ -2701,8 +2701,8 @@
 //       // },
 //             onFocusChange: (hasFocus) {
 //         if (hasFocus) {
-//           Color dominantColor = ProfessionalColors.gradientColors[
-//               math.Random().nextInt(ProfessionalColors.gradientColors.length)];
+//           Color dominantColor = ProfessionalColorsForHomePages.gradientColors[
+//               math.Random().nextInt(ProfessionalColorsForHomePages.gradientColors.length)];
 //           context.read<ColorProvider>().updateColor(dominantColor, true);
 //         }
 //         // ✅ The 'else' block has been removed.
@@ -2772,12 +2772,12 @@
 //         mainAxisAlignment: MainAxisAlignment.center,
 //         children: [
 //           const CircularProgressIndicator(
-//               color: ProfessionalColors.accentPurple),
+//               color: ProfessionalColorsForHomePages.accentPurple),
 //           const SizedBox(height: 20),
 //           Text(
 //             message,
 //             style: const TextStyle(
-//                 color: ProfessionalColors.textPrimary, fontSize: 16),
+//                 color: ProfessionalColorsForHomePages.textPrimary, fontSize: 16),
 //           ),
 //         ],
 //       ),
@@ -2806,7 +2806,7 @@
 //     with TickerProviderStateMixin {
 //   late AnimationController _scaleController;
 //   late Animation<double> _scaleAnimation;
-//   // Color _dominantColor = ProfessionalColors.accentBlue;
+//   // Color _dominantColor = ProfessionalColorsForHomePages.accentBlue;
 //   bool _isFocused = false;
 
 //   @override
@@ -2824,8 +2824,8 @@
 //     setState(() => _isFocused = widget.focusNode.hasFocus);
 //     if (_isFocused) {
 //       _scaleController.forward();
-//       // _dominantColor = ProfessionalColors.gradientColors[
-//       //     math.Random().nextInt(ProfessionalColors.gradientColors.length)];
+//       // _dominantColor = ProfessionalColorsForHomePages.gradientColors[
+//       //     math.Random().nextInt(ProfessionalColorsForHomePages.gradientColors.length)];
 //       HapticFeedback.lightImpact();
 //     } else {
 //       _scaleController.reverse();
@@ -2846,7 +2846,7 @@
 //   final colorProvider = context.watch<ColorProvider>();
 //   final dominantColor = colorProvider.isItemFocused && _isFocused
 //       ? colorProvider.dominantColor
-//       : ProfessionalColors.accentBlue; // Fallback color
+//       : ProfessionalColorsForHomePages.accentBlue; // Fallback color
 
 //   return AnimatedBuilder(
 //     animation: _scaleAnimation,
@@ -2935,12 +2935,12 @@
 //       gradient: LinearGradient(
 //         begin: Alignment.topLeft,
 //         end: Alignment.bottomRight,
-//         colors: [ProfessionalColors.cardDark, ProfessionalColors.surfaceDark],
+//         colors: [ProfessionalColorsForHomePages.cardDark, ProfessionalColorsForHomePages.surfaceDark],
 //       ),
 //     ),
 //     child: const Center(
 //       child: Icon(Icons.tv_outlined,
-//           size: 40, color: ProfessionalColors.textSecondary),
+//           size: 40, color: ProfessionalColorsForHomePages.textSecondary),
 //     ),
 //   );
 // }
@@ -2980,7 +2980,7 @@
 //         fontSize: _isFocused ? 13 : 11,
 //         fontWeight: FontWeight.w600,
 //         // ✅ Use the color from the provider
-//         color: _isFocused ? dominantColor : ProfessionalColors.textPrimary,
+//         color: _isFocused ? dominantColor : ProfessionalColorsForHomePages.textPrimary,
 //         letterSpacing: 0.5,
 //       ),
 //       child: Text(
@@ -3080,12 +3080,12 @@
 // //         gradient: LinearGradient(
 // //           begin: Alignment.topLeft,
 // //           end: Alignment.bottomRight,
-// //           colors: [ProfessionalColors.cardDark, ProfessionalColors.surfaceDark],
+// //           colors: [ProfessionalColorsForHomePages.cardDark, ProfessionalColorsForHomePages.surfaceDark],
 // //         ),
 // //       ),
 // //       child: const Center(
 // //         child: Icon(Icons.tv_outlined,
-// //             size: 40, color: ProfessionalColors.textSecondary),
+// //             size: 40, color: ProfessionalColorsForHomePages.textSecondary),
 // //       ),
 // //     );
 // //   }
@@ -3124,7 +3124,7 @@
 // //         style: TextStyle(
 // //           fontSize: _isFocused ? 13 : 11,
 // //           fontWeight: FontWeight.w600,
-// //           color: _isFocused ? _dominantColor : ProfessionalColors.textPrimary,
+// //           color: _isFocused ? _dominantColor : ProfessionalColorsForHomePages.textPrimary,
 // //           letterSpacing: 0.5,
 // //         ),
 // //         child: Text(
@@ -3188,12 +3188,12 @@
 //   //           decoration: BoxDecoration(
 //   //             borderRadius: BorderRadius.circular(12),
 //   //             border: _isFocused
-//   //                 ? Border.all(color: ProfessionalColors.accentPurple, width: 3)
+//   //                 ? Border.all(color: ProfessionalColorsForHomePages.accentPurple, width: 3)
 //   //                 : null,
 //   //             gradient: const LinearGradient(
 //   //               colors: [
-//   //                 ProfessionalColors.cardDark,
-//   //                 ProfessionalColors.surfaceDark
+//   //                 ProfessionalColorsForHomePages.cardDark,
+//   //                 ProfessionalColorsForHomePages.surfaceDark
 //   //               ],
 //   //               begin: Alignment.topLeft,
 //   //               end: Alignment.bottomRight,
@@ -3205,13 +3205,13 @@
 //   //               Icon(Icons.grid_view_rounded,
 //   //                   size: 35,
 //   //                   color: _isFocused
-//   //                       ? ProfessionalColors.accentPurple
+//   //                       ? ProfessionalColorsForHomePages.accentPurple
 //   //                       : Colors.white),
 //   //               const SizedBox(height: 8),
 //   //               Text('VIEW ALL',
 //   //                   style: TextStyle(
 //   //                       color: _isFocused
-//   //                           ? ProfessionalColors.accentPurple
+//   //                           ? ProfessionalColorsForHomePages.accentPurple
 //   //                           : Colors.white,
 //   //                       fontWeight: FontWeight.bold,
 //   //                       fontSize: 14)),
@@ -3224,8 +3224,8 @@
 //   //             fontSize: _isFocused ? 13 : 11,
 //   //             fontWeight: FontWeight.w600,
 //   //             color: _isFocused
-//   //                 ? ProfessionalColors.accentPurple
-//   //                 : ProfessionalColors.textPrimary,
+//   //                 ? ProfessionalColorsForHomePages.accentPurple
+//   //                 : ProfessionalColorsForHomePages.textPrimary,
 //   //           ),
 //   //           child: const Text('ALL SERIES', textAlign: TextAlign.center),
 //   //         )
@@ -3242,7 +3242,7 @@
 //   final colorProvider = context.watch<ColorProvider>();
 //   final dominantColor = colorProvider.isItemFocused && _isFocused
 //       ? colorProvider.dominantColor
-//       : ProfessionalColors.accentPurple; // Fallback color
+//       : ProfessionalColorsForHomePages.accentPurple; // Fallback color
 
 //   return Container(
 //     width: bannerwdt,
@@ -3260,8 +3260,8 @@
 //                 : null,
 //             gradient: const LinearGradient(
 //               colors: [
-//                 ProfessionalColors.cardDark,
-//                 ProfessionalColors.surfaceDark
+//                 ProfessionalColorsForHomePages.cardDark,
+//                 ProfessionalColorsForHomePages.surfaceDark
 //               ],
 //               begin: Alignment.topLeft,
 //               end: Alignment.bottomRight,
@@ -3296,7 +3296,7 @@
 //             // ✅ Use the color from the provider for the title
 //             color: _isFocused
 //                 ? dominantColor
-//                 : ProfessionalColors.textPrimary,
+//                 : ProfessionalColorsForHomePages.textPrimary,
 //           ),
 //           child: const Text('ALL SERIES', textAlign: TextAlign.center),
 //         )
@@ -3324,7 +3324,7 @@
 // import 'dart:ui';
 
 // // ✅ Professional Color Palette (COMMON)
-// class ProfessionalColors {
+// class ProfessionalColorsForHomePages {
 //   static const primaryDark = Color(0xFF0A0E1A);
 //   static const surfaceDark = Color(0xFF1A1D29);
 //   static const cardDark = Color(0xFF2A2D3A);
@@ -3796,7 +3796,7 @@
 //       builder: (context, colorProvider, child) {
 //         final bgColor = colorProvider.isItemFocused
 //             ? colorProvider.dominantColor.withOpacity(0.1)
-//             : ProfessionalColors.primaryDark;
+//             : ProfessionalColorsForHomePages.primaryDark;
 //         return Scaffold(
 //           backgroundColor: Colors.transparent,
 //           body: Container(
@@ -3807,7 +3807,7 @@
 //                 colors: [
 //                   bgColor,
 //                   bgColor.withOpacity(0.8),
-//                   ProfessionalColors.primaryDark,
+//                   ProfessionalColorsForHomePages.primaryDark,
 //                 ],
 //               ),
 //             ),
@@ -3836,8 +3836,8 @@
 //             ShaderMask(
 //               shaderCallback: (bounds) => const LinearGradient(
 //                 colors: [
-//                   ProfessionalColors.accentPurple,
-//                   ProfessionalColors.accentBlue
+//                   ProfessionalColorsForHomePages.accentPurple,
+//                   ProfessionalColorsForHomePages.accentBlue
 //                 ],
 //               ).createShader(bounds),
 //               child: const Text(
@@ -3872,12 +3872,12 @@
 //         mainAxisAlignment: MainAxisAlignment.center,
 //         children: [
 //           Icon(Icons.tv_off_outlined,
-//               size: 50, color: ProfessionalColors.textSecondary),
+//               size: 50, color: ProfessionalColorsForHomePages.textSecondary),
 //           SizedBox(height: 16),
 //           Text(
 //             'No Web Series Found',
 //             style: TextStyle(
-//                 color: ProfessionalColors.textPrimary,
+//                 color: ProfessionalColorsForHomePages.textPrimary,
 //                 fontSize: 18,
 //                 fontWeight: FontWeight.w600),
 //           ),
@@ -3885,7 +3885,7 @@
 //           Text(
 //             'Please check back later.',
 //             style: TextStyle(
-//                 color: ProfessionalColors.textSecondary, fontSize: 14),
+//                 color: ProfessionalColorsForHomePages.textSecondary, fontSize: 14),
 //           ),
 //         ],
 //       ),
@@ -3924,8 +3924,8 @@
 //       focusNode: _viewAllFocusNode,
 //       onFocusChange: (hasFocus) {
 //         if (hasFocus) {
-//           Color dominantColor = ProfessionalColors.gradientColors[
-//               math.Random().nextInt(ProfessionalColors.gradientColors.length)];
+//           Color dominantColor = ProfessionalColorsForHomePages.gradientColors[
+//               math.Random().nextInt(ProfessionalColorsForHomePages.gradientColors.length)];
 //           context.read<ColorProvider>().updateColor(dominantColor, true);
 //         }
 //       },
@@ -3976,8 +3976,8 @@
 //       focusNode: focusNode,
 //       onFocusChange: (hasFocus) {
 //         if (hasFocus) {
-//           Color dominantColor = ProfessionalColors.gradientColors[
-//               math.Random().nextInt(ProfessionalColors.gradientColors.length)];
+//           Color dominantColor = ProfessionalColorsForHomePages.gradientColors[
+//               math.Random().nextInt(ProfessionalColorsForHomePages.gradientColors.length)];
 //           context.read<ColorProvider>().updateColor(dominantColor, true);
 //         }
 //       },
@@ -4063,12 +4063,12 @@
 //         mainAxisAlignment: MainAxisAlignment.center,
 //         children: [
 //           const CircularProgressIndicator(
-//               color: ProfessionalColors.accentPurple),
+//               color: ProfessionalColorsForHomePages.accentPurple),
 //           const SizedBox(height: 20),
 //           Text(
 //             message,
 //             style: const TextStyle(
-//                 color: ProfessionalColors.textPrimary, fontSize: 16),
+//                 color: ProfessionalColorsForHomePages.textPrimary, fontSize: 16),
 //           ),
 //         ],
 //       ),
@@ -4132,7 +4132,7 @@
 //     final colorProvider = context.watch<ColorProvider>();
 //     final dominantColor = colorProvider.isItemFocused && _isFocused
 //         ? colorProvider.dominantColor
-//         : ProfessionalColors.accentBlue;
+//         : ProfessionalColorsForHomePages.accentBlue;
 
 //     return AnimatedBuilder(
 //       animation: _scaleAnimation,
@@ -4218,12 +4218,12 @@
 //         gradient: LinearGradient(
 //           begin: Alignment.topLeft,
 //           end: Alignment.bottomRight,
-//           colors: [ProfessionalColors.cardDark, ProfessionalColors.surfaceDark],
+//           colors: [ProfessionalColorsForHomePages.cardDark, ProfessionalColorsForHomePages.surfaceDark],
 //         ),
 //       ),
 //       child: const Center(
 //         child: Icon(Icons.tv_outlined,
-//             size: 40, color: ProfessionalColors.textSecondary),
+//             size: 40, color: ProfessionalColorsForHomePages.textSecondary),
 //       ),
 //     );
 //   }
@@ -4262,7 +4262,7 @@
 //         style: TextStyle(
 //           fontSize: _isFocused ? 13 : 11,
 //           fontWeight: FontWeight.w600,
-//           color: _isFocused ? dominantColor : ProfessionalColors.textPrimary,
+//           color: _isFocused ? dominantColor : ProfessionalColorsForHomePages.textPrimary,
 //           letterSpacing: 0.5,
 //         ),
 //         child: Text(
@@ -4318,7 +4318,7 @@
 //     final colorProvider = context.watch<ColorProvider>();
 //     final dominantColor = colorProvider.isItemFocused && _isFocused
 //         ? colorProvider.dominantColor
-//         : ProfessionalColors.accentPurple;
+//         : ProfessionalColorsForHomePages.accentPurple;
 
 //     return Container(
 //       width: bannerwdt,
@@ -4335,8 +4335,8 @@
 //                   : null,
 //               gradient: const LinearGradient(
 //                 colors: [
-//                   ProfessionalColors.cardDark,
-//                   ProfessionalColors.surfaceDark
+//                   ProfessionalColorsForHomePages.cardDark,
+//                   ProfessionalColorsForHomePages.surfaceDark
 //                 ],
 //                 begin: Alignment.topLeft,
 //                 end: Alignment.bottomRight,
@@ -4362,7 +4362,7 @@
 //             style: TextStyle(
 //               fontSize: _isFocused ? 13 : 11,
 //               fontWeight: FontWeight.w600,
-//               color: _isFocused ? dominantColor : ProfessionalColors.textPrimary,
+//               color: _isFocused ? dominantColor : ProfessionalColorsForHomePages.textPrimary,
 //             ),
 //             child: const Text('ALL SERIES', textAlign: TextAlign.center),
 //           )
@@ -4390,7 +4390,7 @@
 // import 'dart:ui';
 
 // // ✅ Professional Color Palette (COMMON)
-// class ProfessionalColors {
+// class ProfessionalColorsForHomePages {
 //   static const primaryDark = Color(0xFF0A0E1A);
 //   static const surfaceDark = Color(0xFF1A1D29);
 //   static const cardDark = Color(0xFF2A2D3A);
@@ -5015,7 +5015,7 @@
 //       builder: (context, colorProvider, child) {
 //         final bgColor = colorProvider.isItemFocused
 //             ? colorProvider.dominantColor.withOpacity(0.1)
-//             : ProfessionalColors.primaryDark;
+//             : ProfessionalColorsForHomePages.primaryDark;
 //         return Scaffold(
 //           backgroundColor: Colors.transparent,
 //           body: Container(
@@ -5026,7 +5026,7 @@
 //                 colors: [
 //                   bgColor,
 //                   bgColor.withOpacity(0.8),
-//                   ProfessionalColors.primaryDark,
+//                   ProfessionalColorsForHomePages.primaryDark,
 //                 ],
 //               ),
 //             ),
@@ -5055,8 +5055,8 @@
 //             ShaderMask(
 //               shaderCallback: (bounds) => const LinearGradient(
 //                 colors: [
-//                   ProfessionalColors.accentPurple,
-//                   ProfessionalColors.accentBlue
+//                   ProfessionalColorsForHomePages.accentPurple,
+//                   ProfessionalColorsForHomePages.accentBlue
 //                 ],
 //               ).createShader(bounds),
 //               child: const Text(
@@ -5091,12 +5091,12 @@
 //         mainAxisAlignment: MainAxisAlignment.center,
 //         children: [
 //           Icon(Icons.tv_off_outlined,
-//               size: 50, color: ProfessionalColors.textSecondary),
+//               size: 50, color: ProfessionalColorsForHomePages.textSecondary),
 //           SizedBox(height: 16),
 //           Text(
 //             'No Web Series Found',
 //             style: TextStyle(
-//                 color: ProfessionalColors.textPrimary,
+//                 color: ProfessionalColorsForHomePages.textPrimary,
 //                 fontSize: 18,
 //                 fontWeight: FontWeight.w600),
 //           ),
@@ -5104,7 +5104,7 @@
 //           Text(
 //             'Please check back later.',
 //             style: TextStyle(
-//                 color: ProfessionalColors.textSecondary, fontSize: 14),
+//                 color: ProfessionalColorsForHomePages.textSecondary, fontSize: 14),
 //           ),
 //         ],
 //       ),
@@ -5143,8 +5143,8 @@
 //       focusNode: _viewAllFocusNode,
 //       onFocusChange: (hasFocus) {
 //         if (hasFocus) {
-//           Color dominantColor = ProfessionalColors.gradientColors[
-//               math.Random().nextInt(ProfessionalColors.gradientColors.length)];
+//           Color dominantColor = ProfessionalColorsForHomePages.gradientColors[
+//               math.Random().nextInt(ProfessionalColorsForHomePages.gradientColors.length)];
 //           context.read<ColorProvider>().updateColor(dominantColor, true);
 //         }
 //       },
@@ -5211,8 +5211,8 @@
 //       focusNode: focusNode,
 //       onFocusChange: (hasFocus) {
 //         if (hasFocus) {
-//           Color dominantColor = ProfessionalColors.gradientColors[
-//               math.Random().nextInt(ProfessionalColors.gradientColors.length)];
+//           Color dominantColor = ProfessionalColorsForHomePages.gradientColors[
+//               math.Random().nextInt(ProfessionalColorsForHomePages.gradientColors.length)];
 //           context.read<ColorProvider>().updateColor(dominantColor, true);
 //         }
 //       },
@@ -5307,12 +5307,12 @@
 //         mainAxisAlignment: MainAxisAlignment.center,
 //         children: [
 //           const CircularProgressIndicator(
-//               color: ProfessionalColors.accentPurple),
+//               color: ProfessionalColorsForHomePages.accentPurple),
 //           const SizedBox(height: 20),
 //           Text(
 //             message,
 //             style: const TextStyle(
-//                 color: ProfessionalColors.textPrimary, fontSize: 16),
+//                 color: ProfessionalColorsForHomePages.textPrimary, fontSize: 16),
 //           ),
 //         ],
 //       ),
@@ -5376,7 +5376,7 @@
 //     final colorProvider = context.watch<ColorProvider>();
 //     final dominantColor = colorProvider.isItemFocused && _isFocused
 //         ? colorProvider.dominantColor
-//         : ProfessionalColors.accentBlue;
+//         : ProfessionalColorsForHomePages.accentBlue;
 
 //     return AnimatedBuilder(
 //       animation: _scaleAnimation,
@@ -5462,12 +5462,12 @@
 //         gradient: LinearGradient(
 //           begin: Alignment.topLeft,
 //           end: Alignment.bottomRight,
-//           colors: [ProfessionalColors.cardDark, ProfessionalColors.surfaceDark],
+//           colors: [ProfessionalColorsForHomePages.cardDark, ProfessionalColorsForHomePages.surfaceDark],
 //         ),
 //       ),
 //       child: const Center(
 //         child: Icon(Icons.tv_outlined,
-//             size: 40, color: ProfessionalColors.textSecondary),
+//             size: 40, color: ProfessionalColorsForHomePages.textSecondary),
 //       ),
 //     );
 //   }
@@ -5506,7 +5506,7 @@
 //         style: TextStyle(
 //           fontSize: _isFocused ? 13 : 11,
 //           fontWeight: FontWeight.w600,
-//           color: _isFocused ? dominantColor : ProfessionalColors.textPrimary,
+//           color: _isFocused ? dominantColor : ProfessionalColorsForHomePages.textPrimary,
 //           letterSpacing: 0.5,
 //         ),
 //         child: Text(
@@ -5562,7 +5562,7 @@
 //     final colorProvider = context.watch<ColorProvider>();
 //     final dominantColor = colorProvider.isItemFocused && _isFocused
 //         ? colorProvider.dominantColor
-//         : ProfessionalColors.accentPurple;
+//         : ProfessionalColorsForHomePages.accentPurple;
 
 //     return Container(
 //       width: bannerwdt,
@@ -5579,8 +5579,8 @@
 //                   : null,
 //               gradient: const LinearGradient(
 //                 colors: [
-//                   ProfessionalColors.cardDark,
-//                   ProfessionalColors.surfaceDark
+//                   ProfessionalColorsForHomePages.cardDark,
+//                   ProfessionalColorsForHomePages.surfaceDark
 //                 ],
 //                 begin: Alignment.topLeft,
 //                 end: Alignment.bottomRight,
@@ -5606,7 +5606,7 @@
 //             style: TextStyle(
 //               fontSize: _isFocused ? 13 : 11,
 //               fontWeight: FontWeight.w600,
-//               color: _isFocused ? dominantColor : ProfessionalColors.textPrimary,
+//               color: _isFocused ? dominantColor : ProfessionalColorsForHomePages.textPrimary,
 //             ),
 //             child: const Text('ALL SERIES', textAlign: TextAlign.center),
 //           )
@@ -5616,6 +5616,16 @@
 //   }
 // }
 
+
+
+
+
+
+
+
+
+
+
 import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -5623,66 +5633,36 @@ import 'package:flutter/services.dart';
 import 'package:http/http.dart' as https;
 import 'package:mobi_tv_entertainment/components/home_screen_pages/webseries_screen/professional_web_series_grid_page.dart';
 import 'package:mobi_tv_entertainment/components/home_screen_pages/webseries_screen/webseries_details_page.dart';
+import 'package:mobi_tv_entertainment/components/services/professional_colors_for_home_pages.dart';
+import 'package:mobi_tv_entertainment/components/widgets/small_widgets/smart_loading_widget.dart';
+import 'package:mobi_tv_entertainment/components/widgets/small_widgets/smart_retry_widget.dart';
 import 'package:mobi_tv_entertainment/main.dart';
 import 'package:mobi_tv_entertainment/components/provider/color_provider.dart';
 import 'package:mobi_tv_entertainment/components/provider/focus_provider.dart';
 import 'package:mobi_tv_entertainment/components/services/history_service.dart';
+// ✅ Import Smart Widgets
 import 'package:provider/provider.dart';
-// ❌ SharedPreferences import hata diya gaya hai kyonki service mein ab iski zaroorat nahi hai
-// import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'dart:math' as math;
 import 'dart:ui';
 
-// ✅ Professional Color Palette (COMMON)
-// ... (Yeh code pehle jaisa hi hai)
-class ProfessionalColors {
-  static const primaryDark = Color(0xFF0A0E1A);
-  static const surfaceDark = Color(0xFF1A1D29);
-  static const cardDark = Color(0xFF2A2D3A);
-  static const accentBlue = Color(0xFF3B82F6);
-  static const accentPurple = Color(0xFF8B5CF6);
-  static const accentGreen = Color(0xFF10B981);
-  static const accentRed = Color(0xFFEF4444);
-  static const accentOrange = Color(0xFFF59E0B);
-  static const accentPink = Color(0xFFEC4899);
-  static const textPrimary = Color(0xFFFFFFFF);
-  static const textSecondary = Color(0xFFB3B3B3);
-  static const focusGlow = Color(0xFF60A5FA);
+// ✅ ==========================================================
+// MODELS & CONSTANTS
+// ✅ ==========================================================
 
-  static List<Color> gradientColors = [
-    accentBlue,
-    accentPurple,
-    accentGreen,
-    accentRed,
-    accentOrange,
-    accentPink,
-  ];
-}
-
-// ✅ Professional Animation Durations (COMMON)
-// ... (Yeh code pehle jaisa hi hai)
 class AnimationTiming {
-  static const Duration ultraFast = Duration(milliseconds: 150);
   static const Duration fast = Duration(milliseconds: 250);
   static const Duration medium = Duration(milliseconds: 400);
   static const Duration slow = Duration(milliseconds: 600);
-  static const Duration focus = Duration(milliseconds: 300);
   static const Duration scroll = Duration(milliseconds: 800);
 }
 
-// ✅ NetworkModel (COMMON)
-// ... (Yeh code pehle jaisa hi hai)
 class NetworkModel {
   final int id;
   final String name;
   final String? logo;
 
-  NetworkModel({
-    required this.id,
-    required this.name,
-    this.logo,
-  });
+  NetworkModel({required this.id, required this.name, this.logo});
 
   factory NetworkModel.fromJson(Map<String, dynamic> json) {
     return NetworkModel(
@@ -5693,8 +5673,6 @@ class NetworkModel {
   }
 }
 
-// ✅ Bulletproof WebSeriesModel (COMMON)
-// ... (Yeh code pehle jaisa hi hai)
 class WebSeriesModel {
   final int id;
   final String name;
@@ -5747,64 +5725,47 @@ class WebSeriesModel {
 }
 
 // ✅ ==========================================================
-// ✅ [UPDATED] WebSeries Service (NO CACHE)
+// WEB SERIES SERVICE
 // ✅ ==========================================================
 class WebSeriesService {
-  // ❌ Cache-related constants hata diye gaye hain
   static const int _limitedListSize = 20;
 
   static Future<List<WebSeriesModel>> getLimitedWebSeries() async {
     try {
-      // Seedha fresh data fetch karein
       return await _fetchAndFilterWebSeries();
     } catch (e) {
       print('❌ Error in getLimitedWebSeries: $e');
-      // Error ko re-throw karein taaki UI handle kar sake
       throw Exception('Failed to load limited web series: $e');
     }
   }
 
-  // ❌ _shouldUseCache method hata diya gaya hai
-  // ❌ _getCachedWebSeries method hata diya gaya hai
-
   static Future<List<WebSeriesModel>> _fetchAndFilterWebSeries() async {
     try {
-      // 'prefs' argument ki zaroorat nahi, SessionManager ka istemaal ho raha hai
       String authKey = SessionManager.authKey;
-      var url = Uri.parse(SessionManager.baseUrl + 'getAllWebSeries?page1&records=11');
-      
-      final response = await https.get(url,
-        // Uri.parse(
-        //     'https://dashboard.cpplayers.com/api/v2/getAllWebSeries?page1&records=11'),
+      var url = Uri.parse(
+          SessionManager.baseUrl + 'getAllWebSeries?page1&records=11');
+
+      final response = await https.get(
+        url,
         headers: {
           'auth-key': authKey,
           'Content-Type': 'application/json',
           'Accept': 'application/json',
-          // 'domain': 'coretechinfo.com'
           'domain': SessionManager.savedDomain
         },
       );
 
       if (response.statusCode == 200) {
         final List<dynamic> jsonData = json.decode(response.body);
-
-        // ✅ ==========================================================
-        // ✅ YAHAN FILTER KAREIN (Yeh logic aapne provide kiya tha)
-        // ✅ ==========================================================
         final List<dynamic> filteredData = jsonData.where((item) {
           if (item is Map<String, dynamic> && item.containsKey('status')) {
             return item['status'] == 1 || item['status'] == '1';
           }
           return false;
         }).toList();
-        // ✅ ==========================================================
 
-        // Ab 'filteredData' ka istemaal karein
         final List<dynamic> processedData =
             filteredData.take(_limitedListSize).toList();
-
-        // ❌ Cache karne ka logic hata diya gaya hai
-
         List<WebSeriesModel> webSeries = processedData
             .map(
                 (json) => WebSeriesModel.fromJson(json as Map<String, dynamic>))
@@ -5821,15 +5782,11 @@ class WebSeriesService {
       rethrow;
     }
   }
-
-  // ❌ _cacheWebSeries method hata diya gaya hai
-  // ❌ _loadFreshDataInBackground method hata diya gaya hai
 }
-// ✅ ==========================================================
-// ✅ END OF [UPDATED] WebSeries Service
-// ✅ ==========================================================
 
-// 🚀 Enhanced ManageWebSeries
+// ✅ ==========================================================
+// MAIN WIDGET: ManageWebSeries
+// ✅ ==========================================================
 class ManageWebSeries extends StatefulWidget {
   const ManageWebSeries({super.key});
   @override
@@ -5843,8 +5800,12 @@ class _ManageWebSeriesState extends State<ManageWebSeries>
 
   List<WebSeriesModel> webSeriesList = [];
   bool isLoading = true;
+  String _errorMessage = ''; // ✅ Error State
   int focusedIndex = -1;
   final int maxHorizontalItems = 10;
+
+  // ✅ Shadow State
+  bool _isSectionFocused = false;
 
   late AnimationController _headerAnimationController;
   late AnimationController _listAnimationController;
@@ -5853,11 +5814,14 @@ class _ManageWebSeriesState extends State<ManageWebSeries>
 
   Map<String, FocusNode> webseriesFocusNodes = {};
   FocusNode? _viewAllFocusNode;
-  FocusNode? _firstWebSeriesFocusNode; // Provider mein register karne ke liye
+
+  // ✅ Retry Focus Node
+  final FocusNode _retryFocusNode = FocusNode();
+
+  FocusNode? _firstWebSeriesFocusNode;
   bool _hasReceivedFocusFromMovies = false;
 
   late ScrollController _scrollController;
-
   bool _isNavigationLocked = false;
   Timer? _navigationLockTimer;
 
@@ -5867,52 +5831,43 @@ class _ManageWebSeriesState extends State<ManageWebSeries>
     _scrollController = ScrollController();
     _initializeAnimations();
     _initializeFocusNodes();
-    // ✅ MODIFIED: Function rename
-    fetchWebSeries();
+    // fetchWebSeries();
+fetchWebSeries().then((_) {
+  _restoreInternalFocus();
+});
   }
 
-  // ✅ ==========================================================
-  // ✅ [UPDATED] Sahi dispose logic
-  // ✅ ==========================================================
   @override
   void dispose() {
     _navigationLockTimer?.cancel();
     _headerAnimationController.dispose();
     _listAnimationController.dispose();
 
-    // Sirf un nodes ko dispose karein jo provider mein register NAHI hue
+    // Dispose nodes safely
     String? firstWebSeriesId;
-    if (webSeriesList.isNotEmpty) {
+    if (webSeriesList.isNotEmpty)
       firstWebSeriesId = webSeriesList[0].id.toString();
-    }
 
     for (var entry in webseriesFocusNodes.entries) {
-      // Agar node register nahi hua hai (yaani first item nahi hai), tabhi use yahan dispose karein
       if (entry.key != firstWebSeriesId) {
         try {
-          entry.value.removeListener(() {}); // Achi practice hai
           entry.value.dispose();
-        } catch (e) {
-          // Error ignore karein
-        }
+        } catch (e) {}
       }
     }
-    // Pehle item ka node provider mein dispose hoga.
-
     webseriesFocusNodes.clear();
     _viewAllFocusNode?.dispose();
+    _retryFocusNode.dispose();
     _scrollController.dispose();
     super.dispose();
   }
-  // ✅ ==========================================================
-  // ✅ END OF [UPDATED] dispose logic
-  // ✅ ==========================================================
 
   void _initializeAnimations() {
     _headerAnimationController =
         AnimationController(duration: AnimationTiming.slow, vsync: this);
     _listAnimationController =
         AnimationController(duration: AnimationTiming.slow, vsync: this);
+
     _headerSlideAnimation =
         Tween<Offset>(begin: const Offset(0, -1), end: Offset.zero).animate(
             CurvedAnimation(
@@ -5930,100 +5885,84 @@ class _ManageWebSeriesState extends State<ManageWebSeries>
   Future<void> _scrollToPosition(int index) async {
     if (!mounted || !_scrollController.hasClients) return;
     try {
-      double itemWidth = bannerwdt + 12; // Card width + horizontal margin (6+6)
+      double itemWidth = bannerwdt + 12;
       double targetPosition = (index * itemWidth) - 5;
-
       targetPosition =
           targetPosition.clamp(0.0, _scrollController.position.maxScrollExtent);
-
-      await _scrollController.animateTo(
-        targetPosition,
-        duration: const Duration(milliseconds: 350), // Snappier scroll
-        curve: Curves.easeOutCubic,
-      );
+      await _scrollController.animateTo(targetPosition,
+          duration: const Duration(milliseconds: 350),
+          curve: Curves.easeOutCubic);
     } catch (e) {
       print('Error scrolling in webseries: $e');
     }
   }
 
-  // Yeh function ab seedha _firstWebSeriesFocusNode ko register karta hai
   void _setupFocusProvider() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted && webSeriesList.isNotEmpty) {
+      if (mounted) {
         final focusProvider =
             Provider.of<FocusProvider>(context, listen: false);
 
-        // Pehle item ka ID aur node check karein
-        final firstWebSeriesId = webSeriesList[0].id.toString();
-        _firstWebSeriesFocusNode = webseriesFocusNodes[firstWebSeriesId];
+        if (webSeriesList.isNotEmpty) {
+          // Success Case
+          final firstWebSeriesId = webSeriesList[0].id.toString();
+          _firstWebSeriesFocusNode = webseriesFocusNodes[firstWebSeriesId];
 
-        if (_firstWebSeriesFocusNode != null) {
-          // Node ko provider mein 'manageWebseries' ID se register karein
-          focusProvider.registerFocusNode(
-              'manageWebseries', _firstWebSeriesFocusNode!);
-          print('✅ WebSeries first focus node registered');
+          if (_firstWebSeriesFocusNode != null) {
+            focusProvider.registerFocusNode(
+                'manageWebseries', _firstWebSeriesFocusNode!);
 
-          // Listener yahin add karein
-          _firstWebSeriesFocusNode?.addListener(() {
-            // ✅ ==========================================================
-            // ✅ [FIXED] Listener logic
-            // ✅ ==========================================================
-            // Check karein ki widget mounted hai aur node ko focus mila hai
-            if (mounted && _firstWebSeriesFocusNode!.hasFocus) {
-              // _hasReceivedFocusFromMovies flag ko sirf tab set karein jab
-              // focus pehli baar row mein aa raha hai.
-              if (!_hasReceivedFocusFromMovies) {
-                _hasReceivedFocusFromMovies = true;
+            _firstWebSeriesFocusNode?.addListener(() {
+              if (mounted && _firstWebSeriesFocusNode!.hasFocus) {
+                if (!_hasReceivedFocusFromMovies)
+                  _hasReceivedFocusFromMovies = true;
+                setState(() => focusedIndex = 0);
+                _scrollToPosition(0);
               }
-
-              // State update aur scroll logic ko hamesha run karein
-              // jab bhi yeh node focus mein aaye.
-              setState(() => focusedIndex = 0);
-              _scrollToPosition(0);
-            }
-            // ✅ ==========================================================
-            // ✅ END OF [FIXED] listener logic
-            // ✅ ==========================================================
-          });
+            });
+          }
+        } else if (_errorMessage.isNotEmpty) {
+          // Error Case
+          focusProvider.registerFocusNode('manageWebseries', _retryFocusNode);
         }
       }
     });
   }
 
-  // ✅ MODIFIED: Function rename
   Future<void> fetchWebSeries() async {
     if (!mounted) return;
-    setState(() => isLoading = true);
+    setState(() {
+      isLoading = true;
+      _errorMessage = '';
+    });
     try {
-      // ✅ MODIFIED: Service call ab seedha hai, koi 'forceRefresh' nahi
       final fetchedWebSeries = await WebSeriesService.getLimitedWebSeries();
       if (mounted) {
         setState(() {
           webSeriesList = fetchedWebSeries;
           isLoading = false;
         });
-        _createFocusNodesForItems(); // Focus nodes banayein
-        _setupFocusProvider(); // *Uske baad* provider ko setup karein
+        _createFocusNodesForItems();
+        _setupFocusProvider();
         _headerAnimationController.forward();
         _listAnimationController.forward();
       }
     } catch (e) {
-      if (mounted) setState(() => isLoading = false);
-      // ✅ MODIFIED: Error message
-      print('Error fetching Limited WebSeries: $e');
+      if (mounted)
+        setState(() {
+          isLoading = false;
+          _errorMessage = 'Failed to load web series';
+        });
+      _setupFocusProvider();
+      print('Error fetching WebSeries: $e');
     }
   }
 
   void _createFocusNodesForItems() {
-    // Purane nodes ko saaf karein (naye dispose logic ke hisaab se)
     webseriesFocusNodes.clear();
-
     for (int i = 0; i < webSeriesList.length && i < maxHorizontalItems; i++) {
       String webSeriesId = webSeriesList[i].id.toString();
-      webseriesFocusNodes[webSeriesId] = FocusNode(); // Naya node banayein
-
-      // Pehle node ke alawa baaki nodes ke liye listener yahin add karein
-      // (Pehle node ka listener _setupFocusProvider mein add hoga)
+      webseriesFocusNodes[webSeriesId] = FocusNode();
       if (i > 0) {
         webseriesFocusNodes[webSeriesId]!.addListener(() {
           if (mounted && webseriesFocusNodes[webSeriesId]!.hasFocus) {
@@ -6038,150 +5977,146 @@ class _ManageWebSeriesState extends State<ManageWebSeries>
     }
   }
 
+
+
+
+void _restoreInternalFocus() {
+  if (!mounted) return;
+  
+  final focusProvider = Provider.of<FocusProvider>(context, listen: false);
+  final savedItemId = focusProvider.lastFocusedItemId;
+
+  if (savedItemId != null && webseriesFocusNodes.containsKey(savedItemId)) {
+    final nodeToFocus = webseriesFocusNodes[savedItemId]!;
+    
+    // Recursive function jo focus check karega jab tak mil na jaye
+    void tryFocus(int count) {
+      if (count > 10 || !mounted) return; // Max 10 attempts (1 second total)
+
+      Future.delayed(Duration(milliseconds: 100), () {
+        if (!mounted) return;
+        
+        // Agar node taiyaar hai aur abhi tak focused nahi hai
+        if (nodeToFocus.canRequestFocus && !nodeToFocus.hasFocus) {
+          print("Attempt $count: Requesting focus for $savedItemId");
+          FocusScope.of(context).requestFocus(nodeToFocus);
+          
+          // UI aur Scroll sync karein
+          int index = webSeriesList.indexWhere((v) => v.id.toString() == savedItemId);
+          if (index != -1) {
+             _scrollToPosition(index);
+             setState(() => focusedIndex = index);
+          }
+        } else if (!nodeToFocus.hasFocus) {
+          // Agla attempt karein agar focus nahi mila
+          tryFocus(count + 1);
+        }
+      });
+    }
+    
+    tryFocus(1);
+  }
+}
+
   void _navigateToWebSeriesDetails(WebSeriesModel webSeries) async {
+    final focusProvider = Provider.of<FocusProvider>(context, listen: false);
+
+    // 1. Current state save karein
+    focusProvider.updateLastFocusedIdentifier('manageWebseries');
+    focusProvider.updateLastFocusedItemId(webSeries.id.toString());
+
     try {
       int? currentUserId = SessionManager.userId;
       final int? parsedId = webSeries.id;
-
       await HistoryService.updateUserHistory(
-        userId: currentUserId!,
-        contentType: 2,
-        eventId: parsedId!,
-        eventTitle: webSeries.name,
-        url: '',
-        categoryId: 0,
-      );
-    } catch (e) {
-      print("History update failed: $e");
-    }
+          userId: currentUserId!,
+          contentType: 2,
+          eventId: parsedId!,
+          eventTitle: webSeries.name,
+          url: '',
+          categoryId: 0);
+    } catch (e) {}
+    await Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => WebSeriesDetailsPage(
+                id: webSeries.id,
+                banner: webSeries.banner ?? webSeries.poster ?? '',
+                poster: webSeries.poster ?? webSeries.banner ?? '',
+                logo: webSeries.poster ?? webSeries.banner ?? '',
+                name: webSeries.name,
+                updatedAt: webSeries.updatedAt)));
 
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => WebSeriesDetailsPage(
-          id: webSeries.id,
-          banner: webSeries.banner ?? webSeries.poster ?? '',
-          poster: webSeries.poster ?? webSeries.banner ?? '',
-          logo: webSeries.poster ?? webSeries.banner ?? '',
-          name: webSeries.name,
-          updatedAt: webSeries.updatedAt,
-        ),
-      ),
-    );
-    // .then((_) {
-    //   Future.delayed(const Duration(milliseconds: 300), () {
-    //     if (mounted) {
-    //       int currentIndex =
-    //       	  webSeriesList.indexWhere((ws) => ws.id == webSeries.id);
-    //       if (currentIndex != -1 && currentIndex < maxHorizontalItems) {
-    //     	String webSeriesId = webSeries.id.toString();
-    //     	if (webseriesFocusNodes.containsKey(webSeriesId)) {
-    //     	  setState(() {
-    //     		focusedIndex = currentIndex;
-    //     		_hasReceivedFocusFromMovies = true;
-    //     	  });
-    //     	  webseriesFocusNodes[webSeriesId]!.requestFocus();
-    //     	  _scrollToPosition(currentIndex);
-    //     	}
-    //   	  }
-    //   }
-    // });
-    // });
+     _restoreInternalFocus();
+  
   }
 
   void _navigateToGridPage() {
     Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const ProfessionalWebSeriesGridPage(
-          title: 'All Web Series',
-        ),
-      ),
-    );
-    // .then((_) {
-    //   Future.delayed(const Duration(milliseconds: 300), () {
-    //     if (mounted && _viewAllFocusNode != null) {
-    //       setState(() {
-    //         focusedIndex = maxHorizontalItems;
-    //         _hasReceivedFocusFromMovies = true;
-    //       });
-    //       _viewAllFocusNode!.requestFocus();
-    //       _scrollToPosition(maxHorizontalItems);
-    //     }
-    //   });
-    // });
+        context,
+        MaterialPageRoute(
+            builder: (context) =>
+                const ProfessionalWebSeriesGridPage(title: 'All Web Series')));
   }
 
-  @override
-  Widget build(BuildContext context) {
-    super.build(context);
-    return Consumer<ColorProvider>(
-      builder: (context, colorProvider, child) {
-        final bgColor = colorProvider.isItemFocused
-            ? colorProvider.dominantColor.withOpacity(0.1)
-            : ProfessionalColors.primaryDark;
-        return Scaffold(
-          backgroundColor: Colors.transparent,
-          body: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  bgColor,
-                  bgColor.withOpacity(0.8),
-                  ProfessionalColors.primaryDark,
-                ],
+  // ✅ ERROR WIDGET (Using Smart Widget)
+  Widget _buildErrorWidget(double height) {
+    return SizedBox(
+      height: height,
+      child: Center(
+        child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          decoration: BoxDecoration(
+              color: ProfessionalColorsForHomePages.cardDark.withOpacity(0.3),
+              borderRadius: BorderRadius.circular(50),
+              border: Border.all(
+                  color: ProfessionalColorsForHomePages.accentRed
+                      .withOpacity(0.3))),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.error_outline_rounded,
+                  size: 20, color: ProfessionalColorsForHomePages.accentRed),
+              const SizedBox(width: 10),
+              Flexible(
+                  child: Text("Connection Failed",
+                      style: const TextStyle(
+                          color: ProfessionalColorsForHomePages.textPrimary,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis)),
+              const SizedBox(width: 15),
+              // ✅ Smart Retry Widget
+              SmartRetryWidget(
+                errorMessage: _errorMessage,
+                onRetry: fetchWebSeries,
+                focusNode: _retryFocusNode,
+                providerIdentifier: 'manageWebseries',
+                onFocusChange: (hasFocus) {
+                  if (mounted) setState(() => _isSectionFocused = hasFocus);
+                },
               ),
-            ),
-            child: Column(
-              children: [
-                const SizedBox(height: 20),
-                _buildProfessionalTitle(),
-                const SizedBox(height: 10),
-                Expanded(child: _buildBody()),
-              ],
-            ),
+            ],
           ),
-        );
-      },
-    );
-  }
-
-  Widget _buildProfessionalTitle() {
-    return SlideTransition(
-      position: _headerSlideAnimation,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 25.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            ShaderMask(
-              shaderCallback: (bounds) => const LinearGradient(
-                colors: [
-                  ProfessionalColors.accentPurple,
-                  ProfessionalColors.accentBlue
-                ],
-              ).createShader(bounds),
-              child: const Text(
-                'WEB SERIES',
-                style: TextStyle(
-                    fontSize: 24,
-                    color: Colors.white,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 2.0),
-              ),
-            ),
-          ],
         ),
       ),
     );
   }
 
-  Widget _buildBody() {
+  Widget _buildBody(double screenWidth, double screenHeight) {
+    double effectiveBannerHgt = bannerhgt ?? screenHeight * 0.2;
+    double effectiveBannerWdt = bannerwdt ?? screenWidth * 0.18;
+
     if (isLoading) {
-      return const ProfessionalWebSeriesLoadingIndicator(
-          message: 'Loading Web Series...');
+      // ✅ Smart Loading
+      return SmartLoadingWidget(
+          itemWidth: effectiveBannerWdt, itemHeight: effectiveBannerHgt);
+    } else if (_errorMessage.isNotEmpty) {
+      // ✅ Smart Error
+      return _buildErrorWidget(effectiveBannerHgt);
     } else if (webSeriesList.isEmpty) {
       return _buildEmptyWidget();
     } else {
@@ -6191,28 +6126,8 @@ class _ManageWebSeriesState extends State<ManageWebSeries>
 
   Widget _buildEmptyWidget() {
     return const Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.tv_off_outlined,
-              size: 50, color: ProfessionalColors.textSecondary),
-          SizedBox(height: 16),
-          Text(
-            'No Web Series Found',
-            style: TextStyle(
-                color: ProfessionalColors.textPrimary,
-                fontSize: 18,
-                fontWeight: FontWeight.w600),
-          ),
-          SizedBox(height: 8),
-          Text(
-            'Please check back later.',
-            style: TextStyle(
-                color: ProfessionalColors.textSecondary, fontSize: 14),
-          ),
-        ],
-      ),
-    );
+        child: Text("No Web Series Found",
+            style: TextStyle(color: Colors.white, fontSize: 12)));
   }
 
   Widget _buildWebSeriesList() {
@@ -6242,94 +6157,34 @@ class _ManageWebSeriesState extends State<ManageWebSeries>
     );
   }
 
-  Widget _buildViewAllButton() {
-    return Focus(
-      focusNode: _viewAllFocusNode,
-      onFocusChange: (hasFocus) {
-        if (hasFocus) {
-          Color dominantColor = ProfessionalColors.gradientColors[
-              math.Random().nextInt(ProfessionalColors.gradientColors.length)];
-          context.read<ColorProvider>().updateColor(dominantColor, true);
-        }
-      },
-      // ✅ ==========================================================
-      // ✅ [UPDATED] ViewAll onKey LOGIC
-      // ✅ ==========================================================
-      onKey: (node, event) {
-        if (event is RawKeyDownEvent) {
-          if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
-            FocusScope.of(context).requestFocus(webseriesFocusNodes[
-                webSeriesList[maxHorizontalItems - 1].id.toString()]);
-            return KeyEventResult.handled;
-          } else if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
-            return KeyEventResult.handled; // Aage nahi jaana hai
-          } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
-            // ✅ CHANGED
-            context.read<ColorProvider>().resetColor();
-            FocusScope.of(context).unfocus();
-            context.read<FocusProvider>().focusPreviousRow();
-            _hasReceivedFocusFromMovies = false;
-            return KeyEventResult.handled;
-          } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
-            // ✅ CHANGED
-            context.read<ColorProvider>().resetColor();
-            FocusScope.of(context).unfocus();
-            context.read<FocusProvider>().focusNextRow();
-            _hasReceivedFocusFromMovies = false;
-            return KeyEventResult.handled;
-          } else if (event.logicalKey == LogicalKeyboardKey.select ||
-              event.logicalKey == LogicalKeyboardKey.enter) {
-            _navigateToGridPage();
-            return KeyEventResult.handled;
-          }
-        }
-        return KeyEventResult.ignored;
-      },
-      // ✅ ==========================================================
-      // ✅ END OF [UPDATED] onKey LOGIC
-      // ✅ ==========================================================
-      child: GestureDetector(
-        onTap: _navigateToGridPage,
-        child: ProfessionalWebSeriesViewAllButton(
-          focusNode: _viewAllFocusNode!,
-          onTap: _navigateToGridPage,
-          totalItems: webSeriesList.length,
-        ),
-      ),
-    );
-  }
-
   Widget _buildWebSeriesItem(WebSeriesModel webSeries, int index) {
     String webSeriesId = webSeries.id.toString();
     FocusNode? focusNode = webseriesFocusNodes[webSeriesId];
-
     if (focusNode == null) return const SizedBox.shrink();
 
     return Focus(
       focusNode: focusNode,
       onFocusChange: (hasFocus) {
+        if (mounted)
+          setState(() => _isSectionFocused = hasFocus); // ✅ Shadow Update
         if (hasFocus) {
-          Color dominantColor = ProfessionalColors.gradientColors[
-              math.Random().nextInt(ProfessionalColors.gradientColors.length)];
+          context.read<FocusProvider>().updateLastFocusedItemId(webSeriesId);
+          Color dominantColor = ProfessionalColorsForHomePages.accentBlue;
           context.read<ColorProvider>().updateColor(dominantColor, true);
+          setState(() => focusedIndex = index);
+          _scrollToPosition(index);
         }
       },
-      // ✅ ==========================================================
-      // ✅ [UPDATED] Item onKey LOGIC
-      // ✅ ==========================================================
       onKey: (node, event) {
         if (event is RawKeyDownEvent) {
           final key = event.logicalKey;
-
           if (key == LogicalKeyboardKey.arrowRight ||
               key == LogicalKeyboardKey.arrowLeft) {
             if (_isNavigationLocked) return KeyEventResult.handled;
-
-            _isNavigationLocked = true;
+            setState(() => _isNavigationLocked = true);
             _navigationLockTimer = Timer(const Duration(milliseconds: 600), () {
-              _isNavigationLocked = false;
+              if (mounted) setState(() => _isNavigationLocked = false);
             });
-
             if (key == LogicalKeyboardKey.arrowRight) {
               int nextIndex = index + 1;
               if (nextIndex < webSeriesList.length &&
@@ -6347,18 +6202,20 @@ class _ManageWebSeriesState extends State<ManageWebSeries>
             }
             return KeyEventResult.handled;
           }
-
+          // ✅ Vertical Navigation
           if (key == LogicalKeyboardKey.arrowUp) {
-            // ✅ CHANGED
             context.read<ColorProvider>().resetColor();
-            FocusScope.of(context).unfocus();
+            context
+                .read<FocusProvider>()
+                .updateLastFocusedIdentifier('manageWebseries');
             context.read<FocusProvider>().focusPreviousRow();
             _hasReceivedFocusFromMovies = false;
             return KeyEventResult.handled;
           } else if (key == LogicalKeyboardKey.arrowDown) {
-            // ✅ CHANGED
             context.read<ColorProvider>().resetColor();
-            FocusScope.of(context).unfocus();
+            context
+                .read<FocusProvider>()
+                .updateLastFocusedIdentifier('manageWebseries');
             context.read<FocusProvider>().focusNextRow();
             _hasReceivedFocusFromMovies = false;
             return KeyEventResult.handled;
@@ -6370,9 +6227,6 @@ class _ManageWebSeriesState extends State<ManageWebSeries>
         }
         return KeyEventResult.ignored;
       },
-      // ✅ ==========================================================
-      // ✅ END OF [UPDATED] onKey LOGIC
-      // ✅ ==========================================================
       child: GestureDetector(
         onTap: () => _navigateToWebSeriesDetails(webSeries),
         child: ProfessionalWebSeriesCard(
@@ -6383,36 +6237,151 @@ class _ManageWebSeriesState extends State<ManageWebSeries>
       ),
     );
   }
-}
 
-// =========================================================================
-// SUPPORTING WIDGETS (Inmein koi change nahi hai)
-// =========================================================================
-
-class ProfessionalWebSeriesLoadingIndicator extends StatelessWidget {
-  final String message;
-  const ProfessionalWebSeriesLoadingIndicator({Key? key, required this.message})
-      : super(key: key);
+  Widget _buildViewAllButton() {
+    return Focus(
+      focusNode: _viewAllFocusNode,
+      onFocusChange: (hasFocus) {
+        if (mounted)
+          setState(() => _isSectionFocused = hasFocus); // ✅ Shadow Update
+        if (hasFocus)
+          context
+              .read<ColorProvider>()
+              .updateColor(ProfessionalColorsForHomePages.accentBlue, true);
+      },
+      onKey: (node, event) {
+        if (event is RawKeyDownEvent) {
+          if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+            FocusScope.of(context).requestFocus(webseriesFocusNodes[
+                webSeriesList[maxHorizontalItems - 1].id.toString()]);
+            return KeyEventResult.handled;
+          }
+          if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+            context.read<ColorProvider>().resetColor();
+            context
+                .read<FocusProvider>()
+                .updateLastFocusedIdentifier('manageWebseries');
+            context.read<FocusProvider>().focusPreviousRow();
+            return KeyEventResult.handled;
+          }
+          if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+            context.read<ColorProvider>().resetColor();
+            context
+                .read<FocusProvider>()
+                .updateLastFocusedIdentifier('manageWebseries');
+            context.read<FocusProvider>().focusNextRow();
+            return KeyEventResult.handled;
+          }
+          if (event.logicalKey == LogicalKeyboardKey.select ||
+              event.logicalKey == LogicalKeyboardKey.enter) {
+            _navigateToGridPage();
+            return KeyEventResult.handled;
+          }
+        }
+        return KeyEventResult.ignored;
+      },
+      child: GestureDetector(
+        onTap: _navigateToGridPage,
+        child: ProfessionalWebSeriesViewAllButton(
+          focusNode: _viewAllFocusNode!,
+          onTap: _navigateToGridPage,
+          totalItems: webSeriesList.length,
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const CircularProgressIndicator(
-              color: ProfessionalColors.accentPurple),
-          const SizedBox(height: 20),
-          Text(
-            message,
-            style: const TextStyle(
-                color: ProfessionalColors.textPrimary, fontSize: 16),
+    super.build(context);
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    double containerHeight = (screenhgt ?? screenHeight) * 0.38;
+
+    return Consumer<ColorProvider>(
+      builder: (context, colorProvider, child) {
+        // ✅ CINEMATIC SHADOW LOGIC
+        bool showShadow = _isSectionFocused;
+
+        return Scaffold(
+          backgroundColor: Colors.white,
+          body: ClipRect(
+            child: SizedBox(
+              height: containerHeight,
+              child: Stack(
+                children: [
+                  Column(
+                    children: [
+                      const SizedBox(height: 5),
+                      _buildProfessionalTitle(),
+                      const SizedBox(height: 10),
+                      Expanded(child: _buildBody(screenWidth, screenHeight)),
+                    ],
+                  ),
+
+                  // ✅ SHADOW OVERLAY
+                  Positioned.fill(
+                    child: IgnorePointer(
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeOut,
+                        decoration: BoxDecoration(
+                          gradient: showShadow
+                              ? LinearGradient(
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                  colors: [
+                                    Colors.black.withOpacity(0.8),
+                                    Colors.transparent,
+                                    Colors.transparent,
+                                    Colors.black.withOpacity(0.8),
+                                  ],
+                                  stops: const [0.0, 0.25, 0.75, 1.0],
+                                )
+                              : null,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
-        ],
+        );
+      },
+    );
+  }
+
+  Widget _buildProfessionalTitle() {
+    return SlideTransition(
+      position: _headerSlideAnimation,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 25.0),
+        child: Row(
+          children: [
+            ShaderMask(
+              shaderCallback: (bounds) => const LinearGradient(
+                colors: [
+                  ProfessionalColorsForHomePages.accentPurple,
+                  ProfessionalColorsForHomePages.accentBlue
+                ],
+              ).createShader(bounds),
+              child: const Text('WEB SERIES',
+                  style: TextStyle(
+                      fontSize: 24,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 2.0)),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
+
+// ... (ProfessionalWebSeriesCard & ProfessionalWebSeriesViewAllButton code remains unchanged) ...
+// Copy them from your existing file.
 
 class ProfessionalWebSeriesCard extends StatefulWidget {
   final WebSeriesModel webSeries;
@@ -6470,7 +6439,7 @@ class _ProfessionalWebSeriesCardState extends State<ProfessionalWebSeriesCard>
     final colorProvider = context.watch<ColorProvider>();
     final dominantColor = colorProvider.isItemFocused && _isFocused
         ? colorProvider.dominantColor
-        : ProfessionalColors.accentBlue;
+        : ProfessionalColorsForHomePages.accentBlue;
 
     return AnimatedBuilder(
       animation: _scaleAnimation,
@@ -6556,12 +6525,15 @@ class _ProfessionalWebSeriesCardState extends State<ProfessionalWebSeriesCard>
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [ProfessionalColors.cardDark, ProfessionalColors.surfaceDark],
+          colors: [
+            ProfessionalColorsForHomePages.cardDark,
+            ProfessionalColorsForHomePages.surfaceDark
+          ],
         ),
       ),
       child: const Center(
         child: Icon(Icons.tv_outlined,
-            size: 40, color: ProfessionalColors.textSecondary),
+            size: 40, color: ProfessionalColorsForHomePages.textSecondary),
       ),
     );
   }
@@ -6600,7 +6572,9 @@ class _ProfessionalWebSeriesCardState extends State<ProfessionalWebSeriesCard>
         style: TextStyle(
           fontSize: _isFocused ? 13 : 11,
           fontWeight: FontWeight.w600,
-          color: _isFocused ? dominantColor : ProfessionalColors.textPrimary,
+          color: _isFocused
+              ? dominantColor
+              : ProfessionalColorsForHomePages.primaryDark,
           letterSpacing: 0.5,
         ),
         child: Text(
@@ -6656,7 +6630,7 @@ class _ProfessionalWebSeriesViewAllButtonState
     final colorProvider = context.watch<ColorProvider>();
     final dominantColor = colorProvider.isItemFocused && _isFocused
         ? colorProvider.dominantColor
-        : ProfessionalColors.accentPurple;
+        : ProfessionalColorsForHomePages.accentPurple;
 
     return Container(
       width: bannerwdt,
@@ -6673,8 +6647,8 @@ class _ProfessionalWebSeriesViewAllButtonState
                   : null,
               gradient: const LinearGradient(
                 colors: [
-                  ProfessionalColors.cardDark,
-                  ProfessionalColors.surfaceDark
+                  ProfessionalColorsForHomePages.cardDark,
+                  ProfessionalColorsForHomePages.surfaceDark
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -6699,8 +6673,9 @@ class _ProfessionalWebSeriesViewAllButtonState
             style: TextStyle(
               fontSize: _isFocused ? 13 : 11,
               fontWeight: FontWeight.w600,
-              color:
-                  _isFocused ? dominantColor : ProfessionalColors.textPrimary,
+              color: _isFocused
+                  ? dominantColor
+                  : ProfessionalColorsForHomePages.textPrimary,
             ),
             child: const Text('ALL SERIES', textAlign: TextAlign.center),
           )

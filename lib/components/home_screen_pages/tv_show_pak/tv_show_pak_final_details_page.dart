@@ -776,7 +776,7 @@
 //         dynamic result;
 //       String rawUrl = episode.videoUrl;
 //       print('rawurl: $rawUrl');
-//       String playableUrl = await SecureUrlService.getSecureUrl(rawUrl);
+//       String rawUrl = await SecureUrlService.getSecureUrl(rawUrl);
 //         if (episode.streamingType.toLowerCase() == 'youtube') {
 //           final deviceInfo = context.read<DeviceInfoProvider>();
 
@@ -786,7 +786,7 @@
 //                 context,
 //                 MaterialPageRoute(
 //                     builder: (context) => YoutubeWebviewPlayer(
-//                           videoUrl: playableUrl,
+//                           videoUrl: rawUrl,
 //                           name: episode.title,
 //                         )));
 //           } else {
@@ -794,20 +794,20 @@
 //               context,
 //               MaterialPageRoute(
 //                 builder: (context) => CustomYoutubePlayer(
-//                   // videoUrl: playableUrl,
+//                   // videoUrl: rawUrl,
 //                   // name: episode.title,
 //                   videoData: VideoData(
-//                     id: playableUrl ?? '',
+//                     id: rawUrl ?? '',
 //                     title: episode.title,
-//                     youtubeUrl: playableUrl ?? '',
+//                     youtubeUrl: rawUrl ?? '',
 //                     thumbnail: episode.thumbnail ?? '',
 //                     description: episode.description ?? '',
 //                   ),
 //                   playlist: [
 //                     VideoData(
-//                       id: playableUrl ?? '',
+//                       id: rawUrl ?? '',
 //                       title: episode.title,
-//                       youtubeUrl: playableUrl ?? '',
+//                       youtubeUrl: rawUrl ?? '',
 //                       thumbnail: episode.thumbnail ?? '',
 //                       description: episode.description ?? '',
 //                     ),
@@ -821,7 +821,7 @@
 //           //   context,
 //           //   MaterialPageRoute(
 //           //     builder: (context) => CustomVideoPlayer(
-//           //       videoUrl: playableUrl,
+//           //       videoUrl: rawUrl,
 //           //     ),
 //           //   ),
 //           // );
@@ -829,7 +829,7 @@
 //             context,
 //             MaterialPageRoute(
 //               builder: (context) => VideoScreen(
-//                 videoUrl: playableUrl,
+//                 videoUrl: rawUrl,
 //                 bannerImageUrl: episode.thumbnail,
 //                 channelList: [],
 //                 // isLive: false,
@@ -3304,7 +3304,7 @@ class _TvShowPakFinalDetailsPageState extends State<TvShowPakFinalDetailsPage>
         dynamic result;
         String rawUrl = episode.videoUrl;
         print('rawurl: $rawUrl');
-        String playableUrl = await SecureUrlService.getSecureUrl(rawUrl);
+        // String rawUrl = await SecureUrlService.getSecureUrl(rawUrl);
         if (episode.streamingType.toLowerCase() == 'youtube') {
           final deviceInfo = context.read<DeviceInfoProvider>();
 
@@ -3314,7 +3314,7 @@ class _TvShowPakFinalDetailsPageState extends State<TvShowPakFinalDetailsPage>
                 context,
                 MaterialPageRoute(
                     builder: (context) => YoutubeWebviewPlayer(
-                          videoUrl: playableUrl,
+                          videoUrl: rawUrl,
                           name: episode.title,
                         )));
           } else {
@@ -3322,20 +3322,20 @@ class _TvShowPakFinalDetailsPageState extends State<TvShowPakFinalDetailsPage>
               context,
               MaterialPageRoute(
                 builder: (context) => CustomYoutubePlayer(
-                  // videoUrl: playableUrl,
+                  // videoUrl: rawUrl,
                   // name: episode.title,
                   videoData: VideoData(
-                    id: playableUrl ?? '',
+                    id: rawUrl ?? '',
                     title: episode.title,
-                    youtubeUrl: playableUrl ?? '',
+                    youtubeUrl: rawUrl ?? '',
                     thumbnail: episode.thumbnail ?? '',
                     description: episode.description ?? '',
                   ),
                   playlist: [
                     VideoData(
-                      id: playableUrl ?? '',
+                      id: rawUrl ?? '',
                       title: episode.title,
-                      youtubeUrl: playableUrl ?? '',
+                      youtubeUrl: rawUrl ?? '',
                       thumbnail: episode.thumbnail ?? '',
                       description: episode.description ?? '',
                     ),
@@ -3349,7 +3349,7 @@ class _TvShowPakFinalDetailsPageState extends State<TvShowPakFinalDetailsPage>
             context,
             MaterialPageRoute(
               builder: (context) => VideoScreen(
-                videoUrl: playableUrl,
+                videoUrl: rawUrl,
                 bannerImageUrl: episode.thumbnail,
                 channelList: [],
                 // isLive: false,

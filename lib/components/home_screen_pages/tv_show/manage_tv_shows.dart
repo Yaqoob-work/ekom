@@ -13,7 +13,7 @@
 // import 'dart:ui';
 
 // // ✅ Professional Color Palette (same as WebSeries)
-// class ProfessionalColors {
+// class ProfessionalColorsForHomePages {
 //   static const primaryDark = Color(0xFF0A0E1A);
 //   static const surfaceDark = Color(0xFF1A1D29);
 //   static const cardDark = Color(0xFF2A2D3A);
@@ -355,7 +355,7 @@
 //   bool isLoading = true;
 //   int focusedIndex = -1;
 //   final int maxHorizontalItems = 7;
-//   Color _currentAccentColor = ProfessionalColors.accentGreen;
+//   Color _currentAccentColor = ProfessionalColorsForHomePages.accentGreen;
 
 //   // Animation Controllers
 //   late AnimationController _headerAnimationController;
@@ -561,7 +561,7 @@
 //           ScaffoldMessenger.of(context).showSnackBar(
 //             SnackBar(
 //               content: const Text('TV Shows refreshed successfully'),
-//               backgroundColor: ProfessionalColors.accentGreen,
+//               backgroundColor: ProfessionalColorsForHomePages.accentGreen,
 //               behavior: SnackBarBehavior.floating,
 //               shape: RoundedRectangleBorder(
 //                 borderRadius: BorderRadius.circular(10),
@@ -706,7 +706,7 @@
 //       builder: (context, colorProvider, child) {
 //         final bgColor = colorProvider.isItemFocused
 //             ? colorProvider.dominantColor.withOpacity(0.1)
-//             : ProfessionalColors.primaryDark;
+//             : ProfessionalColorsForHomePages.primaryDark;
 
 //         return Scaffold(
 //           backgroundColor: Colors.transparent,
@@ -718,11 +718,11 @@
 //                 end: Alignment.bottomCenter,
 //                 colors: [
 //                   bgColor,
-//                   // ProfessionalColors.primaryDark,
-//                   // ProfessionalColors.surfaceDark.withOpacity(0.5),
+//                   // ProfessionalColorsForHomePages.primaryDark,
+//                   // ProfessionalColorsForHomePages.surfaceDark.withOpacity(0.5),
 
 //                   bgColor.withOpacity(0.8),
-//                   ProfessionalColors.primaryDark,
+//                   ProfessionalColorsForHomePages.primaryDark,
 //                 ],
 //               ),
 //             ),
@@ -760,9 +760,9 @@
 //       onFocusChange: (hasFocus) async {
 //         if (hasFocus && mounted) {
 //           try {
-//             Color dominantColor = ProfessionalColors.gradientColors[
+//             Color dominantColor = ProfessionalColorsForHomePages.gradientColors[
 //                 math.Random()
-//                     .nextInt(ProfessionalColors.gradientColors.length)];
+//                     .nextInt(ProfessionalColorsForHomePages.gradientColors.length)];
 
 //             setState(() {
 //               _currentAccentColor = dominantColor;
@@ -891,9 +891,9 @@
 //                 focusNode: _viewAllFocusNode,
 //                 onFocusChange: (hasFocus) {
 //                   if (hasFocus && mounted) {
-//                     Color viewAllColor = ProfessionalColors.gradientColors[
+//                     Color viewAllColor = ProfessionalColorsForHomePages.gradientColors[
 //                         math.Random()
-//                             .nextInt(ProfessionalColors.gradientColors.length)];
+//                             .nextInt(ProfessionalColorsForHomePages.gradientColors.length)];
 
 //                     setState(() {
 //                       _currentAccentColor = viewAllColor;
@@ -1004,8 +1004,8 @@
 //             ShaderMask(
 //               shaderCallback: (bounds) => const LinearGradient(
 //                 colors: [
-//                   ProfessionalColors.accentGreen,
-//                   ProfessionalColors.accentBlue,
+//                   ProfessionalColorsForHomePages.accentGreen,
+//                   ProfessionalColorsForHomePages.accentBlue,
 //                 ],
 //               ).createShader(bounds),
 //               child: Text(
@@ -1026,10 +1026,10 @@
 //                 //   child: Container(
 //                 //     padding: const EdgeInsets.all(8),
 //                 //     decoration: BoxDecoration(
-//                 //       color: ProfessionalColors.accentGreen.withOpacity(0.2),
+//                 //       color: ProfessionalColorsForHomePages.accentGreen.withOpacity(0.2),
 //                 //       borderRadius: BorderRadius.circular(8),
 //                 //       border: Border.all(
-//                 //         color: ProfessionalColors.accentGreen.withOpacity(0.3),
+//                 //         color: ProfessionalColorsForHomePages.accentGreen.withOpacity(0.3),
 //                 //         width: 1,
 //                 //       ),
 //                 //     ),
@@ -1040,14 +1040,14 @@
 //                 //             child: CircularProgressIndicator(
 //                 //               strokeWidth: 2,
 //                 //               valueColor: AlwaysStoppedAnimation<Color>(
-//                 //                 ProfessionalColors.accentGreen,
+//                 //                 ProfessionalColorsForHomePages.accentGreen,
 //                 //               ),
 //                 //             ),
 //                 //           )
 //                 //         : Icon(
 //                 //             Icons.refresh,
 //                 //             size: 16,
-//                 //             color: ProfessionalColors.accentGreen,
+//                 //             color: ProfessionalColorsForHomePages.accentGreen,
 //                 //           ),
 //                 //   ),
 //                 // ),
@@ -1059,20 +1059,20 @@
 //                 //     decoration: BoxDecoration(
 //                 //       gradient: LinearGradient(
 //                 //         colors: [
-//                 //           ProfessionalColors.accentGreen.withOpacity(0.2),
-//                 //           ProfessionalColors.accentBlue.withOpacity(0.2),
+//                 //           ProfessionalColorsForHomePages.accentGreen.withOpacity(0.2),
+//                 //           ProfessionalColorsForHomePages.accentBlue.withOpacity(0.2),
 //                 //         ],
 //                 //       ),
 //                 //       borderRadius: BorderRadius.circular(20),
 //                 //       border: Border.all(
-//                 //         color: ProfessionalColors.accentGreen.withOpacity(0.3),
+//                 //         color: ProfessionalColorsForHomePages.accentGreen.withOpacity(0.3),
 //                 //         width: 1,
 //                 //       ),
 //                 //     ),
 //                 //     child: Text(
 //                 //       '${tvShowsList.length} Shows Available',
 //                 //       style: const TextStyle(
-//                 //         color: ProfessionalColors.textSecondary,
+//                 //         color: ProfessionalColorsForHomePages.textSecondary,
 //                 //         fontSize: 12,
 //                 //         fontWeight: FontWeight.w500,
 //                 //       ),
@@ -1108,22 +1108,22 @@
 //               shape: BoxShape.circle,
 //               gradient: LinearGradient(
 //                 colors: [
-//                   ProfessionalColors.accentGreen.withOpacity(0.2),
-//                   ProfessionalColors.accentGreen.withOpacity(0.1),
+//                   ProfessionalColorsForHomePages.accentGreen.withOpacity(0.2),
+//                   ProfessionalColorsForHomePages.accentGreen.withOpacity(0.1),
 //                 ],
 //               ),
 //             ),
 //             child: const Icon(
 //               Icons.live_tv_outlined,
 //               size: 40,
-//               color: ProfessionalColors.accentGreen,
+//               color: ProfessionalColorsForHomePages.accentGreen,
 //             ),
 //           ),
 //           const SizedBox(height: 24),
 //           const Text(
 //             'No TV Shows Found',
 //             style: TextStyle(
-//               color: ProfessionalColors.textPrimary,
+//               color: ProfessionalColorsForHomePages.textPrimary,
 //               fontSize: 18,
 //               fontWeight: FontWeight.w600,
 //             ),
@@ -1132,7 +1132,7 @@
 //           const Text(
 //             'Check back later for new shows',
 //             style: TextStyle(
-//               color: ProfessionalColors.textSecondary,
+//               color: ProfessionalColorsForHomePages.textSecondary,
 //               fontSize: 14,
 //             ),
 //           ),
@@ -1270,7 +1270,7 @@
 //   late Animation<double> _glowAnimation;
 //   late Animation<double> _shimmerAnimation;
 
-//   Color _dominantColor = ProfessionalColors.accentGreen;
+//   Color _dominantColor = ProfessionalColorsForHomePages.accentGreen;
 //   bool _isFocused = false;
 
 //   @override
@@ -1337,7 +1337,7 @@
 //   }
 
 //   void _generateDominantColor() {
-//     final colors = ProfessionalColors.gradientColors;
+//     final colors = ProfessionalColorsForHomePages.gradientColors;
 //     _dominantColor = colors[math.Random().nextInt(colors.length)];
 //   }
 
@@ -1449,8 +1449,8 @@
 //           begin: Alignment.topLeft,
 //           end: Alignment.bottomRight,
 //           colors: [
-//             ProfessionalColors.cardDark,
-//             ProfessionalColors.surfaceDark,
+//             ProfessionalColorsForHomePages.cardDark,
+//             ProfessionalColorsForHomePages.surfaceDark,
 //           ],
 //         ),
 //       ),
@@ -1460,13 +1460,13 @@
 //           Icon(
 //             Icons.live_tv_rounded,
 //             size: height * 0.25,
-//             color: ProfessionalColors.textSecondary,
+//             color: ProfessionalColorsForHomePages.textSecondary,
 //           ),
 //           const SizedBox(height: 8),
 //           Text(
 //             'TV SHOW',
 //             style: TextStyle(
-//               color: ProfessionalColors.textSecondary,
+//               color: ProfessionalColorsForHomePages.textSecondary,
 //               fontSize: 10,
 //               fontWeight: FontWeight.bold,
 //             ),
@@ -1475,13 +1475,13 @@
 //           Container(
 //             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
 //             decoration: BoxDecoration(
-//               color: ProfessionalColors.accentGreen.withOpacity(0.2),
+//               color: ProfessionalColorsForHomePages.accentGreen.withOpacity(0.2),
 //               borderRadius: BorderRadius.circular(6),
 //             ),
 //             child: const Text(
 //               'LIVE',
 //               style: TextStyle(
-//                 color: ProfessionalColors.accentGreen,
+//                 color: ProfessionalColorsForHomePages.accentGreen,
 //                 fontSize: 8,
 //                 fontWeight: FontWeight.bold,
 //               ),
@@ -1533,23 +1533,23 @@
 
 //   Widget _buildGenreBadge() {
 //     String genre = 'SHOW';
-//     Color badgeColor = ProfessionalColors.accentGreen;
+//     Color badgeColor = ProfessionalColorsForHomePages.accentGreen;
 
 //     if (widget.tvShow.genres != null) {
 //       if (widget.tvShow.genres!.toLowerCase().contains('news')) {
 //         genre = 'NEWS';
-//         badgeColor = ProfessionalColors.accentRed;
+//         badgeColor = ProfessionalColorsForHomePages.accentRed;
 //       } else if (widget.tvShow.genres!.toLowerCase().contains('sports')) {
 //         genre = 'SPORTS';
-//         badgeColor = ProfessionalColors.accentOrange;
+//         badgeColor = ProfessionalColorsForHomePages.accentOrange;
 //       } else if (widget.tvShow.genres!
 //           .toLowerCase()
 //           .contains('entertainment')) {
 //         genre = 'ENTERTAINMENT';
-//         badgeColor = ProfessionalColors.accentPink;
+//         badgeColor = ProfessionalColorsForHomePages.accentPink;
 //       } else if (widget.tvShow.genres!.toLowerCase().contains('documentary')) {
 //         genre = 'DOCUMENTARY';
-//         badgeColor = ProfessionalColors.accentBlue;
+//         badgeColor = ProfessionalColorsForHomePages.accentBlue;
 //       }
 //     }
 
@@ -1616,7 +1616,7 @@
 //         style: TextStyle(
 //           fontSize: _isFocused ? 13 : 11,
 //           fontWeight: FontWeight.w600,
-//           color: _isFocused ? _dominantColor : ProfessionalColors.textPrimary,
+//           color: _isFocused ? _dominantColor : ProfessionalColorsForHomePages.textPrimary,
 //           letterSpacing: 0.5,
 //           shadows: _isFocused
 //               ? [
@@ -1668,7 +1668,7 @@
 //   late Animation<double> _rotateAnimation;
 
 //   bool _isFocused = false;
-//   Color _currentColor = ProfessionalColors.accentGreen;
+//   Color _currentColor = ProfessionalColorsForHomePages.accentGreen;
 
 //   @override
 //   void initState() {
@@ -1704,8 +1704,8 @@
 //     setState(() {
 //       _isFocused = widget.focusNode.hasFocus;
 //       if (_isFocused) {
-//         _currentColor = ProfessionalColors.gradientColors[
-//             math.Random().nextInt(ProfessionalColors.gradientColors.length)];
+//         _currentColor = ProfessionalColorsForHomePages.gradientColors[
+//             math.Random().nextInt(ProfessionalColorsForHomePages.gradientColors.length)];
 //         HapticFeedback.mediumImpact();
 //       }
 //     });
@@ -1749,8 +1749,8 @@
 //                                 _currentColor.withOpacity(0.7),
 //                               ]
 //                             : [
-//                                 ProfessionalColors.cardDark,
-//                                 ProfessionalColors.surfaceDark,
+//                                 ProfessionalColorsForHomePages.cardDark,
+//                                 ProfessionalColorsForHomePages.surfaceDark,
 //                               ],
 //                       ),
 //                       boxShadow: [
@@ -1850,7 +1850,7 @@
 //       style: TextStyle(
 //         fontSize: _isFocused ? 13 : 11,
 //         fontWeight: FontWeight.w600,
-//         color: _isFocused ? _currentColor : ProfessionalColors.textPrimary,
+//         color: _isFocused ? _currentColor : ProfessionalColorsForHomePages.textPrimary,
 //         letterSpacing: 0.5,
 //         shadows: _isFocused
 //             ? [
@@ -1928,10 +1928,10 @@
 //                   shape: BoxShape.circle,
 //                   gradient: SweepGradient(
 //                     colors: [
-//                       ProfessionalColors.accentGreen,
-//                       ProfessionalColors.accentBlue,
-//                       ProfessionalColors.accentOrange,
-//                       ProfessionalColors.accentGreen,
+//                       ProfessionalColorsForHomePages.accentGreen,
+//                       ProfessionalColorsForHomePages.accentBlue,
+//                       ProfessionalColorsForHomePages.accentOrange,
+//                       ProfessionalColorsForHomePages.accentGreen,
 //                     ],
 //                     stops: [0.0, 0.3, 0.7, 1.0],
 //                     transform: GradientRotation(_animation.value * 2 * math.pi),
@@ -1941,11 +1941,11 @@
 //                   margin: const EdgeInsets.all(5),
 //                   decoration: const BoxDecoration(
 //                     shape: BoxShape.circle,
-//                     color: ProfessionalColors.primaryDark,
+//                     color: ProfessionalColorsForHomePages.primaryDark,
 //                   ),
 //                   child: const Icon(
 //                     Icons.live_tv_rounded,
-//                     color: ProfessionalColors.textPrimary,
+//                     color: ProfessionalColorsForHomePages.textPrimary,
 //                     size: 28,
 //                   ),
 //                 ),
@@ -1956,7 +1956,7 @@
 //           Text(
 //             widget.message,
 //             style: const TextStyle(
-//               color: ProfessionalColors.textPrimary,
+//               color: ProfessionalColorsForHomePages.textPrimary,
 //               fontSize: 16,
 //               fontWeight: FontWeight.w500,
 //             ),
@@ -1967,7 +1967,7 @@
 //             height: 3,
 //             decoration: BoxDecoration(
 //               borderRadius: BorderRadius.circular(2),
-//               color: ProfessionalColors.surfaceDark,
+//               color: ProfessionalColorsForHomePages.surfaceDark,
 //             ),
 //             child: AnimatedBuilder(
 //               animation: _animation,
@@ -1976,7 +1976,7 @@
 //                   value: _animation.value,
 //                   backgroundColor: Colors.transparent,
 //                   valueColor: const AlwaysStoppedAnimation<Color>(
-//                     ProfessionalColors.accentGreen,
+//                     ProfessionalColorsForHomePages.accentGreen,
 //                   ),
 //                 );
 //               },
@@ -2178,7 +2178,7 @@
 //   @override
 //   Widget build(BuildContext context) {
 //     return Scaffold(
-//       backgroundColor: ProfessionalColors.primaryDark,
+//       backgroundColor: ProfessionalColorsForHomePages.primaryDark,
 //       body: Stack(
 //         children: [
 //           // Background Gradient
@@ -2188,9 +2188,9 @@
 //                 begin: Alignment.topCenter,
 //                 end: Alignment.bottomCenter,
 //                 colors: [
-//                   ProfessionalColors.primaryDark,
-//                   ProfessionalColors.surfaceDark.withOpacity(0.8),
-//                   ProfessionalColors.primaryDark,
+//                   ProfessionalColorsForHomePages.primaryDark,
+//                   ProfessionalColorsForHomePages.surfaceDark.withOpacity(0.8),
+//                   ProfessionalColorsForHomePages.primaryDark,
 //                 ],
 //               ),
 //             ),
@@ -2226,8 +2226,8 @@
 //           begin: Alignment.topCenter,
 //           end: Alignment.bottomCenter,
 //           colors: [
-//             ProfessionalColors.surfaceDark.withOpacity(0.9),
-//             ProfessionalColors.surfaceDark.withOpacity(0.7),
+//             ProfessionalColorsForHomePages.surfaceDark.withOpacity(0.9),
+//             ProfessionalColorsForHomePages.surfaceDark.withOpacity(0.7),
 //             Colors.transparent,
 //           ],
 //         ),
@@ -2239,8 +2239,8 @@
 //               shape: BoxShape.circle,
 //               gradient: LinearGradient(
 //                 colors: [
-//                   ProfessionalColors.accentGreen.withOpacity(0.2),
-//                   ProfessionalColors.accentBlue.withOpacity(0.2),
+//                   ProfessionalColorsForHomePages.accentGreen.withOpacity(0.2),
+//                   ProfessionalColorsForHomePages.accentBlue.withOpacity(0.2),
 //                 ],
 //               ),
 //             ),
@@ -2261,8 +2261,8 @@
 //                 ShaderMask(
 //                   shaderCallback: (bounds) => const LinearGradient(
 //                     colors: [
-//                       ProfessionalColors.accentGreen,
-//                       ProfessionalColors.accentBlue,
+//                       ProfessionalColorsForHomePages.accentGreen,
+//                       ProfessionalColorsForHomePages.accentBlue,
 //                     ],
 //                   ).createShader(bounds),
 //                   child: Text(
@@ -2281,20 +2281,20 @@
 //                 //   decoration: BoxDecoration(
 //                 //     gradient: LinearGradient(
 //                 //       colors: [
-//                 //         ProfessionalColors.accentGreen.withOpacity(0.2),
-//                 //         ProfessionalColors.accentBlue.withOpacity(0.1),
+//                 //         ProfessionalColorsForHomePages.accentGreen.withOpacity(0.2),
+//                 //         ProfessionalColorsForHomePages.accentBlue.withOpacity(0.1),
 //                 //       ],
 //                 //     ),
 //                 //     borderRadius: BorderRadius.circular(15),
 //                 //     border: Border.all(
-//                 //       color: ProfessionalColors.accentGreen.withOpacity(0.3),
+//                 //       color: ProfessionalColorsForHomePages.accentGreen.withOpacity(0.3),
 //                 //       width: 1,
 //                 //     ),
 //                 //   ),
 //                 //   child: Text(
 //                 //     '${widget.tvShowsList.length} TV Shows Available',
 //                 //     style: const TextStyle(
-//                 //       color: ProfessionalColors.accentGreen,
+//                 //       color: ProfessionalColorsForHomePages.accentGreen,
 //                 //       fontSize: 12,
 //                 //       fontWeight: FontWeight.w500,
 //                 //     ),
@@ -2321,22 +2321,22 @@
 //                 shape: BoxShape.circle,
 //                 gradient: LinearGradient(
 //                   colors: [
-//                     ProfessionalColors.accentGreen.withOpacity(0.2),
-//                     ProfessionalColors.accentGreen.withOpacity(0.1),
+//                     ProfessionalColorsForHomePages.accentGreen.withOpacity(0.2),
+//                     ProfessionalColorsForHomePages.accentGreen.withOpacity(0.1),
 //                   ],
 //                 ),
 //               ),
 //               child: const Icon(
 //                 Icons.live_tv_outlined,
 //                 size: 40,
-//                 color: ProfessionalColors.accentGreen,
+//                 color: ProfessionalColorsForHomePages.accentGreen,
 //               ),
 //             ),
 //             const SizedBox(height: 24),
 //             Text(
 //               'No ${widget.title} Found',
 //               style: TextStyle(
-//                 color: ProfessionalColors.textPrimary,
+//                 color: ProfessionalColorsForHomePages.textPrimary,
 //                 fontSize: 18,
 //                 fontWeight: FontWeight.w600,
 //               ),
@@ -2345,7 +2345,7 @@
 //             const Text(
 //               'Check back later for new shows',
 //               style: TextStyle(
-//                 color: ProfessionalColors.textSecondary,
+//                 color: ProfessionalColorsForHomePages.textSecondary,
 //                 fontSize: 14,
 //               ),
 //             ),
@@ -2472,7 +2472,7 @@
 //   late Animation<double> _scaleAnimation;
 //   late Animation<double> _glowAnimation;
 
-//   Color _dominantColor = ProfessionalColors.accentGreen;
+//   Color _dominantColor = ProfessionalColorsForHomePages.accentGreen;
 //   bool _isFocused = false;
 
 //   @override
@@ -2525,7 +2525,7 @@
 //   }
 
 //   void _generateDominantColor() {
-//     final colors = ProfessionalColors.gradientColors;
+//     final colors = ProfessionalColorsForHomePages.gradientColors;
 //     _dominantColor = colors[math.Random().nextInt(colors.length)];
 //   }
 
@@ -2631,8 +2631,8 @@
 //           begin: Alignment.topLeft,
 //           end: Alignment.bottomRight,
 //           colors: [
-//             ProfessionalColors.cardDark,
-//             ProfessionalColors.surfaceDark,
+//             ProfessionalColorsForHomePages.cardDark,
+//             ProfessionalColorsForHomePages.surfaceDark,
 //           ],
 //         ),
 //       ),
@@ -2643,13 +2643,13 @@
 //             const Icon(
 //               Icons.live_tv_outlined,
 //               size: 40,
-//               color: ProfessionalColors.textSecondary,
+//               color: ProfessionalColorsForHomePages.textSecondary,
 //             ),
 //             const SizedBox(height: 8),
 //             Text(
 //               'TV SHOW',
 //               style: TextStyle(
-//                 color: ProfessionalColors.textSecondary,
+//                 color: ProfessionalColorsForHomePages.textSecondary,
 //                 fontSize: 10,
 //                 fontWeight: FontWeight.bold,
 //               ),
@@ -2658,13 +2658,13 @@
 //             Container(
 //               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
 //               decoration: BoxDecoration(
-//                 color: ProfessionalColors.accentGreen.withOpacity(0.2),
+//                 color: ProfessionalColorsForHomePages.accentGreen.withOpacity(0.2),
 //                 borderRadius: BorderRadius.circular(6),
 //               ),
 //               child: const Text(
 //                 'LIVE',
 //                 style: TextStyle(
-//                   color: ProfessionalColors.accentGreen,
+//                   color: ProfessionalColorsForHomePages.accentGreen,
 //                   fontSize: 8,
 //                   fontWeight: FontWeight.bold,
 //                 ),
@@ -2749,17 +2749,17 @@
 //                     padding:
 //                         const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
 //                     decoration: BoxDecoration(
-//                       color: ProfessionalColors.accentGreen.withOpacity(0.3),
+//                       color: ProfessionalColorsForHomePages.accentGreen.withOpacity(0.3),
 //                       borderRadius: BorderRadius.circular(8),
 //                       border: Border.all(
-//                         color: ProfessionalColors.accentGreen.withOpacity(0.5),
+//                         color: ProfessionalColorsForHomePages.accentGreen.withOpacity(0.5),
 //                         width: 1,
 //                       ),
 //                     ),
 //                     child: Text(
 //                       widget.tvShow.genres!.toUpperCase(),
 //                       style: const TextStyle(
-//                         color: ProfessionalColors.accentGreen,
+//                         color: ProfessionalColorsForHomePages.accentGreen,
 //                         fontSize: 8,
 //                         fontWeight: FontWeight.bold,
 //                       ),
@@ -2840,7 +2840,7 @@
 // import 'dart:ui';
 
 // // ✅ Professional Color Palette (same as WebSeries)
-// class ProfessionalColors {
+// class ProfessionalColorsForHomePages {
 //   static const primaryDark = Color(0xFF0A0E1A);
 //   static const surfaceDark = Color(0xFF1A1D29);
 //   static const cardDark = Color(0xFF2A2D3A);
@@ -3179,7 +3179,7 @@
 //   List<TVShowModel> tvShowsList = [];
 //   bool isLoading = true;
 //   int focusedIndex = -1;
-//   Color _currentAccentColor = ProfessionalColors.accentGreen;
+//   Color _currentAccentColor = ProfessionalColorsForHomePages.accentGreen;
 
 //   // Animation Controllers
 //   late AnimationController _headerAnimationController;
@@ -3385,7 +3385,7 @@
 //           ScaffoldMessenger.of(context).showSnackBar(
 //             SnackBar(
 //               content: const Text('TV Shows refreshed successfully'),
-//               backgroundColor: ProfessionalColors.accentGreen,
+//               backgroundColor: ProfessionalColorsForHomePages.accentGreen,
 //               behavior: SnackBarBehavior.floating,
 //               shape: RoundedRectangleBorder(
 //                 borderRadius: BorderRadius.circular(10),
@@ -3507,7 +3507,7 @@
 //       builder: (context, colorProvider, child) {
 //         final bgColor = colorProvider.isItemFocused
 //             ? colorProvider.dominantColor.withOpacity(0.1)
-//             : ProfessionalColors.primaryDark;
+//             : ProfessionalColorsForHomePages.primaryDark;
 
 //         return Scaffold(
 //           backgroundColor: Colors.transparent,
@@ -3520,7 +3520,7 @@
 //                 colors: [
 //                   bgColor,
 //                   bgColor.withOpacity(0.8),
-//                   ProfessionalColors.primaryDark,
+//                   ProfessionalColorsForHomePages.primaryDark,
 //                 ],
 //               ),
 //             ),
@@ -3558,9 +3558,9 @@
 //       onFocusChange: (hasFocus) async {
 //         if (hasFocus && mounted) {
 //           try {
-//             Color dominantColor = ProfessionalColors.gradientColors[
+//             Color dominantColor = ProfessionalColorsForHomePages.gradientColors[
 //                 math.Random()
-//                     .nextInt(ProfessionalColors.gradientColors.length)];
+//                     .nextInt(ProfessionalColorsForHomePages.gradientColors.length)];
 
 //             setState(() {
 //               _currentAccentColor = dominantColor;
@@ -3790,8 +3790,8 @@
 //             ShaderMask(
 //               shaderCallback: (bounds) => const LinearGradient(
 //                 colors: [
-//                   ProfessionalColors.accentGreen,
-//                   ProfessionalColors.accentBlue,
+//                   ProfessionalColorsForHomePages.accentGreen,
+//                   ProfessionalColorsForHomePages.accentBlue,
 //                 ],
 //               ).createShader(bounds),
 //               child: Text(
@@ -3837,22 +3837,22 @@
 //               shape: BoxShape.circle,
 //               gradient: LinearGradient(
 //                 colors: [
-//                   ProfessionalColors.accentGreen.withOpacity(0.2),
-//                   ProfessionalColors.accentGreen.withOpacity(0.1),
+//                   ProfessionalColorsForHomePages.accentGreen.withOpacity(0.2),
+//                   ProfessionalColorsForHomePages.accentGreen.withOpacity(0.1),
 //                 ],
 //               ),
 //             ),
 //             child: const Icon(
 //               Icons.live_tv_outlined,
 //               size: 40,
-//               color: ProfessionalColors.accentGreen,
+//               color: ProfessionalColorsForHomePages.accentGreen,
 //             ),
 //           ),
 //           const SizedBox(height: 24),
 //           const Text(
 //             'No TV Shows Found',
 //             style: TextStyle(
-//               color: ProfessionalColors.textPrimary,
+//               color: ProfessionalColorsForHomePages.textPrimary,
 //               fontSize: 18,
 //               fontWeight: FontWeight.w600,
 //             ),
@@ -3861,7 +3861,7 @@
 //           const Text(
 //             'Check back later for new shows',
 //             style: TextStyle(
-//               color: ProfessionalColors.textSecondary,
+//               color: ProfessionalColorsForHomePages.textSecondary,
 //               fontSize: 14,
 //             ),
 //           ),
@@ -4027,7 +4027,7 @@
 //   late Animation<double> _glowAnimation;
 //   late Animation<double> _shimmerAnimation;
 
-//   Color _dominantColor = ProfessionalColors.accentGreen;
+//   Color _dominantColor = ProfessionalColorsForHomePages.accentGreen;
 //   bool _isFocused = false;
 
 //   @override
@@ -4094,7 +4094,7 @@
 //   }
 
 //   void _generateDominantColor() {
-//     final colors = ProfessionalColors.gradientColors;
+//     final colors = ProfessionalColorsForHomePages.gradientColors;
 //     _dominantColor = colors[math.Random().nextInt(colors.length)];
 //   }
 
@@ -4206,8 +4206,8 @@
 //           begin: Alignment.topLeft,
 //           end: Alignment.bottomRight,
 //           colors: [
-//             ProfessionalColors.cardDark,
-//             ProfessionalColors.surfaceDark,
+//             ProfessionalColorsForHomePages.cardDark,
+//             ProfessionalColorsForHomePages.surfaceDark,
 //           ],
 //         ),
 //       ),
@@ -4217,13 +4217,13 @@
 //           Icon(
 //             Icons.live_tv_rounded,
 //             size: height * 0.25,
-//             color: ProfessionalColors.textSecondary,
+//             color: ProfessionalColorsForHomePages.textSecondary,
 //           ),
 //           const SizedBox(height: 8),
 //           Text(
 //             'TV SHOW',
 //             style: TextStyle(
-//               color: ProfessionalColors.textSecondary,
+//               color: ProfessionalColorsForHomePages.textSecondary,
 //               fontSize: 10,
 //               fontWeight: FontWeight.bold,
 //             ),
@@ -4232,13 +4232,13 @@
 //           Container(
 //             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
 //             decoration: BoxDecoration(
-//               color: ProfessionalColors.accentGreen.withOpacity(0.2),
+//               color: ProfessionalColorsForHomePages.accentGreen.withOpacity(0.2),
 //               borderRadius: BorderRadius.circular(6),
 //             ),
 //             child: const Text(
 //               'LIVE',
 //               style: TextStyle(
-//                 color: ProfessionalColors.accentGreen,
+//                 color: ProfessionalColorsForHomePages.accentGreen,
 //                 fontSize: 8,
 //                 fontWeight: FontWeight.bold,
 //               ),
@@ -4290,23 +4290,23 @@
 
 //   Widget _buildGenreBadge() {
 //     String genre = 'SHOW';
-//     Color badgeColor = ProfessionalColors.accentGreen;
+//     Color badgeColor = ProfessionalColorsForHomePages.accentGreen;
 
 //     if (widget.tvShow.genres != null) {
 //       if (widget.tvShow.genres!.toLowerCase().contains('news')) {
 //         genre = 'NEWS';
-//         badgeColor = ProfessionalColors.accentRed;
+//         badgeColor = ProfessionalColorsForHomePages.accentRed;
 //       } else if (widget.tvShow.genres!.toLowerCase().contains('sports')) {
 //         genre = 'SPORTS';
-//         badgeColor = ProfessionalColors.accentOrange;
+//         badgeColor = ProfessionalColorsForHomePages.accentOrange;
 //       } else if (widget.tvShow.genres!
 //           .toLowerCase()
 //           .contains('entertainment')) {
 //         genre = 'ENTERTAINMENT';
-//         badgeColor = ProfessionalColors.accentPink;
+//         badgeColor = ProfessionalColorsForHomePages.accentPink;
 //       } else if (widget.tvShow.genres!.toLowerCase().contains('documentary')) {
 //         genre = 'DOCUMENTARY';
-//         badgeColor = ProfessionalColors.accentBlue;
+//         badgeColor = ProfessionalColorsForHomePages.accentBlue;
 //       }
 //     }
 
@@ -4373,7 +4373,7 @@
 //         style: TextStyle(
 //           fontSize: _isFocused ? 13 : 11,
 //           fontWeight: FontWeight.w600,
-//           color: _isFocused ? _dominantColor : ProfessionalColors.textPrimary,
+//           color: _isFocused ? _dominantColor : ProfessionalColorsForHomePages.textPrimary,
 //           letterSpacing: 0.5,
 //           shadows: _isFocused
 //               ? [
@@ -4454,10 +4454,10 @@
 //                   shape: BoxShape.circle,
 //                   gradient: SweepGradient(
 //                     colors: [
-//                       ProfessionalColors.accentGreen,
-//                       ProfessionalColors.accentBlue,
-//                       ProfessionalColors.accentOrange,
-//                       ProfessionalColors.accentGreen,
+//                       ProfessionalColorsForHomePages.accentGreen,
+//                       ProfessionalColorsForHomePages.accentBlue,
+//                       ProfessionalColorsForHomePages.accentOrange,
+//                       ProfessionalColorsForHomePages.accentGreen,
 //                     ],
 //                     stops: [0.0, 0.3, 0.7, 1.0],
 //                     transform: GradientRotation(_animation.value * 2 * math.pi),
@@ -4467,11 +4467,11 @@
 //                   margin: const EdgeInsets.all(5),
 //                   decoration: const BoxDecoration(
 //                     shape: BoxShape.circle,
-//                     color: ProfessionalColors.primaryDark,
+//                     color: ProfessionalColorsForHomePages.primaryDark,
 //                   ),
 //                   child: const Icon(
 //                     Icons.live_tv_rounded,
-//                     color: ProfessionalColors.textPrimary,
+//                     color: ProfessionalColorsForHomePages.textPrimary,
 //                     size: 28,
 //                   ),
 //                 ),
@@ -4482,7 +4482,7 @@
 //           Text(
 //             widget.message,
 //             style: const TextStyle(
-//               color: ProfessionalColors.textPrimary,
+//               color: ProfessionalColorsForHomePages.textPrimary,
 //               fontSize: 16,
 //               fontWeight: FontWeight.w500,
 //             ),
@@ -4493,7 +4493,7 @@
 //             height: 3,
 //             decoration: BoxDecoration(
 //               borderRadius: BorderRadius.circular(2),
-//               color: ProfessionalColors.surfaceDark,
+//               color: ProfessionalColorsForHomePages.surfaceDark,
 //             ),
 //             child: AnimatedBuilder(
 //               animation: _animation,
@@ -4502,7 +4502,7 @@
 //                   value: _animation.value,
 //                   backgroundColor: Colors.transparent,
 //                   valueColor: const AlwaysStoppedAnimation<Color>(
-//                     ProfessionalColors.accentGreen,
+//                     ProfessionalColorsForHomePages.accentGreen,
 //                   ),
 //                 );
 //               },
@@ -4533,7 +4533,7 @@
 // import 'dart:ui';
 
 // // ✅ Professional Color Palette (same as WebSeries)
-// class ProfessionalColors {
+// class ProfessionalColorsForHomePages {
 //   static const primaryDark = Color(0xFF0A0E1A);
 //   static const surfaceDark = Color(0xFF1A1D29);
 //   static const cardDark = Color(0xFF2A2D3A);
@@ -4872,7 +4872,7 @@
 //   List<TVShowModel> tvShowsList = [];
 //   bool isLoading = true;
 //   int focusedIndex = -1;
-//   Color _currentAccentColor = ProfessionalColors.accentGreen;
+//   Color _currentAccentColor = ProfessionalColorsForHomePages.accentGreen;
 
 //   // Animation Controllers
 //   late AnimationController _headerAnimationController;
@@ -5122,7 +5122,7 @@
 //           ScaffoldMessenger.of(context).showSnackBar(
 //             SnackBar(
 //               content: const Text('TV Shows refreshed successfully'),
-//               backgroundColor: ProfessionalColors.accentGreen,
+//               backgroundColor: ProfessionalColorsForHomePages.accentGreen,
 //               behavior: SnackBarBehavior.floating,
 //               shape: RoundedRectangleBorder( borderRadius: BorderRadius.circular(10), ),
 //             ),
@@ -5226,7 +5226,7 @@
 //       builder: (context, colorProvider, child) {
 //         final bgColor = colorProvider.isItemFocused
 //             ? colorProvider.dominantColor.withOpacity(0.1)
-//             : ProfessionalColors.primaryDark;
+//             : ProfessionalColorsForHomePages.primaryDark;
 
 //         return Scaffold(
 //           backgroundColor: Colors.transparent,
@@ -5238,7 +5238,7 @@
 //                 colors: [
 //                   bgColor,
 //                   bgColor.withOpacity(0.8),
-//                   ProfessionalColors.primaryDark,
+//                   ProfessionalColorsForHomePages.primaryDark,
 //                 ],
 //               ),
 //             ),
@@ -5269,9 +5269,9 @@
 //          if (!mounted) return; // Add mount check
 //         if (hasFocus) {
 //           try {
-//             Color dominantColor = ProfessionalColors.gradientColors[
+//             Color dominantColor = ProfessionalColorsForHomePages.gradientColors[
 //                 math.Random()
-//                     .nextInt(ProfessionalColors.gradientColors.length)];
+//                     .nextInt(ProfessionalColorsForHomePages.gradientColors.length)];
 
 //             setState(() {
 //               _currentAccentColor = dominantColor;
@@ -5409,8 +5409,8 @@
 //             ShaderMask(
 //               shaderCallback: (bounds) => const LinearGradient(
 //                 colors: [
-//                   ProfessionalColors.accentGreen,
-//                   ProfessionalColors.accentBlue,
+//                   ProfessionalColorsForHomePages.accentGreen,
+//                   ProfessionalColorsForHomePages.accentBlue,
 //                 ],
 //               ).createShader(bounds),
 //               child: Text(
@@ -5452,22 +5452,22 @@
 //               shape: BoxShape.circle,
 //               gradient: LinearGradient(
 //                 colors: [
-//                   ProfessionalColors.accentGreen.withOpacity(0.2),
-//                   ProfessionalColors.accentGreen.withOpacity(0.1),
+//                   ProfessionalColorsForHomePages.accentGreen.withOpacity(0.2),
+//                   ProfessionalColorsForHomePages.accentGreen.withOpacity(0.1),
 //                 ],
 //               ),
 //             ),
 //             child: const Icon(
 //               Icons.live_tv_outlined,
 //               size: 40,
-//               color: ProfessionalColors.accentGreen,
+//               color: ProfessionalColorsForHomePages.accentGreen,
 //             ),
 //           ),
 //           const SizedBox(height: 24),
 //           const Text(
 //             'No TV Shows Found',
 //             style: TextStyle(
-//               color: ProfessionalColors.textPrimary,
+//               color: ProfessionalColorsForHomePages.textPrimary,
 //               fontSize: 18,
 //               fontWeight: FontWeight.w600,
 //             ),
@@ -5476,7 +5476,7 @@
 //           const Text(
 //             'Check back later for new shows',
 //             style: TextStyle(
-//               color: ProfessionalColors.textSecondary,
+//               color: ProfessionalColorsForHomePages.textSecondary,
 //               fontSize: 14,
 //             ),
 //           ),
@@ -5523,7 +5523,7 @@
 //   late Animation<double> _glowAnimation;
 //   late Animation<double> _shimmerAnimation;
 
-//   Color _dominantColor = ProfessionalColors.accentGreen;
+//   Color _dominantColor = ProfessionalColorsForHomePages.accentGreen;
 //   bool _isFocused = false;
 
 //   @override
@@ -5591,7 +5591,7 @@
 //   }
 
 //   void _generateDominantColor() {
-//     final colors = ProfessionalColors.gradientColors;
+//     final colors = ProfessionalColorsForHomePages.gradientColors;
 //     _dominantColor = colors[math.Random().nextInt(colors.length)];
 //   }
 
@@ -5703,8 +5703,8 @@
 //           begin: Alignment.topLeft,
 //           end: Alignment.bottomRight,
 //           colors: [
-//             ProfessionalColors.cardDark,
-//             ProfessionalColors.surfaceDark,
+//             ProfessionalColorsForHomePages.cardDark,
+//             ProfessionalColorsForHomePages.surfaceDark,
 //           ],
 //         ),
 //       ),
@@ -5714,13 +5714,13 @@
 //           Icon(
 //             Icons.live_tv_rounded,
 //             size: height * 0.25,
-//             color: ProfessionalColors.textSecondary,
+//             color: ProfessionalColorsForHomePages.textSecondary,
 //           ),
 //           const SizedBox(height: 8),
 //           Text(
 //             'TV SHOW',
 //             style: TextStyle(
-//               color: ProfessionalColors.textSecondary,
+//               color: ProfessionalColorsForHomePages.textSecondary,
 //               fontSize: 10,
 //               fontWeight: FontWeight.bold,
 //             ),
@@ -5729,13 +5729,13 @@
 //           Container(
 //             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
 //             decoration: BoxDecoration(
-//               color: ProfessionalColors.accentGreen.withOpacity(0.2),
+//               color: ProfessionalColorsForHomePages.accentGreen.withOpacity(0.2),
 //               borderRadius: BorderRadius.circular(6),
 //             ),
 //             child: const Text(
 //               'LIVE',
 //               style: TextStyle(
-//                 color: ProfessionalColors.accentGreen,
+//                 color: ProfessionalColorsForHomePages.accentGreen,
 //                 fontSize: 8,
 //                 fontWeight: FontWeight.bold,
 //               ),
@@ -5787,23 +5787,23 @@
 
 //   Widget _buildGenreBadge() {
 //     String genre = 'SHOW';
-//     Color badgeColor = ProfessionalColors.accentGreen;
+//     Color badgeColor = ProfessionalColorsForHomePages.accentGreen;
 
 //     if (widget.tvShow.genres != null) {
 //       if (widget.tvShow.genres!.toLowerCase().contains('news')) {
 //         genre = 'NEWS';
-//         badgeColor = ProfessionalColors.accentRed;
+//         badgeColor = ProfessionalColorsForHomePages.accentRed;
 //       } else if (widget.tvShow.genres!.toLowerCase().contains('sports')) {
 //         genre = 'SPORTS';
-//         badgeColor = ProfessionalColors.accentOrange;
+//         badgeColor = ProfessionalColorsForHomePages.accentOrange;
 //       } else if (widget.tvShow.genres!
 //           .toLowerCase()
 //           .contains('entertainment')) {
 //         genre = 'ENTERTAINMENT';
-//         badgeColor = ProfessionalColors.accentPink;
+//         badgeColor = ProfessionalColorsForHomePages.accentPink;
 //       } else if (widget.tvShow.genres!.toLowerCase().contains('documentary')) {
 //         genre = 'DOCUMENTARY';
-//         badgeColor = ProfessionalColors.accentBlue;
+//         badgeColor = ProfessionalColorsForHomePages.accentBlue;
 //       }
 //     }
 
@@ -5870,7 +5870,7 @@
 //         style: TextStyle(
 //           fontSize: _isFocused ? 13 : 11,
 //           fontWeight: FontWeight.w600,
-//           color: _isFocused ? _dominantColor : ProfessionalColors.textPrimary,
+//           color: _isFocused ? _dominantColor : ProfessionalColorsForHomePages.textPrimary,
 //           letterSpacing: 0.5,
 //           shadows: _isFocused
 //               ? [
@@ -5949,10 +5949,10 @@
 //                   shape: BoxShape.circle,
 //                   gradient: SweepGradient(
 //                     colors: [
-//                       ProfessionalColors.accentGreen,
-//                       ProfessionalColors.accentBlue,
-//                       ProfessionalColors.accentOrange,
-//                       ProfessionalColors.accentGreen,
+//                       ProfessionalColorsForHomePages.accentGreen,
+//                       ProfessionalColorsForHomePages.accentBlue,
+//                       ProfessionalColorsForHomePages.accentOrange,
+//                       ProfessionalColorsForHomePages.accentGreen,
 //                     ],
 //                     stops: [0.0, 0.3, 0.7, 1.0],
 //                     transform: GradientRotation(_animation.value * 2 * math.pi),
@@ -5962,11 +5962,11 @@
 //                   margin: const EdgeInsets.all(5),
 //                   decoration: const BoxDecoration(
 //                     shape: BoxShape.circle,
-//                     color: ProfessionalColors.primaryDark,
+//                     color: ProfessionalColorsForHomePages.primaryDark,
 //                   ),
 //                   child: const Icon(
 //                     Icons.live_tv_rounded,
-//                     color: ProfessionalColors.textPrimary,
+//                     color: ProfessionalColorsForHomePages.textPrimary,
 //                     size: 28,
 //                   ),
 //                 ),
@@ -5977,7 +5977,7 @@
 //           Text(
 //             widget.message,
 //             style: const TextStyle(
-//               color: ProfessionalColors.textPrimary,
+//               color: ProfessionalColorsForHomePages.textPrimary,
 //               fontSize: 16,
 //               fontWeight: FontWeight.w500,
 //             ),
@@ -5988,7 +5988,7 @@
 //             height: 3,
 //             decoration: BoxDecoration(
 //               borderRadius: BorderRadius.circular(2),
-//               color: ProfessionalColors.surfaceDark,
+//               color: ProfessionalColorsForHomePages.surfaceDark,
 //             ),
 //             child: AnimatedBuilder(
 //               animation: _animation,
@@ -5997,7 +5997,7 @@
 //                   value: _animation.value,
 //                   backgroundColor: Colors.transparent,
 //                   valueColor: const AlwaysStoppedAnimation<Color>(
-//                     ProfessionalColors.accentGreen,
+//                     ProfessionalColorsForHomePages.accentGreen,
 //                   ),
 //                 );
 //               },
@@ -6099,7 +6099,7 @@
 // import 'dart:ui';
 
 // // ✅ Professional Color Palette (Copied)
-// class ProfessionalColors {
+// class ProfessionalColorsForHomePages {
 //   static const primaryDark = Color(0xFF0A0E1A);
 //   static const surfaceDark = Color(0xFF1A1D29);
 //   static const cardDark = Color(0xFF2A2D3A);
@@ -6423,7 +6423,7 @@
 //   bool _showViewAll = false;
 //   bool isLoading = true;
 //   int focusedIndex = -1;
-//   Color _currentAccentColor = ProfessionalColors.accentGreen;
+//   Color _currentAccentColor = ProfessionalColorsForHomePages.accentGreen;
 
 //   // Animation Controllers
 //   late AnimationController _headerAnimationController;
@@ -6726,7 +6726,7 @@
 //       builder: (context, colorProvider, child) {
 //         final bgColor = colorProvider.isItemFocused
 //             ? colorProvider.dominantColor.withOpacity(0.1)
-//             : ProfessionalColors.primaryDark;
+//             : ProfessionalColorsForHomePages.primaryDark;
 
 //         return Scaffold(
 //           backgroundColor: Colors.transparent,
@@ -6738,7 +6738,7 @@
 //                 colors: [
 //                   bgColor,
 //                   bgColor.withOpacity(0.8),
-//                   ProfessionalColors.primaryDark,
+//                   ProfessionalColorsForHomePages.primaryDark,
 //                 ],
 //               ),
 //             ),
@@ -6770,8 +6770,8 @@
 //   //       if (!mounted) return;
 //   //       if (hasFocus) {
 //   //         try {
-//   //           Color dominantColor = ProfessionalColors.gradientColors[
-//   //               math.Random().nextInt(ProfessionalColors.gradientColors.length)];
+//   //           Color dominantColor = ProfessionalColorsForHomePages.gradientColors[
+//   //               math.Random().nextInt(ProfessionalColorsForHomePages.gradientColors.length)];
 //   //           setState(() {
 //   //             _currentAccentColor = dominantColor;
 //   //             focusedIndex = index;
@@ -6896,9 +6896,9 @@
 //         if (!mounted) return;
 //         if (hasFocus) {
 //           try {
-//             Color dominantColor = ProfessionalColors.gradientColors[
+//             Color dominantColor = ProfessionalColorsForHomePages.gradientColors[
 //                 math.Random()
-//                     .nextInt(ProfessionalColors.gradientColors.length)];
+//                     .nextInt(ProfessionalColorsForHomePages.gradientColors.length)];
 //             setState(() {
 //               _currentAccentColor = dominantColor;
 //               focusedIndex = index;
@@ -7028,7 +7028,7 @@
 //   //         });
 //   //         context
 //   //             .read<ColorProvider>()
-//   //             .updateColor(ProfessionalColors.accentPurple, true);
+//   //             .updateColor(ProfessionalColorsForHomePages.accentPurple, true);
 //   //       } else {
 //   //         context.read<ColorProvider>().resetColor();
 //   //       }
@@ -7101,7 +7101,7 @@
 //           });
 //           context
 //               .read<ColorProvider>()
-//               .updateColor(ProfessionalColors.accentPurple, true);
+//               .updateColor(ProfessionalColorsForHomePages.accentPurple, true);
 //           _scrollToPosition(focusedIndex); // Scroll when focused
 //         } else {
 //           // Only reset color if no other item in this row has focus
@@ -7229,8 +7229,8 @@
 //             ShaderMask(
 //               shaderCallback: (bounds) => const LinearGradient(
 //                 colors: [
-//                   ProfessionalColors.accentGreen,
-//                   ProfessionalColors.accentBlue,
+//                   ProfessionalColorsForHomePages.accentGreen,
+//                   ProfessionalColorsForHomePages.accentBlue,
 //                 ],
 //               ).createShader(bounds),
 //               child: const Text(
@@ -7272,22 +7272,22 @@
 //               shape: BoxShape.circle,
 //               gradient: LinearGradient(
 //                 colors: [
-//                   ProfessionalColors.accentGreen.withOpacity(0.2),
-//                   ProfessionalColors.accentGreen.withOpacity(0.1),
+//                   ProfessionalColorsForHomePages.accentGreen.withOpacity(0.2),
+//                   ProfessionalColorsForHomePages.accentGreen.withOpacity(0.1),
 //                 ],
 //               ),
 //             ),
 //             child: const Icon(
 //               Icons.live_tv_outlined, // ✅ Icon Updated
 //               size: 40,
-//               color: ProfessionalColors.accentGreen,
+//               color: ProfessionalColorsForHomePages.accentGreen,
 //             ),
 //           ),
 //           const SizedBox(height: 24),
 //           const Text(
 //             'No TV Shows Found', // ✅ Text Updated
 //             style: TextStyle(
-//               color: ProfessionalColors.textPrimary,
+//               color: ProfessionalColorsForHomePages.textPrimary,
 //               fontSize: 18,
 //               fontWeight: FontWeight.w600,
 //             ),
@@ -7296,7 +7296,7 @@
 //           const Text(
 //             'Check back later for new shows', // ✅ Text Updated
 //             style: TextStyle(
-//               color: ProfessionalColors.textSecondary,
+//               color: ProfessionalColorsForHomePages.textSecondary,
 //               fontSize: 14,
 //             ),
 //           ),
@@ -7340,7 +7340,7 @@
 //   late Animation<double> _glowAnimation;
 //   late Animation<double> _shimmerAnimation;
 
-//   Color _dominantColor = ProfessionalColors.accentGreen;
+//   Color _dominantColor = ProfessionalColorsForHomePages.accentGreen;
 //   bool _isFocused = false;
 
 //   @override
@@ -7383,7 +7383,7 @@
 //   }
 
 //   void _generateDominantColor() {
-//     final colors = ProfessionalColors.gradientColors;
+//     final colors = ProfessionalColorsForHomePages.gradientColors;
 //     _dominantColor = colors[math.Random().nextInt(colors.length)];
 //   }
 
@@ -7489,8 +7489,8 @@
 //           begin: Alignment.topLeft,
 //           end: Alignment.bottomRight,
 //           colors: [
-//             ProfessionalColors.cardDark,
-//             ProfessionalColors.surfaceDark,
+//             ProfessionalColorsForHomePages.cardDark,
+//             ProfessionalColorsForHomePages.surfaceDark,
 //           ],
 //         ),
 //       ),
@@ -7500,13 +7500,13 @@
 //           Icon(
 //             Icons.live_tv_rounded, // ✅ Updated Icon
 //             size: height * 0.25,
-//             color: ProfessionalColors.textSecondary,
+//             color: ProfessionalColorsForHomePages.textSecondary,
 //           ),
 //           const SizedBox(height: 8),
 //           const Text(
 //             'TV SHOW', // ✅ Updated Text
 //             style: TextStyle(
-//               color: ProfessionalColors.textSecondary,
+//               color: ProfessionalColorsForHomePages.textSecondary,
 //               fontSize: 10,
 //               fontWeight: FontWeight.bold,
 //             ),
@@ -7598,7 +7598,7 @@
 //         style: TextStyle(
 //           fontSize: _isFocused ? 13 : 11,
 //           fontWeight: FontWeight.w600,
-//           color: _isFocused ? _dominantColor : ProfessionalColors.textPrimary,
+//           color: _isFocused ? _dominantColor : ProfessionalColorsForHomePages.textPrimary,
 //           letterSpacing: 0.5,
 //           shadows: _isFocused
 //               ? [
@@ -7643,7 +7643,7 @@
 //   late AnimationController _scaleController;
 //   late Animation<double> _scaleAnimation;
 //   bool _isFocused = false;
-//   final Color _focusColor = ProfessionalColors.accentPurple;
+//   final Color _focusColor = ProfessionalColorsForHomePages.accentPurple;
 
 //   @override
 //   void initState() {
@@ -7710,8 +7710,8 @@
 //           begin: Alignment.topLeft,
 //           end: Alignment.bottomRight,
 //           colors: [
-//             ProfessionalColors.cardDark.withOpacity(0.8),
-//             ProfessionalColors.surfaceDark.withOpacity(0.8),
+//             ProfessionalColorsForHomePages.cardDark.withOpacity(0.8),
+//             ProfessionalColorsForHomePages.surfaceDark.withOpacity(0.8),
 //           ],
 //         ),
 //         border: Border.all(
@@ -7738,14 +7738,14 @@
 //                 Icons.arrow_forward_ios_rounded,
 //                 size: 30,
 //                 color:
-//                     _isFocused ? _focusColor : ProfessionalColors.textPrimary,
+//                     _isFocused ? _focusColor : ProfessionalColorsForHomePages.textPrimary,
 //               ),
 //               const SizedBox(height: 8),
 //               Text(
 //                 'VIEW ALL',
 //                 style: TextStyle(
 //                   color:
-//                       _isFocused ? _focusColor : ProfessionalColors.textPrimary,
+//                       _isFocused ? _focusColor : ProfessionalColorsForHomePages.textPrimary,
 //                   fontSize: 12,
 //                   fontWeight: FontWeight.bold,
 //                 ),
@@ -7765,7 +7765,7 @@
 //         style: TextStyle(
 //           fontSize: _isFocused ? 13 : 11,
 //           fontWeight: FontWeight.w600,
-//           color: _isFocused ? _focusColor : ProfessionalColors.textPrimary,
+//           color: _isFocused ? _focusColor : ProfessionalColorsForHomePages.textPrimary,
 //         ),
 //         child: const Text(
 //           'SEE ALL',
@@ -7828,10 +7828,10 @@
 //                   shape: BoxShape.circle,
 //                   gradient: SweepGradient(
 //                     colors: const [
-//                       ProfessionalColors.accentGreen,
-//                       ProfessionalColors.accentBlue,
-//                       ProfessionalColors.accentOrange,
-//                       ProfessionalColors.accentGreen,
+//                       ProfessionalColorsForHomePages.accentGreen,
+//                       ProfessionalColorsForHomePages.accentBlue,
+//                       ProfessionalColorsForHomePages.accentOrange,
+//                       ProfessionalColorsForHomePages.accentGreen,
 //                     ],
 //                     stops: [0.0, 0.3, 0.7, 1.0],
 //                     transform: GradientRotation(_animation.value * 2 * math.pi),
@@ -7841,11 +7841,11 @@
 //                   margin: const EdgeInsets.all(5),
 //                   decoration: const BoxDecoration(
 //                     shape: BoxShape.circle,
-//                     color: ProfessionalColors.primaryDark,
+//                     color: ProfessionalColorsForHomePages.primaryDark,
 //                   ),
 //                   child: const Icon(
 //                     Icons.live_tv_rounded,
-//                     color: ProfessionalColors.textPrimary,
+//                     color: ProfessionalColorsForHomePages.textPrimary,
 //                     size: 28,
 //                   ),
 //                 ),
@@ -7856,7 +7856,7 @@
 //           Text(
 //             widget.message,
 //             style: const TextStyle(
-//               color: ProfessionalColors.textPrimary,
+//               color: ProfessionalColorsForHomePages.textPrimary,
 //               fontSize: 16,
 //               fontWeight: FontWeight.w500,
 //             ),
@@ -7876,10 +7876,10 @@
 //   @override
 //   Widget build(BuildContext context) {
 //     return Scaffold(
-//       backgroundColor: ProfessionalColors.primaryDark,
+//       backgroundColor: ProfessionalColorsForHomePages.primaryDark,
 //       appBar: AppBar(
 //         title: Text('All TV Show Networks (${networks.length})'),
-//         backgroundColor: ProfessionalColors.surfaceDark,
+//         backgroundColor: ProfessionalColorsForHomePages.surfaceDark,
 //       ),
 //       body: Center(
 //           child: Text(
@@ -7965,75 +7965,43 @@
 
 
 
-
-
-
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as https;
-import 'package:mobi_tv_entertainment/components/home_screen_pages/tv_show/tv_show_second_page.dart'; // ✅ Reuse existing page
-import 'package:mobi_tv_entertainment/components/home_screen_pages/tv_show/tv_show_slider_screen.dart'; // ✅ Yeh import zaroori hai
+import 'package:mobi_tv_entertainment/components/home_screen_pages/tv_show/tv_show_final_details_page.dart';
+import 'package:mobi_tv_entertainment/components/home_screen_pages/tv_show/tv_show_slider_screen.dart';
+import 'package:mobi_tv_entertainment/components/services/professional_colors_for_home_pages.dart';
+import 'package:mobi_tv_entertainment/components/widgets/small_widgets/smart_loading_widget.dart';
+import 'package:mobi_tv_entertainment/components/widgets/small_widgets/smart_retry_widget.dart';
 import 'dart:math' as math;
 import 'package:mobi_tv_entertainment/main.dart';
 import 'package:mobi_tv_entertainment/components/provider/color_provider.dart';
 import 'package:mobi_tv_entertainment/components/provider/focus_provider.dart';
 import 'package:mobi_tv_entertainment/components/services/history_service.dart';
+// ✅ Import Smart Widgets
 import 'package:provider/provider.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:ui';
 
-// ✅ Professional Color Palette (Copied)
-class ProfessionalColors {
-  static const primaryDark = Color(0xFF0A0E1A);
-  static const surfaceDark = Color(0xFF1A1D29);
-  static const cardDark = Color(0xFF2A2D3A);
-  static const accentBlue = Color(0xFF3B82F6);
-  static const accentPurple = Color(0xFF8B5CF6);
-  static const accentGreen = Color(0xFF10B981);
-  static const accentRed = Color(0xFFEF4444);
-  static const accentOrange = Color(0xFFF59E0B);
-  static const accentPink = Color(0xFFEC4899);
-  static const textPrimary = Color(0xFFFFFFFF);
-  static const textSecondary = Color(0xFFB3B3B3);
-  static const focusGlow = Color(0xFF60A5FA);
-
-  static List<Color> gradientColors = [
-    accentBlue,
-    accentPurple,
-    accentGreen,
-    accentRed,
-    accentOrange,
-    accentPink,
-  ];
-}
-
-// ✅ Professional Animation Durations (Copied)
+// ✅ ==========================================================
+// MODELS & CONSTANTS
+// ✅ ==========================================================
 class AnimationTiming {
-  static const Duration ultraFast = Duration(milliseconds: 150);
   static const Duration fast = Duration(milliseconds: 250);
   static const Duration medium = Duration(milliseconds: 400);
   static const Duration slow = Duration(milliseconds: 600);
-  static const Duration focus = Duration(milliseconds: 300);
   static const Duration scroll = Duration(milliseconds: 800);
 }
 
-// ✅ ==========================================================
-// ✅ [RENAMED] TV Show Network Model
-// ✅ ==========================================================
 class TVShowNetworkModel {
   final int id;
   final String name;
   final String? logo;
   final int status;
 
-  TVShowNetworkModel({
-    required this.id,
-    required this.name,
-    this.logo,
-    required this.status,
-  });
+  TVShowNetworkModel({required this.id, required this.name, this.logo, required this.status});
 
   factory TVShowNetworkModel.fromJson(Map<String, dynamic> json) {
     return TVShowNetworkModel(
@@ -8046,252 +8014,70 @@ class TVShowNetworkModel {
 }
 
 // ✅ ==========================================================
-// ✅ [RENAMED & FIXED] TVShowNetworkService with Caching
+// TV SHOW NETWORK SERVICE
 // ✅ ==========================================================
 class TVShowNetworkService {
-  // ✅ [UPDATED] Cache keys ko "tvshows" naam diya gaya hai
   static const String _cacheKeyTVShows = 'cached_tv_shows';
   static const String _cacheKeyTimestamp = 'cached_tv_shows_timestamp';
-  static const String _cacheKeyAuthKey = 'result_auth_key';
+  static const int _cacheDurationMs = 60 * 60 * 1000;
 
-  // Cache duration (in milliseconds) - 1 hour
-  static const int _cacheDurationMs = 60 * 60 * 1000; // 1 hour
-
-  /// Main method to get all Networks with caching
-  static Future<List<TVShowNetworkModel>> getAllTVShowNetworks(
-      {bool forceRefresh = false}) async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-
-      // Check if we should use cache
-      if (!forceRefresh && await _shouldUseCache(prefs)) {
-        print('📦 Loading TV Show Networks from cache...'); // ✅ UPDATED Text
-        final cachedNetworks = await _getCachedTVShowNetworks(prefs);
-        if (cachedNetworks.isNotEmpty) {
-          print(
-              '✅ Successfully loaded ${cachedNetworks.length} TV show networks from cache'); // ✅ UPDATED Text
-          _loadFreshDataInBackground(); // Load fresh data in background
-          return cachedNetworks;
-        }
+  static Future<List<TVShowNetworkModel>> getAllTVShowNetworks({bool forceRefresh = false}) async {
+    final prefs = await SharedPreferences.getInstance();
+    if (!forceRefresh && await _shouldUseCache(prefs)) {
+      final cached = await _getCachedTVShowNetworks(prefs);
+      if (cached.isNotEmpty) {
+        _loadFreshDataInBackground();
+        return cached;
       }
-
-      // Load fresh data if no cache or force refresh
-      print('🌐 Loading fresh TV Show Networks from API...'); // ✅ UPDATED Text
-      return await _fetchFreshTVShowNetworks(prefs);
-    } catch (e) {
-      print('❌ Error in getAllTVShowNetworks: $e'); // ✅ UPDATED Text
-      try {
-        final prefs = await SharedPreferences.getInstance();
-        final cachedNetworks = await _getCachedTVShowNetworks(prefs);
-        if (cachedNetworks.isNotEmpty) {
-          print(
-              '🔄 Returning cached TV show networks as fallback'); // ✅ UPDATED Text
-          return cachedNetworks;
-        }
-      } catch (cacheError) {
-        print('❌ Cache fallback also failed: $cacheError');
-      }
-      throw Exception('Failed to load TV show networks: $e'); // ✅ UPDATED Text
     }
+    return await _fetchFreshTVShowNetworks(prefs);
   }
 
-  /// Check if cached data is still valid
   static Future<bool> _shouldUseCache(SharedPreferences prefs) async {
-    try {
-      final timestampStr = prefs.getString(_cacheKeyTimestamp);
-      if (timestampStr == null) return false;
-      final cachedTimestamp = int.tryParse(timestampStr);
-      if (cachedTimestamp == null) return false;
-
-      final currentTimestamp = DateTime.now().millisecondsSinceEpoch;
-      final cacheAge = currentTimestamp - cachedTimestamp;
-      return cacheAge < _cacheDurationMs;
-    } catch (e) {
-      print(
-          '❌ Error checking TV Show Networks cache validity: $e'); // ✅ UPDATED Text
-      return false;
-    }
+    final timestampStr = prefs.getString(_cacheKeyTimestamp);
+    if (timestampStr == null) return false;
+    final cachedTimestamp = int.tryParse(timestampStr) ?? 0;
+    return DateTime.now().millisecondsSinceEpoch - cachedTimestamp < _cacheDurationMs;
   }
 
-  /// Get Networks from cache
-  static Future<List<TVShowNetworkModel>> _getCachedTVShowNetworks(
-      SharedPreferences prefs) async {
+  static Future<List<TVShowNetworkModel>> _getCachedTVShowNetworks(SharedPreferences prefs) async {
+    final cachedData = prefs.getString(_cacheKeyTVShows);
+    if (cachedData == null) return [];
     try {
-      // ✅ [UPDATED] Use new key variable
-      final cachedData = prefs.getString(_cacheKeyTVShows);
-      if (cachedData == null || cachedData.isEmpty) {
-        print('📦 No cached TV Show Networks data found'); // ✅ UPDATED Text
-        return [];
-      }
-
       final List<dynamic> jsonData = json.decode(cachedData);
-      final networks = jsonData
-          .map((json) =>
-              TVShowNetworkModel.fromJson(json as Map<String, dynamic>))
-          .where((network) => network.status == 1) // Filter active networks
-          .toList();
-
-      print(
-          '📦 Successfully loaded ${networks.length} TV show networks from cache'); // ✅ UPDATED Text
-      return networks;
-    } catch (e) {
-      print('❌ Error loading cached TV show networks: $e'); // ✅ UPDATED Text
-      return [];
-    }
+      return jsonData.map((json) => TVShowNetworkModel.fromJson(json)).where((n) => n.status == 1).toList();
+    } catch (e) { return []; }
   }
 
-  /// Fetch fresh Networks from API and cache them
-  static Future<List<TVShowNetworkModel>> _fetchFreshTVShowNetworks(
-      SharedPreferences prefs) async {
+  static Future<List<TVShowNetworkModel>> _fetchFreshTVShowNetworks(SharedPreferences prefs) async {
     try {
-            String authKey = SessionManager.authKey ;
+      String authKey = SessionManager.authKey;
       var url = Uri.parse(SessionManager.baseUrl + 'getNetworks');
-
-      final response = await https
-          .post(url,
-          //   Uri.parse('https://dashboard.cpplayers.com/api/v3/getNetworks'),
-            headers: {
-              'auth-key': authKey,
-              'Content-Type': 'application/json',
-              'Accept': 'application/json',
-              'domain': SessionManager.savedDomain,
-            },
-            body: json.encode({"network_id": "", "data_for": "tvshows"}),
-          )
-          .timeout(
-            const Duration(seconds: 30),
-            onTimeout: () => throw Exception('Request timeout'),
-          );
+      final response = await https.post(url, headers: {'auth-key': authKey, 'Content-Type': 'application/json', 'domain': SessionManager.savedDomain}, body: json.encode({"network_id": "", "data_for": "tvshows"})).timeout(const Duration(seconds: 30));
 
       if (response.statusCode == 200) {
         final List<dynamic> jsonData = json.decode(response.body);
-
-        final allNetworks = jsonData
-            .map((json) =>
-                TVShowNetworkModel.fromJson(json as Map<String, dynamic>))
-            .toList();
-
-        final activeNetworks =
-            allNetworks.where((network) => network.status == 1).toList();
-
-        // Cache the fresh data (save all, return active)
+        final activeNetworks = jsonData.map((json) => TVShowNetworkModel.fromJson(json)).where((n) => n.status == 1).toList();
         await _cacheTVShowNetworks(prefs, jsonData);
-
-        print(
-            '✅ Successfully loaded ${activeNetworks.length} active TV show networks from API (from ${allNetworks.length} total)'); // ✅ UPDATED Text
         return activeNetworks;
-      } else {
-        throw Exception(
-            'API Error: ${response.statusCode} - ${response.reasonPhrase}');
-      }
-    } catch (e) {
-      print('❌ Error fetching fresh TV show networks: $e'); // ✅ UPDATED Text
-      rethrow;
-    }
+      } else { throw Exception('API Error: ${response.statusCode}'); }
+    } catch (e) { rethrow; }
   }
 
-  /// Cache Networks data
-  static Future<void> _cacheTVShowNetworks(
-      SharedPreferences prefs, List<dynamic> networkData) async {
-    try {
-      final jsonString = json.encode(networkData);
-      final currentTimestamp = DateTime.now().millisecondsSinceEpoch.toString();
-
-      await Future.wait([
-        // ✅ [UPDATED] Use new key variable
-        prefs.setString(_cacheKeyTVShows, jsonString),
-        prefs.setString(_cacheKeyTimestamp, currentTimestamp),
-      ]);
-
-      print(
-          '💾 Successfully cached ${networkData.length} TV show networks'); // ✅ UPDATED Text
-    } catch (e) {
-      print('❌ Error caching TV show networks: $e'); // ✅ UPDATED Text
-    }
+  static Future<void> _cacheTVShowNetworks(SharedPreferences prefs, List<dynamic> data) async {
+    await prefs.setString(_cacheKeyTVShows, json.encode(data));
+    await prefs.setString(_cacheKeyTimestamp, DateTime.now().millisecondsSinceEpoch.toString());
   }
 
-  /// Load fresh data in background without blocking UI
   static void _loadFreshDataInBackground() {
     Future.delayed(const Duration(milliseconds: 500), () async {
-      try {
-        print(
-            '🔄 Loading fresh TV show networks data in background...'); // ✅ UPDATED Text
-        final prefs = await SharedPreferences.getInstance();
-        await _fetchFreshTVShowNetworks(prefs);
-        print(
-            '✅ TV show networks background refresh completed'); // ✅ UPDATED Text
-      } catch (e) {
-        print(
-            '⚠️ TV show networks background refresh failed: $e'); // ✅ UPDATED Text
-      }
+      try { final prefs = await SharedPreferences.getInstance(); await _fetchFreshTVShowNetworks(prefs); } catch (e) {}
     });
-  }
-
-  /// Clear all cached data
-  static Future<void> clearCache() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      await Future.wait([
-        // ✅ [UPDATED] Use new key variable
-        prefs.remove(_cacheKeyTVShows),
-        prefs.remove(_cacheKeyTimestamp),
-      ]);
-      print(
-          '🗑️ TV show networks cache cleared successfully'); // ✅ UPDATED Text
-    } catch (e) {
-      print('❌ Error clearing TV show networks cache: $e'); // ✅ UPDATED Text
-    }
-  }
-
-  /// Get cache info for debugging
-  static Future<Map<String, dynamic>> getCacheInfo() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final timestampStr = prefs.getString(_cacheKeyTimestamp);
-      // ✅ [UPDATED] Use new key variable
-      final cachedData = prefs.getString(_cacheKeyTVShows);
-
-      if (timestampStr == null || cachedData == null) {
-        return {
-          'hasCachedData': false,
-          'cacheAge': 0,
-          'cachedTVShowNetworksCount': 0, // ✅ UPDATED Text
-          'cacheSize': 0
-        };
-      }
-
-      final cachedTimestamp = int.tryParse(timestampStr) ?? 0;
-      final currentTimestamp = DateTime.now().millisecondsSinceEpoch;
-      final cacheAge = currentTimestamp - cachedTimestamp;
-      final cacheAgeMinutes = (cacheAge / (1000 * 60)).round();
-
-      final List<dynamic> jsonData = json.decode(cachedData);
-      final cacheSizeKB = (cachedData.length / 1024).round();
-
-      return {
-        'hasCachedData': true,
-        'cacheAge': cacheAgeMinutes,
-        'cachedTVShowNetworksCount': jsonData.length, // ✅ UPDATED Text
-        'cacheSize': cacheSizeKB,
-        'isValid': cacheAge < _cacheDurationMs,
-      };
-    } catch (e) {
-      print(
-          '❌ Error getting TV show networks cache info: $e'); // ✅ UPDATED Text
-      return {'hasCachedData': false, 'error': e.toString()};
-    }
-  }
-
-  /// Force refresh data (bypass cache)
-  static Future<List<TVShowNetworkModel>> forceRefresh() async {
-    print('🔄 Force refreshing TV show networks data...'); // ✅ UPDATED Text
-    return await getAllTVShowNetworks(forceRefresh: true);
   }
 }
 
 // ✅ ==========================================================
-// ✅ [RENAMED] Main Widget: ManageTvShows
-// ✅ (Yeh aapke purane ManageTvShows ko replace karega)
+// MAIN WIDGET: ManageTvShows
 // ✅ ==========================================================
 class ManageTvShows extends StatefulWidget {
   const ManageTvShows({super.key});
@@ -8304,26 +8090,30 @@ class _ManageTvShowsState extends State<ManageTvShows>
   @override
   bool get wantKeepAlive => true;
 
-  // ✅ [RENAMED] State variables
   List<TVShowNetworkModel> _fullTVShowNetworkList = [];
   List<TVShowNetworkModel> _displayedTVShowNetworkList = [];
   bool _showViewAll = false;
   bool isLoading = true;
+  String _errorMessage = ''; // ✅ Error State
   int focusedIndex = -1;
-  Color _currentAccentColor = ProfessionalColors.accentGreen;
+  Color _currentAccentColor = ProfessionalColorsForHomePages.accentGreen;
+  
+  // ✅ Shadow State
+  bool _isSectionFocused = false;
 
-  // Animation Controllers
   late AnimationController _headerAnimationController;
   late AnimationController _listAnimationController;
   late Animation<Offset> _headerSlideAnimation;
   late Animation<double> _listFadeAnimation;
 
-  // ✅ [RENAMED] Focus variables
   Map<String, FocusNode> tvShowNetworkFocusNodes = {};
   FocusNode? _firstTVShowNetworkFocusNode;
-  late FocusNode _viewAllFocusNode; // ✅ ADD: FocusNode for View All
+  late FocusNode _viewAllFocusNode;
+  
+  // ✅ Retry Focus Node
+  final FocusNode _retryFocusNode = FocusNode();
+  
   bool _hasReceivedFocus = false;
-
   late ScrollController _scrollController;
   bool _isNavigationLocked = false;
   Timer? _navigationLockTimer;
@@ -8332,10 +8122,10 @@ class _ManageTvShowsState extends State<ManageTvShows>
   void initState() {
     super.initState();
     _scrollController = ScrollController();
-    _viewAllFocusNode = FocusNode(); // ✅ Init View All FocusNode
+    _viewAllFocusNode = FocusNode();
     _initializeAnimations();
     _initializeFocusListeners();
-    fetchTVShowNetworksWithCache(); // ✅ [RENAMED]
+    fetchTVShowNetworksWithCache();
   }
 
   @override
@@ -8343,23 +8133,15 @@ class _ManageTvShowsState extends State<ManageTvShows>
     _navigationLockTimer?.cancel();
     _headerAnimationController.dispose();
     _listAnimationController.dispose();
-
-    _viewAllFocusNode.removeListener(_onViewAllFocusChange);
     _viewAllFocusNode.dispose();
-
-    // ✅ [RENAMED] Dispose logic
+    _retryFocusNode.dispose();
+    
     String? firstNetworkId;
-    if (_fullTVShowNetworkList.isNotEmpty) {
-      firstNetworkId = _fullTVShowNetworkList[0].id.toString();
-    }
+    if (_fullTVShowNetworkList.isNotEmpty) firstNetworkId = _fullTVShowNetworkList[0].id.toString();
 
     for (var entry in tvShowNetworkFocusNodes.entries) {
       if (entry.key != firstNetworkId) {
-        // Provider mein register node ko chhodkar
-        try {
-          entry.value.removeListener(() {});
-          entry.value.dispose();
-        } catch (e) {}
+        try { entry.value.dispose(); } catch (e) {}
       }
     }
     tvShowNetworkFocusNodes.clear();
@@ -8368,153 +8150,99 @@ class _ManageTvShowsState extends State<ManageTvShows>
   }
 
   void _initializeAnimations() {
-    _headerAnimationController =
-        AnimationController(duration: AnimationTiming.slow, vsync: this);
-    _listAnimationController =
-        AnimationController(duration: AnimationTiming.slow, vsync: this);
-
-    _headerSlideAnimation = Tween<Offset>(
-      begin: const Offset(0, -1),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(
-        parent: _headerAnimationController, curve: Curves.easeOutCubic));
-
-    _listFadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-        CurvedAnimation(
-            parent: _listAnimationController, curve: Curves.easeInOut));
+    _headerAnimationController = AnimationController(duration: AnimationTiming.slow, vsync: this);
+    _listAnimationController = AnimationController(duration: AnimationTiming.slow, vsync: this);
+    _headerSlideAnimation = Tween<Offset>(begin: const Offset(0, -1), end: Offset.zero).animate(CurvedAnimation(parent: _headerAnimationController, curve: Curves.easeOutCubic));
+    _listFadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(parent: _listAnimationController, curve: Curves.easeInOut));
   }
 
   void _initializeFocusListeners() {
     _viewAllFocusNode.addListener(_onViewAllFocusChange);
-    print('✅ TV Show Network focus listeners initialized');
   }
 
   void _onViewAllFocusChange() {
     if (mounted && _viewAllFocusNode.hasFocus) {
-      setState(() {
-        focusedIndex = _displayedTVShowNetworkList.length; // View All ka index
-      });
+      setState(() => _isSectionFocused = true); // ✅ Shadow Update
+      setState(() => focusedIndex = _displayedTVShowNetworkList.length);
       _scrollToPosition(focusedIndex);
-      print('✅ View All button focused');
     }
   }
 
   void _scrollToPosition(int index) {
     if (!mounted || !_scrollController.hasClients) return;
     try {
-      double itemWidth = bannerwdt + 12; // Card width + horizontal margin (6+6)
+      double itemWidth = bannerwdt + 12;
       double targetPosition = index * itemWidth;
-      targetPosition =
-          targetPosition.clamp(0.0, _scrollController.position.maxScrollExtent);
-
-      _scrollController.animateTo(
-        targetPosition,
-        duration: const Duration(milliseconds: 350),
-        curve: Curves.easeOutCubic,
-      );
-    } catch (e) {
-      print('Error scrolling in networks: $e');
-    }
+      targetPosition = targetPosition.clamp(0.0, _scrollController.position.maxScrollExtent);
+      _scrollController.animateTo(targetPosition, duration: const Duration(milliseconds: 350), curve: Curves.easeOutCubic);
+    } catch (e) {}
   }
 
-  // ✅ [RENAMED]
   void _setupTVShowNetworkFocusProvider() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted && _displayedTVShowNetworkList.isNotEmpty) {
-        try {
-          final focusProvider =
-              Provider.of<FocusProvider>(context, listen: false);
+      if (mounted) {
+        final focusProvider = Provider.of<FocusProvider>(context, listen: false);
+        
+        if (_displayedTVShowNetworkList.isNotEmpty) {
+          // Success Case
           final firstNetworkId = _displayedTVShowNetworkList[0].id.toString();
-          _firstTVShowNetworkFocusNode =
-              tvShowNetworkFocusNodes[firstNetworkId];
+          _firstTVShowNetworkFocusNode = tvShowNetworkFocusNodes[firstNetworkId];
 
           if (_firstTVShowNetworkFocusNode != null) {
-            // ✅ [UPDATED] Register with a new unique key
-            focusProvider.registerFocusNode(
-                'tvShows', _firstTVShowNetworkFocusNode!);
-            print(
-                '✅ TV Show Networks first focus node registered: ${_displayedTVShowNetworkList[0].name}');
-
+            focusProvider.registerFocusNode('tvShows', _firstTVShowNetworkFocusNode!);
+            
             _firstTVShowNetworkFocusNode!.addListener(() {
               if (mounted && _firstTVShowNetworkFocusNode!.hasFocus) {
-                if (!_hasReceivedFocus) {
-                  _hasReceivedFocus = true;
-                }
+                if (!_hasReceivedFocus) _hasReceivedFocus = true;
                 setState(() => focusedIndex = 0);
                 _scrollToPosition(0);
-                print('✅ TV Show Network (first item) received focus');
               }
             });
           }
-        } catch (e) {
-          print('❌ TV Show Networks focus provider setup failed: $e');
+        } else if (_errorMessage.isNotEmpty) {
+           // Error Case
+           focusProvider.registerFocusNode('tvShows', _retryFocusNode);
         }
       }
     });
   }
 
-  // ✅ [RENAMED]
   Future<void> fetchTVShowNetworksWithCache() async {
     if (!mounted) return;
-    setState(() {
-      isLoading = true;
-    });
+    setState(() { isLoading = true; _errorMessage = ''; });
     try {
       final fetchedNetworks = await TVShowNetworkService.getAllTVShowNetworks();
-
       if (mounted) {
         _fullTVShowNetworkList = fetchedNetworks;
-        // ✅ [NEW] View All Logic
         if (_fullTVShowNetworkList.length > 10) {
           _displayedTVShowNetworkList = _fullTVShowNetworkList.sublist(0, 10);
         } else {
           _displayedTVShowNetworkList = _fullTVShowNetworkList;
         }
         _showViewAll = _fullTVShowNetworkList.isNotEmpty;
-
-        setState(() {
-          isLoading = false;
-        });
-
+        
+        setState(() => isLoading = false);
         if (_fullTVShowNetworkList.isNotEmpty) {
           _createFocusNodesForItems();
-          _setupTVShowNetworkFocusProvider(); // ✅ [RENAMED]
+          _setupTVShowNetworkFocusProvider();
           _headerAnimationController.forward();
           _listAnimationController.forward();
-          _debugCacheInfo();
+          _restoreInternalFocus();
         }
+        
       }
     } catch (e) {
-      if (mounted) {
-        setState(() {
-          isLoading = false;
-        });
-      }
-      print('Error fetching Networks with cache: $e');
-    }
-  }
-
-  Future<void> _debugCacheInfo() async {
-    try {
-      final cacheInfo =
-          await TVShowNetworkService.getCacheInfo(); // ✅ [RENAMED]
-      print('📊 TV Show Networks Cache Info: $cacheInfo'); // ✅ [RENAMED]
-    } catch (e) {
-      print('❌ Error getting TV Show Networks cache info: $e'); // ✅ [RENAMED]
+      if (mounted) setState(() { isLoading = false; _errorMessage = 'Failed to load TV Shows'; });
+      _setupTVShowNetworkFocusProvider();
     }
   }
 
   void _createFocusNodesForItems() {
-    // Purane nodes saaf karein
     tvShowNetworkFocusNodes.clear();
-
-    // Sirf displayed items ke liye nodes banayein
     for (int i = 0; i < _displayedTVShowNetworkList.length; i++) {
       String networkId = _displayedTVShowNetworkList[i].id.toString();
       tvShowNetworkFocusNodes[networkId] = FocusNode();
-
       if (i > 0) {
-        // Pehle node ka listener _setupTVShowNetworkFocusProvider mein hai
         tvShowNetworkFocusNodes[networkId]!.addListener(() {
           if (mounted && tvShowNetworkFocusNodes[networkId]!.hasFocus) {
             setState(() {
@@ -8526,420 +8254,212 @@ class _ManageTvShowsState extends State<ManageTvShows>
         });
       }
     }
-    print('✅ Created ${tvShowNetworkFocusNodes.length} network focus nodes');
   }
 
-  // ✅ [RENAMED] Navigation method
-  void _navigateToTVShowNetworkDetails(TVShowNetworkModel network) async {
-    print('🎬 Navigating to Network Details: ${network.name}');
 
+  void _restoreInternalFocus() {
+  WidgetsBinding.instance.addPostFrameCallback((_) async {
+    if (!mounted) return;
+
+    // TV navigation transition ke liye delay
+    await Future.delayed(const Duration(milliseconds: 300));
+
+    final focusProvider = Provider.of<FocusProvider>(context, listen: false);
+    final savedItemId = focusProvider.lastFocusedItemId;
+
+    // Check karein ki kya saved ID hamare nodes map mein mojud hai
+    if (savedItemId != null && tvShowNetworkFocusNodes.containsKey(savedItemId)) {
+      final nodeToFocus = tvShowNetworkFocusNodes[savedItemId]!;
+      
+      if (nodeToFocus.canRequestFocus) {
+        FocusScope.of(context).requestFocus(nodeToFocus);
+        
+        // Index nikal kar scroll aur state update karein
+        int index = _displayedTVShowNetworkList.indexWhere((v) => v.id.toString() == savedItemId);
+        if (index != -1) {
+          _scrollToPosition(index);
+          setState(() => focusedIndex = index);
+        }
+      }
+    }
+  });
+}
+
+  void _navigateToTVShowNetworkDetails(TVShowNetworkModel network) async {
+    final focusProvider = Provider.of<FocusProvider>(context, listen: false);
+  
+  // 1. Current position save karein
+  focusProvider.updateLastFocusedIdentifier('tvShows');
+  focusProvider.updateLastFocusedItemId(network.id.toString());
     try {
       int? currentUserId = SessionManager.userId;
-      await HistoryService.updateUserHistory(
-        userId: currentUserId!,
-        contentType: 4, // 4 for channel/network
-        eventId: network.id,
-        eventTitle: network.name,
-        url: '',
-        categoryId: 0,
-      );
-    } catch (e) {
-      print("History update failed, but proceeding. Error: $e");
-    }
-
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        // ✅ Reuse existing TVShowDetailsPage
-        builder: (context) => TVShowDetailsPage(
-          tvChannelId: network.id,
-          channelName: network.name,
-          channelLogo: network.logo,
-        ),
-      ),
-    );
-    // .then((_) {
-    //   print('🔙 Returned from Network Details');
-    //   Future.delayed(Duration(milliseconds: 300), () {
-    //     if (mounted) {
-    //       int currentIndex = _displayedTVShowNetworkList
-    //           .indexWhere((net) => net.id == network.id);
-    //       if (currentIndex != -1) {
-    //         String networkId = network.id.toString();
-    //         if (tvShowNetworkFocusNodes.containsKey(networkId)) {
-    //           setState(() {
-    //             focusedIndex = currentIndex;
-    //             _hasReceivedFocus = true;
-    //           });
-    //           tvShowNetworkFocusNodes[networkId]!.requestFocus();
-    //           _scrollToPosition(currentIndex);
-    //           print('✅ Restored focus to ${network.name}');
-    //         }
-    //       }
-    //     }
-    //   });
-    // });
+      await HistoryService.updateUserHistory(userId: currentUserId!, contentType: 4, eventId: network.id, eventTitle: network.name, url: '', categoryId: 0);
+    } catch (e) {}
+    await Navigator.push(context, MaterialPageRoute(builder: (context) => TvShowFinalDetailsPage (id: network.id, name: network.name, banner: network.logo??'', poster: network.logo ??'',)));
+    _restoreInternalFocus();
   }
 
-  // ✅ [UPDATED] Navigate to Grid Page (View All)
   void _navigateToGridPage() {
-    print(
-        'Navigating to Grid Page for all ${_fullTVShowNetworkList.length} Networks...');
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => TvShowSliderScreen(
-          // networks: _fullTVShowNetworkList, // Yeh parameter ab nahi hai
-          initialNetworkId:
-              null, // ✅ Explicitly null bhejein (taaki default select ho)
-        ),
-      ),
-    );
-    // .then((_) {
-    //   print('🔙 Returned from Grid Page');
-    //   Future.delayed(Duration(milliseconds: 300), () {
-    //     if (mounted) {
-    //       // Restore focus to the "View All" button
-    //       _viewAllFocusNode.requestFocus();
-    //     }
-    //   });
-    // });
+    Navigator.push(context, MaterialPageRoute(builder: (context) => TvShowSliderScreen(initialNetworkId: null)));
   }
 
-  // ✅ [NEW] Grid Page par Network ID ke saath navigate karein
   void _navigateToGridPageWithNetwork(TVShowNetworkModel network) {
-    print(
-        'Navigating to Grid Page, pre-selecting: ${network.name} (ID: ${network.id})');
+    Navigator.push(context, MaterialPageRoute(builder: (context) => TvShowSliderScreen(initialNetworkId: network.id)));
+  }
 
-    // Focus restore karne ke liye current index save karein
-    int returnIndex =
-        _displayedTVShowNetworkList.indexWhere((n) => n.id == network.id);
-
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => TvShowSliderScreen(
-          initialNetworkId: network.id, // ✅ YAHAN ID PASS KAREIN
+  // ✅ ERROR WIDGET (Smart UI)
+  Widget _buildErrorWidget(double height) {
+    return SizedBox(
+      height: height,
+      child: Center(
+        child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          decoration: BoxDecoration(color: ProfessionalColorsForHomePages.cardDark.withOpacity(0.3), borderRadius: BorderRadius.circular(50), border: Border.all(color: ProfessionalColorsForHomePages.accentRed.withOpacity(0.3))),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.error_outline_rounded, size: 20, color: ProfessionalColorsForHomePages.accentRed),
+              const SizedBox(width: 10),
+              Flexible(child: Text("Connection Failed", style: const TextStyle(color: ProfessionalColorsForHomePages.textPrimary, fontSize: 11, fontWeight: FontWeight.w600), maxLines: 1, overflow: TextOverflow.ellipsis)),
+              const SizedBox(width: 15),
+              // ✅ Smart Retry Widget
+              SmartRetryWidget(
+                errorMessage: _errorMessage,
+                onRetry: fetchTVShowNetworksWithCache,
+                focusNode: _retryFocusNode,
+                providerIdentifier: 'tvShows',
+                onFocusChange: (hasFocus) {
+                   if(mounted) setState(() => _isSectionFocused = hasFocus);
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
-    // .then((_) {
-    //   print('🔙 Returned from Grid Page (from item click)');
-    //   Future.delayed(Duration(milliseconds: 300), () {
-    //     if (mounted) {
-    //       // Usi item par focus restore karein jise click kiya gaya tha
-    //       if (returnIndex != -1) {
-    //          String networkId = _displayedTVShowNetworkList[returnIndex].id.toString();
-    //          if (tvShowNetworkFocusNodes.containsKey(networkId)) {
-    //             tvShowNetworkFocusNodes[networkId]!.requestFocus();
-    //          }
-    //       }
-    //       else if (_viewAllFocusNode.canRequestFocus) {
-    //          // Fallback
-    //         _viewAllFocusNode.requestFocus();
-    //       }
-    //     }
-    //   });
-    // });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    super.build(context);
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
+  Widget _buildBody(double screenWidth, double screenHeight) {
+    double effectiveBannerHgt = bannerhgt ?? screenHeight * 0.2;
+    double effectiveBannerWdt = bannerwdt ?? screenWidth * 0.18;
 
-    return Consumer<ColorProvider>(
-      builder: (context, colorProvider, child) {
-        final bgColor = colorProvider.isItemFocused
-            ? colorProvider.dominantColor.withOpacity(0.1)
-            : ProfessionalColors.primaryDark;
+    if (isLoading) {
+      // ✅ Smart Loading
+      return SmartLoadingWidget(itemWidth: effectiveBannerWdt, itemHeight: effectiveBannerHgt);
+    } else if (_errorMessage.isNotEmpty) {
+      // ✅ Smart Error
+      return _buildErrorWidget(effectiveBannerHgt);
+    } else if (_fullTVShowNetworkList.isEmpty) {
+      return _buildEmptyWidget();
+    } else {
+      return _buildTVShowNetworksList(screenWidth, screenHeight);
+    }
+  }
 
-        return Scaffold(
-          backgroundColor: Colors.transparent,
-          body: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  bgColor,
-                  bgColor.withOpacity(0.8),
-                  ProfessionalColors.primaryDark,
-                ],
-              ),
-            ),
-            child: Column(
-              children: [
-                SizedBox(height: screenHeight * 0.02),
-                _buildProfessionalTitle(screenWidth),
-                SizedBox(height: screenHeight * 0.01),
-                Expanded(child: _buildBody(screenWidth, screenHeight)),
-              ],
-            ),
-          ),
-        );
-      },
+  Widget _buildEmptyWidget() {
+    return const Center(child: Text("No TV Shows Found", style: TextStyle(color: Colors.white, fontSize: 12)));
+  }
+
+  Widget _buildTVShowNetworksList(double screenWidth, double screenHeight) {
+    return FadeTransition(
+      opacity: _listFadeAnimation,
+      child: Container(
+        height: screenHeight * 0.38,
+        child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          clipBehavior: Clip.none,
+          controller: _scrollController,
+          padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.025),
+          cacheExtent: 9999,
+          itemCount: _displayedTVShowNetworkList.length + (_showViewAll ? 1 : 0),
+          itemBuilder: (context, index) {
+            if (index < _displayedTVShowNetworkList.length) {
+              var network = _displayedTVShowNetworkList[index];
+              return _buildTVShowNetworkItem(network, index, screenWidth, screenHeight);
+            } else {
+              return _buildViewAllButton(screenWidth, screenHeight);
+            }
+          },
+        ),
+      ),
     );
   }
 
-  // // ✅ [RENAMED] Build item
-  // Widget _buildTVShowNetworkItem(TVShowNetworkModel network, int index,
-  //     double screenWidth, double screenHeight) {
-  //   String networkId = network.id.toString();
-  //   FocusNode? focusNode = tvShowNetworkFocusNodes[networkId];
-
-  //   if (focusNode == null) return const SizedBox.shrink();
-
-  //   return Focus(
-  //     focusNode: focusNode,
-  //     onFocusChange: (hasFocus) async {
-  //       if (!mounted) return;
-  //       if (hasFocus) {
-  //         try {
-  //           Color dominantColor = ProfessionalColors.gradientColors[
-  //               math.Random().nextInt(ProfessionalColors.gradientColors.length)];
-  //           setState(() {
-  //             _currentAccentColor = dominantColor;
-  //             focusedIndex = index;
-  //             _hasReceivedFocus = true;
-  //           });
-  //           context.read<ColorProvider>().updateColor(dominantColor, true);
-  //         } catch (e) {
-  //           print('Focus change handling failed: $e');
-  //         }
-  //       } else {
-  //         context.read<ColorProvider>().resetColor();
-  //       }
-  //     },
-  //     onKey: (FocusNode node, RawKeyEvent event) {
-  //       if (event is RawKeyDownEvent) {
-  //         final key = event.logicalKey;
-
-  //         // --- Horizontal (Left/Right) ---
-  //         if (key == LogicalKeyboardKey.arrowRight ||
-  //             key == LogicalKeyboardKey.arrowLeft) {
-  //           if (_isNavigationLocked) return KeyEventResult.handled;
-  //           setState(() => _isNavigationLocked = true);
-  //           _navigationLockTimer = Timer(const Duration(milliseconds: 600), () {
-  //             if (mounted) setState(() => _isNavigationLocked = false);
-  //           });
-
-  //           if (key == LogicalKeyboardKey.arrowRight) {
-  //             if (index < _displayedTVShowNetworkList.length - 1) {
-  //               // Move to next item
-  //               String nextNetworkId =
-  //                   _displayedTVShowNetworkList[index + 1].id.toString();
-  //               FocusScope.of(context)
-  //                   .requestFocus(tvShowNetworkFocusNodes[nextNetworkId]);
-  //             } else if (_showViewAll) {
-  //               // Move to View All button
-  //               FocusScope.of(context).requestFocus(_viewAllFocusNode);
-  //             } else {
-  //               _navigationLockTimer?.cancel();
-  //               if (mounted) setState(() => _isNavigationLocked = false);
-  //             }
-  //           } else if (key == LogicalKeyboardKey.arrowLeft) {
-  //             if (index > 0) {
-  //               String prevNetworkId =
-  //                   _displayedTVShowNetworkList[index - 1].id.toString();
-  //               FocusScope.of(context)
-  //                   .requestFocus(tvShowNetworkFocusNodes[prevNetworkId]);
-  //             } else {
-  //               _navigationLockTimer?.cancel();
-  //               if (mounted) setState(() => _isNavigationLocked = false);
-  //             }
-  //           }
-  //           return KeyEventResult.handled;
-  //         }
-
-  //         // --- Vertical (Up/Down) & Select ---
-  //         // ✅ [UPDATED] Navigation keys
-  //         if (key == LogicalKeyboardKey.arrowUp) {
-  //           setState(() {
-  //             focusedIndex = -1;
-  //             _hasReceivedFocus = false;
-  //           });
-  //           context.read<ColorProvider>().resetColor();
-  //           FocusScope.of(context).unfocus();
-  //           // ✅ [IMPORTANT] Yeh 'tvShows' key aapke *PURANE* widget ka
-  //           // registration key hona chahiye. Agar woh 'manageWebseries' tha,
-  //           // toh isse 'manageWebseries' karein.
-  //           // Abhi ke liye, main maan raha hoon ki purana widget 'tvShows' naam se register hua tha.
-  //           // Agar yeh row #2 hai, toh upar wali row ka key yahan daalein.
-  //           context.read<FocusProvider>().requestFocus('manageWebseries'); // 👈 ISSE CHECK KAREIN
-  //           return KeyEventResult.handled;
-  //         } else if (key == LogicalKeyboardKey.arrowDown) {
-  //           setState(() {
-  //             focusedIndex = -1;
-  //             _hasReceivedFocus = false;
-  //           });
-  //           context.read<ColorProvider>().resetColor();
-  //           FocusScope.of(context).unfocus();
-  //           // ✅ [IMPORTANT] Yeh 'sportsCategory' aapke *NEECHE* wale
-  //           // widget ka registration key hona chahiye.
-  //           context
-  //               .read<FocusProvider>()
-  //               .requestFocus('sportsCategory'); // 👈 ISSE CHECK KAREIN
-  //           return KeyEventResult.handled;
-  //         } else if (key == LogicalKeyboardKey.enter ||
-  //             key == LogicalKeyboardKey.select) {
-  //           _navigateToTVShowNetworkDetails(network); // ✅ [RENAMED]
-  //           return KeyEventResult.handled;
-  //         }
-  //       }
-  //       return KeyEventResult.ignored;
-  //     },
-  //     child: GestureDetector(
-  //       onTap: () => _navigateToTVShowNetworkDetails(network), // ✅ [RENAMED]
-  //       child: ProfessionalTVShowNetworkCard(
-  //         // ✅ [RENAMED]
-  //         network: network,
-  //         focusNode: focusNode,
-  //         onTap: () => _navigateToTVShowNetworkDetails(network), // ✅ [RENAMED]
-  //         onColorChange: (color) {
-  //           if (!mounted) return;
-  //           setState(() {
-  //             _currentAccentColor = color;
-  //           });
-  //           context.read<ColorProvider>().updateColor(color, true);
-  //         },
-  //       ),
-  //     ),
-  //   );
-  // }
-
-  // ✅ [UPDATED] Build item with Original Focus Logic
-  Widget _buildTVShowNetworkItem(TVShowNetworkModel network, int index,
-      double screenWidth, double screenHeight) {
+  Widget _buildTVShowNetworkItem(TVShowNetworkModel network, int index, double screenWidth, double screenHeight) {
     String networkId = network.id.toString();
     FocusNode? focusNode = tvShowNetworkFocusNodes[networkId];
-
     if (focusNode == null) return const SizedBox.shrink();
 
     return Focus(
       focusNode: focusNode,
       onFocusChange: (hasFocus) async {
-        if (!mounted) return;
+        if (mounted) setState(() => _isSectionFocused = hasFocus); // ✅ Shadow Update
         if (hasFocus) {
-          try {
-            Color dominantColor = ProfessionalColors.gradientColors[
-                math.Random()
-                    .nextInt(ProfessionalColors.gradientColors.length)];
-            setState(() {
-              _currentAccentColor = dominantColor;
-              focusedIndex = index;
-              _hasReceivedFocus = true;
-            });
-            context.read<ColorProvider>().updateColor(dominantColor, true);
-            _scrollToPosition(index); // Scroll when focused
-          } catch (e) {
-            print('Focus change handling failed: $e');
-          }
+          context.read<FocusProvider>().updateLastFocusedItemId(networkId);
+          Color dominantColor = ProfessionalColorsForHomePages.accentBlue;
+          setState(() {
+            _currentAccentColor = dominantColor;
+            focusedIndex = index;
+            _hasReceivedFocus = true;
+          });
+          context.read<ColorProvider>().updateColor(dominantColor, true);
+          _scrollToPosition(index);
         } else {
-          // Only reset color if no other item in this row has focus
-          // (This check might need refinement based on exact desired behavior)
-          bool isAnyItemFocused =
-              tvShowNetworkFocusNodes.values.any((node) => node.hasFocus);
+          bool isAnyItemFocused = tvShowNetworkFocusNodes.values.any((node) => node.hasFocus);
           if (!mounted) return;
           if (!isAnyItemFocused && !_viewAllFocusNode.hasFocus) {
             context.read<ColorProvider>().resetColor();
           }
         }
       },
-      // ✅ [UPDATED] onKey to match commented code style
-      onKey: (FocusNode node, RawKeyEvent event) {
+      onKey: (node, event) {
         if (event is RawKeyDownEvent) {
           final key = event.logicalKey;
-
           if (key == LogicalKeyboardKey.arrowRight) {
             if (index < _displayedTVShowNetworkList.length - 1) {
-              // Focus next item
-              String nextNetworkId =
-                  _displayedTVShowNetworkList[index + 1].id.toString();
-              FocusScope.of(context)
-                  .requestFocus(tvShowNetworkFocusNodes[nextNetworkId]);
+              String nextNetworkId = _displayedTVShowNetworkList[index + 1].id.toString();
+              FocusScope.of(context).requestFocus(tvShowNetworkFocusNodes[nextNetworkId]);
             } else if (_showViewAll) {
-              // Focus View All button
               FocusScope.of(context).requestFocus(_viewAllFocusNode);
             }
             return KeyEventResult.handled;
           } else if (key == LogicalKeyboardKey.arrowLeft) {
             if (index > 0) {
-              // Focus previous item
-              String prevNetworkId =
-                  _displayedTVShowNetworkList[index - 1].id.toString();
-              FocusScope.of(context)
-                  .requestFocus(tvShowNetworkFocusNodes[prevNetworkId]);
+              String prevNetworkId = _displayedTVShowNetworkList[index - 1].id.toString();
+              FocusScope.of(context).requestFocus(tvShowNetworkFocusNodes[prevNetworkId]);
             }
-            // else: Already at the first item, do nothing for left arrow
             return KeyEventResult.handled;
           } else if (key == LogicalKeyboardKey.arrowUp) {
-            setState(() {
-              focusedIndex = -1;
-              _hasReceivedFocus = false;
-            });
+            setState(() { focusedIndex = -1; _hasReceivedFocus = false; });
             context.read<ColorProvider>().resetColor();
-            FocusScope.of(context).unfocus(); // Unfocus current node first
-            Future.delayed(const Duration(milliseconds: 50), () {
-              // Short delay
-              if (mounted) {
-                try {
-                  // // Request focus for the row above (adjust key if needed)
-                  // Provider.of<FocusProvider>(context, listen: false)
-                  //     .requestFocus('manageWebseries'); // 👈 ISSE CHECK KAREIN
-                  // print('✅ Navigating UP from TV Shows row');
-                  context.read<FocusProvider>().focusPreviousRow();
-                } catch (e) {
-                  print('❌ Failed to navigate UP: $e');
-                }
-              }
-            });
+            FocusScope.of(context).unfocus();
+            context.read<FocusProvider>().updateLastFocusedIdentifier('tvShows');
+            context.read<FocusProvider>().focusPreviousRow();
             return KeyEventResult.handled;
           } else if (key == LogicalKeyboardKey.arrowDown) {
-            setState(() {
-              focusedIndex = -1;
-              _hasReceivedFocus = false;
-            });
+            setState(() { focusedIndex = -1; _hasReceivedFocus = false; });
             context.read<ColorProvider>().resetColor();
-            FocusScope.of(context).unfocus(); // Unfocus current node first
-            Future.delayed(const Duration(milliseconds: 50), () {
-              // Short delay
-              if (mounted) {
-                try {
-                  // // Request focus for the row below (adjust key if needed)
-                  // Provider.of<FocusProvider>(context, listen: false)
-                  //     .requestFocus('sportsCategory'); // 👈 ISSE CHECK KAREIN
-                  // print('✅ Navigating DOWN from TV Shows row');
-                  context.read<FocusProvider>().focusNextRow();
-                } catch (e) {
-                  print('❌ Failed to navigate DOWN: $e');
-                }
-              }
-            });
+            FocusScope.of(context).unfocus();
+            context.read<FocusProvider>().updateLastFocusedIdentifier('tvShows');
+            context.read<FocusProvider>().focusNextRow();
             return KeyEventResult.handled;
-          } else if (key == LogicalKeyboardKey.enter ||
-              key == LogicalKeyboardKey.select) {
-            // _navigateToTVShowNetworkDetails(network); // <-- PURANA
-            _navigateToGridPageWithNetwork(network); // ✅ [UPDATED]
+          } else if (key == LogicalKeyboardKey.enter || key == LogicalKeyboardKey.select) {
+            _navigateToGridPageWithNetwork(network);
             return KeyEventResult.handled;
           }
         }
         return KeyEventResult.ignored;
       },
       child: GestureDetector(
-        // onTap: () => _navigateToTVShowNetworkDetails(network), // <-- PURANA
-        onTap: () => _navigateToGridPageWithNetwork(network), // ✅ [UPDATED]
+        onTap: () => _navigateToGridPageWithNetwork(network),
         child: ProfessionalTVShowNetworkCard(
           network: network,
           focusNode: focusNode,
-          // onTap: () => _navigateToTVShowNetworkDetails(network), // <-- PURANA
-          onTap: () => _navigateToGridPageWithNetwork(network), // ✅ [UPDATED]
+          onTap: () => _navigateToGridPageWithNetwork(network),
           onColorChange: (color) {
-            if (!mounted) return;
-            setState(() {
-              _currentAccentColor = color;
-            });
+            if (mounted) setState(() => _currentAccentColor = color);
             context.read<ColorProvider>().updateColor(color, true);
           },
         ),
@@ -8947,167 +8467,45 @@ class _ManageTvShowsState extends State<ManageTvShows>
     );
   }
 
-  // // ✅ [NEW] Build View All Button
-  // Widget _buildViewAllButton(double screenWidth, double screenHeight) {
-  //   return Focus(
-  //     focusNode: _viewAllFocusNode,
-  //     onFocusChange: (hasFocus) {
-  //       if (!mounted) return;
-  //       if (hasFocus) {
-  //         setState(() {
-  //           focusedIndex = _displayedTVShowNetworkList.length;
-  //           _hasReceivedFocus = true;
-  //         });
-  //         context
-  //             .read<ColorProvider>()
-  //             .updateColor(ProfessionalColors.accentPurple, true);
-  //       } else {
-  //         context.read<ColorProvider>().resetColor();
-  //       }
-  //     },
-  //     onKey: (FocusNode node, RawKeyEvent event) {
-  //       if (event is RawKeyDownEvent) {
-  //         final key = event.logicalKey;
-
-  //         if (key == LogicalKeyboardKey.arrowLeft) {
-  //           if (_displayedTVShowNetworkList.isNotEmpty) {
-  //             String prevNetworkId =
-  //                 _displayedTVShowNetworkList.last.id.toString();
-  //             FocusScope.of(context)
-  //                 .requestFocus(tvShowNetworkFocusNodes[prevNetworkId]);
-  //           }
-  //           return KeyEventResult.handled;
-  //         } else if (key == LogicalKeyboardKey.arrowRight) {
-  //           return KeyEventResult.handled;
-  //         } else if (key == LogicalKeyboardKey.arrowUp) {
-  //           setState(() {
-  //             focusedIndex = -1;
-  //             _hasReceivedFocus = false;
-  //           });
-  //           context.read<ColorProvider>().resetColor();
-  //           FocusScope.of(context).unfocus();
-  //           // ✅ [IMPORTANT] Upar wali row ka key
-  //           context.read<FocusProvider>().requestFocus('manageWebseries'); // 👈 ISSE CHECK KAREIN
-  //           return KeyEventResult.handled;
-  //         } else if (key == LogicalKeyboardKey.arrowDown) {
-  //           setState(() {
-  //             focusedIndex = -1;
-  //             _hasReceivedFocus = false;
-  //           });
-  //           context.read<ColorProvider>().resetColor();
-  //           FocusScope.of(context).unfocus();
-  //           // ✅ [IMPORTANT] Neeche wali row ka key
-  //           context
-  //               .read<FocusProvider>()
-  //               .requestFocus('sportsCategory'); // 👈 ISSE CHECK KAREIN
-  //           return KeyEventResult.handled;
-  //         } else if (key == LogicalKeyboardKey.enter ||
-  //             key == LogicalKeyboardKey.select) {
-  //           _navigateToGridPage();
-  //           return KeyEventResult.handled;
-  //         }
-  //       }
-  //       return KeyEventResult.ignored;
-  //     },
-  //     child: GestureDetector(
-  //       onTap: _navigateToGridPage,
-  //       child: ProfessionalTVShowNetworkViewAllButton(
-  //         // ✅ [RENAMED]
-  //         focusNode: _viewAllFocusNode,
-  //         onTap: _navigateToGridPage,
-  //       ),
-  //     ),
-  //   );
-  // }
-
-  // ✅ [UPDATED] Build View All Button with Original Focus Logic
   Widget _buildViewAllButton(double screenWidth, double screenHeight) {
     return Focus(
       focusNode: _viewAllFocusNode,
       onFocusChange: (hasFocus) {
-        if (!mounted) return;
+        if (mounted) setState(() => _isSectionFocused = hasFocus); // ✅ Shadow Update
         if (hasFocus) {
-          setState(() {
-            focusedIndex = _displayedTVShowNetworkList.length;
-            _hasReceivedFocus = true;
-          });
-          context
-              .read<ColorProvider>()
-              .updateColor(ProfessionalColors.accentPurple, true);
-          _scrollToPosition(focusedIndex); // Scroll when focused
+          setState(() { focusedIndex = _displayedTVShowNetworkList.length; _hasReceivedFocus = true; });
+          context.read<ColorProvider>().updateColor(ProfessionalColorsForHomePages.accentPurple, true);
+          _scrollToPosition(focusedIndex);
         } else {
-          // Only reset color if no other item in this row has focus
-          bool isAnyItemFocused =
-              tvShowNetworkFocusNodes.values.any((node) => node.hasFocus);
+          bool isAnyItemFocused = tvShowNetworkFocusNodes.values.any((node) => node.hasFocus);
           if (!mounted) return;
-          if (!isAnyItemFocused) {
-            context.read<ColorProvider>().resetColor();
-          }
+          if (!isAnyItemFocused) context.read<ColorProvider>().resetColor();
         }
       },
-      // ✅ [UPDATED] onKey to match commented code style
-      onKey: (FocusNode node, RawKeyEvent event) {
+      onKey: (node, event) {
         if (event is RawKeyDownEvent) {
           final key = event.logicalKey;
-
           if (key == LogicalKeyboardKey.arrowLeft) {
             if (_displayedTVShowNetworkList.isNotEmpty) {
-              // Focus last actual item
-              String prevNetworkId =
-                  _displayedTVShowNetworkList.last.id.toString();
-              FocusScope.of(context)
-                  .requestFocus(tvShowNetworkFocusNodes[prevNetworkId]);
+              String prevNetworkId = _displayedTVShowNetworkList.last.id.toString();
+              FocusScope.of(context).requestFocus(tvShowNetworkFocusNodes[prevNetworkId]);
             }
             return KeyEventResult.handled;
-          } else if (key == LogicalKeyboardKey.arrowRight) {
-            // Already at the end, do nothing
-            return KeyEventResult.handled;
           } else if (key == LogicalKeyboardKey.arrowUp) {
-            setState(() {
-              focusedIndex = -1;
-              _hasReceivedFocus = false;
-            });
+            setState(() { focusedIndex = -1; _hasReceivedFocus = false; });
             context.read<ColorProvider>().resetColor();
-            FocusScope.of(context).unfocus(); // Unfocus current node first
-            Future.delayed(const Duration(milliseconds: 50), () {
-              // Short delay
-              if (mounted) {
-                try {
-                  // // Request focus for the row above (adjust key if needed)
-                  // Provider.of<FocusProvider>(context, listen: false)
-                  //     .requestFocus('manageWebseries'); // 👈 ISSE CHECK KAREIN
-                  // print('✅ Navigating UP from TV Shows row (View All)');
-                  context.read<FocusProvider>().focusPreviousRow();
-                } catch (e) {
-                  print('❌ Failed to navigate UP: $e');
-                }
-              }
-            });
+            FocusScope.of(context).unfocus();
+            context.read<FocusProvider>().updateLastFocusedIdentifier('tvShows');
+            context.read<FocusProvider>().focusPreviousRow();
             return KeyEventResult.handled;
           } else if (key == LogicalKeyboardKey.arrowDown) {
-            setState(() {
-              focusedIndex = -1;
-              _hasReceivedFocus = false;
-            });
+            setState(() { focusedIndex = -1; _hasReceivedFocus = false; });
             context.read<ColorProvider>().resetColor();
-            FocusScope.of(context).unfocus(); // Unfocus current node first
-            Future.delayed(const Duration(milliseconds: 50), () {
-              // Short delay
-              if (mounted) {
-                try {
-                  // // Request focus for the row below (adjust key if needed)
-                  // Provider.of<FocusProvider>(context, listen: false)
-                  //     .requestFocus('sportsCategory'); // 👈 ISSE CHECK KAREIN
-                  // print('✅ Navigating DOWN from TV Shows row (View All)');
-                  context.read<FocusProvider>().focusNextRow();
-                } catch (e) {
-                  print('❌ Failed to navigate DOWN: $e');
-                }
-              }
-            });
+            FocusScope.of(context).unfocus();
+            context.read<FocusProvider>().updateLastFocusedIdentifier('tvShows');
+            context.read<FocusProvider>().focusNextRow();
             return KeyEventResult.handled;
-          } else if (key == LogicalKeyboardKey.enter ||
-              key == LogicalKeyboardKey.select) {
+          } else if (key == LogicalKeyboardKey.enter || key == LogicalKeyboardKey.select) {
             _navigateToGridPage();
             return KeyEventResult.handled;
           }
@@ -9124,121 +8522,89 @@ class _ManageTvShowsState extends State<ManageTvShows>
     );
   }
 
-  // ✅ [RENAMED] Build list
-  Widget _buildTVShowNetworksList(double screenWidth, double screenHeight) {
-    return FadeTransition(
-      opacity: _listFadeAnimation,
-      child: Container(
-        height: screenHeight * 0.38,
-        child: ListView.builder(
-          scrollDirection: Axis.horizontal,
-          clipBehavior: Clip.none,
-          controller: _scrollController,
-          padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.025),
-          cacheExtent: 9999,
-          itemCount:
-              _displayedTVShowNetworkList.length + (_showViewAll ? 1 : 0),
-          itemBuilder: (context, index) {
-            if (index < _displayedTVShowNetworkList.length) {
-              var network = _displayedTVShowNetworkList[index];
-              return _buildTVShowNetworkItem(
-                  network, index, screenWidth, screenHeight); // ✅ [RENAMED]
-            } else {
-              return _buildViewAllButton(screenWidth, screenHeight);
-            }
-          },
-        ),
-      ),
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    double containerHeight = (screenhgt ?? screenHeight) * 0.38;
+
+    return Consumer<ColorProvider>(
+      builder: (context, colorProvider, child) {
+        
+        bool showShadow = _isSectionFocused;
+
+        return Scaffold(
+          backgroundColor: Colors.white,
+          body: ClipRect(
+            child: SizedBox(
+              height: containerHeight,
+              child: Stack(
+                children: [
+                  Column(
+                    children: [
+                      SizedBox(height: (screenhgt ?? screenHeight) * 0.02),
+                      _buildProfessionalTitle(screenWidth),
+                      SizedBox(height: (screenhgt ?? screenHeight) * 0.01),
+                      Expanded(child: _buildBody(screenWidth, screenHeight)),
+                    ],
+                  ),
+                  
+                  // ✅ SHADOW OVERLAY
+                  Positioned.fill(
+                    child: IgnorePointer(
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeOut,
+                        decoration: BoxDecoration(
+                          gradient: showShadow
+                              ? LinearGradient(
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                  colors: [
+                                    Colors.black.withOpacity(0.8), 
+                                    Colors.transparent,             
+                                    Colors.transparent,             
+                                    Colors.black.withOpacity(0.8), 
+                                  ],
+                                  stops: const [0.0, 0.25, 0.75, 1.0], 
+                                )
+                              : null,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 
   Widget _buildProfessionalTitle(double screenWidth) {
     return SlideTransition(
       position: _headerSlideAnimation,
-      child: Container(
+      child: Padding(
         padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.025),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             ShaderMask(
               shaderCallback: (bounds) => const LinearGradient(
-                colors: [
-                  ProfessionalColors.accentGreen,
-                  ProfessionalColors.accentBlue,
-                ],
+                colors: [ProfessionalColorsForHomePages.accentGreen, ProfessionalColorsForHomePages.accentBlue],
               ).createShader(bounds),
-              child: const Text(
-                'TV SHOWS', // ✅ Title Updated
-                style: TextStyle(
-                  fontSize: 24,
-                  color: Colors.white,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 2.0,
-                ),
-              ),
+              child: const Text('TV SHOWS', style: TextStyle(fontSize: 24, color: Colors.white, fontWeight: FontWeight.w700, letterSpacing: 2.0)),
             ),
           ],
         ),
       ),
     );
   }
-
-  Widget _buildBody(double screenWidth, double screenHeight) {
-    if (isLoading) {
-      return ProfessionalTVShowNetworkLoadingIndicator(
-          message: 'Loading TV Shows...'); // ✅ [RENAMED]
-    } else if (_fullTVShowNetworkList.isEmpty) {
-      return _buildEmptyWidget();
-    } else {
-      return _buildTVShowNetworksList(screenWidth, screenHeight); // ✅ [RENAMED]
-    }
-  }
-
-  Widget _buildEmptyWidget() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            width: 80,
-            height: 80,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: LinearGradient(
-                colors: [
-                  ProfessionalColors.accentGreen.withOpacity(0.2),
-                  ProfessionalColors.accentGreen.withOpacity(0.1),
-                ],
-              ),
-            ),
-            child: const Icon(
-              Icons.live_tv_outlined, // ✅ Icon Updated
-              size: 40,
-              color: ProfessionalColors.accentGreen,
-            ),
-          ),
-          const SizedBox(height: 24),
-          const Text(
-            'No TV Shows Found', // ✅ Text Updated
-            style: TextStyle(
-              color: ProfessionalColors.textPrimary,
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: 8),
-          const Text(
-            'Check back later for new shows', // ✅ Text Updated
-            style: TextStyle(
-              color: ProfessionalColors.textSecondary,
-              fontSize: 14,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }
+
+// ... (ProfessionalTVShowNetworkCard and ViewAllButton - Unchanged from previous snippets) ...
+// Copy them here. No changes needed.
 
 // ✅ ==========================================================
 // ✅ [RENAMED] Supporting Widgets
@@ -9274,7 +8640,7 @@ class _ProfessionalTVShowNetworkCardState
   late Animation<double> _glowAnimation;
   late Animation<double> _shimmerAnimation;
 
-  Color _dominantColor = ProfessionalColors.accentGreen;
+  Color _dominantColor = ProfessionalColorsForHomePages.accentBlue;
   bool _isFocused = false;
 
   @override
@@ -9317,8 +8683,10 @@ class _ProfessionalTVShowNetworkCardState
   }
 
   void _generateDominantColor() {
-    final colors = ProfessionalColors.gradientColors;
-    _dominantColor = colors[math.Random().nextInt(colors.length)];
+    // final colors = ProfessionalColorsForHomePages.gradientColors;
+    // _dominantColor = colors[math.Random().nextInt(colors.length)];
+    final colors = ProfessionalColorsForHomePages.accentBlue;
+    _dominantColor = colors;
   }
 
   @override
@@ -9423,8 +8791,8 @@ class _ProfessionalTVShowNetworkCardState
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            ProfessionalColors.cardDark,
-            ProfessionalColors.surfaceDark,
+            ProfessionalColorsForHomePages.cardDark,
+            ProfessionalColorsForHomePages.surfaceDark,
           ],
         ),
       ),
@@ -9434,13 +8802,13 @@ class _ProfessionalTVShowNetworkCardState
           Icon(
             Icons.live_tv_rounded, // ✅ Updated Icon
             size: height * 0.25,
-            color: ProfessionalColors.textSecondary,
+            color: ProfessionalColorsForHomePages.textSecondary,
           ),
           const SizedBox(height: 8),
           const Text(
             'TV SHOW', // ✅ Updated Text
             style: TextStyle(
-              color: ProfessionalColors.textSecondary,
+              color: ProfessionalColorsForHomePages.textSecondary,
               fontSize: 10,
               fontWeight: FontWeight.bold,
             ),
@@ -9532,7 +8900,9 @@ class _ProfessionalTVShowNetworkCardState
         style: TextStyle(
           fontSize: _isFocused ? 13 : 11,
           fontWeight: FontWeight.w600,
-          color: _isFocused ? _dominantColor : ProfessionalColors.textPrimary,
+          color: _isFocused
+              ? _dominantColor
+              : ProfessionalColorsForHomePages.primaryDark,
           letterSpacing: 0.5,
           shadows: _isFocused
               ? [
@@ -9577,7 +8947,7 @@ class _ProfessionalTVShowNetworkViewAllButtonState
   late AnimationController _scaleController;
   late Animation<double> _scaleAnimation;
   bool _isFocused = false;
-  final Color _focusColor = ProfessionalColors.accentPurple;
+  final Color _focusColor = ProfessionalColorsForHomePages.accentPurple;
 
   @override
   void initState() {
@@ -9644,8 +9014,8 @@ class _ProfessionalTVShowNetworkViewAllButtonState
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            ProfessionalColors.cardDark.withOpacity(0.8),
-            ProfessionalColors.surfaceDark.withOpacity(0.8),
+            ProfessionalColorsForHomePages.cardDark.withOpacity(0.8),
+            ProfessionalColorsForHomePages.surfaceDark.withOpacity(0.8),
           ],
         ),
         border: Border.all(
@@ -9671,15 +9041,17 @@ class _ProfessionalTVShowNetworkViewAllButtonState
               Icon(
                 Icons.arrow_forward_ios_rounded,
                 size: 30,
-                color:
-                    _isFocused ? _focusColor : ProfessionalColors.textPrimary,
+                color: _isFocused
+                    ? _focusColor
+                    : ProfessionalColorsForHomePages.textPrimary,
               ),
               const SizedBox(height: 8),
               Text(
                 'VIEW ALL',
                 style: TextStyle(
-                  color:
-                      _isFocused ? _focusColor : ProfessionalColors.textPrimary,
+                  color: _isFocused
+                      ? _focusColor
+                      : ProfessionalColorsForHomePages.textPrimary,
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
                 ),
@@ -9699,7 +9071,9 @@ class _ProfessionalTVShowNetworkViewAllButtonState
         style: TextStyle(
           fontSize: _isFocused ? 13 : 11,
           fontWeight: FontWeight.w600,
-          color: _isFocused ? _focusColor : ProfessionalColors.textPrimary,
+          color: _isFocused
+              ? _focusColor
+              : ProfessionalColorsForHomePages.textPrimary,
         ),
         child: const Text(
           'SEE ALL',
@@ -9762,10 +9136,10 @@ class _ProfessionalTVShowNetworkLoadingIndicatorState
                   shape: BoxShape.circle,
                   gradient: SweepGradient(
                     colors: const [
-                      ProfessionalColors.accentGreen,
-                      ProfessionalColors.accentBlue,
-                      ProfessionalColors.accentOrange,
-                      ProfessionalColors.accentGreen,
+                      ProfessionalColorsForHomePages.accentGreen,
+                      ProfessionalColorsForHomePages.accentBlue,
+                      ProfessionalColorsForHomePages.accentOrange,
+                      ProfessionalColorsForHomePages.accentGreen,
                     ],
                     stops: [0.0, 0.3, 0.7, 1.0],
                     transform: GradientRotation(_animation.value * 2 * math.pi),
@@ -9775,11 +9149,11 @@ class _ProfessionalTVShowNetworkLoadingIndicatorState
                   margin: const EdgeInsets.all(5),
                   decoration: const BoxDecoration(
                     shape: BoxShape.circle,
-                    color: ProfessionalColors.primaryDark,
+                    color: ProfessionalColorsForHomePages.primaryDark,
                   ),
                   child: const Icon(
                     Icons.live_tv_rounded,
-                    color: ProfessionalColors.textPrimary,
+                    color: ProfessionalColorsForHomePages.textPrimary,
                     size: 28,
                   ),
                 ),
@@ -9790,7 +9164,7 @@ class _ProfessionalTVShowNetworkLoadingIndicatorState
           Text(
             widget.message,
             style: const TextStyle(
-              color: ProfessionalColors.textPrimary,
+              color: ProfessionalColorsForHomePages.textPrimary,
               fontSize: 16,
               fontWeight: FontWeight.w500,
             ),
@@ -9800,101 +9174,3 @@ class _ProfessionalTVShowNetworkLoadingIndicatorState
     );
   }
 }
-
-// // ✅ [RENAMED] Placeholder Grid Page
-// class TVShowNetworksGridPage extends StatelessWidget {
-//   final List<TVShowNetworkModel> networks;
-//   const TVShowNetworksGridPage({Key? key, required this.networks})
-//       : super(key: key);
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       backgroundColor: ProfessionalColors.primaryDark,
-//       appBar: AppBar(
-//         title: Text('All TV Show Networks (${networks.length})'),
-//         backgroundColor: ProfessionalColors.surfaceDark,
-//       ),
-//       body: Center(
-//           child: Text(
-//         'Yeh grid page hai.',
-//         style: TextStyle(color: Colors.white, fontSize: 20),
-//       )),
-//     );
-//   }
-// }
-
-// ✅ ==========================================================
-// ✅ [FIXED] CacheManager
-// ✅ (Yeh sirf naye TVShowNetworkService ka istemaal karta hai)
-// ✅ ==========================================================
-class CacheManager {
-  /// Clear all app caches
-  static Future<void> clearAllCaches() async {
-    try {
-      await Future.wait([
-        TVShowNetworkService.clearCache(), // ✅ RENAMED
-        // WebSeriesService.clearCache(),
-        // MoviesService.clearCache(),
-      ]);
-      print('🗑️ All caches cleared successfully');
-    } catch (e) {
-      print('❌ Error clearing all caches: $e');
-    }
-  }
-
-  /// Get comprehensive cache info for all services
-  static Future<Map<String, dynamic>> getAllCacheInfo() async {
-    try {
-      final networksCacheInfo =
-          await TVShowNetworkService.getCacheInfo(); // ✅ RENAMED
-      // final webSeriesCacheInfo = await WebSeriesService.getCacheInfo();
-      // final moviesCacheInfo = await MoviesService.getCacheInfo();
-
-      return {
-        'tvShowNetworks': networksCacheInfo, // ✅ Key updated
-        // 'webSeries': webSeriesCacheInfo,
-        // 'movies': moviesCacheInfo,
-        'totalCacheSize': _calculateTotalCacheSize([
-          networksCacheInfo, // ✅ RENAMED
-          // webSeriesCacheInfo,
-          // moviesCacheInfo,
-        ]),
-      };
-    } catch (e) {
-      print('❌ Error getting all cache info: $e');
-      return {
-        'error': e.toString(),
-        'tvShowNetworks': {'hasCachedData': false}, // ✅ Key updated
-      };
-    }
-  }
-
-  static int _calculateTotalCacheSize(List<Map<String, dynamic>> cacheInfos) {
-    int totalSize = 0;
-    for (final info in cacheInfos) {
-      if (info.containsKey('cacheSize') && info['cacheSize'] is int) {
-        totalSize += info['cacheSize'] as int;
-      }
-    }
-    return totalSize;
-  }
-
-  /// Force refresh all data
-  static Future<void> forceRefreshAllData() async {
-    try {
-      await Future.wait([
-        TVShowNetworkService.forceRefresh(), // ✅ RENAMED
-        // WebSeriesService.forceRefresh(),
-        // MoviesService.forceRefresh(),
-      ]);
-      print('🔄 All data force refreshed successfully');
-    } catch (e) {
-      print('❌ Error force refreshing all data: $e');
-    }
-  }
-}
-
-
-
-

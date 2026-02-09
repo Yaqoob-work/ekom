@@ -336,7 +336,7 @@ class _KidChannelsDetailsPageState extends State<KidChannelsDetailsPage>
       if (mounted) {
         String rawUrl = episode.url;
         print('rawurl: $rawUrl');
-        String playableUrl = await SecureUrlService.getSecureUrl(rawUrl);
+        // String rawUrl = await SecureUrlService.getSecureUrl(rawUrl);
         if (episode.source.toLowerCase() == 'youtube') {
           final deviceInfo = context.read<DeviceInfoProvider>();
 
@@ -345,7 +345,7 @@ class _KidChannelsDetailsPageState extends State<KidChannelsDetailsPage>
               context,
               MaterialPageRoute(
                 builder: (context) => YoutubeWebviewPlayer(
-                  videoUrl: playableUrl,
+                  videoUrl: rawUrl,
                   name: episode.episodeName,
                 ),
               ),
@@ -356,17 +356,17 @@ class _KidChannelsDetailsPageState extends State<KidChannelsDetailsPage>
               MaterialPageRoute(
                 builder: (context) => CustomYoutubePlayer(
                   videoData: VideoData(
-                    id: playableUrl,
+                    id: rawUrl,
                     title: episode.episodeName,
-                    youtubeUrl: playableUrl,
+                    youtubeUrl: rawUrl,
                     thumbnail: episode.episodeImage,
                     description: episode.episodeDescription,
                   ),
                   playlist: [
                     VideoData(
-                      id: playableUrl,
+                      id: rawUrl,
                       title: episode.episodeName,
-                      youtubeUrl: playableUrl,
+                      youtubeUrl: rawUrl,
                       thumbnail: episode.episodeImage,
                       description: episode.episodeDescription,
                     ),
@@ -380,7 +380,7 @@ class _KidChannelsDetailsPageState extends State<KidChannelsDetailsPage>
             context,
             MaterialPageRoute(
               builder: (context) => VideoScreen(
-                videoUrl: playableUrl,
+                videoUrl: rawUrl,
                 bannerImageUrl: episode.episodeImage,
                 channelList: [],
                 videoId: episode.id,

@@ -731,7 +731,7 @@
 //     try {
 //                     String rawUrl = episode.url;
 //       print('rawurl: $rawUrl');
-//       String playableUrl = await SecureUrlService.getSecureUrl(rawUrl);
+//       String rawUrl = await SecureUrlService.getSecureUrl(rawUrl);
 //       if (mounted) {
 
 //         if (episode.source.toLowerCase() == 'youtube'
@@ -745,7 +745,7 @@
 //                 context,
 //                 MaterialPageRoute(
 //                     builder: (context) => YoutubeWebviewPlayer(
-//                           videoUrl: playableUrl,
+//                           videoUrl: rawUrl,
 //                           name: episode.title,
 //                         )));
 //           } else {
@@ -754,17 +754,17 @@
 //               MaterialPageRoute(
 //                 builder: (context) => CustomYoutubePlayer(
 //                   videoData: VideoData(
-//                     id: playableUrl,
+//                     id: rawUrl,
 //                     title: episode.title,
-//                     youtubeUrl: playableUrl,
+//                     youtubeUrl: rawUrl,
 //                     thumbnail: episode.episodeImage,
 //                     description: episode.episodeDescription,
 //                   ),
 //                   playlist: [
 //                     VideoData(
-//                       id: playableUrl,
+//                       id: rawUrl,
 //                       title: episode.title,
-//                       youtubeUrl: playableUrl,
+//                       youtubeUrl: rawUrl,
 //                       thumbnail: episode.episodeImage,
 //                       description: episode.episodeDescription,
 //                     ),
@@ -779,7 +779,7 @@
 //         //   context,
 //         //   MaterialPageRoute(
 //         //     builder: (context) => CustomVideoPlayer(
-//         //       videoUrl: playableUrl,
+//         //       videoUrl: rawUrl,
 //         //     ),
 //         //   ),
 //         // );
@@ -787,7 +787,7 @@
 //           context,
 //           MaterialPageRoute(
 //             builder: (context) => VideoScreen(
-//               videoUrl: playableUrl,
+//               videoUrl: rawUrl,
 //               bannerImageUrl: episode.episodeImage,
 //               channelList: [],
 //               source: 'isReligious',
@@ -2463,7 +2463,7 @@ class _ReligiousChannelDetailsPageState
     try {
       String rawUrl = episode.url;
       print('rawurl: $rawUrl');
-      String playableUrl = await SecureUrlService.getSecureUrl(rawUrl);
+      // String rawUrl = await SecureUrlService.getSecureUrl(rawUrl);
 
       if (mounted) {
         if (episode.source.toLowerCase() == 'youtube') {
@@ -2474,7 +2474,7 @@ class _ReligiousChannelDetailsPageState
                 context,
                 MaterialPageRoute(
                     builder: (context) => YoutubeWebviewPlayer(
-                          videoUrl: playableUrl,
+                          videoUrl: rawUrl,
                           name: episode.title,
                         )));
           } else {
@@ -2483,17 +2483,17 @@ class _ReligiousChannelDetailsPageState
               MaterialPageRoute(
                 builder: (context) => CustomYoutubePlayer(
                   videoData: VideoData(
-                    id: playableUrl,
+                    id: rawUrl,
                     title: episode.title,
-                    youtubeUrl: playableUrl,
+                    youtubeUrl: rawUrl,
                     thumbnail: episode.episodeImage,
                     description: episode.episodeDescription,
                   ),
                   playlist: [
                     VideoData(
-                      id: playableUrl,
+                      id: rawUrl,
                       title: episode.title,
-                      youtubeUrl: playableUrl,
+                      youtubeUrl: rawUrl,
                       thumbnail: episode.episodeImage,
                       description: episode.episodeDescription,
                     ),
@@ -2507,7 +2507,7 @@ class _ReligiousChannelDetailsPageState
             context,
             MaterialPageRoute(
               builder: (context) => VideoScreen(
-                videoUrl: playableUrl,
+                videoUrl: rawUrl,
                 bannerImageUrl: episode.episodeImage,
                 channelList: [],
                 source: 'isReligious',

@@ -2133,7 +2133,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final GlobalKey tvShowsPakKey = GlobalKey();
   final GlobalKey sportsKey = GlobalKey();
   final GlobalKey religiousChannelKey = GlobalKey();
-  final GlobalKey kids_showKey = GlobalKey();
+  final GlobalKey kidsShowKey = GlobalKey();
   // final GlobalKey aboveEighteenKey = GlobalKey();
 
   // --- FOCUS NODES ---
@@ -2178,7 +2178,7 @@ class _HomeScreenState extends State<HomeScreen> {
       focusProvider.registerElementKey('sports', sportsKey);
       focusProvider.registerElementKey('religiousChannels', religiousChannelKey);
       focusProvider.registerElementKey('tvShowPak', tvShowsPakKey);
-      focusProvider.registerElementKey('kids_show', kids_showKey);
+      focusProvider.registerElementKey('kids_show', kidsShowKey);
       // focusProvider.registerElementKey('aboveEighteen', aboveEighteenKey);
     });
   }
@@ -2351,7 +2351,8 @@ class _HomeScreenState extends State<HomeScreen> {
           }
         },
         child: Scaffold(
-          backgroundColor: backgroundColor,
+          // backgroundColor: backgroundColor,
+          backgroundColor: Colors.white,
           body: Container(
             width: MediaQuery.of(context).size.width,
             height: MediaQuery.of(context).size.height,
@@ -2371,7 +2372,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                   // 2. Live Channels
                   Container(
-                    height: MediaQuery.of(context).size.height * 0.38,
+                    height: MediaQuery.of(context).size.height * 0.30,
                     width: MediaQuery.of(context).size.width,
                     key: liveChannelLanguageKey,
                     child: const LiveChannelLanguageScreen(),
@@ -2380,49 +2381,49 @@ class _HomeScreenState extends State<HomeScreen> {
                   // 3. Dynamic Sections
                   if (_showContentNetwork)
                     SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.38,
+                      height: MediaQuery.of(context).size.height * 0.30,
                       key: subVodKey,
                       child: const HorzontalVod(),
                     ),
 
                   if (_showMovies)
                     SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.38,
+                      height: MediaQuery.of(context).size.height * 0.30,
                       key: manageMoviesKey,
                       child: const MoviesScreen(),
                     ),
 
                   if (_showWebseries)
                     SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.38,
+                      height: MediaQuery.of(context).size.height * 0.30,
                       key: manageWebseriesKey,
                       child: const ManageWebSeries(),
                     ),
 
                   if (_showTvShows)
                     SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.38,
+                      height: MediaQuery.of(context).size.height * 0.30,
                       key: tvShowsKey,
                       child: const ManageTvShows(),
                     ),
 
                   if (_showSports)
                     SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.38,
+                      height: MediaQuery.of(context).size.height * 0.30,
                       key: sportsKey,
                       child: const ManageSports(),
                     ),
 
                   if (_showReligious)
                     SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.38,
+                      height: MediaQuery.of(context).size.height * 0.30,
                       key: religiousChannelKey,
                       child: const ManageReligiousShows(),
                     ),
 
                   if (_showTvShowsPak)
                     SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.38,
+                      height: MediaQuery.of(context).size.height * 0.30,
                       key: tvShowsPakKey,
                       child: const TvShowsPak(),
                     ),
@@ -2430,8 +2431,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   // --- ✅ FIX: Kids Section ---
                   if (_showKids)
                     SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.38,
-                      key: kids_showKey,
+                      height: MediaQuery.of(context).size.height * 0.30,
+                      key: kidsShowKey,
                       child: const ManageKidsShows(),
                     ),
 

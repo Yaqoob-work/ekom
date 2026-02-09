@@ -3281,8 +3281,16 @@ class _CustomYoutubePlayerState extends State<CustomYoutubePlayer> {
     if (_isDisposed) return;
 
     try {
-      String? videoId = YoutubePlayer.convertUrlToId(currentVideo.youtubeUrl);
-      print('🔧 TV Mode: Initializing player for: $videoId');
+      // String? videoId = YoutubePlayer.convertUrlToId(currentVideo.youtubeUrl);
+      // print('🔧 TV Mode: Initializing player for: $videoId');
+
+      String videoId;
+    if (currentVideo.youtubeUrl.length == 11 && !currentVideo.youtubeUrl.contains('/')) {
+        videoId = currentVideo.youtubeUrl; // It's already an ID from your JSON
+    } else {
+        // It's a full URL, convert it
+        videoId = YoutubePlayer.convertUrlToId(currentVideo.youtubeUrl) ?? '';
+    }
 
       if (videoId == null || videoId.isEmpty) {
         if (mounted && !_isDisposed) {
