@@ -435,6 +435,11 @@ class _ManageSportsState extends State<ManageSports>
       onKey: (node, event) {
         if (event is RawKeyDownEvent) {
           final key = event.logicalKey;
+          if (key == LogicalKeyboardKey.arrowRight) {
+      return KeyEventResult.handled; // Iska matlab "is key ka kaam khatam, aage kuch mat karo"
+    } 
+    
+    else
           if (key == LogicalKeyboardKey.arrowLeft) {
             if (_displayedSportsList.isNotEmpty) {
               String prevNetworkId = _displayedSportsList.last.id.toString();

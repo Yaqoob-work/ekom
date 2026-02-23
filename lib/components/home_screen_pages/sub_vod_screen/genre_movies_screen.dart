@@ -2491,7 +2491,7 @@ class _GenreMoviesScreenState extends State<GenreMoviesScreen> with SingleTicker
                   _buildGenreBarWithGlassEffect(),
                   const SizedBox(height: 15),
                   SizedBox(
-                    height: bannerhgt + 50,
+                    height: bannerhgt * 1.5,
                     child: _buildMoviesRowWithColorSystem(),
                   ),
                   const SizedBox(height: 15),
@@ -2850,6 +2850,7 @@ class _GenreMoviesScreenState extends State<GenreMoviesScreen> with SingleTicker
       padding: const EdgeInsets.symmetric(horizontal: 40),
       physics: const ClampingScrollPhysics(),
       cacheExtent: 800,
+      clipBehavior: Clip.none,
       addAutomaticKeepAlives: true,
       addRepaintBoundaries: true,
       itemCount: safeItemCount,
@@ -2938,6 +2939,7 @@ class _MovieItemWithColorSystemState extends State<MovieItemWithColorSystem> wit
     return RepaintBoundary(
       child: Padding(
         padding: const EdgeInsets.only(right: itemSpacing),
+        // padding: const EdgeInsets.only(right: itemSpacing, top: 10),
         child: InkWell(
           focusNode: widget.focusNode,
           onFocusChange: (has) {

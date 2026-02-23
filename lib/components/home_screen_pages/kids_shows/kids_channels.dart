@@ -390,11 +390,11 @@ class _ManageKidsShowsState extends State<ManageKidsShows>
             context.read<FocusProvider>().focusPreviousRow();
             return KeyEventResult.handled;
           } else if (key == LogicalKeyboardKey.arrowDown) {
-            setState(() { focusedIndex = -1; _hasReceivedFocus = false; });
-            context.read<ColorProvider>().resetColor();
-            FocusScope.of(context).unfocus();
-            context.read<FocusProvider>().updateLastFocusedIdentifier('kids_show');
-            context.read<FocusProvider>().focusNextRow();
+            // setState(() { focusedIndex = -1; _hasReceivedFocus = false; });
+            // context.read<ColorProvider>().resetColor();
+            // FocusScope.of(context).unfocus();
+            // context.read<FocusProvider>().updateLastFocusedIdentifier('kids_show');
+            // context.read<FocusProvider>().focusNextRow();
             return KeyEventResult.handled;
           } else if (key == LogicalKeyboardKey.enter || key == LogicalKeyboardKey.select) {
             _navigateToGridPageWithNetwork(network);
@@ -436,13 +436,17 @@ class _ManageKidsShowsState extends State<ManageKidsShows>
       onKey: (node, event) {
         if (event is RawKeyDownEvent) {
           final key = event.logicalKey;
+          if (key == LogicalKeyboardKey.arrowRight) {
+            return KeyEventResult.handled;
+          } else
           if (key == LogicalKeyboardKey.arrowLeft) {
             if (_displayedKidsList.isNotEmpty) {
               String prevNetworkId = _displayedKidsList.last.id.toString();
               FocusScope.of(context).requestFocus(kidsFocusNodes[prevNetworkId]);
             }
             return KeyEventResult.handled;
-          } else if (key == LogicalKeyboardKey.arrowUp) {
+          } else
+           if (key == LogicalKeyboardKey.arrowUp) {
             setState(() { focusedIndex = -1; _hasReceivedFocus = false; });
             context.read<ColorProvider>().resetColor();
             FocusScope.of(context).unfocus();
@@ -450,11 +454,11 @@ class _ManageKidsShowsState extends State<ManageKidsShows>
             context.read<FocusProvider>().focusPreviousRow();
             return KeyEventResult.handled;
           } else if (key == LogicalKeyboardKey.arrowDown) {
-            setState(() { focusedIndex = -1; _hasReceivedFocus = false; });
-            context.read<ColorProvider>().resetColor();
-            FocusScope.of(context).unfocus();
-            context.read<FocusProvider>().updateLastFocusedIdentifier('kids_show');
-            context.read<FocusProvider>().focusNextRow();
+            // setState(() { focusedIndex = -1; _hasReceivedFocus = false; });
+            // context.read<ColorProvider>().resetColor();
+            // FocusScope.of(context).unfocus();
+            // context.read<FocusProvider>().updateLastFocusedIdentifier('kids_show');
+            // context.read<FocusProvider>().focusNextRow();
             return KeyEventResult.handled;
           } else if (key == LogicalKeyboardKey.enter || key == LogicalKeyboardKey.select) {
             _navigateToGridPage();

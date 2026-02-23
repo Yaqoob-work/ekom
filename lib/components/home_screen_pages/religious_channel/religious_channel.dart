@@ -435,6 +435,11 @@ class _ManageReligiousShowsState extends State<ManageReligiousShows>
       onKey: (node, event) {
         if (event is RawKeyDownEvent) {
           final key = event.logicalKey;
+          if (key == LogicalKeyboardKey.arrowRight) {
+      return KeyEventResult.handled; // Iska matlab "is key ka kaam khatam, aage kuch mat karo"
+    } 
+    
+    else
           if (key == LogicalKeyboardKey.arrowLeft) {
             if (_displayedReligiousList.isNotEmpty) {
               String prevNetworkId = _displayedReligiousList.last.id.toString();

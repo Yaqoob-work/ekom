@@ -10,6 +10,7 @@
 
 
 
+
     <application
         android:label="Get Play Box"
         android:name="${applicationName}"

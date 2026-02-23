@@ -474,6 +474,11 @@ class _TvShowsPakState extends State<TvShowsPak>
       onKey: (node, event) {
         if (event is RawKeyDownEvent) {
           final key = event.logicalKey;
+          if (key == LogicalKeyboardKey.arrowRight) {
+      return KeyEventResult.handled; // Iska matlab "is key ka kaam khatam, aage kuch mat karo"
+    } 
+    
+    else
           if (key == LogicalKeyboardKey.arrowLeft) {
             if (_displayedTVShowPakNetworkList.isNotEmpty) {
               String prevNetworkId = _displayedTVShowPakNetworkList.last.id.toString();
@@ -523,11 +528,10 @@ class _TvShowsPakState extends State<TvShowsPak>
         
         bool showShadow = _isSectionFocused;
 
-        return Scaffold(
-          backgroundColor: Colors.white,
-          body: ClipRect(
-            child: SizedBox(
+        return Container(
               height: containerHeight,
+          color: Colors.white,
+
               child: Stack(
                 children: [
                   Column(
@@ -565,8 +569,6 @@ class _TvShowsPakState extends State<TvShowsPak>
                   ),
                 ],
               ),
-            ),
-          ),
         );
       },
     );
