@@ -1309,106 +1309,439 @@
 
 
 
-import 'dart:async';
+// import 'dart:async';
+// import 'dart:convert';
+// import 'dart:math' as math;
+// import 'package:flutter/material.dart';
+// import 'package:flutter/services.dart';
+// import 'package:http/http.dart' as https;
+// import 'package:provider/provider.dart';
+
+// // Import your existing components
+// import 'package:mobi_tv_entertainment/main.dart';
+// import 'package:mobi_tv_entertainment/components/provider/color_provider.dart';
+// // Assuming this is the correct path to your slider screen
+// import 'package:mobi_tv_entertainment/components/home_screen_pages/above_18/above_eighteen_slider_screen.dart';
+
+// // ✅ 1. THEME & COLORS (Updated for Light Theme base but keeping accents)
+// class ProfessionalColors {
+//   // Kept accents for focus effects
+//   static const accentRed = Color(0xFFEF4444);
+//   static const accentPurple = Color(0xFF8B5CF6);
+//   static const accentBlue = Color(0xFF3B82F6);
+//   static const accentOrange = Color(0xFFF59E0B);
+//   static const accentPink = Color(0xFFEC4899);
+//   static const accentGreen = Color(0xFF10B981);
+
+//   static List<Color> focusColors = [
+//     accentRed, accentPurple, accentBlue, accentOrange, accentPink, accentGreen
+//   ];
+// }
+
+// // ✅ 2. MODEL
+// class AdultContentModel {
+//   final int id;
+//   final String name;
+//   final String? logo;
+//   final int status;
+
+//   AdultContentModel({
+//     required this.id,
+//     required this.name,
+//     this.logo,
+//     required this.status,
+//   });
+
+//   factory AdultContentModel.fromJson(Map<String, dynamic> json) {
+//     return AdultContentModel(
+//       id: json['id'] ?? 0,
+//       name: json['name'] ?? '',
+//       logo: json['logo'],
+//       status: json['status'] ?? 0,
+//     );
+//   }
+// }
+
+// // ✅ 3. SERVICE (The fixed version)
+// class AdultContentService {
+//   static Future<List<AdultContentModel>> getAllAdultContent() async {
+//     try {
+//       String authKey = SessionManager.authKey;
+//       var url = Uri.parse(SessionManager.baseUrl + 'getNetworks');
+
+//       final response = await https.post(
+//         url,
+//         headers: {
+//           'auth-key': authKey,
+//           'Content-Type': 'application/json',
+//           'Accept': 'application/json',
+//           'domain': SessionManager.savedDomain,
+//         },
+//         body: json.encode({"network_id": "", "data_for": "adultmovies"}),
+//       ).timeout(const Duration(seconds: 30));
+
+//       if (response.statusCode == 200) {
+//         final dynamic decodedData = json.decode(response.body);
+//         List<dynamic> listData = [];
+
+//         if (decodedData is List) {
+//           listData = decodedData;
+//         } else if (decodedData is Map<String, dynamic>) {
+//           if (decodedData.containsKey('data') && decodedData['data'] is List) {
+//             listData = decodedData['data'];
+//           } else if (decodedData.containsKey('networks') && decodedData['networks'] is List) {
+//              listData = decodedData['networks'];
+//           }
+//         }
+
+//         return listData
+//             .map((json) => AdultContentModel.fromJson(json))
+//             .where((item) => item.status == 1)
+//             .toList();
+//       } else {
+//         throw Exception('API Error: ${response.statusCode}');
+//       }
+//     } catch (e) {
+//       print('❌ Error fetching adult content: $e');
+//       return [];
+//     }
+//   }
+// }
+
+// // ✅ 4. MAIN SCREEN (Updated for White Background)
+// class AdultMoviesScreen extends StatefulWidget {
+//   const AdultMoviesScreen({Key? key}) : super(key: key);
+
+//   @override
+//   _AdultMoviesScreenState createState() => _AdultMoviesScreenState();
+// }
+
+// class _AdultMoviesScreenState extends State<AdultMoviesScreen> {
+//   List<AdultContentModel> _contentList = [];
+//   bool _isLoading = true;
+//   final FocusScopeNode _gridFocusScope = FocusScopeNode();
+//   bool _initialFocusSet = false;
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     _fetchContent();
+//   }
+
+//   @override
+//   void dispose() {
+//     _gridFocusScope.dispose();
+//     super.dispose();
+//   }
+
+//   Future<void> _fetchContent() async {
+//     try {
+//       final data = await AdultContentService.getAllAdultContent();
+//       if (mounted) {
+//         setState(() {
+//           _contentList = data;
+//           _isLoading = false;
+//         });
+//       }
+//     } catch (e) {
+//       if (mounted) setState(() => _isLoading = false);
+//     }
+//   }
+
+//   void _navigateToDetails(AdultContentModel content) {
+//     Navigator.push(
+//       context,
+//       MaterialPageRoute(
+//         builder: (context) => AboveEighteenSliderScreen(
+//           tvChannelId: content.id.toString(),
+//           logoUrl: content.logo ?? '',
+//           title: content.name,
+//         ),
+//       ),
+//     );
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final screenWidth = MediaQuery.of(context).size.width;
+
+//     return Scaffold(
+//       // 1. Set background to white
+//       backgroundColor: Colors.white, 
+//       body: FocusScope(
+//         node: _gridFocusScope,
+//         child: Container(
+//           // Removed dark gradient
+//           color: Colors.white,
+//           child: Column(
+//             crossAxisAlignment: CrossAxisAlignment.start,
+//             children: [
+//               // --- Header (Updated for light theme) ---
+//               Padding(
+//                 padding: const EdgeInsets.fromLTRB(40, 30, 40, 20),
+//                 child: Row(
+//                   children: [
+//                     // Icon color adjusted slightly
+//                     Icon(Icons.movie_filter_rounded, color: Colors.red[700], size: 32),
+//                     SizedBox(width: 15),
+//                     Text(
+//                       '18+ ZONE',
+//                       style: TextStyle(
+//                         fontSize: 28,
+//                         fontWeight: FontWeight.bold,
+//                         color: Colors.black87, // Text became dark
+//                         letterSpacing: 1.5,
+//                         // Lighter shadow for white background
+//                         shadows: [
+//                           Shadow(color: Colors.grey.withOpacity(0.5), blurRadius: 5, offset: Offset(2,2))
+//                         ],
+//                       ),
+//                     ),
+//                   ],
+//                 ),
+//               ),
+
+//               // --- Grid Body ---
+//               Expanded(
+//                 child: _isLoading
+//                     ? Center(child: CircularProgressIndicator(color: ProfessionalColors.accentRed))
+//                     : _contentList.isEmpty
+//                         ? _buildEmptyState()
+//                         : _buildGridView(screenWidth),
+//               ),
+//             ],
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildEmptyState() {
+//     return Center(
+//       child: Column(
+//         mainAxisAlignment: MainAxisAlignment.center,
+//         children: [
+//           Icon(Icons.block, size: 60, color: Colors.grey[400]),
+//           SizedBox(height: 10),
+//           Text("No Content Available", style: TextStyle(color: Colors.grey[600], fontSize: 18)),
+//         ],
+//       ),
+//     );
+//   }
+
+//   Widget _buildGridView(double screenWidth) {
+//     int crossAxisCount = (screenWidth > 900) ? 5 : 4;
+//     // Aspect ratio adjusted for image + text below it
+//     double childAspectRatio = 0.8; 
+
+//     return GridView.builder(
+//       padding: EdgeInsets.symmetric(horizontal: 40, vertical: 20),
+//       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+//         crossAxisCount: crossAxisCount,
+//         childAspectRatio: childAspectRatio,
+//         crossAxisSpacing: 30,
+//         mainAxisSpacing: 30,
+//       ),
+//       itemCount: _contentList.length,
+//       itemBuilder: (context, index) {
+//         if (index == 0 && !_initialFocusSet) {
+//           _initialFocusSet = true;
+//           WidgetsBinding.instance.addPostFrameCallback((_) {
+//              FocusScope.of(context).requestFocus(); 
+//           });
+//         }
+
+//         return GridContentCard(
+//           content: _contentList[index],
+//           isFirstItem: index == 0,
+//           onTap: () => _navigateToDetails(_contentList[index]),
+//         );
+//       },
+//     );
+//   }
+// }
+
+// // ✅ 5. GRID CONTENT CARD (RESTRUCTURED: Border around Image only)
+// class GridContentCard extends StatefulWidget {
+//   final AdultContentModel content;
+//   final VoidCallback onTap;
+//   final bool isFirstItem;
+
+//   const GridContentCard({
+//     Key? key,
+//     required this.content,
+//     required this.onTap,
+//     this.isFirstItem = false,
+//   }) : super(key: key);
+
+//   @override
+//   _GridContentCardState createState() => _GridContentCardState();
+// }
+
+// class _GridContentCardState extends State<GridContentCard> with SingleTickerProviderStateMixin {
+//   late AnimationController _animController;
+//   late Animation<double> _scaleAnimation;
+//   late FocusNode _focusNode;
+//   bool _isFocused = false;
+//   late Color _dynamicColor;
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     _focusNode = FocusNode();
+//     // Pick a random accent color for focus
+//     _dynamicColor = ProfessionalColors.focusColors[
+//         math.Random().nextInt(ProfessionalColors.focusColors.length)];
+
+//     if (widget.isFirstItem) {
+//       WidgetsBinding.instance.addPostFrameCallback((_) {
+//         if(mounted) FocusScope.of(context).requestFocus(_focusNode);
+//       });
+//     }
+
+//     _animController = AnimationController(
+//       duration: Duration(milliseconds: 200),
+//       vsync: this,
+//     );
+//     // Scale up slightly on focus
+//     _scaleAnimation = Tween<double>(begin: 1.0, end: 1.05).animate(
+//       CurvedAnimation(parent: _animController, curve: Curves.easeOutCubic),
+//     );
+
+//     _focusNode.addListener(_onFocusChange);
+//   }
+
+//   void _onFocusChange() {
+//     if (!mounted) return;
+//     setState(() {
+//       _isFocused = _focusNode.hasFocus;
+//     });
+
+//     if (_isFocused) {
+//       _animController.forward();
+//       // Optional: Update global ambient color if your app uses it
+//       // context.read<ColorProvider>().updateColor(_dynamicColor, true);
+//     } else {
+//       _animController.reverse();
+//     }
+//   }
+
+//   @override
+//   void dispose() {
+//     _focusNode.dispose();
+//     _animController.dispose();
+//     super.dispose();
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     // The InkWell wraps everything to capture focus events
+//     return InkWell(
+//       focusNode: _focusNode,
+//       onTap: widget.onTap,
+//       borderRadius: BorderRadius.circular(12),
+//       focusColor: Colors.transparent,
+//       child: Column(
+//         crossAxisAlignment: CrossAxisAlignment.stretch,
+//         children: [
+//           // --- 1. The Image Container (Handles Focus Border/Shadow/Scale) ---
+//           Expanded(
+//             child: AnimatedBuilder(
+//               animation: _scaleAnimation,
+//               builder: (context, child) {
+//                 return Transform.scale(
+//                   scale: _scaleAnimation.value,
+//                   child: child,
+//                 );
+//               },
+//               child: Container(
+//                 decoration: BoxDecoration(
+//                   borderRadius: BorderRadius.circular(12),
+//                   // White background for the image container itself
+//                   color: Colors.white, 
+//                   // Border only appears on focus around the image
+//                   border: _isFocused 
+//                       ? Border.all(color: _dynamicColor, width: 3) 
+//                       : Border.all(color: Colors.grey.shade300, width: 1), // Subtle border when not focused
+//                   boxShadow: _isFocused
+//                       ? [
+//                           BoxShadow(
+//                             color: _dynamicColor.withOpacity(0.5),
+//                             blurRadius: 20,
+//                             spreadRadius: 2,
+//                             offset: Offset(0, 5),
+//                           )
+//                         ]
+//                       : [
+//                           BoxShadow(
+//                             color: Colors.grey.shade300,
+//                             blurRadius: 5,
+//                             offset: Offset(0, 2),
+//                           )
+//                         ],
+//                 ),
+//                 // ClipRRect ensures the image respects the container's rounded corners
+//                 child: ClipRRect(
+//                   borderRadius: BorderRadius.circular(10), // Slightly smaller radius than container border
+//                   child: widget.content.logo != null && widget.content.logo!.isNotEmpty
+//                       ? Image.network(
+//                           widget.content.logo!,
+//                           fit: BoxFit.cover,
+//                           errorBuilder: (ctx, _, __) => _buildPlaceholder(),
+//                         )
+//                       : _buildPlaceholder(),
+//                 ),
+//               ),
+//             ),
+//           ),
+          
+//           // --- 2. The Text (Outside the border, below image) ---
+//           Container(
+//             alignment: Alignment.center,
+//             padding: EdgeInsets.only(top: 12, left: 4, right: 4, bottom: 4),
+//             child: Text(
+//               widget.content.name.toUpperCase(),
+//               maxLines: 2,
+//               overflow: TextOverflow.ellipsis,
+//               textAlign: TextAlign.center,
+//               style: TextStyle(
+//                 // Text color matches the focus color, otherwise dark gray
+//                 color: _isFocused ? _dynamicColor : Colors.black87,
+//                 fontWeight: FontWeight.w700,
+//                 fontSize: 13,
+//                 letterSpacing: 0.5,
+//               ),
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+
+//   Widget _buildPlaceholder() {
+//     return Container(
+//       color: Colors.grey[200],
+//       child: Center(
+//         child: Icon(Icons.image_not_supported_rounded, color: Colors.grey[400], size: 40),
+//       ),
+//     );
+//   }
+// }
+
+
+
+
 import 'dart:convert';
-import 'dart:math' as math;
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:http/http.dart' as https;
-import 'package:provider/provider.dart';
-
-// Import your existing components
+import 'package:mobi_tv_entertainment/components/widgets/smart_common_horizontal_list.dart';
 import 'package:mobi_tv_entertainment/main.dart';
-import 'package:mobi_tv_entertainment/components/provider/color_provider.dart';
-// Assuming this is the correct path to your slider screen
 import 'package:mobi_tv_entertainment/components/home_screen_pages/above_18/above_eighteen_slider_screen.dart';
+import 'package:mobi_tv_entertainment/components/services/history_service.dart';
 
-// ✅ 1. THEME & COLORS (Updated for Light Theme base but keeping accents)
-class ProfessionalColors {
-  // Kept accents for focus effects
-  static const accentRed = Color(0xFFEF4444);
-  static const accentPurple = Color(0xFF8B5CF6);
-  static const accentBlue = Color(0xFF3B82F6);
-  static const accentOrange = Color(0xFFF59E0B);
-  static const accentPink = Color(0xFFEC4899);
-  static const accentGreen = Color(0xFF10B981);
 
-  static List<Color> focusColors = [
-    accentRed, accentPurple, accentBlue, accentOrange, accentPink, accentGreen
-  ];
-}
 
-// ✅ 2. MODEL
-class AdultContentModel {
-  final int id;
-  final String name;
-  final String? logo;
-  final int status;
 
-  AdultContentModel({
-    required this.id,
-    required this.name,
-    this.logo,
-    required this.status,
-  });
-
-  factory AdultContentModel.fromJson(Map<String, dynamic> json) {
-    return AdultContentModel(
-      id: json['id'] ?? 0,
-      name: json['name'] ?? '',
-      logo: json['logo'],
-      status: json['status'] ?? 0,
-    );
-  }
-}
-
-// ✅ 3. SERVICE (The fixed version)
-class AdultContentService {
-  static Future<List<AdultContentModel>> getAllAdultContent() async {
-    try {
-      String authKey = SessionManager.authKey;
-      var url = Uri.parse(SessionManager.baseUrl + 'getNetworks');
-
-      final response = await https.post(
-        url,
-        headers: {
-          'auth-key': authKey,
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'domain': SessionManager.savedDomain,
-        },
-        body: json.encode({"network_id": "", "data_for": "adultmovies"}),
-      ).timeout(const Duration(seconds: 30));
-
-      if (response.statusCode == 200) {
-        final dynamic decodedData = json.decode(response.body);
-        List<dynamic> listData = [];
-
-        if (decodedData is List) {
-          listData = decodedData;
-        } else if (decodedData is Map<String, dynamic>) {
-          if (decodedData.containsKey('data') && decodedData['data'] is List) {
-            listData = decodedData['data'];
-          } else if (decodedData.containsKey('networks') && decodedData['networks'] is List) {
-             listData = decodedData['networks'];
-          }
-        }
-
-        return listData
-            .map((json) => AdultContentModel.fromJson(json))
-            .where((item) => item.status == 1)
-            .toList();
-      } else {
-        throw Exception('API Error: ${response.statusCode}');
-      }
-    } catch (e) {
-      print('❌ Error fetching adult content: $e');
-      return [];
-    }
-  }
-}
-
-// ✅ 4. MAIN SCREEN (Updated for White Background)
 class AdultMoviesScreen extends StatefulWidget {
   const AdultMoviesScreen({Key? key}) : super(key: key);
 
@@ -1416,314 +1749,121 @@ class AdultMoviesScreen extends StatefulWidget {
   _AdultMoviesScreenState createState() => _AdultMoviesScreenState();
 }
 
-class _AdultMoviesScreenState extends State<AdultMoviesScreen> {
-  List<AdultContentModel> _contentList = [];
-  bool _isLoading = true;
-  final FocusScopeNode _gridFocusScope = FocusScopeNode();
-  bool _initialFocusSet = false;
-
+class _AdultMoviesScreenState extends State<AdultMoviesScreen> with AutomaticKeepAliveClientMixin {
   @override
-  void initState() {
-    super.initState();
-    _fetchContent();
-  }
+  bool get wantKeepAlive => true;
 
-  @override
-  void dispose() {
-    _gridFocusScope.dispose();
-    super.dispose();
-  }
+  // ✅ 1. API Call For 18+ Content (Aapka custom parsing logic)
+  Future<List<CommonContentModel>> fetchAdultContentAPI() async {
+    var url = Uri.parse(SessionManager.baseUrl + 'getNetworks');
+    final response = await https.post(
+      url,
+      headers: {
+        'auth-key': SessionManager.authKey,
+        'Content-Type': 'application/json',
+        'domain': SessionManager.savedDomain
+      },
+      body: json.encode({"network_id": "", "data_for": "adultmovies"})
+    ).timeout(const Duration(seconds: 30));
 
-  Future<void> _fetchContent() async {
-    try {
-      final data = await AdultContentService.getAllAdultContent();
-      if (mounted) {
-        setState(() {
-          _contentList = data;
-          _isLoading = false;
-        });
+    if (response.statusCode == 200) {
+      final dynamic decodedData = json.decode(response.body);
+      List<dynamic> listData = [];
+
+      // API Response ka structure check karna
+      if (decodedData is List) {
+        listData = decodedData;
+      } else if (decodedData is Map<String, dynamic>) {
+        if (decodedData.containsKey('data') && decodedData['data'] is List) {
+          listData = decodedData['data'];
+        } else if (decodedData.containsKey('networks') && decodedData['networks'] is List) {
+          listData = decodedData['networks'];
+        }
       }
-    } catch (e) {
-      if (mounted) setState(() => _isLoading = false);
+
+      // Filter active status and Map to Common Model
+      return listData
+          .where((item) => item['status'] == 1 || item['status'] == '1')
+          .map((item) => CommonContentModel(
+                id: item['id'].toString(),
+                title: item['name'] ?? 'Unknown',
+                imageUrl: item['logo'] ?? '',
+                badgeText: '18+',
+                originalData: item,
+              ))
+          .toList();
+    } else {
+      throw Exception('Failed to load 18+ content');
     }
   }
 
-  void _navigateToDetails(AdultContentModel content) {
-    Navigator.push(
+  // ✅ 2. On Item Tap Navigation
+  Future<void> _onItemTap(CommonContentModel item) async {
+    // Save to history (Optional, adjust contentType based on your backend)
+    try {
+      await HistoryService.updateUserHistory(
+        userId: SessionManager.userId!,
+        contentType: 4, 
+        eventId: int.parse(item.id),
+        eventTitle: item.title,
+        url: '',
+        categoryId: 0,
+      );
+    } catch (e) {}
+
+    // Navigate and Wait
+    await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => AboveEighteenSliderScreen(
-          tvChannelId: content.id.toString(),
-          logoUrl: content.logo ?? '',
-          title: content.name,
+          tvChannelId: item.id,
+          logoUrl: item.imageUrl,
+          title: item.title,
         ),
       ),
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-
-    return Scaffold(
-      // 1. Set background to white
-      backgroundColor: Colors.white, 
-      body: FocusScope(
-        node: _gridFocusScope,
-        child: Container(
-          // Removed dark gradient
-          color: Colors.white,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // --- Header (Updated for light theme) ---
-              Padding(
-                padding: const EdgeInsets.fromLTRB(40, 30, 40, 20),
-                child: Row(
-                  children: [
-                    // Icon color adjusted slightly
-                    Icon(Icons.movie_filter_rounded, color: Colors.red[700], size: 32),
-                    SizedBox(width: 15),
-                    Text(
-                      '18+ ZONE',
-                      style: TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87, // Text became dark
-                        letterSpacing: 1.5,
-                        // Lighter shadow for white background
-                        shadows: [
-                          Shadow(color: Colors.grey.withOpacity(0.5), blurRadius: 5, offset: Offset(2,2))
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              // --- Grid Body ---
-              Expanded(
-                child: _isLoading
-                    ? Center(child: CircularProgressIndicator(color: ProfessionalColors.accentRed))
-                    : _contentList.isEmpty
-                        ? _buildEmptyState()
-                        : _buildGridView(screenWidth),
-              ),
-            ],
-          ),
+  // ✅ 3. On View All Tap (Optional: Agar View All chahiye toh isko uncomment karein)
+  /*
+  Future<void> _onViewAllTap() async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AboveEighteenSliderScreen(
+          tvChannelId: '', // Ya jo bhi null handle logic ho
+          logoUrl: '',
+          title: 'All 18+ Content',
         ),
       ),
     );
   }
-
-  Widget _buildEmptyState() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.block, size: 60, color: Colors.grey[400]),
-          SizedBox(height: 10),
-          Text("No Content Available", style: TextStyle(color: Colors.grey[600], fontSize: 18)),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildGridView(double screenWidth) {
-    int crossAxisCount = (screenWidth > 900) ? 5 : 4;
-    // Aspect ratio adjusted for image + text below it
-    double childAspectRatio = 0.8; 
-
-    return GridView.builder(
-      padding: EdgeInsets.symmetric(horizontal: 40, vertical: 20),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: crossAxisCount,
-        childAspectRatio: childAspectRatio,
-        crossAxisSpacing: 30,
-        mainAxisSpacing: 30,
-      ),
-      itemCount: _contentList.length,
-      itemBuilder: (context, index) {
-        if (index == 0 && !_initialFocusSet) {
-          _initialFocusSet = true;
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-             FocusScope.of(context).requestFocus(); 
-          });
-        }
-
-        return GridContentCard(
-          content: _contentList[index],
-          isFirstItem: index == 0,
-          onTap: () => _navigateToDetails(_contentList[index]),
-        );
-      },
-    );
-  }
-}
-
-// ✅ 5. GRID CONTENT CARD (RESTRUCTURED: Border around Image only)
-class GridContentCard extends StatefulWidget {
-  final AdultContentModel content;
-  final VoidCallback onTap;
-  final bool isFirstItem;
-
-  const GridContentCard({
-    Key? key,
-    required this.content,
-    required this.onTap,
-    this.isFirstItem = false,
-  }) : super(key: key);
-
-  @override
-  _GridContentCardState createState() => _GridContentCardState();
-}
-
-class _GridContentCardState extends State<GridContentCard> with SingleTickerProviderStateMixin {
-  late AnimationController _animController;
-  late Animation<double> _scaleAnimation;
-  late FocusNode _focusNode;
-  bool _isFocused = false;
-  late Color _dynamicColor;
-
-  @override
-  void initState() {
-    super.initState();
-    _focusNode = FocusNode();
-    // Pick a random accent color for focus
-    _dynamicColor = ProfessionalColors.focusColors[
-        math.Random().nextInt(ProfessionalColors.focusColors.length)];
-
-    if (widget.isFirstItem) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if(mounted) FocusScope.of(context).requestFocus(_focusNode);
-      });
-    }
-
-    _animController = AnimationController(
-      duration: Duration(milliseconds: 200),
-      vsync: this,
-    );
-    // Scale up slightly on focus
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 1.05).animate(
-      CurvedAnimation(parent: _animController, curve: Curves.easeOutCubic),
-    );
-
-    _focusNode.addListener(_onFocusChange);
-  }
-
-  void _onFocusChange() {
-    if (!mounted) return;
-    setState(() {
-      _isFocused = _focusNode.hasFocus;
-    });
-
-    if (_isFocused) {
-      _animController.forward();
-      // Optional: Update global ambient color if your app uses it
-      // context.read<ColorProvider>().updateColor(_dynamicColor, true);
-    } else {
-      _animController.reverse();
-    }
-  }
-
-  @override
-  void dispose() {
-    _focusNode.dispose();
-    _animController.dispose();
-    super.dispose();
-  }
+  */
 
   @override
   Widget build(BuildContext context) {
-    // The InkWell wraps everything to capture focus events
-    return InkWell(
-      focusNode: _focusNode,
-      onTap: widget.onTap,
-      borderRadius: BorderRadius.circular(12),
-      focusColor: Colors.transparent,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          // --- 1. The Image Container (Handles Focus Border/Shadow/Scale) ---
-          Expanded(
-            child: AnimatedBuilder(
-              animation: _scaleAnimation,
-              builder: (context, child) {
-                return Transform.scale(
-                  scale: _scaleAnimation.value,
-                  child: child,
-                );
-              },
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  // White background for the image container itself
-                  color: Colors.white, 
-                  // Border only appears on focus around the image
-                  border: _isFocused 
-                      ? Border.all(color: _dynamicColor, width: 3) 
-                      : Border.all(color: Colors.grey.shade300, width: 1), // Subtle border when not focused
-                  boxShadow: _isFocused
-                      ? [
-                          BoxShadow(
-                            color: _dynamicColor.withOpacity(0.5),
-                            blurRadius: 20,
-                            spreadRadius: 2,
-                            offset: Offset(0, 5),
-                          )
-                        ]
-                      : [
-                          BoxShadow(
-                            color: Colors.grey.shade300,
-                            blurRadius: 5,
-                            offset: Offset(0, 2),
-                          )
-                        ],
-                ),
-                // ClipRRect ensures the image respects the container's rounded corners
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10), // Slightly smaller radius than container border
-                  child: widget.content.logo != null && widget.content.logo!.isNotEmpty
-                      ? Image.network(
-                          widget.content.logo!,
-                          fit: BoxFit.cover,
-                          errorBuilder: (ctx, _, __) => _buildPlaceholder(),
-                        )
-                      : _buildPlaceholder(),
-                ),
-              ),
-            ),
-          ),
-          
-          // --- 2. The Text (Outside the border, below image) ---
-          Container(
-            alignment: Alignment.center,
-            padding: EdgeInsets.only(top: 12, left: 4, right: 4, bottom: 4),
-            child: Text(
-              widget.content.name.toUpperCase(),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                // Text color matches the focus color, otherwise dark gray
-                color: _isFocused ? _dynamicColor : Colors.black87,
-                fontWeight: FontWeight.w700,
-                fontSize: 13,
-                letterSpacing: 0.5,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildPlaceholder() {
-    return Container(
-      color: Colors.grey[200],
-      child: Center(
-        child: Icon(Icons.image_not_supported_rounded, color: Colors.grey[400], size: 40),
-      ),
+    super.build(context);
+    
+    return SmartCommonHorizontalList(
+      sectionTitle: "18+ ZONE",
+      
+      // ✅ Theme colors specifically for Adult section (Red/Dark Red)
+      titleGradient: const [Color(0xFFEF4444), Color(0xFF991B1B)], 
+      accentColor: const Color(0xFFEF4444), 
+      
+      placeholderIcon: Icons.movie_filter_rounded,
+      badgeDefaultText: '18+',
+      
+      // ID jo Sidebar se match karni chahiye
+      focusIdentifier: 'eighteenPlus', 
+      
+      fetchApiData: fetchAdultContentAPI,
+      onItemTap: _onItemTap,
+      
+      // Agar "View All" button dikhana hai toh neeche comment hatayein
+      // onViewAllTap: _onViewAllTap, 
+      
+      maxVisibleItems: 10, // List mein initial items
     );
   }
 }

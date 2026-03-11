@@ -269,273 +269,276 @@
 
 
 
-import 'package:flutter/material.dart';
-import 'dart:async';
+// import 'package:flutter/material.dart';
+// import 'dart:async';
 
-class FocusProvider extends ChangeNotifier {
-  final Map<String, FocusNode> _focusNodes = {};
-  final Map<String, GlobalKey> _elementKeys = {};
-  final ScrollController scrollController = ScrollController();
+// class FocusProvider extends ChangeNotifier {
+//   final Map<String, FocusNode> _focusNodes = {};
+//   final Map<String, GlobalKey> _elementKeys = {};
+//   final ScrollController scrollController = ScrollController();
 
-  // --- UPDATED CONSTANTS FOR SMOOTHER SCROLL ---
-  static const int _kLockDurationMs = 50; // Thoda badhaya taaki rapid clicks handle hon
-  static const int _kScrollDurationMs = 200; // 1200ms se kam kiya taaki lag na lage
+//   // --- UPDATED CONSTANTS FOR SMOOTHER SCROLL ---
+//   static const int _kLockDurationMs = 50; // Thoda badhaya taaki rapid clicks handle hon
+//   static const int _kScrollDurationMs = 200; // 1200ms se kam kiya taaki lag na lage
 
-  // --- NAVIGATION LOCK VARIABLES ---
-  bool _isNavigationLocked = false;
-  Timer? _navigationLockTimer;
-  String _lastFocusedIdentifier = '';
-  String get lastFocusedIdentifier => _lastFocusedIdentifier;
+//   // --- NAVIGATION LOCK VARIABLES ---
+//   bool _isNavigationLocked = false;
+//   Timer? _navigationLockTimer;
+//   String _lastFocusedIdentifier = '';
+//   String get lastFocusedIdentifier => _lastFocusedIdentifier;
 
-  String? _lastFocusedItemId; 
-  String? get lastFocusedItemId => _lastFocusedItemId;
-
-  void updateLastFocusedItemId(String itemId) {
-    _lastFocusedItemId = itemId;
-    // notifyListeners(); // Performance ke liye off rakha hai
-  }
-
-  // --- VISIBLE ROWS LIST ---
-  List<String> _visibleRowIdentifiers = [];
-  String _lastNavigationDirection = 'down';
-
-  final Set<String> _lockableIdentifiers = {
-    'watchNow',
-    'liveChannelLanguage',
-    'subVod',
-    'manageMovies',
-    'manageWebseries',
-    'tvShows',
-    'sports',
-    'religiousChannels',
-    'tvShowPak',
-    'kids_show',
-    'aboveEighteen', // Agar future mein add karein
-  };
-
-  void updateVisibleRowIdentifiers(List<String> identifiers) {
-    _visibleRowIdentifiers = identifiers;
-  }
-
-  // --- NAVIGATION METHODS ---
-
-  void focusNextRow() {
-    _lastNavigationDirection = 'down';
-    final currentIndex = _visibleRowIdentifiers.indexOf(_lastFocusedIdentifier);
-
-    if (currentIndex == -1 && _visibleRowIdentifiers.isNotEmpty) {
-      requestFocus(_visibleRowIdentifiers[0]);
-    } 
-    else if (currentIndex < _visibleRowIdentifiers.length - 1) {
-      bool foundNext = false;
-      for (int i = currentIndex + 1; i < _visibleRowIdentifiers.length; i++) {
-        final String nextIdentifier = _visibleRowIdentifiers[i];
-        final node = _focusNodes[nextIdentifier];
-
-        if (node != null && node.canRequestFocus) {
-          requestFocus(nextIdentifier);
-          foundNext = true;
-          return; 
-        }
-      }
-      if (!foundNext) {
-        requestFocus(_lastFocusedIdentifier);
-      }
-    } 
-    else {
-      requestFocus(_lastFocusedIdentifier);
-    }
-  }
-
-  void focusPreviousRow() {
-    _lastNavigationDirection = 'up';
-    final currentIndex = _visibleRowIdentifiers.indexOf(_lastFocusedIdentifier);
-
-    if (currentIndex > 0) {
-      bool foundPrev = false;
-      for (int i = currentIndex - 1; i >= 0; i--) {
-        final String prevIdentifier = _visibleRowIdentifiers[i];
-        final node = _focusNodes[prevIdentifier]; 
-
-        if (node != null && node.canRequestFocus) {
-          requestFocus(prevIdentifier);
-          foundPrev = true;
-          return; 
-        }
-      }
-      if (!foundPrev) {
-         requestFocus(_lastFocusedIdentifier);
-      }
-    } else if (currentIndex == 0) {
-      requestFocus(_lastFocusedIdentifier);
-    }
-  }
-
-  // -----------------------------
-
-  void registerFocusNode(String identifier, FocusNode node) {
-    _focusNodes[identifier] = node;
-    // notifyListeners(); // Bar bar rebuild se bachne ke liye comment kiya
-  }
-
-  // void requestFocus(String identifier) {
-  //   final node = _focusNodes[identifier];
-  //   if (node == null) {
-  //    // Agar main node nahi mil raha toh check karein ki kya ye kisi sub-item ki row hai
-  //    return;
-  // }
-
-    
-
-  //   // --- LOCK LOGIC ---
-  //   final bool requiresLock = _lockableIdentifiers.contains(identifier);
-
-  //   if (requiresLock && _isNavigationLocked) return;
-
-  //   if (requiresLock) {
-  //     _isNavigationLocked = true;
-  //     _navigationLockTimer?.cancel();
-  //     _navigationLockTimer = Timer(const Duration(milliseconds: _kLockDurationMs), () {
-  //       _isNavigationLocked = false;
-  //     });
-  //   }
-
-  //   Future.microtask(() {
-  //     if (!node.canRequestFocus) {
-  //       if (requiresLock) {
-  //         _isNavigationLocked = false;
-  //         _navigationLockTimer?.cancel();
-  //       }
-  //       return;
-  //     }
-
-  //     if (_visibleRowIdentifiers.contains(identifier)) {
-  //       _lastFocusedIdentifier = identifier;
-  //     }
-
-  //     // --- FOCUS & SCROLL LOGIC ---
-  //     node.requestFocus();
-      
-  //     // Sabhi lockable identifiers ke liye scroll call karein
-  //     if (_lockableIdentifiers.contains(identifier)) {
-  //       scrollToElement(identifier);
-  //     }
-  //   });
-  // }
+//   String? _lastFocusedItemId; 
+//   String? get lastFocusedItemId => _lastFocusedItemId;
 
 
+  
 
-//   void requestFocus(String identifier) {
-//   final node = _focusNodes[identifier];
-//   if (node == null) return;
+//   void updateLastFocusedItemId(String itemId) {
+//     _lastFocusedItemId = itemId;
+//     // notifyListeners(); // Performance ke liye off rakha hai
+//   }
 
-//   // Agar navigation locked hai toh return karein
-//   final bool requiresLock = _lockableIdentifiers.contains(identifier);
-//   if (requiresLock && _isNavigationLocked) return;
+//   // --- VISIBLE ROWS LIST ---
+//   List<String> _visibleRowIdentifiers = [];
+//   String _lastNavigationDirection = 'down';
 
-//   // ✅ Update identifier immediately 
-//   _lastFocusedIdentifier = identifier;
+//   final Set<String> _lockableIdentifiers = {
+//     'watchNow',
+//     'liveChannelLanguage',
+//     'subVod',
+//     'manageMovies',
+//     'manageWebseries',
+//     'tvShows',
+//     'sports',
+//     'religiousChannels',
+//     'tvShowPak',
+//     'kids_show',
+//     'aboveEighteen', // Agar future mein add karein
+//   };
 
-//   Future.microtask(() {
-//     if (!node.canRequestFocus) return;
-    
-//     // Sirf request karein, notifyListeners() ki zarurat nahi hai agar sirf focus switch ho raha hai
-//     node.requestFocus();
-    
-//     if (_lockableIdentifiers.contains(identifier)) {
-//       scrollToElement(identifier);
+//   void updateVisibleRowIdentifiers(List<String> identifiers) {
+//     _visibleRowIdentifiers = identifiers;
+//   }
+
+//   // --- NAVIGATION METHODS ---
+
+//   void focusNextRow() {
+//     _lastNavigationDirection = 'down';
+//     final currentIndex = _visibleRowIdentifiers.indexOf(_lastFocusedIdentifier);
+
+//     if (currentIndex == -1 && _visibleRowIdentifiers.isNotEmpty) {
+//       requestFocus(_visibleRowIdentifiers[0]);
+//     } 
+//     else if (currentIndex < _visibleRowIdentifiers.length - 1) {
+//       bool foundNext = false;
+//       for (int i = currentIndex + 1; i < _visibleRowIdentifiers.length; i++) {
+//         final String nextIdentifier = _visibleRowIdentifiers[i];
+//         final node = _focusNodes[nextIdentifier];
+
+//         if (node != null && node.canRequestFocus) {
+//           requestFocus(nextIdentifier);
+//           foundNext = true;
+//           return; 
+//         }
+//       }
+//       if (!foundNext) {
+//         requestFocus(_lastFocusedIdentifier);
+//       }
+//     } 
+//     else {
+//       requestFocus(_lastFocusedIdentifier);
 //     }
-//   });
-// }
+//   }
 
+//   void focusPreviousRow() {
+//     _lastNavigationDirection = 'up';
+//     final currentIndex = _visibleRowIdentifiers.indexOf(_lastFocusedIdentifier);
 
+//     if (currentIndex > 0) {
+//       bool foundPrev = false;
+//       for (int i = currentIndex - 1; i >= 0; i--) {
+//         final String prevIdentifier = _visibleRowIdentifiers[i];
+//         final node = _focusNodes[prevIdentifier]; 
 
-void requestFocus(String identifier) {
-    final node = _focusNodes[identifier];
-    if (node == null) return;
+//         if (node != null && node.canRequestFocus) {
+//           requestFocus(prevIdentifier);
+//           foundPrev = true;
+//           return; 
+//         }
+//       }
+//       if (!foundPrev) {
+//          requestFocus(_lastFocusedIdentifier);
+//       }
+//     } else if (currentIndex == 0) {
+//       requestFocus(_lastFocusedIdentifier);
+//     }
+//   }
 
-    final bool requiresLock = _lockableIdentifiers.contains(identifier);
-    if (requiresLock && _isNavigationLocked) return;
+//   // -----------------------------
 
-    _lastFocusedIdentifier = identifier;
+//   void registerFocusNode(String identifier, FocusNode node) {
+//     _focusNodes[identifier] = node;
+//     // notifyListeners(); // Bar bar rebuild se bachne ke liye comment kiya
+//   }
 
-    // ✅ Focus request ko scroll ke saath sync karein
-    Future.delayed(Duration.zero, () {
-      if (!node.canRequestFocus) return;
-      node.requestFocus();
+//   // void requestFocus(String identifier) {
+//   //   final node = _focusNodes[identifier];
+//   //   if (node == null) {
+//   //    // Agar main node nahi mil raha toh check karein ki kya ye kisi sub-item ki row hai
+//   //    return;
+//   // }
+
+    
+
+//   //   // --- LOCK LOGIC ---
+//   //   final bool requiresLock = _lockableIdentifiers.contains(identifier);
+
+//   //   if (requiresLock && _isNavigationLocked) return;
+
+//   //   if (requiresLock) {
+//   //     _isNavigationLocked = true;
+//   //     _navigationLockTimer?.cancel();
+//   //     _navigationLockTimer = Timer(const Duration(milliseconds: _kLockDurationMs), () {
+//   //       _isNavigationLocked = false;
+//   //     });
+//   //   }
+
+//   //   Future.microtask(() {
+//   //     if (!node.canRequestFocus) {
+//   //       if (requiresLock) {
+//   //         _isNavigationLocked = false;
+//   //         _navigationLockTimer?.cancel();
+//   //       }
+//   //       return;
+//   //     }
+
+//   //     if (_visibleRowIdentifiers.contains(identifier)) {
+//   //       _lastFocusedIdentifier = identifier;
+//   //     }
+
+//   //     // --- FOCUS & SCROLL LOGIC ---
+//   //     node.requestFocus();
       
-      if (_lockableIdentifiers.contains(identifier)) {
-        scrollToElement(identifier);
-      }
-    });
-  }
+//   //     // Sabhi lockable identifiers ke liye scroll call karein
+//   //     if (_lockableIdentifiers.contains(identifier)) {
+//   //       scrollToElement(identifier);
+//   //     }
+//   //   });
+//   // }
 
-  void scrollToElement(String identifier) {
-    final key = _elementKeys[identifier];
-    if (key?.currentContext == null) return;
 
-    final BuildContext context = key!.currentContext!;
-    final RenderBox box = context.findRenderObject() as RenderBox;
-    final Offset position = box.localToGlobal(Offset.zero, ancestor: scrollController.position.context.storageContext.findRenderObject());
+
+// //   void requestFocus(String identifier) {
+// //   final node = _focusNodes[identifier];
+// //   if (node == null) return;
+
+// //   // Agar navigation locked hai toh return karein
+// //   final bool requiresLock = _lockableIdentifiers.contains(identifier);
+// //   if (requiresLock && _isNavigationLocked) return;
+
+// //   // ✅ Update identifier immediately 
+// //   _lastFocusedIdentifier = identifier;
+
+// //   Future.microtask(() {
+// //     if (!node.canRequestFocus) return;
     
-    // ✅ Custom calculation taaki makkhan ki tarah scroll ho
-    final double targetOffset = scrollController.offset + position.dy - (MediaQuery.of(context).size.height / 3);
-
-    scrollController.animateTo(
-      targetOffset.clamp(0.0, scrollController.position.maxScrollExtent),
-      duration: const Duration(milliseconds: _kScrollDurationMs),
-      curve: Curves.easeOutCubic, // Isse smoothness badh jayegi
-    );
-  }
-
-  void registerElementKey(String identifier, GlobalKey key) {
-    _elementKeys[identifier] = key;
-  }
-
-  void unregisterElementKey(String identifier) {
-    _elementKeys.remove(identifier);
-  }
-
-  // /// ✅ [UPDATED] Smooth Scrolling Method
-  // void scrollToElement(String identifier) {
-  //   final key = _elementKeys[identifier];
+// //     // Sirf request karein, notifyListeners() ki zarurat nahi hai agar sirf focus switch ho raha hai
+// //     node.requestFocus();
     
-  //   // Agar key null hai ya widget tree mein abhi attach nahi hua hai
-  //   if (key?.currentContext == null) return;
+// //     if (_lockableIdentifiers.contains(identifier)) {
+// //       scrollToElement(identifier);
+// //     }
+// //   });
+// // }
 
-  //   final BuildContext context = key!.currentContext!;
 
-  //   // 0.5 matlab item ko screen ke center mein lana
-  //   final double targetAlignment = 0.5;
 
-  //   Scrollable.ensureVisible(
-  //     context,
-  //     alignment: targetAlignment,
-  //     duration: const Duration(milliseconds: _kScrollDurationMs),
-  //     // ✅ Linear ki jagah EaseInOutCubic use karein (Makkhan scrolling)
-  //     curve: Curves.easeInOutCubic, 
-  //     alignmentPolicy: ScrollPositionAlignmentPolicy.explicit,
-  //   );
-  // }
+// void requestFocus(String identifier) {
+//     final node = _focusNodes[identifier];
+//     if (node == null) return;
 
-  void updateLastFocusedIdentifier(String identifier) {
-    if (_visibleRowIdentifiers.contains(identifier)) {
-      _lastFocusedIdentifier = identifier;
-      notifyListeners();
-    }
-  }
+//     final bool requiresLock = _lockableIdentifiers.contains(identifier);
+//     if (requiresLock && _isNavigationLocked) return;
 
-  @override
-  void dispose() {
-    _navigationLockTimer?.cancel();
-    scrollController.dispose();
-    for (var node in _focusNodes.values) {
-      node.dispose();
-    }
-    _focusNodes.clear();
-    super.dispose();
-  }
-}
+//     _lastFocusedIdentifier = identifier;
+
+//     // ✅ Focus request ko scroll ke saath sync karein
+//     Future.delayed(Duration.zero, () {
+//       if (!node.canRequestFocus) return;
+//       node.requestFocus();
+      
+//       if (_lockableIdentifiers.contains(identifier)) {
+//         scrollToElement(identifier);
+//       }
+//     });
+//   }
+
+//   void scrollToElement(String identifier) {
+//     final key = _elementKeys[identifier];
+//     if (key?.currentContext == null) return;
+
+//     final BuildContext context = key!.currentContext!;
+//     final RenderBox box = context.findRenderObject() as RenderBox;
+//     final Offset position = box.localToGlobal(Offset.zero, ancestor: scrollController.position.context.storageContext.findRenderObject());
+    
+//     // ✅ Custom calculation taaki makkhan ki tarah scroll ho
+//     final double targetOffset = scrollController.offset + position.dy - (MediaQuery.of(context).size.height / 3);
+
+//     scrollController.animateTo(
+//       targetOffset.clamp(0.0, scrollController.position.maxScrollExtent),
+//       duration: const Duration(milliseconds: _kScrollDurationMs),
+//       curve: Curves.easeOutCubic, // Isse smoothness badh jayegi
+//     );
+//   }
+
+//   void registerElementKey(String identifier, GlobalKey key) {
+//     _elementKeys[identifier] = key;
+//   }
+
+//   void unregisterElementKey(String identifier) {
+//     _elementKeys.remove(identifier);
+//   }
+
+//   // /// ✅ [UPDATED] Smooth Scrolling Method
+//   // void scrollToElement(String identifier) {
+//   //   final key = _elementKeys[identifier];
+    
+//   //   // Agar key null hai ya widget tree mein abhi attach nahi hua hai
+//   //   if (key?.currentContext == null) return;
+
+//   //   final BuildContext context = key!.currentContext!;
+
+//   //   // 0.5 matlab item ko screen ke center mein lana
+//   //   final double targetAlignment = 0.5;
+
+//   //   Scrollable.ensureVisible(
+//   //     context,
+//   //     alignment: targetAlignment,
+//   //     duration: const Duration(milliseconds: _kScrollDurationMs),
+//   //     // ✅ Linear ki jagah EaseInOutCubic use karein (Makkhan scrolling)
+//   //     curve: Curves.easeInOutCubic, 
+//   //     alignmentPolicy: ScrollPositionAlignmentPolicy.explicit,
+//   //   );
+//   // }
+
+//   void updateLastFocusedIdentifier(String identifier) {
+//     if (_visibleRowIdentifiers.contains(identifier)) {
+//       _lastFocusedIdentifier = identifier;
+//       notifyListeners();
+//     }
+//   }
+
+//   @override
+//   void dispose() {
+//     _navigationLockTimer?.cancel();
+//     scrollController.dispose();
+//     for (var node in _focusNodes.values) {
+//       node.dispose();
+//     }
+//     _focusNodes.clear();
+//     super.dispose();
+//   }
+// }
 
 
 
@@ -713,3 +716,86 @@ void requestFocus(String identifier) {
 //     super.dispose();
 //   }
 // }
+
+
+
+
+
+
+import 'package:flutter/material.dart';
+import 'dart:async';
+
+class FocusProvider extends ChangeNotifier {
+  final Map<String, FocusNode> _focusNodes = {};
+  
+  // Navigation Lock Variables
+  bool _isNavigationLocked = false;
+  Timer? _navigationLockTimer;
+  static const int _kLockDurationMs = 50;
+
+  // Trackers
+  String _lastFocusedIdentifier = '';
+  String get lastFocusedIdentifier => _lastFocusedIdentifier;
+
+  String? _lastFocusedItemId; 
+  String? get lastFocusedItemId => _lastFocusedItemId;
+
+  // ✅ Dashboard Navigation Callbacks (Perfectly Added)
+  VoidCallback? onDashboardNextPage;
+  VoidCallback? onDashboardPrevPage;
+  VoidCallback? onBannerDown;
+
+  void triggerDashboardNextPage() => onDashboardNextPage?.call();
+  void triggerDashboardPrevPage() => onDashboardPrevPage?.call();
+  void triggerBannerDown() => onBannerDown?.call();
+
+  
+
+  // Item ID updater for returning focus
+  void updateLastFocusedItemId(String itemId) {
+    _lastFocusedItemId = itemId;
+  }
+
+  void updateLastFocusedIdentifier(String identifier) {
+    _lastFocusedIdentifier = identifier;
+    // notifyListeners(); // Performance ke liye off rakha hai
+  }
+
+  // Node Registration
+  void registerFocusNode(String identifier, FocusNode node) {
+    _focusNodes[identifier] = node;
+  }
+
+  // ✅ Core Focus Logic (Cleaned up for new layout)
+  void requestFocus(String identifier) {
+    final node = _focusNodes[identifier];
+    if (node == null) return;
+
+    // Optional Navigation Lock to prevent rapid misclicks
+    if (_isNavigationLocked) return;
+    _isNavigationLocked = true;
+    _navigationLockTimer?.cancel();
+    _navigationLockTimer = Timer(const Duration(milliseconds: _kLockDurationMs), () {
+      _isNavigationLocked = false;
+    });
+
+    _lastFocusedIdentifier = identifier;
+
+    // Microtask ensures focus is requested right after the frame is ready
+    Future.microtask(() {
+      if (node.canRequestFocus) {
+        node.requestFocus();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _navigationLockTimer?.cancel();
+    for (var node in _focusNodes.values) {
+      node.dispose();
+    }
+    _focusNodes.clear();
+    super.dispose();
+  }
+}

@@ -69,7 +69,7 @@ class _SmartRetryWidgetState extends State<SmartRetryWidget> {
                 // Nahi to Default Provider logic use karein
                 if (widget.providerIdentifier != null) {
                   context.read<FocusProvider>().updateLastFocusedIdentifier(widget.providerIdentifier!);
-                  context.read<FocusProvider>().focusPreviousRow();
+                  // context.read<FocusProvider>().focusPreviousRow();
                   return KeyEventResult.handled;
                 }
               } 
@@ -77,7 +77,7 @@ class _SmartRetryWidgetState extends State<SmartRetryWidget> {
               if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
                 if (widget.providerIdentifier != null) {
                   context.read<FocusProvider>().updateLastFocusedIdentifier(widget.providerIdentifier!);
-                  context.read<FocusProvider>().focusNextRow();
+                  // context.read<FocusProvider>().focusNextRow();
                   return KeyEventResult.handled;
                 }
               }

@@ -426,7 +426,7 @@ class _BannerSliderState extends State<BannerSlider>
             return _buildSimpleBanner(banner);
           },
         ),
-        _buildNavigationButton(),
+        // _buildNavigationButton(),
         if (bannerList.length > 1) _buildPageIndicators(),
         _buildStationaryTitle(),
       ],
@@ -448,52 +448,52 @@ class _BannerSliderState extends State<BannerSlider>
     );
   }
 
-  Widget _buildNavigationButton() {
-    final bool hasFocus = widget.focusNode.hasFocus;
-    final List<Color> focusColors = [
-      ProfessionalColorsForHomePages.accentBlue, 
-      ProfessionalColorsForHomePages.accentPurple, 
-      ProfessionalColorsForHomePages.accentGreen
-    ];
-    int bannerIndex = bannerList.indexWhere((b) => b.id.toString() == selectedContentId);
-    if (bannerIndex == -1) bannerIndex = 0;
-    final Color focusColor = bannerList.isNotEmpty ? focusColors[bannerIndex % focusColors.length] : ProfessionalColorsForHomePages.accentBlue;
+  // Widget _buildNavigationButton() {
+  //   final bool hasFocus = widget.focusNode.hasFocus;
+  //   final List<Color> focusColors = [
+  //     ProfessionalColorsForHomePages.accentBlue, 
+  //     ProfessionalColorsForHomePages.accentPurple, 
+  //     ProfessionalColorsForHomePages.accentGreen
+  //   ];
+  //   int bannerIndex = bannerList.indexWhere((b) => b.id.toString() == selectedContentId);
+  //   if (bannerIndex == -1) bannerIndex = 0;
+  //   final Color focusColor = bannerList.isNotEmpty ? focusColors[bannerIndex % focusColors.length] : ProfessionalColorsForHomePages.accentBlue;
 
-    double effectiveScreenHeight = MediaQuery.of(context).size.height;
-    double effectiveScreenWidth = MediaQuery.of(context).size.width;
+  //   double effectiveScreenHeight = MediaQuery.of(context).size.height;
+  //   double effectiveScreenWidth = MediaQuery.of(context).size.width;
 
-    return Positioned(
-      top: effectiveScreenHeight * 0.2,
-      left: effectiveScreenWidth * 0.03,
-      child: Focus(
-        focusNode: widget.focusNode,
-        onKeyEvent: _handleKeyEvent,
-        child: GestureDetector(
-          onTap: _handleWatchNowTap,
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
-            padding: EdgeInsets.symmetric(vertical: effectiveScreenHeight * 0.01, horizontal: effectiveScreenWidth * 0.02),
-            decoration: BoxDecoration(
-              color: hasFocus ? Colors.black87 : Colors.black.withOpacity(0.6),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: hasFocus ? focusColor : Colors.white.withOpacity(0.3), width: hasFocus ? 3.0 : 1.0),
-              boxShadow: hasFocus
-                  ? [BoxShadow(color: focusColor.withOpacity(0.5), blurRadius: 20.0, spreadRadius: 5.0)]
-                  : [BoxShadow(color: Colors.black.withOpacity(0.3), blurRadius: 10.0, spreadRadius: 2.0)],
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.chevron_left, color: hasFocus ? focusColor : Colors.grey[600]),
-                const SizedBox(width: 8),
-                Icon(Icons.chevron_right, color: hasFocus ? focusColor : Colors.grey[600]),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
+  //   return Positioned(
+  //     top: effectiveScreenHeight * 0.2,
+  //     left: effectiveScreenWidth * 0.03,
+  //     child: Focus(
+  //       focusNode: widget.focusNode,
+  //       onKeyEvent: _handleKeyEvent,
+  //       child: GestureDetector(
+  //         onTap: _handleWatchNowTap,
+  //         child: AnimatedContainer(
+  //           duration: const Duration(milliseconds: 200),
+  //           padding: EdgeInsets.symmetric(vertical: effectiveScreenHeight * 0.01, horizontal: effectiveScreenWidth * 0.02),
+  //           decoration: BoxDecoration(
+  //             color: hasFocus ? Colors.black87 : Colors.black.withOpacity(0.6),
+  //             borderRadius: BorderRadius.circular(12),
+  //             border: Border.all(color: hasFocus ? focusColor : Colors.white.withOpacity(0.3), width: hasFocus ? 3.0 : 1.0),
+  //             boxShadow: hasFocus
+  //                 ? [BoxShadow(color: focusColor.withOpacity(0.5), blurRadius: 20.0, spreadRadius: 5.0)]
+  //                 : [BoxShadow(color: Colors.black.withOpacity(0.3), blurRadius: 10.0, spreadRadius: 2.0)],
+  //           ),
+  //           child: Row(
+  //             mainAxisSize: MainAxisSize.min,
+  //             children: [
+  //               Icon(Icons.chevron_left, color: hasFocus ? focusColor : Colors.grey[600]),
+  //               const SizedBox(width: 8),
+  //               Icon(Icons.chevron_right, color: hasFocus ? focusColor : Colors.grey[600]),
+  //             ],
+  //           ),
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
 
   Widget _buildPageIndicators() {
     return Positioned(
@@ -561,6 +561,39 @@ class _BannerSliderState extends State<BannerSlider>
     );
   }
 
+  // KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
+  //   if (event is! KeyDownEvent) return KeyEventResult.ignored;
+  //   final focusProvider = context.read<FocusProvider>();
+
+  //   if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
+  //     if (_pageController.hasClients && _pageController.page! < bannerList.length - 1) {
+  //       _pageController.nextPage(duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
+  //       return KeyEventResult.handled;
+  //     }
+  //   } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+  //     if (_pageController.hasClients && _pageController.page! > 0) {
+  //       _pageController.previousPage(duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
+  //       return KeyEventResult.handled;
+  //     }
+  //   } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+  //      context.read<ColorProvider>().resetColor();
+  //      focusProvider.requestFocus('topNavigation');
+  //      return KeyEventResult.handled;
+  //   } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+  //      node.unfocus();
+  //      widget.onFocusChange?.call(false);
+  //      context.read<ColorProvider>().resetColor();
+  //      focusProvider.updateLastFocusedIdentifier('watchNow');
+  //      focusProvider.focusNextRow();
+  //      return KeyEventResult.handled;
+  //   } else if (event.logicalKey == LogicalKeyboardKey.select || event.logicalKey == LogicalKeyboardKey.enter) {
+  //     _handleWatchNowTap();
+  //     return KeyEventResult.handled;
+  //   }
+  //   return KeyEventResult.ignored;
+  // }
+
+
   KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
     if (event is! KeyDownEvent) return KeyEventResult.ignored;
     final focusProvider = context.read<FocusProvider>();
@@ -570,26 +603,45 @@ class _BannerSliderState extends State<BannerSlider>
         _pageController.nextPage(duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
         return KeyEventResult.handled;
       }
-    } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
-      if (_pageController.hasClients && _pageController.page! > 0) {
+    } 
+    
+    // ✅ 1. LEFT ARROW LOGIC UPDATE
+    else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+      if (_pageController.hasClients && (_pageController.page?.round() ?? 0) > 0) {
+        // Agar pehle banner par nahi hain, to pichla banner dikhayein
         _pageController.previousPage(duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
         return KeyEventResult.handled;
+      } else {
+        // NAYA: Agar pehle banner par hain aur Left dabaya, to Sidebar par focus wapas bhej dein!
+        context.read<ColorProvider>().resetColor();
+        focusProvider.requestFocus('activeSidebar');
+        return KeyEventResult.handled;
       }
-    } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
-       context.read<ColorProvider>().resetColor();
-       focusProvider.requestFocus('topNavigation');
+    } 
+    
+    else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+      //  context.read<ColorProvider>().resetColor();
+      //  focusProvider.requestFocus('topNavigation');
        return KeyEventResult.handled;
-    } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
-       node.unfocus();
-       widget.onFocusChange?.call(false);
-       context.read<ColorProvider>().resetColor();
-       focusProvider.updateLastFocusedIdentifier('watchNow');
-       focusProvider.focusNextRow();
+    } 
+    
+    // ✅ 2. DOWN ARROW LOGIC UPDATE
+    else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+      //  node.unfocus();
+      //  widget.onFocusChange?.call(false);
+      //  context.read<ColorProvider>().resetColor();
+       
+      //  // NAYA: Niche wale dynamically loaded page ke item ko focus bhejenge
+      //  focusProvider.triggerBannerDown(); 
+       
        return KeyEventResult.handled;
-    } else if (event.logicalKey == LogicalKeyboardKey.select || event.logicalKey == LogicalKeyboardKey.enter) {
+    } 
+    
+    else if (event.logicalKey == LogicalKeyboardKey.select || event.logicalKey == LogicalKeyboardKey.enter) {
       _handleWatchNowTap();
       return KeyEventResult.handled;
     }
+    
     return KeyEventResult.ignored;
   }
 

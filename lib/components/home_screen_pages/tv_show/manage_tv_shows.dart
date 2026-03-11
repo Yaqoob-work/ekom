@@ -1219,565 +1219,780 @@
 
 
 
-import 'dart:async';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:http/http.dart' as https;
-import 'package:provider/provider.dart';
-import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:ui';
+// import 'dart:async';
+// import 'package:flutter/foundation.dart';
+// import 'package:flutter/material.dart';
+// import 'package:flutter/services.dart';
+// import 'package:flutter_svg/flutter_svg.dart';
+// import 'package:http/http.dart' as https;
+// import 'package:provider/provider.dart';
+// import 'dart:convert';
+// import 'package:shared_preferences/shared_preferences.dart';
+// import 'dart:ui';
+// // ✅ Custom Imports (Make sure paths match your project structure)
+// import 'package:mobi_tv_entertainment/main.dart';
+// import 'package:mobi_tv_entertainment/components/provider/color_provider.dart';
+// import 'package:mobi_tv_entertainment/components/provider/focus_provider.dart';
+// import 'package:mobi_tv_entertainment/components/services/history_service.dart';
+// import 'package:mobi_tv_entertainment/components/services/professional_colors_for_home_pages.dart';
+// import 'package:mobi_tv_entertainment/components/widgets/small_widgets/smart_loading_widget.dart';
+// import 'package:mobi_tv_entertainment/components/widgets/small_widgets/smart_retry_widget.dart';
+// import 'package:mobi_tv_entertainment/components/home_screen_pages/tv_show/tv_show_final_details_page.dart';
+// import 'package:mobi_tv_entertainment/components/home_screen_pages/tv_show/tv_show_slider_screen.dart';
 
-// ✅ Custom Imports (Make sure paths match your project structure)
-import 'package:mobi_tv_entertainment/main.dart';
-import 'package:mobi_tv_entertainment/components/provider/color_provider.dart';
-import 'package:mobi_tv_entertainment/components/provider/focus_provider.dart';
-import 'package:mobi_tv_entertainment/components/services/history_service.dart';
+// // ✅ ==========================================================
+// // DATA MODELS & PARSING (Using High-Performance Isolate)
+// // ==========================================================
+// enum LoadingState { initial, loading, rebuilding, loaded, error }
+
+// class AnimationTiming {
+//   static const Duration fast = Duration(milliseconds: 250);
+//   static const Duration medium = Duration(milliseconds: 400);
+//   static const Duration slow = Duration(milliseconds: 600);
+//   static const Duration scroll = Duration(milliseconds: 800);
+// }
+
+// class TVShowNetworkModel {
+//   final int id;
+//   final String name;
+//   final String? logo;
+//   final int status;
+
+//   TVShowNetworkModel({
+//     required this.id, 
+//     required this.name, 
+//     this.logo, 
+//     required this.status
+//   });
+
+//   factory TVShowNetworkModel.fromJson(Map<String, dynamic> json) {
+//     return TVShowNetworkModel(
+//       id: json['id'] ?? 0,
+//       name: json['name'] ?? '',
+//       logo: json['logo'],
+//       status: json['status'] ?? 0,
+//     );
+//   }
+// }
+
+// // Background Task for JSON Parsing to prevent UI lag (Code 1 Style)
+// List<TVShowNetworkModel> _parseTVShowData(String jsonString) {
+//   final List<dynamic> jsonData = json.decode(jsonString);
+//   return jsonData
+//       .map((json) => TVShowNetworkModel.fromJson(json))
+//       .where((n) => n.status == 1)
+//       .toList();
+// }
+
+// // ✅ Image Helper (Supports Network, SVG, and Base64)
+// Widget displayImage(String imageUrl, {double? width, double? height, BoxFit fit = BoxFit.cover}) {
+//   if (imageUrl.isEmpty || imageUrl == 'localImage' || imageUrl.contains('localhost')) return _buildImgError(width, height);
+  
+//   if (imageUrl.startsWith('data:image')) {
+//     try {
+//       Uint8List imageBytes = base64Decode(imageUrl.split(',').last);
+//       return Image.memory(imageBytes, fit: fit, width: width, height: height, errorBuilder: (c, e, s) => _buildImgError(width, height));
+//     } catch (e) { return _buildImgError(width, height); }
+//   } else if (imageUrl.startsWith('http')) {
+//     if (imageUrl.toLowerCase().endsWith('.svg')) {
+//       return SvgPicture.network(imageUrl, width: width, height: height, fit: fit, placeholderBuilder: (c) => _buildImgLoader(width, height));
+//     } else {
+//       return Image.network(imageUrl, width: width, height: height, fit: fit, errorBuilder: (c, e, s) => _buildImgError(width, height));
+//     }
+//   } else { return _buildImgError(width, height); }
+// }
+
+// Widget _buildImgLoader(double? width, double? height) => SizedBox(width: width, height: height, child: const Center(child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation<Color>(Colors.white24))));
+// Widget _buildImgError(double? width, double? height) => Container(width: width, height: height, color: Colors.grey[900], child: const Icon(Icons.broken_image, color: Colors.white24, size: 24));
+
+// // ✅ ==========================================================
+// // MAIN WIDGET: ManageTvShows
+// // ✅ ==========================================================
+// class ManageTvShows extends StatefulWidget {
+//   const ManageTvShows({super.key});
+//   @override
+//   _ManageTvShowsState createState() => _ManageTvShowsState();
+// }
+
+// class _ManageTvShowsState extends State<ManageTvShows>
+//     with AutomaticKeepAliveClientMixin, TickerProviderStateMixin {
+//   @override
+//   bool get wantKeepAlive => true;
+
+//   LoadingState _loadingState = LoadingState.initial;
+//   List<TVShowNetworkModel> _fullList = [];
+//   List<TVShowNetworkModel> _displayedList = [];
+//   String _errorMessage = '';
+//   int focusedIndex = -1;
+//   bool _isSectionFocused = false;
+//   bool _isNavigationLocked = false;
+//   Timer? _navLockTimer;
+
+//   Map<String, FocusNode> _tvFocusNodes = {};
+//   final FocusNode _viewAllFocusNode = FocusNode();
+//   final FocusNode _retryFocusNode = FocusNode();
+//   late ScrollController _scrollController;
+
+//   late AnimationController _listAnimationController;
+//   late Animation<double> _listFadeAnimation;
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     _scrollController = ScrollController();
+//     _listAnimationController = AnimationController(duration: AnimationTiming.slow, vsync: this);
+//     _listFadeAnimation = CurvedAnimation(parent: _listAnimationController, curve: Curves.easeInOut);
+//     _fetchTVShows();
+//   }
+
+//   Future<void> _fetchTVShows() async {
+//     if (mounted) setState(() => _loadingState = LoadingState.loading);
+//     try {
+//       String authKey = SessionManager.authKey;
+//       var url = Uri.parse("${SessionManager.baseUrl}getNetworks");
+//       final response = await https.post(url, headers: {
+//         'auth-key': authKey,
+//         'Content-Type': 'application/json',
+//         'domain': SessionManager.savedDomain
+//       }, body: json.encode({"network_id": "", "data_for": "tvshows"})).timeout(const Duration(seconds: 25));
+
+//       if (response.statusCode == 200) {
+//         final parsedData = await compute(_parseTVShowData, response.body);
+//         _applyDataToState(parsedData);
+//       } else {
+//         throw Exception('API Error: ${response.statusCode}');
+//       }
+//     } catch (e) {
+//       if (mounted) setState(() { _errorMessage = e.toString(); _loadingState = LoadingState.error; });
+//       _setupFocusInProvider();
+//     }
+//   }
+
+//   void _applyDataToState(List<TVShowNetworkModel> data) {
+//     if (!mounted) return;
+//     _tvFocusNodes.forEach((_, node) => node.dispose());
+//     _tvFocusNodes.clear();
+
+//     _fullList = data;
+//     _displayedList = _fullList.length > 10 ? _fullList.sublist(0, 10) : _fullList;
+
+//     for (var item in _displayedList) {
+//       _tvFocusNodes[item.id.toString()] = FocusNode();
+//     }
+
+//     setState(() => _loadingState = LoadingState.loaded);
+//     _setupFocusInProvider();
+//     _listAnimationController.forward();
+//   }
+
+//   // void _setupFocusInProvider() {
+//   //   WidgetsBinding.instance.addPostFrameCallback((_) {
+//   //     if (!mounted) return;
+//   //     final fp = Provider.of<FocusProvider>(context, listen: false);
+//   //     if (_displayedList.isNotEmpty) {
+//   //       fp.registerFocusNode('tvShows', _tvFocusNodes[_displayedList[0].id.toString()]!);
+//   //     } else if (_loadingState == LoadingState.error) {
+//   //       fp.registerFocusNode('tvShows', _retryFocusNode);
+//   //     }
+//   //   });
+//   // }
+
+
+//   void _setupFocusInProvider() {
+//     WidgetsBinding.instance.addPostFrameCallback((_) {
+//       if (!mounted) return;
+//       final fp = Provider.of<FocusProvider>(context, listen: false);
+//       const String myId = 'tvShows'; // Is page ka identifier
+
+//       if (_displayedList.isNotEmpty) {
+//         final firstNode = _tvFocusNodes[_displayedList[0].id.toString()];
+        
+//         if (firstNode != null) {
+//           // 1. Register karein
+//           fp.registerFocusNode(myId, firstNode);
+
+//           // 2. ✅ CRITICAL FIX: Agar Dashboard focus maang raha hai
+//           if (fp.lastFocusedIdentifier == myId) {
+//             firstNode.requestFocus();
+//           }
+//         }
+//       } else if (_loadingState == LoadingState.error) {
+//         fp.registerFocusNode(myId, _retryFocusNode);
+//         if (fp.lastFocusedIdentifier == myId) {
+//           _retryFocusNode.requestFocus();
+//         }
+//       }
+//     });
+//   }
+
+//   // ✅ Fixed Scroll with .toDouble() to solve your num error
+//   void _scrollToPosition(int index) {
+//     if (!_scrollController.hasClients) return;
+//     double itemWidth = (bannerwdt + 12).toDouble();
+//     double targetOffset = (index * itemWidth).toDouble();
+//     _scrollController.animateTo(
+//       targetOffset.clamp(0.0, _scrollController.position.maxScrollExtent),
+//       duration: AnimationTiming.scroll,
+//       curve: Curves.easeOutCubic,
+//     );
+//   }
+
+//   void _restoreFocus() {
+//     WidgetsBinding.instance.addPostFrameCallback((_) async {
+//       await Future.delayed(const Duration(milliseconds: 300));
+//       if (!mounted) return;
+//       final fp = Provider.of<FocusProvider>(context, listen: false);
+//       final savedId = fp.lastFocusedItemId;
+//       if (savedId != null && _tvFocusNodes.containsKey(savedId)) {
+//         _tvFocusNodes[savedId]!.requestFocus();
+//         int idx = _displayedList.indexWhere((n) => n.id.toString() == savedId);
+//         if (idx != -1) _scrollToPosition(idx);
+//       }
+//     });
+//   }
+
+//   @override
+//   void dispose() {
+//     _navLockTimer?.cancel();
+//     _listAnimationController.dispose();
+//     _scrollController.dispose();
+//     _viewAllFocusNode.dispose();
+//     _retryFocusNode.dispose();
+//     _tvFocusNodes.forEach((_, node) => node.dispose());
+//     super.dispose();
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     super.build(context);
+//     final sw = MediaQuery.of(context).size.width;
+//     final sh = MediaQuery.of(context).size.height;
+//     double h = (screenhgt ?? sh) * 0.38;
+
+//     return Container(
+//       height: h,
+//       color: Colors.white,
+//       child: Stack(
+//         children: [
+//           Column(
+//             children: [
+//               SizedBox(height: (screenhgt ?? sh) * 0.02),
+//               _buildProfessionalTitle(sw),
+//               Expanded(child: _buildBody(sw, sh)),
+//             ],
+//           ),
+//           if (_isSectionFocused) _buildShadowOverlay(),
+//         ],
+//       ),
+//     );
+//   }
+
+//   Widget _buildProfessionalTitle(double sw) {
+//     return Padding(
+//       padding: EdgeInsets.symmetric(horizontal: sw * 0.025),
+//       child: Row(
+//         children: [
+//           ShaderMask(
+//             shaderCallback: (bounds) => const LinearGradient(
+//               colors: [ProfessionalColorsForHomePages.accentGreen, ProfessionalColorsForHomePages.accentBlue],
+//             ).createShader(bounds),
+//             child: const Text('TV SHOWS', style: TextStyle(fontSize: 24, color: Colors.white, fontWeight: FontWeight.w700, letterSpacing: 2.0)),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+
+//   Widget _buildBody(double sw, double sh) {
+//     double bh = bannerhgt ?? sh * 0.2;
+//     double bw = bannerwdt ?? sw * 0.18;
+
+//     switch (_loadingState) {
+//       case LoadingState.loading:
+//         return SmartLoadingWidget(itemWidth: bw, itemHeight: bh);
+//       case LoadingState.error:
+//         return Center(child: SmartRetryWidget(
+//           errorMessage: _errorMessage, 
+//           onRetry: _fetchTVShows, 
+//           focusNode: _retryFocusNode, 
+//           providerIdentifier: 'tvShows', 
+//           onFocusChange: (f) => setState(() => _isSectionFocused = f)
+//         ));
+//       case LoadingState.loaded:
+//         if (_displayedList.isEmpty) return const Center(child: Text("No TV Shows Found"));
+//         return _buildTVShowList(sw, sh);
+//       default:
+//         return const SizedBox.shrink();
+//     }
+//   }
+
+//   Widget _buildTVShowList(double sw, double sh) {
+//     return FadeTransition(
+//       opacity: _listFadeAnimation,
+//       child: ListView.builder(
+//         scrollDirection: Axis.horizontal,
+//         controller: _scrollController,
+//         padding: EdgeInsets.symmetric(horizontal: sw * 0.025),
+//         itemCount: _displayedList.length + (_fullList.length > 10 ? 1 : 0),
+//         itemBuilder: (context, index) {
+//           if (index < _displayedList.length) {
+//             return _buildTVShowItem(_displayedList[index], index);
+//           } else {
+//             return _buildViewAllButton();
+//           }
+//         },
+//       ),
+//     );
+//   }
+
+//   Widget _buildTVShowItem(TVShowNetworkModel network, int index) {
+//     String id = network.id.toString();
+//     FocusNode node = _tvFocusNodes[id]!;
+
+//     return Focus(
+//       focusNode: node,
+//       onFocusChange: (f) {
+//         if (mounted) setState(() => _isSectionFocused = f);
+//         if (f) {
+//           context.read<FocusProvider>().updateLastFocusedItemId(id);
+//           _scrollToPosition(index);
+//           setState(() => focusedIndex = index);
+//           context.read<ColorProvider>().updateColor(ProfessionalColorsForHomePages.accentBlue, true);
+//         }
+//       },
+//       // onKey: (node, event) {
+//       //   if (event is RawKeyDownEvent) {
+//       //     final key = event.logicalKey;
+//       //     if (key == LogicalKeyboardKey.arrowRight || key == LogicalKeyboardKey.arrowLeft) {
+//       //       if (_isNavigationLocked) return KeyEventResult.handled;
+//       //       setState(() => _isNavigationLocked = true);
+//       //       _navLockTimer = Timer(const Duration(milliseconds: 150), () => setState(() => _isNavigationLocked = false));
+//       //     }
+//       //     if (key == LogicalKeyboardKey.enter || key == LogicalKeyboardKey.select) {
+//       //       _navigateToDetails(network);
+//       //       return KeyEventResult.handled;
+//       //     }
+//       //     if (key == LogicalKeyboardKey.arrowUp) {
+//       //       context.read<FocusProvider>().focusPreviousRow();
+//       //       return KeyEventResult.handled;
+//       //     }
+//       //     if (key == LogicalKeyboardKey.arrowDown) {
+//       //       context.read<FocusProvider>().focusNextRow();
+//       //       return KeyEventResult.handled;
+//       //     }
+//       //   }
+//       //   return KeyEventResult.ignored;
+//       // },
+
+//       onKey: (node, event) {
+//         if (event is RawKeyDownEvent) {
+//           final key = event.logicalKey;
+          
+//           if (key == LogicalKeyboardKey.arrowRight || key == LogicalKeyboardKey.arrowLeft) {
+//             if (_isNavigationLocked) return KeyEventResult.handled;
+//             setState(() => _isNavigationLocked = true);
+//             _navLockTimer = Timer(const Duration(milliseconds: 150), () {
+//                if(mounted) setState(() => _isNavigationLocked = false);
+//             });
+            
+//             if (key == LogicalKeyboardKey.arrowRight) {
+//               if (index < _displayedList.length - 1) {
+//                 String nextId = _displayedList[index + 1].id.toString();
+//                 FocusScope.of(context).requestFocus(_tvFocusNodes[nextId]);
+//               } else if (_fullList.length > 10) {
+//                 FocusScope.of(context).requestFocus(_viewAllFocusNode);
+//               }
+//             } 
+            
+//             // ✅ 1. LEFT ARROW LOGIC UPDATE
+//             else if (key == LogicalKeyboardKey.arrowLeft) {
+//               if (index > 0) {
+//                 String prevId = _displayedList[index - 1].id.toString();
+//                 FocusScope.of(context).requestFocus(_tvFocusNodes[prevId]);
+//               } else {
+//                 // Agar Index 0 par left dabaya jaye to sidebar par focus bhejo
+//                 _navLockTimer?.cancel();
+//                 if (mounted) setState(() => _isNavigationLocked = false);
+                
+//                 context.read<ColorProvider>().resetColor();
+//                 context.read<FocusProvider>().requestFocus('activeSidebar');
+//               }
+//             }
+//             return KeyEventResult.handled;
+//           }
+          
+//           // ✅ 2. UP ARROW UPDATE (Banner par jane ke liye)
+//           if (key == LogicalKeyboardKey.arrowUp) {
+//             // context.read<ColorProvider>().resetColor();
+//             // FocusScope.of(context).unfocus();
+//             // context.read<FocusProvider>().requestFocus('watchNow');
+//             return KeyEventResult.handled;
+//           }
+          
+//           // // ✅ 3. DOWN ARROW UPDATE (Next Page ke liye)
+//           // if (key == LogicalKeyboardKey.arrowDown) {
+//           //   context.read<ColorProvider>().resetColor();
+//           //   FocusScope.of(context).unfocus();
+//           //   context.read<FocusProvider>().triggerDashboardNextPage();
+//           //   return KeyEventResult.handled;
+//           // }
+
+//           // _buildTVShowItem ke andar onKey handler mein:
+// // ✅ 3. DOWN ARROW UPDATE (Next Page ke liye)
+// if (key == LogicalKeyboardKey.arrowDown) {
+//   // context.read<ColorProvider>().resetColor();
+//   // FocusScope.of(context).unfocus();
+  
+//   // final fp = context.read<FocusProvider>();
+  
+//   // // Agle page ka identifier ('sports') set karein
+//   // fp.updateLastFocusedIdentifier('sports'); 
+  
+//   // // Dashboard ko switch trigger karein
+//   // fp.triggerDashboardNextPage();
+  
+//   return KeyEventResult.handled;
+// }
+          
+//           if (key == LogicalKeyboardKey.enter || key == LogicalKeyboardKey.select) {
+//             _navigateToDetails(network);
+//             return KeyEventResult.handled;
+//           }
+//         }
+//         return KeyEventResult.ignored;
+//       },
+//       child: GestureDetector(
+//         onTap: () => _navigateToDetails(network),
+//         child: ProfessionalTVShowNetworkCard(
+//           network: network,
+//           focusNode: node,
+//           onTap: () => _navigateToDetails(network),
+//           onColorChange: (c) {},
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildViewAllButton() {
+//     return Focus(
+//       focusNode: _viewAllFocusNode,
+//       onFocusChange: (f) {
+//         if (mounted) setState(() => _isSectionFocused = f);
+//         if (f) {
+//           _scrollToPosition(_displayedList.length);
+//           setState(() => focusedIndex = 999);
+//           context.read<ColorProvider>().updateColor(ProfessionalColorsForHomePages.accentPurple, true);
+//         }
+//       },
+//       // onKey: (node, event) {
+//       //   if (event is RawKeyDownEvent && (event.logicalKey == LogicalKeyboardKey.enter || event.logicalKey == LogicalKeyboardKey.select)) {
+//       //     Navigator.push(context, MaterialPageRoute(builder: (context) => const TvShowSliderScreen(initialNetworkId: null)));
+//       //     return KeyEventResult.handled;
+//       //   }
+//       //   return KeyEventResult.ignored;
+//       // },
+//       onKey: (node, event) {
+//         if (event is RawKeyDownEvent) {
+//           final key = event.logicalKey;
+
+//           if (key == LogicalKeyboardKey.arrowLeft) {
+//              if (_displayedList.isNotEmpty) {
+//                String prevId = _displayedList.last.id.toString();
+//                FocusScope.of(context).requestFocus(_tvFocusNodes[prevId]);
+//              }
+//              return KeyEventResult.handled;
+//           }
+
+//           // ✅ UP ARROW UPDATE
+//           if (key == LogicalKeyboardKey.arrowUp) {
+//             // context.read<ColorProvider>().resetColor();
+//             // FocusScope.of(context).unfocus();
+//             // context.read<FocusProvider>().requestFocus('watchNow');
+//             return KeyEventResult.handled;
+//           }
+          
+//           // // ✅ DOWN ARROW UPDATE
+//           // if (key == LogicalKeyboardKey.arrowDown) {
+//           //   context.read<ColorProvider>().resetColor();
+//           //   FocusScope.of(context).unfocus();
+//           //   context.read<FocusProvider>().triggerDashboardNextPage();
+//           //   return KeyEventResult.handled;
+//           // }
+
+//           // _buildViewAllButton ke andar onKey handler mein:
+// // ✅ DOWN ARROW UPDATE
+// if (key == LogicalKeyboardKey.arrowDown) {
+//   // context.read<ColorProvider>().resetColor();
+//   // FocusScope.of(context).unfocus();
+  
+//   // final fp = context.read<FocusProvider>();
+//   // fp.updateLastFocusedIdentifier('sports'); 
+//   // fp.triggerDashboardNextPage();
+  
+//   return KeyEventResult.handled;
+// }
+
+//           if (key == LogicalKeyboardKey.enter || key == LogicalKeyboardKey.select) {
+//             Navigator.push(context, MaterialPageRoute(builder: (context) => const TvShowSliderScreen(initialNetworkId: null)));
+//             return KeyEventResult.handled;
+//           }
+//         }
+//         return KeyEventResult.ignored;
+//       },
+//       child: GestureDetector(
+//         onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const TvShowSliderScreen(initialNetworkId: null))),
+//         child: ProfessionalTVShowNetworkViewAllButton(focusNode: _viewAllFocusNode, onTap: () {}),
+//       ),
+//     );
+//   }
+
+//   void _navigateToDetails(TVShowNetworkModel network) async {
+//     final fp = Provider.of<FocusProvider>(context, listen: false);
+//     fp.updateLastFocusedIdentifier('tvShows');
+//     fp.updateLastFocusedItemId(network.id.toString());
+    
+//     try {
+//       await HistoryService.updateUserHistory(userId: SessionManager.userId!, contentType: 4, eventId: network.id, eventTitle: network.name, url: '', categoryId: 0);
+//     } catch (e) {}
+
+//     await Navigator.push(context, MaterialPageRoute(builder: (context) => TvShowFinalDetailsPage(
+//       id: network.id, 
+//       name: network.name, 
+//       banner: network.logo ?? '', 
+//       poster: network.logo ?? ''
+//     )));
+//     _restoreFocus();
+//   }
+
+//   Widget _buildShadowOverlay() {
+//     return IgnorePointer(
+//       child: AnimatedContainer(
+//         duration: const Duration(milliseconds: 300),
+//         decoration: BoxDecoration(
+//           gradient: LinearGradient(
+//             begin: Alignment.topCenter, end: Alignment.bottomCenter,
+//             colors: [Colors.black.withOpacity(0.8), Colors.transparent, Colors.transparent, Colors.black.withOpacity(0.8)],
+//             stops: const [0.0, 0.2, 0.8, 1.0],
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+// // ✅ Professional TVShow Card Widget
+// class ProfessionalTVShowNetworkCard extends StatefulWidget {
+//   final TVShowNetworkModel network;
+//   final FocusNode focusNode;
+//   final VoidCallback onTap;
+//   final Function(Color) onColorChange;
+
+//   const ProfessionalTVShowNetworkCard({
+//     Key? key,
+//     required this.network,
+//     required this.focusNode,
+//     required this.onTap,
+//     required this.onColorChange,
+//   }) : super(key: key);
+
+//   @override
+//   _ProfessionalTVShowNetworkCardState createState() => _ProfessionalTVShowNetworkCardState();
+// }
+
+// class _ProfessionalTVShowNetworkCardState extends State<ProfessionalTVShowNetworkCard> with TickerProviderStateMixin {
+//   late AnimationController _scaleController;
+//   late Animation<double> _scaleAnimation;
+//   bool _isFocused = false;
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     _scaleController = AnimationController(duration: AnimationTiming.medium, vsync: this);
+//     _scaleAnimation = Tween<double>(begin: 1.0, end: 1.06).animate(CurvedAnimation(parent: _scaleController, curve: Curves.easeOutCubic));
+//     widget.focusNode.addListener(_handleFocus);
+//   }
+
+//   void _handleFocus() {
+//     if (!mounted) return;
+//     setState(() => _isFocused = widget.focusNode.hasFocus);
+//     if (_isFocused) {
+//       _scaleController.forward();
+//       HapticFeedback.lightImpact();
+//     } else {
+//       _scaleController.reverse();
+//     }
+//   }
+
+//   @override
+//   void dispose() {
+//     _scaleController.dispose();
+//     widget.focusNode.removeListener(_handleFocus);
+//     super.dispose();
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return AnimatedBuilder(
+//       animation: _scaleAnimation,
+//       builder: (context, child) => Transform.scale(
+//         scale: _scaleAnimation.value,
+//         child: Container(
+//           width: bannerwdt,
+//           margin: const EdgeInsets.symmetric(horizontal: 6),
+//           child: Column(
+//             children: [
+//               _buildPoster(),
+//               _buildTitle(),
+//             ],
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildPoster() {
+//     double h = _isFocused ? focussedBannerhgt : bannerhgt;
+//     return Container(
+//       height: h,
+//       decoration: BoxDecoration(
+//         borderRadius: BorderRadius.circular(12),
+//         boxShadow: [
+//           BoxShadow(
+//             color: _isFocused ? ProfessionalColorsForHomePages.accentBlue.withOpacity(0.4) : Colors.black.withOpacity(0.3),
+//             blurRadius: _isFocused ? 20 : 10,
+//             offset: const Offset(0, 5),
+//           )
+//         ],
+//       ),
+//       child: ClipRRect(
+//         borderRadius: BorderRadius.circular(12),
+//         child: Stack(
+//           children: [
+//             displayImage(widget.network.logo ?? '', fit: BoxFit.cover, width: double.infinity, height: h),
+//             if (_isFocused) Container(decoration: BoxDecoration(border: Border.all(color: ProfessionalColorsForHomePages.accentBlue, width: 3), borderRadius: BorderRadius.circular(12))),
+//             if (_isFocused) Center(child: Icon(Icons.play_circle_fill, color: Colors.white.withOpacity(0.8), size: 40)),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildTitle() {
+//     return Padding(
+//       padding: const EdgeInsets.only(top: 8),
+//       child: Text(
+//         widget.network.name.toUpperCase(),
+//         textAlign: TextAlign.center,
+//         maxLines: 2,
+//         overflow: TextOverflow.ellipsis,
+//         style: TextStyle(
+//           fontSize: _isFocused ? 12 : 11,
+//           fontWeight: FontWeight.w600,
+//           color: _isFocused ? ProfessionalColorsForHomePages.accentBlue : Colors.black87,
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+// // Professional View All Button Widget (As in Code 2)
+// class ProfessionalTVShowNetworkViewAllButton extends StatelessWidget {
+//   final FocusNode focusNode;
+//   final VoidCallback onTap;
+
+//   const ProfessionalTVShowNetworkViewAllButton({Key? key, required this.focusNode, required this.onTap}) : super(key: key);
+
+//   @override
+//   Widget build(BuildContext context) {
+//     bool isFocused = focusNode.hasFocus;
+//     double h = isFocused ? focussedBannerhgt : bannerhgt;
+
+//     return Container(
+//       width: bannerwdt,
+//       margin: const EdgeInsets.symmetric(horizontal: 6),
+//       child: Column(
+//         children: [
+//           Container(
+//             height: h,
+//             decoration: BoxDecoration(
+//               borderRadius: BorderRadius.circular(12),
+//               color: isFocused ? ProfessionalColorsForHomePages.accentPurple : Colors.grey[200],
+//             ),
+//             child: Column(
+//               mainAxisAlignment: MainAxisAlignment.center,
+//               children: [
+//                 Icon(Icons.arrow_forward_ios_rounded, color: isFocused ? Colors.white : Colors.black54),
+//                 const SizedBox(height: 10),
+//                 Text("VIEW ALL", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10, color: isFocused ? Colors.white : Colors.black54)),
+//               ],
+//             ),
+//           ),
+//           const SizedBox(height: 8),
+//           Text("SEE ALL", style: TextStyle(fontSize: 11, color: isFocused ? ProfessionalColorsForHomePages.accentPurple : Colors.black54)),
+//         ],
+//       ),
+//     );
+//   }
+// }
+
+
+
+
+
+import 'dart:convert';
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as https;
 import 'package:mobi_tv_entertainment/components/services/professional_colors_for_home_pages.dart';
-import 'package:mobi_tv_entertainment/components/widgets/small_widgets/smart_loading_widget.dart';
-import 'package:mobi_tv_entertainment/components/widgets/small_widgets/smart_retry_widget.dart';
+import 'package:mobi_tv_entertainment/components/widgets/smart_common_horizontal_list.dart';
+import 'package:mobi_tv_entertainment/main.dart';
 import 'package:mobi_tv_entertainment/components/home_screen_pages/tv_show/tv_show_final_details_page.dart';
 import 'package:mobi_tv_entertainment/components/home_screen_pages/tv_show/tv_show_slider_screen.dart';
+import 'package:mobi_tv_entertainment/components/services/history_service.dart';
 
-// ✅ ==========================================================
-// DATA MODELS & PARSING (Using High-Performance Isolate)
-// ==========================================================
-enum LoadingState { initial, loading, rebuilding, loaded, error }
-
-class AnimationTiming {
-  static const Duration fast = Duration(milliseconds: 250);
-  static const Duration medium = Duration(milliseconds: 400);
-  static const Duration slow = Duration(milliseconds: 600);
-  static const Duration scroll = Duration(milliseconds: 800);
-}
-
-class TVShowNetworkModel {
-  final int id;
-  final String name;
-  final String? logo;
-  final int status;
-
-  TVShowNetworkModel({
-    required this.id, 
-    required this.name, 
-    this.logo, 
-    required this.status
-  });
-
-  factory TVShowNetworkModel.fromJson(Map<String, dynamic> json) {
-    return TVShowNetworkModel(
-      id: json['id'] ?? 0,
-      name: json['name'] ?? '',
-      logo: json['logo'],
-      status: json['status'] ?? 0,
-    );
-  }
-}
-
-// Background Task for JSON Parsing to prevent UI lag (Code 1 Style)
-List<TVShowNetworkModel> _parseTVShowData(String jsonString) {
-  final List<dynamic> jsonData = json.decode(jsonString);
-  return jsonData
-      .map((json) => TVShowNetworkModel.fromJson(json))
-      .where((n) => n.status == 1)
-      .toList();
-}
-
-// ✅ Image Helper (Supports Network, SVG, and Base64)
-Widget displayImage(String imageUrl, {double? width, double? height, BoxFit fit = BoxFit.cover}) {
-  if (imageUrl.isEmpty || imageUrl == 'localImage' || imageUrl.contains('localhost')) return _buildImgError(width, height);
-  
-  if (imageUrl.startsWith('data:image')) {
-    try {
-      Uint8List imageBytes = base64Decode(imageUrl.split(',').last);
-      return Image.memory(imageBytes, fit: fit, width: width, height: height, errorBuilder: (c, e, s) => _buildImgError(width, height));
-    } catch (e) { return _buildImgError(width, height); }
-  } else if (imageUrl.startsWith('http')) {
-    if (imageUrl.toLowerCase().endsWith('.svg')) {
-      return SvgPicture.network(imageUrl, width: width, height: height, fit: fit, placeholderBuilder: (c) => _buildImgLoader(width, height));
-    } else {
-      return Image.network(imageUrl, width: width, height: height, fit: fit, errorBuilder: (c, e, s) => _buildImgError(width, height));
-    }
-  } else { return _buildImgError(width, height); }
-}
-
-Widget _buildImgLoader(double? width, double? height) => SizedBox(width: width, height: height, child: const Center(child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation<Color>(Colors.white24))));
-Widget _buildImgError(double? width, double? height) => Container(width: width, height: height, color: Colors.grey[900], child: const Icon(Icons.broken_image, color: Colors.white24, size: 24));
-
-// ✅ ==========================================================
-// MAIN WIDGET: ManageTvShows
-// ✅ ==========================================================
 class ManageTvShows extends StatefulWidget {
   const ManageTvShows({super.key});
   @override
-  _ManageTvShowsState createState() => _ManageTvShowsState();
+  State<ManageTvShows> createState() => _ManageTvShowsState();
 }
 
-class _ManageTvShowsState extends State<ManageTvShows>
-    with AutomaticKeepAliveClientMixin, TickerProviderStateMixin {
+class _ManageTvShowsState extends State<ManageTvShows> with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
 
-  LoadingState _loadingState = LoadingState.initial;
-  List<TVShowNetworkModel> _fullList = [];
-  List<TVShowNetworkModel> _displayedList = [];
-  String _errorMessage = '';
-  int focusedIndex = -1;
-  bool _isSectionFocused = false;
-  bool _isNavigationLocked = false;
-  Timer? _navLockTimer;
+  Future<List<CommonContentModel>> fetchTvShowsAPI() async {
+    var url = Uri.parse(SessionManager.baseUrl + 'getNetworks');
+    final response = await https.post(url, headers: {'auth-key': SessionManager.authKey, 'Content-Type': 'application/json', 'domain': SessionManager.savedDomain}, body: json.encode({"network_id": "", "data_for": "tvshows"})).timeout(const Duration(seconds: 30));
 
-  Map<String, FocusNode> _tvFocusNodes = {};
-  final FocusNode _viewAllFocusNode = FocusNode();
-  final FocusNode _retryFocusNode = FocusNode();
-  late ScrollController _scrollController;
-
-  late AnimationController _listAnimationController;
-  late Animation<double> _listFadeAnimation;
-
-  @override
-  void initState() {
-    super.initState();
-    _scrollController = ScrollController();
-    _listAnimationController = AnimationController(duration: AnimationTiming.slow, vsync: this);
-    _listFadeAnimation = CurvedAnimation(parent: _listAnimationController, curve: Curves.easeInOut);
-    _fetchTVShows();
+    if (response.statusCode == 200) {
+      List<dynamic> jsonData = json.decode(response.body);
+      return jsonData.where((n) => n['status'] == 1 || n['status'] == '1').map((item) => CommonContentModel(
+        id: item['id'].toString(), title: item['name'] ?? 'Unknown', imageUrl: item['logo'] ?? '', badgeText: 'TV SHOW', originalData: item,
+      )).toList();
+    } else { throw Exception('Failed to load tv shows'); }
   }
 
-  Future<void> _fetchTVShows() async {
-    if (mounted) setState(() => _loadingState = LoadingState.loading);
-    try {
-      String authKey = SessionManager.authKey;
-      var url = Uri.parse("${SessionManager.baseUrl}getNetworks");
-      final response = await https.post(url, headers: {
-        'auth-key': authKey,
-        'Content-Type': 'application/json',
-        'domain': SessionManager.savedDomain
-      }, body: json.encode({"network_id": "", "data_for": "tvshows"})).timeout(const Duration(seconds: 25));
-
-      if (response.statusCode == 200) {
-        final parsedData = await compute(_parseTVShowData, response.body);
-        _applyDataToState(parsedData);
-      } else {
-        throw Exception('API Error: ${response.statusCode}');
-      }
-    } catch (e) {
-      if (mounted) setState(() { _errorMessage = e.toString(); _loadingState = LoadingState.error; });
-      _setupFocusInProvider();
-    }
+  Future<void> _onItemTap(CommonContentModel item) async {
+    try { await HistoryService.updateUserHistory(userId: SessionManager.userId!, contentType: 4, eventId: int.parse(item.id), eventTitle: item.title, url: '', categoryId: 0); } catch (e) {}
+    await Navigator.push(context, MaterialPageRoute(builder: (context) => TvShowSliderScreen(initialNetworkId: int.parse(item.id))));
   }
 
-  void _applyDataToState(List<TVShowNetworkModel> data) {
-    if (!mounted) return;
-    _tvFocusNodes.forEach((_, node) => node.dispose());
-    _tvFocusNodes.clear();
-
-    _fullList = data;
-    _displayedList = _fullList.length > 10 ? _fullList.sublist(0, 10) : _fullList;
-
-    for (var item in _displayedList) {
-      _tvFocusNodes[item.id.toString()] = FocusNode();
-    }
-
-    setState(() => _loadingState = LoadingState.loaded);
-    _setupFocusInProvider();
-    _listAnimationController.forward();
-  }
-
-  void _setupFocusInProvider() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      final fp = Provider.of<FocusProvider>(context, listen: false);
-      if (_displayedList.isNotEmpty) {
-        fp.registerFocusNode('tvShows', _tvFocusNodes[_displayedList[0].id.toString()]!);
-      } else if (_loadingState == LoadingState.error) {
-        fp.registerFocusNode('tvShows', _retryFocusNode);
-      }
-    });
-  }
-
-  // ✅ Fixed Scroll with .toDouble() to solve your num error
-  void _scrollToPosition(int index) {
-    if (!_scrollController.hasClients) return;
-    double itemWidth = (bannerwdt + 12).toDouble();
-    double targetOffset = (index * itemWidth).toDouble();
-    _scrollController.animateTo(
-      targetOffset.clamp(0.0, _scrollController.position.maxScrollExtent),
-      duration: AnimationTiming.scroll,
-      curve: Curves.easeOutCubic,
-    );
-  }
-
-  void _restoreFocus() {
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await Future.delayed(const Duration(milliseconds: 300));
-      if (!mounted) return;
-      final fp = Provider.of<FocusProvider>(context, listen: false);
-      final savedId = fp.lastFocusedItemId;
-      if (savedId != null && _tvFocusNodes.containsKey(savedId)) {
-        _tvFocusNodes[savedId]!.requestFocus();
-        int idx = _displayedList.indexWhere((n) => n.id.toString() == savedId);
-        if (idx != -1) _scrollToPosition(idx);
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _navLockTimer?.cancel();
-    _listAnimationController.dispose();
-    _scrollController.dispose();
-    _viewAllFocusNode.dispose();
-    _retryFocusNode.dispose();
-    _tvFocusNodes.forEach((_, node) => node.dispose());
-    super.dispose();
+  Future<void> _onViewAllTap() async {
+    await Navigator.push(context, MaterialPageRoute(builder: (context) => const TvShowSliderScreen(initialNetworkId: null)));
   }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final sw = MediaQuery.of(context).size.width;
-    final sh = MediaQuery.of(context).size.height;
-    double h = (screenhgt ?? sh) * 0.38;
-
-    return Container(
-      height: h,
-      color: Colors.white,
-      child: Stack(
-        children: [
-          Column(
-            children: [
-              SizedBox(height: (screenhgt ?? sh) * 0.02),
-              _buildProfessionalTitle(sw),
-              Expanded(child: _buildBody(sw, sh)),
-            ],
-          ),
-          if (_isSectionFocused) _buildShadowOverlay(),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildProfessionalTitle(double sw) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: sw * 0.025),
-      child: Row(
-        children: [
-          ShaderMask(
-            shaderCallback: (bounds) => const LinearGradient(
-              colors: [ProfessionalColorsForHomePages.accentGreen, ProfessionalColorsForHomePages.accentBlue],
-            ).createShader(bounds),
-            child: const Text('TV SHOWS', style: TextStyle(fontSize: 24, color: Colors.white, fontWeight: FontWeight.w700, letterSpacing: 2.0)),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBody(double sw, double sh) {
-    double bh = bannerhgt ?? sh * 0.2;
-    double bw = bannerwdt ?? sw * 0.18;
-
-    switch (_loadingState) {
-      case LoadingState.loading:
-        return SmartLoadingWidget(itemWidth: bw, itemHeight: bh);
-      case LoadingState.error:
-        return Center(child: SmartRetryWidget(
-          errorMessage: _errorMessage, 
-          onRetry: _fetchTVShows, 
-          focusNode: _retryFocusNode, 
-          providerIdentifier: 'tvShows', 
-          onFocusChange: (f) => setState(() => _isSectionFocused = f)
-        ));
-      case LoadingState.loaded:
-        if (_displayedList.isEmpty) return const Center(child: Text("No TV Shows Found"));
-        return _buildTVShowList(sw, sh);
-      default:
-        return const SizedBox.shrink();
-    }
-  }
-
-  Widget _buildTVShowList(double sw, double sh) {
-    return FadeTransition(
-      opacity: _listFadeAnimation,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        controller: _scrollController,
-        padding: EdgeInsets.symmetric(horizontal: sw * 0.025),
-        itemCount: _displayedList.length + (_fullList.length > 10 ? 1 : 0),
-        itemBuilder: (context, index) {
-          if (index < _displayedList.length) {
-            return _buildTVShowItem(_displayedList[index], index);
-          } else {
-            return _buildViewAllButton();
-          }
-        },
-      ),
-    );
-  }
-
-  Widget _buildTVShowItem(TVShowNetworkModel network, int index) {
-    String id = network.id.toString();
-    FocusNode node = _tvFocusNodes[id]!;
-
-    return Focus(
-      focusNode: node,
-      onFocusChange: (f) {
-        if (mounted) setState(() => _isSectionFocused = f);
-        if (f) {
-          context.read<FocusProvider>().updateLastFocusedItemId(id);
-          _scrollToPosition(index);
-          setState(() => focusedIndex = index);
-          context.read<ColorProvider>().updateColor(ProfessionalColorsForHomePages.accentBlue, true);
-        }
-      },
-      onKey: (node, event) {
-        if (event is RawKeyDownEvent) {
-          final key = event.logicalKey;
-          if (key == LogicalKeyboardKey.arrowRight || key == LogicalKeyboardKey.arrowLeft) {
-            if (_isNavigationLocked) return KeyEventResult.handled;
-            setState(() => _isNavigationLocked = true);
-            _navLockTimer = Timer(const Duration(milliseconds: 150), () => setState(() => _isNavigationLocked = false));
-          }
-          if (key == LogicalKeyboardKey.enter || key == LogicalKeyboardKey.select) {
-            _navigateToDetails(network);
-            return KeyEventResult.handled;
-          }
-          if (key == LogicalKeyboardKey.arrowUp) {
-            context.read<FocusProvider>().focusPreviousRow();
-            return KeyEventResult.handled;
-          }
-          if (key == LogicalKeyboardKey.arrowDown) {
-            context.read<FocusProvider>().focusNextRow();
-            return KeyEventResult.handled;
-          }
-        }
-        return KeyEventResult.ignored;
-      },
-      child: GestureDetector(
-        onTap: () => _navigateToDetails(network),
-        child: ProfessionalTVShowNetworkCard(
-          network: network,
-          focusNode: node,
-          onTap: () => _navigateToDetails(network),
-          onColorChange: (c) {},
-        ),
-      ),
-    );
-  }
-
-  Widget _buildViewAllButton() {
-    return Focus(
-      focusNode: _viewAllFocusNode,
-      onFocusChange: (f) {
-        if (mounted) setState(() => _isSectionFocused = f);
-        if (f) {
-          _scrollToPosition(_displayedList.length);
-          setState(() => focusedIndex = 999);
-          context.read<ColorProvider>().updateColor(ProfessionalColorsForHomePages.accentPurple, true);
-        }
-      },
-      onKey: (node, event) {
-        if (event is RawKeyDownEvent && (event.logicalKey == LogicalKeyboardKey.enter || event.logicalKey == LogicalKeyboardKey.select)) {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => const TvShowSliderScreen(initialNetworkId: null)));
-          return KeyEventResult.handled;
-        }
-        return KeyEventResult.ignored;
-      },
-      child: GestureDetector(
-        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const TvShowSliderScreen(initialNetworkId: null))),
-        child: ProfessionalTVShowNetworkViewAllButton(focusNode: _viewAllFocusNode, onTap: () {}),
-      ),
-    );
-  }
-
-  void _navigateToDetails(TVShowNetworkModel network) async {
-    final fp = Provider.of<FocusProvider>(context, listen: false);
-    fp.updateLastFocusedIdentifier('tvShows');
-    fp.updateLastFocusedItemId(network.id.toString());
-    
-    try {
-      await HistoryService.updateUserHistory(userId: SessionManager.userId!, contentType: 4, eventId: network.id, eventTitle: network.name, url: '', categoryId: 0);
-    } catch (e) {}
-
-    await Navigator.push(context, MaterialPageRoute(builder: (context) => TvShowFinalDetailsPage(
-      id: network.id, 
-      name: network.name, 
-      banner: network.logo ?? '', 
-      poster: network.logo ?? ''
-    )));
-    _restoreFocus();
-  }
-
-  Widget _buildShadowOverlay() {
-    return IgnorePointer(
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter, end: Alignment.bottomCenter,
-            colors: [Colors.black.withOpacity(0.8), Colors.transparent, Colors.transparent, Colors.black.withOpacity(0.8)],
-            stops: const [0.0, 0.2, 0.8, 1.0],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-// ✅ Professional TVShow Card Widget
-class ProfessionalTVShowNetworkCard extends StatefulWidget {
-  final TVShowNetworkModel network;
-  final FocusNode focusNode;
-  final VoidCallback onTap;
-  final Function(Color) onColorChange;
-
-  const ProfessionalTVShowNetworkCard({
-    Key? key,
-    required this.network,
-    required this.focusNode,
-    required this.onTap,
-    required this.onColorChange,
-  }) : super(key: key);
-
-  @override
-  _ProfessionalTVShowNetworkCardState createState() => _ProfessionalTVShowNetworkCardState();
-}
-
-class _ProfessionalTVShowNetworkCardState extends State<ProfessionalTVShowNetworkCard> with TickerProviderStateMixin {
-  late AnimationController _scaleController;
-  late Animation<double> _scaleAnimation;
-  bool _isFocused = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _scaleController = AnimationController(duration: AnimationTiming.medium, vsync: this);
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 1.06).animate(CurvedAnimation(parent: _scaleController, curve: Curves.easeOutCubic));
-    widget.focusNode.addListener(_handleFocus);
-  }
-
-  void _handleFocus() {
-    if (!mounted) return;
-    setState(() => _isFocused = widget.focusNode.hasFocus);
-    if (_isFocused) {
-      _scaleController.forward();
-      HapticFeedback.lightImpact();
-    } else {
-      _scaleController.reverse();
-    }
-  }
-
-  @override
-  void dispose() {
-    _scaleController.dispose();
-    widget.focusNode.removeListener(_handleFocus);
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _scaleAnimation,
-      builder: (context, child) => Transform.scale(
-        scale: _scaleAnimation.value,
-        child: Container(
-          width: bannerwdt,
-          margin: const EdgeInsets.symmetric(horizontal: 6),
-          child: Column(
-            children: [
-              _buildPoster(),
-              _buildTitle(),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPoster() {
-    double h = _isFocused ? focussedBannerhgt : bannerhgt;
-    return Container(
-      height: h,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: _isFocused ? ProfessionalColorsForHomePages.accentBlue.withOpacity(0.4) : Colors.black.withOpacity(0.3),
-            blurRadius: _isFocused ? 20 : 10,
-            offset: const Offset(0, 5),
-          )
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(12),
-        child: Stack(
-          children: [
-            displayImage(widget.network.logo ?? '', fit: BoxFit.cover, width: double.infinity, height: h),
-            if (_isFocused) Container(decoration: BoxDecoration(border: Border.all(color: ProfessionalColorsForHomePages.accentBlue, width: 3), borderRadius: BorderRadius.circular(12))),
-            if (_isFocused) Center(child: Icon(Icons.play_circle_fill, color: Colors.white.withOpacity(0.8), size: 40)),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTitle() {
-    return Padding(
-      padding: const EdgeInsets.only(top: 8),
-      child: Text(
-        widget.network.name.toUpperCase(),
-        textAlign: TextAlign.center,
-        maxLines: 2,
-        overflow: TextOverflow.ellipsis,
-        style: TextStyle(
-          fontSize: _isFocused ? 12 : 11,
-          fontWeight: FontWeight.w600,
-          color: _isFocused ? ProfessionalColorsForHomePages.accentBlue : Colors.black87,
-        ),
-      ),
-    );
-  }
-}
-
-// Professional View All Button Widget (As in Code 2)
-class ProfessionalTVShowNetworkViewAllButton extends StatelessWidget {
-  final FocusNode focusNode;
-  final VoidCallback onTap;
-
-  const ProfessionalTVShowNetworkViewAllButton({Key? key, required this.focusNode, required this.onTap}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    bool isFocused = focusNode.hasFocus;
-    double h = isFocused ? focussedBannerhgt : bannerhgt;
-
-    return Container(
-      width: bannerwdt,
-      margin: const EdgeInsets.symmetric(horizontal: 6),
-      child: Column(
-        children: [
-          Container(
-            height: h,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              color: isFocused ? ProfessionalColorsForHomePages.accentPurple : Colors.grey[200],
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.arrow_forward_ios_rounded, color: isFocused ? Colors.white : Colors.black54),
-                const SizedBox(height: 10),
-                Text("VIEW ALL", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10, color: isFocused ? Colors.white : Colors.black54)),
-              ],
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text("SEE ALL", style: TextStyle(fontSize: 11, color: isFocused ? ProfessionalColorsForHomePages.accentPurple : Colors.black54)),
-        ],
-      ),
+    return SmartCommonHorizontalList(
+      sectionTitle: "TV SHOWS",
+      titleGradient: const [ProfessionalColorsForHomePages.accentGreen, ProfessionalColorsForHomePages.accentBlue],
+      accentColor: ProfessionalColorsForHomePages.accentBlue,
+      placeholderIcon: Icons.live_tv_rounded, badgeDefaultText: 'HD',
+      focusIdentifier: 'tvShows',
+      fetchApiData: fetchTvShowsAPI,
+      onItemTap: _onItemTap,
+      onViewAllTap: _onViewAllTap,
+      maxVisibleItems: 10,
     );
   }
 }
