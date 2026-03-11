@@ -3292,7 +3292,7 @@ class _CustomYoutubePlayerState extends State<CustomYoutubePlayer> {
         videoId = YoutubePlayer.convertUrlToId(currentVideo.youtubeUrl) ?? '';
     }
 
-      if (videoId == null || videoId.isEmpty) {
+      if (videoId.isEmpty) {
         if (mounted && !_isDisposed) {
           setState(() {
             _error = 'Invalid URL: ${currentVideo.youtubeUrl}';

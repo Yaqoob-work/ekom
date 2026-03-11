@@ -1349,7 +1349,8 @@ class _LiveChannelLanguageScreenState extends State<LiveChannelLanguageScreen> w
     final response = await https.get(url, headers: {'auth-key': SessionManager.authKey, 'Content-Type': 'application/json', 'domain': SessionManager.savedDomain}).timeout(const Duration(seconds: 20));
 
     if (response.statusCode == 200) {
-      final List<dynamic> jsonData = json.decode(response.body)['languages'] ?? [];
+      final dynamic _decoded_jsonData = json.decode(response.body);
+      final List<dynamic> jsonData = safeDecodeList(_decoded_jsonData);
       jsonData.sort((a, b) => (a['id'] ?? 0).compareTo(b['id'] ?? 0));
 
       return jsonData.map((item) => CommonContentModel(

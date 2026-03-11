@@ -2570,7 +2570,7 @@
 // import 'dart:convert';
 // import 'package:shared_preferences/shared_preferences.dart';
 
-// class SessionManager {
+// const double kSideMenuWidthFactor = 0.14;\r\n\r\nclass SessionManager {
 //   static bool _isInitialized = false;
 
 //   // --- Session Data ---
@@ -3263,6 +3263,7 @@ import 'package:flutter/material.dart';
 // import 'package:media_kit/media_kit.dart'; // Provides [Player], [Media], [Playlist] etc.
 // import 'package:media_kit_video/media_kit_video.dart'; // Provides [VideoController] & [Video] etc.
 
+const double kSideMenuWidthFactor = 0.14;
 class SessionManager {
   static bool _isInitialized = false;
 
@@ -4166,8 +4167,8 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
             return ElevatedButton(
               onPressed: () => _onKeyPressed(keyToProcess),
               style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.resolveWith<Color>((states) {
-                  if (states.contains(MaterialState.focused)) {
+                backgroundColor: WidgetStateProperty.resolveWith<Color>((states) {
+                  if (states.contains(WidgetState.focused)) {
                     if (isOkKey) return Colors.white; 
                     return _activeGlow; 
                   }
@@ -4176,31 +4177,31 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                   if (isDelKey) return Color(0xFFFEB2B2);
                   return _bgStart;
                 }),
-                foregroundColor: MaterialStateProperty.resolveWith<Color>((states) {
-                   if (states.contains(MaterialState.focused)) {
+                foregroundColor: WidgetStateProperty.resolveWith<Color>((states) {
+                   if (states.contains(WidgetState.focused)) {
                      if (isOkKey) return _okButtonColor;
                      return Colors.white;
                    }
                    if (isOkKey) return Colors.white;
                    return _textLabel;
                 }),
-                side: MaterialStateProperty.resolveWith<BorderSide>((states) {
-                  if (states.contains(MaterialState.focused)) {
+                side: WidgetStateProperty.resolveWith<BorderSide>((states) {
+                  if (states.contains(WidgetState.focused)) {
                     if (isOkKey) return BorderSide(color: _okButtonColor, width: 3);
                     return BorderSide(color: Colors.white, width: 2);
                   }
                   return BorderSide.none;
                 }),
-                elevation: MaterialStateProperty.resolveWith<double>((states) {
-                  if (states.contains(MaterialState.focused)) return 15;
-                  if (states.contains(MaterialState.pressed)) return 0;
+                elevation: WidgetStateProperty.resolveWith<double>((states) {
+                  if (states.contains(WidgetState.focused)) return 15;
+                  if (states.contains(WidgetState.pressed)) return 0;
                   return 8;
                 }),
-                shadowColor: MaterialStateProperty.all(_shadowDark),
-                shape: MaterialStateProperty.all(
+                shadowColor: WidgetStateProperty.all(_shadowDark),
+                shape: WidgetStateProperty.all(
                   RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                 ),
-                padding: MaterialStateProperty.all(EdgeInsets.zero),
+                padding: WidgetStateProperty.all(EdgeInsets.zero),
               ),
               child: Container(
                 width: double.infinity,
@@ -4670,4 +4671,22 @@ class _MyHomeState extends State<MyHome> {
       ),
     );
   }
+}
+
+// Safe helper: handles API responses that return List or Map with list under known keys
+List<dynamic> safeDecodeList(dynamic decoded, {List<String> keys = const ['data', 'networks', 'results', 'items', 'languages']}) {
+  if (decoded is List) return decoded;
+  if (decoded is Map<String, dynamic>) {
+    for (final key in keys) {
+      final value = decoded[key];
+      if (value is List) return value;
+      if (value is Map<String, dynamic>) {
+        for (final nestedKey in keys) {
+          final nestedValue = value[nestedKey];
+          if (nestedValue is List) return nestedValue;
+        }
+      }
+    }
+  }
+  return <dynamic>[];
 }

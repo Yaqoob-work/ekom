@@ -1622,7 +1622,6 @@ import 'package:mobi_tv_entertainment/components/home_screen_pages/webseries_scr
 import 'package:mobi_tv_entertainment/components/video_widget/custom_youtube_player.dart';
 import 'package:mobi_tv_entertainment/components/video_widget/video_screen.dart';
 import 'package:mobi_tv_entertainment/components/video_widget/youtube_webview_player.dart';
-import 'package:mobi_tv_entertainment/components/video_widget/secure_url_service.dart';
 
 const double itemSpacing = 15.0;
 const double genreItemWidth = 120.0;
@@ -1725,7 +1724,10 @@ class _GenreMoviesScreenState extends State<GenreMoviesScreen> with SingleTicker
   bool _isVideoLoading = false;
   bool _isGenreSwitching = false;
   bool _isProcessing = false;
-  bool _isDisposed = false; // 🔥 ADDED: To track disposal
+  bool _isDisposed = false;
+  bool _isNavigationLocked = false;
+  Timer? _navigationLockTimer;
+  static const Duration _navigationLockDuration = Duration(milliseconds: 500);
 
   // Focus
   int _focusedGenreIndex = 0;
@@ -1806,6 +1808,7 @@ class _GenreMoviesScreenState extends State<GenreMoviesScreen> with SingleTicker
     
     _genreChangeDebounce?.cancel();
     _genreChangeDebounce = null;
+    _navigationLockTimer?.cancel();
     
     // Dispose controllers
     _sliderPageController.dispose();
@@ -2149,6 +2152,12 @@ class _GenreMoviesScreenState extends State<GenreMoviesScreen> with SingleTicker
     final list = _isSearching ? _searchResults : _filteredMovies;
     
     if (list.isEmpty || _movieFocusNodes.isEmpty) return KeyEventResult.handled;
+    if (_isNavigationLocked) return KeyEventResult.handled;
+    _isNavigationLocked = true;
+    _navigationLockTimer?.cancel();
+    _navigationLockTimer = Timer(_navigationLockDuration, () {
+      if (!_isDisposed && mounted) setState(() => _isNavigationLocked = false);
+    });
     
     if (_focusedMovieIndex < 0 || _focusedMovieIndex >= _movieFocusNodes.length) {
       _focusedMovieIndex = 0;

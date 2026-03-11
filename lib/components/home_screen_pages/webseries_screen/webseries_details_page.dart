@@ -5040,7 +5040,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:mobi_tv_entertainment/components/provider/device_info_provider.dart';
 import 'package:mobi_tv_entertainment/components/services/history_service.dart';
-import 'package:mobi_tv_entertainment/components/video_widget/custom_video_player.dart';
 import 'package:mobi_tv_entertainment/components/video_widget/secure_url_service.dart';
 import 'package:mobi_tv_entertainment/components/video_widget/video_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';

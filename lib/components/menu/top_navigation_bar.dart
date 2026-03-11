@@ -3103,10 +3103,6 @@
 //   NavItem({required this.title, required this.icon, required this.id});
 // }
 
-
-
-
-
 import 'dart:async'; // ✅ Navigation Timer ke liye zaroori
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -3238,8 +3234,7 @@ class _TopNavigationBarState extends State<TopNavigationBar>
       canPop: false,
       onPopInvoked: (didPop) {
         if (!didPop) {
-                    context.read<FocusProvider>().requestFocus('activeSidebar');
-
+          context.read<FocusProvider>().requestFocus('watchNow');
         }
       },
       child: Consumer<ColorProvider>(
@@ -3247,10 +3242,10 @@ class _TopNavigationBarState extends State<TopNavigationBar>
           return Container(
             color: Colors.transparent,
             padding: EdgeInsets.only(
-              top: screenhgt * 0.03,
+              top: screenhgt * 0.02,
               right: screenwdt * 0.05,
-              bottom: screenhgt * 0.001,
-              left: screenwdt * 0.03,
+              bottom: screenhgt * 0.015,
+              left: screenwdt * 0.04
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -3343,7 +3338,7 @@ class _TopNavigationBarState extends State<TopNavigationBar>
                     ),
                   ),
                 Padding(
-                  padding: EdgeInsets.all(hasFocus ? 5.0 : 0.0),
+                  padding: EdgeInsets.all(hasFocus ? 5.0 : 5.0),
                   child: Container(
                     padding: EdgeInsets.symmetric(
                         horizontal: screenwdt * 0.0012,
@@ -3358,16 +3353,14 @@ class _TopNavigationBarState extends State<TopNavigationBar>
                           : Border.all(
                               color: Colors.white.withOpacity(0.1), width: 1.5),
                     ),
-                    child: ClipRRect (
-                      borderRadius: BorderRadius.circular(8),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(hasFocus ? 8 : 12),
                       child: CachedNetworkImage(
                         imageUrl: SessionManager.logoUrl,
-                        height: screenhgt * 0.6,
-                        width: screenwdt * 0.08,  // Width bhi fix kar sakte hain
-  fit: BoxFit.cover,
+                        height: screenhgt * 0.12,
                         placeholder: (context, url) => SizedBox(
-                          height: screenhgt * 0.05,
-                          width: screenhgt * 0.05,
+                          height: screenhgt * 0.12,
+                          width: screenhgt * 0.12,
                           child: const Center(
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
@@ -3555,8 +3548,7 @@ class _TopNavigationBarState extends State<TopNavigationBar>
       if (event.logicalKey == LogicalKeyboardKey.enter ||
           event.logicalKey == LogicalKeyboardKey.select) {
         if (index == 0) {
-                    context.read<FocusProvider>().requestFocus('activeSidebar');
-
+          context.read<FocusProvider>().requestFocus('watchNow');
           widget.onPageSelected(index);
         } else if (item != null) {
           _executeItemAction(item);
@@ -3571,8 +3563,7 @@ class _TopNavigationBarState extends State<TopNavigationBar>
         } else if (item != null && item.id == 'search') {
           context.read<FocusProvider>().requestFocus('activeSidebar');
         } else {
-                    context.read<FocusProvider>().requestFocus('activeSidebar');
-
+          context.read<FocusProvider>().requestFocus('watchNow');
         }
         return KeyEventResult.handled;
       }

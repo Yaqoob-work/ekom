@@ -1324,7 +1324,8 @@ class _ManageSportsState extends State<ManageSports> with AutomaticKeepAliveClie
     final response = await https.post(url, headers: {'auth-key': SessionManager.authKey, 'Content-Type': 'application/json', 'domain': SessionManager.savedDomain}, body: json.encode({"network_id": "", "data_for": "sports"})).timeout(const Duration(seconds: 30));
 
     if (response.statusCode == 200) {
-      List<dynamic> jsonData = json.decode(response.body);
+      final dynamic _decoded_jsonData = json.decode(response.body);
+      List<dynamic> jsonData = safeDecodeList(_decoded_jsonData);
       return jsonData.where((n) => n['status'] == 1 || n['status'] == '1').map((item) => CommonContentModel(
         id: item['id'].toString(), title: item['name'] ?? 'Unknown', imageUrl: item['logo'] ?? '', badgeText: 'SPORTS', originalData: item,
       )).toList();

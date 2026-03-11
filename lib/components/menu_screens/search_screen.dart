@@ -2632,7 +2632,7 @@ class SearchItemCard extends StatelessWidget {
   Widget _buildItemImage() {
     final imageUrl = item.banner.isNotEmpty ? item.banner : item.poster;
 
-    return imageUrl != null && imageUrl.isNotEmpty
+    return imageUrl.isNotEmpty
         ? Image.network(
             imageUrl,
             fit: BoxFit.cover,

@@ -117,20 +117,41 @@
 //           );
 
 //       if (response.statusCode == 200) {
-//         final List<dynamic> jsonData = json.decode(response.body);
+    //   final dynamic decodedData = json.decode(response.body);
+    //   List<dynamic> listData = [];
 
-//         final allContent = jsonData
-//             .map((json) =>
-//                 AdultContentModel.fromJson(json as Map<String, dynamic>))
-//             .toList();
+    //   // API Response ka structure check karna
+    //   if (decodedData is List) {
+    //     listData = decodedData;
+    //   } else if (decodedData is Map<String, dynamic>) {
+    //     final dataNode = decodedData['data'];
+    //     if (dataNode is List) {
+    //       listData = dataNode;
+    //     } else if (dataNode is Map<String, dynamic>) {
+    //       if (dataNode['data'] is List) {
+    //         listData = dataNode['data'];
+    //       } else if (dataNode['networks'] is List) {
+    //         listData = dataNode['networks'];
+    //       }
+    //     }
 
-//         final activeContent =
-//             allContent.where((item) => item.status == 1).toList();
+    //     if (listData.isEmpty && decodedData['networks'] is List) {
+    //       listData = decodedData['networks'];
+    //     }
+    //   }
 
-//         print(
-//             '✅ Successfully loaded ${activeContent.length} active Adult items');
-//         return activeContent;
-//       } else {
+    //   // Filter active status and Map to Common Model
+    //   return listData
+    //       .where((item) => item['status'] == 1 || item['status'] == '1')
+    //       .map((item) => CommonContentModel(
+    //             id: item['id'].toString(),
+    //             title: item['name'] ?? 'Unknown',
+    //             imageUrl: item['logo'] ?? '',
+    //             badgeText: '18+',
+    //             originalData: item,
+    //           ))
+    //       .toList();
+    // } else {
 //         throw Exception(
 //             'API Error: ${response.statusCode} - ${response.reasonPhrase}');
 //       }
@@ -1381,24 +1402,41 @@
 //       ).timeout(const Duration(seconds: 30));
 
 //       if (response.statusCode == 200) {
-//         final dynamic decodedData = json.decode(response.body);
-//         List<dynamic> listData = [];
+    //   final dynamic decodedData = json.decode(response.body);
+    //   List<dynamic> listData = [];
 
-//         if (decodedData is List) {
-//           listData = decodedData;
-//         } else if (decodedData is Map<String, dynamic>) {
-//           if (decodedData.containsKey('data') && decodedData['data'] is List) {
-//             listData = decodedData['data'];
-//           } else if (decodedData.containsKey('networks') && decodedData['networks'] is List) {
-//              listData = decodedData['networks'];
-//           }
-//         }
+    //   // API Response ka structure check karna
+    //   if (decodedData is List) {
+    //     listData = decodedData;
+    //   } else if (decodedData is Map<String, dynamic>) {
+    //     final dataNode = decodedData['data'];
+    //     if (dataNode is List) {
+    //       listData = dataNode;
+    //     } else if (dataNode is Map<String, dynamic>) {
+    //       if (dataNode['data'] is List) {
+    //         listData = dataNode['data'];
+    //       } else if (dataNode['networks'] is List) {
+    //         listData = dataNode['networks'];
+    //       }
+    //     }
 
-//         return listData
-//             .map((json) => AdultContentModel.fromJson(json))
-//             .where((item) => item.status == 1)
-//             .toList();
-//       } else {
+    //     if (listData.isEmpty && decodedData['networks'] is List) {
+    //       listData = decodedData['networks'];
+    //     }
+    //   }
+
+    //   // Filter active status and Map to Common Model
+    //   return listData
+    //       .where((item) => item['status'] == 1 || item['status'] == '1')
+    //       .map((item) => CommonContentModel(
+    //             id: item['id'].toString(),
+    //             title: item['name'] ?? 'Unknown',
+    //             imageUrl: item['logo'] ?? '',
+    //             badgeText: '18+',
+    //             originalData: item,
+    //           ))
+    //       .toList();
+    // } else {
 //         throw Exception('API Error: ${response.statusCode}');
 //       }
 //     } catch (e) {
@@ -1774,9 +1812,18 @@ class _AdultMoviesScreenState extends State<AdultMoviesScreen> with AutomaticKee
       if (decodedData is List) {
         listData = decodedData;
       } else if (decodedData is Map<String, dynamic>) {
-        if (decodedData.containsKey('data') && decodedData['data'] is List) {
-          listData = decodedData['data'];
-        } else if (decodedData.containsKey('networks') && decodedData['networks'] is List) {
+        final dataNode = decodedData['data'];
+        if (dataNode is List) {
+          listData = dataNode;
+        } else if (dataNode is Map<String, dynamic>) {
+          if (dataNode['data'] is List) {
+            listData = dataNode['data'];
+          } else if (dataNode['networks'] is List) {
+            listData = dataNode['networks'];
+          }
+        }
+
+        if (listData.isEmpty && decodedData['networks'] is List) {
           listData = decodedData['networks'];
         }
       }

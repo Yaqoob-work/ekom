@@ -7,7 +7,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:ui';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as https;
@@ -192,6 +191,9 @@ class _LanguageChannelsScreenState extends State<LanguageChannelsScreen> with Si
   bool _isProcessing = false;
   bool _isDisposed = false;
   String? _error;
+  bool _isNavigationLocked = false;
+  Timer? _navigationLockTimer;
+  static const Duration _navigationLockDuration = Duration(milliseconds: 500);
 
   // --- Focus Management ---
   int _focusedGenreIndex = 0;
@@ -276,6 +278,7 @@ class _LanguageChannelsScreenState extends State<LanguageChannelsScreen> with Si
     _isDisposed = true;
     _sliderTimer?.cancel();
     _genreChangeDebounce?.cancel();
+    _navigationLockTimer?.cancel();
     _sliderPageController.dispose();
     _fadeController.dispose();
     _genreScrollController.dispose();
@@ -476,7 +479,8 @@ class _LanguageChannelsScreenState extends State<LanguageChannelsScreen> with Si
 
       // --- 2. Process Channels & Genres ---
       if (results[1].statusCode == 200) {
-        final List<dynamic> channelsData = json.decode(results[1].body);
+        final dynamic _decoded_channelsData = json.decode(results[1].body);
+        final List<dynamic> channelsData = safeDecodeList(_decoded_channelsData);
         _allChannels = channelsData
             .map((item) => NewsChannel.fromJson(item))
             .where((c) => c.status == 1)
@@ -708,6 +712,12 @@ class _LanguageChannelsScreenState extends State<LanguageChannelsScreen> with Si
   KeyEventResult _navigateChannels(LogicalKeyboardKey key) {
     final list = _isSearching ? _searchResults : _currentDisplayList;
     if (list.isEmpty) return KeyEventResult.handled;
+    if (_isNavigationLocked) return KeyEventResult.handled;
+    _isNavigationLocked = true;
+    _navigationLockTimer?.cancel();
+    _navigationLockTimer = Timer(_navigationLockDuration, () {
+      if (!_isDisposed && mounted) setState(() => _isNavigationLocked = false);
+    });
 
     int i = _focusedChannelIndex;
     if (i < 0) i = 0;
@@ -762,6 +772,7 @@ class _LanguageChannelsScreenState extends State<LanguageChannelsScreen> with Si
     if (index < 0 || index >= _genres.length) return;
 
     _genreChangeDebounce?.cancel();
+    _navigationLockTimer?.cancel();
     _genreChangeDebounce = Timer(const Duration(milliseconds: 50), () {
       if (!_isDisposed && mounted) _executeGenreChange(index);
     });

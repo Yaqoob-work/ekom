@@ -1,8 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:provider/provider.dart';
-import 'package:mobi_tv_entertainment/components/provider/focus_provider.dart';
-import 'package:mobi_tv_entertainment/components/services/professional_colors_for_home_pages.dart';
 
 //==============================================================================
 // ✅ 1. SMART SKELETON LOADING SERVICE

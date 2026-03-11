@@ -287,7 +287,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mobi_tv_entertainment/main.dart'; // Ensure LoginScreen & SessionManager access
 
 class PlanExpiredScreen extends StatelessWidget {

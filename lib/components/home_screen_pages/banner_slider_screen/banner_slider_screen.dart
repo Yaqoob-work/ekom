@@ -70,7 +70,8 @@ class BannerService {
     final cachedData = prefs.getString(_cacheKeyBanners);
     if (cachedData == null || cachedData.isEmpty) return [];
     try {
-      final List<dynamic> jsonData = json.decode(cachedData);
+      final dynamic _decoded_jsonData = json.decode(cachedData);
+      final List<dynamic> jsonData = safeDecodeList(_decoded_jsonData);
       return jsonData.map((item) => BannerDataModel.fromJson(item)).where((banner) => banner.isActive).toList();
     } catch (e) { return []; }
   }

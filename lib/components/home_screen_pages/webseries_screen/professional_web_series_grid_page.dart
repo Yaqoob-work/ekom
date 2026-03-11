@@ -6110,7 +6110,8 @@ class _ProfessionalWebSeriesGridPageState
         },
       );
       if (response.statusCode == 200) {
-        final List<dynamic> jsonData = json.decode(response.body);
+        final dynamic _decoded_jsonData = json.decode(response.body);
+        final List<dynamic> jsonData = safeDecodeList(_decoded_jsonData);
         return jsonData
             .map((item) => WebSeriesModel.fromJson(item as Map<String, dynamic>))
             .toList();
@@ -6137,7 +6138,8 @@ class _ProfessionalWebSeriesGridPageState
         body: json.encode({"network_id": "", "data_for": "webseries"}),
       ).timeout(const Duration(seconds: 30));
       if (response.statusCode == 200) {
-        final List<dynamic> jsonData = json.decode(response.body);
+        final dynamic _decoded_jsonData = json.decode(response.body);
+        final List<dynamic> jsonData = safeDecodeList(_decoded_jsonData);
         return jsonData
             .map((item) => ApiNetworkModel.fromJson(item as Map<String, dynamic>))
             .toList();

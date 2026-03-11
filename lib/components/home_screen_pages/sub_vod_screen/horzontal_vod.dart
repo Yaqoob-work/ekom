@@ -2035,7 +2035,8 @@ class _HorzontalVodState extends State<HorzontalVod> with AutomaticKeepAliveClie
     final response = await https.post(url, headers: {'auth-key': SessionManager.authKey, 'Content-Type': 'application/json', 'domain': SessionManager.savedDomain}, body: json.encode({"network_id": "", "data_for": ""})).timeout(const Duration(seconds: 30));
 
     if (response.statusCode == 200) {
-      List<dynamic> jsonData = json.decode(response.body);
+      final dynamic _decoded_jsonData = json.decode(response.body);
+      List<dynamic> jsonData = safeDecodeList(_decoded_jsonData);
       var activeData = jsonData.where((n) => n['status'] == 1 || n['status'] == '1').toList();
       activeData.sort((a, b) => (a['networks_order'] ?? 999).compareTo(b['networks_order'] ?? 999));
 

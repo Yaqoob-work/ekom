@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ui';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -268,6 +267,15 @@ class _SmartCommonHorizontalListState extends State<SmartCommonHorizontalList> w
       color: Colors.white,
       child: Stack(
         children: [
+          Positioned(
+            left: 0,
+            top: 0,
+            bottom: 0,
+            width: sw * 0.14, // should match side menu width
+            child: Container(
+              color: Colors.grey.withOpacity(0.60),
+            ),
+          ),
           Column(
             children: [
               SizedBox(height: (screenhgt ?? sh) * 0.01),
@@ -292,7 +300,7 @@ class _SmartCommonHorizontalListState extends State<SmartCommonHorizontalList> w
     return SlideTransition(
       position: _headerSlideAnimation,
       child: Padding(
-        padding: EdgeInsets.only(left: sw * 0.16, right: sw * 0.025),
+        padding: EdgeInsets.only(left: sw * kSideMenuWidthFactor, right: sw * 0.025),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -357,7 +365,7 @@ class _SmartCommonHorizontalListState extends State<SmartCommonHorizontalList> w
         scrollDirection: Axis.horizontal,
         clipBehavior: Clip.none,
         controller: _scrollController,
-        padding: EdgeInsets.only(left: sw * 0.16, right: sw * 0.7),
+        padding: EdgeInsets.only(left: sw * kSideMenuWidthFactor, right: sw * 0.7),
         itemCount: itemCount,
         itemBuilder: (context, index) {
           if (index < _displayedList.length) {
@@ -432,7 +440,7 @@ class _SmartCommonHorizontalListState extends State<SmartCommonHorizontalList> w
     if (key == LogicalKeyboardKey.arrowRight || key == LogicalKeyboardKey.arrowLeft) {
       if (_isNavigationLocked) return KeyEventResult.handled;
       setState(() => _isNavigationLocked = true);
-      _navLockTimer = Timer(const Duration(milliseconds: 150), () { if (mounted) setState(() => _isNavigationLocked = false); });
+      _navLockTimer = Timer(const Duration(milliseconds: 500), () { if (mounted) setState(() => _isNavigationLocked = false); });
 
       if (key == LogicalKeyboardKey.arrowRight) {
         if (!isViewAll && index < _displayedList.length - 1) {

@@ -630,7 +630,7 @@
 //       _isNavigationLocked = true;
 //     });
 
-//     _navigationLockTimer = Timer(const Duration(milliseconds: 700), () {
+//     _navigationLockTimer = Timer(const Duration(milliseconds:  500), () {
 //       if (mounted) {
 //         setState(() {
 //           _isNavigationLocked = false;
@@ -2077,20 +2077,17 @@
 
 import 'dart:async';
 import 'dart:convert';
-import 'dart:typed_data';
 import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:math' as math;
 import 'package:http/http.dart' as https;
-import 'package:provider/provider.dart';
 
 // NOTE: Check your project structure imports
 import 'package:mobi_tv_entertainment/components/home_screen_pages/sports_category/sports_final_details_page.dart';
 import 'package:mobi_tv_entertainment/main.dart'; 
 import 'package:mobi_tv_entertainment/components/services/history_service.dart';
-import 'package:mobi_tv_entertainment/components/provider/internal_focus_provider.dart';
 
 //==============================================================================
 // SECTION 1: COMMON CLASSES AND MODELS (SPORTS EDITION)
@@ -2554,7 +2551,8 @@ class _SportsSliderScreenState extends State<SportsSliderScreen> with SingleTick
       if (_isDisposed) return [];
 
       if (response.statusCode == 200) {
-        final List<dynamic> jsonData = json.decode(response.body);
+        final dynamic _decoded_jsonData = json.decode(response.body);
+        final List<dynamic> jsonData = safeDecodeList(_decoded_jsonData);
         return jsonData.map((item) => SportsChannelModel.fromJson(item as Map<String, dynamic>)).toList()..sort((a, b) => a.order.compareTo(b.order));  
       } else {
         throw Exception('API Error: ${response.statusCode}');
@@ -2581,7 +2579,8 @@ class _SportsSliderScreenState extends State<SportsSliderScreen> with SingleTick
       if (_isDisposed) return [];
 
       if (response.statusCode == 200) {
-        final List<dynamic> jsonData = json.decode(response.body);
+        final dynamic _decoded_jsonData = json.decode(response.body);
+        final List<dynamic> jsonData = safeDecodeList(_decoded_jsonData);
         return jsonData.map((item) => SportsShowItemModel.fromJson(item as Map<String, dynamic>)).toList()..sort((a, b) => a.order.compareTo(b.order));  
       } else {
         throw Exception('API Error: ${response.statusCode}');
@@ -2609,7 +2608,8 @@ class _SportsSliderScreenState extends State<SportsSliderScreen> with SingleTick
         if (_isDisposed) return [];
 
       if (response.statusCode == 200) {
-        final List<dynamic> jsonData = json.decode(response.body);
+        final dynamic _decoded_jsonData = json.decode(response.body);
+        final List<dynamic> jsonData = safeDecodeList(_decoded_jsonData);
         return jsonData.map((item) => ApiNetworkModel.fromJson(item as Map<String, dynamic>)).toList();
       } else {
         throw Exception('API Error: ${response.statusCode}');
@@ -2711,7 +2711,7 @@ class _SportsSliderScreenState extends State<SportsSliderScreen> with SingleTick
 
     setState(() => _isNavigationLocked = true);
 
-    _navigationLockTimer = Timer(const Duration(milliseconds: 700), () {
+    _navigationLockTimer = Timer(const Duration(milliseconds:  500), () {
       if (!_isDisposed && mounted) setState(() => _isNavigationLocked = false);
     });
 

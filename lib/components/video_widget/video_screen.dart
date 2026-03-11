@@ -2622,8 +2622,8 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
       builder: (context, constraints) {
         final screenWidth = constraints.maxWidth;
         final screenHeight = constraints.maxHeight;
-        final videoWidth = _controller!.value.size?.width ?? screenWidth;
-        final videoHeight = _controller!.value.size?.height ?? screenHeight;
+        final videoWidth = _controller!.value.size.width ?? screenWidth;
+        final videoHeight = _controller!.value.size.height ?? screenHeight;
         final videoRatio = videoWidth / videoHeight;
         final screenRatio = screenWidth / screenHeight;
 

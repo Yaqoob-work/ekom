@@ -734,7 +734,7 @@
 
 //     // Ek chota Timer set karo jo lock ko thodi der baad khol dega
 //     // Yeh 700ms ka cooldown period dega
-//     _navigationLockTimer = Timer(const Duration(milliseconds: 700), () {
+//     _navigationLockTimer = Timer(const Duration(milliseconds:  500), () {
 //       if (mounted) {
 //         setState(() {
 //           _isNavigationLocked = false;
@@ -2334,13 +2334,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:math' as math;
 import 'package:http/http.dart' as https;
-import 'package:provider/provider.dart';
 
 // NOTE: Update these imports based on your project structure
 import 'package:mobi_tv_entertainment/components/home_screen_pages/tv_show_pak/tv_show_pak_final_details_page.dart';
 import 'package:mobi_tv_entertainment/main.dart'; 
 import 'package:mobi_tv_entertainment/components/services/history_service.dart';
-import 'package:mobi_tv_entertainment/components/provider/internal_focus_provider.dart';
 
 //==============================================================================
 // SECTION 1: COMMON CLASSES AND MODELS (UNCHANGED)
@@ -2830,7 +2828,8 @@ class _TvShowPakSliderScreenState extends State<TvShowPakSliderScreen>
       if (_isDisposed) return [];
 
       if (response.statusCode == 200) {
-        final List<dynamic> jsonData = json.decode(response.body);
+        final dynamic _decoded_jsonData = json.decode(response.body);
+        final List<dynamic> jsonData = safeDecodeList(_decoded_jsonData);
         return jsonData
             .map((item) => TvShowModel.fromJson(item as Map<String, dynamic>))
             .toList()
@@ -2861,7 +2860,8 @@ class _TvShowPakSliderScreenState extends State<TvShowPakSliderScreen>
       if (_isDisposed) return [];
 
       if (response.statusCode == 200) {
-        final List<dynamic> jsonData = json.decode(response.body);
+        final dynamic _decoded_jsonData = json.decode(response.body);
+        final List<dynamic> jsonData = safeDecodeList(_decoded_jsonData);
         return jsonData
             .map((item) => TvShowItemModel.fromJson(item as Map<String, dynamic>))
             .toList()
@@ -2893,7 +2893,8 @@ class _TvShowPakSliderScreenState extends State<TvShowPakSliderScreen>
       if (_isDisposed) return [];
 
       if (response.statusCode == 200) {
-        final List<dynamic> jsonData = json.decode(response.body);
+        final dynamic _decoded_jsonData = json.decode(response.body);
+        final List<dynamic> jsonData = safeDecodeList(_decoded_jsonData);
         return jsonData
             .map((item) => ApiNetworkModel.fromJson(item as Map<String, dynamic>))
             .toList();
@@ -3239,7 +3240,7 @@ class _TvShowPakSliderScreenState extends State<TvShowPakSliderScreen>
 
     setState(() => _isNavigationLocked = true);
 
-    _navigationLockTimer = Timer(const Duration(milliseconds: 300), () {
+    _navigationLockTimer = Timer(const Duration(milliseconds:  500), () {
       if (!_isDisposed && mounted) setState(() => _isNavigationLocked = false);
     });
 

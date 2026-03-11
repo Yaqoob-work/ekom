@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:math' as math; 
 
-// ✅ IMPORT EXIT & EXPIRED SCREENS
+// ? IMPORT EXIT & EXPIRED SCREENS
 import 'package:mobi_tv_entertainment/exit_confirmation_screen.dart';
 import 'package:mobi_tv_entertainment/plan_expired_screen.dart';
 
-// ✅ PAGES IMPORTS
+// ? PAGES IMPORTS
 import 'package:mobi_tv_entertainment/components/home_screen_pages/above_18/above_eighteen.dart'; 
 import 'package:mobi_tv_entertainment/components/home_screen_pages/banner_slider_screen/banner_slider_screen.dart';
 import 'package:mobi_tv_entertainment/components/home_screen_pages/kids_shows/kids_channels.dart';
@@ -36,6 +36,7 @@ class MainDashboardScreen extends StatefulWidget {
 class _MainDashboardScreenState extends State<MainDashboardScreen> {
   bool _isLoading = true;
   bool _isPlanExpired = false;
+    static const double _sideMenuWidthFactor = 0.14;
 
   bool _showContentNetwork = false;
   bool _showMovies = false;
@@ -46,6 +47,7 @@ class _MainDashboardScreenState extends State<MainDashboardScreen> {
   bool _showReligious = false;
   bool _showKids = false;
   bool _show18Plus = false;
+  bool _isAdultUnlocked = false;
 
   List<String> _menuItems = [];
   List<String> _pageIdentifiers = [];
@@ -337,10 +339,23 @@ class _MainDashboardScreenState extends State<MainDashboardScreen> {
   void _validatePin(String inputPin) {
     if (inputPin == _serverPin) {
       Navigator.pop(context);
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const AdultMoviesScreen()),
-      );
+      setState(() {
+        _isAdultUnlocked = true;
+        final idx = _menuItems.indexOf('18+');
+        if (idx != -1) {
+          _selectedIndex = idx;
+          _focusedIndex = idx;
+        }
+      });
+
+      Future.delayed(const Duration(milliseconds: 50), () {
+        if (!mounted) return;
+        final idx = _menuItems.indexOf('18+');
+        if (idx != -1 && _menuFocusNodes.length > idx) {
+          context.read<FocusProvider>().registerFocusNode('activeSidebar', _menuFocusNodes[idx]);
+          context.read<FocusProvider>().requestFocus('eighteenPlus');
+        }
+      });
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Invalid PIN"), backgroundColor: Colors.red, duration: Duration(seconds: 2)),
@@ -363,6 +378,7 @@ class _MainDashboardScreenState extends State<MainDashboardScreen> {
       case 'religiousChannels': return const ManageReligiousShows();
       case 'sports': return const ManageSports();
       case 'kids_show': return const ManageKidsShows();
+      case 'eighteenPlus': return _isAdultUnlocked ? const AdultMoviesScreen () : const SizedBox.shrink();
       default: return const SizedBox.shrink();
     }
   }
@@ -398,7 +414,7 @@ class _MainDashboardScreenState extends State<MainDashboardScreen> {
       canPop: false,
       onPopInvoked: (didPop) {
         if (!didPop) {
-          // ✅ FIX: Check karein ki kya focus already sidebar par hai
+          // ? FIX: Check karein ki kya focus already sidebar par hai
           final fp = context.read<FocusProvider>();
           if (fp.lastFocusedIdentifier != 'activeSidebar') {
             // Agar contents page (subVod) par hai, toh Exit karne ke bajaye Sidebar par bhejein
@@ -455,12 +471,12 @@ class _MainDashboardScreenState extends State<MainDashboardScreen> {
                 child: BackdropFilter(
                   filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0), 
                   child: Container(
-                    width: screenWidth * 0.14,
+                    width: screenWidth * kSideMenuWidthFactor,
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.40), 
+                      color: Colors.white.withOpacity(0.20), 
                       border: Border(
                         right: BorderSide(
-                          color: Colors.white.withOpacity(0.2), 
+                          color: Colors.white.withOpacity(0.12), 
                           width: 1,
                         ),
                       ),
@@ -468,7 +484,7 @@ class _MainDashboardScreenState extends State<MainDashboardScreen> {
                     child: ListView.builder(
                       controller: _sidebarScrollController, 
                       clipBehavior: Clip.none, 
-                      // ✅ MAGIC FIX: ListView ke andar 40% vertical space de diya.
+                      // ? MAGIC FIX: ListView ke andar 40% vertical space de diya.
                       // Isse List ka har element properly center tak aa payega.
                       padding: EdgeInsets.symmetric(vertical: screenHeight * 0.40),
                       itemCount: _menuItems.length,
@@ -552,7 +568,7 @@ class _MainDashboardScreenState extends State<MainDashboardScreen> {
                               }
 
                               if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
-                                 if (_menuItems[index] == '18+') return KeyEventResult.handled;
+                                 if (_menuItems[index] == '18+' && !_isAdultUnlocked) return KeyEventResult.handled;
 
                                  setState(() {
                                    _selectedIndex = index;
@@ -578,7 +594,7 @@ class _MainDashboardScreenState extends State<MainDashboardScreen> {
               left: 0,
               right: 0,
               child: SizedBox(
-                height: screenHeight * 0.12, 
+                height: screenHeight * 0.24, 
                 child: TopNavigationBar(
                   selectedPage: _topNavSelectedIndex,
                   tvenableAll: true,
@@ -641,7 +657,7 @@ class _AnimatedSidebarItemState extends State<AnimatedSidebarItem> with SingleTi
       if (_isFocused) {
         _borderAnimationController.repeat();
         
-        // ✅ SMOOTH SCROLLING FIX
+        // ? SMOOTH SCROLLING FIX
         // 50ms ka delay diya taaki UI pehle border paint kar le,
         // phir bina frame drop ke smoothly scroll kare.
         Future.delayed(const Duration(milliseconds: 50), () {
@@ -682,7 +698,7 @@ class _AnimatedSidebarItemState extends State<AnimatedSidebarItem> with SingleTi
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(8),
             boxShadow: _isFocused
-                ? [BoxShadow(color: Colors.black.withOpacity(0.5), blurRadius: 10, offset: const Offset(0, 5))]
+                ? [BoxShadow(color: Colors.black.withOpacity(0.5), blurRadius: 14, offset: const Offset(0, 5))]
                 : [],
           ),
           child: Stack(
@@ -716,24 +732,56 @@ class _AnimatedSidebarItemState extends State<AnimatedSidebarItem> with SingleTi
                   decoration: BoxDecoration(
                     color: _isFocused 
                         ? Colors.black 
-                        : (widget.isSelected ? Colors.black.withOpacity(0.15) : Colors.transparent),
+                        : (widget.isSelected ? Colors.black.withOpacity(0.35) : Colors.transparent),
                     borderRadius: BorderRadius.circular(_isFocused ? 4 : 8),
                   ),
                   child: Center(
-                    child: Text(
-                      widget.title,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: _isFocused 
-                            ? Colors.white 
-                            : (widget.isSelected ? Colors.black87 : Colors.black87),
-                        fontSize: _isFocused ? 13 : 11,
-                        fontWeight: _isFocused || widget.isSelected ? FontWeight.w900 : FontWeight.w700,
-                        letterSpacing: 0.5,
-                      ),
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Text(
+                          widget.title,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: _isFocused ? 13 : 12,
+                            fontWeight: _isFocused || widget.isSelected ? FontWeight.w900 : FontWeight.w700,
+                            letterSpacing: 0.5,
+                            shadows: [
+                              Shadow(
+                                color: Colors.black.withOpacity(1.0),
+                                blurRadius: 14,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                            foreground: Paint()
+                              ..style = PaintingStyle.stroke
+                              ..strokeWidth = 4
+                              ..color = Colors.black,
+                          ),
+                        ),
+                        Text(
+                          widget.title,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: _isFocused
+                                ? Colors.white
+                                : (widget.isSelected ? Colors.white : Colors.white),
+                            fontSize: _isFocused ? 13 : 12,
+                            fontWeight: _isFocused || widget.isSelected ? FontWeight.w900 : FontWeight.w500,
+                            letterSpacing: 0.5,
+                            // shadows: [
+                            //   Shadow(
+                            //     color: Colors.black.withOpacity(1.0),
+                            //     blurRadius: 14,
+                            //     offset: const Offset(0, 4),
+                            //   ),
+                            // ],
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ),
+                      ),
               ),
             ],
           ),

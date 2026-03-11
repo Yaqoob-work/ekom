@@ -2270,7 +2270,7 @@ class _ReligiousChannelDetailsPageState
   }
 
   // Fetch shows from API with loading indicator
-  Future<void> _fetchShowsFromAPI({bool showLoading = false}) async {
+  Future<void> _fetchShowsFromAPI() async {
     setState(() {
       _isLoading = true;
       _errorMessage = "";

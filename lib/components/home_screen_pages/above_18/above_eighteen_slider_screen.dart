@@ -541,7 +541,7 @@
 //     }
 
 //     setState(() => _isNavigationLocked = true);
-//     _navigationLockTimer = Timer(const Duration(milliseconds: 600), () {
+//     _navigationLockTimer = Timer(const Duration(milliseconds:  500), () {
 //       if (mounted) setState(() => _isNavigationLocked = false);
 //     });
 
@@ -2167,7 +2167,7 @@ class _AboveEighteenSliderScreenState extends State<AboveEighteenSliderScreen>
     }
 
     setState(() => _isNavigationLocked = true);
-    _navigationLockTimer = Timer(const Duration(milliseconds: 600), () {
+    _navigationLockTimer = Timer(const Duration(milliseconds:  500), () {
       if (!_isDisposed && mounted) setState(() => _isNavigationLocked = false);
     });
 

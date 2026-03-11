@@ -1259,7 +1259,8 @@ class _ManageWebSeriesState extends State<ManageWebSeries> with AutomaticKeepAli
     final response = await https.get(url, headers: {'auth-key': SessionManager.authKey, 'Content-Type': 'application/json', 'domain': SessionManager.savedDomain}).timeout(const Duration(seconds: 30));
 
     if (response.statusCode == 200) {
-      List<dynamic> jsonData = json.decode(response.body);
+      final dynamic _decoded_jsonData = json.decode(response.body);
+      List<dynamic> jsonData = safeDecodeList(_decoded_jsonData);
       var activeData = jsonData.where((item) => item['status'] == 1 || item['status'] == '1').toList();
       activeData.sort((a, b) => (a['series_order'] ?? 9999).compareTo(b['series_order'] ?? 9999));
 

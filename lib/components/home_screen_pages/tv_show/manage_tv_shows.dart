@@ -1945,7 +1945,6 @@ import 'package:http/http.dart' as https;
 import 'package:mobi_tv_entertainment/components/services/professional_colors_for_home_pages.dart';
 import 'package:mobi_tv_entertainment/components/widgets/smart_common_horizontal_list.dart';
 import 'package:mobi_tv_entertainment/main.dart';
-import 'package:mobi_tv_entertainment/components/home_screen_pages/tv_show/tv_show_final_details_page.dart';
 import 'package:mobi_tv_entertainment/components/home_screen_pages/tv_show/tv_show_slider_screen.dart';
 import 'package:mobi_tv_entertainment/components/services/history_service.dart';
 
@@ -1964,7 +1963,8 @@ class _ManageTvShowsState extends State<ManageTvShows> with AutomaticKeepAliveCl
     final response = await https.post(url, headers: {'auth-key': SessionManager.authKey, 'Content-Type': 'application/json', 'domain': SessionManager.savedDomain}, body: json.encode({"network_id": "", "data_for": "tvshows"})).timeout(const Duration(seconds: 30));
 
     if (response.statusCode == 200) {
-      List<dynamic> jsonData = json.decode(response.body);
+      final dynamic _decoded_jsonData = json.decode(response.body);
+      List<dynamic> jsonData = safeDecodeList(_decoded_jsonData);
       return jsonData.where((n) => n['status'] == 1 || n['status'] == '1').map((item) => CommonContentModel(
         id: item['id'].toString(), title: item['name'] ?? 'Unknown', imageUrl: item['logo'] ?? '', badgeText: 'TV SHOW', originalData: item,
       )).toList();
