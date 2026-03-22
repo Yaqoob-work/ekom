@@ -1331,7 +1331,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as https;
 import 'package:mobi_tv_entertainment/components/services/professional_colors_for_home_pages.dart';
 import 'package:mobi_tv_entertainment/main.dart';
-import 'package:mobi_tv_entertainment/components/home_screen_pages/sub_live_screen/language_channel_screen.dart';
+import 'package:mobi_tv_entertainment/components/home_screen_pages/sub_live_screen/live_slider_screen.dart';
 import 'package:mobi_tv_entertainment/components/widgets/smart_common_horizontal_list.dart'; 
 
 class LiveChannelLanguageScreen extends StatefulWidget {
@@ -1360,7 +1360,7 @@ class _LiveChannelLanguageScreenState extends State<LiveChannelLanguageScreen> w
   }
 
   Future<void> _onItemTap(CommonContentModel item) async {
-    await Navigator.push(context, MaterialPageRoute(builder: (context) => LanguageChannelsScreen(languageId: item.id, languageName: item.title)));
+    await Navigator.push(context, MaterialPageRoute(builder: (context) => liveSliderScreen(languageId: item.id, languageName: item.title)));
   }
 
   @override

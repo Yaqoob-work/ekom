@@ -1240,7 +1240,7 @@ import 'package:http/http.dart' as https;
 import 'package:mobi_tv_entertainment/components/services/professional_colors_for_home_pages.dart';
 import 'package:mobi_tv_entertainment/main.dart';
 import 'package:mobi_tv_entertainment/components/home_screen_pages/webseries_screen/webseries_details_page.dart';
-import 'package:mobi_tv_entertainment/components/home_screen_pages/webseries_screen/professional_web_series_grid_page.dart';
+import 'package:mobi_tv_entertainment/components/home_screen_pages/webseries_screen/webseries_slider_screen.dart';
 import 'package:mobi_tv_entertainment/components/services/history_service.dart';
 import 'package:mobi_tv_entertainment/components/widgets/smart_common_horizontal_list.dart';
 
@@ -1277,7 +1277,7 @@ class _ManageWebSeriesState extends State<ManageWebSeries> with AutomaticKeepAli
   }
 
   Future<void> _onViewAllTap() async {
-    await Navigator.push(context, MaterialPageRoute(builder: (context) => const ProfessionalWebSeriesGridPage(title: 'All Web Series')));
+    await Navigator.push(context, MaterialPageRoute(builder: (context) => const WebseriesSliderScreen(title: 'All Web Series')));
   }
 
   @override

@@ -3234,6 +3234,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 // import 'package:hive_flutter/hive_flutter.dart';
@@ -3691,10 +3692,29 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
     }
   }
 
+  // Future<String> _getDeviceSerialNumber() async {
+  //   try {
+  //     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+  //     if (Platform.isAndroid) {
+  //       AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+  //       return androidInfo.id;
+  //     } else if (Platform.isIOS) {
+  //       IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
+  //       return iosInfo.identifierForVendor ?? 'iOS-${DateTime.now().millisecondsSinceEpoch}';
+  //     }
+  //   } catch (_) {}
+  //   return 'DEVICE-${DateTime.now().millisecondsSinceEpoch}';
+  // }
+
+
   Future<String> _getDeviceSerialNumber() async {
     try {
       DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
-      if (Platform.isAndroid) {
+      
+      // ✅ Web ke liye check add kiya
+      if (kIsWeb) {
+         return 'WEB-${DateTime.now().millisecondsSinceEpoch}';
+      } else if (Platform.isAndroid) {
         AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
         return androidInfo.id;
       } else if (Platform.isIOS) {
@@ -4133,7 +4153,8 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                   fontWeight: FontWeight.w900,
                   // ✅ Agar PIN hai to letter spacing kam karein kyunki humne manual space diya hai
                   letterSpacing: isPin ? 2.0 : 0.5, 
-                  fontFamily: Platform.isIOS ? "Courier" : "Monospace",
+                  // fontFamily: Platform.isIOS ? "Courier" : "Monospace",
+                  fontFamily: kIsWeb ? "Monospace" : (Platform.isIOS ? "Courier" : "Monospace"),
                 ),
               ),
             ),

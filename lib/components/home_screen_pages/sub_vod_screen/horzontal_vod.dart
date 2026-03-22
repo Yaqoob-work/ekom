@@ -2016,7 +2016,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as https;
 import 'package:mobi_tv_entertainment/components/services/professional_colors_for_home_pages.dart';
 import 'package:mobi_tv_entertainment/main.dart';
-import 'package:mobi_tv_entertainment/components/home_screen_pages/sub_vod_screen/genre_movies_screen.dart';
+import 'package:mobi_tv_entertainment/components/home_screen_pages/sub_vod_screen/content_slider_screen.dart';
 import 'package:mobi_tv_entertainment/components/services/history_service.dart';
 import 'package:mobi_tv_entertainment/components/widgets/smart_common_horizontal_list.dart'; 
 
@@ -2054,7 +2054,7 @@ class _HorzontalVodState extends State<HorzontalVod> with AutomaticKeepAliveClie
 
   Future<void> _onItemTap(CommonContentModel item) async {
     try { await HistoryService.updateUserHistory(userId: SessionManager.userId!, contentType: 0, eventId: int.parse(item.id), eventTitle: item.title, url: '', categoryId: 0); } catch (e) {}
-    await Navigator.push(context, MaterialPageRoute(builder: (context) => GenreMoviesScreen(tvChannelId: item.id, logoUrl: item.imageUrl, title: item.title)));
+    await Navigator.push(context, MaterialPageRoute(builder: (context) => ContentSliderScreen(tvChannelId: item.id, logoUrl: item.imageUrl, title: item.title)));
   }
 
   @override

@@ -3027,3 +3027,326 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
 
 
 
+
+
+
+// import 'package:flutter/material.dart';
+// // Agar aapko SecureUrlService ki zaroorat ho to isko uncomment kar lein
+// // import 'package:mobi_tv_entertainment/components/video_widget/secure_url_service.dart';
+// import 'package:video_player/video_player.dart';
+
+// class VideoScreen extends StatefulWidget {
+//   final String videoUrl;
+//   final String name;
+//   final bool liveStatus;
+//   final String updatedAt;
+//   final List<dynamic> channelList;
+//   final String bannerImageUrl;
+//   final int? videoId;
+//   final String source;
+
+//   VideoScreen({
+//     required this.videoUrl,
+//     required this.updatedAt,
+//     required this.channelList,
+//     required this.bannerImageUrl,
+//     required this.videoId,
+//     required this.source,
+//     required this.name,
+//     required this.liveStatus,
+//   });
+
+//   @override
+//   _VideoScreenState createState() => _VideoScreenState();
+// }
+
+// class _VideoScreenState extends State<VideoScreen> {
+//   VideoPlayerController? _controller;
+//   bool _isError = false;
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     _initPlayerWithSecureUrl();
+//   }
+
+//   Future<void> _initPlayerWithSecureUrl() async {
+//     try {
+//       if (!mounted) return;
+
+//       // Abhi testing ke liye hum public video use kar rahe hain. 
+//       // Jab ye chal jaye, to 'BigBuckBunny.mp4' hata kar wapas 'widget.videoUrl' laga lijiye.
+//       final controller = VideoPlayerController.networkUrl(
+//         Uri.parse('https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4'),
+        
+//         // Agar original URL ke liye headers zaroori hain, to inhe uncomment karein
+//         // httpHeaders: {
+//         //   'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+//         //   'Referer': 'https://dashboard.cpplayers.com/', 
+//         // },
+//       );
+
+//       // --- Error aur Buffering check karne ke liye Listener ---
+//       controller.addListener(() {
+//         if (controller.value.hasError) {
+//           print("🔴 VIDEO ERROR: ${controller.value.errorDescription}");
+//         }
+//         if (controller.value.isBuffering) {
+//           print("🟡 Video is Buffering...");
+//         }
+//       });
+
+//       // Video ko initialize karein (load karein)
+//       await controller.initialize();
+
+//       if (mounted) {
+//         setState(() {
+//           _controller = controller;
+//           // 👇 YAHAN BADLAV HAI: 
+//           // Humne _controller!.play(); ko hata diya hai taaki autoplay error na aaye.
+//           // Video ab sirf load hogi aur pause state mein rahegi.
+//         });
+//       }
+//     } catch (e, stackTrace) {
+//       print("🔴 Initialization Exception: $e");
+//       print("Stack Trace: $stackTrace");
+
+//       if (mounted) {
+//         setState(() {
+//           _isError = true;
+//         });
+//       }
+//     }
+//   }
+
+//   @override
+//   void dispose() {
+//     // Null check ke sath dispose karein
+//     _controller?.dispose();
+//     super.dispose();
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       backgroundColor: Colors.black, // Background black kar diya taaki TV jaisa feel aaye
+//       appBar: AppBar(title: const Text("Flutter Video Player")),
+//       body: Center(
+//         child: _isError
+//             ? const Text("Video Play Error", style: TextStyle(color: Colors.red))
+//             : (_controller != null && _controller!.value.isInitialized)
+//                 ? AspectRatio(
+//                     aspectRatio: _controller!.value.aspectRatio,
+//                     child: Stack(
+//                       alignment: Alignment.bottomCenter,
+//                       children: [
+//                         VideoPlayer(_controller!),
+//                         _buildControls(), // User control buttons
+//                       ],
+//                     ),
+//                   )
+//                 : const CircularProgressIndicator(color: Colors.blue), // Jab tak null hai, loader dikhega
+//       ),
+//     );
+//   }
+
+//   // Play/Pause button UI
+//   Widget _buildControls() {
+//     if (_controller == null) return const SizedBox.shrink();
+
+//     return Container(
+//       color: Colors.black54, // Thoda transparent background buttons ke liye
+//       height: 60,
+//       child: Row(
+//         mainAxisAlignment: MainAxisAlignment.center,
+//         children: [
+//           IconButton(
+//             iconSize: 40,
+//             icon: Icon(
+//               _controller!.value.isPlaying ? Icons.pause : Icons.play_arrow,
+//               color: Colors.white,
+//             ),
+//             onPressed: () {
+//               setState(() {
+//                 // User jab play button dabayega, tab video chalegi (Browser isse block nahi karega)
+//                 _controller!.value.isPlaying
+//                     ? _controller!.pause()
+//                     : _controller!.play();
+//               });
+//             },
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }
+
+
+
+
+
+// import 'package:flutter/material.dart';
+// import 'package:mobi_tv_entertainment/components/video_widget/secure_url_service.dart';
+// import 'package:video_player/video_player.dart';
+
+// class VideoScreen extends StatefulWidget {
+//   final String videoUrl;
+// final String name;
+// final bool liveStatus;
+// final String updatedAt;
+// final List<dynamic> channelList;
+// final String bannerImageUrl;
+// final int? videoId;
+// final String source;
+
+// VideoScreen({
+// required this.videoUrl,
+// required this.updatedAt,
+// required this.channelList,
+// required this.bannerImageUrl,
+// required this.videoId,
+// required this.source,
+// required this.name,
+// required this.liveStatus,
+// });
+
+// @override
+// _VideoScreenState createState() => _VideoScreenState();
+// }
+
+// class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
+// // CHANGE 1: 'late' hataya aur '?' lagaya taaki ye shuru mein null reh sake
+// VideoPlayerController? _controller;
+// bool _isError = false;
+
+// @override
+// void initState() {
+// super.initState();
+// _initPlayerWithSecureUrl();
+// }
+
+// Future<void> _initPlayerWithSecureUrl() async {
+// try {
+// // String secureUrl = await SecureUrlService.getSecureUrl(
+// // '',
+// // expirySeconds: 6;
+
+// // print('DEBUG: Generated URL: $secureUrl'); // Check if this URL works in a browser
+
+// if (!mounted) return;
+
+// // final controller = VideoPlayerController.networkUrl(
+// // Uri.parse('https://dashboard.cpplayers.com/api/video/play/FRpCb9WhFXIeHpFFtNO79947oThNFJ5zxrRbHwkY54KwM84YPDcDTQnhhusKhORc'),
+// // // Uncomment these if your server requires them to prevent 403 Forbidden errors
+// // /* httpHeaders: {
+// // 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36...',
+// // },
+// // */
+// // );
+
+// // CHANGE 2: Naya controller banaya
+// final controller = VideoPlayerController.networkUrl(
+// Uri.parse(widget.videoUrl),
+// // 👇 Add these headers to fix the 403 Error
+// // httpHeaders: {
+// // 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+// // 'Referer': 'https://dashboard.cpplayers.com/', // Important: Tells the server you are coming from their site
+// // },
+// );
+
+// // --- ADD THIS LISTENER HERE ---
+// controller.addListener(() {
+// // This prints errors that happen during playback/buffering
+// if (controller.value.hasError) {
+// print("🔴 VIDEO ERROR: ${controller.value.errorDescription}");
+// }
+
+// // Optional: Print buffering status to see if it's stuck loading
+// if (controller.value.isBuffering) {
+// print("🟡 Video is Buffering...");
+// }
+// });
+// // -----------------------------
+
+// await controller.initialize();
+// await controller.setVolume(0.0);
+// if (mounted) {
+// setState(() {
+// _controller = controller;
+// _controller!.play();
+// });
+// }
+// } catch (e, stackTrace) {
+// // Print the full stack trace to see exactly where it failed
+// print("🔴 Initialization Exception: $e");
+// print("Stack Trace: $stackTrace");
+
+// if (mounted) {
+// setState(() {
+// _isError = true;
+// });
+// }
+// }
+// }
+
+// @override
+// void dispose() {
+// // CHANGE 4: Null check ke sath dispose karein
+// _controller?.dispose();
+// super.dispose();
+// }
+
+// @override
+// Widget build(BuildContext context) {
+// return Scaffold(
+// appBar: AppBar(title: const Text("Flutter Video Player")),
+// body: Center(
+// child: _isError
+// ? const Text("Video Play Error", style: TextStyle(color: Colors.red))
+// // CHANGE 5: Check karein ki controller null to nahi hai
+// : (_controller != null && _controller!.value.isInitialized)
+// ? AspectRatio(
+// aspectRatio: _controller!.value.aspectRatio,
+// child: Stack(
+// alignment: Alignment.bottomCenter,
+// children: [
+// VideoPlayer(_controller!),
+// _buildControls(),
+// ],
+// ),
+// )
+// : const CircularProgressIndicator(), // Jab tak null hai, loader dikhega
+// ),
+// );
+// }
+
+// Widget _buildControls() {
+// // Safety check
+// if (_controller == null) return const SizedBox.shrink();
+
+// return Container(
+// color: Colors.black45,
+// height: 50,
+// child: Row(
+// mainAxisAlignment: MainAxisAlignment.center,
+// children: [
+// IconButton(
+// icon: Icon(
+// _controller!.value.isPlaying ? Icons.pause : Icons.play_arrow,
+// color: Colors.white,
+// ),
+// onPressed: () {
+// setState(() {
+// _controller!.value.isPlaying
+// ? _controller!.pause()
+// : _controller!.play();
+// });
+// },
+// ),
+// ],
+// ),
+// );
+//   }
+// }
+
+
