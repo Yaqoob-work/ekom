@@ -761,7 +761,7 @@
 //                 videoUrl: rawUrl,
 //                 bannerImageUrl: content.poster ?? content.banner ?? '',
 //                 videoId: content.id,
-//                 name: content.name,                                                                               
+//                 name: content.name,
 //                 updatedAt: content.updatedAt ?? '',
 //                 source: 'isVod',
 //                 channelList: const [],
@@ -1590,10 +1590,6 @@
 //   }
 // }
 
-
-
-
-
 // import 'dart:async';
 // import 'dart:convert';
 // import 'dart:ui';
@@ -1773,7 +1769,7 @@
 
 // class _AboveEighteenSliderScreenState extends State<AboveEighteenSliderScreen>
 //     with SingleTickerProviderStateMixin {
-  
+
 //   // 🔥 CRASH FIX: Disposal Flag
 //   bool _isDisposed = false;
 
@@ -1845,12 +1841,12 @@
 //     SecureUrlService.refreshSettings();
 //     _sliderPageController = PageController();
 //     _searchButtonFocusNode = FocusNode();
-    
+
 //     // 🔥 CRASH FIX: Safe data fetch
 //     WidgetsBinding.instance.addPostFrameCallback((_) {
 //       if(!_isDisposed) _fetchDataForPage();
 //     });
-    
+
 //     _initializeAnimations();
 //   }
 
@@ -1860,13 +1856,13 @@
 //     _sliderTimer?.cancel();
 //     _debounce?.cancel();
 //     _navigationLockTimer?.cancel();
-    
+
 //     _sliderPageController.dispose();
 //     _fadeController.dispose();
-    
+
 //     _widgetFocusNode.dispose();
 //     _searchButtonFocusNode.dispose();
-    
+
 //     _genreScrollController.dispose();
 //     _movieScrollController.dispose();
 
@@ -1874,10 +1870,10 @@
 //     _disposeFocusNodes(_genreFocusNodes);
 //     _disposeFocusNodes(_movieFocusNodes);
 //     _disposeFocusNodes(_keyboardFocusNodes);
-    
+
 //     super.dispose();
 //   }
-  
+
 //   void _disposeFocusNodes(List<FocusNode> nodes) {
 //     for (var node in nodes) {
 //       try {
@@ -1978,7 +1974,6 @@
 //       final genreRes = results[0];
 //       final movieRes = results[1];
 
-
 //       if (genreRes.statusCode == 200 && movieRes.statusCode == 200) {
 //         final genreData = GenreResponse.fromJson(json.decode(genreRes.body));
 //         final movieData = MovieResponse.fromJson(json.decode(movieRes.body));
@@ -2031,7 +2026,7 @@
 
 //   void _processDataWithApiGenres(List<String> apiGenres) {
 //     if (_isDisposed) return;
-    
+
 //     final Map<String, List<Movie>> moviesByGenre = {};
 
 //     List<String> sortedGenres = List.from(apiGenres);
@@ -2392,7 +2387,7 @@
 //                 videoUrl: rawUrl,
 //                 bannerImageUrl: content.poster ?? content.banner ?? '',
 //                 videoId: content.id,
-//                 name: content.name,                                                                
+//                 name: content.name,
 //                 updatedAt: content.updatedAt ?? '',
 //                 source: 'isVod',
 //                 channelList: const [],
@@ -3172,10 +3167,6 @@
 //   }
 // }
 
-
-
-
-
 // import 'dart:async';
 // import 'dart:convert';
 // import 'dart:ui';
@@ -3386,7 +3377,7 @@
 
 // class _AboveEighteenSliderScreenState extends State<AboveEighteenSliderScreen>
 //     with SingleTickerProviderStateMixin {
-  
+
 //   bool _isDisposed = false;
 
 //   // Data State
@@ -3453,41 +3444,41 @@
 //   @override
 //   void initState() {
 //     super.initState();
-//     _isDisposed = false; 
+//     _isDisposed = false;
 //     SecureUrlService.refreshSettings();
 //     _sliderPageController = PageController();
 //     _searchButtonFocusNode = FocusNode();
-    
+
 //     WidgetsBinding.instance.addPostFrameCallback((_) {
 //       if(!_isDisposed) _fetchDataForPage();
 //     });
-    
+
 //     _initializeAnimations();
 //   }
 
 //   @override
 //   void dispose() {
-//     _isDisposed = true; 
+//     _isDisposed = true;
 //     _sliderTimer?.cancel();
 //     _debounce?.cancel();
 //     _navigationLockTimer?.cancel();
-    
+
 //     _sliderPageController.dispose();
 //     _fadeController.dispose();
-    
+
 //     _widgetFocusNode.dispose();
 //     _searchButtonFocusNode.dispose();
-    
+
 //     _genreScrollController.dispose();
 //     _movieScrollController.dispose();
 
 //     _disposeFocusNodes(_genreFocusNodes);
 //     _disposeFocusNodes(_movieFocusNodes);
 //     _disposeFocusNodes(_keyboardFocusNodes);
-    
+
 //     super.dispose();
 //   }
-  
+
 //   void _disposeFocusNodes(List<FocusNode> nodes) {
 //     for (var node in nodes) {
 //       try {
@@ -3563,7 +3554,7 @@
 //           genreUrl,
 //           headers: headers,
 //           body: json.encode({
-//             "data_for": "adultmovies", 
+//             "data_for": "adultmovies",
 //             "network_id": int.tryParse(widget.tvChannelId) ?? 0
 //           }),
 //         ),
@@ -3573,7 +3564,7 @@
 //           body: json.encode({
 //             "genre": "",
 //             "network_id": widget.tvChannelId,
-//             "data_for": "adultmovies" 
+//             "data_for": "adultmovies"
 //           }),
 //         ),
 //       ]);
@@ -3634,7 +3625,7 @@
 
 //   void _processDataWithApiGenres(List<String> apiGenres) {
 //     if (_isDisposed) return;
-    
+
 //     final Map<String, List<Movie>> moviesByGenre = {};
 
 //     List<String> sortedGenres = List.from(apiGenres);
@@ -3991,7 +3982,7 @@
 //                 videoUrl: rawUrl,
 //                 bannerImageUrl: content.poster ?? content.banner ?? '',
 //                 videoId: content.id,
-//                 name: content.name,                                                
+//                 name: content.name,
 //                 updatedAt: content.updatedAt ?? '',
 //                 source: 'isVod',
 //                 channelList: const [],
@@ -4633,7 +4624,7 @@
 //             ),
 //             const SizedBox(height: 24),
 //             ElevatedButton.icon(
-//               focusNode: FocusNode(), 
+//               focusNode: FocusNode(),
 //               onPressed: () => _fetchDataForPage(forceRefresh: true),
 //               icon: const Icon(Icons.refresh_rounded),
 //               label: const Text('Try Again'),
@@ -4809,9 +4800,6 @@
 //   }
 // }
 
-
-
-
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as https;
@@ -4824,43 +4812,112 @@ import 'package:mobi_tv_entertainment/components/provider/device_info_provider.d
 import 'package:mobi_tv_entertainment/components/video_widget/custom_youtube_player.dart';
 import 'package:mobi_tv_entertainment/components/video_widget/video_screen.dart';
 import 'package:mobi_tv_entertainment/components/video_widget/youtube_webview_player.dart';
-import 'package:mobi_tv_entertainment/components/widgets/master_slider_layout.dart'; 
+import 'package:mobi_tv_entertainment/components/widgets/master_slider_layout.dart';
 
 class ContentSlider {
-  final int id; final String title; final String? banner; final String? sliderFor;
-  ContentSlider({required this.id, required this.title, this.banner, this.sliderFor});
-  factory ContentSlider.fromJson(Map<String, dynamic> json) => ContentSlider(id: json['id'] ?? 0, title: json['title'] ?? 'No Title', banner: json['banner'], sliderFor: json['slider_for']);
+  final int id;
+  final String title;
+  final String? banner;
+  final String? sliderFor;
+  ContentSlider(
+      {required this.id, required this.title, this.banner, this.sliderFor});
+  factory ContentSlider.fromJson(Map<String, dynamic> json) => ContentSlider(
+      id: json['id'] ?? 0,
+      title: json['title'] ?? 'No Title',
+      banner: json['banner'],
+      sliderFor: json['slider_for']);
 }
 
 class Movie {
-  final int id; final String name; final String? banner; final String? poster; final String? description; final String genres; final int? contentType; final String? sourceType; final String? youtubeTrailer; final String? updatedAt; final String? movieUrl; final int? status;
-  Movie({required this.id, required this.name, this.banner, this.poster, this.description, required this.genres, this.contentType, this.sourceType, this.youtubeTrailer, this.updatedAt, this.movieUrl, this.status});
-  factory Movie.fromJson(Map<String, dynamic> json) => Movie(id: json['id'] ?? 0, name: json['name'] ?? 'No Name', banner: json['banner'], poster: json['poster'], description: json['description'], genres: json['genres'] ?? 'Uncategorized', contentType: json['content_type'], sourceType: json['source_type'], youtubeTrailer: json['youtube_trailer'], updatedAt: json['updated_at'], movieUrl: json['movie_url'], status: json['status']);
-  String getrawUrl() { if (sourceType == 'YoutubeLive') return movieUrl ?? ''; return (youtubeTrailer != null && youtubeTrailer!.isNotEmpty) ? youtubeTrailer! : (movieUrl ?? ''); }
+  final int id;
+  final String name;
+  final String? banner;
+  final String? poster;
+  final String? description;
+  final String genres;
+  final int? contentType;
+  final String? sourceType;
+  final String? youtubeTrailer;
+  final String? updatedAt;
+  final String? movieUrl;
+  final int? status;
+  Movie(
+      {required this.id,
+      required this.name,
+      this.banner,
+      this.poster,
+      this.description,
+      required this.genres,
+      this.contentType,
+      this.sourceType,
+      this.youtubeTrailer,
+      this.updatedAt,
+      this.movieUrl,
+      this.status});
+  factory Movie.fromJson(Map<String, dynamic> json) => Movie(
+      id: json['id'] ?? 0,
+      name: json['name'] ?? 'No Name',
+      banner: json['banner'],
+      poster: json['poster'],
+      description: json['description'],
+      genres: json['genres'] ?? 'Uncategorized',
+      contentType: json['content_type'],
+      sourceType: json['source_type'],
+      youtubeTrailer: json['youtube_trailer'],
+      updatedAt: json['updated_at'],
+      movieUrl: json['movie_url'],
+      status: json['status']);
+  String getrawUrl() {
+    if (sourceType == 'YoutubeLive') return movieUrl ?? '';
+    return (youtubeTrailer != null && youtubeTrailer!.isNotEmpty)
+        ? youtubeTrailer!
+        : (movieUrl ?? '');
+  }
 }
 
 class MovieResponse {
-  final bool status; final List<Movie> data; final List<ContentSlider> contentSliders;
-  MovieResponse({required this.status, required this.data, required this.contentSliders});
+  final bool status;
+  final List<Movie> data;
+  final List<ContentSlider> contentSliders;
+  MovieResponse(
+      {required this.status, required this.data, required this.contentSliders});
   factory MovieResponse.fromJson(Map<String, dynamic> json) {
-    List<T> parseList<T>(String key, T Function(Map<String, dynamic>) fromJson) => json[key] is List ? (json[key] as List).map((i) => fromJson(i as Map<String, dynamic>)).toList() : [];
-    return MovieResponse(status: json['status'] ?? false, data: parseList('data', (i) => Movie.fromJson(i)), contentSliders: parseList('content_sliders', (i) => ContentSlider.fromJson(i)));
+    List<T> parseList<T>(
+            String key, T Function(Map<String, dynamic>) fromJson) =>
+        json[key] is List
+            ? (json[key] as List)
+                .map((i) => fromJson(i as Map<String, dynamic>))
+                .toList()
+            : [];
+    return MovieResponse(
+        status: json['status'] ?? false,
+        data: parseList('data', (i) => Movie.fromJson(i)),
+        contentSliders:
+            parseList('content_sliders', (i) => ContentSlider.fromJson(i)));
   }
 }
 
 class GenreResponse {
-  final bool status; final List<String> genres;
+  final bool status;
+  final List<String> genres;
   GenreResponse({required this.status, required this.genres});
-  factory GenreResponse.fromJson(Map<String, dynamic> json) => GenreResponse(status: json['status'] ?? false, genres: json['genres'] != null ? List<String>.from(json['genres']) : []);
+  factory GenreResponse.fromJson(Map<String, dynamic> json) => GenreResponse(
+      status: json['status'] ?? false,
+      genres: json['genres'] != null ? List<String>.from(json['genres']) : []);
 }
 
 class AboveEighteenSliderScreen extends StatefulWidget {
   final String tvChannelId;
   final String logoUrl;
   final String title;
-  const AboveEighteenSliderScreen({super.key, required this.tvChannelId, required this.logoUrl, required this.title});
+  const AboveEighteenSliderScreen(
+      {super.key,
+      required this.tvChannelId,
+      required this.logoUrl,
+      required this.title});
   @override
-  State<AboveEighteenSliderScreen> createState() => _AboveEighteenSliderScreenState();
+  State<AboveEighteenSliderScreen> createState() =>
+      _AboveEighteenSliderScreenState();
 }
 
 class _AboveEighteenSliderScreenState extends State<AboveEighteenSliderScreen> {
@@ -4874,7 +4931,7 @@ class _AboveEighteenSliderScreenState extends State<AboveEighteenSliderScreen> {
   List<Movie> _displayList = [];
   List<String> _genres = [];
   List<String> _sliderImages = [];
-  
+
   int _selectedGenreIndex = 0;
   String _searchText = '';
 
@@ -4892,12 +4949,34 @@ class _AboveEighteenSliderScreenState extends State<AboveEighteenSliderScreen> {
   }
 
   Future<void> _fetchDataForPage() async {
-    setState(() { _isLoading = true; _errorMessage = null; });
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
     try {
-      final headers = { 'auth-key': SessionManager.authKey, 'domain': SessionManager.savedDomain, 'Accept': 'application/json', 'Content-Type': 'application/json' };
+      final headers = {
+        'auth-key': SessionManager.authKey,
+        'domain': SessionManager.savedDomain,
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      };
       final results = await Future.wait([
-        https.post(Uri.parse('https://dashboard.cpplayers.com/api/v3/getGenreByContentNetwork'), headers: headers, body: json.encode({"data_for": "adultmovies", "network_id": int.tryParse(widget.tvChannelId) ?? 0})),
-        https.post(Uri.parse(SessionManager.baseUrl + 'getAllContentsOfNetworkNew'), headers: headers, body: json.encode({"genre": "", "network_id": widget.tvChannelId, "data_for": "adultmovies"})),
+        https.post(
+            Uri.parse(
+                'https://dashboard.cpplayers.com/api/v3/getGenreByContentNetwork'),
+            headers: headers,
+            body: json.encode({
+              "data_for": "adultmovies",
+              "network_id": int.tryParse(widget.tvChannelId) ?? 0
+            })),
+        https.post(
+            Uri.parse(SessionManager.baseUrl + 'getAllContentsOfNetworkNew'),
+            headers: headers,
+            body: json.encode({
+              "genre": "",
+              "network_id": widget.tvChannelId,
+              "data_for": "adultmovies"
+            })),
       ]);
 
       if (_isDisposed || !mounted) return;
@@ -4907,17 +4986,32 @@ class _AboveEighteenSliderScreenState extends State<AboveEighteenSliderScreen> {
         final movieData = MovieResponse.fromJson(json.decode(results[1].body));
 
         if (genreData.status && movieData.status) {
-          _allMovies = movieData.data.where((movie) => movie.status == 1).toList();
-          _sliderImages = movieData.contentSliders.where((s) => s.sliderFor == 'movies').map((e) => e.banner ?? '').toList();
+          _allMovies =
+              movieData.data.where((movie) => movie.status == 1).toList();
+          _sliderImages = movieData.contentSliders
+              .where((s) => s.sliderFor == 'movies')
+              .map((e) => e.banner ?? '')
+              .toList();
 
           List<String> sortedGenres = List.from(genreData.genres);
-          if (sortedGenres.contains('Web Series')) { sortedGenres.remove('Web Series'); sortedGenres.insert(0, 'Web Series'); }
+          if (sortedGenres.contains('Web Series')) {
+            sortedGenres.remove('Web Series');
+            sortedGenres.insert(0, 'Web Series');
+          }
 
           Map<String, List<Movie>> moviesByGenre = {};
-          for (var genre in sortedGenres) { moviesByGenre[genre] = []; }
+          for (var genre in sortedGenres) {
+            moviesByGenre[genre] = [];
+          }
           for (final movie in _allMovies) {
-            final movieGenresList = movie.genres.split(',').map((g) => g.trim()).where((g) => g.isNotEmpty).toList();
-            for (var mg in movieGenresList) { if (moviesByGenre.containsKey(mg)) moviesByGenre[mg]!.add(movie); }
+            final movieGenresList = movie.genres
+                .split(',')
+                .map((g) => g.trim())
+                .where((g) => g.isNotEmpty)
+                .toList();
+            for (var mg in movieGenresList) {
+              if (moviesByGenre.containsKey(mg)) moviesByGenre[mg]!.add(movie);
+            }
           }
 
           setState(() {
@@ -4930,10 +5024,19 @@ class _AboveEighteenSliderScreenState extends State<AboveEighteenSliderScreen> {
             }
             _isLoading = false;
           });
-        } else { throw Exception('API returned status false.'); }
-      } else { throw Exception('API Error'); }
+        } else {
+          throw Exception('API returned status false.');
+        }
+      } else {
+        throw Exception('API Error');
+      }
     } catch (e) {
-      if (!_isDisposed && mounted) setState(() { _errorMessage = "Failed to load content.\nPlease check your connection."; _isLoading = false; });
+      if (!_isDisposed && mounted)
+        setState(() {
+          _errorMessage =
+              "Failed to load content.\nPlease check your connection.";
+          _isLoading = false;
+        });
     }
   }
 
@@ -4941,9 +5044,13 @@ class _AboveEighteenSliderScreenState extends State<AboveEighteenSliderScreen> {
     setState(() {
       _searchText = query;
       if (query.isEmpty) {
-        _displayList = _genres.isNotEmpty ? (_moviesByGenre[_genres[_selectedGenreIndex]] ?? []) : _allMovies;
+        _displayList = _genres.isNotEmpty
+            ? (_moviesByGenre[_genres[_selectedGenreIndex]] ?? [])
+            : _allMovies;
       } else {
-        _displayList = _allMovies.where((m) => m.name.toLowerCase().contains(query.toLowerCase())).toList();
+        _displayList = _allMovies
+            .where((m) => m.name.toLowerCase().contains(query.toLowerCase()))
+            .toList();
       }
     });
   }
@@ -4955,21 +5062,63 @@ class _AboveEighteenSliderScreenState extends State<AboveEighteenSliderScreen> {
     try {
       String rawUrl = content.getrawUrl();
       if (content.contentType == 2) {
-        await Navigator.push(context, MaterialPageRoute(builder: (context) => WebSeriesDetailsPage(id: content.id, banner: content.banner ?? '', poster: content.poster ?? '', logo: widget.logoUrl, name: content.name, updatedAt: content.updatedAt ?? ''))).catchError((_) => null);
+        await Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => WebSeriesDetailsPage(
+                        id: content.id,
+                        banner: content.banner ?? '',
+                        poster: content.poster ?? '',
+                        logo: widget.logoUrl,
+                        name: content.name,
+                        updatedAt: content.updatedAt ?? '')))
+            .catchError((_) => null);
       } else if (rawUrl.isNotEmpty) {
-        if (content.sourceType == 'YoutubeLive' || (content.youtubeTrailer != null && content.youtubeTrailer!.isNotEmpty)) {
+        if (content.sourceType == 'YoutubeLive' ||
+            (content.youtubeTrailer != null &&
+                content.youtubeTrailer!.isNotEmpty)) {
           final deviceInfo = context.read<DeviceInfoProvider>();
           if (deviceInfo.deviceName == 'AFTSS : Amazon Fire Stick HD') {
-            await Navigator.push(context, MaterialPageRoute(builder: (context) => YoutubeWebviewPlayer(videoUrl: rawUrl, name: content.name))).catchError((_) => null);
+            await Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => YoutubeWebviewPlayer(
+                        videoUrl: rawUrl,
+                        name: content.name))).catchError((_) => null);
           } else {
-            await Navigator.push(context, MaterialPageRoute(builder: (context) => CustomYoutubePlayer(videoData: VideoData(id: content.id.toString(), title: content.name, youtubeUrl: rawUrl, thumbnail: content.poster ?? content.banner ?? '', description: content.description ?? ''), playlist: const []))).catchError((_) => null);
+            await Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => CustomYoutubePlayer(
+                        videoData: VideoData(
+                            id: content.id.toString(),
+                            title: content.name,
+                            youtubeUrl: rawUrl,
+                            thumbnail: content.poster ?? content.banner ?? '',
+                            description: content.description ?? ''),
+                        playlist: const []))).catchError((_) => null);
           }
         } else {
-          await Navigator.push(context, MaterialPageRoute(builder: (context) => VideoScreen(videoUrl: rawUrl, bannerImageUrl: content.poster ?? content.banner ?? '', videoId: content.id, name: content.name, updatedAt: content.updatedAt ?? '', source: 'isVod', channelList: const [], liveStatus: false))).catchError((_) => null);
+          await Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => VideoScreen(
+                      videoUrl: rawUrl,
+                      bannerImageUrl: content.poster ?? content.banner ?? '',
+                      videoId: content.id,
+                      name: content.name,
+                      updatedAt: content.updatedAt ?? '',
+                      source: 'isVod',
+                      channelList: const [],
+                      liveStatus: false))).catchError((_) => null);
         }
-      } else { throw Exception('No playable video URL found.'); }
+      } else {
+        throw Exception('No playable video URL found.');
+      }
     } catch (e) {
-      if (!_isDisposed && mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error playing content: $e')));
+      if (!_isDisposed && mounted)
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Error playing content: $e')));
     } finally {
       if (!_isDisposed && mounted) setState(() => _isVideoLoading = false);
     }
@@ -4984,10 +5133,8 @@ class _AboveEighteenSliderScreenState extends State<AboveEighteenSliderScreen> {
       isVideoLoading: _isVideoLoading,
       errorMessage: _errorMessage,
       onRetry: _fetchDataForPage,
-      
-      networkNames: const [], 
+      networkNames: const [],
       selectedNetworkIndex: 0,
-      
       filterNames: _genres,
       selectedFilterIndex: _selectedGenreIndex,
       onFilterSelected: (idx) {
@@ -4998,18 +5145,23 @@ class _AboveEighteenSliderScreenState extends State<AboveEighteenSliderScreen> {
         });
       },
       onSearch: _onSearch,
-      
       contentList: _displayList,
       onContentTap: _playContent,
       getTitle: (m) => m.name,
       getImageUrl: (m) => m.poster ?? m.banner ?? '',
-      
       sliderImages: _sliderImages,
-      focusColors: const [Color(0xFF3B82F6), Color(0xFF8B5CF6), Color(0xFF10B981), Color(0xFFF59E0B), Color(0xFFEC4899), Color(0xFFEF4444)],
+      focusColors: const [
+        Color(0xFF3B82F6),
+        Color(0xFF8B5CF6),
+        Color(0xFF10B981),
+        Color(0xFFF59E0B),
+        Color(0xFFEC4899),
+        Color(0xFFEF4444)
+      ],
       placeholderIcon: Icons.movie_creation_outlined,
       emptyMessage: "No Movies Available",
-      cardWidth: screenwdt / 7,
-      cardHeight: bannerhgt * 1.1,
+      cardWidth: bannerwdt,
+      cardHeight: bannerhgt,
     );
   }
 }

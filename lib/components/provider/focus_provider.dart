@@ -749,6 +749,16 @@ class FocusProvider extends ChangeNotifier {
   void triggerDashboardPrevPage() => onDashboardPrevPage?.call();
   void triggerBannerDown() => onBannerDown?.call();
 
+
+  String _focusedItemName = '';
+
+  String get focusedItemName => _focusedItemName;
+
+  void updateName(String newName) {
+    if (_focusedItemName == newName) return;
+    _focusedItemName = newName;
+    notifyListeners();
+  }
   
 
   // Item ID updater for returning focus

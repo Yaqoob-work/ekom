@@ -1360,7 +1360,7 @@ class _LiveChannelLanguageScreenState extends State<LiveChannelLanguageScreen> w
   }
 
   Future<void> _onItemTap(CommonContentModel item) async {
-    await Navigator.push(context, MaterialPageRoute(builder: (context) => liveSliderScreen(languageId: item.id, languageName: item.title)));
+    await Navigator.push(context, MaterialPageRoute(builder: (context) => liveSliderScreen(languageId: item.id, languageName: item.title, logoUrl: item.imageUrl)));
   }
 
   @override

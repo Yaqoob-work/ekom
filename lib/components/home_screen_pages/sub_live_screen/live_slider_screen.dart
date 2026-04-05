@@ -1,9 +1,3 @@
-
-
-
-
-
-
 // import 'dart:async';
 // import 'dart:convert';
 // import 'dart:ui';
@@ -111,7 +105,6 @@
 // //   }
 // // }
 
-
 // class NewsChannel {
 //   final int id;
 //   final String name;
@@ -146,11 +139,11 @@
 //       genres: json['genres'] ?? 'General',
 //       status: json['status'] ?? 0,
 //       streamType: json['stream_type'] ?? 'M3u8',
-      
+
 //       // 🔥 FIX: Add .toString() here
 //       // यह लाइन नंबर (int) को सेफली स्ट्रिंग में बदल देगी
-//       contentType: json['content_type']?.toString() ?? '', 
-      
+//       contentType: json['content_type']?.toString() ?? '',
+
 //       sourceType: json['source_type'] ?? '',
 //       updatedAt: json['updated_at'],
 //     );
@@ -199,10 +192,10 @@
 //   int _focusedGenreIndex = 0;
 //   int _focusedChannelIndex = -1;
 //   String _selectedGenre = '';
-  
+
 //   final FocusNode _widgetFocusNode = FocusNode();
 //   late FocusNode _searchButtonFocusNode;
-  
+
 //   List<FocusNode> _genreFocusNodes = [];
 //   List<FocusNode> _channelFocusNodes = [];
 //   List<FocusNode> _keyboardFocusNodes = [];
@@ -332,7 +325,7 @@
 //   //         })
 //   //       ),
 //   //       https.post(
-//   //          Uri.parse(SessionManager.baseUrl + 'getGenreByContentNetwork'), 
+//   //          Uri.parse(SessionManager.baseUrl + 'getGenreByContentNetwork'),
 //   //          headers: headers,
 //   //          body: json.encode({"language_id": widget.languageId})
 //   //       ),
@@ -388,7 +381,7 @@
 //   //       for (var g in apiGenres) {
 //   //         mapTemp[g] = _allChannels.where((c) => c.genres.contains(g)).toList();
 //   //       }
-        
+
 //   //       apiGenres.removeWhere((g) => (mapTemp[g] ?? []).isEmpty);
 //   //       _genres = apiGenres;
 //   //       _channelsByGenre = mapTemp;
@@ -428,9 +421,6 @@
 //   //   }
 //   // }
 
-
-
-
 //   Future<void> _fetchAndProcessData() async {
 //     if (_isDisposed) return;
 
@@ -452,7 +442,7 @@
 //           })
 //         ),
 //         https.post(
-//             Uri.parse(SessionManager.baseUrl + 'getGenreByContentNetwork'), 
+//             Uri.parse(SessionManager.baseUrl + 'getGenreByContentNetwork'),
 //             headers: headers,
 //             body: json.encode({"language_id": widget.languageId})
 //         ),
@@ -490,8 +480,8 @@
 //         // Agar API se Slider nahi mila, to pehle channel ka banner use karein
 //         if (tempSliders.isEmpty && _allChannels.isNotEmpty) {
 //            tempSliders.add(SliderItem(
-//              id: 0, 
-//              title: _allChannels.first.name, 
+//              id: 0,
+//              title: _allChannels.first.name,
 //              banner: _allChannels.first.banner
 //            ));
 //         }
@@ -518,7 +508,7 @@
 //         for (var g in apiGenres) {
 //           mapTemp[g] = _allChannels.where((c) => c.genres.contains(g)).toList();
 //         }
-        
+
 //         apiGenres.removeWhere((g) => (mapTemp[g] ?? []).isEmpty);
 //         _genres = apiGenres;
 //         _channelsByGenre = mapTemp;
@@ -613,7 +603,7 @@
 //     if (_isDisposed || !_genreScrollController.hasClients) return;
 //     try {
 //       double screenW = MediaQuery.of(context).size.width;
-//       double itemW = 120.0; 
+//       double itemW = 120.0;
 //       double offset = (index * itemW) - (screenW / 2) + (itemW / 2);
 //       if (offset < 0) offset = 0;
 //       if (offset > _genreScrollController.position.maxScrollExtent) {
@@ -629,7 +619,7 @@
 //     if (_isDisposed || !_channelScrollController.hasClients) return;
 //     try {
 //       double screenW = MediaQuery.of(context).size.width;
-//       double itemW = bannerwdt + 15.0; 
+//       double itemW = bannerwdt + 15.0;
 //       double offset = (index * itemW) - (screenW / 2) + (itemW / 2);
 //       if (offset < 0) offset = 0;
 //       if (offset > _channelScrollController.position.maxScrollExtent) {
@@ -658,7 +648,7 @@
 //         _searchButtonFocusNode.requestFocus();
 //         return KeyEventResult.handled;
 //       }
-//       return KeyEventResult.ignored; 
+//       return KeyEventResult.ignored;
 //     }
 
 //     if (_showKeyboard) return _navigateVirtualKeyboard(key);
@@ -683,7 +673,7 @@
 
 //   KeyEventResult _navigateGenres(LogicalKeyboardKey key) {
 //     if (_genres.isEmpty) return KeyEventResult.handled;
-    
+
 //     int i = _focusedGenreIndex;
 //     if (i < 0) i = 0;
 
@@ -752,7 +742,7 @@
 //     if (index >= list.length) return;
 
 //     setState(() => _focusedChannelIndex = index);
-    
+
 //     Future.delayed(const Duration(milliseconds: 50), () {
 //       if (!_isDisposed && mounted && index < _channelFocusNodes.length) {
 //         _channelFocusNodes[index].requestFocus();
@@ -764,7 +754,7 @@
 //   // ==========================================================
 //   // GENRE SWITCHING
 //   // ==========================================================
-  
+
 //   Timer? _genreChangeDebounce;
 
 //   void _changeGenre(int index) {
@@ -798,7 +788,7 @@
 //     Future.microtask(() {
 //       if (_isDisposed) return;
 //       _rebuildChannelNodes();
-      
+
 //       if (_channelScrollController.hasClients) {
 //         _channelScrollController.jumpTo(0);
 //       }
@@ -887,10 +877,6 @@
 //     });
 //   }
 
-
-
-
-
 //   Future<void> _playChannel(NewsChannel channel) async {
 //     if (_isDisposed || _isProcessing || _isVideoLoading) return;
 
@@ -905,16 +891,16 @@
 //         final prefs = await SharedPreferences.getInstance();
 //         String userIdStr = prefs.getString('user_id') ?? '';
 //         int? userId = int.tryParse(userIdStr);
-        
+
 //         if (userId != null) {
 //           // 🔥 FIX: Ensure all parameters match what HistoryService expects
-//           // If HistoryService expects Strings, we convert them. 
+//           // If HistoryService expects Strings, we convert them.
 //           // If it expects ints, int.tryParse handles it.
 //           await HistoryService.updateUserHistory(
 //             userId: userId,
 //             // 🔥 Possible Error Source: Converting to String just in case
-//             contentType: int.tryParse(channel.contentType) ?? 4, 
-//             eventId: channel.id, 
+//             contentType: int.tryParse(channel.contentType) ?? 4,
+//             eventId: channel.id,
 //             eventTitle: channel.name,
 //             url: channel.url,
 //             categoryId: 0
@@ -925,11 +911,11 @@
 //       }
 
 //       // --- 2. Playback Logic ---
-//       String playableUrl = channel.url; 
+//       String playableUrl = channel.url;
 //       if (playableUrl.isEmpty) throw Exception("Empty URL");
 
 //       final deviceInfo = context.read<DeviceInfoProvider>();
-      
+
 //       // Check for Youtube
 //       if (channel.streamType == 'YoutubeLive' || (channel.url.contains('youtube') || channel.url.contains('youtu.be'))) {
 //          if (deviceInfo.deviceName == 'AFTSS : Amazon Fire Stick HD') {
@@ -964,7 +950,7 @@
 //       } else {
 //         // --- 3. M3U8 / Other Player ---
 //         final list = _isSearching ? _searchResults : _currentDisplayList;
-        
+
 //         // 🔥 FIX: Converting everything to String explicitly to prevent Type Cast Errors
 //         List<NewsItemModel> playerList = list.map((c) => NewsItemModel(
 //           id: c.id.toString(),
@@ -974,14 +960,14 @@
 //           streamType: c.streamType,
 //           status: c.status.toString(),
 //           genres: c.genres,
-//           videoId: '', 
-//           description: '', 
-//           poster: c.banner, 
-//           category: c.genres, 
-//           type: c.streamType, 
-//           index: '0', 
-//           image: c.banner, 
-//           unUpdatedUrl: c.url, 
+//           videoId: '',
+//           description: '',
+//           poster: c.banner,
+//           category: c.genres,
+//           type: c.streamType,
+//           index: '0',
+//           image: c.banner,
+//           unUpdatedUrl: c.url,
 //           updatedAt: ''
 //         )).toList();
 
@@ -1061,7 +1047,7 @@
 //                   ],
 //                 ),
 //               ),
-            
+
 //             if (_isVideoLoading)
 //               Positioned.fill(
 //                 child: Container(
@@ -1094,9 +1080,9 @@
 //                   errorBuilder: (c,e,s) => Container(color: Colors.black),
 //                 ),
 //               )
-//             else 
+//             else
 //               Container(color: ProfessionalColors.primaryDark),
-            
+
 //             Positioned.fill(
 //               child: Container(
 //                 decoration: BoxDecoration(
@@ -1287,7 +1273,7 @@
 //   Widget _buildChannelsList() {
 //     final list = _isSearching ? _searchResults : _currentDisplayList;
 //     if (list.isEmpty) return const Center(child: Text("No Channels Available", style: TextStyle(color: Colors.white54)));
-    
+
 //     final safeCount = math.min(list.length, _channelFocusNodes.length);
 
 //     return ListView.builder(
@@ -1352,7 +1338,7 @@
 //             final isFocused = _focusedKeyRow == rEntry.key && _focusedKeyCol == cEntry.key;
 //             final idx = nodeIdx++;
 //             double w = (key == "SPACE") ? 150 : (key == "OK" || key == "DEL" ? 60 : 35);
-            
+
 //             return Container(
 //               margin: const EdgeInsets.all(2),
 //               width: w,
@@ -1385,7 +1371,7 @@
 //       padding: const EdgeInsets.only(bottom: 10), // Added padding
 //       child: Row(
 //         mainAxisAlignment: MainAxisAlignment.center,
-//         children: List.generate(_sliders.length, (i) => 
+//         children: List.generate(_sliders.length, (i) =>
 //           AnimatedContainer(
 //             duration: AnimationTiming.fast,
 //             margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 10),
@@ -1442,7 +1428,7 @@
 //   @override
 //   Widget build(BuildContext context) {
 //     super.build(context);
-    
+
 //     return RepaintBoundary(
 //       child: Padding(
 //         padding: const EdgeInsets.only(right: 15),
@@ -1457,8 +1443,8 @@
 //             children: [
 //               AnimatedContainer(
 //                 duration: AnimationTiming.fast,
-//                 width: bannerwdt, 
-//                 height: bannerhgt, 
+//                 width: bannerwdt,
+//                 height: bannerhgt,
 //                 transform: widget.isFocused ? (Matrix4.identity()..scale(1.05)) : Matrix4.identity(),
 //                 transformAlignment: Alignment.center,
 //                 decoration: BoxDecoration(
@@ -1526,10 +1512,6 @@
 //     );
 //   }
 // }
-
-
-
-
 
 // import 'dart:async';
 // import 'dart:convert';
@@ -1632,7 +1614,7 @@
 //       genres: json['genres'] ?? 'General',
 //       status: json['status'] ?? 0,
 //       streamType: json['stream_type'] ?? 'M3u8',
-//       contentType: json['content_type']?.toString() ?? '', 
+//       contentType: json['content_type']?.toString() ?? '',
 //       sourceType: json['source_type'] ?? '',
 //       updatedAt: json['updated_at'],
 //     );
@@ -1681,10 +1663,10 @@
 //   int _focusedGenreIndex = 0;
 //   int _focusedChannelIndex = -1;
 //   String _selectedGenre = '';
-  
+
 //   final FocusNode _widgetFocusNode = FocusNode();
 //   late FocusNode _searchButtonFocusNode;
-  
+
 //   List<FocusNode> _genreFocusNodes = [];
 //   List<FocusNode> _channelFocusNodes = [];
 //   List<FocusNode> _keyboardFocusNodes = [];
@@ -1810,7 +1792,7 @@
 //           })
 //         ),
 //         https.post(
-//             Uri.parse(SessionManager.baseUrl + 'getGenreByContentNetwork'), 
+//             Uri.parse(SessionManager.baseUrl + 'getGenreByContentNetwork'),
 //             headers: headers,
 //             body: json.encode({"language_id": widget.languageId})
 //         ),
@@ -1846,8 +1828,8 @@
 
 //         if (tempSliders.isEmpty && _allChannels.isNotEmpty) {
 //            tempSliders.add(SliderItem(
-//              id: 0, 
-//              title: _allChannels.first.name, 
+//              id: 0,
+//              title: _allChannels.first.name,
 //              banner: _allChannels.first.banner
 //            ));
 //         }
@@ -1874,14 +1856,14 @@
 //         for (var g in apiGenres) {
 //           mapTemp[g] = _allChannels.where((c) => c.genres.contains(g)).toList();
 //         }
-        
+
 //         apiGenres.removeWhere((g) => (mapTemp[g] ?? []).isEmpty);
 //         _genres = apiGenres;
 //         _channelsByGenre = mapTemp;
 
 //         if (!_isDisposed && mounted) {
 //            setState(() {
-//              _sliders = tempSliders; 
+//              _sliders = tempSliders;
 //              if (_genres.isNotEmpty) {
 //                _selectedGenre = _genres[0];
 //                _currentDisplayList = _channelsByGenre[_selectedGenre] ?? [];
@@ -1969,7 +1951,7 @@
 //     if (_isDisposed || !_genreScrollController.hasClients) return;
 //     try {
 //       double screenW = MediaQuery.of(context).size.width;
-//       double itemW = 120.0; 
+//       double itemW = 120.0;
 //       double offset = (index * itemW) - (screenW / 2) + (itemW / 2);
 //       if (offset < 0) offset = 0;
 //       if (offset > _genreScrollController.position.maxScrollExtent) {
@@ -1985,7 +1967,7 @@
 //     if (_isDisposed || !_channelScrollController.hasClients) return;
 //     try {
 //       double screenW = MediaQuery.of(context).size.width;
-//       double itemW = bannerwdt + 15.0; 
+//       double itemW = bannerwdt + 15.0;
 //       double offset = (index * itemW) - (screenW / 2) + (itemW / 2);
 //       if (offset < 0) offset = 0;
 //       if (offset > _channelScrollController.position.maxScrollExtent) {
@@ -2014,7 +1996,7 @@
 //         _searchButtonFocusNode.requestFocus();
 //         return KeyEventResult.handled;
 //       }
-//       return KeyEventResult.ignored; 
+//       return KeyEventResult.ignored;
 //     }
 
 //     if (_showKeyboard) return _navigateVirtualKeyboard(key);
@@ -2039,7 +2021,7 @@
 
 //   KeyEventResult _navigateGenres(LogicalKeyboardKey key) {
 //     if (_genres.isEmpty) return KeyEventResult.handled;
-    
+
 //     int i = _focusedGenreIndex;
 //     if (i < 0) i = 0;
 
@@ -2108,7 +2090,7 @@
 //     if (index >= list.length) return;
 
 //     setState(() => _focusedChannelIndex = index);
-    
+
 //     Future.delayed(const Duration(milliseconds: 50), () {
 //       if (!_isDisposed && mounted && index < _channelFocusNodes.length) {
 //         _channelFocusNodes[index].requestFocus();
@@ -2120,7 +2102,7 @@
 //   // ==========================================================
 //   // GENRE SWITCHING
 //   // ==========================================================
-  
+
 //   Timer? _genreChangeDebounce;
 
 //   void _changeGenre(int index) {
@@ -2154,7 +2136,7 @@
 //     Future.microtask(() {
 //       if (_isDisposed) return;
 //       _rebuildChannelNodes();
-      
+
 //       if (_channelScrollController.hasClients) {
 //         _channelScrollController.jumpTo(0);
 //       }
@@ -2257,12 +2239,12 @@
 //         final prefs = await SharedPreferences.getInstance();
 //         String userIdStr = prefs.getString('user_id') ?? '';
 //         int? userId = int.tryParse(userIdStr);
-        
+
 //         if (userId != null) {
 //           await HistoryService.updateUserHistory(
 //             userId: userId,
-//             contentType: int.tryParse(channel.contentType) ?? 4, 
-//             eventId: channel.id, 
+//             contentType: int.tryParse(channel.contentType) ?? 4,
+//             eventId: channel.id,
 //             eventTitle: channel.name,
 //             url: channel.url,
 //             categoryId: 0
@@ -2273,11 +2255,11 @@
 //       }
 
 //       // --- 2. Playback Logic ---
-//       String playableUrl = channel.url; 
+//       String playableUrl = channel.url;
 //       if (playableUrl.isEmpty) throw Exception("Empty URL");
 
 //       final deviceInfo = context.read<DeviceInfoProvider>();
-      
+
 //       // Check for Youtube
 //       if (channel.streamType == 'YoutubeLive' || (channel.url.contains('youtube') || channel.url.contains('youtu.be'))) {
 //          if (deviceInfo.deviceName == 'AFTSS : Amazon Fire Stick HD') {
@@ -2310,7 +2292,7 @@
 //       } else {
 //         // --- 3. M3U8 / Other Player ---
 //         final list = _isSearching ? _searchResults : _currentDisplayList;
-        
+
 //         List<NewsItemModel> playerList = list.map((c) => NewsItemModel(
 //           id: c.id.toString(),
 //           name: c.name,
@@ -2319,14 +2301,14 @@
 //           streamType: c.streamType,
 //           status: c.status.toString(),
 //           genres: c.genres,
-//           videoId: '', 
-//           description: '', 
-//           poster: c.banner, 
-//           category: c.genres, 
-//           type: c.streamType, 
-//           index: '0', 
-//           image: c.banner, 
-//           unUpdatedUrl: c.url, 
+//           videoId: '',
+//           description: '',
+//           poster: c.banner,
+//           category: c.genres,
+//           type: c.streamType,
+//           index: '0',
+//           image: c.banner,
+//           unUpdatedUrl: c.url,
 //           updatedAt: ''
 //         )).toList();
 
@@ -2347,7 +2329,7 @@
 
 //     } catch (e) {
 //       if (!_isDisposed && mounted) {
-//         print("Playback Error Details: $e"); 
+//         print("Playback Error Details: $e");
 //         ScaffoldMessenger.of(context).showSnackBar(
 //           SnackBar(content: Text('Playback Error: ${e.toString()}'), backgroundColor: Colors.red,)
 //         );
@@ -2406,7 +2388,7 @@
 //                   ],
 //                 ),
 //               ),
-            
+
 //             if (_isVideoLoading)
 //               Positioned.fill(
 //                 child: Container(
@@ -2439,9 +2421,9 @@
 //                   errorBuilder: (c,e,s) => Container(color: Colors.black),
 //                 ),
 //               )
-//             else 
+//             else
 //               Container(color: ProfessionalColors.primaryDark),
-            
+
 //             Positioned.fill(
 //               child: Container(
 //                 decoration: BoxDecoration(
@@ -2631,7 +2613,7 @@
 //   Widget _buildChannelsList() {
 //     final list = _isSearching ? _searchResults : _currentDisplayList;
 //     if (list.isEmpty) return const Center(child: Text("No Channels Available", style: TextStyle(color: Colors.white54)));
-    
+
 //     final safeCount = math.min(list.length, _channelFocusNodes.length);
 
 //     return ListView.builder(
@@ -2696,7 +2678,7 @@
 //             final isFocused = _focusedKeyRow == rEntry.key && _focusedKeyCol == cEntry.key;
 //             final idx = nodeIdx++;
 //             double w = (key == "SPACE") ? 150 : (key == "OK" || key == "DEL" ? 60 : 35);
-            
+
 //             return Container(
 //               margin: const EdgeInsets.all(2),
 //               width: w,
@@ -2729,7 +2711,7 @@
 //       padding: const EdgeInsets.only(bottom: 10),
 //       child: Row(
 //         mainAxisAlignment: MainAxisAlignment.center,
-//         children: List.generate(_sliders.length, (i) => 
+//         children: List.generate(_sliders.length, (i) =>
 //           AnimatedContainer(
 //             duration: AnimationTiming.fast,
 //             margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 10),
@@ -2786,7 +2768,7 @@
 //   @override
 //   Widget build(BuildContext context) {
 //     super.build(context);
-    
+
 //     return RepaintBoundary(
 //       child: Padding(
 //         padding: const EdgeInsets.only(right: 15),
@@ -2808,8 +2790,8 @@
 //                     color: ProfessionalColors.cardDark,
 //                     child: Center(
 //                       child: Icon(
-//                         Icons.tv, 
-//                         color: ProfessionalColors.textSecondary.withOpacity(0.5), 
+//                         Icons.tv,
+//                         color: ProfessionalColors.textSecondary.withOpacity(0.5),
 //                         size: 40
 //                       ),
 //                     ),
@@ -2869,13 +2851,467 @@
 // }
 
 
+
+
+
+
+
+// import 'dart:convert';
+// import 'package:flutter/material.dart';
+// import 'package:http/http.dart' as https;
+// import 'package:provider/provider.dart';
+// import 'package:shared_preferences/shared_preferences.dart';
+
+// // Update paths as per your project
+// import 'package:mobi_tv_entertainment/main.dart';
+// import 'package:mobi_tv_entertainment/components/provider/device_info_provider.dart';
+// import 'package:mobi_tv_entertainment/components/video_widget/custom_youtube_player.dart';
+// import 'package:mobi_tv_entertainment/components/video_widget/secure_url_service.dart';
+// import 'package:mobi_tv_entertainment/components/video_widget/video_screen.dart';
+// import 'package:mobi_tv_entertainment/components/video_widget/youtube_webview_player.dart';
+// import 'package:mobi_tv_entertainment/components/services/history_service.dart';
+// import 'package:mobi_tv_entertainment/components/widgets/models/news_item_model.dart';
+// import 'package:mobi_tv_entertainment/components/widgets/master_slider_layout.dart'; // 🔥 THE MASTER WIDGET
+
+// class SliderItem {
+//   final int id;
+//   final String title;
+//   final String banner;
+//   SliderItem({required this.id, required this.title, required this.banner});
+//   factory SliderItem.fromJson(Map<String, dynamic> json) => SliderItem(
+//       id: json['id'] ?? 0,
+//       title: json['title'] ?? '',
+//       banner: json['banner'] ?? '');
+// }
+
+// // class NewsChannel {
+// //   final int id;
+// //   final String name;
+// //   final String banner;
+// //   final String url;
+// //   final String genres;
+// //   final int status;
+// //   final String streamType;
+// //   final String contentType;
+// //   final String? updatedAt;
+// //   NewsChannel(
+// //       {required this.id,
+// //       required this.name,
+// //       required this.banner,
+// //       required this.url,
+// //       required this.genres,
+// //       required this.status,
+// //       required this.streamType,
+// //       required this.contentType,
+// //       this.updatedAt});
+// //   factory NewsChannel.fromJson(Map<String, dynamic> json) => NewsChannel(
+// //       id: json['id'] ?? 0,
+// //       name: json['channel_name'] ?? '',
+// //       banner: json['channel_logo'] ?? '',
+// //       url: json['channel_link'] ?? '',
+// //       genres: json['genres'] ?? '',
+// //       status: json['status'] ?? 0,
+// //       streamType: json['stream_type'] ?? '',
+// //       contentType: json['content_type']?.toString() ?? '',
+// //       updatedAt: json['updated_at']);
+// // }
+
+
+
+// class NewsChannel {
+//   final int id;
+//   final String channelNumber; // 🔥 ADDED: To store channel number
+//   final String name;
+//   final String banner;
+//   final String url;
+//   final String genres;
+//   final int status;
+//   final String streamType;
+//   final String contentType;
+//   final String? updatedAt;
+
+//   NewsChannel({
+//       required this.id,
+//       required this.channelNumber, // 🔥 ADDED
+//       required this.name,
+//       required this.banner,
+//       required this.url,
+//       required this.genres,
+//       required this.status,
+//       required this.streamType,
+//       required this.contentType,
+//       this.updatedAt
+//   });
+
+//   factory NewsChannel.fromJson(Map<String, dynamic> json) => NewsChannel(
+//       id: json['id'] ?? 0,
+//       // 🔥 ADDED: Parsing the number as a string so it's easy to search
+//       channelNumber: json['channel_number']?.toString() ?? '', 
+//       name: json['channel_name'] ?? '',
+//       banner: json['channel_logo'] ?? '',
+//       url: json['channel_link'] ?? '',
+//       genres: json['genres'] ?? '',
+//       status: json['status'] ?? 0,
+//       streamType: json['stream_type'] ?? '',
+//       contentType: json['content_type']?.toString() ?? '',
+//       updatedAt: json['updated_at']
+//   );
+// }
+
+// class liveSliderScreen extends StatefulWidget {
+//   final String languageId;
+//   final String languageName;
+//   final String logoUrl;
+
+//   const liveSliderScreen(
+//       {super.key, required this.languageId, required this.languageName, required this.logoUrl});
+
+//   @override
+//   State<liveSliderScreen> createState() => liveSliderScreenState();
+// }
+
+// class liveSliderScreenState extends State<liveSliderScreen> {
+//   // 🔥 FIX: Added _isDisposed variable
+//   bool _isDisposed = false;
+
+//   bool _isLoading = true;
+//   bool _isVideoLoading = false;
+//   String? _error;
+
+//   List<NewsChannel> _allChannels = [];
+//   Map<String, List<NewsChannel>> _channelsByGenre = {};
+//   List<NewsChannel> _displayList = [];
+//   List<String> _genres = [];
+//   List<String> _sliderImages = [];
+
+//   int _selectedGenreIndex = 0;
+//   String _searchText = '';
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     _isDisposed = false; // Initialize to false
+//     SecureUrlService.refreshSettings();
+//     _fetchAndProcessData();
+//   }
+
+//   // 🔥 FIX: Added dispose method to clean up safely
+//   @override
+//   void dispose() {
+//     _isDisposed = true;
+//     super.dispose();
+//   }
+
+//   Future<void> _fetchAndProcessData() async {
+//     setState(() {
+//       _isLoading = true;
+//       _error = null;
+//     });
+//     try {
+//       final headers = {
+//         'auth-key': SessionManager.authKey,
+//         'domain': SessionManager.savedDomain,
+//         'Content-Type': 'application/json'
+//       };
+//       final results = await Future.wait([
+//         https.get(Uri.parse(SessionManager.baseUrl + 'getAllLanguages'),
+//             headers: headers),
+//         https.post(Uri.parse(SessionManager.baseUrl + 'getAllLiveTV'),
+//             headers: headers,
+//             body: json.encode({"genere": "", "languageId": widget.languageId})),
+//         https.post(
+//             Uri.parse(SessionManager.baseUrl + 'getGenreByContentNetwork'),
+//             headers: headers,
+//             body: json.encode({"language_id": widget.languageId})),
+//       ]);
+
+//       if (_isDisposed || !mounted) return;
+
+//       // 1. Process Sliders
+//       List<String> tempSliders = [];
+//       if (results[0].statusCode == 200) {
+//         final langData = json.decode(results[0].body);
+//         if (langData['languages'] is List) {
+//           final currentLang = (langData['languages'] as List).firstWhere(
+//               (l) => l['id'].toString() == widget.languageId,
+//               orElse: () => null);
+//           if (currentLang != null && currentLang['slider'] is List) {
+//             tempSliders = (currentLang['slider'] as List)
+//                 .map((i) => i['banner'].toString())
+//                 .toList();
+//           }
+//         }
+//       }
+
+//       // 2. Process Channels
+//       if (results[1].statusCode == 200) {
+//         final channelsData = safeDecodeList(json.decode(results[1].body));
+//         _allChannels = channelsData
+//             .map((item) => NewsChannel.fromJson(item))
+//             .where((c) => c.status == 1)
+//             .toList();
+
+//         if (tempSliders.isEmpty && _allChannels.isNotEmpty)
+//           tempSliders.add(_allChannels.first.banner);
+
+//         // 3. Process Genres
+//         List<String> apiGenres = [];
+//         if (results[2].statusCode == 200) {
+//           final gData = json.decode(results[2].body);
+//           if (gData['genres'] != null)
+//             apiGenres = List<String>.from(gData['genres']);
+//         }
+
+//         if (apiGenres.isEmpty) {
+//           final Set<String> extracted = {};
+//           for (var c in _allChannels) {
+//             c.genres.split(',').forEach((g) => extracted.add(g.trim()));
+//           }
+//           extracted.removeWhere((e) => e.isEmpty);
+//           apiGenres = extracted.toList()..sort();
+//         }
+
+//         Map<String, List<NewsChannel>> mapTemp = {};
+//         for (var g in apiGenres) {
+//           mapTemp[g] = _allChannels.where((c) => c.genres.contains(g)).toList();
+//         }
+//         apiGenres.removeWhere((g) => (mapTemp[g] ?? []).isEmpty);
+
+//         if (_isDisposed || !mounted) return;
+
+//         setState(() {
+//           _genres = apiGenres;
+//           _channelsByGenre = mapTemp;
+//           _sliderImages = tempSliders;
+//           if (_genres.isNotEmpty) {
+//             _selectedGenreIndex = 0;
+//             _displayList = _channelsByGenre[_genres[0]] ?? [];
+//           } else {
+//             _displayList = _allChannels;
+//           }
+//           _isLoading = false;
+//         });
+//       } else {
+//         throw Exception("API Error");
+//       }
+//     } catch (e) {
+//       if (!_isDisposed && mounted)
+//         setState(() {
+//           _isLoading = false;
+//           _error = e.toString();
+//         });
+//     }
+//   }
+
+//   // void _onSearch(String query) {
+//   //   if (_isDisposed || !mounted) return;
+//   //   setState(() {
+//   //     _searchText = query;
+//   //     if (query.isEmpty) {
+//   //       _displayList = _genres.isNotEmpty
+//   //           ? (_channelsByGenre[_genres[_selectedGenreIndex]] ?? [])
+//   //           : _allChannels;
+//   //     } else {
+//   //       _displayList = _allChannels
+//   //           .where((c) => c.name.toLowerCase().contains(query.toLowerCase()))
+//   //           .toList();
+//   //     }
+//   //   });
+//   // }
+
+
+//   void _onSearch(String query) {
+//     if (_isDisposed || !mounted) return;
+//     setState(() {
+//       _searchText = query;
+//       if (query.isEmpty) {
+//         _displayList = _genres.isNotEmpty
+//             ? (_channelsByGenre[_genres[_selectedGenreIndex]] ?? [])
+//             : _allChannels;
+//       } else {
+//         // Convert query to lowercase once for efficiency
+//         final lowerQuery = query.toLowerCase();
+        
+//         _displayList = _allChannels.where((c) {
+//           // 🔥 NEW LOGIC: Check if Name contains query OR Channel Number contains query
+//           final bool matchesName = c.name.toLowerCase().contains(lowerQuery);
+//           final bool matchesNumber = c.channelNumber.contains(lowerQuery);
+          
+//           return matchesName || matchesNumber;
+//         }).toList();
+//       }
+//     });
+//   }
+
+//   void _playChannel(NewsChannel channel, int index) async {
+//     // 🔥 Double click aur safe state check
+//     if (_isVideoLoading || _isDisposed || !mounted) return;
+
+//     setState(() => _isVideoLoading = true);
+
+//     // --- 1. HISTORY LOGIC (ISOLATED TRY-CATCH) ---
+//     try {
+//       final prefs = await SharedPreferences.getInstance();
+//       String userIdStr = prefs.getString('user_id') ?? '';
+//       int? userId = int.tryParse(userIdStr);
+
+//       if (userId != null) {
+//         await HistoryService.updateUserHistory(
+//             userId: userId,
+//             contentType: int.tryParse(channel.contentType) ?? 4,
+//             eventId: channel.id,
+//             eventTitle: channel.name,
+//             url: channel.url,
+//             categoryId: 0);
+//       }
+//     } catch (historyError) {
+//       debugPrint("History Update Failed (Non-fatal): $historyError");
+//     }
+
+//     // --- 2. VIDEO PLAYBACK LOGIC ---
+//     try {
+//       String playableUrl = channel.url;
+//       if (playableUrl.isEmpty) throw Exception("Empty URL");
+
+//       if (_isDisposed || !mounted) return;
+
+//       final deviceInfo = context.read<DeviceInfoProvider>();
+
+//       if (channel.streamType == 'YoutubeLive' ||
+//           playableUrl.contains('youtube') ||
+//           playableUrl.contains('youtu.be')) {
+//         if (deviceInfo.deviceName == 'AFTSS : Amazon Fire Stick HD') {
+//           await Navigator.push(
+//               context,
+//               MaterialPageRoute(
+//                   builder: (c) => YoutubeWebviewPlayer(
+//                       videoUrl: playableUrl, name: channel.name)));
+//         } else {
+//           String videoId = playableUrl.contains('v=')
+//               ? playableUrl.split('v=')[1].split('&')[0]
+//               : playableUrl.split('youtu.be/')[1].split('?')[0];
+//           await Navigator.push(
+//               context,
+//               MaterialPageRoute(
+//                   builder: (c) => CustomYoutubePlayer(
+//                       videoData: VideoData(
+//                           id: videoId,
+//                           title: channel.name,
+//                           youtubeUrl: playableUrl,
+//                           thumbnail: channel.banner,
+//                           description: ''),
+//                       playlist: const [])));
+//         }
+//       } else {
+//         // Normal M3U8 Player
+//         List<NewsItemModel> playerList = _displayList
+//             .map((c) => NewsItemModel(
+//                 id: c.id.toString(),
+
+//                 name: c.name,
+//                 banner: c.banner,
+//                 url: c.url,
+//                 streamType: c.streamType,
+//                 status: c.status.toString(),
+//                 genres: c.genres,
+//                 videoId: '',
+//                 description: '',
+//                 poster: c.banner,
+//                 category: c.genres,
+//                 type: c.streamType,
+//                 index: '0',
+//                 image: c.banner,
+//                 unUpdatedUrl: c.url,
+//                 updatedAt: ''))
+//             .toList();
+
+//         await Navigator.push(
+//             context,
+//             MaterialPageRoute(
+//                 builder: (c) => VideoScreen(
+//                     videoUrl: playableUrl,
+//                     bannerImageUrl: channel.banner,
+//                     source: 'isLive',
+//                     channelList: playerList,
+//                     videoId: channel.id,
+//                     name: channel.name,
+//                     liveStatus: true,
+//                     updatedAt: channel.updatedAt ?? '')));
+//       }
+//     } catch (e) {
+//       if (!_isDisposed && mounted) {
+//         ScaffoldMessenger.of(context).showSnackBar(
+//             SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red));
+//       }
+//     } finally {
+//       if (!_isDisposed && mounted) {
+//         setState(() => _isVideoLoading = false);
+//       }
+//     }
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return MasterSliderLayout<NewsChannel>(
+//       title: widget.languageName,
+//       // logoUrl: "", // Live TV doesn't have a top network logo
+//       logoUrl: widget.logoUrl,
+//       isLoading: _isLoading,
+//       isVideoLoading: _isVideoLoading,
+//       errorMessage: _error,
+//       onRetry: _fetchAndProcessData,
+
+//       networkNames: const [], // Hide Top Bar
+//       selectedNetworkIndex: 0,
+
+//       filterNames: _genres,
+//       selectedFilterIndex: _selectedGenreIndex,
+//       onFilterSelected: (idx) {
+//         if (!_isDisposed && mounted) {
+//           setState(() {
+//             _selectedGenreIndex = idx;
+//             _displayList = _channelsByGenre[_genres[idx]] ?? [];
+//           });
+//         }
+//       },
+//       onSearch: _onSearch,
+//       contentList: _displayList,
+//       onContentTap: _playChannel,
+//       // getTitle: (c) => c.name,
+//       getTitle: (c) {
+//   if (c.channelNumber.isNotEmpty) {
+//     return "${c.channelNumber} ${c.name}"; // Example: "701. ABN TV India"
+//   }
+//   return c.name;
+// },
+//       getImageUrl: (c) => c.banner,
+
+//       sliderImages: _sliderImages,
+//       focusColors: const [
+//         Color(0xFF3B82F6),
+//         Color(0xFF8B5CF6),
+//         Color(0xFF10B981),
+//         Color(0xFFF59E0B),
+//         Color(0xFFEC4899)
+//       ],
+//       placeholderIcon: Icons.tv,
+//       emptyMessage: "No Channels Available",
+//       cardWidth: bannerwdt,
+//       cardHeight: bannerhgt,
+//     );
+//   }
+// }
+
+
+
+
+
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as https;
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-// Update paths as per your project
 import 'package:mobi_tv_entertainment/main.dart';
 import 'package:mobi_tv_entertainment/components/provider/device_info_provider.dart';
 import 'package:mobi_tv_entertainment/components/video_widget/custom_youtube_player.dart';
@@ -2884,56 +3320,94 @@ import 'package:mobi_tv_entertainment/components/video_widget/video_screen.dart'
 import 'package:mobi_tv_entertainment/components/video_widget/youtube_webview_player.dart';
 import 'package:mobi_tv_entertainment/components/services/history_service.dart';
 import 'package:mobi_tv_entertainment/components/widgets/models/news_item_model.dart';
-import 'package:mobi_tv_entertainment/components/widgets/master_slider_layout.dart'; // 🔥 THE MASTER WIDGET
+import 'package:mobi_tv_entertainment/components/widgets/master_slider_layout.dart'; 
 
 class SliderItem {
-  final int id; final String title; final String banner;
+  final int id;
+  final String title;
+  final String banner;
   SliderItem({required this.id, required this.title, required this.banner});
-  factory SliderItem.fromJson(Map<String, dynamic> json) => SliderItem(id: json['id'] ?? 0, title: json['title'] ?? '', banner: json['banner'] ?? '');
+  factory SliderItem.fromJson(Map<String, dynamic> json) => SliderItem(
+      id: json['id'] ?? 0,
+      title: json['title'] ?? '',
+      banner: json['banner'] ?? '');
 }
 
 class NewsChannel {
-  final int id; final String name; final String banner; final String url; final String genres;
-  final int status; final String streamType; final String contentType; final String? updatedAt;
-  NewsChannel({required this.id, required this.name, required this.banner, required this.url, required this.genres, required this.status, required this.streamType, required this.contentType, this.updatedAt});
-  factory NewsChannel.fromJson(Map<String, dynamic> json) => NewsChannel(id: json['id'] ?? 0, name: json['channel_name'] ?? '', banner: json['channel_logo'] ?? '', url: json['channel_link'] ?? '', genres: json['genres'] ?? '', status: json['status'] ?? 0, streamType: json['stream_type'] ?? '', contentType: json['content_type']?.toString() ?? '', updatedAt: json['updated_at']);
+  final int id;
+  final String channelNumber; 
+  final String name;
+  final String banner;
+  final String url;
+  final String genres;
+  final int status;
+  final String streamType;
+  final String contentType;
+  final String? updatedAt;
+
+  NewsChannel({
+      required this.id,
+      required this.channelNumber, 
+      required this.name,
+      required this.banner,
+      required this.url,
+      required this.genres,
+      required this.status,
+      required this.streamType,
+      required this.contentType,
+      this.updatedAt
+  });
+
+  factory NewsChannel.fromJson(Map<String, dynamic> json) => NewsChannel(
+      id: json['id'] ?? 0,
+      channelNumber: json['channel_number']?.toString() ?? '', 
+      name: json['channel_name'] ?? '',
+      banner: json['channel_logo'] ?? '',
+      url: json['channel_link'] ?? '',
+      genres: json['genres'] ?? '',
+      status: json['status'] ?? 0,
+      streamType: json['stream_type'] ?? '',
+      contentType: json['content_type']?.toString() ?? '',
+      updatedAt: json['updated_at']
+  );
 }
 
 class liveSliderScreen extends StatefulWidget {
   final String languageId;
   final String languageName;
-  const liveSliderScreen({super.key, required this.languageId, required this.languageName});
+  final String logoUrl;
+
+  const liveSliderScreen(
+      {super.key, required this.languageId, required this.languageName, required this.logoUrl});
 
   @override
   State<liveSliderScreen> createState() => liveSliderScreenState();
 }
 
 class liveSliderScreenState extends State<liveSliderScreen> {
-  // 🔥 FIX: Added _isDisposed variable
   bool _isDisposed = false;
-  
+
   bool _isLoading = true;
   bool _isVideoLoading = false;
   String? _error;
-  
+
   List<NewsChannel> _allChannels = [];
   Map<String, List<NewsChannel>> _channelsByGenre = {};
   List<NewsChannel> _displayList = [];
   List<String> _genres = [];
   List<String> _sliderImages = [];
-  
+
   int _selectedGenreIndex = 0;
   String _searchText = '';
 
   @override
   void initState() {
     super.initState();
-    _isDisposed = false; // Initialize to false
+    _isDisposed = false; 
     SecureUrlService.refreshSettings();
     _fetchAndProcessData();
   }
 
-  // 🔥 FIX: Added dispose method to clean up safely
   @override
   void dispose() {
     _isDisposed = true;
@@ -2941,13 +3415,26 @@ class liveSliderScreenState extends State<liveSliderScreen> {
   }
 
   Future<void> _fetchAndProcessData() async {
-    setState(() { _isLoading = true; _error = null; });
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
     try {
-      final headers = { 'auth-key': SessionManager.authKey, 'domain': SessionManager.savedDomain, 'Content-Type': 'application/json' };
+      final headers = {
+        'auth-key': SessionManager.authKey,
+        'domain': SessionManager.savedDomain,
+        'Content-Type': 'application/json'
+      };
       final results = await Future.wait([
-        https.get(Uri.parse(SessionManager.baseUrl + 'getAllLanguages'), headers: headers),
-        https.post(Uri.parse(SessionManager.baseUrl + 'getAllLiveTV'), headers: headers, body: json.encode({"genere": "", "languageId": widget.languageId})),
-        https.post(Uri.parse(SessionManager.baseUrl + 'getGenreByContentNetwork'), headers: headers, body: json.encode({"language_id": widget.languageId})),
+        https.get(Uri.parse(SessionManager.baseUrl + 'getAllLanguages'),
+            headers: headers),
+        https.post(Uri.parse(SessionManager.baseUrl + 'getAllLiveTV'),
+            headers: headers,
+            body: json.encode({"genere": "", "languageId": widget.languageId})),
+        https.post(
+            Uri.parse(SessionManager.baseUrl + 'getGenreByContentNetwork'),
+            headers: headers,
+            body: json.encode({"language_id": widget.languageId})),
       ]);
 
       if (_isDisposed || !mounted) return;
@@ -2957,9 +3444,13 @@ class liveSliderScreenState extends State<liveSliderScreen> {
       if (results[0].statusCode == 200) {
         final langData = json.decode(results[0].body);
         if (langData['languages'] is List) {
-          final currentLang = (langData['languages'] as List).firstWhere((l) => l['id'].toString() == widget.languageId, orElse: () => null);
+          final currentLang = (langData['languages'] as List).firstWhere(
+              (l) => l['id'].toString() == widget.languageId,
+              orElse: () => null);
           if (currentLang != null && currentLang['slider'] is List) {
-             tempSliders = (currentLang['slider'] as List).map((i) => i['banner'].toString()).toList();
+            tempSliders = (currentLang['slider'] as List)
+                .map((i) => i['banner'].toString())
+                .toList();
           }
         }
       }
@@ -2967,20 +3458,27 @@ class liveSliderScreenState extends State<liveSliderScreen> {
       // 2. Process Channels
       if (results[1].statusCode == 200) {
         final channelsData = safeDecodeList(json.decode(results[1].body));
-        _allChannels = channelsData.map((item) => NewsChannel.fromJson(item)).where((c) => c.status == 1).toList();
+        _allChannels = channelsData
+            .map((item) => NewsChannel.fromJson(item))
+            .where((c) => c.status == 1)
+            .toList();
 
-        if (tempSliders.isEmpty && _allChannels.isNotEmpty) tempSliders.add(_allChannels.first.banner);
+        if (tempSliders.isEmpty && _allChannels.isNotEmpty)
+          tempSliders.add(_allChannels.first.banner);
 
         // 3. Process Genres
         List<String> apiGenres = [];
         if (results[2].statusCode == 200) {
-           final gData = json.decode(results[2].body);
-           if (gData['genres'] != null) apiGenres = List<String>.from(gData['genres']);
+          final gData = json.decode(results[2].body);
+          if (gData['genres'] != null)
+            apiGenres = List<String>.from(gData['genres']);
         }
 
         if (apiGenres.isEmpty) {
           final Set<String> extracted = {};
-          for (var c in _allChannels) { c.genres.split(',').forEach((g) => extracted.add(g.trim())); }
+          for (var c in _allChannels) {
+            c.genres.split(',').forEach((g) => extracted.add(g.trim()));
+          }
           extracted.removeWhere((e) => e.isEmpty);
           apiGenres = extracted.toList()..sort();
         }
@@ -2990,7 +3488,7 @@ class liveSliderScreenState extends State<liveSliderScreen> {
           mapTemp[g] = _allChannels.where((c) => c.genres.contains(g)).toList();
         }
         apiGenres.removeWhere((g) => (mapTemp[g] ?? []).isEmpty);
-        
+
         if (_isDisposed || !mounted) return;
 
         setState(() {
@@ -3009,7 +3507,11 @@ class liveSliderScreenState extends State<liveSliderScreen> {
         throw Exception("API Error");
       }
     } catch (e) {
-      if (!_isDisposed && mounted) setState(() { _isLoading = false; _error = e.toString(); });
+      if (!_isDisposed && mounted)
+        setState(() {
+          _isLoading = false;
+          _error = e.toString();
+        });
     }
   }
 
@@ -3018,34 +3520,41 @@ class liveSliderScreenState extends State<liveSliderScreen> {
     setState(() {
       _searchText = query;
       if (query.isEmpty) {
-        _displayList = _genres.isNotEmpty ? (_channelsByGenre[_genres[_selectedGenreIndex]] ?? []) : _allChannels;
+        _displayList = _genres.isNotEmpty
+            ? (_channelsByGenre[_genres[_selectedGenreIndex]] ?? [])
+            : _allChannels;
       } else {
-        _displayList = _allChannels.where((c) => c.name.toLowerCase().contains(query.toLowerCase())).toList();
+        final lowerQuery = query.toLowerCase();
+        
+        _displayList = _allChannels.where((c) {
+          final bool matchesName = c.name.toLowerCase().contains(lowerQuery);
+          final bool matchesNumber = c.channelNumber.contains(lowerQuery);
+          
+          return matchesName || matchesNumber;
+        }).toList();
       }
     });
   }
 
   void _playChannel(NewsChannel channel, int index) async {
-    // 🔥 Double click aur safe state check
     if (_isVideoLoading || _isDisposed || !mounted) return;
 
     setState(() => _isVideoLoading = true);
 
-    // --- 1. HISTORY LOGIC (ISOLATED TRY-CATCH) ---
+    // --- 1. HISTORY LOGIC ---
     try {
       final prefs = await SharedPreferences.getInstance();
       String userIdStr = prefs.getString('user_id') ?? '';
       int? userId = int.tryParse(userIdStr);
-      
+
       if (userId != null) {
         await HistoryService.updateUserHistory(
-          userId: userId, 
-          contentType: int.tryParse(channel.contentType) ?? 4, 
-          eventId: channel.id, 
-          eventTitle: channel.name, 
-          url: channel.url, 
-          categoryId: 0
-        );
+            userId: userId,
+            contentType: int.tryParse(channel.contentType) ?? 4,
+            eventId: channel.id,
+            eventTitle: channel.name,
+            url: channel.url,
+            categoryId: 0);
       }
     } catch (historyError) {
       debugPrint("History Update Failed (Non-fatal): $historyError");
@@ -3053,45 +3562,78 @@ class liveSliderScreenState extends State<liveSliderScreen> {
 
     // --- 2. VIDEO PLAYBACK LOGIC ---
     try {
-      String playableUrl = channel.url; 
+      String playableUrl = channel.url;
       if (playableUrl.isEmpty) throw Exception("Empty URL");
 
       if (_isDisposed || !mounted) return;
 
       final deviceInfo = context.read<DeviceInfoProvider>();
-      
-      if (channel.streamType == 'YoutubeLive' || playableUrl.contains('youtube') || playableUrl.contains('youtu.be')) {
-         if (deviceInfo.deviceName == 'AFTSS : Amazon Fire Stick HD') {
-            await Navigator.push(
-              context, 
-              MaterialPageRoute(builder: (c) => YoutubeWebviewPlayer(videoUrl: playableUrl, name: channel.name))
-            );
-         } else {
-            String videoId = playableUrl.contains('v=') ? playableUrl.split('v=')[1].split('&')[0] : playableUrl.split('youtu.be/')[1].split('?')[0];
-            await Navigator.push(
-              context, 
-              MaterialPageRoute(builder: (c) => CustomYoutubePlayer(
-                videoData: VideoData(id: videoId, title: channel.name, youtubeUrl: playableUrl, thumbnail: channel.banner, description: ''), 
-                playlist: const []
-              ))
-            );
-         }
+
+      if (channel.streamType == 'YoutubeLive' ||
+          playableUrl.contains('youtube') ||
+          playableUrl.contains('youtu.be')) {
+        if (deviceInfo.deviceName == 'AFTSS : Amazon Fire Stick HD') {
+          await Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (c) => YoutubeWebviewPlayer(
+                      videoUrl: playableUrl, name: channel.name)));
+        } else {
+          String videoId = playableUrl.contains('v=')
+              ? playableUrl.split('v=')[1].split('&')[0]
+              : playableUrl.split('youtu.be/')[1].split('?')[0];
+          await Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (c) => CustomYoutubePlayer(
+                      videoData: VideoData(
+                          id: videoId,
+                          title: channel.name,
+                          youtubeUrl: playableUrl,
+                          thumbnail: channel.banner,
+                          description: ''),
+                      playlist: const [])));
+        }
       } else {
-        // Normal M3U8 Player
-        List<NewsItemModel> playerList = _displayList.map((c) => NewsItemModel(
-          id: c.id.toString(), name: c.name, banner: c.banner, url: c.url, streamType: c.streamType, status: c.status.toString(), genres: c.genres, videoId: '', description: '', poster: c.banner, category: c.genres, type: c.streamType, index: '0', image: c.banner, unUpdatedUrl: c.url, updatedAt: ''
-        )).toList();
-        
+        // 🔥 FIX IS HERE: We pass the channelNumber securely into the playerList
+        List<NewsItemModel> playerList = _displayList
+            .map((c) => NewsItemModel(
+                id: c.id.toString(),
+                channelNumber: c.channelNumber, // 🔥 SUCCESSFULLY PASSED TO THE VIDEO SCREEN
+                name: c.name,
+                banner: c.banner,
+                url: c.url,
+                streamType: c.streamType,
+                status: c.status.toString(),
+                genres: c.genres,
+                videoId: '',
+                description: '',
+                poster: c.banner,
+                category: c.genres,
+                type: c.streamType,
+                index: '0',
+                image: c.banner,
+                unUpdatedUrl: c.url,
+                updatedAt: ''))
+            .toList();
+
         await Navigator.push(
-          context, 
-          MaterialPageRoute(builder: (c) => VideoScreen(
-            videoUrl: playableUrl, bannerImageUrl: channel.banner, source: 'isLive', channelList: playerList, videoId: channel.id, name: channel.name, liveStatus: true, updatedAt: channel.updatedAt ?? ''
-          ))
-        );
+            context,
+            MaterialPageRoute(
+                builder: (c) => VideoScreen(
+                    videoUrl: playableUrl,
+                    bannerImageUrl: channel.banner,
+                    source: 'isLive',
+                    channelList: playerList,
+                    videoId: channel.id,
+                    name: channel.name,
+                    liveStatus: true,
+                    updatedAt: channel.updatedAt ?? '')));
       }
     } catch (e) {
       if (!_isDisposed && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red));
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red));
       }
     } finally {
       if (!_isDisposed && mounted) {
@@ -3104,15 +3646,15 @@ class liveSliderScreenState extends State<liveSliderScreen> {
   Widget build(BuildContext context) {
     return MasterSliderLayout<NewsChannel>(
       title: widget.languageName,
-      logoUrl: "", // Live TV doesn't have a top network logo
+      logoUrl: widget.logoUrl,
       isLoading: _isLoading,
       isVideoLoading: _isVideoLoading,
       errorMessage: _error,
       onRetry: _fetchAndProcessData,
-      
-      networkNames: const [], // Hide Top Bar
+
+      networkNames: const [], 
       selectedNetworkIndex: 0,
-      
+
       filterNames: _genres,
       selectedFilterIndex: _selectedGenreIndex,
       onFilterSelected: (idx) {
@@ -3124,14 +3666,24 @@ class liveSliderScreenState extends State<liveSliderScreen> {
         }
       },
       onSearch: _onSearch,
-      
       contentList: _displayList,
       onContentTap: _playChannel,
-      getTitle: (c) => c.name,
+      getTitle: (c) {
+        if (c.channelNumber.isNotEmpty) {
+          return "${c.channelNumber} ${c.name}"; 
+        }
+        return c.name;
+      },
       getImageUrl: (c) => c.banner,
-      
+
       sliderImages: _sliderImages,
-      focusColors: const [Color(0xFF3B82F6), Color(0xFF8B5CF6), Color(0xFF10B981), Color(0xFFF59E0B), Color(0xFFEC4899)],
+      focusColors: const [
+        Color(0xFF3B82F6),
+        Color(0xFF8B5CF6),
+        Color(0xFF10B981),
+        Color(0xFFF59E0B),
+        Color(0xFFEC4899)
+      ],
       placeholderIcon: Icons.tv,
       emptyMessage: "No Channels Available",
       cardWidth: bannerwdt,
@@ -3139,3 +3691,6 @@ class liveSliderScreenState extends State<liveSliderScreen> {
     );
   }
 }
+
+
+

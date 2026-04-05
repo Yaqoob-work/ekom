@@ -3231,6 +3231,1493 @@
 
 
 
+// import 'dart:async';
+// import 'dart:convert';
+// import 'dart:io';
+// import 'package:flutter/foundation.dart' show kIsWeb;
+// import 'package:flutter/material.dart';
+// import 'package:flutter/services.dart';
+// // import 'package:hive_flutter/hive_flutter.dart';
+// import 'package:http/http.dart' as https;
+// import 'package:mobi_tv_entertainment/exit_confirmation_screen.dart';
+// import 'package:mobi_tv_entertainment/home_screen.dart';
+// import 'package:mobi_tv_entertainment/components/menu_screens/search_screen.dart';
+// import 'package:mobi_tv_entertainment/components/provider/color_provider.dart';
+// import 'package:mobi_tv_entertainment/components/provider/device_info_provider.dart';
+// import 'package:mobi_tv_entertainment/components/provider/focus_provider.dart';
+// import 'package:mobi_tv_entertainment/components/widgets/small_widgets/loading_indicator.dart';
+// import 'package:mobi_tv_entertainment/main_dashboard_screen.dart';
+// import 'package:package_info_plus/package_info_plus.dart';
+// import 'package:provider/provider.dart';
+// import 'package:shared_preferences/shared_preferences.dart';
+// import 'package:url_launcher/url_launcher.dart';
+// import 'package:device_info_plus/device_info_plus.dart';
+// import 'package:intl/date_symbol_data_local.dart';
+// import 'components/menu/top_navigation_bar.dart';
+// import 'dart:convert';
+// import 'package:shared_preferences/shared_preferences.dart';
+// import 'dart:convert';
+// import 'package:shared_preferences/shared_preferences.dart';
+// // import 'package:video_player_avplay/video_player_avplay.dart'; // <-- Add this import
+// import 'package:flutter/material.dart';
+// // import 'package:media_kit/media_kit.dart'; // Provides [Player], [Media], [Playlist] etc.
+// // import 'package:media_kit_video/media_kit_video.dart'; // Provides [VideoController] & [Video] etc.
+
+// const double kSideMenuWidthFactor = 0.14;
+// class SessionManager {
+//   static bool _isInitialized = false;
+
+//   // --- Session Data ---
+//   static String _authKey = '';
+//   static String _imageBaseUrl = '';
+//   static Map<String, dynamic>? _userData;
+//   static String _logoUrl = '';
+//   static String _savedDomain = '';
+//   static int? _userId; // ✅ 1. User ID ke liye naya variable
+
+//   static String get baseUrl {
+//     if (_savedDomain.isNotEmpty) {
+//       // ✅ 1. Agar domain hai, toh usse URL banakar return karein
+//       return 'https://$_savedDomain/api/v3/';
+//     } else {
+//       // ✅ 2. Agar domain nahi hai (jo login ke baad nahi hona chahiye),
+//       //    toh ek error throw karein taaki aapko galti pata chal sake.
+//       throw StateError('FATAL: baseUrl was requested but no domain is saved in SessionManager.');
+//     }
+//   }
+
+//   // --- Feature flags (No changes here) ---
+//   static bool _showMovies = false;
+//   static bool _showWebseries = false;
+//   static bool _showTvShow = false;
+//   static bool _showTvShowPak = false;
+//   static bool _showKidsShow = false;
+//   static bool _showReligious = false;
+//   static bool _showSports = false;
+//   static bool _showStageShows = false;
+//   static bool _showLaughterShows = false;
+//   static bool _showContentNetwork = false;
+//   static bool _showSearch = false;
+
+//   // --- Public Getters ---
+//   static String get authKey => _authKey;
+//   static String get imageBaseUrl => _imageBaseUrl;
+//   static Map<String, dynamic>? get userData => _userData;
+//   static String get logoUrl => _logoUrl;
+//   static String get savedDomain => _savedDomain;
+//   static int? get userId => _userId; // ✅ 2. User ID ke liye public getter
+//   static bool get isLoggedIn => _authKey.isNotEmpty && _userData != null;
+
+//   // --- Feature flag getters (No changes here) ---
+//   static bool get showMovies => _showMovies;
+//   static bool get showWebseries => _showWebseries;
+//   static bool get showTvShow => _showTvShow;
+//   static bool get showTvShowPak => _showTvShowPak;
+//   static bool get showKidsShow => _showKidsShow;
+//   static bool get showReligious => _showReligious;
+//   static bool get showSports => _showSports;
+//   static bool get showStageShows => _showStageShows;
+//   static bool get showLaughterShows => _showLaughterShows;
+//   static bool get showContentNetwork => _showContentNetwork;
+//   static bool get showSearch => _showSearch;
+
+//   // --- Methods ---
+//   static Future<void> initialize() async {
+//     if (!_isInitialized) {
+//       await _loadSession();
+//       _isInitialized = true;
+//     }
+//   }
+
+//   static Future<void> _loadSession() async {
+//     try {
+//       SharedPreferences prefs = await SharedPreferences.getInstance();
+//       _authKey = prefs.getString('result_auth_key') ?? '';
+//       _imageBaseUrl = prefs.getString('image_base_url') ?? '';
+//       _logoUrl = prefs.getString('logo_url') ?? '';
+//       _savedDomain = prefs.getString('saved_domain') ?? '';
+//       _userId = prefs.getInt('user_id'); // ✅ 3. Saved ID ko load karein
+
+//       String? userDataString = prefs.getString('user_data');
+//       if (userDataString != null) {
+//         _userData = jsonDecode(userDataString);
+//       }
+
+//       _showMovies = prefs.getBool('show_movies') ?? false;
+//       _showWebseries = prefs.getBool('show_webseries') ?? false;
+//       _showTvShow = prefs.getBool('show_tvshow') ?? false;
+//       _showTvShowPak = prefs.getBool('show_tvshow_pak') ?? false;
+//       _showKidsShow = prefs.getBool('show_kids_show') ?? false;
+//       _showReligious = prefs.getBool('show_religious') ?? false;
+//       _showSports = prefs.getBool('show_sports') ?? false;
+//       _showStageShows = prefs.getBool('show_stage_shows') ?? false;
+//       _showLaughterShows = prefs.getBool('show_laughter_shows') ?? false;
+//       _showContentNetwork = prefs.getBool('show_content_network') ?? false;
+//       _showSearch = prefs.getBool('show_search') ?? false;
+//     } catch (e) {
+//       await clearSession();
+//     }
+//   }
+
+
+  
+
+
+// // 1. Add 'String loginDomain' as a parameter
+//   static Future<void> saveSession(
+//       Map<String, dynamic> apiResponse, String loginDomain) async {
+//     SharedPreferences prefs = await SharedPreferences.getInstance();
+
+//     _authKey = apiResponse['result_auth_key'] ?? '';
+//     _imageBaseUrl = apiResponse['imageBaseUrl'] ?? '';
+//     _userData = apiResponse['data'] as Map<String, dynamic>?;
+
+//     if (_userData != null && _userData!['id'] != null) {
+//       _userId = _userData!['id'];
+//       await prefs.setInt('user_id', _userId!);
+//     }
+
+//     // --- ⬇️ MODIFIED SECTION ⬇️ ---
+
+//     // 2. Nayi logic: Pehle API se domain lene ki koshish karein
+//     String domainFromApi = '';
+//     if (_userData != null && _userData!['domain'] != null && _userData!['domain'].isNotEmpty) {
+//       domainFromApi = _userData!['domain'];
+//     }
+
+//     // 3. Agar API se domain NAHI mila, toh 'loginDomain' (jo user ne type kiya) use karein
+//     _savedDomain = domainFromApi.isNotEmpty ? domainFromApi : loginDomain;
+
+//     // 4. Final domain ko save karein
+//     await prefs.setString('saved_domain', _savedDomain);
+    
+//     // --- ⬆️ MODIFIED SECTION ⬆️ ---
+
+//     if (_userData != null && _userData!['domain_content'] != null) {
+//       final domainContent = _userData!['domain_content'];
+//       _logoUrl = domainContent['logo'] ?? '';
+//       _showMovies = (domainContent['movies'] ?? 0) == 1;
+//       _showWebseries = (domainContent['webseries'] ?? 0) == 1;
+//       // ... (baaki ka code same) ...
+//       _showSearch = (domainContent['search'] ?? 0) == 1;
+//     }
+
+//     await prefs.setString('result_auth_key', _authKey);
+//     await prefs.setString('image_base_url', _imageBaseUrl);
+//     await prefs.setString('logo_url', _logoUrl);
+//     if (_userData != null) {
+//       await prefs.setString('user_data', jsonEncode(_userData));
+//     }
+//     await prefs.setBool('is_logged_in', true);
+
+//     await prefs.setBool('show_movies', _showMovies);
+//     await prefs.setBool('show_webseries', _showWebseries);
+//     await prefs.setBool('show_tvshow', _showTvShow);
+//     await prefs.setBool('show_tvshow_pak', _showTvShowPak);
+//     await prefs.setBool('show_kids_show', _showKidsShow);
+//     await prefs.setBool('show_religious', _showReligious);
+//     await prefs.setBool('show_sports', _showSports);
+//     await prefs.setBool('show_stage_shows', _showStageShows);
+//     await prefs.setBool('show_laughter_shows', _showLaughterShows);
+//     await prefs.setBool('show_content_network', _showContentNetwork);
+//     await prefs.setBool('show_search', _showSearch);
+//   }
+
+
+
+//   static Future<void> clearSession({bool keepDomain = false}) async {
+//     SharedPreferences prefs = await SharedPreferences.getInstance();
+
+//     await prefs.remove('result_auth_key');
+//     await prefs.remove('user_data');
+//     await prefs.remove('is_logged_in');
+//     await prefs.remove('user_id');
+    
+//     // ✅ Logic change: Agar keepDomain true hai, to domain delete MAT karo
+//     if (!keepDomain) {
+//       await prefs.remove('saved_domain');
+//       _savedDomain = ''; 
+//     }
+
+//     // Variables reset karein
+//     _authKey = '';
+//     _userData = null;
+//     _logoUrl = '';
+//     _userId = null;
+//     // Note: _savedDomain ko upar condition mein reset kiya gaya hai
+//   }
+// }
+
+// class MyHttpOverrides extends HttpOverrides {
+//   @override
+//   HttpClient createHttpClient(SecurityContext? context) {
+//     return super.createHttpClient(context)
+//       ..badCertificateCallback =
+//           (X509Certificate cert, String host, int port) => true;
+//   }
+// }
+
+// void main() async {
+//   // VideoPlayerAvplay.init();
+//   WidgetsFlutterBinding.ensureInitialized();
+//   // MediaKit.ensureInitialized();
+//   HttpOverrides.global = MyHttpOverrides();
+//   await initializeDateFormatting(null, null);
+//   await SessionManager.initialize();
+
+//   // SystemChrome.setEnabledSystemUIMode(
+//   //   SystemUiMode.immersiveSticky,
+//   //   overlays: [],
+//   // );
+
+//   // SystemChrome.setSystemUIOverlayStyle(
+//   //   const SystemUiOverlayStyle(
+//   //     statusBarColor: Colors.transparent,
+//   //     systemNavigationBarColor: Colors.transparent,
+//   //     statusBarBrightness: Brightness.dark,
+//   //     statusBarIconBrightness: Brightness.light,
+//   //     systemNavigationBarIconBrightness: Brightness.light,
+//   //   ),
+//   // );
+
+//   // // Hive को Flutter के लिए इनिशियलाइज़ करें
+//   // // await Hive.initFlutter();
+
+//   // // TypeAdapters को रजिस्टर करें
+//   // // महत्वपूर्ण: सुनिश्चित करें कि typeId आपके मॉडल में दिए गए आईडी से मेल खाता है
+//   // Hive.registerAdapter(ChannelDataCacheAdapter()); // typeId: 0
+//   // Hive.registerAdapter(ContentItemAdapter()); // typeId: 1
+//   // Hive.registerAdapter(NetworkDataAdapter()); // typeId: 2
+//   // Hive.registerAdapter(HorizontalVodModelAdapter()); // typeId: 3
+//   // Hive.registerAdapter(HorizontalVodCacheAdapter()); // typeId: 4
+
+//   // // Hive बॉक्स खोलें जिसे आप ऐप में इस्तेमाल करेंगे
+//   // await Hive.openBox('channelCache');
+//   // await Hive.openBox('vodCache');
+//   final deviceInfoProvider = DeviceInfoProvider();
+//   await deviceInfoProvider.loadDeviceInfo();
+
+//   runApp(
+//     MultiProvider(
+//       providers: [
+//         ChangeNotifierProvider(create: (_) => ColorProvider()),
+//         ChangeNotifierProvider(create: (_) => FocusProvider()),
+//         ChangeNotifierProvider.value(value: deviceInfoProvider),
+//         // ChangeNotifierProvider(create: (_) => InternalFocusProvider()),
+//       ],
+//       child: MyApp(),
+//     ),
+//   );
+// }
+
+// // Global variables
+// // String baseUrl = 'https://dashboard.cpplayers.com/public/api/';
+// var highlightColor;
+// var cardColor;
+// var hintColor;
+// var borderColor;
+
+// var screenhgt;
+// var screenwdt;
+// var bannerwdt;
+// var bannerhgt;
+// var focussedBannerwdt;
+// var focussedBannerhgt;
+// var screensz;
+// var nametextsz;
+// var menutextsz;
+// var minitextsz;
+// var Headingtextsz;
+
+// String localImage = 'assets/cpPlayer.png';
+// String streamImage = 'assets/streamstarting.gif';
+
+// class MyApp extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     screenhgt = MediaQuery.of(context).size.height;
+//     screenwdt = MediaQuery.of(context).size.width;
+//     bannerwdt = screenwdt * 0.13;
+//     bannerhgt = screenhgt * 0.15;
+//     focussedBannerwdt = screenwdt * 0.13;
+//     // focussedBannerhgt = screenhgt * 0.19;
+//     focussedBannerhgt = screenhgt * 0.15;
+//     screensz = MediaQuery.of(context).size;
+//     nametextsz = MediaQuery.of(context).size.width / 60.0;
+//     menutextsz = MediaQuery.of(context).size.width / 70;
+//     minitextsz = MediaQuery.of(context).size.width / 80;
+//     Headingtextsz = MediaQuery.of(context).size.width / 50;
+//     highlightColor = Colors.blue;
+//     cardColor = const Color.fromARGB(200, 0, 0, 0).withOpacity(0.7);
+//     hintColor = Colors.white;
+//     borderColor = Color.fromARGB(255, 247, 6, 118);
+
+//     return MaterialApp(
+//       debugShowCheckedModeBanner: false,
+//       home: SplashScreen(),
+//       routes: {
+//         '/mainscreen': (context) => MainDashboardScreen(),
+//         '/search': (context) => SearchScreen(),
+//         // '/vod': (context) => VOD(),
+//         // '/live': (context) => LiveScreen(),
+//         '/home': (context) => MyHome(),
+//         '/login': (context) => LoginScreen(),
+//       },
+//     );
+//   }
+// }
+
+// class SplashScreen extends StatefulWidget {
+//   @override
+//   _SplashScreenState createState() => _SplashScreenState();
+// }
+
+// class _SplashScreenState extends State<SplashScreen> {
+//   @override
+//   void initState() {
+//     super.initState();
+//     _checkLoginStatus();
+//   }
+
+//   Future<void> _checkLoginStatus() async {
+//     await Future.delayed(Duration(seconds: 2));
+
+//     if (SessionManager.isLoggedIn) {
+//       Navigator.pushReplacement(
+//         context,
+//         MaterialPageRoute(builder: (context) => MyHome()),
+//       );
+//     } else {
+//       Navigator.pushReplacement(
+//         context,
+//         MaterialPageRoute(builder: (context) => LoginScreen()),
+//       );
+//     }
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       // backgroundColor: cardColor,
+//       backgroundColor: Colors.white,
+//       body: Center(
+//         child: Column(
+//           mainAxisAlignment: MainAxisAlignment.center,
+//           children: [
+//             Container(
+//               width: screenwdt * 0.5,
+//               height: screenhgt * 0.5,
+//               child: Image.asset('assets/streamstarting.gif'),
+//             ),
+//             LoadingIndicator(),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+// // Paste this updated LoginScreen widget and its State class into your main.dart file.
+// // All other parts of your file can remain the same.
+
+// enum InputFocus { domain, pin }
+
+
+
+
+
+// class LoginScreen extends StatefulWidget {
+//   @override
+//   _LoginScreenState createState() => _LoginScreenState();
+// }
+
+// class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin {
+//   final TextEditingController _pinController = TextEditingController();
+//   final TextEditingController _domainController = TextEditingController();
+  
+//   InputFocus _currentFocus = InputFocus.domain;
+//   bool _isShiftEnabled = false;
+//   bool _isLoading = false;
+//   String _errorMessage = '';
+  
+//   // --- ADDED: Variables for Real Login ---
+//   String _deviceSerial = '';
+  
+//   late AnimationController _pulseController;
+//   late Animation<double> _pulseAnimation;
+
+//   // Colors
+//   final Color _bgStart = const Color(0xFFE0E5EC); 
+//   final Color _bgEnd = const Color(0xFFD1D9E6);
+//   final Color _shadowDark = const Color(0xFFA3B1C6);
+//   final Color _textLabel = const Color(0xFF4A5568); 
+//   final Color _textInput = const Color(0xFF2D3748);
+//   final Color _activeGlow = const Color(0xFF3182CE); 
+//   final Color _okButtonColor = const Color(0xFF00C853);
+//   final Color _errorColor = const Color(0xFFE53E3E);
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     _pulseController = AnimationController(
+//       duration: const Duration(seconds: 2),
+//       vsync: this,
+//     )..repeat(reverse: true);
+    
+//     _pulseAnimation = Tween<double>(begin: 1.0, end: 1.05).animate(
+//       CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
+//     );
+
+//     _initializeScreen();
+//   }
+
+//   Future<void> _initializeScreen() async {
+//     if (mounted) {
+//       setState(() {
+//         _domainController.text = SessionManager.savedDomain;
+//         if (_domainController.text.isNotEmpty) {
+//           _currentFocus = InputFocus.pin;
+//         }
+//       });
+//     }
+//     // --- ADDED: Load Device ID ---
+//     _loadDeviceSerial();
+//   }
+
+//   // --- ADDED: Real Device ID Logic ---
+//   Future<void> _loadDeviceSerial() async {
+//     try {
+//       String serial = await _getDeviceSerialNumber();
+//       if (mounted) setState(() => _deviceSerial = serial);
+//     } catch (e) {
+//       if (mounted) setState(() => _deviceSerial = '123456789');
+//     }
+//   }
+
+//   // Future<String> _getDeviceSerialNumber() async {
+//   //   try {
+//   //     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+//   //     if (Platform.isAndroid) {
+//   //       AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+//   //       return androidInfo.id;
+//   //     } else if (Platform.isIOS) {
+//   //       IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
+//   //       return iosInfo.identifierForVendor ?? 'iOS-${DateTime.now().millisecondsSinceEpoch}';
+//   //     }
+//   //   } catch (_) {}
+//   //   return 'DEVICE-${DateTime.now().millisecondsSinceEpoch}';
+//   // }
+
+
+//   Future<String> _getDeviceSerialNumber() async {
+//     try {
+//       DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+      
+//       // ✅ Web ke liye check add kiya
+//       if (kIsWeb) {
+//          return 'WEB-${DateTime.now().millisecondsSinceEpoch}';
+//       } else if (Platform.isAndroid) {
+//         AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+//         return androidInfo.id;
+//       } else if (Platform.isIOS) {
+//         IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
+//         return iosInfo.identifierForVendor ?? 'iOS-${DateTime.now().millisecondsSinceEpoch}';
+//       }
+//     } catch (_) {}
+//     return 'DEVICE-${DateTime.now().millisecondsSinceEpoch}';
+//   }
+
+//   // --- RESTORED: Real API Login Logic ---
+//   Future<void> _login() async {
+//     if (_domainController.text.trim().isEmpty) {
+//       _showError('Domain Required');
+//       return;
+//     }
+//     // Changed length check to 10 as per your original code
+//     if (_pinController.text.trim().length < 1) { 
+//       _showError('Invalid PIN');
+//       return;
+//     }
+
+//     setState(() {
+//       _isLoading = true;
+//       _errorMessage = '';
+//     });
+
+//     try {
+//       String serialNumber = _deviceSerial.isNotEmpty
+//           ? _deviceSerial
+//           : await _getDeviceSerialNumber();
+
+//       // REAL API CALL
+//       final response = await https
+//           .post(
+//             Uri.parse('https://dash.getplaybox.com/api/v3/login_new'),
+//             headers: {
+//               'Content-Type': 'application/json',
+//               'Accept': 'application/json',
+//               'User-Agent': 'MobiTV-Flutter-App',
+//             },
+//             body: jsonEncode({
+//               'token': '',
+//               'mac_address': serialNumber,
+//               'login_pin': _pinController.text.trim(),
+//               'domain': _domainController.text.trim(),
+//             }),
+//           )
+//           .timeout(Duration(seconds: 15));
+
+//       if (response.statusCode == 200) {
+//         final data = jsonDecode(response.body);
+
+//         if (data['status'] == true) {
+//           await SessionManager.saveSession(data, _domainController.text.trim());
+          
+//           SharedPreferences prefs = await SharedPreferences.getInstance();
+//           await prefs.setString('user_pin', _pinController.text.trim());
+//           await prefs.setString('device_serial', serialNumber);
+
+//           if (mounted) {
+//             Navigator.pushReplacement(
+//               context,
+//               PageRouteBuilder(
+//                 pageBuilder: (context, animation, _) => MyHome(),
+//                 transitionsBuilder: (_, animation, __, child) =>
+//                     FadeTransition(opacity: animation, child: child),
+//               ),
+//             );
+//           }
+//         } else {
+//           _showError(data['msg'] ?? 'Login Failed');
+//         }
+//       } else {
+//         _showError('Server Error');
+//       }
+//     } catch (e) {
+//       _showError('Connection Failed');
+//     } finally {
+//       if (mounted) setState(() => _isLoading = false);
+//     }
+//   }
+
+//   void _showError(String message) {
+//     if (!mounted) return;
+//     setState(() => _errorMessage = message);
+//     Timer(Duration(seconds: 4), () { // Increased timer slightly
+//       if (mounted) setState(() => _errorMessage = '');
+//     });
+//   }
+
+//   void _onKeyPressed(String value) {
+//     setState(() {
+//       if (value == 'OK') {
+//         if (_currentFocus == InputFocus.domain) {
+//           _currentFocus = InputFocus.pin;
+//         } else {
+//           _login();
+//         }
+//         return;
+//       }
+//       if (value == 'SHIFT') {
+//         _isShiftEnabled = !_isShiftEnabled;
+//         return;
+//       }
+      
+//       TextEditingController activeController =
+//           _currentFocus == InputFocus.domain ? _domainController : _pinController;
+
+//       if (value == 'DEL') {
+//         if (activeController.text.isNotEmpty) {
+//           activeController.text =
+//               activeController.text.substring(0, activeController.text.length - 1);
+//         } else if (_currentFocus == InputFocus.pin) {
+//           _currentFocus = InputFocus.domain;
+//         }
+//       } else if (_currentFocus == InputFocus.pin) {
+//         if (RegExp(r'^[0-9]$').hasMatch(value) && activeController.text.length < 10) {
+//           activeController.text += value;
+//         }
+//       } else {
+//         String finalValue = value;
+//         if (RegExp(r'^[a-z]$').hasMatch(value)) {
+//            finalValue = _isShiftEnabled ? value.toUpperCase() : value;
+//         }
+//         activeController.text += finalValue;
+//       }
+//     });
+//   }
+
+//   @override
+//   void dispose() {
+//     _pulseController.dispose();
+//     _pinController.dispose();
+//     _domainController.dispose();
+//     super.dispose();
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final size = MediaQuery.of(context).size;
+    
+//     return Scaffold(
+//       backgroundColor: _bgStart,
+//       body: Container(
+//         decoration: BoxDecoration(
+//           gradient: RadialGradient(
+//             center: Alignment(-0.5, -0.5),
+//             radius: 1.5,
+//             colors: [_bgStart, _bgEnd],
+//           ),
+//         ),
+//         child: SafeArea(
+//           child: Padding(
+//             padding: EdgeInsets.symmetric(horizontal: 24, vertical: 5),
+//             child: Column(
+//               children: [
+//                 // --- 1. HEADER & INPUTS ---
+//                 Expanded(
+//                   flex: 35, 
+//                   child: Column(
+//                     mainAxisAlignment: MainAxisAlignment.center,
+//                     children: [
+//                       ScaleTransition(
+//                         scale: _pulseAnimation,
+//                         child: Container(
+//                           height: size.height * 0.35, // 35% Height Image
+//                           width: size.height * 0.35,
+//                           padding: EdgeInsets.all(20),
+//                           decoration: BoxDecoration(
+//                             shape: BoxShape.circle,
+//                             color: _bgStart,
+//                             gradient: LinearGradient(
+//                               begin: Alignment.topLeft,
+//                               end: Alignment.bottomRight,
+//                               colors: [Colors.white, _bgEnd],
+//                             ),
+//                             boxShadow: [
+//                               BoxShadow(color: _shadowDark.withOpacity(0.6), offset: Offset(15, 15), blurRadius: 25),
+//                               BoxShadow(color: Colors.white, offset: Offset(-15, -15), blurRadius: 25),
+//                             ],
+//                           ),
+//                           child: Image.asset(
+//                             'assets/streamstarting.gif',
+//                             fit: BoxFit.contain,
+//                             errorBuilder: (c, o, s) => Icon(Icons.tv, size: 80, color: _activeGlow),
+//                           ),
+//                         ),
+//                       ),
+                      
+//                       Spacer(), 
+
+//                       // INPUT ROW
+//                       Row(
+//                         crossAxisAlignment: CrossAxisAlignment.center,
+//                         children: [
+//                           Expanded(
+//                             child: _buildInputField(
+//                               controller: _domainController,
+//                               hint: 'test.example.com',
+//                               focus: InputFocus.domain,
+//                             ),
+//                           ),
+//                           SizedBox(width: 30),
+//                           Expanded(
+//                             child: _buildInputField(
+//                               controller: _pinController,
+//                               hint: 'PIN CODE',
+//                               focus: InputFocus.pin,
+//                               isPin: true,
+//                             ),
+//                           ),
+//                         ],
+//                       ),
+                      
+//                       // SizedBox(height: 10),
+                      
+//                       if (_errorMessage.isNotEmpty)
+//                         Expanded(flex:40, child:  Text(_errorMessage, style: TextStyle(color: _errorColor, fontWeight: FontWeight.bold, fontSize: 16))),
+                        
+//                       if (_isLoading)
+//                          SizedBox(height: 10, width: 100, child: LinearProgressIndicator(color: _activeGlow, backgroundColor: _bgStart)),
+//                     ],
+//                   ),
+//                 ),
+
+//                 SizedBox(height: 10),
+
+//                 // --- 2. KEYBOARD ---
+//                 Expanded(
+//                   flex: 35,
+//                   child: Container(
+//                     padding: EdgeInsets.all(12),
+//                     decoration: BoxDecoration(
+//                       color: _bgStart,
+//                       borderRadius: BorderRadius.circular(30),
+//                       gradient: LinearGradient(
+//                         begin: Alignment.topLeft,
+//                         end: Alignment.bottomRight,
+//                         colors: [_bgEnd, _bgStart],
+//                       ),
+//                       boxShadow: [
+//                         BoxShadow(color: _shadowDark, offset: Offset(8, 8), blurRadius: 16),
+//                         BoxShadow(color: Colors.white, offset: Offset(-8, -8), blurRadius: 16),
+//                       ],
+//                       border: Border.all(color: Colors.white.withOpacity(0.5), width: 1),
+//                     ),
+//                     child: _currentFocus == InputFocus.pin
+//                         ? _buildNumpad()
+//                         : _buildQwertyKeyboard(),
+//                   ),
+//                 ),
+//               ],
+//             ),
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+
+//   // // --- WIDGETS ---
+
+//   // Widget _buildInputField({
+//   //   required TextEditingController controller,
+//   //   required String hint,
+//   //   required InputFocus focus,
+//   //   bool isPin = false,
+//   // }) {
+//   //   final bool isActive = _currentFocus == focus;
+    
+//   //   String rawText = controller.text;
+//   //   String displayText = rawText.isEmpty ? hint : rawText;
+
+//   //   return GestureDetector(
+//   //     onTap: () => setState(() => _currentFocus = focus),
+//   //     child: AnimatedContainer(
+//   //       duration: Duration(milliseconds: 250),
+//   //       curve: Curves.easeOut,
+//   //       padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10), 
+//   //       decoration: BoxDecoration(
+//   //         color: _bgStart,
+//   //         borderRadius: BorderRadius.circular(20),
+//   //         border: Border.all(
+//   //           color: isActive ? _activeGlow.withOpacity(0.6) : Colors.white.withOpacity(0.2),
+//   //           width: isActive ? 2.5 : 1,
+//   //         ),
+//   //         boxShadow: isActive
+//   //             ? [ 
+//   //                 BoxShadow(color: _activeGlow.withOpacity(0.3), blurRadius: 15, spreadRadius: 1),
+//   //                 BoxShadow(color: Colors.white, offset: Offset(-4, -4), blurRadius: 10),
+//   //                 BoxShadow(color: _shadowDark, offset: Offset(4, 4), blurRadius: 10),
+//   //               ]
+//   //             : [ 
+//   //                 BoxShadow(color: Colors.white, offset: Offset(4, 4), blurRadius: 5, spreadRadius: -2),
+//   //                 BoxShadow(color: _shadowDark, offset: Offset(-4, -4), blurRadius: 5, spreadRadius: -2),
+//   //                 BoxShadow(color: _shadowDark, offset: Offset(4, 4), blurRadius: 8),
+//   //                 BoxShadow(color: Colors.white, offset: Offset(-4, -4), blurRadius: 8),
+//   //               ],
+//   //         gradient: LinearGradient(
+//   //           begin: Alignment.topLeft,
+//   //           end: Alignment.bottomRight,
+//   //           colors: isActive 
+//   //             ? [Color(0xFFE0E5EC), Color(0xFFF0F5FA)] 
+//   //             : [Color(0xFFD1D9E6), Color(0xFFE0E5EC)],
+//   //         ),
+//   //       ),
+//   //       child: Row(
+//   //         children: [
+//   //           Container(
+//   //             padding: EdgeInsets.only(right: 15),
+//   //             decoration: BoxDecoration(
+//   //               border: Border(right: BorderSide(color: _textLabel.withOpacity(0.2), width: 1))
+//   //             ),
+//   //             child: Text(
+//   //               hint == 'test.example.com' ? "DOMAIN" : "PIN", 
+//   //               style: TextStyle(
+//   //                 color: isActive ? _activeGlow : _textLabel,
+//   //                 fontSize: nametextsz ,
+//   //                 fontWeight: FontWeight.w900,
+//   //                 letterSpacing: 1.0,
+//   //               ),
+//   //             ),
+//   //           ),
+//   //           SizedBox(width: 15),
+//   //           Expanded(
+//   //             child: Text(
+//   //               displayText,
+//   //               maxLines: 1,
+//   //               overflow: TextOverflow.ellipsis,
+//   //               style: TextStyle(
+//   //                 color: rawText.isEmpty ? _textLabel.withOpacity(0.4) : _textInput,
+//   //                 fontSize: nametextsz ,
+//   //                 fontWeight: FontWeight.w900,
+//   //                 letterSpacing: 0.5, 
+//   //                 fontFamily: Platform.isIOS ? "Courier" : "Monospace",
+//   //               ),
+//   //             ),
+//   //           ),
+//   //           if (isActive)
+//   //             Container(
+//   //               width: 10, height: 10,
+//   //               decoration: BoxDecoration(
+//   //                 color: _activeGlow, shape: BoxShape.circle,
+//   //                 boxShadow: [BoxShadow(color: _activeGlow, blurRadius: 5)]
+//   //               ),
+//   //             )
+//   //         ],
+//   //       ),
+//   //     ),
+//   //   );
+//   // }
+
+
+
+//   Widget _buildInputField({
+//     required TextEditingController controller,
+//     required String hint,
+//     required InputFocus focus,
+//     bool isPin = false,
+//   }) {
+//     final bool isActive = _currentFocus == focus;
+//     String rawText = controller.text;
+//     String displayText;
+
+//     // ✅ LOGIC CHANGE HERE
+//     if (isPin) {
+//       // 1. Agar PIN hai, to hum 10 length ka format banayenge
+//       // Jitne number type hue hain wo dikhayein, baaki '_' dikhayein
+//       String maskedText = rawText.padRight(10, '_');
+
+//       // 2. Har character ke beech space daal dein taaki saaf dikhe (e.g., "1 2 _ _")
+//       displayText = maskedText.split('').join(' ');
+//     } else {
+//       // Domain ke liye normal logic
+//       displayText = rawText.isEmpty ? hint : rawText;
+//     }
+
+//     return GestureDetector(
+//       onTap: () => setState(() => _currentFocus = focus),
+//       child: AnimatedContainer(
+//         duration: Duration(milliseconds: 250),
+//         curve: Curves.easeOut,
+//         padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+//         decoration: BoxDecoration(
+//           color: _bgStart,
+//           borderRadius: BorderRadius.circular(20),
+//           border: Border.all(
+//             color: isActive ? _activeGlow.withOpacity(0.6) : Colors.white.withOpacity(0.2),
+//             width: isActive ? 2.5 : 1,
+//           ),
+//           boxShadow: isActive
+//               ? [
+//                   BoxShadow(color: _activeGlow.withOpacity(0.3), blurRadius: 15, spreadRadius: 1),
+//                   BoxShadow(color: Colors.white, offset: Offset(-4, -4), blurRadius: 10),
+//                   BoxShadow(color: _shadowDark, offset: Offset(4, 4), blurRadius: 10),
+//                 ]
+//               : [
+//                   BoxShadow(color: Colors.white, offset: Offset(4, 4), blurRadius: 5, spreadRadius: -2),
+//                   BoxShadow(color: _shadowDark, offset: Offset(-4, -4), blurRadius: 5, spreadRadius: -2),
+//                   BoxShadow(color: _shadowDark, offset: Offset(4, 4), blurRadius: 8),
+//                   BoxShadow(color: Colors.white, offset: Offset(-4, -4), blurRadius: 8),
+//                 ],
+//           gradient: LinearGradient(
+//             begin: Alignment.topLeft,
+//             end: Alignment.bottomRight,
+//             colors: isActive
+//                 ? [Color(0xFFE0E5EC), Color(0xFFF0F5FA)]
+//                 : [Color(0xFFD1D9E6), Color(0xFFE0E5EC)],
+//           ),
+//         ),
+//         child: Row(
+//           children: [
+//             Container(
+//               padding: EdgeInsets.only(right: 15),
+//               decoration: BoxDecoration(
+//                   border: Border(right: BorderSide(color: _textLabel.withOpacity(0.2), width: 1))),
+//               child: Text(
+//                 hint == 'test.example.com' ? "DOMAIN" : "PIN",
+//                 style: TextStyle(
+//                   color: isActive ? _activeGlow : _textLabel,
+//                   fontSize: nametextsz,
+//                   fontWeight: FontWeight.w900,
+//                   letterSpacing: 1.0,
+//                 ),
+//               ),
+//             ),
+//             SizedBox(width: 15),
+//             Expanded(
+//               child: Text(
+//                 displayText,
+//                 maxLines: 1,
+//                 overflow: TextOverflow.ellipsis,
+//                 style: TextStyle(
+//                   color: rawText.isEmpty && !isPin ? _textLabel.withOpacity(0.4) : _textInput,
+//                   fontSize: nametextsz, // Font size same rakha hai
+//                   fontWeight: FontWeight.w900,
+//                   // ✅ Agar PIN hai to letter spacing kam karein kyunki humne manual space diya hai
+//                   letterSpacing: isPin ? 2.0 : 0.5, 
+//                   // fontFamily: Platform.isIOS ? "Courier" : "Monospace",
+//                   fontFamily: kIsWeb ? "Monospace" : (Platform.isIOS ? "Courier" : "Monospace"),
+//                 ),
+//               ),
+//             ),
+//             if (isActive)
+//               Container(
+//                 width: 10,
+//                 height: 10,
+//                 decoration: BoxDecoration(
+//                     color: _activeGlow,
+//                     shape: BoxShape.circle,
+//                     boxShadow: [BoxShadow(color: _activeGlow, blurRadius: 5)]),
+//               )
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildKey(String label, {String? originalKey, int flex = 1}) {
+//     final keyToProcess = originalKey ?? label;
+//     bool isActiveShift = (keyToProcess == 'SHIFT' && _isShiftEnabled);
+//     bool isOkKey = (keyToProcess == 'OK');
+//     bool isDelKey = (keyToProcess == 'DEL');
+
+//     return Expanded(
+//       flex: flex,
+//       child: Padding(
+//         padding: const EdgeInsets.all(5.0),
+//         child: LayoutBuilder(
+//           builder: (context, constraints) {
+//             return ElevatedButton(
+//               onPressed: () => _onKeyPressed(keyToProcess),
+//               style: ButtonStyle(
+//                 backgroundColor: WidgetStateProperty.resolveWith<Color>((states) {
+//                   if (states.contains(WidgetState.focused)) {
+//                     if (isOkKey) return Colors.white; 
+//                     return _activeGlow; 
+//                   }
+//                   if (isOkKey) return _okButtonColor;
+//                   if (isActiveShift) return _activeGlow.withOpacity(0.5);
+//                   if (isDelKey) return Color(0xFFFEB2B2);
+//                   return _bgStart;
+//                 }),
+//                 foregroundColor: WidgetStateProperty.resolveWith<Color>((states) {
+//                    if (states.contains(WidgetState.focused)) {
+//                      if (isOkKey) return _okButtonColor;
+//                      return Colors.white;
+//                    }
+//                    if (isOkKey) return Colors.white;
+//                    return _textLabel;
+//                 }),
+//                 side: WidgetStateProperty.resolveWith<BorderSide>((states) {
+//                   if (states.contains(WidgetState.focused)) {
+//                     if (isOkKey) return BorderSide(color: _okButtonColor, width: 3);
+//                     return BorderSide(color: Colors.white, width: 2);
+//                   }
+//                   return BorderSide.none;
+//                 }),
+//                 elevation: WidgetStateProperty.resolveWith<double>((states) {
+//                   if (states.contains(WidgetState.focused)) return 15;
+//                   if (states.contains(WidgetState.pressed)) return 0;
+//                   return 8;
+//                 }),
+//                 shadowColor: WidgetStateProperty.all(_shadowDark),
+//                 shape: WidgetStateProperty.all(
+//                   RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+//                 ),
+//                 padding: WidgetStateProperty.all(EdgeInsets.zero),
+//               ),
+//               child: Container(
+//                 width: double.infinity,
+//                 height: double.infinity,
+//                 alignment: Alignment.center,
+//                 child: Text(
+//                   label,
+//                   style: TextStyle(
+//                     fontSize: nametextsz * 1.4,
+//                     fontWeight: isOkKey || isDelKey ? FontWeight.w900 : FontWeight.w600,
+//                   ),
+//                 ),
+//               ),
+//             );
+//           }
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildNumpad() {
+//     return Column(
+//       children: [
+//         Expanded(child: Row(children: [for(var i=1;i<=3;i++) _buildKey('$i')])),
+//         Expanded(child: Row(children: [for(var i=4;i<=6;i++) _buildKey('$i')])),
+//         Expanded(child: Row(children: [for(var i=7;i<=9;i++) _buildKey('$i')])),
+//         Expanded(child: Row(children: [
+//           _buildKey('DEL'), 
+//           _buildKey('0'), 
+//           _buildKey('OK')
+//         ])),
+//       ],
+//     );
+//   }
+
+//   Widget _buildQwertyKeyboard() {
+//     final row1 = "1234567890".split('');
+//     final row2 = "qwertyuiop".split('');
+//     final row3 = "asdfghjkl".split('');
+//     final row4 = "zxcvbnm".split(''); 
+
+//     return Column(
+//       children: [
+//         Expanded(child: Row(children: row1.map((e) => _buildKey(e)).toList())),
+//         Expanded(child: Row(children: row2.map((e) => _buildKey(e)).toList())),
+//         Expanded(child: Row(children: row3.map((e) => _buildKey(e)).toList())),
+//         Expanded(child: Row(children: [
+//             _buildKey('DEL', flex: 2), 
+//              ...row4.map((e) => _buildKey(e)).toList(),
+//              _buildKey('.', flex: 1)
+//         ])),
+//         Expanded(
+//           child: Row(
+//             children: [
+//               _buildKey('SHIFT', flex: 2),
+//               _buildKey('@', flex: 1),
+//               _buildKey(' ', originalKey: ' ', flex: 4), 
+//               _buildKey('.com', flex: 2),
+//               _buildKey('OK', flex: 2),
+//             ],
+//           ),
+//         ),
+//       ],
+//     );
+//   }
+// }
+
+
+
+
+// class UpdateChecker {
+//   static const String LAST_UPDATE_CHECK_KEY = 'last_update_check';
+//   static const String FORCE_UPDATE_TIME_KEY = 'force_update_time';
+//   static const Duration CHECK_INTERVAL = Duration(hours: 8);
+
+//   late BuildContext context;
+//   Timer? _timer;
+//   bool _forceUpdate = false;
+//   bool _isDialogShowing = false;
+
+//   UpdateChecker(this.context) {
+//     _startUpdateCheckTimer();
+//   }
+
+//   void _startUpdateCheckTimer() {
+//     _checkForUpdate();
+//     _timer = Timer.periodic(CHECK_INTERVAL, (timer) {
+//       _checkForUpdate();
+//     });
+//   }
+
+//   Future<void> _checkForUpdate() async {
+//     final prefs = await SharedPreferences.getInstance();
+//     final lastCheck = prefs.getInt(LAST_UPDATE_CHECK_KEY) ?? 0;
+//     final now = DateTime.now().millisecondsSinceEpoch;
+
+//     if (now - lastCheck >= CHECK_INTERVAL.inMilliseconds || _forceUpdate) {
+//       await prefs.setInt(LAST_UPDATE_CHECK_KEY, now);
+
+//       try {
+//         final response = await https.get(
+//           Uri.parse('https://api.ekomflix.com/android/getSettings'),
+//           headers: {'x-api-key': 'vLQTuPZUxktl5mVW'},
+//         );
+
+//         if (response.statusCode == 200) {
+//           final data = jsonDecode(response.body);
+
+//           String apiVersion = data['playstore_version'] ?? "";
+//           String apkUrl = data['playstore_apkUrl'] ?? '';
+//           String releaseNotes = data['playstore_releaseNotes'] ?? '';
+
+//           int forceUpdateTime =
+//               DateTime.parse(data['playstore_forceUpdateTime'])
+//                   .millisecondsSinceEpoch;
+
+//           PackageInfo packageInfo = await PackageInfo.fromPlatform();
+//           String appVersion = packageInfo.version;
+
+//           if (_isVersionGreater(apiVersion, appVersion)) {
+//             if (forceUpdateTime > 0 && now >= forceUpdateTime) {
+//               _forceUpdate = true;
+//               await prefs.setInt(FORCE_UPDATE_TIME_KEY, forceUpdateTime);
+//             }
+//             if (!_isDialogShowing) {
+//               _showUpdateDialog(apkUrl, releaseNotes, appVersion, apiVersion);
+//             }
+//           }
+//         }
+//       } catch (e) {
+//         // Handle error
+//       }
+//     }
+//   }
+
+//   bool _isVersionGreater(String v1, String v2) {
+//     List<int> v1Parts = v1.split('.').map(int.parse).toList();
+//     List<int> v2Parts = v2.split('.').map(int.parse).toList();
+
+//     for (int i = 0; i < v1Parts.length && i < v2Parts.length; i++) {
+//       if (v1Parts[i] > v2Parts[i]) return true;
+//       if (v1Parts[i] < v2Parts[i]) return false;
+//     }
+
+//     return v1Parts.length > v2Parts.length;
+//   }
+
+//   void _showUpdateDialog(String apkUrl, String releaseNotes,
+//       String currentVersion, String newVersion) {
+//     _isDialogShowing = true;
+//     showDialog(
+//       barrierColor: Colors.black54,
+//       context: context,
+//       barrierDismissible: !_forceUpdate,
+//       builder: (BuildContext context) {
+//         return WillPopScope(
+//           onWillPop: () async => !_forceUpdate,
+//           child: AlertDialog(
+//             backgroundColor: cardColor,
+//             title: Center(
+//                 child: Text('NEW UPDATE AVAILABLE',
+//                     style: TextStyle(color: hintColor))),
+//             actions: [
+//               if (!_forceUpdate)
+//                 TextButton(
+//                   onPressed: () {
+//                     Navigator.of(context).pop();
+//                     _isDialogShowing = false;
+//                   },
+//                   child: Center(child: Text('Later')),
+//                 ),
+//               TextButton(
+//                 onPressed: () {
+//                   _launchURL(apkUrl);
+//                 },
+//                 child: Center(child: Text('Update Now')),
+//               ),
+//             ],
+//           ),
+//         );
+//       },
+//     ).then((_) {
+//       if (_forceUpdate) {
+//         _showUpdateDialog(apkUrl, releaseNotes, currentVersion, newVersion);
+//       } else {
+//         _isDialogShowing = false;
+//       }
+//     });
+//   }
+
+//   Future<void> _launchURL(String url) async {
+//     if (await canLaunch(url)) {
+//       await launch(url);
+//     } else {
+//       throw 'Could not launch $url';
+//     }
+//   }
+
+//   void dispose() {
+//     _timer?.cancel();
+//   }
+// }
+
+// class MyHome extends StatefulWidget {
+//   @override
+//   _MyHomeState createState() => _MyHomeState();
+// }
+
+// class _MyHomeState extends State<MyHome> {
+//   int _selectedPage = 0;
+//   late PageController _pageController;
+//   bool _tvenableAll = false;
+//   late UpdateChecker _updateChecker;
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     _pageController = PageController(initialPage: _selectedPage);
+//     _fetchTvenableAllStatus();
+//     _updateChecker = UpdateChecker(context);
+
+//     // Example of how to access user data
+//     // You can access user data anywhere like this:
+//     String? userName = SessionManager.userData?['name'];
+//     print('Logged in user: $userName');
+
+//     String? imageUrl = SessionManager.imageBaseUrl;
+//     print('Base Image URL: $imageUrl');
+//     WidgetsBinding.instance.addPostFrameCallback((_) {
+//       _showInitialLoadingScreen();
+//     });
+//   }
+
+//   @override
+//   void dispose() {
+//     _pageController.dispose();
+//     _updateChecker.dispose();
+//     super.dispose();
+//   }
+
+//   // ✅ YEH NAYA FUNCTION ADD KAREIN
+//   void _showInitialLoadingScreen() {
+//     Navigator.of(context).push(
+//       PageRouteBuilder(
+//         // opaque: false, screen ko transparent banata hai
+//         opaque: false,
+//         pageBuilder: (context, _, __) => const ExitConfirmationScreen(
+//           // Hum false bhej rahe hain kyunki yeh app start par call ho raha hai
+//           isFromBackButton: false,
+//         ),
+//       ),
+//     );
+//   }
+
+//   void _onPageSelected(int index) {
+//     setState(() {
+//       _selectedPage = index;
+//     });
+//     _pageController.jumpToPage(index);
+//   }
+
+//   Future<void> _fetchTvenableAllStatus() async {
+//     try {
+//       final response = await https.get(
+//         Uri.parse('https://api.ekomflix.com/android/getSettings'),
+//         headers: {
+//           'x-api-key': 'vLQTuPZUxktl5mVW',
+//         },
+//       );
+
+//       if (response.statusCode == 200) {
+//         final data = jsonDecode(response.body);
+//         setState(() {
+//           _tvenableAll = data['tvenableAll'] == 1;
+//         });
+//       } else {}
+//     } catch (e) {}
+//   }
+
+//   void _showLogoutDialog() {
+//     showDialog(
+//       context: context,
+//       builder: (BuildContext context) {
+//         return AlertDialog(
+//           backgroundColor: cardColor,
+//           title: Text(
+//             'Logout',
+//             style: TextStyle(color: hintColor),
+//           ),
+//           content: Text(
+//             'Are you sure you want to logout?',
+//             style: TextStyle(color: hintColor),
+//           ),
+//           actions: [
+//             TextButton(
+//               onPressed: () => Navigator.of(context).pop(),
+//               child: Text('Cancel'),
+//             ),
+//             TextButton(
+//               onPressed: () async {
+//                 Navigator.of(context).pop();
+//                 await _logout();
+//               },
+//               child: Text('Logout', style: TextStyle(color: Colors.red)),
+//             ),
+//           ],
+//         );
+//       },
+//     );
+//   }
+
+//   Future<void> _logout() async {
+//     // ✅ Clear session using the manager
+//     await SessionManager.clearSession();
+
+//     Navigator.pushAndRemoveUntil(
+//       context,
+//       MaterialPageRoute(builder: (context) => LoginScreen()),
+//       (route) => false,
+//     );
+//   }
+
+//   // @override
+//   // Widget build(BuildContext context) {
+//   //   List<Widget> pages = [
+//   //     HomeScreen(),
+//   //     // VOD(),
+//   //     // LiveScreen(),
+//   //     SearchScreen(),
+//   //     // YoutubeSearchScreen()
+//   //   ];
+
+//   //   return Consumer<ColorProvider>(builder: (context, colorProvider, child) {
+//   //     Color backgroundColor = colorProvider.isItemFocused
+//   //         ? colorProvider.dominantColor.withOpacity(0.5)
+//   //         : cardColor;
+//   //     return SafeArea(
+//   //       child: Scaffold(
+//   //         body: Container(
+//   //           color: backgroundColor,
+//   //           child: Stack(
+//   //             children: [
+//   //               Container(
+//   //                 width: screenwdt,
+//   //                 height: screenhgt,
+//   //                 color: cardColor,
+//   //                 child: Column(
+//   //                   children: [
+//   //                     Container(
+//   //                       child: Stack(
+//   //                         children: [
+//   //                           TopNavigationBar(
+//   //                             selectedPage: _selectedPage,
+//   //                             onPageSelected: _onPageSelected,
+//   //                             tvenableAll: _tvenableAll,
+//   //                           ),
+//   //                           // Positioned(
+//   //                           //   top: 10,
+//   //                           //   right: 10,
+//   //                           //   child: GestureDetector(
+//   //                           //     onTap: _showLogoutDialog, // Enable logout button
+//   //                           //     child: Container(
+//   //                           //       padding: EdgeInsets.all(8),
+//   //                           //       decoration: BoxDecoration(
+//   //                           //         color: Colors.red.withOpacity(0.7),
+//   //                           //         borderRadius: BorderRadius.circular(20),
+//   //                           //       ),
+//   //                           //       child: Icon(
+//   //                           //         Icons.logout,
+//   //                           //         color: Colors.white,
+//   //                           //         size: 20,
+//   //                           //       ),
+//   //                           //     ),
+//   //                           //   ),
+//   //                           // ),
+//   //                         ],
+//   //                       ),
+//   //                     ),
+//   //                     Expanded(
+//   //                       child: PageView(
+//   //                         controller: _pageController,
+//   //                         onPageChanged: (index) {
+//   //                           setState(() {
+//   //                             _selectedPage = index;
+//   //                           });
+//   //                         },
+//   //                         children: pages,
+//   //                       ),
+//   //                     ),
+//   //                   ],
+//   //                 ),
+//   //               ),
+//   //             ],
+//   //           ),
+//   //         ),
+//   //       ),
+//   //     );
+//   //   });
+//   // }
+
+//   // ✅ YEH 'MyHome' KA NAYA BUILD METHOD HAI
+
+//   @override
+//   Widget build(BuildContext context) {
+//     List<Widget> pages = [
+//       MainDashboardScreen(),
+//       SearchScreen(),
+//     ];
+
+//     // Hum 'SafeArea' ko hata rahe hain taaki content poori screen par dikhe
+//     return Scaffold(
+//       // Consumer ko 'body' ke andar le aayein
+//       body: Consumer<ColorProvider>(
+//         builder: (context, colorProvider, child) {
+//           // Background color logic waisi hi rahegi
+//           Color backgroundColor = colorProvider.isItemFocused
+//               ? colorProvider.dominantColor.withOpacity(0.5)
+//               : cardColor;
+
+//           // Yeh Container ab poora background banayega
+//           return Container(
+//             // color: backgroundColor, // Animated background color
+//             color: Colors.white, // Animated background color
+
+//             // ✅ YEH HAI ASLI STACK LAYOUT
+//             child: Stack(
+//               children: [
+//                 // 1. CONTENT (PEECHE)
+//                 // PageView ab 'Expanded' mein nahi hai.
+//                 // Yeh poori screen lega aur Stack mein sabse peeche rahega.
+//                 PageView(
+//                   controller: _pageController,
+//                   onPageChanged: (index) {
+//                     setState(() {
+//                       _selectedPage = index;
+//                     });
+//                   },
+//                   children: pages,
+//                 ),
+
+//                 // 2. APP BAR (OOPAR)
+//                 // TopNavigationBar ko 'Positioned' karke oopar fix kar diya hai.
+//                 // Positioned(
+//                 //   top: 0,
+//                 //   left: 0,
+//                 //   right: 0,
+//                 //   child: TopNavigationBar(
+//                 //     selectedPage: _selectedPage,
+//                 //     onPageSelected: _onPageSelected,
+//                 //     tvenableAll: _tvenableAll,
+//                 //   ),
+//                 // ),
+
+//                 // Aapka logout button (agar future mein add karein)
+//                 // Positioned(
+//                 //   top: 10,
+//                 //   right: 10,
+//                 //   child: GestureDetector(
+//                 //     onTap: _showLogoutDialog,
+//                 //     ...
+//                 //   ),
+//                 // ),
+//               ],
+//             ),
+//           );
+//         },
+//       ),
+//     );
+//   }
+// }
+
+// // Safe helper: handles API responses that return List or Map with list under known keys
+// List<dynamic> safeDecodeList(dynamic decoded, {List<String> keys = const ['data', 'networks', 'results', 'items', 'languages']}) {
+//   if (decoded is List) return decoded;
+//   if (decoded is Map<String, dynamic>) {
+//     for (final key in keys) {
+//       final value = decoded[key];
+//       if (value is List) return value;
+//       if (value is Map<String, dynamic>) {
+//         for (final nestedKey in keys) {
+//           final nestedValue = value[nestedKey];
+//           if (nestedValue is List) return nestedValue;
+//         }
+//       }
+//     }
+//   }
+//   return <dynamic>[];
+// }
+
+
+
+
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -3245,7 +4732,6 @@ import 'package:mobi_tv_entertainment/components/menu_screens/search_screen.dart
 import 'package:mobi_tv_entertainment/components/provider/color_provider.dart';
 import 'package:mobi_tv_entertainment/components/provider/device_info_provider.dart';
 import 'package:mobi_tv_entertainment/components/provider/focus_provider.dart';
-import 'package:mobi_tv_entertainment/components/provider/internal_focus_provider.dart';
 import 'package:mobi_tv_entertainment/components/widgets/small_widgets/loading_indicator.dart';
 import 'package:mobi_tv_entertainment/main_dashboard_screen.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -3275,6 +4761,9 @@ class SessionManager {
   static String _logoUrl = '';
   static String _savedDomain = '';
   static int? _userId; // ✅ 1. User ID ke liye naya variable
+  
+  // ✅ ADDED: Variable to store cached dashboard content
+  static String _cachedDomainContent = ''; 
 
   static String get baseUrl {
     if (_savedDomain.isNotEmpty) {
@@ -3282,7 +4771,7 @@ class SessionManager {
       return 'https://$_savedDomain/api/v3/';
     } else {
       // ✅ 2. Agar domain nahi hai (jo login ke baad nahi hona chahiye),
-      //    toh ek error throw karein taaki aapko galti pata chal sake.
+      //     toh ek error throw karein taaki aapko galti pata chal sake.
       throw StateError('FATAL: baseUrl was requested but no domain is saved in SessionManager.');
     }
   }
@@ -3322,6 +4811,18 @@ class SessionManager {
   static bool get showContentNetwork => _showContentNetwork;
   static bool get showSearch => _showSearch;
 
+  // ✅ ADDED: Get cached dashboard domain content synchronously
+  static String? getSavedDomainContent() {
+    return _cachedDomainContent;
+  }
+
+  // ✅ ADDED: Save cached dashboard domain content asynchronously
+  static Future<void> saveDomainContent(String jsonString) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    _cachedDomainContent = jsonString;
+    await prefs.setString('cached_domain_content', jsonString);
+  }
+
   // --- Methods ---
   static Future<void> initialize() async {
     if (!_isInitialized) {
@@ -3338,6 +4839,9 @@ class SessionManager {
       _logoUrl = prefs.getString('logo_url') ?? '';
       _savedDomain = prefs.getString('saved_domain') ?? '';
       _userId = prefs.getInt('user_id'); // ✅ 3. Saved ID ko load karein
+      
+      // ✅ ADDED: Load cached domain content from memory
+      _cachedDomainContent = prefs.getString('cached_domain_content') ?? '';
 
       String? userDataString = prefs.getString('user_data');
       if (userDataString != null) {
@@ -3361,7 +4865,7 @@ class SessionManager {
   }
 
 
-// 1. Add 'String loginDomain' as a parameter
+  // 1. Add 'String loginDomain' as a parameter
   static Future<void> saveSession(
       Map<String, dynamic> apiResponse, String loginDomain) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -3421,8 +4925,6 @@ class SessionManager {
     await prefs.setBool('show_search', _showSearch);
   }
 
-
-
   static Future<void> clearSession({bool keepDomain = false}) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -3430,6 +4932,10 @@ class SessionManager {
     await prefs.remove('user_data');
     await prefs.remove('is_logged_in');
     await prefs.remove('user_id');
+    
+    // ✅ ADDED: Clear cached content on logout
+    await prefs.remove('cached_domain_content');
+    _cachedDomainContent = '';
     
     // ✅ Logic change: Agar keepDomain true hai, to domain delete MAT karo
     if (!keepDomain) {
@@ -3501,7 +5007,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => ColorProvider()),
         ChangeNotifierProvider(create: (_) => FocusProvider()),
         ChangeNotifierProvider.value(value: deviceInfoProvider),
-        ChangeNotifierProvider(create: (_) => InternalFocusProvider()),
+        // ChangeNotifierProvider(create: (_) => InternalFocusProvider()),
       ],
       child: MyApp(),
     ),

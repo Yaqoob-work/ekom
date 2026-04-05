@@ -10,7 +10,7 @@
 
 // // NOTE: Check your project structure imports
 // // import 'package:mobi_tv_entertainment/components/home_screen_pages/sports/sports_channel_details_page.dart'; // Create this file
-// import 'package:mobi_tv_entertainment/main.dart'; 
+// import 'package:mobi_tv_entertainment/main.dart';
 // import 'package:mobi_tv_entertainment/components/services/history_service.dart';
 
 // //==============================================================================
@@ -39,12 +39,12 @@
 // }
 
 // // Model: SportsChannelModel (Channels)
-// class SportsChannelModel { 
+// class SportsChannelModel {
 //   final int id;
-//   final String title; 
+//   final String title;
 //   final String updatedAt;
-//   final String? thumbnail; 
-//   final String? genre; 
+//   final String? thumbnail;
+//   final String? genre;
 //   final int order;
 //   final String? language;
 
@@ -63,7 +63,7 @@
 //       id: json['id'] ?? 0,
 //       title: json['title'] ?? '',
 //       updatedAt: json['updated_at'] ?? '',
-//       thumbnail: json['Thumbnail'], 
+//       thumbnail: json['Thumbnail'],
 //       genre: null,
 //       order: json['order'] ?? 9999,
 //       language: json['language'],
@@ -200,7 +200,7 @@
 //   final int? initialNetworkId;
 
 //   const SportsSliderScreen({
-//     Key? key, 
+//     Key? key,
 //     this.title = 'Sports Channels',
 //     this.initialNetworkId,
 //     })
@@ -214,21 +214,21 @@
 // class _SportsSliderScreenState
 //     extends State<SportsSliderScreen>
 //     with SingleTickerProviderStateMixin {
-   
-//   List<SportsChannelModel> _sportsChannelList = []; 
-//   bool _isLoading = true; 
-//   bool _isListLoading = false; 
+
+//   List<SportsChannelModel> _sportsChannelList = [];
+//   bool _isLoading = true;
+//   bool _isListLoading = false;
 //   String? _errorMessage;
 
 //   // Focus and Scroll Controllers
 //   List<FocusNode> _itemFocusNodes = [];
 //   List<FocusNode> _networkFocusNodes = [];
-//   List<FocusNode> _channelFilterFocusNodes = [];  
+//   List<FocusNode> _channelFilterFocusNodes = [];
 //   List<FocusNode> _keyboardFocusNodes = [];
 //   final FocusNode _widgetFocusNode = FocusNode();
 //   final ScrollController _listScrollController = ScrollController();
 //   final ScrollController _networkScrollController = ScrollController();
-//   final ScrollController _channelFilterScrollController = ScrollController();  
+//   final ScrollController _channelFilterScrollController = ScrollController();
 
 //   late PageController _sliderPageController;
 
@@ -245,23 +245,23 @@
 
 //   // UI and Filter State
 //   int _focusedNetworkIndex = 0;
-//   int _focusedChannelFilterIndex = 0;  
+//   int _focusedChannelFilterIndex = 0;
 //   int _focusedItemIndex = -1;
 //   String _selectedNetworktitle = '';
 //   String? _selectedNetworkLogo;
-   
-//   Map<String, int?> _channelFilters = {}; 
-//   String _selectedChannelFiltertitle = ''; 
-//   int? _selectedChannelFilterId; 
-//   bool _isDisplayingShows = false;  
 
-//   List<SportsChannelModel> _currentViewMasterList = []; 
-//   List<SportsChannelModel> _displayList = []; 
+//   Map<String, int?> _channelFilters = {};
+//   String _selectedChannelFiltertitle = '';
+//   int? _selectedChannelFilterId;
+//   bool _isDisplayingShows = false;
+
+//   List<SportsChannelModel> _currentViewMasterList = [];
+//   List<SportsChannelModel> _displayList = [];
 //   List<ApiNetworkModel> _apiNetworks = [];
 //   List<String> _uniqueNetworks = [];
-   
+
 //   // Animation and Loading State
-//   bool _isVideoLoading = false; 
+//   bool _isVideoLoading = false;
 //   late AnimationController _fadeController;
 //   late Animation<double> _fadeAnimation;
 //   String? _currentBackgroundUrl;
@@ -293,7 +293,7 @@
 //     super.initState();
 //     _sliderPageController = PageController();
 //     _searchButtonFocusNode = FocusNode();
-//     _searchButtonFocusNode.addListener(_setStateListener); 
+//     _searchButtonFocusNode.addListener(_setStateListener);
 //     _widgetFocusNode.addListener(_setStateListener);
 //     _fetchDataForPage();
 //     _initializeAnimations();
@@ -307,14 +307,14 @@
 //     _widgetFocusNode.dispose();
 //     _listScrollController.dispose();
 //     _networkScrollController.dispose();
-//     _channelFilterScrollController.dispose();  
+//     _channelFilterScrollController.dispose();
 //     _searchButtonFocusNode.removeListener(_setStateListener);
 //     _searchButtonFocusNode.dispose();
 //     _debounce?.cancel();
 //     _navigationLockTimer?.cancel();
 //     _disposeFocusNodes(_itemFocusNodes);
 //     _disposeFocusNodes(_networkFocusNodes);
-//     _disposeFocusNodes(_channelFilterFocusNodes);  
+//     _disposeFocusNodes(_channelFilterFocusNodes);
 //     _disposeFocusNodes(_keyboardFocusNodes);
 //     super.dispose();
 //   }
@@ -330,14 +330,14 @@
 //         child: Stack(
 //           children: [
 //             _buildBackgroundOrSlider(),
-//             _isLoading 
+//             _isLoading
 //                 ? const Center(
 //                     child: ProfessionalSportsLoadingIndicator(
-//                         message: 'Loading Sports Channels...'))  
+//                         message: 'Loading Sports Channels...'))
 //                 : _errorMessage != null
-//                     ? _buildErrorWidget() 
-//                     : _buildPageContent(), 
-//             if (_isVideoLoading && _errorMessage == null) 
+//                     ? _buildErrorWidget()
+//                     : _buildPageContent(),
+//             if (_isVideoLoading && _errorMessage == null)
 //               Positioned.fill(
 //                 child: Container(
 //                   color: Colors.black.withOpacity(0.8),
@@ -379,7 +379,7 @@
 //       if (widget.initialNetworkId != null) {
 //         int foundIndex = fetchedNetworks.indexWhere((n) => n.id == widget.initialNetworkId);
 //         if (foundIndex != -1) {
-//           initialIndex = foundIndex; 
+//           initialIndex = foundIndex;
 //         }
 //       }
 
@@ -389,24 +389,24 @@
 //       setState(() {
 //         _apiNetworks = fetchedNetworks;
 //         _uniqueNetworks = _apiNetworks.map((n) => n.name).toList();
-//         _focusedNetworkIndex = initialIndex; 
+//         _focusedNetworkIndex = initialIndex;
 //         _selectedNetworktitle = initialNetwork.name;
 //       });
 
 //       // 2. Fetch Sports Channels
-//       final fetchedList = await _fetchSportsChannelsForNetwork(networkIdToFetch); 
-       
+//       final fetchedList = await _fetchSportsChannelsForNetwork(networkIdToFetch);
+
 //       if (!mounted) return;
 
 //       setState(() {
-//         _sportsChannelList = fetchedList;  
+//         _sportsChannelList = fetchedList;
 //         if (_sportsChannelList.isEmpty) _errorMessage = "No Sports Channels Found.";
 //       });
 
 //       if (_errorMessage == null) {
-//         _processInitialData();  
-//         _updateChannelFilters(); 
-//         await _fetchDataForView(); 
+//         _processInitialData();
+//         _updateChannelFilters();
+//         await _fetchDataForView();
 //         _initializeFocusNodes();
 //         _startAnimations();
 
@@ -417,7 +417,7 @@
 //               _networkFocusNodes,
 //               _focusedNetworkIndex,
 //               _networkScrollController,
-//               160 
+//               160
 //             );
 //           }
 //         });
@@ -456,14 +456,14 @@
 //         final List<dynamic> jsonData = json.decode(response.body);
 //         return jsonData
 //             .map(
-//                 (item) => SportsChannelModel.fromJson(item as Map<String, dynamic>))  
+//                 (item) => SportsChannelModel.fromJson(item as Map<String, dynamic>))
 //             .toList()
-//               ..sort((a, b) => a.order.compareTo(b.order));  
+//               ..sort((a, b) => a.order.compareTo(b.order));
 //       } else {
 //         throw Exception('API Error: ${response.statusCode}');
 //       }
 //     } catch (e) {
-//       debugPrint('Failed to load sports channels for network $networkId: $e');  
+//       debugPrint('Failed to load sports channels for network $networkId: $e');
 //       throw Exception('Failed to load sports channels for network $networkId: $e');
 //     }
 //   }
@@ -489,7 +489,7 @@
 //         return jsonData
 //             .map((item) => SportsShowItemModel.fromJson(item as Map<String, dynamic>))
 //             .toList()
-//               ..sort((a, b) => a.order.compareTo(b.order));  
+//               ..sort((a, b) => a.order.compareTo(b.order));
 //       } else {
 //         throw Exception('API Error: ${response.statusCode}');
 //       }
@@ -512,7 +512,7 @@
 //               'domain': SessionManager.savedDomain,
 //             },
 //             // ✅ CHANGED data_for parameter
-//             body: json.encode({"network_id": "", "data_for": "sports"}),  
+//             body: json.encode({"network_id": "", "data_for": "sports"}),
 //           )
 //           .timeout(const Duration(seconds: 30));
 
@@ -534,9 +534,8 @@
 
 //   void _processInitialData() {
 //     if (_apiNetworks.isEmpty) return;
-//     _updateSelectedNetworkData(); 
+//     _updateSelectedNetworkData();
 //   }
-
 
 //   //=================================================
 //   // SECTION 2.2: KEYBOARD AND FOCUS NAVIGATION
@@ -548,11 +547,11 @@
 //     if (_listScrollController.hasClients) {
 //       _listScrollController.animateTo(
 //         0.0,
-//         duration: AnimationTiming.fast, 
+//         duration: AnimationTiming.fast,
 //         curve: Curves.easeInOut,
 //       );
 //     }
-     
+
 //     Future.delayed(const Duration(milliseconds: 250), () {
 //       if (mounted && _itemFocusNodes.isNotEmpty) {
 //         setState(() => _focusedItemIndex = 0);
@@ -577,7 +576,7 @@
 //         _searchButtonFocusNode.requestFocus();
 //         return KeyEventResult.handled;
 //       }
-//       if (listHasFocus || channelFilterHasFocus || searchHasFocus) {  
+//       if (listHasFocus || channelFilterHasFocus || searchHasFocus) {
 //           if (_networkFocusNodes.isNotEmpty) { _networkFocusNodes[_focusedNetworkIndex].requestFocus(); }
 //         return KeyEventResult.handled;
 //       }
@@ -595,10 +594,10 @@
 //         return KeyEventResult.handled;
 //       }
 //       if (key == LogicalKeyboardKey.arrowLeft) {
-//         return KeyEventResult.handled; 
+//         return KeyEventResult.handled;
 //       }
-//       if (key == LogicalKeyboardKey.arrowRight && _channelFilterFocusNodes.isNotEmpty) {  
-//         _channelFilterFocusNodes[0].requestFocus();  
+//       if (key == LogicalKeyboardKey.arrowRight && _channelFilterFocusNodes.isNotEmpty) {
+//         _channelFilterFocusNodes[0].requestFocus();
 //         return KeyEventResult.handled;
 //       }
 //       if (key == LogicalKeyboardKey.arrowUp && _networkFocusNodes.isNotEmpty) {
@@ -614,8 +613,8 @@
 
 //     if ([ LogicalKeyboardKey.arrowUp, LogicalKeyboardKey.arrowDown, LogicalKeyboardKey.arrowLeft, LogicalKeyboardKey.arrowRight, LogicalKeyboardKey.select, LogicalKeyboardKey.enter ].contains(key)) {
 //       if (networkHasFocus) { _navigateNetworks(key); }
-//       else if (channelFilterHasFocus) { _navigateChannelFilters(key); }  
-//       else if (listHasFocus) { _navigateList(key); } 
+//       else if (channelFilterHasFocus) { _navigateChannelFilters(key); }
+//       else if (listHasFocus) { _navigateList(key); }
 //       return KeyEventResult.handled;
 //     }
 
@@ -639,7 +638,7 @@
 //     });
 
 //     int newIndex = _focusedItemIndex;
-     
+
 //     if (key == LogicalKeyboardKey.arrowUp) {
 //       setState(() => _lastNavigationDirection = 'vertical');
 //       if (_channelFilterFocusNodes.isNotEmpty) {
@@ -663,7 +662,7 @@
 //         setState(() => _lastNavigationDirection = 'horizontal');
 //       }
 //     } else if (key == LogicalKeyboardKey.arrowRight) {
-//       final currentList = _displayList; 
+//       final currentList = _displayList;
 //       if (newIndex + 1 < currentList.length) {
 //         newIndex++;
 //         setState(() => _lastNavigationDirection = 'horizontal');
@@ -673,8 +672,8 @@
 //       _isNavigationLocked = false;
 //       _navigationLockTimer?.cancel();
 
-//       final currentList = _displayList; 
-//       _navigateToSportsDetails(currentList[_focusedItemIndex], _focusedItemIndex); 
+//       final currentList = _displayList;
+//       _navigateToSportsDetails(currentList[_focusedItemIndex], _focusedItemIndex);
 //       return;
 //     }
 
@@ -705,7 +704,7 @@
 //       return;
 //     } else if (key == LogicalKeyboardKey.select ||
 //         key == LogicalKeyboardKey.enter) {
-//       _updateSelectedNetwork(); 
+//       _updateSelectedNetwork();
 //       return;
 //     }
 //     if (newIndex != _focusedNetworkIndex) {
@@ -718,7 +717,7 @@
 
 //   void _navigateChannelFilters(LogicalKeyboardKey key) {
 //     final filtertitles = _channelFilters.keys.toList();
-     
+
 //     if (filtertitles.isEmpty) {
 //         if (key == LogicalKeyboardKey.arrowLeft) {
 //             _searchButtonFocusNode.requestFocus();
@@ -729,9 +728,9 @@
 //             setState(() => _lastNavigationDirection = 'vertical');
 //             _focusFirstListItemWithScroll();
 //         }
-//         return; 
+//         return;
 //     }
-     
+
 //     int newIndex = _focusedChannelFilterIndex;
 //     if (key == LogicalKeyboardKey.arrowLeft) {
 //       if (newIndex > 0) {
@@ -760,14 +759,14 @@
 //       return;
 //     } else if (key == LogicalKeyboardKey.select ||
 //         key == LogicalKeyboardKey.enter) {
-//       _updateSelectedChannelFilter(); 
+//       _updateSelectedChannelFilter();
 //       return;
 //     }
 //     if (newIndex != _focusedChannelFilterIndex) {
 //       setState(() => _focusedChannelFilterIndex = newIndex);
 //       _channelFilterFocusNodes[newIndex].requestFocus();
 //       _updateAndScrollToFocus(
-//           _channelFilterFocusNodes, newIndex, _channelFilterScrollController, 160); 
+//           _channelFilterFocusNodes, newIndex, _channelFilterScrollController, 160);
 //     }
 //   }
 
@@ -813,16 +812,16 @@
 //   //=================================================
 
 //   Future<void> _fetchDataForView() async {
-//     _debounce?.cancel();  
+//     _debounce?.cancel();
 
 //     setState(() {
 //       _isListLoading = true;
-//       _displayList.clear();  
-//       _currentViewMasterList.clear();  
-//       _rebuildItemFocusNodes();  
-//       _errorMessage = null;  
-       
-//       _searchText = '';  
+//       _displayList.clear();
+//       _currentViewMasterList.clear();
+//       _rebuildItemFocusNodes();
+//       _errorMessage = null;
+
+//       _searchText = '';
 //       _isSearching = false;
 //     });
 
@@ -831,20 +830,20 @@
 //     try {
 //       if (_selectedChannelFilterId != null) {
 //         final List<SportsShowItemModel> showItems =
-//             await _fetchSportsShowsForChannel(_selectedChannelFilterId!); 
-         
+//             await _fetchSportsShowsForChannel(_selectedChannelFilterId!);
+
 //         newMasterList = showItems.map((show) => SportsChannelModel(
 //               id: show.id,
 //               title: show.title,
-//               thumbnail: show.logo,  
-//               updatedAt: '',  
-//               order: show.order,  
+//               thumbnail: show.logo,
+//               updatedAt: '',
+//               order: show.order,
 //               genre: show.genre,
 //               language: null,
 //             )).toList();
-//         _isDisplayingShows = true;  
+//         _isDisplayingShows = true;
 //       } else {
-//         newMasterList = [];  
+//         newMasterList = [];
 //         _isDisplayingShows = false;
 //       }
 //     } catch (e) {
@@ -853,23 +852,23 @@
 //           _errorMessage = "Failed to load data. Please try again.";
 //           debugPrint("Error in _fetchDataForView: $e");
 //         });
-//         newMasterList = [];  
+//         newMasterList = [];
 //       }
 //     }
 
 //     if (!mounted) return;
 
 //     setState(() {
-//       _currentViewMasterList = newMasterList;  
-//       _displayList = List.from(_currentViewMasterList);  
-//       _isListLoading = false;  
-//       _rebuildItemFocusNodes();  
-//       _focusedItemIndex = -1;  
+//       _currentViewMasterList = newMasterList;
+//       _displayList = List.from(_currentViewMasterList);
+//       _isListLoading = false;
+//       _rebuildItemFocusNodes();
+//       _focusedItemIndex = -1;
 //     });
 
 //     _startAnimations();
 //   }
-   
+
 //   void _applySearchFilter() {
 //     if (!mounted) return;
 
@@ -884,53 +883,53 @@
 //     }
 
 //     setState(() {
-//       _displayList = filteredList; 
+//       _displayList = filteredList;
 //       _rebuildItemFocusNodes();
-//       _focusedItemIndex = -1; 
+//       _focusedItemIndex = -1;
 //     });
 //     _startAnimations();
 //   }
 
 //   void _updateSelectedNetwork() async {
-//       if (_apiNetworks.isEmpty || _focusedNetworkIndex >= _apiNetworks.length) return;  
+//       if (_apiNetworks.isEmpty || _focusedNetworkIndex >= _apiNetworks.length) return;
 
 //     final selectedNetwork = _apiNetworks[_focusedNetworkIndex];
-//     _debounce?.cancel();  
+//     _debounce?.cancel();
 
 //     setState(() {
-//       _isListLoading = true;  
-//       _errorMessage = null;  
-//         _displayList = [];  
+//       _isListLoading = true;
+//       _errorMessage = null;
+//         _displayList = [];
 //         _currentViewMasterList.clear();
-//         _rebuildItemFocusNodes();  
-//         _isSearching = false;  
+//         _rebuildItemFocusNodes();
+//         _isSearching = false;
 //         _searchText = '';
 //     });
 
 //     try {
-//       final newChannelList = await _fetchSportsChannelsForNetwork(selectedNetwork.id); 
+//       final newChannelList = await _fetchSportsChannelsForNetwork(selectedNetwork.id);
 //       if (!mounted) return;
 
 //       setState(() {
-//         _sportsChannelList = newChannelList;  
+//         _sportsChannelList = newChannelList;
 //         _selectedNetworktitle = selectedNetwork.name;
-//         _updateSelectedNetworkData();  
-         
-//         _updateChannelFilters();  
+//         _updateSelectedNetworkData();
+
+//         _updateChannelFilters();
 //         _rebuildChannelFilterFocusNodes();
 //       });
-       
-//       await _fetchDataForView();  
-       
+
+//       await _fetchDataForView();
+
 //     } catch (e) {
 //       if (mounted) {
 //         setState(() {
 //           _isListLoading = false;
 //           _errorMessage = "Failed to load channels for ${selectedNetwork.name}.";
-//           _sportsChannelList = [];  
+//           _sportsChannelList = [];
 //           _displayList = [];
 //           _currentViewMasterList.clear();
-//             _updateChannelFilters();  
+//             _updateChannelFilters();
 //             _rebuildChannelFilterFocusNodes();
 //             debugPrint("Error in _updateSelectedNetwork: $e");
 //         });
@@ -942,7 +941,7 @@
 //     final filtertitles = _channelFilters.keys.toList();
 //     if (filtertitles.isEmpty || _focusedChannelFilterIndex >= filtertitles.length || _channelFilterFocusNodes.isEmpty) return;
 
-//     _debounce?.cancel();  
+//     _debounce?.cancel();
 
 //     final newFiltertitle = filtertitles[_focusedChannelFilterIndex];
 //     if (newFiltertitle == _selectedChannelFiltertitle) return;
@@ -951,26 +950,26 @@
 //       _selectedChannelFiltertitle = newFiltertitle;
 //       _selectedChannelFilterId = _channelFilters[_selectedChannelFiltertitle];
 //       _isDisplayingShows = (_selectedChannelFilterId != null);
-       
+
 //       _fetchDataForView();
 //     });
 //   }
 
 //   void _updateSelectedNetworkData() {
-//       if (_apiNetworks.isEmpty || _focusedNetworkIndex >= _apiNetworks.length) return;  
+//       if (_apiNetworks.isEmpty || _focusedNetworkIndex >= _apiNetworks.length) return;
 
 //     final selectedNetwork = _apiNetworks.firstWhere(
 //         (n) => n.name == _selectedNetworktitle,
 //         orElse: () => ApiNetworkModel(id: -1, name: '', networksOrder: 9999));
-        
+
 //     final sportsSliders = selectedNetwork.sliders
 //         // ✅ CHANGED sliderFor check
-//         .where((s) => s.sliderFor == 'sports') 
+//         .where((s) => s.sliderFor == 'sports')
 //         .toList();
 
 //     setState(() {
 //       _selectedNetworkLogo = selectedNetwork.logo;
-//       _currentSportsSliders = sportsSliders; 
+//       _currentSportsSliders = sportsSliders;
 //       _currentSliderIndex = 0;
 //       if (sportsSliders.isNotEmpty) {
 //         _currentBackgroundUrl = sportsSliders.first.thumbnail;
@@ -979,7 +978,7 @@
 //       }
 //     });
 
-//     if (_sliderPageController.hasClients && _currentSportsSliders.isNotEmpty) { 
+//     if (_sliderPageController.hasClients && _currentSportsSliders.isNotEmpty) {
 //       _sliderPageController.jumpToPage(0);
 //     }
 //   }
@@ -987,9 +986,9 @@
 //   void _updateChannelFilters() {
 //     setState(() {
 //       if (_sportsChannelList.isEmpty) {
-//         _channelFilters = {};  
+//         _channelFilters = {};
 //       } else {
-//         final Map<String, int?> newFilters = {};  
+//         final Map<String, int?> newFilters = {};
 //         for (final channel in _sportsChannelList) {
 //           if (channel.title.isNotEmpty && !newFilters.containsKey(channel.title)) {
 //             newFilters[channel.title] = channel.id;
@@ -997,11 +996,11 @@
 //         }
 //         _channelFilters = newFilters;
 //       }
-       
+
 //       if (_channelFilters.isNotEmpty) {
 //         _selectedChannelFiltertitle = _channelFilters.keys.first;
 //         _selectedChannelFilterId = _channelFilters.values.first;
-//         _isDisplayingShows = true;  
+//         _isDisplayingShows = true;
 //         _focusedChannelFilterIndex = 0;
 //       } else {
 //         _selectedChannelFiltertitle = '';
@@ -1011,7 +1010,6 @@
 //       }
 //     });
 //   }
-
 
 //   void _onKeyPressed(String value) {
 //     setState(() {
@@ -1029,32 +1027,32 @@
 //           _searchText = _searchText.substring(0, _searchText.length - 1);
 //         }
 //       } else if (value == ' ') {
-//         if (_searchText.isNotEmpty && !_searchText.endsWith(' ')) { 
+//         if (_searchText.isNotEmpty && !_searchText.endsWith(' ')) {
 //           _searchText += ' ';
 //         }
 //       } else {
 //         _searchText += value;
 //       }
-//       _isSearching = _searchText.isNotEmpty; 
-//       _debounce?.cancel(); 
-//       _debounce = Timer(const Duration(milliseconds: 400), () { 
-//         _applySearchFilter(); 
+//       _isSearching = _searchText.isNotEmpty;
+//       _debounce?.cancel();
+//       _debounce = Timer(const Duration(milliseconds: 400), () {
+//         _applySearchFilter();
 //       });
 //     });
 //   }
 
 //   Future<void> _navigateToSportsDetails(
-//       SportsChannelModel item, int index) async {  
+//       SportsChannelModel item, int index) async {
 //     if (_isVideoLoading) return;
 //     setState(() => _isVideoLoading = true);
-     
+
 //     try {
 //       int? currentUserId = SessionManager.userId;
 //       HistoryService.updateUserHistory(
 //         userId: currentUserId!,
 //         contentType: 4, // ✅ CHECK THIS ID: 5 was Religious, assuming 4 or 6 for Sports
-//         eventId: item.id,  
-//         eventTitle: item.title,  
+//         eventId: item.id,
+//         eventTitle: item.title,
 //         url: '',
 //         categoryId: 0,
 //       ).catchError((e) { debugPrint("History update failed: $e"); });
@@ -1064,10 +1062,10 @@
 //     await Navigator.push(
 //       context,
 //       MaterialPageRoute(
-//         builder: (context) => TournamentFinalDetailsPage ( 
-//           id: item.id,  
-//           banner: item.thumbnail ??'',  
-//           poster: item.thumbnail ?? '',  
+//         builder: (context) => TournamentFinalDetailsPage (
+//           id: item.id,
+//           banner: item.thumbnail ??'',
+//           poster: item.thumbnail ?? '',
 //           name: item.title,  updatedAt:item.updatedAt,
 //         ),
 //       ),
@@ -1078,25 +1076,24 @@
 //     if (mounted) {
 //       setState(() {
 //         _isVideoLoading = false;
-//           if (index >= 0 && index < _itemFocusNodes.length) { 
+//           if (index >= 0 && index < _itemFocusNodes.length) {
 //             _focusedItemIndex = index;
 //               WidgetsBinding.instance.addPostFrameCallback((_) {
 //                   if(mounted && _itemFocusNodes.isNotEmpty && _focusedItemIndex < _itemFocusNodes.length) {
 //                     _itemFocusNodes[_focusedItemIndex].requestFocus();
 //                     _updateAndScrollToFocus(
-//                         _itemFocusNodes, _focusedItemIndex, _listScrollController, (bannerwdt * 1.1) + 15); 
+//                         _itemFocusNodes, _focusedItemIndex, _listScrollController, (bannerwdt * 1.1) + 15);
 //                   }
 //                 });
 //           } else {
 //             _focusedItemIndex = -1;
 //             if(_itemFocusNodes.isNotEmpty) { _focusFirstListItemWithScroll(); }
-//             else if (_channelFilterFocusNodes.isNotEmpty && _focusedChannelFilterIndex >= 0) { _channelFilterFocusNodes[_focusedChannelFilterIndex].requestFocus(); }  
+//             else if (_channelFilterFocusNodes.isNotEmpty && _focusedChannelFilterIndex >= 0) { _channelFilterFocusNodes[_focusedChannelFilterIndex].requestFocus(); }
 //             else { _searchButtonFocusNode.requestFocus(); }
 //           }
 //       });
 //     }
 //   }
-
 
 //   //=================================================
 //   // SECTION 2.4: INITIALIZATION AND CLEANUP
@@ -1110,14 +1107,14 @@
 //   }
 
 //   void _startAnimations() {
-//     _fadeController.reset(); 
+//     _fadeController.reset();
 //     _fadeController.forward();
 //   }
 
 //   void _initializeFocusNodes() {
 //     _disposeFocusNodes(_networkFocusNodes);
 //     _networkFocusNodes = List.generate(
-//         _apiNetworks.length, (index) => FocusNode(debugLabel: 'Network-$index')..addListener(_setStateListener)); 
+//         _apiNetworks.length, (index) => FocusNode(debugLabel: 'Network-$index')..addListener(_setStateListener));
 //     _rebuildChannelFilterFocusNodes();
 //     _rebuildItemFocusNodes();
 //     _rebuildKeyboardFocusNodes();
@@ -1126,14 +1123,14 @@
 //   void _rebuildChannelFilterFocusNodes() {
 //     _disposeFocusNodes(_channelFilterFocusNodes);
 //     _channelFilterFocusNodes = List.generate(
-//         _channelFilters.length, (index) => FocusNode(debugLabel: 'ChannelFilter-$index')..addListener(_setStateListener)); 
+//         _channelFilters.length, (index) => FocusNode(debugLabel: 'ChannelFilter-$index')..addListener(_setStateListener));
 //   }
 
 //   void _rebuildItemFocusNodes() {
 //     _disposeFocusNodes(_itemFocusNodes);
 //     final currentList = _displayList;
 //     _itemFocusNodes = List.generate(
-//         currentList.length, (index) => FocusNode(debugLabel: 'Item-$index')..addListener(_setStateListener)); 
+//         currentList.length, (index) => FocusNode(debugLabel: 'Item-$index')..addListener(_setStateListener));
 //   }
 
 //   void _rebuildKeyboardFocusNodes() {
@@ -1141,7 +1138,7 @@
 //     int totalKeys =
 //         _keyboardLayout.fold(0, (prev, row) => prev + row.length);
 //     _keyboardFocusNodes =
-//         List.generate(totalKeys, (index) => FocusNode(debugLabel: 'Key-$index')..addListener(_setStateListener)); 
+//         List.generate(totalKeys, (index) => FocusNode(debugLabel: 'Key-$index')..addListener(_setStateListener));
 //   }
 
 //   int _getFocusNodeIndexForKey(int row, int col) {
@@ -1156,10 +1153,10 @@
 
 //   void _disposeFocusNodes(List<FocusNode> nodes) {
 //     for (var node in nodes) {
-//       node.removeListener(_setStateListener); 
+//       node.removeListener(_setStateListener);
 //       node.dispose();
 //     }
-//     nodes.clear(); 
+//     nodes.clear();
 //   }
 
 //   void _updateAndScrollToFocus(List<FocusNode> nodes, int index,
@@ -1187,7 +1184,7 @@
 //       child: Column(
 //         children: [
 //           _buildTopFilterBar(),
-//           Expanded( 
+//           Expanded(
 //             child: FadeTransition(
 //               opacity: _fadeAnimation,
 //               child: _buildContentBody(),
@@ -1201,22 +1198,22 @@
 //   Widget _buildContentBody() {
 //     return Column(
 //       children: [
-//         SizedBox( 
+//         SizedBox(
 //           height: screenhgt * 0.5,
 //           child: _showKeyboard ? _buildSearchUI() : const SizedBox.shrink(),
 //         ),
 //         _buildSliderIndicators(),
-//         _buildChannelFilterAndSearchButtons(), 
+//         _buildChannelFilterAndSearchButtons(),
 //         SizedBox(height: screenhgt * 0.02),
 //         _buildSportsList(), // ✅ List build call
 //       ],
 //     );
 //   }
-   
+
 //   Widget _buildBackgroundOrSlider() {
-//     if (_currentSportsSliders.isNotEmpty) { 
-//       return SportsthumbnailSlider( 
-//         sliders: _currentSportsSliders, 
+//     if (_currentSportsSliders.isNotEmpty) {
+//       return SportsthumbnailSlider(
+//         sliders: _currentSportsSliders,
 //         controller: _sliderPageController,
 //         onPageChanged: (index) {
 //           if (mounted) {
@@ -1241,7 +1238,7 @@
 //                 image: DecorationImage(
 //                   image: CachedNetworkImageProvider(_currentBackgroundUrl!), // ✅ Cache
 //                   fit: BoxFit.cover,
-//                   onError: (exception, stackTrace) { 
+//                   onError: (exception, stackTrace) {
 //                     debugPrint('Error loading background image: $_currentBackgroundUrl');
 //                   },
 //                 ),
@@ -1317,11 +1314,11 @@
 //           scrollDirection: Axis.horizontal,
 //           itemCount: _uniqueNetworks.length,
 //           itemBuilder: (context, index) {
-//             if (index >= _networkFocusNodes.length) return const SizedBox.shrink(); 
+//             if (index >= _networkFocusNodes.length) return const SizedBox.shrink();
 //             final networktitle = _uniqueNetworks[index];
 //             final focusNode = _networkFocusNodes[index];
 //             final isSelected = _selectedNetworktitle == networktitle;
-             
+
 //             return Focus(
 //               focusNode: focusNode,
 //               onFocusChange: (hasFocus) {
@@ -1329,7 +1326,7 @@
 //                   setState(() => _focusedNetworkIndex = index);
 //                 }
 //               },
-//               child: _buildGlassEffectButton( 
+//               child: _buildGlassEffectButton(
 //                 focusNode: focusNode,
 //                 isSelected: isSelected,
 //                 focusColor: _focusColors[index % _focusColors.length],
@@ -1360,9 +1357,9 @@
 //     final filtertitles = _channelFilters.keys.toList();
 
 //     if (filtertitles.isEmpty && !_isSearching) {
-//       return const SizedBox(height: 30); 
+//       return const SizedBox(height: 30);
 //     }
-     
+
 //     return SizedBox(
 //       height: 30,
 //       child: Center(
@@ -1377,7 +1374,7 @@
 //                 focusNode: _searchButtonFocusNode,
 //                 child: _buildGlassEffectButton(
 //                   focusNode: _searchButtonFocusNode,
-//                   isSelected: _isSearching || _showKeyboard, 
+//                   isSelected: _isSearching || _showKeyboard,
 //                   focusColor: ProfessionalColors.accentOrange,
 //                   onTap: () {
 //                     _searchButtonFocusNode.requestFocus();
@@ -1401,7 +1398,7 @@
 //                         ("Search").toUpperCase(),
 //                         style: TextStyle(
 //                           color: Colors.white,
-//                           fontWeight: FontWeight.bold, 
+//                           fontWeight: FontWeight.bold,
 //                           fontSize: 16,
 //                         ),
 //                       ),
@@ -1440,7 +1437,7 @@
 //                   filtertitle.toUpperCase(),
 //                   style: const TextStyle(
 //                     color: Colors.white,
-//                     fontWeight: FontWeight.bold, 
+//                     fontWeight: FontWeight.bold,
 //                     fontSize: 16,
 //                   ),
 //                 ),
@@ -1455,7 +1452,7 @@
 //   Widget _buildSportsList() {
 //     final currentList = _displayList;
 
-//     if (currentList.isEmpty && !_isListLoading) { 
+//     if (currentList.isEmpty && !_isListLoading) {
 //       return Expanded(
 //         child: Center(
 //           child: Container(
@@ -1477,7 +1474,7 @@
 //                 Text(
 //                   _isSearching && _searchText.isNotEmpty
 //                       ? "No results found for '$_searchText'"
-//                       : 'No sports content available.', 
+//                       : 'No sports content available.',
 //                   style: const TextStyle(
 //                     color: ProfessionalColors.textSecondary,
 //                     fontSize: 16,
@@ -1489,7 +1486,7 @@
 //         ),
 //       );
 //     }
-     
+
 //     return Expanded(
 //       child: Padding(
 //         padding: const EdgeInsets.only(top: 1.0, bottom: 10.0), // Bottom padding added
@@ -1500,17 +1497,17 @@
 //           padding:  EdgeInsets.symmetric(horizontal: screenwdt * 0.015),
 //           itemCount: currentList.length,
 //           itemBuilder: (context, index) {
-//             if (index >= _itemFocusNodes.length) return const SizedBox.shrink(); 
+//             if (index >= _itemFocusNodes.length) return const SizedBox.shrink();
 //             final item = currentList[index];
 //             final focusNode = _itemFocusNodes[index];
-             
+
 //             return Container(
 //               width: bannerwdt * 1.1, // Width sufficient for text
-//               margin: const EdgeInsets.only(right: 15.0), 
+//               margin: const EdgeInsets.only(right: 15.0),
 //               alignment: Alignment.topCenter,
 //               child: InkWell(
 //                 focusNode: focusNode,
-//                 onTap: () => _navigateToSportsDetails(item, index), 
+//                 onTap: () => _navigateToSportsDetails(item, index),
 //                 onFocusChange: (hasFocus) {
 //                   if (hasFocus) {
 //                     setState(() => _focusedItemIndex = index);
@@ -1518,13 +1515,13 @@
 //                         _itemFocusNodes, index, _listScrollController, (bannerwdt * 1.1) + 15);
 //                   }
 //                 },
-//                 child: OptimizedSportsCard( 
-//                   item: item, 
+//                 child: OptimizedSportsCard(
+//                   item: item,
 //                   isFocused: _focusedItemIndex == index,
 //                   onTap: () =>
 //                       _navigateToSportsDetails(item, index),
-//                   cardHeight: bannerhgt * 1.0, 
-//                   networkLogo: _isDisplayingShows ? null : _selectedNetworkLogo, 
+//                   cardHeight: bannerhgt * 1.0,
+//                   networkLogo: _isDisplayingShows ? null : _selectedNetworkLogo,
 //                   uniqueIndex: index,
 //                 ),
 //               ),
@@ -1555,9 +1552,9 @@
 //                     ],
 //                   ).createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
 //                   child: Text(
-//                     "Search in $_selectedChannelFiltertitle", 
+//                     "Search in $_selectedChannelFiltertitle",
 //                     style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-//                     maxLines: 2, 
+//                     maxLines: 2,
 //                     textAlign: TextAlign.center,
 //                   ),
 //                 ),
@@ -1609,7 +1606,7 @@
 //   }
 
 //   Widget _buildKeyboardRow(List<String> keys, int rowIndex) {
-//     int startIndex = _getFocusNodeIndexForKey(rowIndex, 0); 
+//     int startIndex = _getFocusNodeIndexForKey(rowIndex, 0);
 
 //     return Row(
 //       mainAxisAlignment: MainAxisAlignment.center,
@@ -1675,12 +1672,12 @@
 //   }
 
 //   Widget _buildSliderIndicators() {
-//     if (_currentSportsSliders.length <= 1) { 
-//       return const SizedBox(height: 28); 
+//     if (_currentSportsSliders.length <= 1) {
+//       return const SizedBox(height: 28);
 //     }
 //     return Row(
 //       mainAxisAlignment: MainAxisAlignment.center,
-//       children: List.generate(_currentSportsSliders.length, (index) { 
+//       children: List.generate(_currentSportsSliders.length, (index) {
 //         bool isActive = _currentSliderIndex == index;
 //         return AnimatedContainer(
 //           duration: const Duration(milliseconds: 300),
@@ -1792,7 +1789,7 @@
 //             ),
 //             const SizedBox(height: 24),
 //             ElevatedButton.icon(
-//               focusNode: FocusNode(), 
+//               focusNode: FocusNode(),
 //               onPressed: () => _fetchDataForPage(forceRefresh: true),
 //               icon: const Icon(Icons.refresh_rounded),
 //               label: const Text('Try Again'),
@@ -1819,7 +1816,7 @@
 // //==============================================================================
 
 // class OptimizedSportsCard extends StatelessWidget {
-//   final SportsChannelModel item; 
+//   final SportsChannelModel item;
 //   final bool isFocused;
 //   final VoidCallback onTap;
 //   final double cardHeight;
@@ -1828,7 +1825,7 @@
 
 //   const OptimizedSportsCard({
 //     Key? key,
-//     required this.item, 
+//     required this.item,
 //     required this.isFocused,
 //     required this.onTap,
 //     required this.cardHeight,
@@ -1850,12 +1847,12 @@
 
 //     // ✅ FIXED: Layout ensures text is visible below image
 //     return Column(
-//       crossAxisAlignment: CrossAxisAlignment.center, 
-//       mainAxisSize: MainAxisSize.min, 
+//       crossAxisAlignment: CrossAxisAlignment.center,
+//       mainAxisSize: MainAxisSize.min,
 //       children: [
 //         SizedBox(
 //           height: cardHeight, // Defines Image area height
-//           width: double.infinity, 
+//           width: double.infinity,
 //           child: AnimatedContainer(
 //             duration: AnimationTiming.fast,
 //             transform: isFocused
@@ -1880,10 +1877,10 @@
 //               child: Stack(
 //                 fit: StackFit.expand,
 //                 children: [
-//                   _buildSportsImage(), 
+//                   _buildSportsImage(),
 //                   if (isFocused)
 //                     Positioned(
-//                         left: 0, right: 0, top: 0, bottom: 0, 
+//                         left: 0, right: 0, top: 0, bottom: 0,
 //                         child: Container(
 //                             color: Colors.black.withOpacity(0.4),
 //                             child: Icon(Icons.play_circle_filled_outlined,
@@ -1905,19 +1902,19 @@
 //         Padding(
 //           padding: const EdgeInsets.symmetric(horizontal: 4.0),
 //           child: Text(
-//               item.title, 
-//               textAlign: TextAlign.center, 
+//               item.title,
+//               textAlign: TextAlign.center,
 //               style: TextStyle(
 //                   color: isFocused
 //                       ? focusColor
 //                       : Colors.white, // ✅ White color for visibility
-//                   fontSize: 15, 
+//                   fontSize: 15,
 //                   fontWeight: isFocused ? FontWeight.bold : FontWeight.w500,
 //                   shadows: [
 //                       Shadow(color: Colors.black.withOpacity(0.8), blurRadius: 2, offset: Offset(0, 1))
 //                   ]
 //               ),
-//               maxLines: 2, 
+//               maxLines: 2,
 //               overflow: TextOverflow.ellipsis
 //           ),
 //         ),
@@ -1926,12 +1923,12 @@
 //   }
 
 //   Widget _buildSportsImage() {
-//     final imageUrl = item.thumbnail; 
-     
+//     final imageUrl = item.thumbnail;
+
 //     return imageUrl != null && imageUrl.isNotEmpty
 //         ? CachedNetworkImage( // ✅ Cached
 //             imageUrl: imageUrl,
-//             fit: BoxFit.fill, 
+//             fit: BoxFit.fill,
 //             placeholder: (context, url) => _buildImagePlaceholder(),
 //             errorWidget: (context, url, error) {
 //               debugPrint('Error loading item image: $imageUrl, Error: $error');
@@ -1940,13 +1937,13 @@
 //           )
 //         : _buildImagePlaceholder();
 //   }
-   
+
 //   Widget _buildImagePlaceholder() {
 //     return Container(
 //       decoration: const BoxDecoration(
 //         gradient: LinearGradient(
 //           colors: [
-//             ProfessionalColors.accentGreen, 
+//             ProfessionalColors.accentGreen,
 //             ProfessionalColors.accentBlue,
 //           ],
 //         ),
@@ -1978,7 +1975,7 @@
 
 // class _SportsthumbnailSliderState extends State<SportsthumbnailSlider> {
 //   Timer? _timer;
-//   double _opacity = 1.0; 
+//   double _opacity = 1.0;
 
 //   @override
 //   void initState() {
@@ -2001,7 +1998,7 @@
 
 //   void _startTimer() {
 //     _timer?.cancel();
-//     _timer = Timer.periodic(const Duration(seconds: 8), (timer) { 
+//     _timer = Timer.periodic(const Duration(seconds: 8), (timer) {
 //       if (!mounted || !widget.controller.hasClients || widget.sliders.length <= 1) return;
 
 //       int currentPage = widget.controller.page?.round() ?? 0;
@@ -2027,7 +2024,7 @@
 //       return const SizedBox.shrink();
 //     }
 
-//     return AnimatedOpacity( 
+//     return AnimatedOpacity(
 //       opacity: _opacity,
 //       duration: const Duration(milliseconds: 400),
 //       child: PageView.builder(
@@ -2059,7 +2056,7 @@
 //                     ],
 //                     begin: Alignment.topCenter,
 //                     end: Alignment.bottomCenter,
-//                     stops: const [0.0, 0.5, 0.7, 0.9], 
+//                     stops: const [0.0, 0.5, 0.7, 0.9],
 //                   ),
 //                 ),
 //               ),
@@ -2070,10 +2067,6 @@
 //     );
 //   }
 // }
-
-
-
-
 
 // import 'dart:async';
 // import 'dart:convert';
@@ -2086,7 +2079,7 @@
 
 // // NOTE: Check your project structure imports
 // import 'package:mobi_tv_entertainment/components/home_screen_pages/sports_category/sports_final_details_page.dart';
-// import 'package:mobi_tv_entertainment/main.dart'; 
+// import 'package:mobi_tv_entertainment/main.dart';
 // import 'package:mobi_tv_entertainment/components/services/history_service.dart';
 // import 'package:mobi_tv_entertainment/components/widgets/smart_style_image_card.dart';
 
@@ -2116,12 +2109,12 @@
 // }
 
 // // Model: SportsChannelModel (Channels/Categories)
-// class SportsChannelModel { 
+// class SportsChannelModel {
 //   final int id;
-//   final String title; 
+//   final String title;
 //   final String updatedAt;
-//   final String? thumbnail; 
-//   final String? genre; 
+//   final String? thumbnail;
+//   final String? genre;
 //   final int order;
 //   final String? language;
 
@@ -2140,7 +2133,7 @@
 //       id: json['id'] ?? 0,
 //       title: json['title'] ?? '',
 //       updatedAt: json['updated_at'] ?? '',
-//       thumbnail: json['Thumbnail'], 
+//       thumbnail: json['Thumbnail'],
 //       genre: null,
 //       order: json['order'] ?? 9999,
 //       language: json['language'],
@@ -2172,7 +2165,7 @@
 //       title: json['title'] ?? '',
 //       logo: json['logo'],
 //       genre: json['genre'],
-//       sportsChannelId: json['sports_category_id'] ?? 0, 
+//       sportsChannelId: json['sports_category_id'] ?? 0,
 //       order: json['order'] ?? 9999,
 //     );
 //   }
@@ -2268,7 +2261,7 @@
 //   final int? initialNetworkId;
 
 //   const SportsSliderScreen({
-//     Key? key, 
+//     Key? key,
 //     this.title = 'Sports Channels',
 //     this.initialNetworkId,
 //   }) : super(key: key);
@@ -2278,24 +2271,24 @@
 // }
 
 // class _SportsSliderScreenState extends State<SportsSliderScreen> with SingleTickerProviderStateMixin {
-   
+
 //   // CRASH FIX: Disposal Flag
 //   bool _isDisposed = false;
 
-//   List<SportsChannelModel> _sportsChannelList = []; 
-//   bool _isLoading = true; 
-//   bool _isListLoading = false; 
+//   List<SportsChannelModel> _sportsChannelList = [];
+//   bool _isLoading = true;
+//   bool _isListLoading = false;
 //   String? _errorMessage;
 
 //   // Focus and Scroll Controllers
 //   List<FocusNode> _itemFocusNodes = [];
 //   List<FocusNode> _networkFocusNodes = [];
-//   List<FocusNode> _channelFilterFocusNodes = [];  
+//   List<FocusNode> _channelFilterFocusNodes = [];
 //   List<FocusNode> _keyboardFocusNodes = [];
 //   final FocusNode _widgetFocusNode = FocusNode();
 //   final ScrollController _listScrollController = ScrollController();
 //   final ScrollController _networkScrollController = ScrollController();
-//   final ScrollController _channelFilterScrollController = ScrollController();  
+//   final ScrollController _channelFilterScrollController = ScrollController();
 
 //   late PageController _sliderPageController;
 
@@ -2312,23 +2305,23 @@
 
 //   // UI and Filter State
 //   int _focusedNetworkIndex = 0;
-//   int _focusedChannelFilterIndex = 0;  
+//   int _focusedChannelFilterIndex = 0;
 //   int _focusedItemIndex = -1;
 //   String _selectedNetworkName = '';
 //   String? _selectedNetworkLogo;
-   
-//   Map<String, int?> _channelFilters = {}; 
-//   String _selectedChannelFilterName = ''; 
-//   int? _selectedChannelFilterId; 
-//   bool _isDisplayingShows = false;  
 
-//   List<SportsChannelModel> _currentViewMasterList = []; 
-//   List<SportsChannelModel> _displayList = []; 
+//   Map<String, int?> _channelFilters = {};
+//   String _selectedChannelFilterName = '';
+//   int? _selectedChannelFilterId;
+//   bool _isDisplayingShows = false;
+
+//   List<SportsChannelModel> _currentViewMasterList = [];
+//   List<SportsChannelModel> _displayList = [];
 //   List<ApiNetworkModel> _apiNetworks = [];
 //   List<String> _uniqueNetworks = [];
-   
+
 //   // Animation and Loading State
-//   bool _isVideoLoading = false; 
+//   bool _isVideoLoading = false;
 //   late AnimationController _fadeController;
 //   late Animation<double> _fadeAnimation;
 //   String? _currentBackgroundUrl;
@@ -2364,14 +2357,14 @@
 //     _isDisposed = false; // Initialize
 //     _sliderPageController = PageController();
 //     _searchButtonFocusNode = FocusNode();
-//     _searchButtonFocusNode.addListener(_setStateListener); 
+//     _searchButtonFocusNode.addListener(_setStateListener);
 //     _widgetFocusNode.addListener(_setStateListener);
-    
+
 //     // CRASH FIX: Safe Init
 //     WidgetsBinding.instance.addPostFrameCallback((_) {
 //       if(!_isDisposed) _fetchDataForPage();
 //     });
-    
+
 //     _initializeAnimations();
 //   }
 
@@ -2381,26 +2374,26 @@
 //     _sliderTimer?.cancel();
 //     _debounce?.cancel();
 //     _navigationLockTimer?.cancel();
-    
+
 //     _sliderPageController.dispose();
 //     _fadeController.dispose();
-    
+
 //     _widgetFocusNode.removeListener(_setStateListener);
 //     _widgetFocusNode.dispose();
-    
+
 //     _searchButtonFocusNode.removeListener(_setStateListener);
 //     _searchButtonFocusNode.dispose();
-    
+
 //     _listScrollController.dispose();
 //     _networkScrollController.dispose();
 //     _channelFilterScrollController.dispose();
-    
+
 //     // Safe Node Disposal
 //     _disposeFocusNodes(_itemFocusNodes);
 //     _disposeFocusNodes(_networkFocusNodes);
-//     _disposeFocusNodes(_channelFilterFocusNodes);  
+//     _disposeFocusNodes(_channelFilterFocusNodes);
 //     _disposeFocusNodes(_keyboardFocusNodes);
-    
+
 //     super.dispose();
 //   }
 
@@ -2413,11 +2406,11 @@
 //   void _disposeFocusNodes(List<FocusNode> nodes) {
 //     for (var node in nodes) {
 //       try {
-//         node.removeListener(_setStateListener); 
+//         node.removeListener(_setStateListener);
 //         node.dispose();
 //       } catch (_) {}
 //     }
-//     nodes.clear(); 
+//     nodes.clear();
 //   }
 
 //   @override
@@ -2431,14 +2424,14 @@
 //         child: Stack(
 //           children: [
 //             _buildBackgroundOrSlider(),
-//             _isLoading 
+//             _isLoading
 //                 ? const Center(
 //                     child: ProfessionalSportsLoadingIndicator(
-//                         message: 'Loading Sports Channels...'))  
+//                         message: 'Loading Sports Channels...'))
 //                 : _errorMessage != null
-//                     ? _buildErrorWidget() 
-//                     : _buildPageContent(), 
-//             if (_isVideoLoading && _errorMessage == null) 
+//                     ? _buildErrorWidget()
+//                     : _buildPageContent(),
+//             if (_isVideoLoading && _errorMessage == null)
 //               Positioned.fill(
 //                 child: Container(
 //                   color: Colors.black.withOpacity(0.8),
@@ -2467,7 +2460,7 @@
 //     try {
 //       final fetchedNetworks = await _fetchNetworks();
 //       if (_isDisposed || !mounted) return;
-      
+
 //       fetchedNetworks.sort((a, b) => a.networksOrder.compareTo(b.networksOrder));
 
 //       if (fetchedNetworks.isEmpty) {
@@ -2480,7 +2473,7 @@
 //       if (widget.initialNetworkId != null) {
 //         int foundIndex = fetchedNetworks.indexWhere((n) => n.id == widget.initialNetworkId);
 //         if (foundIndex != -1) {
-//           initialIndex = foundIndex; 
+//           initialIndex = foundIndex;
 //         }
 //       }
 
@@ -2490,23 +2483,23 @@
 //       setState(() {
 //         _apiNetworks = fetchedNetworks;
 //         _uniqueNetworks = _apiNetworks.map((n) => n.name).toList();
-//         _focusedNetworkIndex = initialIndex; 
+//         _focusedNetworkIndex = initialIndex;
 //         _selectedNetworkName = initialNetwork.name;
 //       });
 
-//       final fetchedList = await _fetchSportsChannelsForNetwork(networkIdToFetch); 
-       
+//       final fetchedList = await _fetchSportsChannelsForNetwork(networkIdToFetch);
+
 //       if (_isDisposed || !mounted) return;
 
 //       setState(() {
-//         _sportsChannelList = fetchedList;  
+//         _sportsChannelList = fetchedList;
 //         if (_sportsChannelList.isEmpty) _errorMessage = "No Sports Channels Found.";
 //       });
 
 //       if (_errorMessage == null) {
-//         _processInitialData();  
-//         _updateChannelFilters(); 
-//         await _fetchDataForView(); 
+//         _processInitialData();
+//         _updateChannelFilters();
+//         await _fetchDataForView();
 //         _initializeFocusNodes();
 //         _startAnimations();
 
@@ -2518,7 +2511,7 @@
 //                 _networkFocusNodes,
 //                 _focusedNetworkIndex,
 //                 _networkScrollController,
-//                 160 
+//                 160
 //               );
 //             } catch (_) {}
 //           }
@@ -2554,12 +2547,12 @@
 //       if (response.statusCode == 200) {
 //         final dynamic _decoded_jsonData = json.decode(response.body);
 //         final List<dynamic> jsonData = safeDecodeList(_decoded_jsonData);
-//         return jsonData.map((item) => SportsChannelModel.fromJson(item as Map<String, dynamic>)).toList()..sort((a, b) => a.order.compareTo(b.order));  
+//         return jsonData.map((item) => SportsChannelModel.fromJson(item as Map<String, dynamic>)).toList()..sort((a, b) => a.order.compareTo(b.order));
 //       } else {
 //         throw Exception('API Error: ${response.statusCode}');
 //       }
 //     } catch (e) {
-//       if (!_isDisposed) debugPrint('Failed to load sports channels for network $networkId: $e');  
+//       if (!_isDisposed) debugPrint('Failed to load sports channels for network $networkId: $e');
 //       return [];
 //     }
 //   }
@@ -2582,7 +2575,7 @@
 //       if (response.statusCode == 200) {
 //         final dynamic _decoded_jsonData = json.decode(response.body);
 //         final List<dynamic> jsonData = safeDecodeList(_decoded_jsonData);
-//         return jsonData.map((item) => SportsShowItemModel.fromJson(item as Map<String, dynamic>)).toList()..sort((a, b) => a.order.compareTo(b.order));  
+//         return jsonData.map((item) => SportsShowItemModel.fromJson(item as Map<String, dynamic>)).toList()..sort((a, b) => a.order.compareTo(b.order));
 //       } else {
 //         throw Exception('API Error: ${response.statusCode}');
 //       }
@@ -2603,7 +2596,7 @@
 //               'Accept': 'application/json',
 //               'domain': SessionManager.savedDomain,
 //             },
-//             body: json.encode({"network_id": "", "data_for": "sports"}),  
+//             body: json.encode({"network_id": "", "data_for": "sports"}),
 //           ).timeout(const Duration(seconds: 30));
 
 //         if (_isDisposed) return [];
@@ -2623,7 +2616,7 @@
 
 //   void _processInitialData() {
 //     if (_apiNetworks.isEmpty || _isDisposed) return;
-//     _updateSelectedNetworkData(); 
+//     _updateSelectedNetworkData();
 //   }
 
 //   //=================================================
@@ -2636,7 +2629,7 @@
 //     if (_listScrollController.hasClients) {
 //       _listScrollController.jumpTo(0);
 //     }
-     
+
 //     Future.delayed(const Duration(milliseconds: 250), () {
 //       if (!_isDisposed && mounted && _itemFocusNodes.isNotEmpty) {
 //         setState(() => _focusedItemIndex = 0);
@@ -2661,7 +2654,7 @@
 //         _searchButtonFocusNode.requestFocus();
 //         return KeyEventResult.handled;
 //       }
-//       if (listHasFocus || channelFilterHasFocus || searchHasFocus) {  
+//       if (listHasFocus || channelFilterHasFocus || searchHasFocus) {
 //           if (_networkFocusNodes.isNotEmpty) { _networkFocusNodes[_focusedNetworkIndex].requestFocus(); }
 //         return KeyEventResult.handled;
 //       }
@@ -2679,10 +2672,10 @@
 //         return KeyEventResult.handled;
 //       }
 //       if (key == LogicalKeyboardKey.arrowLeft) {
-//         return KeyEventResult.handled; 
+//         return KeyEventResult.handled;
 //       }
-//       if (key == LogicalKeyboardKey.arrowRight && _channelFilterFocusNodes.isNotEmpty) {  
-//         _channelFilterFocusNodes[0].requestFocus();  
+//       if (key == LogicalKeyboardKey.arrowRight && _channelFilterFocusNodes.isNotEmpty) {
+//         _channelFilterFocusNodes[0].requestFocus();
 //         return KeyEventResult.handled;
 //       }
 //       if (key == LogicalKeyboardKey.arrowUp && _networkFocusNodes.isNotEmpty) {
@@ -2698,8 +2691,8 @@
 
 //     if ([ LogicalKeyboardKey.arrowUp, LogicalKeyboardKey.arrowDown, LogicalKeyboardKey.arrowLeft, LogicalKeyboardKey.arrowRight, LogicalKeyboardKey.select, LogicalKeyboardKey.enter ].contains(key)) {
 //       if (networkHasFocus) { _navigateNetworks(key); }
-//       else if (channelFilterHasFocus) { _navigateChannelFilters(key); }  
-//       else if (listHasFocus) { _navigateList(key); } 
+//       else if (channelFilterHasFocus) { _navigateChannelFilters(key); }
+//       else if (listHasFocus) { _navigateList(key); }
 //       return KeyEventResult.handled;
 //     }
 
@@ -2717,7 +2710,7 @@
 //     });
 
 //     int newIndex = _focusedItemIndex;
-    
+
 //     if (key == LogicalKeyboardKey.arrowUp) {
 //       setState(() => _lastNavigationDirection = 'vertical');
 //       if (_channelFilterFocusNodes.isNotEmpty) {
@@ -2741,7 +2734,7 @@
 //         setState(() => _lastNavigationDirection = 'horizontal');
 //       }
 //     } else if (key == LogicalKeyboardKey.arrowRight) {
-//       final currentList = _displayList; 
+//       final currentList = _displayList;
 //       if (newIndex + 1 < currentList.length) {
 //         newIndex++;
 //         setState(() => _lastNavigationDirection = 'horizontal');
@@ -2749,8 +2742,8 @@
 //     } else if (key == LogicalKeyboardKey.select || key == LogicalKeyboardKey.enter) {
 //       _isNavigationLocked = false;
 //       _navigationLockTimer?.cancel();
-//       final currentList = _displayList; 
-//       _navigateToSportsDetails(currentList[_focusedItemIndex], _focusedItemIndex); 
+//       final currentList = _displayList;
+//       _navigateToSportsDetails(currentList[_focusedItemIndex], _focusedItemIndex);
 //       return;
 //     }
 
@@ -2780,7 +2773,7 @@
 //       _searchButtonFocusNode.requestFocus();
 //       return;
 //     } else if (key == LogicalKeyboardKey.select || key == LogicalKeyboardKey.enter) {
-//       _updateSelectedNetwork(); 
+//       _updateSelectedNetwork();
 //       return;
 //     }
 //     if (newIndex != _focusedNetworkIndex) {
@@ -2792,7 +2785,7 @@
 
 //   void _navigateChannelFilters(LogicalKeyboardKey key) {
 //     final filterNames = _channelFilters.keys.toList();
-     
+
 //     if (filterNames.isEmpty) {
 //         if (key == LogicalKeyboardKey.arrowLeft) {
 //             _searchButtonFocusNode.requestFocus();
@@ -2803,9 +2796,9 @@
 //             setState(() => _lastNavigationDirection = 'vertical');
 //             _focusFirstListItemWithScroll();
 //         }
-//         return; 
+//         return;
 //     }
-     
+
 //     int newIndex = _focusedChannelFilterIndex;
 //     if (key == LogicalKeyboardKey.arrowLeft) {
 //       if (newIndex > 0) {
@@ -2833,13 +2826,13 @@
 //       }
 //       return;
 //     } else if (key == LogicalKeyboardKey.select || key == LogicalKeyboardKey.enter) {
-//       _updateSelectedChannelFilter(); 
+//       _updateSelectedChannelFilter();
 //       return;
 //     }
 //     if (newIndex != _focusedChannelFilterIndex) {
 //       setState(() => _focusedChannelFilterIndex = newIndex);
 //       _channelFilterFocusNodes[newIndex].requestFocus();
-//       _updateAndScrollToFocus(_channelFilterFocusNodes, newIndex, _channelFilterScrollController, 160); 
+//       _updateAndScrollToFocus(_channelFilterFocusNodes, newIndex, _channelFilterScrollController, 160);
 //     }
 //   }
 
@@ -2881,16 +2874,16 @@
 
 //   Future<void> _fetchDataForView() async {
 //     if (_isDisposed) return;
-//     _debounce?.cancel();  
+//     _debounce?.cancel();
 
 //     setState(() {
 //       _isListLoading = true;
-//       _displayList.clear();  
-//       _currentViewMasterList.clear();  
-//       _rebuildItemFocusNodes();  
-//       _errorMessage = null;  
-       
-//       _searchText = '';  
+//       _displayList.clear();
+//       _currentViewMasterList.clear();
+//       _rebuildItemFocusNodes();
+//       _errorMessage = null;
+
+//       _searchText = '';
 //       _isSearching = false;
 //     });
 
@@ -2899,22 +2892,22 @@
 //     try {
 //       if (_selectedChannelFilterId != null) {
 //         final List<SportsShowItemModel> showItems =
-//             await _fetchSportsShowsForChannel(_selectedChannelFilterId!); 
-         
+//             await _fetchSportsShowsForChannel(_selectedChannelFilterId!);
+
 //         if (_isDisposed) return;
 
 //         newMasterList = showItems.map((show) => SportsChannelModel(
 //               id: show.id,
 //               title: show.title,
-//               thumbnail: show.logo,  
-//               updatedAt: '',  
-//               order: show.order,  
+//               thumbnail: show.logo,
+//               updatedAt: '',
+//               order: show.order,
 //               genre: show.genre,
 //               language: null,
 //             )).toList();
-//         _isDisplayingShows = true;  
+//         _isDisplayingShows = true;
 //       } else {
-//         newMasterList = [];  
+//         newMasterList = [];
 //         _isDisplayingShows = false;
 //       }
 //     } catch (e) {
@@ -2922,23 +2915,23 @@
 //         setState(() {
 //           _errorMessage = "Failed to load data. Please try again.";
 //         });
-//         newMasterList = [];  
+//         newMasterList = [];
 //       }
 //     }
 
 //     if (_isDisposed || !mounted) return;
 
 //     setState(() {
-//       _currentViewMasterList = newMasterList;  
-//       _displayList = List.from(_currentViewMasterList);  
-//       _isListLoading = false;  
-//       _rebuildItemFocusNodes();  
-//       _focusedItemIndex = -1;  
+//       _currentViewMasterList = newMasterList;
+//       _displayList = List.from(_currentViewMasterList);
+//       _isListLoading = false;
+//       _rebuildItemFocusNodes();
+//       _focusedItemIndex = -1;
 //     });
 
 //     _startAnimations();
 //   }
-   
+
 //   void _applySearchFilter() {
 //     if (!mounted) return;
 
@@ -2953,53 +2946,53 @@
 //     }
 
 //     setState(() {
-//       _displayList = filteredList; 
+//       _displayList = filteredList;
 //       _rebuildItemFocusNodes();
-//       _focusedItemIndex = -1; 
+//       _focusedItemIndex = -1;
 //     });
 //     _startAnimations();
 //   }
 
 //   void _updateSelectedNetwork() async {
-//       if (_isDisposed || _apiNetworks.isEmpty || _focusedNetworkIndex >= _apiNetworks.length) return;  
+//       if (_isDisposed || _apiNetworks.isEmpty || _focusedNetworkIndex >= _apiNetworks.length) return;
 
 //     final selectedNetwork = _apiNetworks[_focusedNetworkIndex];
-//     _debounce?.cancel();  
+//     _debounce?.cancel();
 
 //     setState(() {
-//       _isListLoading = true;  
-//       _errorMessage = null;  
-//         _displayList = [];  
+//       _isListLoading = true;
+//       _errorMessage = null;
+//         _displayList = [];
 //         _currentViewMasterList.clear();
-//         _rebuildItemFocusNodes();  
-//         _isSearching = false;  
+//         _rebuildItemFocusNodes();
+//         _isSearching = false;
 //         _searchText = '';
 //     });
 
 //     try {
-//       final newChannelList = await _fetchSportsChannelsForNetwork(selectedNetwork.id); 
+//       final newChannelList = await _fetchSportsChannelsForNetwork(selectedNetwork.id);
 //       if (_isDisposed || !mounted) return;
 
 //       setState(() {
-//         _sportsChannelList = newChannelList;  
+//         _sportsChannelList = newChannelList;
 //         _selectedNetworkName = selectedNetwork.name;
-//         _updateSelectedNetworkData();  
-         
-//         _updateChannelFilters();  
+//         _updateSelectedNetworkData();
+
+//         _updateChannelFilters();
 //         _rebuildChannelFilterFocusNodes();
 //       });
-       
-//       await _fetchDataForView();  
-       
+
+//       await _fetchDataForView();
+
 //     } catch (e) {
 //       if (!_isDisposed && mounted) {
 //         setState(() {
 //           _isListLoading = false;
 //           _errorMessage = "Failed to load channels for ${selectedNetwork.name}.";
-//           _sportsChannelList = [];  
+//           _sportsChannelList = [];
 //           _displayList = [];
 //           _currentViewMasterList.clear();
-//             _updateChannelFilters();  
+//             _updateChannelFilters();
 //             _rebuildChannelFilterFocusNodes();
 //         });
 //       }
@@ -3011,7 +3004,7 @@
 //     final filterNames = _channelFilters.keys.toList();
 //     if (filterNames.isEmpty || _focusedChannelFilterIndex >= filterNames.length || _channelFilterFocusNodes.isEmpty) return;
 
-//     _debounce?.cancel();  
+//     _debounce?.cancel();
 
 //     final newFilterName = filterNames[_focusedChannelFilterIndex];
 //     if (newFilterName == _selectedChannelFilterName) return;
@@ -3020,26 +3013,26 @@
 //       _selectedChannelFilterName = newFilterName;
 //       _selectedChannelFilterId = _channelFilters[_selectedChannelFilterName];
 //       _isDisplayingShows = (_selectedChannelFilterId != null);
-       
+
 //       _fetchDataForView();
 //     });
 //   }
 
 //   void _updateSelectedNetworkData() {
 //     if (_isDisposed) return;
-//     if (_apiNetworks.isEmpty || _focusedNetworkIndex >= _apiNetworks.length) return;  
+//     if (_apiNetworks.isEmpty || _focusedNetworkIndex >= _apiNetworks.length) return;
 
 //     final selectedNetwork = _apiNetworks.firstWhere(
 //         (n) => n.name == _selectedNetworkName,
 //         orElse: () => ApiNetworkModel(id: -1, name: '', networksOrder: 9999));
-        
+
 //     final sportsSliders = selectedNetwork.sliders
-//         .where((s) => s.sliderFor == 'sports') 
+//         .where((s) => s.sliderFor == 'sports')
 //         .toList();
 
 //     setState(() {
 //       _selectedNetworkLogo = selectedNetwork.logo;
-//       _currentSportsSliders = sportsSliders; 
+//       _currentSportsSliders = sportsSliders;
 //       _currentSliderIndex = 0;
 //       if (sportsSliders.isNotEmpty) {
 //         _currentBackgroundUrl = sportsSliders.first.thumbnail;
@@ -3059,8 +3052,8 @@
 //           int next = (_sliderPageController.page?.round() ?? 0) + 1;
 //           if (next >= _currentSportsSliders.length) next = 0;
 //           _sliderPageController.animateToPage(
-//             next, 
-//             duration: const Duration(milliseconds: 500), 
+//             next,
+//             duration: const Duration(milliseconds: 500),
 //             curve: Curves.easeInOut
 //           );
 //         }
@@ -3072,9 +3065,9 @@
 //     if (_isDisposed) return;
 //     setState(() {
 //       if (_sportsChannelList.isEmpty) {
-//         _channelFilters = {};  
+//         _channelFilters = {};
 //       } else {
-//         final Map<String, int?> newFilters = {};  
+//         final Map<String, int?> newFilters = {};
 //         for (final channel in _sportsChannelList) {
 //           if (channel.title.isNotEmpty && !newFilters.containsKey(channel.title)) {
 //             newFilters[channel.title] = channel.id;
@@ -3082,11 +3075,11 @@
 //         }
 //         _channelFilters = newFilters;
 //       }
-       
+
 //       if (_channelFilters.isNotEmpty) {
 //         _selectedChannelFilterName = _channelFilters.keys.first;
 //         _selectedChannelFilterId = _channelFilters.values.first;
-//         _isDisplayingShows = true;  
+//         _isDisplayingShows = true;
 //         _focusedChannelFilterIndex = 0;
 //       } else {
 //         _selectedChannelFilterName = '';
@@ -3113,32 +3106,32 @@
 //           _searchText = _searchText.substring(0, _searchText.length - 1);
 //         }
 //       } else if (value == ' ') {
-//         if (_searchText.isNotEmpty && !_searchText.endsWith(' ')) { 
+//         if (_searchText.isNotEmpty && !_searchText.endsWith(' ')) {
 //           _searchText += ' ';
 //         }
 //       } else {
 //         _searchText += value;
 //       }
-//       _isSearching = _searchText.isNotEmpty; 
-//       _debounce?.cancel(); 
-//       _debounce = Timer(const Duration(milliseconds: 400), () { 
-//         _applySearchFilter(); 
+//       _isSearching = _searchText.isNotEmpty;
+//       _debounce?.cancel();
+//       _debounce = Timer(const Duration(milliseconds: 400), () {
+//         _applySearchFilter();
 //       });
 //     });
 //   }
 
-//   Future<void> _navigateToSportsDetails(SportsChannelModel item, int index) async {  
+//   Future<void> _navigateToSportsDetails(SportsChannelModel item, int index) async {
 //     if (_isVideoLoading || _isDisposed) return;
 //     setState(() => _isVideoLoading = true);
-      
+
 //     try {
 //       int? currentUserId = SessionManager.userId;
 //       if (currentUserId != null) {
 //         HistoryService.updateUserHistory(
 //           userId: currentUserId,
-//           contentType: 4, 
-//           eventId: item.id,  
-//           eventTitle: item.title,  
+//           contentType: 4,
+//           eventId: item.id,
+//           eventTitle: item.title,
 //           url: '',
 //           categoryId: 0,
 //         ).catchError((e) {});
@@ -3148,10 +3141,10 @@
 //     await Navigator.push(
 //       context,
 //       MaterialPageRoute(
-//         builder: (context) => TournamentFinalDetailsPage( 
-//           id: item.id,  
-//           banner: item.thumbnail ?? '',  
-//           poster: item.thumbnail ?? '',  
+//         builder: (context) => TournamentFinalDetailsPage(
+//           id: item.id,
+//           banner: item.thumbnail ?? '',
+//           poster: item.thumbnail ?? '',
 //           name: item.title, updatedAt:item.updatedAt,
 //         ),
 //       ),
@@ -3160,19 +3153,19 @@
 //     if (!_isDisposed && mounted) {
 //       setState(() {
 //         _isVideoLoading = false;
-//           if (index >= 0 && index < _itemFocusNodes.length) { 
+//           if (index >= 0 && index < _itemFocusNodes.length) {
 //             _focusedItemIndex = index;
 //               WidgetsBinding.instance.addPostFrameCallback((_) {
 //                   if(!_isDisposed && mounted && _itemFocusNodes.isNotEmpty && _focusedItemIndex < _itemFocusNodes.length) {
 //                     try { _itemFocusNodes[_focusedItemIndex].requestFocus(); } catch (_) {}
 //                     _updateAndScrollToFocus(
-//                         _itemFocusNodes, _focusedItemIndex, _listScrollController, (bannerwdt * 1.1) + 15); 
+//                         _itemFocusNodes, _focusedItemIndex, _listScrollController, (bannerwdt * 1.1) + 15);
 //                   }
 //                 });
 //           } else {
 //             _focusedItemIndex = -1;
 //             if(_itemFocusNodes.isNotEmpty) { _focusFirstListItemWithScroll(); }
-//             else if (_channelFilterFocusNodes.isNotEmpty && _focusedChannelFilterIndex >= 0) { _channelFilterFocusNodes[_focusedChannelFilterIndex].requestFocus(); }  
+//             else if (_channelFilterFocusNodes.isNotEmpty && _focusedChannelFilterIndex >= 0) { _channelFilterFocusNodes[_focusedChannelFilterIndex].requestFocus(); }
 //             else { _searchButtonFocusNode.requestFocus(); }
 //           }
 //       });
@@ -3189,13 +3182,13 @@
 //   }
 
 //   void _startAnimations() {
-//     _fadeController.reset(); 
+//     _fadeController.reset();
 //     _fadeController.forward();
 //   }
 
 //   void _initializeFocusNodes() {
 //     _disposeFocusNodes(_networkFocusNodes);
-//     _networkFocusNodes = List.generate(_apiNetworks.length, (index) => FocusNode(debugLabel: 'Network-$index')..addListener(_setStateListener)); 
+//     _networkFocusNodes = List.generate(_apiNetworks.length, (index) => FocusNode(debugLabel: 'Network-$index')..addListener(_setStateListener));
 //     _rebuildChannelFilterFocusNodes();
 //     _rebuildItemFocusNodes();
 //     _rebuildKeyboardFocusNodes();
@@ -3203,19 +3196,19 @@
 
 //   void _rebuildChannelFilterFocusNodes() {
 //     _disposeFocusNodes(_channelFilterFocusNodes);
-//     _channelFilterFocusNodes = List.generate(_channelFilters.length, (index) => FocusNode(debugLabel: 'ChannelFilter-$index')..addListener(_setStateListener)); 
+//     _channelFilterFocusNodes = List.generate(_channelFilters.length, (index) => FocusNode(debugLabel: 'ChannelFilter-$index')..addListener(_setStateListener));
 //   }
 
 //   void _rebuildItemFocusNodes() {
 //     _disposeFocusNodes(_itemFocusNodes);
 //     final currentList = _displayList;
-//     _itemFocusNodes = List.generate(currentList.length, (index) => FocusNode(debugLabel: 'Item-$index')..addListener(_setStateListener)); 
+//     _itemFocusNodes = List.generate(currentList.length, (index) => FocusNode(debugLabel: 'Item-$index')..addListener(_setStateListener));
 //   }
 
 //   void _rebuildKeyboardFocusNodes() {
 //     _disposeFocusNodes(_keyboardFocusNodes);
 //     int totalKeys = _keyboardLayout.fold(0, (prev, row) => prev + row.length);
-//     _keyboardFocusNodes = List.generate(totalKeys, (index) => FocusNode(debugLabel: 'Key-$index')..addListener(_setStateListener)); 
+//     _keyboardFocusNodes = List.generate(totalKeys, (index) => FocusNode(debugLabel: 'Key-$index')..addListener(_setStateListener));
 //   }
 
 //   int _getFocusNodeIndexForKey(int row, int col) {
@@ -3231,11 +3224,11 @@
 //   // void _disposeFocusNodes(List<FocusNode> nodes) {
 //   //   for (var node in nodes) {
 //   //     try {
-//   //       node.removeListener(_setStateListener); 
+//   //       node.removeListener(_setStateListener);
 //   //       node.dispose();
 //   //     } catch (_) {}
 //   //   }
-//   //   nodes.clear(); 
+//   //   nodes.clear();
 //   // }
 
 //   void _updateAndScrollToFocus(List<FocusNode> nodes, int index, ScrollController controller, double itemWidth) {
@@ -3259,7 +3252,7 @@
 //       child: Column(
 //         children: [
 //           _buildTopFilterBar(),
-//           Expanded( 
+//           Expanded(
 //             child: FadeTransition(
 //               opacity: _fadeAnimation,
 //               child: _buildContentBody(),
@@ -3273,22 +3266,22 @@
 //   Widget _buildContentBody() {
 //     return Column(
 //       children: [
-//         SizedBox( 
+//         SizedBox(
 //           height: screenhgt * 0.5,
 //           child: _showKeyboard ? _buildSearchUI() : const SizedBox.shrink(),
 //         ),
 //         _buildSliderIndicators(),
-//         _buildChannelFilterAndSearchButtons(), 
+//         _buildChannelFilterAndSearchButtons(),
 //         SizedBox(height: screenhgt * 0.02),
-//         _buildSportsList(), 
+//         _buildSportsList(),
 //       ],
 //     );
 //   }
-   
+
 //   Widget _buildBackgroundOrSlider() {
-//     if (_currentSportsSliders.isNotEmpty) { 
-//       return SportsThumbnailSlider( 
-//         sliders: _currentSportsSliders, 
+//     if (_currentSportsSliders.isNotEmpty) {
+//       return SportsThumbnailSlider(
+//         sliders: _currentSportsSliders,
 //         controller: _sliderPageController,
 //         onPageChanged: (index) {
 //           if (!_isDisposed && mounted) {
@@ -3311,7 +3304,7 @@
 //               key: ValueKey<String>(_currentBackgroundUrl!),
 //               decoration: BoxDecoration(
 //                 image: DecorationImage(
-//                   image: CachedNetworkImageProvider(_currentBackgroundUrl!), 
+//                   image: CachedNetworkImageProvider(_currentBackgroundUrl!),
 //                   fit: BoxFit.cover,
 //                   onError: (exception, stackTrace) {},
 //                 ),
@@ -3387,11 +3380,11 @@
 //           scrollDirection: Axis.horizontal,
 //           itemCount: _uniqueNetworks.length,
 //           itemBuilder: (context, index) {
-//             if (index >= _networkFocusNodes.length) return const SizedBox.shrink(); 
+//             if (index >= _networkFocusNodes.length) return const SizedBox.shrink();
 //             final networkName = _uniqueNetworks[index];
 //             final focusNode = _networkFocusNodes[index];
 //             final isSelected = _selectedNetworkName == networkName;
-            
+
 //             return Focus(
 //               focusNode: focusNode,
 //               onFocusChange: (hasFocus) {
@@ -3399,7 +3392,7 @@
 //                   setState(() => _focusedNetworkIndex = index);
 //                 }
 //               },
-//               child: _buildGlassEffectButton( 
+//               child: _buildGlassEffectButton(
 //                 focusNode: focusNode,
 //                 isSelected: isSelected,
 //                 focusColor: _focusColors[index % _focusColors.length],
@@ -3430,24 +3423,24 @@
 //     final filterNames = _channelFilters.keys.toList();
 
 //     if (filterNames.isEmpty && !_isSearching) {
-//       return const SizedBox(height: 30); 
+//       return const SizedBox(height: 30);
 //     }
-    
+
 //     return SizedBox(
 //       height: 30,
 //       child: Center(
 //         child: ListView.builder(
 //           controller: _channelFilterScrollController,
 //           scrollDirection: Axis.horizontal,
-//           itemCount: filterNames.length + 1, 
+//           itemCount: filterNames.length + 1,
 //           padding: EdgeInsets.symmetric(horizontal: screenwdt * 0.015),
 //           itemBuilder: (context, index) {
-//             if (index == 0) { 
+//             if (index == 0) {
 //               return Focus(
 //                 focusNode: _searchButtonFocusNode,
 //                 child: _buildGlassEffectButton(
 //                   focusNode: _searchButtonFocusNode,
-//                   isSelected: _isSearching || _showKeyboard, 
+//                   isSelected: _isSearching || _showKeyboard,
 //                   focusColor: ProfessionalColors.accentOrange,
 //                   onTap: () {
 //                     _searchButtonFocusNode.requestFocus();
@@ -3471,7 +3464,7 @@
 //                         ("Search").toUpperCase(),
 //                         style: TextStyle(
 //                           color: Colors.white,
-//                           fontWeight: FontWeight.bold, 
+//                           fontWeight: FontWeight.bold,
 //                           fontSize: 16,
 //                         ),
 //                       ),
@@ -3509,7 +3502,7 @@
 //                   filterName.toUpperCase(),
 //                   style: const TextStyle(
 //                     color: Colors.white,
-//                     fontWeight: FontWeight.bold, 
+//                     fontWeight: FontWeight.bold,
 //                     fontSize: 16,
 //                   ),
 //                 ),
@@ -3524,7 +3517,7 @@
 //   Widget _buildSportsList() {
 //     final currentList = _displayList;
 
-//     if (currentList.isEmpty && !_isListLoading) { 
+//     if (currentList.isEmpty && !_isListLoading) {
 //       return Expanded(
 //         child: Center(
 //           child: Container(
@@ -3546,7 +3539,7 @@
 //                 Text(
 //                   _isSearching && _searchText.isNotEmpty
 //                       ? "No results found for '$_searchText'"
-//                       : 'No sports content available.', 
+//                       : 'No sports content available.',
 //                   style: const TextStyle(
 //                     color: ProfessionalColors.textSecondary,
 //                     fontSize: 16,
@@ -3558,7 +3551,7 @@
 //         ),
 //       );
 //     }
-    
+
 //     return Expanded(
 //       child: Padding(
 //         padding: const EdgeInsets.only(top: 1.0, bottom: 10.0), // Bottom padding added
@@ -3569,31 +3562,31 @@
 //           padding:  EdgeInsets.symmetric(horizontal: screenwdt * 0.015),
 //           itemCount: currentList.length,
 //           itemBuilder: (context, index) {
-//             if (index >= _itemFocusNodes.length) return const SizedBox.shrink(); 
+//             if (index >= _itemFocusNodes.length) return const SizedBox.shrink();
 //             final item = currentList[index];
 //             final focusNode = _itemFocusNodes[index];
-            
+
 //             return Container(
 //               width: bannerwdt * 1.1, // Width sufficient for text
-//               margin: const EdgeInsets.only(right: 15.0), 
+//               margin: const EdgeInsets.only(right: 15.0),
 //               alignment: Alignment.topCenter,
 //               child: InkWell(
 //                 focusNode: focusNode,
-//                 onTap: () => _navigateToSportsDetails(item, index), 
+//                 onTap: () => _navigateToSportsDetails(item, index),
 //                 onFocusChange: (hasFocus) {
 //                   if (hasFocus && !_isDisposed) {
 //                     setState(() => _focusedItemIndex = index);
 //                     _updateAndScrollToFocus(
-//                         _itemFocusNodes, index, _listScrollController, (bannerwdt * 1.1) + 15); 
+//                         _itemFocusNodes, index, _listScrollController, (bannerwdt * 1.1) + 15);
 //                   }
 //                 },
-//                 child: OptimizedSportsCard( 
-//                   item: item, 
+//                 child: OptimizedSportsCard(
+//                   item: item,
 //                   isFocused: _focusedItemIndex == index,
 //                   onTap: () =>
 //                       _navigateToSportsDetails(item, index),
-//                   cardHeight: bannerhgt * 1.0, 
-//                   networkLogo: _isDisplayingShows ? null : _selectedNetworkLogo, 
+//                   cardHeight: bannerhgt * 1.0,
+//                   networkLogo: _isDisplayingShows ? null : _selectedNetworkLogo,
 //                   uniqueIndex: index,
 //                 ),
 //               ),
@@ -3624,9 +3617,9 @@
 //                     ],
 //                   ).createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
 //                   child: Text(
-//                     "Search in $_selectedChannelFilterName", 
+//                     "Search in $_selectedChannelFilterName",
 //                     style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-//                     maxLines: 2, 
+//                     maxLines: 2,
 //                     textAlign: TextAlign.center,
 //                   ),
 //                 ),
@@ -3678,7 +3671,7 @@
 //   }
 
 //   Widget _buildKeyboardRow(List<String> keys, int rowIndex) {
-//     int startIndex = _getFocusNodeIndexForKey(rowIndex, 0); 
+//     int startIndex = _getFocusNodeIndexForKey(rowIndex, 0);
 
 //     return Row(
 //       mainAxisAlignment: MainAxisAlignment.center,
@@ -3744,12 +3737,12 @@
 //   }
 
 //   Widget _buildSliderIndicators() {
-//     if (_currentSportsSliders.length <= 1) { 
-//       return const SizedBox(height: 28); 
+//     if (_currentSportsSliders.length <= 1) {
+//       return const SizedBox(height: 28);
 //     }
 //     return Row(
 //       mainAxisAlignment: MainAxisAlignment.center,
-//       children: List.generate(_currentSportsSliders.length, (index) { 
+//       children: List.generate(_currentSportsSliders.length, (index) {
 //         bool isActive = _currentSliderIndex == index;
 //         return AnimatedContainer(
 //           duration: const Duration(milliseconds: 300),
@@ -3861,7 +3854,7 @@
 //             ),
 //             const SizedBox(height: 24),
 //             ElevatedButton.icon(
-//               focusNode: FocusNode(), 
+//               focusNode: FocusNode(),
 //               onPressed: () => _fetchDataForPage(forceRefresh: true),
 //               icon: const Icon(Icons.refresh_rounded),
 //               label: const Text('Try Again'),
@@ -3888,7 +3881,7 @@
 // //==============================================================================
 
 // class OptimizedSportsCard extends StatelessWidget {
-//   final SportsChannelModel item; 
+//   final SportsChannelModel item;
 //   final bool isFocused;
 //   final VoidCallback onTap;
 //   final double cardHeight;
@@ -3897,7 +3890,7 @@
 
 //   const OptimizedSportsCard({
 //     Key? key,
-//     required this.item, 
+//     required this.item,
 //     required this.isFocused,
 //     required this.onTap,
 //     required this.cardHeight,
@@ -3945,7 +3938,7 @@
 //             ),
 // /*        SizedBox(
 //           height: cardHeight, // Defines Image area height
-//           width: double.infinity, 
+//           width: double.infinity,
 //           child: AnimatedContainer(
 //             duration: AnimationTiming.fast,
 //             transform: isFocused
@@ -3971,10 +3964,10 @@
 //               child: Stack(
 //                 fit: StackFit.expand,
 //                 children: [
-//                   _buildSportsImage(), 
+//                   _buildSportsImage(),
 //                   if (isFocused)
 //                     Positioned(
-//                         left: 0, right: 0, top: 0, bottom: 0, 
+//                         left: 0, right: 0, top: 0, bottom: 0,
 //                         child: Container(
 //                             color: Colors.black.withOpacity(0.4),
 //                             child: Icon(Icons.play_circle_filled_outlined,
@@ -3996,19 +3989,19 @@
 //         Padding(
 //           padding: const EdgeInsets.symmetric(horizontal: 4.0),
 //           child: Text(
-//               item.title, 
-//               textAlign: TextAlign.center, 
+//               item.title,
+//               textAlign: TextAlign.center,
 //               style: TextStyle(
 //                   color: isFocused
 //                       ? focusColor
 //                       : Colors.white, // ✅ White color for visibility
-//                   fontSize: 15, 
+//                   fontSize: 15,
 //                   fontWeight: isFocused ? FontWeight.bold : FontWeight.w500,
 //                   shadows: [
 //                       Shadow(color: Colors.black.withOpacity(0.8), blurRadius: 2, offset: Offset(0, 1))
 //                   ]
 //               ),
-//               maxLines: 2, 
+//               maxLines: 2,
 //               overflow: TextOverflow.ellipsis
 //           ),
 //         ),
@@ -4017,12 +4010,12 @@
 //   }
 
 //   Widget _buildSportsImage() {
-//     final imageUrl = item.thumbnail; 
-    
+//     final imageUrl = item.thumbnail;
+
 //     return imageUrl != null && imageUrl.isNotEmpty
 //         ? CachedNetworkImage( // ✅ Cached
 //             imageUrl: imageUrl,
-//             fit: BoxFit.fill, 
+//             fit: BoxFit.fill,
 //             placeholder: (context, url) => _buildImagePlaceholder(),
 //             errorWidget: (context, url, error) {
 //               debugPrint('Error loading item image: $imageUrl, Error: $error');
@@ -4031,13 +4024,13 @@
 //           )
 //         : _buildImagePlaceholder();
 //   }
-  
+
 //   Widget _buildImagePlaceholder() {
 //     return Container(
 //       decoration: const BoxDecoration(
 //         gradient: LinearGradient(
 //           colors: [
-//             ProfessionalColors.accentGreen, 
+//             ProfessionalColors.accentGreen,
 //             ProfessionalColors.accentBlue,
 //           ],
 //         ),
@@ -4069,7 +4062,7 @@
 
 // class _SportsThumbnailSliderState extends State<SportsThumbnailSlider> {
 //   Timer? _timer;
-//   double _opacity = 1.0; 
+//   double _opacity = 1.0;
 
 //   @override
 //   void initState() {
@@ -4092,7 +4085,7 @@
 
 //   void _startTimer() {
 //     _timer?.cancel();
-//     _timer = Timer.periodic(const Duration(seconds: 8), (timer) { 
+//     _timer = Timer.periodic(const Duration(seconds: 8), (timer) {
 //       if (!mounted || !widget.controller.hasClients || widget.sliders.length <= 1) return;
 
 //       int currentPage = widget.controller.page?.round() ?? 0;
@@ -4118,7 +4111,7 @@
 //       return const SizedBox.shrink();
 //     }
 
-//     return AnimatedOpacity( 
+//     return AnimatedOpacity(
 //       opacity: _opacity,
 //       duration: const Duration(milliseconds: 400),
 //       child: PageView.builder(
@@ -4150,7 +4143,7 @@
 //                     ],
 //                     begin: Alignment.topCenter,
 //                     end: Alignment.bottomCenter,
-//                     stops: const [0.0, 0.5, 0.7, 0.9], 
+//                     stops: const [0.0, 0.5, 0.7, 0.9],
 //                   ),
 //                 ),
 //               ),
@@ -4161,9 +4154,6 @@
 //     );
 //   }
 // }
-
-
-
 
 // import 'dart:async';
 // import 'dart:convert';
@@ -4176,7 +4166,7 @@
 
 // // NOTE: Check your project structure imports
 // import 'package:mobi_tv_entertainment/components/home_screen_pages/sports_category/sports_final_details_page.dart';
-// import 'package:mobi_tv_entertainment/main.dart'; 
+// import 'package:mobi_tv_entertainment/main.dart';
 // import 'package:mobi_tv_entertainment/components/services/history_service.dart';
 // import 'package:mobi_tv_entertainment/components/widgets/smart_style_image_card.dart';
 
@@ -4206,12 +4196,12 @@
 // }
 
 // // Model: SportsChannelModel (Channels/Categories)
-// class SportsChannelModel { 
+// class SportsChannelModel {
 //   final int id;
-//   final String title; 
+//   final String title;
 //   final String updatedAt;
-//   final String? thumbnail; 
-//   final String? genre; 
+//   final String? thumbnail;
+//   final String? genre;
 //   final int order;
 //   final String? language;
 
@@ -4230,7 +4220,7 @@
 //       id: json['id'] ?? 0,
 //       title: json['title'] ?? '',
 //       updatedAt: json['updated_at'] ?? '',
-//       thumbnail: json['Thumbnail'], 
+//       thumbnail: json['Thumbnail'],
 //       genre: null,
 //       order: json['order'] ?? 9999,
 //       language: json['language'],
@@ -4262,7 +4252,7 @@
 //       title: json['title'] ?? '',
 //       logo: json['logo'],
 //       genre: json['genre'],
-//       sportsChannelId: json['sports_category_id'] ?? 0, 
+//       sportsChannelId: json['sports_category_id'] ?? 0,
 //       order: json['order'] ?? 9999,
 //     );
 //   }
@@ -4358,7 +4348,7 @@
 //   final int? initialNetworkId;
 
 //   const SportsSliderScreen({
-//     Key? key, 
+//     Key? key,
 //     this.title = 'Sports Channels',
 //     this.initialNetworkId,
 //   }) : super(key: key);
@@ -4368,23 +4358,23 @@
 // }
 
 // class _SportsSliderScreenState extends State<SportsSliderScreen> with SingleTickerProviderStateMixin {
-   
+
 //   bool _isDisposed = false;
 
-//   List<SportsChannelModel> _sportsChannelList = []; 
-//   bool _isLoading = true; 
-//   bool _isListLoading = false; 
+//   List<SportsChannelModel> _sportsChannelList = [];
+//   bool _isLoading = true;
+//   bool _isListLoading = false;
 //   String? _errorMessage;
 
 //   // Focus and Scroll Controllers
 //   List<FocusNode> _itemFocusNodes = [];
 //   List<FocusNode> _networkFocusNodes = [];
-//   List<FocusNode> _channelFilterFocusNodes = [];  
+//   List<FocusNode> _channelFilterFocusNodes = [];
 //   List<FocusNode> _keyboardFocusNodes = [];
 //   final FocusNode _widgetFocusNode = FocusNode();
 //   final ScrollController _listScrollController = ScrollController();
 //   final ScrollController _networkScrollController = ScrollController();
-//   final ScrollController _channelFilterScrollController = ScrollController();  
+//   final ScrollController _channelFilterScrollController = ScrollController();
 
 //   late PageController _sliderPageController;
 
@@ -4401,23 +4391,23 @@
 
 //   // UI and Filter State
 //   int _focusedNetworkIndex = 0;
-//   int _focusedChannelFilterIndex = 0;  
+//   int _focusedChannelFilterIndex = 0;
 //   int _focusedItemIndex = -1;
 //   String _selectedNetworkName = '';
 //   String? _selectedNetworkLogo;
-   
-//   Map<String, int?> _channelFilters = {}; 
-//   String _selectedChannelFilterName = ''; 
-//   int? _selectedChannelFilterId; 
-//   bool _isDisplayingShows = false;  
 
-//   List<SportsChannelModel> _currentViewMasterList = []; 
-//   List<SportsChannelModel> _displayList = []; 
+//   Map<String, int?> _channelFilters = {};
+//   String _selectedChannelFilterName = '';
+//   int? _selectedChannelFilterId;
+//   bool _isDisplayingShows = false;
+
+//   List<SportsChannelModel> _currentViewMasterList = [];
+//   List<SportsChannelModel> _displayList = [];
 //   List<ApiNetworkModel> _apiNetworks = [];
 //   List<String> _uniqueNetworks = [];
-   
+
 //   // Animation and Loading State
-//   bool _isVideoLoading = false; 
+//   bool _isVideoLoading = false;
 //   late AnimationController _fadeController;
 //   late Animation<double> _fadeAnimation;
 //   String? _currentBackgroundUrl;
@@ -4453,13 +4443,13 @@
 //     _isDisposed = false;
 //     _sliderPageController = PageController();
 //     _searchButtonFocusNode = FocusNode();
-//     _searchButtonFocusNode.addListener(_setStateListener); 
+//     _searchButtonFocusNode.addListener(_setStateListener);
 //     _widgetFocusNode.addListener(_setStateListener);
-    
+
 //     WidgetsBinding.instance.addPostFrameCallback((_) {
 //       if(!_isDisposed) _fetchDataForPage();
 //     });
-    
+
 //     _initializeAnimations();
 //   }
 
@@ -4469,25 +4459,25 @@
 //     _sliderTimer?.cancel();
 //     _debounce?.cancel();
 //     _navigationLockTimer?.cancel();
-    
+
 //     _sliderPageController.dispose();
 //     _fadeController.dispose();
-    
+
 //     _widgetFocusNode.removeListener(_setStateListener);
 //     _widgetFocusNode.dispose();
-    
+
 //     _searchButtonFocusNode.removeListener(_setStateListener);
 //     _searchButtonFocusNode.dispose();
-    
+
 //     _listScrollController.dispose();
 //     _networkScrollController.dispose();
 //     _channelFilterScrollController.dispose();
-    
+
 //     _disposeFocusNodes(_itemFocusNodes);
 //     _disposeFocusNodes(_networkFocusNodes);
-//     _disposeFocusNodes(_channelFilterFocusNodes);  
+//     _disposeFocusNodes(_channelFilterFocusNodes);
 //     _disposeFocusNodes(_keyboardFocusNodes);
-    
+
 //     super.dispose();
 //   }
 
@@ -4500,11 +4490,11 @@
 //   void _disposeFocusNodes(List<FocusNode> nodes) {
 //     for (var node in nodes) {
 //       try {
-//         node.removeListener(_setStateListener); 
+//         node.removeListener(_setStateListener);
 //         node.dispose();
 //       } catch (_) {}
 //     }
-//     nodes.clear(); 
+//     nodes.clear();
 //   }
 
 //   @override
@@ -4518,14 +4508,14 @@
 //         child: Stack(
 //           children: [
 //             _buildBackgroundOrSlider(),
-//             _isLoading 
+//             _isLoading
 //                 ? const Center(
 //                     child: ProfessionalSportsLoadingIndicator(
-//                         message: 'Loading Sports Channels...'))  
+//                         message: 'Loading Sports Channels...'))
 //                 : _errorMessage != null
-//                     ? _buildErrorWidget() 
-//                     : _buildPageContent(), 
-//             if (_isVideoLoading && _errorMessage == null) 
+//                     ? _buildErrorWidget()
+//                     : _buildPageContent(),
+//             if (_isVideoLoading && _errorMessage == null)
 //               Positioned.fill(
 //                 child: Container(
 //                   color: Colors.black.withOpacity(0.8),
@@ -4550,7 +4540,7 @@
 //     try {
 //       final fetchedNetworks = await _fetchNetworks();
 //       if (_isDisposed || !mounted) return;
-      
+
 //       fetchedNetworks.sort((a, b) => a.networksOrder.compareTo(b.networksOrder));
 
 //       if (fetchedNetworks.isEmpty) {
@@ -4563,7 +4553,7 @@
 //       if (widget.initialNetworkId != null) {
 //         int foundIndex = fetchedNetworks.indexWhere((n) => n.id == widget.initialNetworkId);
 //         if (foundIndex != -1) {
-//           initialIndex = foundIndex; 
+//           initialIndex = foundIndex;
 //         }
 //       }
 
@@ -4573,23 +4563,23 @@
 //       setState(() {
 //         _apiNetworks = fetchedNetworks;
 //         _uniqueNetworks = _apiNetworks.map((n) => n.name).toList();
-//         _focusedNetworkIndex = initialIndex; 
+//         _focusedNetworkIndex = initialIndex;
 //         _selectedNetworkName = initialNetwork.name;
 //       });
 
-//       final fetchedList = await _fetchSportsChannelsForNetwork(networkIdToFetch); 
-       
+//       final fetchedList = await _fetchSportsChannelsForNetwork(networkIdToFetch);
+
 //       if (_isDisposed || !mounted) return;
 
 //       setState(() {
-//         _sportsChannelList = fetchedList;  
+//         _sportsChannelList = fetchedList;
 //         if (_sportsChannelList.isEmpty) _errorMessage = "No Sports Channels Found.";
 //       });
 
 //       if (_errorMessage == null) {
-//         _processInitialData();  
-//         _updateChannelFilters(); 
-//         await _fetchDataForView(); 
+//         _processInitialData();
+//         _updateChannelFilters();
+//         await _fetchDataForView();
 //         _initializeFocusNodes();
 //         _startAnimations();
 
@@ -4601,7 +4591,7 @@
 //                 _networkFocusNodes,
 //                 _focusedNetworkIndex,
 //                 _networkScrollController,
-//                 160 
+//                 160
 //               );
 //             } catch (_) {}
 //           }
@@ -4637,12 +4627,12 @@
 //       if (response.statusCode == 200) {
 //         final dynamic _decoded_jsonData = json.decode(response.body);
 //         final List<dynamic> jsonData = safeDecodeList(_decoded_jsonData);
-//         return jsonData.map((item) => SportsChannelModel.fromJson(item as Map<String, dynamic>)).toList()..sort((a, b) => a.order.compareTo(b.order));  
+//         return jsonData.map((item) => SportsChannelModel.fromJson(item as Map<String, dynamic>)).toList()..sort((a, b) => a.order.compareTo(b.order));
 //       } else {
 //         throw Exception('API Error: ${response.statusCode}');
 //       }
 //     } catch (e) {
-//       if (!_isDisposed) debugPrint('Failed to load sports channels for network $networkId: $e');  
+//       if (!_isDisposed) debugPrint('Failed to load sports channels for network $networkId: $e');
 //       return [];
 //     }
 //   }
@@ -4665,7 +4655,7 @@
 //       if (response.statusCode == 200) {
 //         final dynamic _decoded_jsonData = json.decode(response.body);
 //         final List<dynamic> jsonData = safeDecodeList(_decoded_jsonData);
-//         return jsonData.map((item) => SportsShowItemModel.fromJson(item as Map<String, dynamic>)).toList()..sort((a, b) => a.order.compareTo(b.order));  
+//         return jsonData.map((item) => SportsShowItemModel.fromJson(item as Map<String, dynamic>)).toList()..sort((a, b) => a.order.compareTo(b.order));
 //       } else {
 //         throw Exception('API Error: ${response.statusCode}');
 //       }
@@ -4686,7 +4676,7 @@
 //               'Accept': 'application/json',
 //               'domain': SessionManager.savedDomain,
 //             },
-//             body: json.encode({"network_id": "", "data_for": "sports"}),  
+//             body: json.encode({"network_id": "", "data_for": "sports"}),
 //           ).timeout(const Duration(seconds: 30));
 
 //         if (_isDisposed) return [];
@@ -4706,7 +4696,7 @@
 
 //   void _processInitialData() {
 //     if (_apiNetworks.isEmpty || _isDisposed) return;
-//     _updateSelectedNetworkData(); 
+//     _updateSelectedNetworkData();
 //   }
 
 //   void _focusFirstListItemWithScroll() {
@@ -4715,7 +4705,7 @@
 //     if (_listScrollController.hasClients) {
 //       _listScrollController.jumpTo(0);
 //     }
-     
+
 //     Future.delayed(const Duration(milliseconds: 250), () {
 //       if (!_isDisposed && mounted && _itemFocusNodes.isNotEmpty) {
 //         setState(() => _focusedItemIndex = 0);
@@ -4740,7 +4730,7 @@
 //         _searchButtonFocusNode.requestFocus();
 //         return KeyEventResult.handled;
 //       }
-//       if (listHasFocus || channelFilterHasFocus || searchHasFocus) {  
+//       if (listHasFocus || channelFilterHasFocus || searchHasFocus) {
 //           if (_networkFocusNodes.isNotEmpty) { _networkFocusNodes[_focusedNetworkIndex].requestFocus(); }
 //         return KeyEventResult.handled;
 //       }
@@ -4758,10 +4748,10 @@
 //         return KeyEventResult.handled;
 //       }
 //       if (key == LogicalKeyboardKey.arrowLeft) {
-//         return KeyEventResult.handled; 
+//         return KeyEventResult.handled;
 //       }
-//       if (key == LogicalKeyboardKey.arrowRight && _channelFilterFocusNodes.isNotEmpty) {  
-//         _channelFilterFocusNodes[0].requestFocus();  
+//       if (key == LogicalKeyboardKey.arrowRight && _channelFilterFocusNodes.isNotEmpty) {
+//         _channelFilterFocusNodes[0].requestFocus();
 //         return KeyEventResult.handled;
 //       }
 //       if (key == LogicalKeyboardKey.arrowUp && _networkFocusNodes.isNotEmpty) {
@@ -4777,8 +4767,8 @@
 
 //     if ([ LogicalKeyboardKey.arrowUp, LogicalKeyboardKey.arrowDown, LogicalKeyboardKey.arrowLeft, LogicalKeyboardKey.arrowRight, LogicalKeyboardKey.select, LogicalKeyboardKey.enter ].contains(key)) {
 //       if (networkHasFocus) { _navigateNetworks(key); }
-//       else if (channelFilterHasFocus) { _navigateChannelFilters(key); }  
-//       else if (listHasFocus) { _navigateList(key); } 
+//       else if (channelFilterHasFocus) { _navigateChannelFilters(key); }
+//       else if (listHasFocus) { _navigateList(key); }
 //       return KeyEventResult.handled;
 //     }
 
@@ -4796,7 +4786,7 @@
 //     });
 
 //     int newIndex = _focusedItemIndex;
-    
+
 //     if (key == LogicalKeyboardKey.arrowUp) {
 //       setState(() => _lastNavigationDirection = 'vertical');
 //       if (_channelFilterFocusNodes.isNotEmpty) {
@@ -4820,7 +4810,7 @@
 //         setState(() => _lastNavigationDirection = 'horizontal');
 //       }
 //     } else if (key == LogicalKeyboardKey.arrowRight) {
-//       final currentList = _displayList; 
+//       final currentList = _displayList;
 //       if (newIndex + 1 < currentList.length) {
 //         newIndex++;
 //         setState(() => _lastNavigationDirection = 'horizontal');
@@ -4828,8 +4818,8 @@
 //     } else if (key == LogicalKeyboardKey.select || key == LogicalKeyboardKey.enter) {
 //       _isNavigationLocked = false;
 //       _navigationLockTimer?.cancel();
-//       final currentList = _displayList; 
-//       _navigateToSportsDetails(currentList[_focusedItemIndex], _focusedItemIndex); 
+//       final currentList = _displayList;
+//       _navigateToSportsDetails(currentList[_focusedItemIndex], _focusedItemIndex);
 //       return;
 //     }
 
@@ -4859,7 +4849,7 @@
 //       _searchButtonFocusNode.requestFocus();
 //       return;
 //     } else if (key == LogicalKeyboardKey.select || key == LogicalKeyboardKey.enter) {
-//       _updateSelectedNetwork(); 
+//       _updateSelectedNetwork();
 //       return;
 //     }
 //     if (newIndex != _focusedNetworkIndex) {
@@ -4871,7 +4861,7 @@
 
 //   void _navigateChannelFilters(LogicalKeyboardKey key) {
 //     final filterNames = _channelFilters.keys.toList();
-     
+
 //     if (filterNames.isEmpty) {
 //         if (key == LogicalKeyboardKey.arrowLeft) {
 //             _searchButtonFocusNode.requestFocus();
@@ -4882,9 +4872,9 @@
 //             setState(() => _lastNavigationDirection = 'vertical');
 //             _focusFirstListItemWithScroll();
 //         }
-//         return; 
+//         return;
 //     }
-     
+
 //     int newIndex = _focusedChannelFilterIndex;
 //     if (key == LogicalKeyboardKey.arrowLeft) {
 //       if (newIndex > 0) {
@@ -4912,13 +4902,13 @@
 //       }
 //       return;
 //     } else if (key == LogicalKeyboardKey.select || key == LogicalKeyboardKey.enter) {
-//       _updateSelectedChannelFilter(); 
+//       _updateSelectedChannelFilter();
 //       return;
 //     }
 //     if (newIndex != _focusedChannelFilterIndex) {
 //       setState(() => _focusedChannelFilterIndex = newIndex);
 //       _channelFilterFocusNodes[newIndex].requestFocus();
-//       _updateAndScrollToFocus(_channelFilterFocusNodes, newIndex, _channelFilterScrollController, 160); 
+//       _updateAndScrollToFocus(_channelFilterFocusNodes, newIndex, _channelFilterScrollController, 160);
 //     }
 //   }
 
@@ -4960,16 +4950,16 @@
 
 //   Future<void> _fetchDataForView() async {
 //     if (_isDisposed) return;
-//     _debounce?.cancel();  
+//     _debounce?.cancel();
 
 //     setState(() {
 //       _isListLoading = true;
-//       _displayList.clear();  
-//       _currentViewMasterList.clear();  
-//       _rebuildItemFocusNodes();  
-//       _errorMessage = null;  
-       
-//       _searchText = '';  
+//       _displayList.clear();
+//       _currentViewMasterList.clear();
+//       _rebuildItemFocusNodes();
+//       _errorMessage = null;
+
+//       _searchText = '';
 //       _isSearching = false;
 //     });
 
@@ -4978,22 +4968,22 @@
 //     try {
 //       if (_selectedChannelFilterId != null) {
 //         final List<SportsShowItemModel> showItems =
-//             await _fetchSportsShowsForChannel(_selectedChannelFilterId!); 
-         
+//             await _fetchSportsShowsForChannel(_selectedChannelFilterId!);
+
 //         if (_isDisposed) return;
 
 //         newMasterList = showItems.map((show) => SportsChannelModel(
 //               id: show.id,
 //               title: show.title,
-//               thumbnail: show.logo,  
-//               updatedAt: '',  
-//               order: show.order,  
+//               thumbnail: show.logo,
+//               updatedAt: '',
+//               order: show.order,
 //               genre: show.genre,
 //               language: null,
 //             )).toList();
-//         _isDisplayingShows = true;  
+//         _isDisplayingShows = true;
 //       } else {
-//         newMasterList = [];  
+//         newMasterList = [];
 //         _isDisplayingShows = false;
 //       }
 //     } catch (e) {
@@ -5001,23 +4991,23 @@
 //         setState(() {
 //           _errorMessage = "Failed to load data. Please try again.";
 //         });
-//         newMasterList = [];  
+//         newMasterList = [];
 //       }
 //     }
 
 //     if (_isDisposed || !mounted) return;
 
 //     setState(() {
-//       _currentViewMasterList = newMasterList;  
-//       _displayList = List.from(_currentViewMasterList);  
-//       _isListLoading = false;  
-//       _rebuildItemFocusNodes();  
-//       _focusedItemIndex = -1;  
+//       _currentViewMasterList = newMasterList;
+//       _displayList = List.from(_currentViewMasterList);
+//       _isListLoading = false;
+//       _rebuildItemFocusNodes();
+//       _focusedItemIndex = -1;
 //     });
 
 //     _startAnimations();
 //   }
-   
+
 //   void _applySearchFilter() {
 //     if (!mounted) return;
 
@@ -5032,53 +5022,53 @@
 //     }
 
 //     setState(() {
-//       _displayList = filteredList; 
+//       _displayList = filteredList;
 //       _rebuildItemFocusNodes();
-//       _focusedItemIndex = -1; 
+//       _focusedItemIndex = -1;
 //     });
 //     _startAnimations();
 //   }
 
 //   void _updateSelectedNetwork() async {
-//       if (_isDisposed || _apiNetworks.isEmpty || _focusedNetworkIndex >= _apiNetworks.length) return;  
+//       if (_isDisposed || _apiNetworks.isEmpty || _focusedNetworkIndex >= _apiNetworks.length) return;
 
 //     final selectedNetwork = _apiNetworks[_focusedNetworkIndex];
-//     _debounce?.cancel();  
+//     _debounce?.cancel();
 
 //     setState(() {
-//       _isListLoading = true;  
-//       _errorMessage = null;  
-//         _displayList = [];  
+//       _isListLoading = true;
+//       _errorMessage = null;
+//         _displayList = [];
 //         _currentViewMasterList.clear();
-//         _rebuildItemFocusNodes();  
-//         _isSearching = false;  
+//         _rebuildItemFocusNodes();
+//         _isSearching = false;
 //         _searchText = '';
 //     });
 
 //     try {
-//       final newChannelList = await _fetchSportsChannelsForNetwork(selectedNetwork.id); 
+//       final newChannelList = await _fetchSportsChannelsForNetwork(selectedNetwork.id);
 //       if (_isDisposed || !mounted) return;
 
 //       setState(() {
-//         _sportsChannelList = newChannelList;  
+//         _sportsChannelList = newChannelList;
 //         _selectedNetworkName = selectedNetwork.name;
-//         _updateSelectedNetworkData();  
-         
-//         _updateChannelFilters();  
+//         _updateSelectedNetworkData();
+
+//         _updateChannelFilters();
 //         _rebuildChannelFilterFocusNodes();
 //       });
-       
-//       await _fetchDataForView();  
-       
+
+//       await _fetchDataForView();
+
 //     } catch (e) {
 //       if (!_isDisposed && mounted) {
 //         setState(() {
 //           _isListLoading = false;
 //           _errorMessage = "Failed to load channels for ${selectedNetwork.name}.";
-//           _sportsChannelList = [];  
+//           _sportsChannelList = [];
 //           _displayList = [];
 //           _currentViewMasterList.clear();
-//             _updateChannelFilters();  
+//             _updateChannelFilters();
 //             _rebuildChannelFilterFocusNodes();
 //         });
 //       }
@@ -5090,7 +5080,7 @@
 //     final filterNames = _channelFilters.keys.toList();
 //     if (filterNames.isEmpty || _focusedChannelFilterIndex >= filterNames.length || _channelFilterFocusNodes.isEmpty) return;
 
-//     _debounce?.cancel();  
+//     _debounce?.cancel();
 
 //     final newFilterName = filterNames[_focusedChannelFilterIndex];
 //     if (newFilterName == _selectedChannelFilterName) return;
@@ -5099,26 +5089,26 @@
 //       _selectedChannelFilterName = newFilterName;
 //       _selectedChannelFilterId = _channelFilters[_selectedChannelFilterName];
 //       _isDisplayingShows = (_selectedChannelFilterId != null);
-       
+
 //       _fetchDataForView();
 //     });
 //   }
 
 //   void _updateSelectedNetworkData() {
 //     if (_isDisposed) return;
-//     if (_apiNetworks.isEmpty || _focusedNetworkIndex >= _apiNetworks.length) return;  
+//     if (_apiNetworks.isEmpty || _focusedNetworkIndex >= _apiNetworks.length) return;
 
 //     final selectedNetwork = _apiNetworks.firstWhere(
 //         (n) => n.name == _selectedNetworkName,
 //         orElse: () => ApiNetworkModel(id: -1, name: '', networksOrder: 9999));
-        
+
 //     final sportsSliders = selectedNetwork.sliders
-//         .where((s) => s.sliderFor == 'sports') 
+//         .where((s) => s.sliderFor == 'sports')
 //         .toList();
 
 //     setState(() {
 //       _selectedNetworkLogo = selectedNetwork.logo;
-//       _currentSportsSliders = sportsSliders; 
+//       _currentSportsSliders = sportsSliders;
 //       _currentSliderIndex = 0;
 //       if (sportsSliders.isNotEmpty) {
 //         _currentBackgroundUrl = sportsSliders.first.thumbnail;
@@ -5138,8 +5128,8 @@
 //           int next = (_sliderPageController.page?.round() ?? 0) + 1;
 //           if (next >= _currentSportsSliders.length) next = 0;
 //           _sliderPageController.animateToPage(
-//             next, 
-//             duration: const Duration(milliseconds: 500), 
+//             next,
+//             duration: const Duration(milliseconds: 500),
 //             curve: Curves.easeInOut
 //           );
 //         }
@@ -5151,9 +5141,9 @@
 //     if (_isDisposed) return;
 //     setState(() {
 //       if (_sportsChannelList.isEmpty) {
-//         _channelFilters = {};  
+//         _channelFilters = {};
 //       } else {
-//         final Map<String, int?> newFilters = {};  
+//         final Map<String, int?> newFilters = {};
 //         for (final channel in _sportsChannelList) {
 //           if (channel.title.isNotEmpty && !newFilters.containsKey(channel.title)) {
 //             newFilters[channel.title] = channel.id;
@@ -5161,11 +5151,11 @@
 //         }
 //         _channelFilters = newFilters;
 //       }
-       
+
 //       if (_channelFilters.isNotEmpty) {
 //         _selectedChannelFilterName = _channelFilters.keys.first;
 //         _selectedChannelFilterId = _channelFilters.values.first;
-//         _isDisplayingShows = true;  
+//         _isDisplayingShows = true;
 //         _focusedChannelFilterIndex = 0;
 //       } else {
 //         _selectedChannelFilterName = '';
@@ -5192,32 +5182,32 @@
 //           _searchText = _searchText.substring(0, _searchText.length - 1);
 //         }
 //       } else if (value == ' ') {
-//         if (_searchText.isNotEmpty && !_searchText.endsWith(' ')) { 
+//         if (_searchText.isNotEmpty && !_searchText.endsWith(' ')) {
 //           _searchText += ' ';
 //         }
 //       } else {
 //         _searchText += value;
 //       }
-//       _isSearching = _searchText.isNotEmpty; 
-//       _debounce?.cancel(); 
-//       _debounce = Timer(const Duration(milliseconds: 400), () { 
-//         _applySearchFilter(); 
+//       _isSearching = _searchText.isNotEmpty;
+//       _debounce?.cancel();
+//       _debounce = Timer(const Duration(milliseconds: 400), () {
+//         _applySearchFilter();
 //       });
 //     });
 //   }
 
-//   Future<void> _navigateToSportsDetails(SportsChannelModel item, int index) async {  
+//   Future<void> _navigateToSportsDetails(SportsChannelModel item, int index) async {
 //     if (_isVideoLoading || _isDisposed) return;
 //     setState(() => _isVideoLoading = true);
-      
+
 //     try {
 //       int? currentUserId = SessionManager.userId;
 //       if (currentUserId != null) {
 //         HistoryService.updateUserHistory(
 //           userId: currentUserId,
-//           contentType: 4, 
-//           eventId: item.id,  
-//           eventTitle: item.title,  
+//           contentType: 4,
+//           eventId: item.id,
+//           eventTitle: item.title,
 //           url: '',
 //           categoryId: 0,
 //         ).catchError((e) {});
@@ -5227,10 +5217,10 @@
 //     await Navigator.push(
 //       context,
 //       MaterialPageRoute(
-//         builder: (context) => TournamentFinalDetailsPage( 
-//           id: item.id,  
-//           banner: item.thumbnail ?? '',  
-//           poster: item.thumbnail ?? '',  
+//         builder: (context) => TournamentFinalDetailsPage(
+//           id: item.id,
+//           banner: item.thumbnail ?? '',
+//           poster: item.thumbnail ?? '',
 //           name: item.title, updatedAt:item.updatedAt,
 //         ),
 //       ),
@@ -5239,19 +5229,19 @@
 //     if (!_isDisposed && mounted) {
 //       setState(() {
 //         _isVideoLoading = false;
-//           if (index >= 0 && index < _itemFocusNodes.length) { 
+//           if (index >= 0 && index < _itemFocusNodes.length) {
 //             _focusedItemIndex = index;
 //               WidgetsBinding.instance.addPostFrameCallback((_) {
 //                   if(!_isDisposed && mounted && _itemFocusNodes.isNotEmpty && _focusedItemIndex < _itemFocusNodes.length) {
 //                     try { _itemFocusNodes[_focusedItemIndex].requestFocus(); } catch (_) {}
 //                     _updateAndScrollToFocus(
-//                         _itemFocusNodes, _focusedItemIndex, _listScrollController, (bannerwdt * 1.1) + 15); 
+//                         _itemFocusNodes, _focusedItemIndex, _listScrollController, (bannerwdt * 1.1) + 15);
 //                   }
 //                 });
 //           } else {
 //             _focusedItemIndex = -1;
 //             if(_itemFocusNodes.isNotEmpty) { _focusFirstListItemWithScroll(); }
-//             else if (_channelFilterFocusNodes.isNotEmpty && _focusedChannelFilterIndex >= 0) { _channelFilterFocusNodes[_focusedChannelFilterIndex].requestFocus(); }  
+//             else if (_channelFilterFocusNodes.isNotEmpty && _focusedChannelFilterIndex >= 0) { _channelFilterFocusNodes[_focusedChannelFilterIndex].requestFocus(); }
 //             else { _searchButtonFocusNode.requestFocus(); }
 //           }
 //       });
@@ -5264,13 +5254,13 @@
 //   }
 
 //   void _startAnimations() {
-//     _fadeController.reset(); 
+//     _fadeController.reset();
 //     _fadeController.forward();
 //   }
 
 //   void _initializeFocusNodes() {
 //     _disposeFocusNodes(_networkFocusNodes);
-//     _networkFocusNodes = List.generate(_apiNetworks.length, (index) => FocusNode(debugLabel: 'Network-$index')..addListener(_setStateListener)); 
+//     _networkFocusNodes = List.generate(_apiNetworks.length, (index) => FocusNode(debugLabel: 'Network-$index')..addListener(_setStateListener));
 //     _rebuildChannelFilterFocusNodes();
 //     _rebuildItemFocusNodes();
 //     _rebuildKeyboardFocusNodes();
@@ -5278,19 +5268,19 @@
 
 //   void _rebuildChannelFilterFocusNodes() {
 //     _disposeFocusNodes(_channelFilterFocusNodes);
-//     _channelFilterFocusNodes = List.generate(_channelFilters.length, (index) => FocusNode(debugLabel: 'ChannelFilter-$index')..addListener(_setStateListener)); 
+//     _channelFilterFocusNodes = List.generate(_channelFilters.length, (index) => FocusNode(debugLabel: 'ChannelFilter-$index')..addListener(_setStateListener));
 //   }
 
 //   void _rebuildItemFocusNodes() {
 //     _disposeFocusNodes(_itemFocusNodes);
 //     final currentList = _displayList;
-//     _itemFocusNodes = List.generate(currentList.length, (index) => FocusNode(debugLabel: 'Item-$index')..addListener(_setStateListener)); 
+//     _itemFocusNodes = List.generate(currentList.length, (index) => FocusNode(debugLabel: 'Item-$index')..addListener(_setStateListener));
 //   }
 
 //   void _rebuildKeyboardFocusNodes() {
 //     _disposeFocusNodes(_keyboardFocusNodes);
 //     int totalKeys = _keyboardLayout.fold(0, (prev, row) => prev + row.length);
-//     _keyboardFocusNodes = List.generate(totalKeys, (index) => FocusNode(debugLabel: 'Key-$index')..addListener(_setStateListener)); 
+//     _keyboardFocusNodes = List.generate(totalKeys, (index) => FocusNode(debugLabel: 'Key-$index')..addListener(_setStateListener));
 //   }
 
 //   int _getFocusNodeIndexForKey(int row, int col) {
@@ -5318,7 +5308,7 @@
 //       child: Column(
 //         children: [
 //           _buildTopFilterBar(),
-//           Expanded( 
+//           Expanded(
 //             child: FadeTransition(
 //               opacity: _fadeAnimation,
 //               child: _buildContentBody(),
@@ -5332,22 +5322,22 @@
 //   Widget _buildContentBody() {
 //     return Column(
 //       children: [
-//         SizedBox( 
+//         SizedBox(
 //           height: screenhgt * 0.5,
 //           child: _showKeyboard ? _buildSearchUI() : const SizedBox.shrink(),
 //         ),
 //         _buildSliderIndicators(),
-//         _buildChannelFilterAndSearchButtons(), 
+//         _buildChannelFilterAndSearchButtons(),
 //         SizedBox(height: screenhgt * 0.02),
-//         _buildSportsList(), 
+//         _buildSportsList(),
 //       ],
 //     );
 //   }
-   
+
 //   Widget _buildBackgroundOrSlider() {
-//     if (_currentSportsSliders.isNotEmpty) { 
-//       return SportsThumbnailSlider( 
-//         sliders: _currentSportsSliders, 
+//     if (_currentSportsSliders.isNotEmpty) {
+//       return SportsThumbnailSlider(
+//         sliders: _currentSportsSliders,
 //         controller: _sliderPageController,
 //         onPageChanged: (index) {
 //           if (!_isDisposed && mounted) {
@@ -5370,7 +5360,7 @@
 //               key: ValueKey<String>(_currentBackgroundUrl!),
 //               decoration: BoxDecoration(
 //                 image: DecorationImage(
-//                   image: CachedNetworkImageProvider(_currentBackgroundUrl!), 
+//                   image: CachedNetworkImageProvider(_currentBackgroundUrl!),
 //                   fit: BoxFit.cover,
 //                   onError: (exception, stackTrace) {},
 //                 ),
@@ -5446,11 +5436,11 @@
 //           scrollDirection: Axis.horizontal,
 //           itemCount: _uniqueNetworks.length,
 //           itemBuilder: (context, index) {
-//             if (index >= _networkFocusNodes.length) return const SizedBox.shrink(); 
+//             if (index >= _networkFocusNodes.length) return const SizedBox.shrink();
 //             final networkName = _uniqueNetworks[index];
 //             final focusNode = _networkFocusNodes[index];
 //             final isSelected = _selectedNetworkName == networkName;
-            
+
 //             return Focus(
 //               focusNode: focusNode,
 //               onFocusChange: (hasFocus) {
@@ -5458,7 +5448,7 @@
 //                   setState(() => _focusedNetworkIndex = index);
 //                 }
 //               },
-//               child: _buildGlassEffectButton( 
+//               child: _buildGlassEffectButton(
 //                 focusNode: focusNode,
 //                 isSelected: isSelected,
 //                 focusColor: _focusColors[index % _focusColors.length],
@@ -5489,24 +5479,24 @@
 //     final filterNames = _channelFilters.keys.toList();
 
 //     if (filterNames.isEmpty && !_isSearching) {
-//       return const SizedBox(height: 30); 
+//       return const SizedBox(height: 30);
 //     }
-    
+
 //     return SizedBox(
 //       height: 30,
 //       child: Center(
 //         child: ListView.builder(
 //           controller: _channelFilterScrollController,
 //           scrollDirection: Axis.horizontal,
-//           itemCount: filterNames.length + 1, 
+//           itemCount: filterNames.length + 1,
 //           padding: EdgeInsets.symmetric(horizontal: screenwdt * 0.015),
 //           itemBuilder: (context, index) {
-//             if (index == 0) { 
+//             if (index == 0) {
 //               return Focus(
 //                 focusNode: _searchButtonFocusNode,
 //                 child: _buildGlassEffectButton(
 //                   focusNode: _searchButtonFocusNode,
-//                   isSelected: _isSearching || _showKeyboard, 
+//                   isSelected: _isSearching || _showKeyboard,
 //                   focusColor: ProfessionalColors.accentOrange,
 //                   onTap: () {
 //                     _searchButtonFocusNode.requestFocus();
@@ -5530,7 +5520,7 @@
 //                         ("Search").toUpperCase(),
 //                         style: TextStyle(
 //                           color: Colors.white,
-//                           fontWeight: FontWeight.bold, 
+//                           fontWeight: FontWeight.bold,
 //                           fontSize: 16,
 //                         ),
 //                       ),
@@ -5568,7 +5558,7 @@
 //                   filterName.toUpperCase(),
 //                   style: const TextStyle(
 //                     color: Colors.white,
-//                     fontWeight: FontWeight.bold, 
+//                     fontWeight: FontWeight.bold,
 //                     fontSize: 16,
 //                   ),
 //                 ),
@@ -5583,7 +5573,7 @@
 //   Widget _buildSportsList() {
 //     final currentList = _displayList;
 
-//     if (currentList.isEmpty && !_isListLoading) { 
+//     if (currentList.isEmpty && !_isListLoading) {
 //       return Expanded(
 //         child: Center(
 //           child: Container(
@@ -5598,14 +5588,14 @@
 //               mainAxisSize: MainAxisSize.min,
 //               children: [
 //                 const Icon(
-//                   Icons.sports_soccer_outlined, 
+//                   Icons.sports_soccer_outlined,
 //                   size: 25,
 //                   color: ProfessionalColors.textSecondary,
 //                 ),
 //                 Text(
 //                   _isSearching && _searchText.isNotEmpty
 //                       ? "No results found for '$_searchText'"
-//                       : 'No sports content available.', 
+//                       : 'No sports content available.',
 //                   style: const TextStyle(
 //                     color: ProfessionalColors.textSecondary,
 //                     fontSize: 16,
@@ -5617,10 +5607,10 @@
 //         ),
 //       );
 //     }
-    
+
 //     return Expanded(
 //       child: Padding(
-//         padding: const EdgeInsets.only(top: 1.0, bottom: 10.0), 
+//         padding: const EdgeInsets.only(top: 1.0, bottom: 10.0),
 //         child: ListView.builder(
 //           controller: _listScrollController,
 //           clipBehavior: Clip.none,
@@ -5628,31 +5618,31 @@
 //           padding:  EdgeInsets.symmetric(horizontal: screenwdt * 0.015),
 //           itemCount: currentList.length,
 //           itemBuilder: (context, index) {
-//             if (index >= _itemFocusNodes.length) return const SizedBox.shrink(); 
+//             if (index >= _itemFocusNodes.length) return const SizedBox.shrink();
 //             final item = currentList[index];
 //             final focusNode = _itemFocusNodes[index];
-            
+
 //             return Container(
-//               width: bannerwdt * 1.1, 
-//               margin: const EdgeInsets.only(right: 15.0), 
+//               width: bannerwdt * 1.1,
+//               margin: const EdgeInsets.only(right: 15.0),
 //               alignment: Alignment.topCenter,
 //               child: InkWell(
 //                 focusNode: focusNode,
-//                 onTap: () => _navigateToSportsDetails(item, index), 
+//                 onTap: () => _navigateToSportsDetails(item, index),
 //                 onFocusChange: (hasFocus) {
 //                   if (hasFocus && !_isDisposed) {
 //                     setState(() => _focusedItemIndex = index);
 //                     _updateAndScrollToFocus(
-//                         _itemFocusNodes, index, _listScrollController, (bannerwdt * 1.1) + 15); 
+//                         _itemFocusNodes, index, _listScrollController, (bannerwdt * 1.1) + 15);
 //                   }
 //                 },
-//                 child: OptimizedSportsCard( 
-//                   item: item, 
+//                 child: OptimizedSportsCard(
+//                   item: item,
 //                   isFocused: _focusedItemIndex == index,
 //                   onTap: () =>
 //                       _navigateToSportsDetails(item, index),
-//                   cardHeight: bannerhgt * 1.0, 
-//                   networkLogo: _isDisplayingShows ? null : _selectedNetworkLogo, 
+//                   cardHeight: bannerhgt * 1.0,
+//                   networkLogo: _isDisplayingShows ? null : _selectedNetworkLogo,
 //                   uniqueIndex: index,
 //                 ),
 //               ),
@@ -5683,9 +5673,9 @@
 //                     ],
 //                   ).createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
 //                   child: Text(
-//                     "Search in $_selectedChannelFilterName", 
+//                     "Search in $_selectedChannelFilterName",
 //                     style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-//                     maxLines: 2, 
+//                     maxLines: 2,
 //                     textAlign: TextAlign.center,
 //                   ),
 //                 ),
@@ -5737,7 +5727,7 @@
 //   }
 
 //   Widget _buildKeyboardRow(List<String> keys, int rowIndex) {
-//     int startIndex = _getFocusNodeIndexForKey(rowIndex, 0); 
+//     int startIndex = _getFocusNodeIndexForKey(rowIndex, 0);
 
 //     return Row(
 //       mainAxisAlignment: MainAxisAlignment.center,
@@ -5803,12 +5793,12 @@
 //   }
 
 //   Widget _buildSliderIndicators() {
-//     if (_currentSportsSliders.length <= 1) { 
-//       return const SizedBox(height: 28); 
+//     if (_currentSportsSliders.length <= 1) {
+//       return const SizedBox(height: 28);
 //     }
 //     return Row(
 //       mainAxisAlignment: MainAxisAlignment.center,
-//       children: List.generate(_currentSportsSliders.length, (index) { 
+//       children: List.generate(_currentSportsSliders.length, (index) {
 //         bool isActive = _currentSliderIndex == index;
 //         return AnimatedContainer(
 //           duration: const Duration(milliseconds: 300),
@@ -5920,7 +5910,7 @@
 //             ),
 //             const SizedBox(height: 24),
 //             ElevatedButton.icon(
-//               focusNode: FocusNode(), 
+//               focusNode: FocusNode(),
 //               onPressed: () => _fetchDataForPage(forceRefresh: true),
 //               icon: const Icon(Icons.refresh_rounded),
 //               label: const Text('Try Again'),
@@ -5946,7 +5936,7 @@
 // //==============================================================================
 
 // class OptimizedSportsCard extends StatelessWidget {
-//   final SportsChannelModel item; 
+//   final SportsChannelModel item;
 //   final bool isFocused;
 //   final VoidCallback onTap;
 //   final double cardHeight;
@@ -5955,7 +5945,7 @@
 
 //   const OptimizedSportsCard({
 //     Key? key,
-//     required this.item, 
+//     required this.item,
 //     required this.isFocused,
 //     required this.onTap,
 //     required this.cardHeight,
@@ -6018,7 +6008,7 @@
 //           height: cardHeight,
 //           isFocused: isFocused,
 //           focusGlowColor: focusColor,
-//           focusedTitleColor: focusColor, 
+//           focusedTitleColor: focusColor,
 //           unfocusedTitleColor: ProfessionalColors.textSecondary,
 //           titleFontSize: 14,
 //           titleSpacing: 8,
@@ -6049,7 +6039,7 @@
 
 // class _SportsThumbnailSliderState extends State<SportsThumbnailSlider> {
 //   Timer? _timer;
-//   double _opacity = 1.0; 
+//   double _opacity = 1.0;
 
 //   @override
 //   void initState() {
@@ -6072,7 +6062,7 @@
 
 //   void _startTimer() {
 //     _timer?.cancel();
-//     _timer = Timer.periodic(const Duration(seconds: 8), (timer) { 
+//     _timer = Timer.periodic(const Duration(seconds: 8), (timer) {
 //       if (!mounted || !widget.controller.hasClients || widget.sliders.length <= 1) return;
 
 //       int currentPage = widget.controller.page?.round() ?? 0;
@@ -6098,7 +6088,7 @@
 //       return const SizedBox.shrink();
 //     }
 
-//     return AnimatedOpacity( 
+//     return AnimatedOpacity(
 //       opacity: _opacity,
 //       duration: const Duration(milliseconds: 400),
 //       child: PageView.builder(
@@ -6130,7 +6120,7 @@
 //                     ],
 //                     begin: Alignment.topCenter,
 //                     end: Alignment.bottomCenter,
-//                     stops: const [0.0, 0.5, 0.7, 0.9], 
+//                     stops: const [0.0, 0.5, 0.7, 0.9],
 //                   ),
 //                 ),
 //               ),
@@ -6142,38 +6132,106 @@
 //   }
 // }
 
-
-
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as https;
 import 'package:mobi_tv_entertainment/components/home_screen_pages/sports_category/sports_final_details_page.dart';
-import 'package:mobi_tv_entertainment/main.dart'; 
+import 'package:mobi_tv_entertainment/main.dart';
 import 'package:mobi_tv_entertainment/components/services/history_service.dart';
 import 'package:mobi_tv_entertainment/components/widgets/master_slider_layout.dart'; // 🔥 Master Widget
 
 // --- MODELS ---
-class SportsChannelModel { 
-  final int id; final String title; final String updatedAt; final String? thumbnail; final String? genre; final int order; final String? language;
-  SportsChannelModel({required this.id, required this.title, required this.updatedAt, this.thumbnail, this.genre, required this.order, this.language});
-  factory SportsChannelModel.fromJson(Map<String, dynamic> json) => SportsChannelModel(id: json['id'] ?? 0, title: json['title'] ?? '', updatedAt: json['updated_at'] ?? '', thumbnail: json['Thumbnail'], order: json['order'] ?? 9999, language: json['language']);
+class SportsChannelModel {
+  final int id;
+  final String title;
+  final String updatedAt;
+  final String? thumbnail;
+  final String? genre;
+  final int order;
+  final String? language;
+  SportsChannelModel(
+      {required this.id,
+      required this.title,
+      required this.updatedAt,
+      this.thumbnail,
+      this.genre,
+      required this.order,
+      this.language});
+  String get genres => genre ?? "";
+  factory SportsChannelModel.fromJson(Map<String, dynamic> json) =>
+      SportsChannelModel(
+          id: json['id'] ?? 0,
+          title: json['title'] ?? '',
+          genre: json['genre'],
+          updatedAt: json['updated_at'] ?? '',
+          thumbnail: json['Thumbnail'],
+          order: json['order'] ?? 9999,
+          language: json['language']);
 }
+
 class SportsShowItemModel {
-  final int id; final String title; final String? logo; final String? genre; final int sportsChannelId; final int order;
-  SportsShowItemModel({required this.id, required this.title, this.logo, this.genre, required this.sportsChannelId, required this.order});
-  factory SportsShowItemModel.fromJson(Map<String, dynamic> json) => SportsShowItemModel(id: json['id'] ?? 0, title: json['title'] ?? '', logo: json['logo'], genre: json['genre'], sportsChannelId: json['sports_category_id'] ?? 0, order: json['order'] ?? 9999);
+  final int id;
+  final String title;
+  final String? logo;
+  final String? genre;
+  final int sportsChannelId;
+  final int order;
+  SportsShowItemModel(
+      {required this.id,
+      required this.title,
+      this.logo,
+      this.genre,
+      required this.sportsChannelId,
+      required this.order});
+  factory SportsShowItemModel.fromJson(Map<String, dynamic> json) =>
+      SportsShowItemModel(
+          id: json['id'] ?? 0,
+          title: json['title'] ?? '',
+          logo: json['logo'],
+          genre: json['genre'],
+          sportsChannelId: json['sports_category_id'] ?? 0,
+          order: json['order'] ?? 9999);
 }
+
 class SliderModel {
-  final int id; final String title; final String thumbnail; final String sliderFor;
-  SliderModel({required this.id, required this.title, required this.thumbnail, required this.sliderFor});
-  factory SliderModel.fromJson(Map<String, dynamic> json) => SliderModel(id: json['id'] ?? 0, title: json['title'] ?? '', thumbnail: json['thumbnail'] ?? '', sliderFor: json['slider_for'] ?? '');
+  final int id;
+  final String title;
+  final String thumbnail;
+  final String sliderFor;
+  SliderModel(
+      {required this.id,
+      required this.title,
+      required this.thumbnail,
+      required this.sliderFor});
+  factory SliderModel.fromJson(Map<String, dynamic> json) => SliderModel(
+      id: json['id'] ?? 0,
+      title: json['title'] ?? '',
+      thumbnail: json['thumbnail'] ?? '',
+      sliderFor: json['slider_for'] ?? '');
 }
+
 class ApiNetworkModel {
-  final int id; final String name; final String? logo; final int networksOrder; final List<SliderModel> sliders;
-  ApiNetworkModel({required this.id, required this.name, this.logo, required this.networksOrder, this.sliders = const []});
+  final int id;
+  final String name;
+  final String? logo;
+  final int networksOrder;
+  final List<SliderModel> sliders;
+  ApiNetworkModel(
+      {required this.id,
+      required this.name,
+      this.logo,
+      required this.networksOrder,
+      this.sliders = const []});
   factory ApiNetworkModel.fromJson(Map<String, dynamic> json) {
-    var sliders = (json['sliders'] as List? ?? []).map((item) => SliderModel.fromJson(item as Map<String, dynamic>)).toList();
-    return ApiNetworkModel(id: json['id'] ?? 0, name: json['name'] ?? '', logo: json['logo'], networksOrder: json['networks_order'] ?? 9999, sliders: sliders);
+    var sliders = (json['sliders'] as List? ?? [])
+        .map((item) => SliderModel.fromJson(item as Map<String, dynamic>))
+        .toList();
+    return ApiNetworkModel(
+        id: json['id'] ?? 0,
+        name: json['name'] ?? '',
+        logo: json['logo'],
+        networksOrder: json['networks_order'] ?? 9999,
+        sliders: sliders);
   }
 }
 
@@ -6181,7 +6239,9 @@ class ApiNetworkModel {
 class SportsSliderScreen extends StatefulWidget {
   final String title;
   final int? initialNetworkId;
-  const SportsSliderScreen({Key? key, this.title = 'Sports Channels', this.initialNetworkId}) : super(key: key);
+  const SportsSliderScreen(
+      {Key? key, this.title = 'Sports Channels', this.initialNetworkId})
+      : super(key: key);
   @override
   _SportsSliderScreenState createState() => _SportsSliderScreenState();
 }
@@ -6193,10 +6253,10 @@ class _SportsSliderScreenState extends State<SportsSliderScreen> {
   String? _errorMessage;
 
   List<ApiNetworkModel> _apiNetworks = [];
-  List<SportsChannelModel> _sportsChannelList = []; 
-  List<SportsChannelModel> _displayList = []; 
-  Map<String, int?> _channelFilters = {}; 
-  
+  List<SportsChannelModel> _sportsChannelList = [];
+  List<SportsChannelModel> _displayList = [];
+  Map<String, int?> _channelFilters = {};
+
   int _selectedNetworkIndex = 0;
   int _selectedFilterIndex = 0;
   List<String> _sliderImages = [];
@@ -6216,26 +6276,43 @@ class _SportsSliderScreenState extends State<SportsSliderScreen> {
   }
 
   Future<void> _fetchDataForPage() async {
-    setState(() { _isLoading = true; _errorMessage = null; });
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
     try {
       final String authKey = SessionManager.authKey;
-      final netRes = await https.post(Uri.parse(SessionManager.baseUrl + 'getNetworks'), headers: {'auth-key': authKey, 'Content-Type': 'application/json', 'domain': SessionManager.savedDomain}, body: json.encode({"network_id": "", "data_for": "sports"}));
-      
+      final netRes =
+          await https.post(Uri.parse(SessionManager.baseUrl + 'getNetworks'),
+              headers: {
+                'auth-key': authKey,
+                'Content-Type': 'application/json',
+                'domain': SessionManager.savedDomain
+              },
+              body: json.encode({"network_id": "", "data_for": "sports"}));
+
       if (_isDisposed) return;
 
       if (netRes.statusCode == 200) {
-        _apiNetworks = safeDecodeList(json.decode(netRes.body)).map((i) => ApiNetworkModel.fromJson(i)).toList()..sort((a, b) => a.networksOrder.compareTo(b.networksOrder));
-        
+        _apiNetworks = safeDecodeList(json.decode(netRes.body))
+            .map((i) => ApiNetworkModel.fromJson(i))
+            .toList()
+          ..sort((a, b) => a.networksOrder.compareTo(b.networksOrder));
+
         if (_apiNetworks.isNotEmpty) {
           if (widget.initialNetworkId != null) {
-            int idx = _apiNetworks.indexWhere((n) => n.id == widget.initialNetworkId);
+            int idx =
+                _apiNetworks.indexWhere((n) => n.id == widget.initialNetworkId);
             if (idx != -1) _selectedNetworkIndex = idx;
           }
-          await _fetchChannelsForNetwork(_apiNetworks[_selectedNetworkIndex].id);
+          await _fetchChannelsForNetwork(
+              _apiNetworks[_selectedNetworkIndex].id);
         } else {
           _errorMessage = "No networks found.";
         }
-      } else { throw Exception("API Error"); }
+      } else {
+        throw Exception("API Error");
+      }
     } catch (e) {
       if (!_isDisposed && mounted) _errorMessage = "Connection Failed";
     } finally {
@@ -6244,17 +6321,28 @@ class _SportsSliderScreenState extends State<SportsSliderScreen> {
   }
 
   Future<void> _fetchChannelsForNetwork(int netId) async {
-    final res = await https.get(Uri.parse(SessionManager.baseUrl + 'getsportCategories?content_network=$netId'), headers: {'auth-key': SessionManager.authKey, 'domain': SessionManager.savedDomain});
+    final res = await https.get(
+        Uri.parse(SessionManager.baseUrl +
+            'getsportCategories?content_network=$netId'),
+        headers: {
+          'auth-key': SessionManager.authKey,
+          'domain': SessionManager.savedDomain
+        });
     if (_isDisposed) return;
-    
+
     if (res.statusCode == 200) {
-      _sportsChannelList = safeDecodeList(json.decode(res.body)).map((i) => SportsChannelModel.fromJson(i)).toList()..sort((a,b)=> a.order.compareTo(b.order));
+      _sportsChannelList = safeDecodeList(json.decode(res.body))
+          .map((i) => SportsChannelModel.fromJson(i))
+          .toList()
+        ..sort((a, b) => a.order.compareTo(b.order));
       _channelFilters.clear();
-      for (var c in _sportsChannelList) { if (c.title.isNotEmpty) _channelFilters[c.title] = c.id; }
-      
+      for (var c in _sportsChannelList) {
+        if (c.title.isNotEmpty) _channelFilters[c.title] = c.id;
+      }
+
       _selectedFilterIndex = _channelFilters.isNotEmpty ? 0 : -1;
       _updateSliders();
-      
+
       if (_channelFilters.isNotEmpty) {
         await _fetchShowsForChannel(_channelFilters.values.elementAt(0)!);
       } else {
@@ -6266,24 +6354,48 @@ class _SportsSliderScreenState extends State<SportsSliderScreen> {
   Future<void> _fetchShowsForChannel(int channelId) async {
     setState(() => _isLoading = true); // Using main loader to avoid UI stutter
     try {
-      final res = await https.get(Uri.parse(SessionManager.baseUrl + 'getsportTournament/$channelId'), headers: {'auth-key': SessionManager.authKey, 'domain': SessionManager.savedDomain});
+      final res = await https.get(
+          Uri.parse(SessionManager.baseUrl + 'getsportTournament/$channelId'),
+          headers: {
+            'auth-key': SessionManager.authKey,
+            'domain': SessionManager.savedDomain
+          });
       if (_isDisposed) return;
       if (res.statusCode == 200) {
-        final showItems = safeDecodeList(json.decode(res.body)).map((i) => SportsShowItemModel.fromJson(i)).toList()..sort((a,b)=> a.order.compareTo(b.order));
-        _displayList = showItems.map((s) => SportsChannelModel(id: s.id, title: s.title, thumbnail: s.logo, updatedAt: '', order: s.order)).toList();
+        final showItems = safeDecodeList(json.decode(res.body))
+            .map((i) => SportsShowItemModel.fromJson(i))
+            .toList()
+          ..sort((a, b) => a.order.compareTo(b.order));
+        _displayList = showItems
+            .map((s) => SportsChannelModel(
+                id: s.id,
+                title: s.title,
+                thumbnail: s.logo,
+                updatedAt: '',
+                order: s.order))
+            .toList();
       }
-    } catch (e) { debugPrint("Error fetching sports shows: $e"); }
+    } catch (e) {
+      debugPrint("Error fetching sports shows: $e");
+    }
     if (mounted && !_isDisposed) setState(() => _isLoading = false);
   }
 
   void _updateSliders() {
     final net = _apiNetworks[_selectedNetworkIndex];
-    _sliderImages = net.sliders.where((s) => s.sliderFor == 'sports').map((e) => e.thumbnail).toList();
+    _sliderImages = net.sliders
+        .where((s) => s.sliderFor == 'sports')
+        .map((e) => e.thumbnail)
+        .toList();
     if (_sliderImages.isEmpty && net.logo != null) _sliderImages.add(net.logo!);
   }
 
   void _onNetworkChange(int idx) async {
-    setState(() { _isLoading = true; _selectedNetworkIndex = idx; _searchText = ''; });
+    setState(() {
+      _isLoading = true;
+      _selectedNetworkIndex = idx;
+      _searchText = '';
+    });
     await _fetchChannelsForNetwork(_apiNetworks[idx].id);
   }
 
@@ -6302,32 +6414,53 @@ class _SportsSliderScreenState extends State<SportsSliderScreen> {
     // 🔥 HISTORY ISOLATED
     try {
       if (SessionManager.userId != null) {
-        await HistoryService.updateUserHistory(userId: SessionManager.userId!, contentType: 4, eventId: item.id, eventTitle: item.title, url: '', categoryId: 0);
+        await HistoryService.updateUserHistory(
+            userId: SessionManager.userId!,
+            contentType: 4,
+            eventId: item.id,
+            eventTitle: item.title,
+            url: '',
+            categoryId: 0);
       }
-    } catch (e) { debugPrint("History Error: $e"); }
+    } catch (e) {
+      debugPrint("History Error: $e");
+    }
 
     if (!_isDisposed && mounted) {
-      await Navigator.push(context, MaterialPageRoute(builder: (context) => TournamentFinalDetailsPage(id: item.id, banner: item.thumbnail ?? '', poster: item.thumbnail ?? '', name: item.title, updatedAt: item.updatedAt))).catchError((_) {});
+      await Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => TournamentFinalDetailsPage(
+                  id: item.id,
+                  banner: item.thumbnail ?? '',
+                  poster: item.thumbnail ?? '',
+                  name: item.title,
+                  updatedAt: item.updatedAt))).catchError((_) {});
       if (mounted) setState(() => _isVideoLoading = false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    List<SportsChannelModel> filteredList = _searchText.isEmpty ? _displayList : _displayList.where((i) => i.title.toLowerCase().contains(_searchText.toLowerCase())).toList();
+    List<SportsChannelModel> filteredList = _searchText.isEmpty
+        ? _displayList
+        : _displayList
+            .where((i) =>
+                i.title.toLowerCase().contains(_searchText.toLowerCase()))
+            .toList();
 
     return MasterSliderLayout<SportsChannelModel>(
       title: widget.title,
-      logoUrl: _apiNetworks.isNotEmpty ? (_apiNetworks[_selectedNetworkIndex].logo ?? '') : '',
+      logoUrl: _apiNetworks.isNotEmpty
+          ? (_apiNetworks[_selectedNetworkIndex].logo ?? '')
+          : '',
       isLoading: _isLoading,
       isVideoLoading: _isVideoLoading,
       errorMessage: _errorMessage,
       onRetry: _fetchDataForPage,
-      
       networkNames: _apiNetworks.map((e) => e.name).toList(),
       selectedNetworkIndex: _selectedNetworkIndex,
       onNetworkSelected: _onNetworkChange,
-      
       filterNames: _channelFilters.keys.toList(),
       selectedFilterIndex: _selectedFilterIndex,
       onFilterSelected: (idx) {
@@ -6335,18 +6468,22 @@ class _SportsSliderScreenState extends State<SportsSliderScreen> {
         _fetchShowsForChannel(_channelFilters.values.elementAt(idx)!);
       },
       onSearch: _onSearch,
-      
       contentList: filteredList,
       onContentTap: _onTap,
       getTitle: (s) => s.title,
       getImageUrl: (s) => s.thumbnail ?? '',
-      
       sliderImages: _sliderImages,
-      focusColors: const [Color(0xFF3B82F6), Color(0xFF8B5CF6), Color(0xFFEC4899), Color(0xFFF59E0B), Color(0xFFEF4444)],
+      focusColors: const [
+        Color(0xFF3B82F6),
+        Color(0xFF8B5CF6),
+        Color(0xFFEC4899),
+        Color(0xFFF59E0B),
+        Color(0xFFEF4444)
+      ],
       placeholderIcon: Icons.sports_soccer_outlined,
       emptyMessage: "No Sports Content Available",
-      cardWidth: bannerwdt * 1.1,
-      cardHeight: bannerhgt * 1.0,
+      cardWidth: bannerwdt,
+      cardHeight: bannerhgt,
     );
   }
 }

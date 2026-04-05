@@ -227,7 +227,7 @@ class _ExitConfirmationScreenState extends State<ExitConfirmationScreen>
     } else {
       // 'Enter' button par focus set karein
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        Future.delayed(const Duration(milliseconds: 100), () {
+        Future.delayed(const Duration(milliseconds: 500), () {
           if (mounted) { // Check karein ki widget abhi bhi screen par hai
             FocusScope.of(context).requestFocus(_enterButtonFocusNode);
           }

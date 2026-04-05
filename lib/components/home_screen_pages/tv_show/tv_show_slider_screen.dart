@@ -1,12 +1,3 @@
-
-
-
-
-
-
-
-
-
 // import 'dart:async';
 // import 'dart:convert';
 // import 'dart:ui';
@@ -188,7 +179,6 @@
 //     );
 //   }
 // }
-
 
 // //==============================================================================
 // // SECTION 2: MAIN PAGE WIDGET AND STATE
@@ -374,7 +364,7 @@
 //       fetchedList.sort((a, b) => a.seriesOrder.compareTo(b.seriesOrder));
 //       fetchedNetworks
 //           .sort((a, b) => a.networksOrder.compareTo(b.networksOrder));
-      
+
 //       // CHANGE 3: Data fetch hone ke baad list ko ek baar shuffle karein.
 //       fetchedList.shuffle();
 
@@ -477,8 +467,6 @@
 //     _applyFilters();
 //   }
 
-
-
 //   //=================================================
 // // SECTION 2.3: STATE MANAGEMENT & UI LOGIC (ke Aas Paas Add Karein)
 // //=================================================
@@ -507,15 +495,13 @@
 //   }
 //   // ===== FIX END =====
 
-
-
 //   //=================================================
 //   // SECTION 2.2: KEYBOARD AND FOCUS NAVIGATION
 //   //=================================================
 
 //   KeyEventResult _onKeyHandler(FocusNode node, RawKeyEvent event) {
 //     if (event is! RawKeyDownEvent) return KeyEventResult.ignored;
-    
+
 //     bool searchHasFocus = _searchButtonFocusNode.hasFocus;
 //     bool networkHasFocus = _networkFocusNodes.any((n) => n.hasFocus);
 //     bool genreHasFocus = _genreFocusNodes.any((n) => n.hasFocus);
@@ -543,7 +529,7 @@
 //     if (keyboardHasFocus && _showKeyboard) {
 //       return _navigateKeyboard(key);
 //     }
-    
+
 //     if (searchHasFocus) {
 //       if (key == LogicalKeyboardKey.select || key == LogicalKeyboardKey.enter) {
 //         setState(() {
@@ -622,7 +608,7 @@
 //     });
 
 //     int newIndex = _focusedItemIndex;
-    
+
 //     if (key == LogicalKeyboardKey.arrowUp) {
 //       setState(() => _lastNavigationDirection = 'vertical');
 //       if (_genreFocusNodes.isNotEmpty) {
@@ -631,7 +617,7 @@
 //         _searchButtonFocusNode.requestFocus();
 //       }
 //       setState(() => _focusedItemIndex = -1);
-      
+
 //       // Lock aur timer ko cancel kar do kyunki hum list se bahar ja rahe hain
 //       _isNavigationLocked = false;
 //       _navigationLockTimer?.cancel();
@@ -657,7 +643,7 @@
 //       }
 //     } else if (key == LogicalKeyboardKey.select ||
 //         key == LogicalKeyboardKey.enter) {
-      
+
 //       // Enter/Select par cooldown nahi chahiye, isliye lock turant hata do
 //       _isNavigationLocked = false;
 //       _navigationLockTimer?.cancel();
@@ -812,10 +798,10 @@
 //               false);
 //       return networkMatch && genreMatch;
 //     }).toList();
-    
+
 //     // CHANGE 5: Yahan se shuffle ko hata diya gaya hai.
-//     // _filteredWebSeriesList.shuffle(); 
-    
+//     // _filteredWebSeriesList.shuffle();
+
 //     _rebuildItemFocusNodes();
 //     _focusedItemIndex = -1;
 //   }
@@ -996,7 +982,6 @@
 //     }
 //   }
 
-
 //   //=================================================
 //   // SECTION 2.4: INITIALIZATION AND CLEANUP
 //   //=================================================
@@ -1107,7 +1092,7 @@
 //       ],
 //     );
 //   }
-  
+
 //   Widget _buildBackgroundOrSlider() {
 //     if (_currentWebSeriesSliders.isNotEmpty) {
 //       return WebSeriesBannerSlider(
@@ -1221,7 +1206,7 @@
 //             final networkName = _uniqueNetworks[index];
 //             final focusNode = _networkFocusNodes[index];
 //             final isSelected = _selectedNetworkName == networkName;
-            
+
 //             return Focus(
 //               focusNode: focusNode,
 //               onFocusChange: (hasFocus) {
@@ -1815,7 +1800,7 @@
 //   // CHANGE 7: CachedNetworkImage ko Image.network se badal diya gaya hai.
 //   Widget _buildWebSeriesImage() {
 //     final imageUrl = webSeries.banner;
-    
+
 //     return imageUrl != null && imageUrl.isNotEmpty
 //         ? Image.network(
 //             imageUrl,
@@ -1832,7 +1817,7 @@
 //           )
 //         : _buildImagePlaceholder();
 //   }
-  
+
 //   Widget _buildImagePlaceholder() {
 //     return Container(
 //       decoration: const BoxDecoration(
@@ -1935,9 +1920,9 @@
 //               Image.network(
 //                 slider.banner,
 //                 fit: BoxFit.cover,
-//                 loadingBuilder: (context, child, progress) => 
+//                 loadingBuilder: (context, child, progress) =>
 //                     progress == null ? child : Container(color: ProfessionalColors.surfaceDark),
-//                 errorBuilder: (context, error, stackTrace) => 
+//                 errorBuilder: (context, error, stackTrace) =>
 //                     Container(color: ProfessionalColors.surfaceDark),
 //               ),
 //               Container(
@@ -1962,11 +1947,6 @@
 //     );
 //   }
 // }
-
-
-
-
-
 
 // import 'dart:async';
 // import 'dart:convert';
@@ -2154,7 +2134,6 @@
 //     );
 //   }
 // }
-
 
 // //==============================================================================
 // // SECTION 2: MAIN PAGE WIDGET AND STATE
@@ -2349,7 +2328,7 @@
 //       fetchedList.sort((a, b) => a.seriesOrder.compareTo(b.seriesOrder));
 //       fetchedNetworks
 //           .sort((a, b) => a.networksOrder.compareTo(b.networksOrder));
-      
+
 //       // CHANGE 3: Data fetch hone ke baad list ko ek baar shuffle karein.
 //       fetchedList.shuffle();
 
@@ -2460,8 +2439,6 @@
 //     _applyFilters();
 //   }
 
-
-
 //   //=================================================
 // // SECTION 2.3: STATE MANAGEMENT & UI LOGIC (ke Aas Paas Add Karein)
 // //=================================================
@@ -2490,15 +2467,13 @@
 //   }
 //   // ===== FIX END =====
 
-
-
 //   //=================================================
 //   // SECTION 2.2: KEYBOARD AND FOCUS NAVIGATION
 //   //=================================================
 
 //   KeyEventResult _onKeyHandler(FocusNode node, RawKeyEvent event) {
 //     if (event is! RawKeyDownEvent) return KeyEventResult.ignored;
-    
+
 //     bool searchHasFocus = _searchButtonFocusNode.hasFocus;
 //     bool networkHasFocus = _networkFocusNodes.any((n) => n.hasFocus);
 //     bool genreHasFocus = _genreFocusNodes.any((n) => n.hasFocus);
@@ -2526,7 +2501,7 @@
 //     if (keyboardHasFocus && _showKeyboard) {
 //       return _navigateKeyboard(key);
 //     }
-    
+
 //     if (searchHasFocus) {
 //       if (key == LogicalKeyboardKey.select || key == LogicalKeyboardKey.enter) {
 //         setState(() {
@@ -2605,7 +2580,7 @@
 //     });
 
 //     int newIndex = _focusedItemIndex;
-    
+
 //     if (key == LogicalKeyboardKey.arrowUp) {
 //       setState(() => _lastNavigationDirection = 'vertical');
 //       if (_genreFocusNodes.isNotEmpty) {
@@ -2614,7 +2589,7 @@
 //         _searchButtonFocusNode.requestFocus();
 //       }
 //       setState(() => _focusedItemIndex = -1);
-      
+
 //       // Lock aur timer ko cancel kar do kyunki hum list se bahar ja rahe hain
 //       _isNavigationLocked = false;
 //       _navigationLockTimer?.cancel();
@@ -2640,7 +2615,7 @@
 //       }
 //     } else if (key == LogicalKeyboardKey.select ||
 //         key == LogicalKeyboardKey.enter) {
-      
+
 //       // Enter/Select par cooldown nahi chahiye, isliye lock turant hata do
 //       _isNavigationLocked = false;
 //       _navigationLockTimer?.cancel();
@@ -2797,10 +2772,10 @@
 //               false);
 //       return networkMatch && genreMatch;
 //     }).toList();
-    
+
 //     // CHANGE 5: Yahan se shuffle ko hata diya gaya hai.
-//     // _filteredTvShowList.shuffle();  
-    
+//     // _filteredTvShowList.shuffle();
+
 //     _rebuildItemFocusNodes();
 //     _focusedItemIndex = -1;
 //   }
@@ -2992,7 +2967,6 @@
 //     }
 //   }
 
-
 //   //=================================================
 //   // SECTION 2.4: INITIALIZATION AND CLEANUP
 //   //=================================================
@@ -3105,7 +3079,7 @@
 //       ],
 //     );
 //   }
-  
+
 //   Widget _buildBackgroundOrSlider() {
 //     // REFACTOR: _currentWebSeriesSliders -> _currentTvShowSliders
 //     if (_currentTvShowSliders.isNotEmpty) {
@@ -3221,7 +3195,7 @@
 //             final networkName = _uniqueNetworks[index];
 //             final focusNode = _networkFocusNodes[index];
 //             final isSelected = _selectedNetworkName == networkName;
-            
+
 //             return Focus(
 //               focusNode: focusNode,
 //               onFocusChange: (hasFocus) {
@@ -3831,7 +3805,7 @@
 //   Widget _buildTvShowImage() {
 //     // REFACTOR: webSeries.banner -> tvShow.banner
 //     final imageUrl = tvShow.banner;
-    
+
 //     return imageUrl != null && imageUrl.isNotEmpty
 //         ? Image.network(
 //             imageUrl,
@@ -3848,7 +3822,7 @@
 //           )
 //         : _buildImagePlaceholder();
 //   }
-  
+
 //   Widget _buildImagePlaceholder() {
 //     return Container(
 //       decoration: const BoxDecoration(
@@ -3955,9 +3929,9 @@
 //               Image.network(
 //                 slider.banner,
 //                 fit: BoxFit.cover,
-//                 loadingBuilder: (context, child, progress) =>  
+//                 loadingBuilder: (context, child, progress) =>
 //                     progress == null ? child : Container(color: ProfessionalColors.surfaceDark),
-//                 errorBuilder: (context, error, stackTrace) =>  
+//                 errorBuilder: (context, error, stackTrace) =>
 //                     Container(color: ProfessionalColors.surfaceDark),
 //               ),
 //               Container(
@@ -3982,13 +3956,6 @@
 //     );
 //   }
 // }
-
-
-
-
-
-
-
 
 // import 'dart:async';
 // import 'dart:convert';
@@ -4114,7 +4081,6 @@
 //   }
 // }
 
-
 // class SliderModel {
 //   final int id;
 //   final String title;
@@ -4206,7 +4172,6 @@
 //   }
 // }
 
-
 // //==============================================================================
 // // SECTION 2: MAIN PAGE WIDGET AND STATE
 // // Yeh page ka main structure aur logic hai.
@@ -4233,12 +4198,12 @@
 //   // Focus and Scroll Controllers
 //   List<FocusNode> _itemFocusNodes = [];
 //   List<FocusNode> _networkFocusNodes = [];
-//   List<FocusNode> _channelFilterFocusNodes = []; 
+//   List<FocusNode> _channelFilterFocusNodes = [];
 //   List<FocusNode> _keyboardFocusNodes = [];
 //   final FocusNode _widgetFocusNode = FocusNode();
 //   final ScrollController _listScrollController = ScrollController();
 //   final ScrollController _networkScrollController = ScrollController();
-//   final ScrollController _channelFilterScrollController = ScrollController(); 
+//   final ScrollController _channelFilterScrollController = ScrollController();
 
 //   late PageController _sliderPageController;
 
@@ -4255,21 +4220,21 @@
 
 //   // UI and Filter State
 //   int _focusedNetworkIndex = 0;
-//   int _focusedChannelFilterIndex = 0; 
+//   int _focusedChannelFilterIndex = 0;
 //   int _focusedItemIndex = -1;
 //   String _selectedNetworkName = '';
 //   String? _selectedNetworkLogo;
-  
+
 //   Map<String, int?> _channelFilters = {}; // Holds "Channel Name" -> Channel ID ("All" removed)
 //   String _selectedChannelFilterName = ''; // Default empty
 //   int? _selectedChannelFilterId; // Default null
-//   bool _isDisplayingShows = false; 
+//   bool _isDisplayingShows = false;
 
 //   List<TvShowModel> _currentViewMasterList = []; // NEW: Holds all items for the current filter (pre-search)
 //   List<TvShowModel> _displayList = []; // List jo UI mein render hogi (ya toh channels ya shows)
 //   List<ApiNetworkModel> _apiNetworks = [];
 //   List<String> _uniqueNetworks = [];
- 
+
 //   // Animation and Loading State
 //   bool _isVideoLoading = false; // Detail page navigation loading
 //   late AnimationController _fadeController;
@@ -4320,14 +4285,14 @@
 //     _widgetFocusNode.dispose();
 //     _listScrollController.dispose();
 //     _networkScrollController.dispose();
-//     _channelFilterScrollController.dispose(); 
+//     _channelFilterScrollController.dispose();
 //     _searchButtonFocusNode.removeListener(_setStateListener);
 //     _searchButtonFocusNode.dispose();
 //     _debounce?.cancel();
 //     _navigationLockTimer?.cancel();
 //     _disposeFocusNodes(_itemFocusNodes);
 //     _disposeFocusNodes(_networkFocusNodes);
-//     _disposeFocusNodes(_channelFilterFocusNodes); 
+//     _disposeFocusNodes(_channelFilterFocusNodes);
 //     _disposeFocusNodes(_keyboardFocusNodes);
 //     super.dispose();
 //   }
@@ -4346,7 +4311,7 @@
 //             _isLoading // Initial page load
 //                 ? const Center(
 //                     child: ProfessionalTvShowLoadingIndicator(
-//                         message: 'Loading Channels...')) 
+//                         message: 'Loading Channels...'))
 //                 : _errorMessage != null
 //                     ? _buildErrorWidget() // UI REFACTOR: Use WebSeries error widget
 //                     : _buildPageContent(), // UI REFACTOR: Use WebSeries layout
@@ -4396,17 +4361,16 @@
 
 //       // 2. Fetch TV Channels for the first network
 //       final int firstNetworkId = fetchedNetworks[0].id;
-//       final fetchedList = await _fetchTvShowsForNetwork(firstNetworkId); 
+//       final fetchedList = await _fetchTvShowsForNetwork(firstNetworkId);
 //       if (!mounted) return;
 
-
 //       setState(() {
-//         _tvShowList = fetchedList; 
-//         if (_tvShowList.isEmpty) _errorMessage = "No TV Channels Found for the first network."; 
+//         _tvShowList = fetchedList;
+//         if (_tvShowList.isEmpty) _errorMessage = "No TV Channels Found for the first network.";
 //       });
 
 //       if (_errorMessage == null) {
-//         _processInitialData(); 
+//         _processInitialData();
 //         _updateChannelFilters(); // This will select the first channel
 //         await _fetchDataForView(); // Fetch shows for the first channel
 //         _initializeFocusNodes();
@@ -4451,14 +4415,14 @@
 //         final List<dynamic> jsonData = json.decode(response.body);
 //         return jsonData
 //             .map(
-//                 (item) => TvShowModel.fromJson(item as Map<String, dynamic>)) 
+//                 (item) => TvShowModel.fromJson(item as Map<String, dynamic>))
 //             .toList()
-//                ..sort((a, b) => a.order.compareTo(b.order)); 
+//                ..sort((a, b) => a.order.compareTo(b.order));
 //       } else {
 //         throw Exception('API Error: ${response.statusCode}');
 //       }
 //     } catch (e) {
-//       debugPrint('Failed to load tv channels for network $networkId: $e'); 
+//       debugPrint('Failed to load tv channels for network $networkId: $e');
 //       throw Exception('Failed to load tv channels for network $networkId: $e');
 //     }
 //   }
@@ -4467,7 +4431,7 @@
 //     final prefs = await SharedPreferences.getInstance();
 //     final authKey = prefs.getString('result_auth_key') ?? '';
 //     try {
-//       final response = await http.get( 
+//       final response = await http.get(
 //         Uri.parse('https://dashboard.cpplayers.com/api/v2/getTvShows/$channelId'),
 //         headers: {
 //           'auth-key': authKey,
@@ -4484,7 +4448,7 @@
 //         return jsonData
 //             .map((item) => TvShowItemModel.fromJson(item as Map<String, dynamic>))
 //             .toList()
-//               ..sort((a, b) => a.order.compareTo(b.order)); 
+//               ..sort((a, b) => a.order.compareTo(b.order));
 //       } else {
 //         throw Exception('API Error: ${response.statusCode}');
 //       }
@@ -4507,7 +4471,7 @@
 //               'Accept': 'application/json',
 //               'domain': 'coretechinfo.com'
 //             },
-//             body: json.encode({"network_id": "", "data_for": "tvshows"}), 
+//             body: json.encode({"network_id": "", "data_for": "tvshows"}),
 //           )
 //           .timeout(const Duration(seconds: 30));
 
@@ -4536,7 +4500,6 @@
 //     }
 //   }
 
-
 //   //=================================================
 //   // SECTION 2.3: STATE MANAGEMENT & UI LOGIC (ke Aas Paas Add Karein)
 //   //=================================================
@@ -4552,7 +4515,7 @@
 //         curve: Curves.easeInOut,
 //       );
 //     }
-    
+
 //     Future.delayed(const Duration(milliseconds: 250), () {
 //       if (mounted && _itemFocusNodes.isNotEmpty) {
 //         setState(() => _focusedItemIndex = 0);
@@ -4560,7 +4523,6 @@
 //       }
 //     });
 //   }
-
 
 //   //=================================================
 //   // SECTION 2.2: KEYBOARD AND FOCUS NAVIGATION
@@ -4582,7 +4544,7 @@
 //         _searchButtonFocusNode.requestFocus();
 //         return KeyEventResult.handled;
 //       }
-//       if (listHasFocus || channelFilterHasFocus || searchHasFocus) { 
+//       if (listHasFocus || channelFilterHasFocus || searchHasFocus) {
 //          if (_networkFocusNodes.isNotEmpty) { _networkFocusNodes[_focusedNetworkIndex].requestFocus(); }
 //         return KeyEventResult.handled;
 //       }
@@ -4603,8 +4565,8 @@
 //         // UI REFACTOR: Logic from WebSeries
 //         return KeyEventResult.handled; // Do nothing
 //       }
-//       if (key == LogicalKeyboardKey.arrowRight && _channelFilterFocusNodes.isNotEmpty) { 
-//         _channelFilterFocusNodes[0].requestFocus(); 
+//       if (key == LogicalKeyboardKey.arrowRight && _channelFilterFocusNodes.isNotEmpty) {
+//         _channelFilterFocusNodes[0].requestFocus();
 //         return KeyEventResult.handled;
 //       }
 //       if (key == LogicalKeyboardKey.arrowUp && _networkFocusNodes.isNotEmpty) {
@@ -4620,7 +4582,7 @@
 
 //     if ([ LogicalKeyboardKey.arrowUp, LogicalKeyboardKey.arrowDown, LogicalKeyboardKey.arrowLeft, LogicalKeyboardKey.arrowRight, LogicalKeyboardKey.select, LogicalKeyboardKey.enter ].contains(key)) {
 //       if (networkHasFocus) { _navigateNetworks(key); }
-//       else if (channelFilterHasFocus) { _navigateChannelFilters(key); } 
+//       else if (channelFilterHasFocus) { _navigateChannelFilters(key); }
 //       else if (listHasFocus) { _navigateList(key); } // UI REFACTOR: Uses new _navigateList
 //       return KeyEventResult.handled;
 //     }
@@ -4651,7 +4613,7 @@
 //     });
 
 //     int newIndex = _focusedItemIndex;
-    
+
 //     if (key == LogicalKeyboardKey.arrowUp) {
 //       setState(() => _lastNavigationDirection = 'vertical');
 //       if (_channelFilterFocusNodes.isNotEmpty) {
@@ -4660,7 +4622,7 @@
 //         _searchButtonFocusNode.requestFocus();
 //       }
 //       setState(() => _focusedItemIndex = -1);
-      
+
 //       // Lock aur timer ko cancel kar do kyunki hum list se bahar ja rahe hain
 //       _isNavigationLocked = false;
 //       _navigationLockTimer?.cancel();
@@ -4685,7 +4647,7 @@
 //       }
 //     } else if (key == LogicalKeyboardKey.select ||
 //         key == LogicalKeyboardKey.enter) {
-      
+
 //       // Enter/Select par cooldown nahi chahiye, isliye lock turant hata do
 //       _isNavigationLocked = false;
 //       _navigationLockTimer?.cancel();
@@ -4704,7 +4666,6 @@
 //       _navigationLockTimer?.cancel();
 //     }
 //   }
-
 
 //   // UI REFACTOR: _navigateNetworks from WebSeries, adapted for TvShow state
 //   void _navigateNetworks(LogicalKeyboardKey key) {
@@ -4740,7 +4701,7 @@
 //   // UI REFACTOR: _navigateGenres from WebSeries, adapted for TvShow state
 //   void _navigateChannelFilters(LogicalKeyboardKey key) {
 //     final filterNames = _channelFilters.keys.toList();
-    
+
 //     // Agar filter list khali hai
 //     if (filterNames.isEmpty) {
 //         if (key == LogicalKeyboardKey.arrowLeft) {
@@ -4754,7 +4715,7 @@
 //         }
 //         return; // Baaki keys ignore karein
 //     }
-    
+
 //     int newIndex = _focusedChannelFilterIndex;
 //     if (key == LogicalKeyboardKey.arrowLeft) {
 //       if (newIndex > 0) {
@@ -4839,16 +4800,16 @@
 
 //   // Data logic (fetching, filtering) remains from TvShowSliderScreen
 //   Future<void> _fetchDataForView() async {
-//     _debounce?.cancel(); 
+//     _debounce?.cancel();
 
 //     setState(() {
 //       _isListLoading = true;
-//       _displayList.clear(); 
-//       _currentViewMasterList.clear(); 
-//       _rebuildItemFocusNodes(); 
-//       _errorMessage = null; 
-      
-//       _searchText = ''; 
+//       _displayList.clear();
+//       _currentViewMasterList.clear();
+//       _rebuildItemFocusNodes();
+//       _errorMessage = null;
+
+//       _searchText = '';
 //       _isSearching = false;
 //     });
 
@@ -4858,20 +4819,20 @@
 //       if (_selectedChannelFilterId != null) {
 //         final List<TvShowItemModel> showItems =
 //             await _fetchTvShowsForChannel(_selectedChannelFilterId!);
-        
+
 //         newMasterList = showItems.map((show) => TvShowModel(
 //               id: show.id,
 //               name: show.name,
-//               poster: show.thumbnail, 
-//               banner: show.thumbnail, 
-//               updatedAt: '', 
-//               order: show.order, 
+//               poster: show.thumbnail,
+//               banner: show.thumbnail,
+//               updatedAt: '',
+//               order: show.order,
 //               genre: show.genre,
 //               language: null,
 //             )).toList();
-//         _isDisplayingShows = true; 
+//         _isDisplayingShows = true;
 //       } else {
-//         newMasterList = []; 
+//         newMasterList = [];
 //         _isDisplayingShows = false;
 //       }
 //     } catch (e) {
@@ -4880,19 +4841,19 @@
 //           _errorMessage = "Failed to load data. Please try again.";
 //           debugPrint("Error in _fetchDataForView: $e");
 //         });
-//         newMasterList = []; 
+//         newMasterList = [];
 //       }
 //     }
 
 //     if (!mounted) return;
 
 //     setState(() {
-//       _currentViewMasterList = newMasterList; 
-//       _displayList = List.from(_currentViewMasterList); 
-//       _isListLoading = false; 
-//       _rebuildItemFocusNodes(); 
-//       _focusedItemIndex = -1; 
-      
+//       _currentViewMasterList = newMasterList;
+//       _displayList = List.from(_currentViewMasterList);
+//       _isListLoading = false;
+//       _rebuildItemFocusNodes();
+//       _focusedItemIndex = -1;
+
 //       if (_displayList.isNotEmpty) {
 //         _focusFirstListItemWithScroll();
 //       }
@@ -4900,7 +4861,7 @@
 
 //     _startAnimations();
 //   }
-  
+
 //   // void _applySearchFilter() {
 //   //   if (!mounted) return;
 
@@ -4915,7 +4876,7 @@
 //   //   }
 
 //   //   setState(() {
-//   //     _displayList = filteredList; 
+//   //     _displayList = filteredList;
 //   //     _rebuildItemFocusNodes();
 //   //     _focusedItemIndex = -1;
 
@@ -4925,8 +4886,6 @@
 //   //   });
 //   //   _startAnimations();
 //   // }
-
-
 
 //   // NEW: Yeh function sirf search apply karta hai, data fetch nahi karta
 //   void _applySearchFilter() {
@@ -4953,7 +4912,7 @@
 //       // Neeche di gayi lines ko comment ya delete kar diya gaya hai
 //       // Taaki focus keyboard par hi rahe
 //       // if (_displayList.isNotEmpty) {
-//       //   _focusFirstListItemWithScroll(); 
+//       //   _focusFirstListItemWithScroll();
 //       // }
 //       // ===== END FIX =====
 //     });
@@ -4961,18 +4920,18 @@
 //   }
 
 //   void _updateSelectedNetwork() async {
-//      if (_apiNetworks.isEmpty || _focusedNetworkIndex >= _apiNetworks.length) return; 
+//      if (_apiNetworks.isEmpty || _focusedNetworkIndex >= _apiNetworks.length) return;
 
 //     final selectedNetwork = _apiNetworks[_focusedNetworkIndex];
-//     _debounce?.cancel(); 
+//     _debounce?.cancel();
 
 //     setState(() {
-//       _isListLoading = true; 
-//       _errorMessage = null; 
-//        _displayList = []; 
+//       _isListLoading = true;
+//       _errorMessage = null;
+//        _displayList = [];
 //        _currentViewMasterList.clear();
-//        _rebuildItemFocusNodes(); 
-//        _isSearching = false; 
+//        _rebuildItemFocusNodes();
+//        _isSearching = false;
 //        _searchText = '';
 //     });
 
@@ -4981,25 +4940,25 @@
 //       if (!mounted) return;
 
 //       setState(() {
-//         _tvShowList = newChannelList; 
+//         _tvShowList = newChannelList;
 //         _selectedNetworkName = selectedNetwork.name;
-//         _updateSelectedNetworkData(); 
-        
-//         _updateChannelFilters(); 
+//         _updateSelectedNetworkData();
+
+//         _updateChannelFilters();
 //         _rebuildChannelFilterFocusNodes();
 //       });
-      
-//       await _fetchDataForView(); 
-      
+
+//       await _fetchDataForView();
+
 //     } catch (e) {
 //       if (mounted) {
 //         setState(() {
 //           _isListLoading = false;
 //           _errorMessage = "Failed to load channels for ${selectedNetwork.name}.";
-//           _tvShowList = []; 
+//           _tvShowList = [];
 //           _displayList = [];
 //           _currentViewMasterList.clear();
-//            _updateChannelFilters(); 
+//            _updateChannelFilters();
 //            _rebuildChannelFilterFocusNodes();
 //             debugPrint("Error in _updateSelectedNetwork: $e");
 //         });
@@ -5011,7 +4970,7 @@
 //     final filterNames = _channelFilters.keys.toList();
 //     if (filterNames.isEmpty || _focusedChannelFilterIndex >= filterNames.length || _channelFilterFocusNodes.isEmpty) return;
 
-//     _debounce?.cancel(); 
+//     _debounce?.cancel();
 
 //     final newFilterName = filterNames[_focusedChannelFilterIndex];
 //     if (newFilterName == _selectedChannelFilterName) return;
@@ -5020,18 +4979,18 @@
 //       _selectedChannelFilterName = newFilterName;
 //       _selectedChannelFilterId = _channelFilters[_selectedChannelFilterName];
 //       _isDisplayingShows = (_selectedChannelFilterId != null);
-      
+
 //       _fetchDataForView();
 //     });
 //   }
 
 //   void _updateSelectedNetworkData() {
-//      if (_apiNetworks.isEmpty || _focusedNetworkIndex >= _apiNetworks.length) return; 
+//      if (_apiNetworks.isEmpty || _focusedNetworkIndex >= _apiNetworks.length) return;
 
 //     final selectedNetwork = _apiNetworks.firstWhere(
 //         (n) => n.name == _selectedNetworkName,
 //         orElse: () => ApiNetworkModel(id: -1, name: '', networksOrder: 9999));
-        
+
 //     final tvShowSliders = selectedNetwork.sliders
 //         .where((s) => s.sliderFor == 'tvshows')
 //         .toList();
@@ -5055,9 +5014,9 @@
 //   void _updateChannelFilters() {
 //     setState(() {
 //       if (_tvShowList.isEmpty) {
-//         _channelFilters = {}; 
+//         _channelFilters = {};
 //       } else {
-//         final Map<String, int?> newFilters = {}; 
+//         final Map<String, int?> newFilters = {};
 //         for (final channel in _tvShowList) {
 //           if (channel.name.isNotEmpty && !newFilters.containsKey(channel.name)) {
 //             newFilters[channel.name] = channel.id;
@@ -5065,11 +5024,11 @@
 //         }
 //         _channelFilters = newFilters;
 //       }
-      
+
 //       if (_channelFilters.isNotEmpty) {
 //         _selectedChannelFilterName = _channelFilters.keys.first;
 //         _selectedChannelFilterId = _channelFilters.values.first;
-//         _isDisplayingShows = true; 
+//         _isDisplayingShows = true;
 //         _focusedChannelFilterIndex = 0;
 //       } else {
 //         _selectedChannelFilterName = '';
@@ -5078,10 +5037,9 @@
 //         _focusedChannelFilterIndex = -1;
 //       }
 
-//       print("Updated Channel Filters: ${_channelFilters.keys.toList()}"); 
+//       print("Updated Channel Filters: ${_channelFilters.keys.toList()}");
 //     });
 //   }
-
 
 //   // UI REFACTOR: _onKeyPressed from WebSeries
 //   void _onKeyPressed(String value) {
@@ -5115,17 +5073,17 @@
 //   }
 
 //   Future<void> _navigateToTvShowDetails(
-//       TvShowModel item, int index) async { 
+//       TvShowModel item, int index) async {
 //     if (_isVideoLoading) return;
 //     setState(() => _isVideoLoading = true);
-    
+
 //     try {
 //       int? currentUserId = SessionManager.userId;
 //       HistoryService.updateUserHistory(
 //         userId: currentUserId!,
-//         contentType: 4, 
-//         eventId: item.id, 
-//         eventTitle: item.name, 
+//         contentType: 4,
+//         eventId: item.id,
+//         eventTitle: item.name,
 //         url: '',
 //         categoryId: 0,
 //       ).catchError((e) { debugPrint("History update failed: $e"); });
@@ -5135,10 +5093,10 @@
 //       context,
 //       MaterialPageRoute(
 //         builder: (context) => TvShowFinalDetailsPage(
-//           id: item.id, 
-//           banner: item.banner ?? item.poster ?? '', 
-//           poster: item.poster ?? item.banner ?? '', 
-//           name: item.name, 
+//           id: item.id,
+//           banner: item.banner ?? item.poster ?? '',
+//           poster: item.poster ?? item.banner ?? '',
+//           name: item.name,
 //         ),
 //       ),
 //     );
@@ -5158,13 +5116,12 @@
 //          } else {
 //             _focusedItemIndex = -1;
 //             if(_itemFocusNodes.isNotEmpty) { _focusFirstListItemWithScroll(); }
-//             else if (_channelFilterFocusNodes.isNotEmpty && _focusedChannelFilterIndex >= 0) { _channelFilterFocusNodes[_focusedChannelFilterIndex].requestFocus(); } 
+//             else if (_channelFilterFocusNodes.isNotEmpty && _focusedChannelFilterIndex >= 0) { _channelFilterFocusNodes[_focusedChannelFilterIndex].requestFocus(); }
 //             else { _searchButtonFocusNode.requestFocus(); }
 //          }
 //       });
 //     }
 //   }
-
 
 //   //=================================================
 //   // SECTION 2.4: INITIALIZATION AND CLEANUP
@@ -5286,7 +5243,7 @@
 //       ],
 //     );
 //   }
-  
+
 //   // UI REFACTOR: _buildBackgroundOrSlider from WebSeries
 //   Widget _buildBackgroundOrSlider() {
 //     if (_currentTvShowSliders.isNotEmpty) { // Use TvShow variable
@@ -5399,7 +5356,7 @@
 //             final networkName = _uniqueNetworks[index];
 //             final focusNode = _networkFocusNodes[index];
 //             final isSelected = _selectedNetworkName == networkName;
-            
+
 //             return Focus(
 //               focusNode: focusNode,
 //               onFocusChange: (hasFocus) {
@@ -5442,7 +5399,7 @@
 //     if (filterNames.isEmpty && !_isSearching) {
 //       return const SizedBox(height: 30); // Keep height consistent
 //     }
-    
+
 //     // Removed _isGenreLoading check
 
 //     return SizedBox(
@@ -5540,7 +5497,7 @@
 //     final currentList = _displayList;
 
 //     // Removed _isSearchLoading check
-    
+
 //     if (currentList.isEmpty && !_isListLoading) { // Check global list loading
 //       return Expanded(
 //         child: Center(
@@ -5575,7 +5532,7 @@
 //         ),
 //       );
 //     }
-    
+
 //     // UI REFACTOR: Use Expanded to fill space
 //     return Expanded(
 //       child: Padding(
@@ -5590,7 +5547,7 @@
 //             if (index >= _itemFocusNodes.length) return const SizedBox.shrink(); // Guard
 //             final item = currentList[index];
 //             final focusNode = _itemFocusNodes[index];
-            
+
 //             return Container(
 //               width: bannerwdt * 1.2, // Use WebSeries width
 //               margin: const EdgeInsets.only(right: 12.0),
@@ -6012,7 +5969,7 @@
 //   // UI REFACTOR: _buildWebSeriesImage from WebSeries, adapted
 //   Widget _buildTvShowImage() {
 //     final imageUrl = tvShow.poster; // Use tvShow.poster
-    
+
 //     return imageUrl != null && imageUrl.isNotEmpty
 //         ? Image.network(
 //             imageUrl,
@@ -6030,7 +5987,7 @@
 //           )
 //         : _buildImagePlaceholder();
 //   }
-  
+
 //   // UI REFACTOR: _buildImagePlaceholder from WebSeries
 //   Widget _buildImagePlaceholder() {
 //     return Container(
@@ -6134,7 +6091,7 @@
 //               Image.network(
 //                 slider.banner,
 //                 fit: BoxFit.cover,
-//                 loadingBuilder: (context, child, progress) =>  
+//                 loadingBuilder: (context, child, progress) =>
 //                     progress == null ? child : Container(color: ProfessionalColors.surfaceDark),
 //                 errorBuilder: (context, error, stackTrace) {
 //                    debugPrint('Error loading slider image: ${slider.banner}');
@@ -6163,10 +6120,6 @@
 //     );
 //   }
 // }
-
-
-
-
 
 // import 'dart:async';
 // import 'dart:convert';
@@ -6292,7 +6245,6 @@
 //   }
 // }
 
-
 // class SliderModel {
 //   final int id;
 //   final String title;
@@ -6384,7 +6336,6 @@
 //   }
 // }
 
-
 // //==============================================================================
 // // SECTION 2: MAIN PAGE WIDGET AND STATE
 // // Yeh page ka main structure aur logic hai.
@@ -6395,7 +6346,7 @@
 //   final int? initialNetworkId; // ✅ YEH ADD KIYA GAYA HAI
 
 //   const TvShowSliderScreen({
-//     Key? key, 
+//     Key? key,
 //     this.title = 'All TV Shows',
 //     this.initialNetworkId, // ✅ YEH ADD KIYA GAYA HAI
 //     })
@@ -6417,12 +6368,12 @@
 //   // Focus and Scroll Controllers
 //   List<FocusNode> _itemFocusNodes = [];
 //   List<FocusNode> _networkFocusNodes = [];
-//   List<FocusNode> _channelFilterFocusNodes = [];  
+//   List<FocusNode> _channelFilterFocusNodes = [];
 //   List<FocusNode> _keyboardFocusNodes = [];
 //   final FocusNode _widgetFocusNode = FocusNode();
 //   final ScrollController _listScrollController = ScrollController();
 //   final ScrollController _networkScrollController = ScrollController();
-//   final ScrollController _channelFilterScrollController = ScrollController();  
+//   final ScrollController _channelFilterScrollController = ScrollController();
 
 //   late PageController _sliderPageController;
 
@@ -6439,21 +6390,21 @@
 
 //   // UI and Filter State
 //   int _focusedNetworkIndex = 0;
-//   int _focusedChannelFilterIndex = 0;  
+//   int _focusedChannelFilterIndex = 0;
 //   int _focusedItemIndex = -1;
 //   String _selectedNetworkName = '';
 //   String? _selectedNetworkLogo;
-  
+
 //   Map<String, int?> _channelFilters = {}; // Holds "Channel Name" -> Channel ID ("All" removed)
 //   String _selectedChannelFilterName = ''; // Default empty
 //   int? _selectedChannelFilterId; // Default null
-//   bool _isDisplayingShows = false;  
+//   bool _isDisplayingShows = false;
 
 //   List<TvShowModel> _currentViewMasterList = []; // NEW: Holds all items for the current filter (pre-search)
 //   List<TvShowModel> _displayList = []; // List jo UI mein render hogi (ya toh channels ya shows)
 //   List<ApiNetworkModel> _apiNetworks = [];
 //   List<String> _uniqueNetworks = [];
-  
+
 //   // Animation and Loading State
 //   bool _isVideoLoading = false; // Detail page navigation loading
 //   late AnimationController _fadeController;
@@ -6504,14 +6455,14 @@
 //     _widgetFocusNode.dispose();
 //     _listScrollController.dispose();
 //     _networkScrollController.dispose();
-//     _channelFilterScrollController.dispose();  
+//     _channelFilterScrollController.dispose();
 //     _searchButtonFocusNode.removeListener(_setStateListener);
 //     _searchButtonFocusNode.dispose();
 //     _debounce?.cancel();
 //     _navigationLockTimer?.cancel();
 //     _disposeFocusNodes(_itemFocusNodes);
 //     _disposeFocusNodes(_networkFocusNodes);
-//     _disposeFocusNodes(_channelFilterFocusNodes);  
+//     _disposeFocusNodes(_channelFilterFocusNodes);
 //     _disposeFocusNodes(_keyboardFocusNodes);
 //     super.dispose();
 //   }
@@ -6530,7 +6481,7 @@
 //             _isLoading // Initial page load
 //                 ? const Center(
 //                     child: ProfessionalTvShowLoadingIndicator(
-//                         message: 'Loading Channels...'))  
+//                         message: 'Loading Channels...'))
 //                 : _errorMessage != null
 //                     ? _buildErrorWidget() // UI REFACTOR: Use WebSeries error widget
 //                     : _buildPageContent(), // UI REFACTOR: Use WebSeries layout
@@ -6575,7 +6526,7 @@
 //       }
 
 //       // ✅ --- START: YAHAN BADLAAV KIYA GAYA HAI ---
-      
+
 //       // Initial network ID aur index dhoondhein
 //       int initialIndex = 0;
 //       int networkIdToFetch;
@@ -6594,27 +6545,26 @@
 //       setState(() {
 //         _apiNetworks = fetchedNetworks;
 //         _uniqueNetworks = _apiNetworks.map((n) => n.name).toList();
-        
+
 //         // State ko initial values se set karein
-//         _focusedNetworkIndex = initialIndex; 
+//         _focusedNetworkIndex = initialIndex;
 //         _selectedNetworkName = initialNetwork.name;
 //       });
 
 //       // 2. Fetch TV Channels for the *selected* network
 //       final fetchedList = await _fetchTvShowsForNetwork(networkIdToFetch); // <-- NAYA
-      
+
 //       // ✅ --- END: BADLAAV KHATAM ---
 
 //       if (!mounted) return;
 
-
 //       setState(() {
-//         _tvShowList = fetchedList;  
+//         _tvShowList = fetchedList;
 //         if (_tvShowList.isEmpty) _errorMessage = "No TV Channels Found for this network."; // Updated message
 //       });
 
 //       if (_errorMessage == null) {
-//         _processInitialData();  
+//         _processInitialData();
 //         _updateChannelFilters(); // This will select the first channel
 //         await _fetchDataForView(); // Fetch shows for the first channel
 //         _initializeFocusNodes();
@@ -6625,7 +6575,7 @@
 //           if (mounted && _networkFocusNodes.isNotEmpty && _focusedNetworkIndex < _networkFocusNodes.length) {
 //             // Sahi index par focus request karein
 //             _networkFocusNodes[_focusedNetworkIndex].requestFocus();
-            
+
 //             // Us index tak scroll bhi karein
 //             _updateAndScrollToFocus(
 //               _networkFocusNodes,
@@ -6671,14 +6621,14 @@
 //         final List<dynamic> jsonData = json.decode(response.body);
 //         return jsonData
 //             .map(
-//                 (item) => TvShowModel.fromJson(item as Map<String, dynamic>))  
+//                 (item) => TvShowModel.fromJson(item as Map<String, dynamic>))
 //             .toList()
-//               ..sort((a, b) => a.order.compareTo(b.order));  
+//               ..sort((a, b) => a.order.compareTo(b.order));
 //       } else {
 //         throw Exception('API Error: ${response.statusCode}');
 //       }
 //     } catch (e) {
-//       debugPrint('Failed to load tv channels for network $networkId: $e');  
+//       debugPrint('Failed to load tv channels for network $networkId: $e');
 //       throw Exception('Failed to load tv channels for network $networkId: $e');
 //     }
 //   }
@@ -6704,7 +6654,7 @@
 //         return jsonData
 //             .map((item) => TvShowItemModel.fromJson(item as Map<String, dynamic>))
 //             .toList()
-//               ..sort((a, b) => a.order.compareTo(b.order));  
+//               ..sort((a, b) => a.order.compareTo(b.order));
 //       } else {
 //         throw Exception('API Error: ${response.statusCode}');
 //       }
@@ -6727,7 +6677,7 @@
 //               'Accept': 'application/json',
 //               'domain': SessionManager.savedDomain,
 //             },
-//             body: json.encode({"network_id": "", "data_for": "tvshows"}),  
+//             body: json.encode({"network_id": "", "data_for": "tvshows"}),
 //           )
 //           .timeout(const Duration(seconds: 30));
 
@@ -6754,7 +6704,6 @@
 //     _updateSelectedNetworkData(); // Slider/Background
 //   }
 
-
 //   //=================================================
 //   // SECTION 2.3: STATE MANAGEMENT & UI LOGIC (ke Aas Paas Add Karein)
 //   //=================================================
@@ -6770,7 +6719,7 @@
 //         curve: Curves.easeInOut,
 //       );
 //     }
-    
+
 //     Future.delayed(const Duration(milliseconds: 250), () {
 //       if (mounted && _itemFocusNodes.isNotEmpty) {
 //         setState(() => _focusedItemIndex = 0);
@@ -6778,7 +6727,6 @@
 //       }
 //     });
 //   }
-
 
 //   //=================================================
 //   // SECTION 2.2: KEYBOARD AND FOCUS NAVIGATION
@@ -6800,7 +6748,7 @@
 //         _searchButtonFocusNode.requestFocus();
 //         return KeyEventResult.handled;
 //       }
-//       if (listHasFocus || channelFilterHasFocus || searchHasFocus) {  
+//       if (listHasFocus || channelFilterHasFocus || searchHasFocus) {
 //           if (_networkFocusNodes.isNotEmpty) { _networkFocusNodes[_focusedNetworkIndex].requestFocus(); }
 //         return KeyEventResult.handled;
 //       }
@@ -6821,8 +6769,8 @@
 //         // UI REFACTOR: Logic from WebSeries
 //         return KeyEventResult.handled; // Do nothing
 //       }
-//       if (key == LogicalKeyboardKey.arrowRight && _channelFilterFocusNodes.isNotEmpty) {  
-//         _channelFilterFocusNodes[0].requestFocus();  
+//       if (key == LogicalKeyboardKey.arrowRight && _channelFilterFocusNodes.isNotEmpty) {
+//         _channelFilterFocusNodes[0].requestFocus();
 //         return KeyEventResult.handled;
 //       }
 //       if (key == LogicalKeyboardKey.arrowUp && _networkFocusNodes.isNotEmpty) {
@@ -6838,7 +6786,7 @@
 
 //     if ([ LogicalKeyboardKey.arrowUp, LogicalKeyboardKey.arrowDown, LogicalKeyboardKey.arrowLeft, LogicalKeyboardKey.arrowRight, LogicalKeyboardKey.select, LogicalKeyboardKey.enter ].contains(key)) {
 //       if (networkHasFocus) { _navigateNetworks(key); }
-//       else if (channelFilterHasFocus) { _navigateChannelFilters(key); }  
+//       else if (channelFilterHasFocus) { _navigateChannelFilters(key); }
 //       else if (listHasFocus) { _navigateList(key); } // UI REFACTOR: Uses new _navigateList
 //       return KeyEventResult.handled;
 //     }
@@ -6869,7 +6817,7 @@
 //     });
 
 //     int newIndex = _focusedItemIndex;
-    
+
 //     if (key == LogicalKeyboardKey.arrowUp) {
 //       setState(() => _lastNavigationDirection = 'vertical');
 //       if (_channelFilterFocusNodes.isNotEmpty) {
@@ -6878,7 +6826,7 @@
 //         _searchButtonFocusNode.requestFocus();
 //       }
 //       setState(() => _focusedItemIndex = -1);
-      
+
 //       // Lock aur timer ko cancel kar do kyunki hum list se bahar ja rahe hain
 //       _isNavigationLocked = false;
 //       _navigationLockTimer?.cancel();
@@ -6903,7 +6851,7 @@
 //       }
 //     } else if (key == LogicalKeyboardKey.select ||
 //         key == LogicalKeyboardKey.enter) {
-      
+
 //       // Enter/Select par cooldown nahi chahiye, isliye lock turant hata do
 //       _isNavigationLocked = false;
 //       _navigationLockTimer?.cancel();
@@ -6922,7 +6870,6 @@
 //       _navigationLockTimer?.cancel();
 //     }
 //   }
-
 
 //   // UI REFACTOR: _navigateNetworks from WebSeries, adapted for TvShow state
 //   void _navigateNetworks(LogicalKeyboardKey key) {
@@ -6958,7 +6905,7 @@
 //   // UI REFACTOR: _navigateGenres from WebSeries, adapted for TvShow state
 //   void _navigateChannelFilters(LogicalKeyboardKey key) {
 //     final filterNames = _channelFilters.keys.toList();
-    
+
 //     // Agar filter list khali hai
 //     if (filterNames.isEmpty) {
 //         if (key == LogicalKeyboardKey.arrowLeft) {
@@ -6972,7 +6919,7 @@
 //         }
 //         return; // Baaki keys ignore karein
 //     }
-    
+
 //     int newIndex = _focusedChannelFilterIndex;
 //     if (key == LogicalKeyboardKey.arrowLeft) {
 //       if (newIndex > 0) {
@@ -7057,16 +7004,16 @@
 
 //   // Data logic (fetching, filtering) remains from TvShowSliderScreen
 //   Future<void> _fetchDataForView() async {
-//     _debounce?.cancel();  
+//     _debounce?.cancel();
 
 //     setState(() {
 //       _isListLoading = true;
-//       _displayList.clear();  
-//       _currentViewMasterList.clear();  
-//       _rebuildItemFocusNodes();  
-//       _errorMessage = null;  
-      
-//       _searchText = '';  
+//       _displayList.clear();
+//       _currentViewMasterList.clear();
+//       _rebuildItemFocusNodes();
+//       _errorMessage = null;
+
+//       _searchText = '';
 //       _isSearching = false;
 //     });
 
@@ -7076,20 +7023,20 @@
 //       if (_selectedChannelFilterId != null) {
 //         final List<TvShowItemModel> showItems =
 //             await _fetchTvShowsForChannel(_selectedChannelFilterId!);
-        
+
 //         newMasterList = showItems.map((show) => TvShowModel(
 //               id: show.id,
 //               name: show.name,
-//               poster: show.thumbnail,  
-//               banner: show.thumbnail,  
-//               updatedAt: '',  
-//               order: show.order,  
+//               poster: show.thumbnail,
+//               banner: show.thumbnail,
+//               updatedAt: '',
+//               order: show.order,
 //               genre: show.genre,
 //               language: null,
 //             )).toList();
-//         _isDisplayingShows = true;  
+//         _isDisplayingShows = true;
 //       } else {
-//         newMasterList = [];  
+//         newMasterList = [];
 //         _isDisplayingShows = false;
 //       }
 //     } catch (e) {
@@ -7098,19 +7045,19 @@
 //           _errorMessage = "Failed to load data. Please try again.";
 //           debugPrint("Error in _fetchDataForView: $e");
 //         });
-//         newMasterList = [];  
+//         newMasterList = [];
 //       }
 //     }
 
 //     if (!mounted) return;
 
 //     setState(() {
-//       _currentViewMasterList = newMasterList;  
-//       _displayList = List.from(_currentViewMasterList);  
-//       _isListLoading = false;  
-//       _rebuildItemFocusNodes();  
-//       _focusedItemIndex = -1;  
-      
+//       _currentViewMasterList = newMasterList;
+//       _displayList = List.from(_currentViewMasterList);
+//       _isListLoading = false;
+//       _rebuildItemFocusNodes();
+//       _focusedItemIndex = -1;
+
 //       // if (_displayList.isNotEmpty) {
 //       //   _focusFirstListItemWithScroll();
 //       // }
@@ -7118,7 +7065,7 @@
 
 //     _startAnimations();
 //   }
-  
+
 //   // void _applySearchFilter() {
 //   //  if (!mounted) return;
 
@@ -7133,7 +7080,7 @@
 //   //  }
 
 //   //  setState(() {
-//   //    _displayList = filteredList;  
+//   //    _displayList = filteredList;
 //   //    _rebuildItemFocusNodes();
 //   //    _focusedItemIndex = -1;
 
@@ -7143,8 +7090,6 @@
 //   //  });
 //   //  _startAnimations();
 //   // }
-
-
 
 //   // NEW: Yeh function sirf search apply karta hai, data fetch nahi karta
 //   void _applySearchFilter() {
@@ -7171,7 +7116,7 @@
 //       // Neeche di gayi lines ko comment ya delete kar diya gaya hai
 //       // Taaki focus keyboard par hi rahe
 //       // if (_displayList.isNotEmpty) {
-//       //   _focusFirstListItemWithScroll();  
+//       //   _focusFirstListItemWithScroll();
 //       // }
 //       // ===== END FIX =====
 //     });
@@ -7179,18 +7124,18 @@
 //   }
 
 //   void _updateSelectedNetwork() async {
-//       if (_apiNetworks.isEmpty || _focusedNetworkIndex >= _apiNetworks.length) return;  
+//       if (_apiNetworks.isEmpty || _focusedNetworkIndex >= _apiNetworks.length) return;
 
 //     final selectedNetwork = _apiNetworks[_focusedNetworkIndex];
-//     _debounce?.cancel();  
+//     _debounce?.cancel();
 
 //     setState(() {
-//       _isListLoading = true;  
-//       _errorMessage = null;  
-//         _displayList = [];  
+//       _isListLoading = true;
+//       _errorMessage = null;
+//         _displayList = [];
 //         _currentViewMasterList.clear();
-//         _rebuildItemFocusNodes();  
-//         _isSearching = false;  
+//         _rebuildItemFocusNodes();
+//         _isSearching = false;
 //         _searchText = '';
 //     });
 
@@ -7199,25 +7144,25 @@
 //       if (!mounted) return;
 
 //       setState(() {
-//         _tvShowList = newChannelList;  
+//         _tvShowList = newChannelList;
 //         _selectedNetworkName = selectedNetwork.name;
-//         _updateSelectedNetworkData();  
-        
-//         _updateChannelFilters();  
+//         _updateSelectedNetworkData();
+
+//         _updateChannelFilters();
 //         _rebuildChannelFilterFocusNodes();
 //       });
-      
-//       await _fetchDataForView();  
-      
+
+//       await _fetchDataForView();
+
 //     } catch (e) {
 //       if (mounted) {
 //         setState(() {
 //           _isListLoading = false;
 //           _errorMessage = "Failed to load channels for ${selectedNetwork.name}.";
-//           _tvShowList = [];  
+//           _tvShowList = [];
 //           _displayList = [];
 //           _currentViewMasterList.clear();
-//             _updateChannelFilters();  
+//             _updateChannelFilters();
 //             _rebuildChannelFilterFocusNodes();
 //             debugPrint("Error in _updateSelectedNetwork: $e");
 //         });
@@ -7229,7 +7174,7 @@
 //     final filterNames = _channelFilters.keys.toList();
 //     if (filterNames.isEmpty || _focusedChannelFilterIndex >= filterNames.length || _channelFilterFocusNodes.isEmpty) return;
 
-//     _debounce?.cancel();  
+//     _debounce?.cancel();
 
 //     final newFilterName = filterNames[_focusedChannelFilterIndex];
 //     if (newFilterName == _selectedChannelFilterName) return;
@@ -7238,18 +7183,18 @@
 //       _selectedChannelFilterName = newFilterName;
 //       _selectedChannelFilterId = _channelFilters[_selectedChannelFilterName];
 //       _isDisplayingShows = (_selectedChannelFilterId != null);
-      
+
 //       _fetchDataForView();
 //     });
 //   }
 
 //   void _updateSelectedNetworkData() {
-//       if (_apiNetworks.isEmpty || _focusedNetworkIndex >= _apiNetworks.length) return;  
+//       if (_apiNetworks.isEmpty || _focusedNetworkIndex >= _apiNetworks.length) return;
 
 //     final selectedNetwork = _apiNetworks.firstWhere(
 //         (n) => n.name == _selectedNetworkName,
 //         orElse: () => ApiNetworkModel(id: -1, name: '', networksOrder: 9999));
-        
+
 //     final tvShowSliders = selectedNetwork.sliders
 //         .where((s) => s.sliderFor == 'tvshows')
 //         .toList();
@@ -7273,9 +7218,9 @@
 //   void _updateChannelFilters() {
 //     setState(() {
 //       if (_tvShowList.isEmpty) {
-//         _channelFilters = {};  
+//         _channelFilters = {};
 //       } else {
-//         final Map<String, int?> newFilters = {};  
+//         final Map<String, int?> newFilters = {};
 //         for (final channel in _tvShowList) {
 //           if (channel.name.isNotEmpty && !newFilters.containsKey(channel.name)) {
 //             newFilters[channel.name] = channel.id;
@@ -7283,11 +7228,11 @@
 //         }
 //         _channelFilters = newFilters;
 //       }
-      
+
 //       if (_channelFilters.isNotEmpty) {
 //         _selectedChannelFilterName = _channelFilters.keys.first;
 //         _selectedChannelFilterId = _channelFilters.values.first;
-//         _isDisplayingShows = true;  
+//         _isDisplayingShows = true;
 //         _focusedChannelFilterIndex = 0;
 //       } else {
 //         _selectedChannelFilterName = '';
@@ -7296,10 +7241,9 @@
 //         _focusedChannelFilterIndex = -1;
 //       }
 
-//       print("Updated Channel Filters: ${_channelFilters.keys.toList()}");  
+//       print("Updated Channel Filters: ${_channelFilters.keys.toList()}");
 //     });
 //   }
-
 
 //   // UI REFACTOR: _onKeyPressed from WebSeries
 //   void _onKeyPressed(String value) {
@@ -7333,17 +7277,17 @@
 //   }
 
 //   Future<void> _navigateToTvShowDetails(
-//       TvShowModel item, int index) async {  
+//       TvShowModel item, int index) async {
 //     if (_isVideoLoading) return;
 //     setState(() => _isVideoLoading = true);
-    
+
 //     try {
 //       int? currentUserId = SessionManager.userId;
 //       HistoryService.updateUserHistory(
 //         userId: currentUserId!,
-//         contentType: 4,  
-//         eventId: item.id,  
-//         eventTitle: item.name,  
+//         contentType: 4,
+//         eventId: item.id,
+//         eventTitle: item.name,
 //         url: '',
 //         categoryId: 0,
 //       ).catchError((e) { debugPrint("History update failed: $e"); });
@@ -7353,10 +7297,10 @@
 //       context,
 //       MaterialPageRoute(
 //         builder: (context) => TvShowFinalDetailsPage(
-//           id: item.id,  
-//           banner: item.banner ?? item.poster ?? '',  
-//           poster: item.poster ?? item.banner ?? '',  
-//           name: item.name,  
+//           id: item.id,
+//           banner: item.banner ?? item.poster ?? '',
+//           poster: item.poster ?? item.banner ?? '',
+//           name: item.name,
 //         ),
 //       ),
 //     );
@@ -7376,13 +7320,12 @@
 //           } else {
 //             _focusedItemIndex = -1;
 //             if(_itemFocusNodes.isNotEmpty) { _focusFirstListItemWithScroll(); }
-//             else if (_channelFilterFocusNodes.isNotEmpty && _focusedChannelFilterIndex >= 0) { _channelFilterFocusNodes[_focusedChannelFilterIndex].requestFocus(); }  
+//             else if (_channelFilterFocusNodes.isNotEmpty && _focusedChannelFilterIndex >= 0) { _channelFilterFocusNodes[_focusedChannelFilterIndex].requestFocus(); }
 //             else { _searchButtonFocusNode.requestFocus(); }
 //           }
 //       });
 //     }
 //   }
-
 
 //   //=================================================
 //   // SECTION 2.4: INITIALIZATION AND CLEANUP
@@ -7504,7 +7447,7 @@
 //       ],
 //     );
 //   }
-  
+
 //   // UI REFACTOR: _buildBackgroundOrSlider from WebSeries
 //   Widget _buildBackgroundOrSlider() {
 //     if (_currentTvShowSliders.isNotEmpty) { // Use TvShow variable
@@ -7617,7 +7560,7 @@
 //             final networkName = _uniqueNetworks[index];
 //             final focusNode = _networkFocusNodes[index];
 //             final isSelected = _selectedNetworkName == networkName;
-            
+
 //             return Focus(
 //               focusNode: focusNode,
 //               onFocusChange: (hasFocus) {
@@ -7660,7 +7603,7 @@
 //     if (filterNames.isEmpty && !_isSearching) {
 //       return const SizedBox(height: 30); // Keep height consistent
 //     }
-    
+
 //     // Removed _isGenreLoading check
 
 //     return SizedBox(
@@ -7758,7 +7701,7 @@
 //     final currentList = _displayList;
 
 //     // Removed _isSearchLoading check
-    
+
 //     if (currentList.isEmpty && !_isListLoading) { // Check global list loading
 //       return Expanded(
 //         child: Center(
@@ -7793,7 +7736,7 @@
 //         ),
 //       );
 //     }
-    
+
 //     // UI REFACTOR: Use Expanded to fill space
 //     return Expanded(
 //       child: Padding(
@@ -7808,7 +7751,7 @@
 //             if (index >= _itemFocusNodes.length) return const SizedBox.shrink(); // Guard
 //             final item = currentList[index];
 //             final focusNode = _itemFocusNodes[index];
-            
+
 //             return Container(
 //               width: bannerwdt * 1.2, // Use WebSeries width
 //               margin: const EdgeInsets.only(right: 12.0),
@@ -8230,7 +8173,7 @@
 //   // UI REFACTOR: _buildWebSeriesImage from WebSeries, adapted
 //   Widget _buildTvShowImage() {
 //     final imageUrl = tvShow.poster; // Use tvShow.poster
-    
+
 //     return imageUrl != null && imageUrl.isNotEmpty
 //         ? Image.network(
 //             imageUrl,
@@ -8248,7 +8191,7 @@
 //           )
 //         : _buildImagePlaceholder();
 //   }
-  
+
 //   // UI REFACTOR: _buildImagePlaceholder from WebSeries
 //   Widget _buildImagePlaceholder() {
 //     return Container(
@@ -8352,7 +8295,7 @@
 //               Image.network(
 //                 slider.banner,
 //                 fit: BoxFit.fill,
-//                 loadingBuilder: (context, child, progress) =>  
+//                 loadingBuilder: (context, child, progress) =>
 //                     progress == null ? child : Container(color: ProfessionalColors.surfaceDark),
 //                 errorBuilder: (context, error, stackTrace) {
 //                     debugPrint('Error loading slider image: ${slider.banner}');
@@ -8382,11 +8325,6 @@
 //   }
 // }
 
-
-
-
-
-
 // import 'dart:async';
 // import 'dart:convert';
 // import 'dart:ui';
@@ -8397,7 +8335,7 @@
 
 // // NOTE: Update these imports based on your project structure
 // import 'package:mobi_tv_entertainment/components/home_screen_pages/tv_show/tv_show_final_details_page.dart';
-// import 'package:mobi_tv_entertainment/main.dart'; 
+// import 'package:mobi_tv_entertainment/main.dart';
 // import 'package:mobi_tv_entertainment/components/services/history_service.dart';
 // import 'package:mobi_tv_entertainment/components/widgets/smart_style_image_card.dart';
 
@@ -8611,7 +8549,7 @@
 
 // class _TvShowSliderScreenState extends State<TvShowSliderScreen>
 //     with SingleTickerProviderStateMixin {
-  
+
 //   // 🔥 CRASH FIX: Disposal Check
 //   bool _isDisposed = false;
 
@@ -8680,7 +8618,7 @@
 //   String _searchText = '';
 //   Timer? _debounce;
 //   late FocusNode _searchButtonFocusNode;
-  
+
 //   // Timer for slider
 //   Timer? _sliderTimer;
 
@@ -8700,12 +8638,12 @@
 //     _searchButtonFocusNode = FocusNode();
 //     _searchButtonFocusNode.addListener(_setStateListener);
 //     _widgetFocusNode.addListener(_setStateListener);
-    
+
 //     // 🔥 CRASH FIX: Safe initialization call
 //     WidgetsBinding.instance.addPostFrameCallback((_) {
 //       if(!_isDisposed) _fetchDataForPage();
 //     });
-    
+
 //     _initializeAnimations();
 //   }
 
@@ -8715,14 +8653,14 @@
 //     _sliderTimer?.cancel();
 //     _debounce?.cancel();
 //     _navigationLockTimer?.cancel();
-    
+
 //     _sliderPageController.dispose();
 //     _fadeController.dispose();
-    
+
 //     // Dispose Focus Nodes & Listeners
 //     _widgetFocusNode.removeListener(_setStateListener);
 //     _widgetFocusNode.dispose();
-    
+
 //     _searchButtonFocusNode.removeListener(_setStateListener);
 //     _searchButtonFocusNode.dispose();
 
@@ -8734,7 +8672,7 @@
 //     _listScrollController.dispose();
 //     _networkScrollController.dispose();
 //     _channelFilterScrollController.dispose();
-    
+
 //     super.dispose();
 //   }
 
@@ -8803,7 +8741,7 @@
 //     try {
 //       final fetchedNetworks = await _fetchNetworks();
 //       if (_isDisposed || !mounted) return;
-      
+
 //       fetchedNetworks.sort((a, b) => a.networksOrder.compareTo(b.networksOrder));
 
 //       if (fetchedNetworks.isEmpty) {
@@ -8831,7 +8769,7 @@
 //       });
 
 //       final fetchedList = await _fetchTvShowsForNetwork(networkIdToFetch);
-      
+
 //       if (_isDisposed || !mounted) return;
 
 //       setState(() {
@@ -8996,7 +8934,7 @@
 //     try {
 //       if (_selectedChannelFilterId != null) {
 //         final List<TvShowItemModel> showItems = await _fetchTvShowsForChannel(_selectedChannelFilterId!);
-        
+
 //         if (_isDisposed) return;
 
 //         newMasterList = showItems.map((show) => TvShowModel(
@@ -9155,8 +9093,8 @@
 //           int next = (_sliderPageController.page?.round() ?? 0) + 1;
 //           if (next >= _currentTvShowSliders.length) next = 0;
 //           _sliderPageController.animateToPage(
-//             next, 
-//             duration: const Duration(milliseconds: 500), 
+//             next,
+//             duration: const Duration(milliseconds: 500),
 //             curve: Curves.easeInOut
 //           );
 //         }
@@ -10304,7 +10242,7 @@
 
 //   Widget _buildTvShowImage() {
 //     final imageUrl = tvShow.poster;
-    
+
 //     return imageUrl != null && imageUrl.isNotEmpty
 //         ? Image.network(
 //             imageUrl,
@@ -10319,7 +10257,7 @@
 //           )
 //         : _buildImagePlaceholder();
 //   }
-  
+
 //   Widget _buildImagePlaceholder() {
 //     return Container(
 //       decoration: const BoxDecoration(
@@ -10421,7 +10359,7 @@
 //               Image.network(
 //                 slider.banner,
 //                 fit: BoxFit.fill,
-//                 loadingBuilder: (context, child, progress) =>  
+//                 loadingBuilder: (context, child, progress) =>
 //                     progress == null ? child : Container(color: ProfessionalColors.surfaceDark),
 //                 errorBuilder: (context, error, stackTrace) {
 //                     return Container(color: ProfessionalColors.surfaceDark);
@@ -10450,50 +10388,326 @@
 //   }
 // }
 
+// import 'dart:convert';
+// import 'package:flutter/material.dart';
+// import 'package:http/http.dart' as https;
+// import 'package:mobi_tv_entertainment/components/home_screen_pages/tv_show/tv_show_final_details_page.dart';
+// import 'package:mobi_tv_entertainment/main.dart';
+// import 'package:mobi_tv_entertainment/components/services/history_service.dart';
+// import 'package:mobi_tv_entertainment/components/widgets/master_slider_layout.dart';
 
+// class TvShowModel {
+//   final int id; final String name; final String updatedAt; final String? poster; final String? banner; final String? genre; final int order; final String? language;
+//   TvShowModel({required this.id, required this.name, required this.updatedAt, this.poster, this.banner, this.genre, required this.order, this.language});
+//   factory TvShowModel.fromJson(Map<String, dynamic> json) => TvShowModel(id: json['id'] ?? 0, name: json['name'] ?? '', updatedAt: json['updated_at'] ?? '', poster: json['logo'], banner: json['logo'], genre: null, order: json['order'] ?? 9999, language: json['language']);
+// }
 
+// class TvShowItemModel {
+//   final int id; final String name; final String? thumbnail; final String? genre; final int tvChannelId; final int order;
+//   TvShowItemModel({required this.id, required this.name, this.thumbnail, this.genre, required this.tvChannelId, required this.order});
+//   factory TvShowItemModel.fromJson(Map<String, dynamic> json) => TvShowItemModel(id: json['id'] ?? 0, name: json['name'] ?? '', thumbnail: json['thumbnail'], genre: json['genre'], tvChannelId: json['tv_channel_id'] ?? 0, order: json['order'] ?? 9999);
+// }
 
+// class SliderModel {
+//   final int id; final String title; final String banner; final String sliderFor;
+//   SliderModel({required this.id, required this.title, required this.banner, required this.sliderFor});
+//   factory SliderModel.fromJson(Map<String, dynamic> json) => SliderModel(id: json['id'] ?? 0, title: json['title'] ?? '', banner: json['banner'] ?? '', sliderFor: json['slider_for'] ?? '');
+// }
 
+// class ApiNetworkModel {
+//   final int id; final String name; final String? logo; final int networksOrder; final List<SliderModel> sliders;
+//   ApiNetworkModel({required this.id, required this.name, this.logo, required this.networksOrder, this.sliders = const []});
+//   factory ApiNetworkModel.fromJson(Map<String, dynamic> json) {
+//     var sliders = (json['sliders'] as List? ?? []).map((item) => SliderModel.fromJson(item as Map<String, dynamic>)).toList();
+//     return ApiNetworkModel(id: json['id'] ?? 0, name: json['name'] ?? '', logo: json['logo'], networksOrder: json['networks_order'] ?? 9999, sliders: sliders);
+//   }
+// }
+
+// class TvShowSliderScreen extends StatefulWidget {
+//   final String title;
+//   final int? initialNetworkId;
+//   const TvShowSliderScreen({Key? key, this.title = 'All TV Shows', this.initialNetworkId}) : super(key: key);
+//   @override
+//   _TvShowSliderScreenState createState() => _TvShowSliderScreenState();
+// }
+
+// class _TvShowSliderScreenState extends State<TvShowSliderScreen> {
+//   bool _isDisposed = false;
+//   bool _isLoading = true;
+//   bool _isVideoLoading = false;
+//   String? _errorMessage;
+
+//   List<ApiNetworkModel> _apiNetworks = [];
+//   List<TvShowModel> _channelsList = [];
+//   List<TvShowModel> _displayList = [];
+//   List<TvShowModel> _masterShowsList = [];
+//   Map<String, int?> _channelFilters = {};
+
+//   int _selectedNetworkIndex = 0;
+//   int _selectedFilterIndex = 0;
+//   List<String> _sliderImages = [];
+//   String _searchText = '';
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     _fetchInitialData();
+//   }
+
+//   @override
+//   void dispose() {
+//     _isDisposed = true;
+//     super.dispose();
+//   }
+
+//   Future<void> _fetchInitialData() async {
+//     setState(() { _isLoading = true; _errorMessage = null; });
+//     try {
+//       final headers = {'auth-key': SessionManager.authKey, 'Content-Type': 'application/json', 'domain': SessionManager.savedDomain};
+//       final netRes = await https.post(Uri.parse(SessionManager.baseUrl + 'getNetworks'), headers: headers, body: json.encode({"network_id": "", "data_for": "tvshows"}));
+
+//       if (_isDisposed) return;
+//       if (netRes.statusCode == 200) {
+//         _apiNetworks = safeDecodeList(json.decode(netRes.body)).map((i) => ApiNetworkModel.fromJson(i)).toList()..sort((a,b)=> a.networksOrder.compareTo(b.networksOrder));
+
+//         if (_apiNetworks.isNotEmpty) {
+//           if (widget.initialNetworkId != null) {
+//             int idx = _apiNetworks.indexWhere((n) => n.id == widget.initialNetworkId);
+//             if (idx != -1) _selectedNetworkIndex = idx;
+//           }
+//           await _fetchChannelsForNetwork(_apiNetworks[_selectedNetworkIndex].id);
+//         } else { _errorMessage = "No Networks Found"; }
+//       } else { throw Exception("API Error"); }
+//     } catch (e) {
+//       if (!_isDisposed && mounted) setState(() { _errorMessage = "Connection Failed"; _isLoading = false; });
+//     }
+//   }
+
+//   Future<void> _fetchChannelsForNetwork(int netId) async {
+//     try {
+//       final res = await https.get(Uri.parse(SessionManager.baseUrl + 'getTvChannels?content_network=$netId'), headers: {'auth-key': SessionManager.authKey, 'domain': SessionManager.savedDomain});
+//       if (_isDisposed) return;
+
+//       if (res.statusCode == 200) {
+//         _channelsList = safeDecodeList(json.decode(res.body)).map((i) => TvShowModel.fromJson(i)).toList()..sort((a,b)=> a.order.compareTo(b.order));
+
+//         _channelFilters.clear();
+//         for (var c in _channelsList) { if (c.name.isNotEmpty) _channelFilters[c.name] = c.id; }
+
+//         final net = _apiNetworks[_selectedNetworkIndex];
+//         _sliderImages = net.sliders.where((s) => s.sliderFor == 'tvshows').map((e) => e.banner).toList();
+//         if (_sliderImages.isEmpty && net.logo != null) _sliderImages.add(net.logo!);
+
+//         if (_channelFilters.isNotEmpty) {
+//           _selectedFilterIndex = 0;
+//           await _fetchShowsForChannel(_channelFilters.values.elementAt(0)!);
+//         } else {
+//           setState(() { _displayList = []; _isLoading = false; });
+//         }
+//       }
+//     } catch (e) {
+//       if (!_isDisposed && mounted) setState(() { _errorMessage = "Failed to load Channels"; _isLoading = false; });
+//     }
+//   }
+
+//   Future<void> _fetchShowsForChannel(int channelId) async {
+//     setState(() => _isLoading = true);
+//     try {
+//       final res = await https.get(Uri.parse(SessionManager.baseUrl + 'getTvShows/$channelId'), headers: {'auth-key': SessionManager.authKey, 'domain': SessionManager.savedDomain});
+//       if (_isDisposed) return;
+//       if (res.statusCode == 200) {
+//         final showItems = safeDecodeList(json.decode(res.body)).map((i) => TvShowItemModel.fromJson(i)).toList()..sort((a,b)=> a.order.compareTo(b.order));
+//         _masterShowsList = showItems.map((s) => TvShowModel(id: s.id, name: s.name, poster: s.thumbnail, banner: s.thumbnail, updatedAt: '', order: s.order)).toList();
+//         _displayList = List.from(_masterShowsList);
+//       }
+//     } catch (e) { debugPrint("Error: $e"); }
+//     if (mounted && !_isDisposed) setState(() => _isLoading = false);
+//   }
+
+//   void _onNetworkChange(int idx) {
+//     if (_isDisposed) return;
+//     setState(() { _selectedNetworkIndex = idx; _searchText = ''; _isLoading = true; });
+//     _fetchChannelsForNetwork(_apiNetworks[idx].id);
+//   }
+
+//   void _onSearch(String query) {
+//     setState(() {
+//       _searchText = query;
+//       if (query.isEmpty) {
+//         _displayList = List.from(_masterShowsList);
+//       } else {
+//         _displayList = _masterShowsList.where((s) => s.name.toLowerCase().contains(query.toLowerCase())).toList();
+//       }
+//     });
+//   }
+
+//   void _onTap(TvShowModel item, int index) async {
+//     if (_isVideoLoading || _isDisposed) return;
+//     setState(() => _isVideoLoading = true);
+
+//     try {
+//       if (SessionManager.userId != null) {
+//         HistoryService.updateUserHistory(userId: SessionManager.userId!, contentType: 4, eventId: item.id, eventTitle: item.name, url: '', categoryId: 0).catchError((_) {});
+//       }
+//     } catch (_) {}
+
+//     if (!_isDisposed && mounted) {
+//       await Navigator.push(context, MaterialPageRoute(builder: (context) => TvShowFinalDetailsPage(id: item.id, banner: item.banner ?? item.poster ?? '', poster: item.poster ?? item.banner ?? '', name: item.name, ))).catchError((_) {});
+//       if (mounted) setState(() => _isVideoLoading = false);
+//     }
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return MasterSliderLayout<TvShowModel>(
+//       title: widget.title,
+//       logoUrl: _apiNetworks.isNotEmpty ? (_apiNetworks[_selectedNetworkIndex].logo ?? '') : '',
+//       isLoading: _isLoading,
+//       isVideoLoading: _isVideoLoading,
+//       errorMessage: _errorMessage,
+//       onRetry: _fetchInitialData,
+
+//       networkNames: _apiNetworks.map((e) => e.name).toList(),
+//       selectedNetworkIndex: _selectedNetworkIndex,
+//       onNetworkSelected: _onNetworkChange,
+
+//       filterNames: _channelFilters.keys.toList(),
+//       selectedFilterIndex: _selectedFilterIndex,
+//       onFilterSelected: (idx) {
+//         setState(() { _selectedFilterIndex = idx; _searchText = ''; });
+//         _fetchShowsForChannel(_channelFilters.values.elementAt(idx)!);
+//       },
+//       onSearch: _onSearch,
+
+//       contentList: _displayList,
+//       onContentTap: _onTap,
+//       getTitle: (s) => s.name,
+//       getImageUrl: (s) => s.poster ?? s.banner ?? '',
+
+//       sliderImages: _sliderImages,
+//       focusColors: const [Color(0xFF3B82F6), Color(0xFF8B5CF6), Color(0xFFF59E0B), Color(0xFFEC4899), Color(0xFFEF4444)],
+//       placeholderIcon: Icons.tv_rounded,
+//       emptyMessage: "No Shows Available",
+//       cardWidth: bannerwdt ,
+//       cardHeight: bannerhgt,
+//     );
+//   }
+// }
 
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as https;
 import 'package:mobi_tv_entertainment/components/home_screen_pages/tv_show/tv_show_final_details_page.dart';
-import 'package:mobi_tv_entertainment/main.dart'; 
+import 'package:mobi_tv_entertainment/main.dart';
 import 'package:mobi_tv_entertainment/components/services/history_service.dart';
 import 'package:mobi_tv_entertainment/components/widgets/master_slider_layout.dart';
 
 class TvShowModel {
-  final int id; final String name; final String updatedAt; final String? poster; final String? banner; final String? genre; final int order; final String? language;
-  TvShowModel({required this.id, required this.name, required this.updatedAt, this.poster, this.banner, this.genre, required this.order, this.language});
-  factory TvShowModel.fromJson(Map<String, dynamic> json) => TvShowModel(id: json['id'] ?? 0, name: json['name'] ?? '', updatedAt: json['updated_at'] ?? '', poster: json['logo'], banner: json['logo'], genre: null, order: json['order'] ?? 9999, language: json['language']);
+  final int id;
+  final String name;
+  final String updatedAt;
+  final String? poster;
+  final String? banner;
+  final String? genre;
+  final int order;
+  final String? language;
+
+  // --- FIX 1: Added a getter so MasterSliderLayout can safely read 'genres' ---
+  String get genres => genre ?? "";
+
+  TvShowModel(
+      {required this.id,
+      required this.name,
+      required this.updatedAt,
+      this.poster,
+      this.banner,
+      this.genre,
+      required this.order,
+      this.language});
+
+  factory TvShowModel.fromJson(Map<String, dynamic> json) => TvShowModel(
+      id: json['id'] ?? 0,
+      name: json['name'] ?? '',
+      updatedAt: json['updated_at'] ?? '',
+      poster: json['logo'],
+      banner: json['logo'],
+      genre: json['genre'], // Mapped genre here just in case
+      order: json['order'] ?? 9999,
+      language: json['language']);
 }
 
 class TvShowItemModel {
-  final int id; final String name; final String? thumbnail; final String? genre; final int tvChannelId; final int order;
-  TvShowItemModel({required this.id, required this.name, this.thumbnail, this.genre, required this.tvChannelId, required this.order});
-  factory TvShowItemModel.fromJson(Map<String, dynamic> json) => TvShowItemModel(id: json['id'] ?? 0, name: json['name'] ?? '', thumbnail: json['thumbnail'], genre: json['genre'], tvChannelId: json['tv_channel_id'] ?? 0, order: json['order'] ?? 9999);
+  final int id;
+  final String name;
+  final String? thumbnail;
+  final String? genre;
+  final int tvChannelId;
+  final int order;
+  TvShowItemModel(
+      {required this.id,
+      required this.name,
+      this.thumbnail,
+      this.genre,
+      required this.tvChannelId,
+      required this.order});
+  factory TvShowItemModel.fromJson(Map<String, dynamic> json) =>
+      TvShowItemModel(
+          id: json['id'] ?? 0,
+          name: json['name'] ?? '',
+          thumbnail: json['thumbnail'],
+          genre: json['genre'],
+          tvChannelId: json['tv_channel_id'] ?? 0,
+          order: json['order'] ?? 9999);
 }
 
 class SliderModel {
-  final int id; final String title; final String banner; final String sliderFor;
-  SliderModel({required this.id, required this.title, required this.banner, required this.sliderFor});
-  factory SliderModel.fromJson(Map<String, dynamic> json) => SliderModel(id: json['id'] ?? 0, title: json['title'] ?? '', banner: json['banner'] ?? '', sliderFor: json['slider_for'] ?? '');
+  final int id;
+  final String title;
+  final String banner;
+  final String sliderFor;
+  SliderModel(
+      {required this.id,
+      required this.title,
+      required this.banner,
+      required this.sliderFor});
+  factory SliderModel.fromJson(Map<String, dynamic> json) => SliderModel(
+      id: json['id'] ?? 0,
+      title: json['title'] ?? '',
+      banner: json['banner'] ?? '',
+      sliderFor: json['slider_for'] ?? '');
 }
 
 class ApiNetworkModel {
-  final int id; final String name; final String? logo; final int networksOrder; final List<SliderModel> sliders;
-  ApiNetworkModel({required this.id, required this.name, this.logo, required this.networksOrder, this.sliders = const []});
+  final int id;
+  final String name;
+  final String? logo;
+  final int networksOrder;
+  final List<SliderModel> sliders;
+  ApiNetworkModel(
+      {required this.id,
+      required this.name,
+      this.logo,
+      required this.networksOrder,
+      this.sliders = const []});
   factory ApiNetworkModel.fromJson(Map<String, dynamic> json) {
-    var sliders = (json['sliders'] as List? ?? []).map((item) => SliderModel.fromJson(item as Map<String, dynamic>)).toList();
-    return ApiNetworkModel(id: json['id'] ?? 0, name: json['name'] ?? '', logo: json['logo'], networksOrder: json['networks_order'] ?? 9999, sliders: sliders);
+    var sliders = (json['sliders'] as List? ?? [])
+        .map((item) => SliderModel.fromJson(item as Map<String, dynamic>))
+        .toList();
+    return ApiNetworkModel(
+        id: json['id'] ?? 0,
+        name: json['name'] ?? '',
+        logo: json['logo'],
+        networksOrder: json['networks_order'] ?? 9999,
+        sliders: sliders);
   }
 }
 
 class TvShowSliderScreen extends StatefulWidget {
   final String title;
   final int? initialNetworkId;
-  const TvShowSliderScreen({Key? key, this.title = 'All TV Shows', this.initialNetworkId}) : super(key: key);
+  const TvShowSliderScreen(
+      {Key? key, this.title = 'All TV Shows', this.initialNetworkId})
+      : super(key: key);
   @override
   _TvShowSliderScreenState createState() => _TvShowSliderScreenState();
 }
@@ -10507,9 +10721,9 @@ class _TvShowSliderScreenState extends State<TvShowSliderScreen> {
   List<ApiNetworkModel> _apiNetworks = [];
   List<TvShowModel> _channelsList = [];
   List<TvShowModel> _displayList = [];
-  List<TvShowModel> _masterShowsList = []; 
+  List<TvShowModel> _masterShowsList = [];
   Map<String, int?> _channelFilters = {};
-  
+
   int _selectedNetworkIndex = 0;
   int _selectedFilterIndex = 0;
   List<String> _sliderImages = [];
@@ -10528,72 +10742,144 @@ class _TvShowSliderScreenState extends State<TvShowSliderScreen> {
   }
 
   Future<void> _fetchInitialData() async {
-    setState(() { _isLoading = true; _errorMessage = null; });
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
     try {
-      final headers = {'auth-key': SessionManager.authKey, 'Content-Type': 'application/json', 'domain': SessionManager.savedDomain};
-      final netRes = await https.post(Uri.parse(SessionManager.baseUrl + 'getNetworks'), headers: headers, body: json.encode({"network_id": "", "data_for": "tvshows"}));
-      
+      final headers = {
+        'auth-key': SessionManager.authKey,
+        'Content-Type': 'application/json',
+        'domain': SessionManager.savedDomain
+      };
+      final netRes = await https.post(
+          Uri.parse(SessionManager.baseUrl + 'getNetworks'),
+          headers: headers,
+          body: json.encode({"network_id": "", "data_for": "tvshows"}));
+
       if (_isDisposed) return;
       if (netRes.statusCode == 200) {
-        _apiNetworks = safeDecodeList(json.decode(netRes.body)).map((i) => ApiNetworkModel.fromJson(i)).toList()..sort((a,b)=> a.networksOrder.compareTo(b.networksOrder));
-        
+        _apiNetworks = safeDecodeList(json.decode(netRes.body))
+            .map((i) => ApiNetworkModel.fromJson(i))
+            .toList()
+          ..sort((a, b) => a.networksOrder.compareTo(b.networksOrder));
+
         if (_apiNetworks.isNotEmpty) {
           if (widget.initialNetworkId != null) {
-            int idx = _apiNetworks.indexWhere((n) => n.id == widget.initialNetworkId);
+            int idx =
+                _apiNetworks.indexWhere((n) => n.id == widget.initialNetworkId);
             if (idx != -1) _selectedNetworkIndex = idx;
           }
-          await _fetchChannelsForNetwork(_apiNetworks[_selectedNetworkIndex].id);
-        } else { _errorMessage = "No Networks Found"; }
-      } else { throw Exception("API Error"); }
+          await _fetchChannelsForNetwork(
+              _apiNetworks[_selectedNetworkIndex].id);
+        } else {
+          _errorMessage = "No Networks Found";
+        }
+      } else {
+        throw Exception("API Error");
+      }
     } catch (e) {
-      if (!_isDisposed && mounted) setState(() { _errorMessage = "Connection Failed"; _isLoading = false; });
+      if (!_isDisposed && mounted)
+        setState(() {
+          _errorMessage = "Connection Failed";
+          _isLoading = false;
+        });
     }
   }
 
   Future<void> _fetchChannelsForNetwork(int netId) async {
     try {
-      final res = await https.get(Uri.parse(SessionManager.baseUrl + 'getTvChannels?content_network=$netId'), headers: {'auth-key': SessionManager.authKey, 'domain': SessionManager.savedDomain});
+      final res = await https.get(
+          Uri.parse(
+              SessionManager.baseUrl + 'getTvChannels?content_network=$netId'),
+          headers: {
+            'auth-key': SessionManager.authKey,
+            'domain': SessionManager.savedDomain
+          });
       if (_isDisposed) return;
-      
+
       if (res.statusCode == 200) {
-        _channelsList = safeDecodeList(json.decode(res.body)).map((i) => TvShowModel.fromJson(i)).toList()..sort((a,b)=> a.order.compareTo(b.order));
-        
+        _channelsList = safeDecodeList(json.decode(res.body))
+            .map((i) => TvShowModel.fromJson(i))
+            .toList()
+          ..sort((a, b) => a.order.compareTo(b.order));
+
         _channelFilters.clear();
-        for (var c in _channelsList) { if (c.name.isNotEmpty) _channelFilters[c.name] = c.id; }
-        
+        for (var c in _channelsList) {
+          if (c.name.isNotEmpty) _channelFilters[c.name] = c.id;
+        }
+
         final net = _apiNetworks[_selectedNetworkIndex];
-        _sliderImages = net.sliders.where((s) => s.sliderFor == 'tvshows').map((e) => e.banner).toList();
-        if (_sliderImages.isEmpty && net.logo != null) _sliderImages.add(net.logo!);
+        _sliderImages = net.sliders
+            .where((s) => s.sliderFor == 'tvshows')
+            .map((e) => e.banner)
+            .toList();
+        if (_sliderImages.isEmpty && net.logo != null)
+          _sliderImages.add(net.logo!);
 
         if (_channelFilters.isNotEmpty) {
           _selectedFilterIndex = 0;
           await _fetchShowsForChannel(_channelFilters.values.elementAt(0)!);
         } else {
-          setState(() { _displayList = []; _isLoading = false; });
+          setState(() {
+            _displayList = [];
+            _isLoading = false;
+          });
         }
       }
     } catch (e) {
-      if (!_isDisposed && mounted) setState(() { _errorMessage = "Failed to load Channels"; _isLoading = false; });
+      if (!_isDisposed && mounted)
+        setState(() {
+          _errorMessage = "Failed to load Channels";
+          _isLoading = false;
+        });
     }
   }
 
   Future<void> _fetchShowsForChannel(int channelId) async {
     setState(() => _isLoading = true);
     try {
-      final res = await https.get(Uri.parse(SessionManager.baseUrl + 'getTvShows/$channelId'), headers: {'auth-key': SessionManager.authKey, 'domain': SessionManager.savedDomain});
+      final res = await https.get(
+          Uri.parse(SessionManager.baseUrl + 'getTvShows/$channelId'),
+          headers: {
+            'auth-key': SessionManager.authKey,
+            'domain': SessionManager.savedDomain
+          });
       if (_isDisposed) return;
       if (res.statusCode == 200) {
-        final showItems = safeDecodeList(json.decode(res.body)).map((i) => TvShowItemModel.fromJson(i)).toList()..sort((a,b)=> a.order.compareTo(b.order));
-        _masterShowsList = showItems.map((s) => TvShowModel(id: s.id, name: s.name, poster: s.thumbnail, banner: s.thumbnail, updatedAt: '', order: s.order)).toList();
+        final showItems = safeDecodeList(json.decode(res.body))
+            .map((i) => TvShowItemModel.fromJson(i))
+            .toList()
+          ..sort((a, b) => a.order.compareTo(b.order));
+
+        // --- FIX 2: Passed `genre: s.genre` here so the badges actually receive the text ---
+        _masterShowsList = showItems
+            .map((s) => TvShowModel(
+                id: s.id,
+                name: s.name,
+                poster: s.thumbnail,
+                banner: s.thumbnail,
+                updatedAt: '',
+                order: s.order,
+                genre: s.genre // Added genre mapping
+                ))
+            .toList();
+
         _displayList = List.from(_masterShowsList);
       }
-    } catch (e) { debugPrint("Error: $e"); }
+    } catch (e) {
+      debugPrint("Error: $e");
+    }
     if (mounted && !_isDisposed) setState(() => _isLoading = false);
   }
 
   void _onNetworkChange(int idx) {
     if (_isDisposed) return;
-    setState(() { _selectedNetworkIndex = idx; _searchText = ''; _isLoading = true; });
+    setState(() {
+      _selectedNetworkIndex = idx;
+      _searchText = '';
+      _isLoading = true;
+    });
     _fetchChannelsForNetwork(_apiNetworks[idx].id);
   }
 
@@ -10603,7 +10889,9 @@ class _TvShowSliderScreenState extends State<TvShowSliderScreen> {
       if (query.isEmpty) {
         _displayList = List.from(_masterShowsList);
       } else {
-        _displayList = _masterShowsList.where((s) => s.name.toLowerCase().contains(query.toLowerCase())).toList();
+        _displayList = _masterShowsList
+            .where((s) => s.name.toLowerCase().contains(query.toLowerCase()))
+            .toList();
       }
     });
   }
@@ -10614,12 +10902,27 @@ class _TvShowSliderScreenState extends State<TvShowSliderScreen> {
 
     try {
       if (SessionManager.userId != null) {
-        HistoryService.updateUserHistory(userId: SessionManager.userId!, contentType: 4, eventId: item.id, eventTitle: item.name, url: '', categoryId: 0).catchError((_) {});
+        HistoryService.updateUserHistory(
+                userId: SessionManager.userId!,
+                contentType: 4,
+                eventId: item.id,
+                eventTitle: item.name,
+                url: '',
+                categoryId: 0)
+            .catchError((_) {});
       }
     } catch (_) {}
 
     if (!_isDisposed && mounted) {
-      await Navigator.push(context, MaterialPageRoute(builder: (context) => TvShowFinalDetailsPage(id: item.id, banner: item.banner ?? item.poster ?? '', poster: item.poster ?? item.banner ?? '', name: item.name, ))).catchError((_) {});
+      await Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => TvShowFinalDetailsPage(
+                    id: item.id,
+                    banner: item.banner ?? item.poster ?? '',
+                    poster: item.poster ?? item.banner ?? '',
+                    name: item.name,
+                  ))).catchError((_) {});
       if (mounted) setState(() => _isVideoLoading = false);
     }
   }
@@ -10628,35 +10931,42 @@ class _TvShowSliderScreenState extends State<TvShowSliderScreen> {
   Widget build(BuildContext context) {
     return MasterSliderLayout<TvShowModel>(
       title: widget.title,
-      logoUrl: _apiNetworks.isNotEmpty ? (_apiNetworks[_selectedNetworkIndex].logo ?? '') : '',
+      logoUrl: _apiNetworks.isNotEmpty
+          ? (_apiNetworks[_selectedNetworkIndex].logo ?? '')
+          : '',
       isLoading: _isLoading,
       isVideoLoading: _isVideoLoading,
       errorMessage: _errorMessage,
       onRetry: _fetchInitialData,
-      
       networkNames: _apiNetworks.map((e) => e.name).toList(),
       selectedNetworkIndex: _selectedNetworkIndex,
       onNetworkSelected: _onNetworkChange,
-      
       filterNames: _channelFilters.keys.toList(),
       selectedFilterIndex: _selectedFilterIndex,
       onFilterSelected: (idx) {
-        setState(() { _selectedFilterIndex = idx; _searchText = ''; });
+        setState(() {
+          _selectedFilterIndex = idx;
+          _searchText = '';
+        });
         _fetchShowsForChannel(_channelFilters.values.elementAt(idx)!);
       },
       onSearch: _onSearch,
-      
       contentList: _displayList,
       onContentTap: _onTap,
       getTitle: (s) => s.name,
       getImageUrl: (s) => s.poster ?? s.banner ?? '',
-      
       sliderImages: _sliderImages,
-      focusColors: const [Color(0xFF3B82F6), Color(0xFF8B5CF6), Color(0xFFF59E0B), Color(0xFFEC4899), Color(0xFFEF4444)],
+      focusColors: const [
+        Color(0xFF3B82F6),
+        Color(0xFF8B5CF6),
+        Color(0xFFF59E0B),
+        Color(0xFFEC4899),
+        Color(0xFFEF4444)
+      ],
       placeholderIcon: Icons.tv_rounded,
       emptyMessage: "No Shows Available",
-      cardWidth: bannerwdt * 1.2,
-      cardHeight: bannerhgt * 1.2,
+      cardWidth: bannerwdt,
+      cardHeight: bannerhgt,
     );
   }
 }

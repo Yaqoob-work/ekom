@@ -1,12 +1,3 @@
-
-
-
-
-
-
-
-
-
 // import 'dart:async';
 // import 'dart:convert';
 // import 'dart:ui';
@@ -188,7 +179,6 @@
 //     );
 //   }
 // }
-
 
 // //==============================================================================
 // // SECTION 2: MAIN PAGE WIDGET AND STATE
@@ -374,7 +364,7 @@
 //       fetchedList.sort((a, b) => a.seriesOrder.compareTo(b.seriesOrder));
 //       fetchedNetworks
 //           .sort((a, b) => a.networksOrder.compareTo(b.networksOrder));
-      
+
 //       // CHANGE 3: Data fetch hone ke baad list ko ek baar shuffle karein.
 //       fetchedList.shuffle();
 
@@ -478,8 +468,6 @@
 //     _applyFilters();
 //   }
 
-
-
 //   //=================================================
 // // SECTION 2.3: STATE MANAGEMENT & UI LOGIC (ke Aas Paas Add Karein)
 // //=================================================
@@ -508,15 +496,13 @@
 //   }
 //   // ===== FIX END =====
 
-
-
 //   //=================================================
 //   // SECTION 2.2: KEYBOARD AND FOCUS NAVIGATION
 //   //=================================================
 
 //   KeyEventResult _onKeyHandler(FocusNode node, RawKeyEvent event) {
 //     if (event is! RawKeyDownEvent) return KeyEventResult.ignored;
-    
+
 //     bool searchHasFocus = _searchButtonFocusNode.hasFocus;
 //     bool networkHasFocus = _networkFocusNodes.any((n) => n.hasFocus);
 //     bool genreHasFocus = _genreFocusNodes.any((n) => n.hasFocus);
@@ -544,7 +530,7 @@
 //     if (keyboardHasFocus && _showKeyboard) {
 //       return _navigateKeyboard(key);
 //     }
-    
+
 //     if (searchHasFocus) {
 //       if (key == LogicalKeyboardKey.select || key == LogicalKeyboardKey.enter) {
 //         setState(() {
@@ -623,7 +609,7 @@
 //     });
 
 //     int newIndex = _focusedItemIndex;
-    
+
 //     if (key == LogicalKeyboardKey.arrowUp) {
 //       setState(() => _lastNavigationDirection = 'vertical');
 //       if (_genreFocusNodes.isNotEmpty) {
@@ -632,7 +618,7 @@
 //         _searchButtonFocusNode.requestFocus();
 //       }
 //       setState(() => _focusedItemIndex = -1);
-      
+
 //       // Lock aur timer ko cancel kar do kyunki hum list se bahar ja rahe hain
 //       _isNavigationLocked = false;
 //       _navigationLockTimer?.cancel();
@@ -658,7 +644,7 @@
 //       }
 //     } else if (key == LogicalKeyboardKey.select ||
 //         key == LogicalKeyboardKey.enter) {
-      
+
 //       // Enter/Select par cooldown nahi chahiye, isliye lock turant hata do
 //       _isNavigationLocked = false;
 //       _navigationLockTimer?.cancel();
@@ -813,10 +799,10 @@
 //               false);
 //       return networkMatch && genreMatch;
 //     }).toList();
-    
+
 //     // CHANGE 5: Yahan se shuffle ko hata diya gaya hai.
-//     // _filteredWebSeriesList.shuffle(); 
-    
+//     // _filteredWebSeriesList.shuffle();
+
 //     _rebuildItemFocusNodes();
 //     _focusedItemIndex = -1;
 //   }
@@ -997,7 +983,6 @@
 //     }
 //   }
 
-
 //   //=================================================
 //   // SECTION 2.4: INITIALIZATION AND CLEANUP
 //   //=================================================
@@ -1108,7 +1093,7 @@
 //       ],
 //     );
 //   }
-  
+
 //   Widget _buildBackgroundOrSlider() {
 //     if (_currentWebSeriesSliders.isNotEmpty) {
 //       return WebSeriesBannerSlider(
@@ -1222,7 +1207,7 @@
 //             final networkName = _uniqueNetworks[index];
 //             final focusNode = _networkFocusNodes[index];
 //             final isSelected = _selectedNetworkName == networkName;
-            
+
 //             return Focus(
 //               focusNode: focusNode,
 //               onFocusChange: (hasFocus) {
@@ -1816,7 +1801,7 @@
 //   // CHANGE 7: CachedNetworkImage ko Image.network se badal diya gaya hai.
 //   Widget _buildWebSeriesImage() {
 //     final imageUrl = webSeries.banner;
-    
+
 //     return imageUrl != null && imageUrl.isNotEmpty
 //         ? Image.network(
 //             imageUrl,
@@ -1833,7 +1818,7 @@
 //           )
 //         : _buildImagePlaceholder();
 //   }
-  
+
 //   Widget _buildImagePlaceholder() {
 //     return Container(
 //       decoration: const BoxDecoration(
@@ -1936,9 +1921,9 @@
 //               Image.network(
 //                 slider.banner,
 //                 fit: BoxFit.cover,
-//                 loadingBuilder: (context, child, progress) => 
+//                 loadingBuilder: (context, child, progress) =>
 //                     progress == null ? child : Container(color: ProfessionalColors.surfaceDark),
-//                 errorBuilder: (context, error, stackTrace) => 
+//                 errorBuilder: (context, error, stackTrace) =>
 //                     Container(color: ProfessionalColors.surfaceDark),
 //               ),
 //               Container(
@@ -1963,11 +1948,6 @@
 //     );
 //   }
 // }
-
-
-
-
-
 
 // import 'dart:async';
 // import 'dart:convert';
@@ -2320,7 +2300,7 @@
 //     try {
 //       final authKey = SessionManager.authKey;
 //       var url = Uri.parse(SessionManager.baseUrl + 'getGenreByContentNetwork');
-      
+
 //       final response = await https.post(
 //         url,
 //         headers: {
@@ -2336,7 +2316,7 @@
 //         if (jsonResponse['status'] == true && jsonResponse['genres'] != null) {
 //           final List<dynamic> genreList = jsonResponse['genres'];
 //           List<String> genres = genreList.map((e) => e.toString().trim()).toList();
-          
+
 //           genres.sort();
 //           if (!genres.contains('All')) {
 //             genres.insert(0, 'All');
@@ -2361,17 +2341,17 @@
 //         _fetchAndCacheWebSeries(forceRefresh: forceRefresh),
 //         _fetchNetworks(),
 //       ]);
-      
+
 //       final fetchedList = results[0] as List<WebSeriesModel>;
 //       final fetchedNetworks = results[1] as List<ApiNetworkModel>;
-      
+
 //       fetchedList.sort((a, b) => a.seriesOrder.compareTo(b.seriesOrder));
 //       fetchedNetworks.sort((a, b) => a.networksOrder.compareTo(b.networksOrder));
 //       fetchedList.shuffle();
 
 //       if (mounted) {
 //         if (fetchedList.isEmpty) _errorMessage = "No Web Series Found.";
-        
+
 //         List<String> initialGenres = ['All'];
 //         if (fetchedNetworks.isNotEmpty) {
 //            initialGenres = await _fetchGenresFromApi(fetchedNetworks[0].id);
@@ -2499,18 +2479,18 @@
 //         _searchResults.clear();
 //       });
 //     }
-    
+
 //     _filteredWebSeriesList = _webSeriesList.where((series) {
 //       final bool networkMatch = _selectedNetworkName.isEmpty ||
 //           series.networks.any((n) => n.name == _selectedNetworkName);
-      
+
 //       final bool genreMatch = _selectedGenre == 'All' ||
 //           (series.genres
 //                   ?.split(',')
 //                   .map((e) => e.trim())
 //                   .contains(_selectedGenre) ??
 //               false);
-              
+
 //       return networkMatch && genreMatch;
 //     }).toList();
 
@@ -2785,12 +2765,12 @@
 //       }
 //     } else if (key == LogicalKeyboardKey.arrowDown) {
 //       setState(() => _lastNavigationDirection = 'vertical');
-      
+
 //       // FIX: Pehle Focus shift karein Search Button par
 //       if (_searchButtonFocusNode.canRequestFocus) {
 //         _searchButtonFocusNode.requestFocus();
 //       }
-      
+
 //       // Phir data update karein (jo loading trigger karega)
 //       _updateSelectedNetwork();
 //       return;
@@ -3283,7 +3263,7 @@
 
 //             // --- 3. GENRE BUTTONS (Normal Case) ---
 //             final genreIndex = index - 1;
-            
+
 //             // Safety check
 //             if (genreIndex >= _uniqueGenres.length) return const SizedBox.shrink();
 
@@ -3942,10 +3922,6 @@
 //   }
 // }
 
-
-
-
-
 // import 'dart:async';
 // import 'dart:convert';
 // import 'dart:ui';
@@ -4142,9 +4118,9 @@
 // class _WebseriesSliderScreenState
 //     extends State<WebseriesSliderScreen>
 //     with SingleTickerProviderStateMixin {
-  
+
 //   // CRASH FIX: Added Disposal Flag
-//   bool _isDisposed = false; 
+//   bool _isDisposed = false;
 
 //   List<WebSeriesModel> _webSeriesList = [];
 //   bool _isLoading = true;
@@ -4301,7 +4277,7 @@
 //     try {
 //       final authKey = SessionManager.authKey;
 //       var url = Uri.parse(SessionManager.baseUrl + 'getGenreByContentNetwork');
-      
+
 //       final response = await https.post(
 //         url,
 //         headers: {
@@ -4319,7 +4295,7 @@
 //         if (jsonResponse['status'] == true && jsonResponse['genres'] != null) {
 //           final List<dynamic> genreList = jsonResponse['genres'];
 //           List<String> genres = genreList.map((e) => e.toString().trim()).toList();
-          
+
 //           genres.sort();
 //           if (!genres.contains('All')) {
 //             genres.insert(0, 'All');
@@ -4344,19 +4320,19 @@
 //         _fetchAndCacheWebSeries(forceRefresh: forceRefresh),
 //         _fetchNetworks(),
 //       ]);
-      
+
 //       if (_isDisposed || !mounted) return; // CRASH FIX
 
 //       final fetchedList = results[0] as List<WebSeriesModel>;
 //       final fetchedNetworks = results[1] as List<ApiNetworkModel>;
-      
+
 //       fetchedList.sort((a, b) => a.seriesOrder.compareTo(b.seriesOrder));
 //       fetchedNetworks.sort((a, b) => a.networksOrder.compareTo(b.networksOrder));
 //       fetchedList.shuffle();
 
 //       if (mounted) {
 //         if (fetchedList.isEmpty) _errorMessage = "No Web Series Found.";
-        
+
 //         List<String> initialGenres = ['All'];
 //         if (fetchedNetworks.isNotEmpty) {
 //            initialGenres = await _fetchGenresFromApi(fetchedNetworks[0].id);
@@ -4374,7 +4350,7 @@
 //           _processInitialData();
 //           _initializeFocusNodes();
 //           _startAnimations();
-          
+
 //           // CRASH FIX: Safe Focus Request
 //           WidgetsBinding.instance.addPostFrameCallback((_) {
 //             if (!_isDisposed && mounted && _networkFocusNodes.isNotEmpty) {
@@ -4481,18 +4457,18 @@
 //         _searchResults.clear();
 //       });
 //     }
-    
+
 //     _filteredWebSeriesList = _webSeriesList.where((series) {
 //       final bool networkMatch = _selectedNetworkName.isEmpty ||
 //           series.networks.any((n) => n.name == _selectedNetworkName);
-      
+
 //       final bool genreMatch = _selectedGenre == 'All' ||
 //           (series.genres
 //                   ?.split(',')
 //                   .map((e) => e.trim())
 //                   .contains(_selectedGenre) ??
 //               false);
-              
+
 //       return networkMatch && genreMatch;
 //     }).toList();
 
@@ -4509,7 +4485,7 @@
 //     });
 
 //     int selectedNetworkId = _apiNetworks[_focusedNetworkIndex].id;
-    
+
 //     // Jump to safe focus temporarily
 //     if (_searchButtonFocusNode.canRequestFocus) _searchButtonFocusNode.requestFocus();
 
@@ -4543,7 +4519,7 @@
 //     final webSeriesSliders = selectedNetwork.sliders
 //         .where((s) => s.sliderFor == 'webseries')
 //         .toList();
-        
+
 //     setState(() {
 //       _selectedNetworkLogo = selectedNetwork.logo;
 //       _currentWebSeriesSliders = webSeriesSliders;
@@ -4878,7 +4854,7 @@
 //   Future<void> _navigateToWebSeriesDetails(WebSeriesModel webSeries, int index) async {
 //     if (_isVideoLoading || _isDisposed) return;
 //     setState(() => _isVideoLoading = true);
-    
+
 //     try {
 //       int? currentUserId = SessionManager.userId;
 //       if (currentUserId != null) {
@@ -4894,7 +4870,7 @@
 //     } catch (e) {
 //       // Ignore
 //     }
-    
+
 //     await Navigator.push(
 //       context,
 //       MaterialPageRoute(
@@ -5626,10 +5602,6 @@
 //   }
 // }
 
-
-
-
-
 // import 'dart:async';
 // import 'dart:convert';
 // import 'dart:ui';
@@ -5826,9 +5798,9 @@
 // class _WebseriesSliderScreenState
 //     extends State<WebseriesSliderScreen>
 //     with SingleTickerProviderStateMixin {
-  
+
 //   // CRASH FIX: Added Disposal Flag
-//   bool _isDisposed = false; 
+//   bool _isDisposed = false;
 
 //   List<WebSeriesModel> _webSeriesList = [];
 //   bool _isLoading = true;
@@ -5918,12 +5890,12 @@
 //         }
 //       }
 //     });
-    
+
 //     // CRASH FIX: Use addPostFrameCallback for initial data fetch
 //     WidgetsBinding.instance.addPostFrameCallback((_) {
 //       if (!_isDisposed) _fetchDataForPage();
 //     });
-    
+
 //     _initializeAnimations();
 //   }
 
@@ -5946,7 +5918,7 @@
 //     _disposeFocusNodes(_keyboardFocusNodes);
 //     super.dispose();
 //   }
-  
+
 //   // Safe way to dispose focus nodes
 //   void _disposeFocusNodes(List<FocusNode> nodes) {
 //     for (var node in nodes) {
@@ -6002,7 +5974,7 @@
 //     try {
 //       final authKey = SessionManager.authKey;
 //       var url = Uri.parse(SessionManager.baseUrl + 'getGenreByContentNetwork');
-      
+
 //       final response = await https.post(
 //         url,
 //         headers: {
@@ -6020,7 +5992,7 @@
 //         if (jsonResponse['status'] == true && jsonResponse['genres'] != null) {
 //           final List<dynamic> genreList = jsonResponse['genres'];
 //           List<String> genres = genreList.map((e) => e.toString().trim()).toList();
-          
+
 //           genres.sort();
 //           if (!genres.contains('All')) {
 //             genres.insert(0, 'All');
@@ -6045,19 +6017,19 @@
 //         _fetchAndCacheWebSeries(forceRefresh: forceRefresh),
 //         _fetchNetworks(),
 //       ]);
-      
+
 //       if (_isDisposed || !mounted) return; // CRASH FIX
 
 //       final fetchedList = results[0] as List<WebSeriesModel>;
 //       final fetchedNetworks = results[1] as List<ApiNetworkModel>;
-      
+
 //       fetchedList.sort((a, b) => a.seriesOrder.compareTo(b.seriesOrder));
 //       fetchedNetworks.sort((a, b) => a.networksOrder.compareTo(b.networksOrder));
 //       fetchedList.shuffle();
 
 //       if (mounted) {
 //         if (fetchedList.isEmpty) _errorMessage = "No Web Series Found.";
-        
+
 //         List<String> initialGenres = ['All'];
 //         if (fetchedNetworks.isNotEmpty) {
 //            initialGenres = await _fetchGenresFromApi(fetchedNetworks[0].id);
@@ -6075,7 +6047,7 @@
 //           _processInitialData();
 //           _initializeFocusNodes();
 //           _startAnimations();
-          
+
 //           // CRASH FIX: Safe Focus Request
 //           WidgetsBinding.instance.addPostFrameCallback((_) {
 //             if (!_isDisposed && mounted && _networkFocusNodes.isNotEmpty) {
@@ -6184,18 +6156,18 @@
 //         _searchResults.clear();
 //       });
 //     }
-    
+
 //     _filteredWebSeriesList = _webSeriesList.where((series) {
 //       final bool networkMatch = _selectedNetworkName.isEmpty ||
 //           series.networks.any((n) => n.name == _selectedNetworkName);
-      
+
 //       final bool genreMatch = _selectedGenre == 'All' ||
 //           (series.genres
 //                   ?.split(',')
 //                   .map((e) => e.trim())
 //                   .contains(_selectedGenre) ??
 //               false);
-              
+
 //       return networkMatch && genreMatch;
 //     }).toList();
 
@@ -6212,7 +6184,7 @@
 //     });
 
 //     int selectedNetworkId = _apiNetworks[_focusedNetworkIndex].id;
-    
+
 //     // Jump to safe focus temporarily
 //     if (_searchButtonFocusNode.canRequestFocus) _searchButtonFocusNode.requestFocus();
 
@@ -6246,7 +6218,7 @@
 //     final webSeriesSliders = selectedNetwork.sliders
 //         .where((s) => s.sliderFor == 'webseries')
 //         .toList();
-        
+
 //     setState(() {
 //       _selectedNetworkLogo = selectedNetwork.logo;
 //       _currentWebSeriesSliders = webSeriesSliders;
@@ -6578,7 +6550,7 @@
 //   Future<void> _navigateToWebSeriesDetails(WebSeriesModel webSeries, int index) async {
 //     if (_isVideoLoading || _isDisposed) return;
 //     setState(() => _isVideoLoading = true);
-    
+
 //     try {
 //       int? currentUserId = SessionManager.userId;
 //       if (currentUserId != null) {
@@ -6594,7 +6566,7 @@
 //     } catch (e) {
 //       // Ignore
 //     }
-    
+
 //     await Navigator.push(
 //       context,
 //       MaterialPageRoute(
@@ -7326,10 +7298,6 @@
 //   }
 // }
 
-
-
-
-
 // import 'dart:async';
 // import 'dart:convert';
 // import 'dart:ui';
@@ -7527,9 +7495,9 @@
 // class _WebseriesSliderScreenState
 //     extends State<WebseriesSliderScreen>
 //     with SingleTickerProviderStateMixin {
-  
+
 //   // CRASH FIX: Added Disposal Flag
-//   bool _isDisposed = false; 
+//   bool _isDisposed = false;
 
 //   List<WebSeriesModel> _webSeriesList = [];
 //   bool _isLoading = true;
@@ -7619,12 +7587,12 @@
 //         }
 //       }
 //     });
-    
+
 //     // CRASH FIX: Use addPostFrameCallback for initial data fetch
 //     WidgetsBinding.instance.addPostFrameCallback((_) {
 //       if (!_isDisposed) _fetchDataForPage();
 //     });
-    
+
 //     _initializeAnimations();
 //   }
 
@@ -7647,7 +7615,7 @@
 //     _disposeFocusNodes(_keyboardFocusNodes);
 //     super.dispose();
 //   }
-  
+
 //   // Safe way to dispose focus nodes
 //   void _disposeFocusNodes(List<FocusNode> nodes) {
 //     for (var node in nodes) {
@@ -7703,7 +7671,7 @@
 //     try {
 //       final authKey = SessionManager.authKey;
 //       var url = Uri.parse(SessionManager.baseUrl + 'getGenreByContentNetwork');
-      
+
 //       final response = await https.post(
 //         url,
 //         headers: {
@@ -7721,7 +7689,7 @@
 //         if (jsonResponse['status'] == true && jsonResponse['genres'] != null) {
 //           final List<dynamic> genreList = jsonResponse['genres'];
 //           List<String> genres = genreList.map((e) => e.toString().trim()).toList();
-          
+
 //           genres.sort();
 //           if (!genres.contains('All')) {
 //             genres.insert(0, 'All');
@@ -7746,19 +7714,19 @@
 //         _fetchAndCacheWebSeries(forceRefresh: forceRefresh),
 //         _fetchNetworks(),
 //       ]);
-      
+
 //       if (_isDisposed || !mounted) return; // CRASH FIX
 
 //       final fetchedList = results[0] as List<WebSeriesModel>;
 //       final fetchedNetworks = results[1] as List<ApiNetworkModel>;
-      
+
 //       fetchedList.sort((a, b) => a.seriesOrder.compareTo(b.seriesOrder));
 //       fetchedNetworks.sort((a, b) => a.networksOrder.compareTo(b.networksOrder));
 //       fetchedList.shuffle();
 
 //       if (mounted) {
 //         if (fetchedList.isEmpty) _errorMessage = "No Web Series Found.";
-        
+
 //         List<String> initialGenres = ['All'];
 //         if (fetchedNetworks.isNotEmpty) {
 //            initialGenres = await _fetchGenresFromApi(fetchedNetworks[0].id);
@@ -7776,7 +7744,7 @@
 //           _processInitialData();
 //           _initializeFocusNodes();
 //           _startAnimations();
-          
+
 //           // CRASH FIX: Safe Focus Request
 //           WidgetsBinding.instance.addPostFrameCallback((_) {
 //             if (!_isDisposed && mounted && _networkFocusNodes.isNotEmpty) {
@@ -7885,18 +7853,18 @@
 //         _searchResults.clear();
 //       });
 //     }
-    
+
 //     _filteredWebSeriesList = _webSeriesList.where((series) {
 //       final bool networkMatch = _selectedNetworkName.isEmpty ||
 //           series.networks.any((n) => n.name == _selectedNetworkName);
-      
+
 //       final bool genreMatch = _selectedGenre == 'All' ||
 //           (series.genres
 //                   ?.split(',')
 //                   .map((e) => e.trim())
 //                   .contains(_selectedGenre) ??
 //               false);
-              
+
 //       return networkMatch && genreMatch;
 //     }).toList();
 
@@ -7913,7 +7881,7 @@
 //     });
 
 //     int selectedNetworkId = _apiNetworks[_focusedNetworkIndex].id;
-    
+
 //     // Jump to safe focus temporarily
 //     if (_searchButtonFocusNode.canRequestFocus) _searchButtonFocusNode.requestFocus();
 
@@ -7947,7 +7915,7 @@
 //     final webSeriesSliders = selectedNetwork.sliders
 //         .where((s) => s.sliderFor == 'webseries')
 //         .toList();
-        
+
 //     setState(() {
 //       _selectedNetworkLogo = selectedNetwork.logo;
 //       _currentWebSeriesSliders = webSeriesSliders;
@@ -8279,7 +8247,7 @@
 //   Future<void> _navigateToWebSeriesDetails(WebSeriesModel webSeries, int index) async {
 //     if (_isVideoLoading || _isDisposed) return;
 //     setState(() => _isVideoLoading = true);
-    
+
 //     try {
 //       int? currentUserId = SessionManager.userId;
 //       if (currentUserId != null) {
@@ -8295,7 +8263,7 @@
 //     } catch (e) {
 //       // Ignore
 //     }
-    
+
 //     await Navigator.push(
 //       context,
 //       MaterialPageRoute(
@@ -9038,8 +9006,6 @@
 //   }
 // }
 
-
-
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
@@ -9051,39 +9017,95 @@ import 'package:mobi_tv_entertainment/components/widgets/master_slider_layout.da
 
 // --- MODELS ---
 class NetworkModel {
-  final int id; final String name; final String? logo;
+  final int id;
+  final String name;
+  final String? logo;
   NetworkModel({required this.id, required this.name, this.logo});
-  factory NetworkModel.fromJson(Map<String, dynamic> json) => NetworkModel(id: json['id'] ?? 0, name: json['name'] ?? '', logo: json['logo']);
+  factory NetworkModel.fromJson(Map<String, dynamic> json) => NetworkModel(
+      id: json['id'] ?? 0, name: json['name'] ?? '', logo: json['logo']);
 }
 
 class WebSeriesModel {
-  final int id; final String name; final String updatedAt; final String? poster; final String? banner; final String? genres; final int seriesOrder; final List<NetworkModel> networks;
-  WebSeriesModel({required this.id, required this.name, required this.updatedAt, this.poster, this.banner, this.genres, required this.seriesOrder, this.networks = const []});
+  final int id;
+  final String name;
+  final String updatedAt;
+  final String? poster;
+  final String? banner;
+  final String? genres;
+  final int seriesOrder;
+  final List<NetworkModel> networks;
+  WebSeriesModel(
+      {required this.id,
+      required this.name,
+      required this.updatedAt,
+      this.poster,
+      this.banner,
+      this.genres,
+      required this.seriesOrder,
+      this.networks = const []});
   factory WebSeriesModel.fromJson(Map<String, dynamic> json) {
-    var networks = (json['networks'] as List? ?? []).map((item) => NetworkModel.fromJson(item as Map<String, dynamic>)).toList();
-    return WebSeriesModel(id: json['id'] ?? 0, name: json['name'] ?? '', updatedAt: json['updated_at'] ?? '', poster: json['poster'], banner: json['banner'], genres: json['genres'], seriesOrder: json['series_order'] ?? 9999, networks: networks);
+    var networks = (json['networks'] as List? ?? [])
+        .map((item) => NetworkModel.fromJson(item as Map<String, dynamic>))
+        .toList();
+    return WebSeriesModel(
+        id: json['id'] ?? 0,
+        name: json['name'] ?? '',
+        updatedAt: json['updated_at'] ?? '',
+        poster: json['poster'],
+        banner: json['banner'],
+        genres: json['genres'],
+        seriesOrder: json['series_order'] ?? 9999,
+        networks: networks);
   }
 }
 
 class SliderModel {
-  final int id; final String title; final String banner; final String sliderFor;
-  SliderModel({required this.id, required this.title, required this.banner, required this.sliderFor});
-  factory SliderModel.fromJson(Map<String, dynamic> json) => SliderModel(id: json['id'] ?? 0, title: json['title'] ?? '', banner: json['banner'] ?? '', sliderFor: json['slider_for'] ?? '');
+  final int id;
+  final String title;
+  final String banner;
+  final String sliderFor;
+  SliderModel(
+      {required this.id,
+      required this.title,
+      required this.banner,
+      required this.sliderFor});
+  factory SliderModel.fromJson(Map<String, dynamic> json) => SliderModel(
+      id: json['id'] ?? 0,
+      title: json['title'] ?? '',
+      banner: json['banner'] ?? '',
+      sliderFor: json['slider_for'] ?? '');
 }
 
 class ApiNetworkModel {
-  final int id; final String name; final String? logo; final int networksOrder; final List<SliderModel> sliders;
-  ApiNetworkModel({required this.id, required this.name, this.logo, required this.networksOrder, this.sliders = const []});
+  final int id;
+  final String name;
+  final String? logo;
+  final int networksOrder;
+  final List<SliderModel> sliders;
+  ApiNetworkModel(
+      {required this.id,
+      required this.name,
+      this.logo,
+      required this.networksOrder,
+      this.sliders = const []});
   factory ApiNetworkModel.fromJson(Map<String, dynamic> json) {
-    var sliders = (json['sliders'] as List? ?? []).map((item) => SliderModel.fromJson(item as Map<String, dynamic>)).toList();
-    return ApiNetworkModel(id: json['id'] ?? 0, name: json['name'] ?? '', logo: json['logo'], networksOrder: json['networks_order'] ?? 9999, sliders: sliders);
+    var sliders = (json['sliders'] as List? ?? [])
+        .map((item) => SliderModel.fromJson(item as Map<String, dynamic>))
+        .toList();
+    return ApiNetworkModel(
+        id: json['id'] ?? 0,
+        name: json['name'] ?? '',
+        logo: json['logo'],
+        networksOrder: json['networks_order'] ?? 9999,
+        sliders: sliders);
   }
 }
 
 // --- MAIN WIDGET ---
 class WebseriesSliderScreen extends StatefulWidget {
   final String title;
-  const WebseriesSliderScreen({Key? key, this.title = 'All Web Series'}) : super(key: key);
+  const WebseriesSliderScreen({Key? key, this.title = 'All Web Series'})
+      : super(key: key);
   @override
   _WebseriesSliderScreenState createState() => _WebseriesSliderScreenState();
 }
@@ -9099,7 +9121,7 @@ class _WebseriesSliderScreenState extends State<WebseriesSliderScreen> {
   List<WebSeriesModel> _displayList = [];
   List<String> _genres = [];
   List<String> _sliderImages = [];
-  
+
   int _selectedNetworkIndex = 0;
   int _selectedGenreIndex = 0;
   String _searchText = '';
@@ -9121,13 +9143,20 @@ class _WebseriesSliderScreenState extends State<WebseriesSliderScreen> {
     try {
       final response = await https.post(
         Uri.parse(SessionManager.baseUrl + 'getGenreByContentNetwork'),
-        headers: {'auth-key': SessionManager.authKey, 'Content-Type': 'application/json', 'domain': SessionManager.savedDomain},
+        headers: {
+          'auth-key': SessionManager.authKey,
+          'Content-Type': 'application/json',
+          'domain': SessionManager.savedDomain
+        },
         body: json.encode({"network_id": networkId, "data_for": "webseries"}),
       );
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         if (data['status'] == true && data['genres'] != null) {
-          List<String> g = (data['genres'] as List).map((e) => e.toString().trim()).toList()..sort();
+          List<String> g = (data['genres'] as List)
+              .map((e) => e.toString().trim())
+              .toList()
+            ..sort();
           if (!g.contains('All')) g.insert(0, 'All');
           return g;
         }
@@ -9137,19 +9166,34 @@ class _WebseriesSliderScreenState extends State<WebseriesSliderScreen> {
   }
 
   Future<void> _fetchDataForPage() async {
-    setState(() { _isLoading = true; _errorMessage = null; });
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
     try {
-      final headers = {'auth-key': SessionManager.authKey, 'Content-Type': 'application/json', 'domain': SessionManager.savedDomain};
+      final headers = {
+        'auth-key': SessionManager.authKey,
+        'Content-Type': 'application/json',
+        'domain': SessionManager.savedDomain
+      };
       final results = await Future.wait([
-        https.get(Uri.parse(SessionManager.baseUrl + 'getAllWebSeries'), headers: headers),
-        https.post(Uri.parse(SessionManager.baseUrl + 'getNetworks'), headers: headers, body: json.encode({"network_id": "", "data_for": "webseries"})),
+        https.get(Uri.parse(SessionManager.baseUrl + 'getAllWebSeries'),
+            headers: headers),
+        https.post(Uri.parse(SessionManager.baseUrl + 'getNetworks'),
+            headers: headers,
+            body: json.encode({"network_id": "", "data_for": "webseries"})),
       ]);
 
       if (_isDisposed || !mounted) return;
 
       if (results[0].statusCode == 200 && results[1].statusCode == 200) {
-        _allWebSeries = safeDecodeList(json.decode(results[0].body)).map((i) => WebSeriesModel.fromJson(i)).toList();
-        _apiNetworks = safeDecodeList(json.decode(results[1].body)).map((i) => ApiNetworkModel.fromJson(i)).toList()..sort((a, b) => a.networksOrder.compareTo(b.networksOrder));
+        _allWebSeries = safeDecodeList(json.decode(results[0].body))
+            .map((i) => WebSeriesModel.fromJson(i))
+            .toList();
+        _apiNetworks = safeDecodeList(json.decode(results[1].body))
+            .map((i) => ApiNetworkModel.fromJson(i))
+            .toList()
+          ..sort((a, b) => a.networksOrder.compareTo(b.networksOrder));
 
         if (_apiNetworks.isNotEmpty) {
           _selectedNetworkIndex = 0;
@@ -9171,30 +9215,53 @@ class _WebseriesSliderScreenState extends State<WebseriesSliderScreen> {
   void _updateDisplayData() {
     if (_apiNetworks.isEmpty || _isDisposed) return;
     final net = _apiNetworks[_selectedNetworkIndex];
-    
+
     // Extract Sliders
-    _sliderImages = net.sliders.where((s) => s.sliderFor == 'webseries').map((e) => e.banner).toList();
+    _sliderImages = net.sliders
+        .where((s) => s.sliderFor == 'webseries')
+        .map((e) => e.banner)
+        .toList();
     if (_sliderImages.isEmpty && net.logo != null) _sliderImages.add(net.logo!);
 
     // Filter Content
-    String selectedGenre = _genres.isNotEmpty ? _genres[_selectedGenreIndex] : 'All';
+    String selectedGenre =
+        _genres.isNotEmpty ? _genres[_selectedGenreIndex] : 'All';
     _displayList = _allWebSeries.where((series) {
       bool netMatch = series.networks.any((n) => n.name == net.name);
-      bool genMatch = selectedGenre == 'All' || (series.genres?.split(',').map((e) => e.trim()).contains(selectedGenre) ?? false);
-      return netMatch && genMatch && (_searchText.isEmpty || series.name.toLowerCase().contains(_searchText.toLowerCase()));
+      bool genMatch = selectedGenre == 'All' ||
+          (series.genres
+                  ?.split(',')
+                  .map((e) => e.trim())
+                  .contains(selectedGenre) ??
+              false);
+      return netMatch &&
+          genMatch &&
+          (_searchText.isEmpty ||
+              series.name.toLowerCase().contains(_searchText.toLowerCase()));
     }).toList();
   }
 
   void _onNetworkChange(int idx) async {
-    setState(() { _isLoading = true; _selectedNetworkIndex = idx; _searchText = ''; });
+    setState(() {
+      _isLoading = true;
+      _selectedNetworkIndex = idx;
+      _searchText = '';
+    });
     _genres = await _fetchGenresFromApi(_apiNetworks[idx].id);
     if (!_isDisposed && mounted) {
-      setState(() { _selectedGenreIndex = 0; _updateDisplayData(); _isLoading = false; });
+      setState(() {
+        _selectedGenreIndex = 0;
+        _updateDisplayData();
+        _isLoading = false;
+      });
     }
   }
 
   void _onSearch(String query) {
-    setState(() { _searchText = query; _updateDisplayData(); });
+    setState(() {
+      _searchText = query;
+      _updateDisplayData();
+    });
   }
 
   void _onTap(WebSeriesModel series, int index) async {
@@ -9204,12 +9271,29 @@ class _WebseriesSliderScreenState extends State<WebseriesSliderScreen> {
     // 🔥 HISTORY ISOLATED
     try {
       if (SessionManager.userId != null) {
-        await HistoryService.updateUserHistory(userId: SessionManager.userId!, contentType: 2, eventId: series.id, eventTitle: series.name, url: '', categoryId: 0);
+        await HistoryService.updateUserHistory(
+            userId: SessionManager.userId!,
+            contentType: 2,
+            eventId: series.id,
+            eventTitle: series.name,
+            url: '',
+            categoryId: 0);
       }
-    } catch (e) { debugPrint("History Error: $e"); }
+    } catch (e) {
+      debugPrint("History Error: $e");
+    }
 
     if (!_isDisposed && mounted) {
-      await Navigator.push(context, MaterialPageRoute(builder: (context) => WebSeriesDetailsPage(id: series.id, banner: series.banner ?? series.poster ?? '', poster: series.poster ?? series.banner ?? '', logo: _apiNetworks[_selectedNetworkIndex].logo ?? '', name: series.name, updatedAt: series.updatedAt))).catchError((_) {});
+      await Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => WebSeriesDetailsPage(
+                  id: series.id,
+                  banner: series.banner ?? series.poster ?? '',
+                  poster: series.poster ?? series.banner ?? '',
+                  logo: _apiNetworks[_selectedNetworkIndex].logo ?? '',
+                  name: series.name,
+                  updatedAt: series.updatedAt))).catchError((_) {});
       if (mounted) setState(() => _isVideoLoading = false);
     }
   }
@@ -9218,34 +9302,41 @@ class _WebseriesSliderScreenState extends State<WebseriesSliderScreen> {
   Widget build(BuildContext context) {
     return MasterSliderLayout<WebSeriesModel>(
       title: widget.title,
-      logoUrl: _apiNetworks.isNotEmpty ? (_apiNetworks[_selectedNetworkIndex].logo ?? '') : '',
+      logoUrl: _apiNetworks.isNotEmpty
+          ? (_apiNetworks[_selectedNetworkIndex].logo ?? '')
+          : '',
       isLoading: _isLoading,
       isVideoLoading: _isVideoLoading,
       errorMessage: _errorMessage,
       onRetry: _fetchDataForPage,
-      
       networkNames: _apiNetworks.map((e) => e.name).toList(),
       selectedNetworkIndex: _selectedNetworkIndex,
       onNetworkSelected: _onNetworkChange,
-      
       filterNames: _genres,
       selectedFilterIndex: _selectedGenreIndex,
       onFilterSelected: (idx) {
-        setState(() { _selectedGenreIndex = idx; _updateDisplayData(); });
+        setState(() {
+          _selectedGenreIndex = idx;
+          _updateDisplayData();
+        });
       },
       onSearch: _onSearch,
-      
       contentList: _displayList,
       onContentTap: _onTap,
       getTitle: (s) => s.name,
       getImageUrl: (s) => s.poster ?? s.banner ?? '',
-      
       sliderImages: _sliderImages,
-      focusColors: const [Color(0xFF3B82F6), Color(0xFF8B5CF6), Color(0xFFF59E0B), Color(0xFFEC4899), Color(0xFFEF4444)],
+      focusColors: const [
+        Color(0xFF3B82F6),
+        Color(0xFF8B5CF6),
+        Color(0xFFF59E0B),
+        Color(0xFFEC4899),
+        Color(0xFFEF4444)
+      ],
       placeholderIcon: Icons.movie_creation_outlined,
       emptyMessage: "No Web Series Available",
-      cardWidth: bannerwdt * 1.2,
-      cardHeight: bannerhgt * 1.2,
+      cardWidth: bannerwdt,
+      cardHeight: bannerhgt,
     );
   }
 }

@@ -2321,12 +2321,6 @@
 //   }
 // }
 
-
-
-
-
-
-
 // import 'dart:async';
 // import 'dart:convert';
 // import 'dart:ui';
@@ -2337,7 +2331,7 @@
 
 // // NOTE: Update these imports based on your project structure
 // import 'package:mobi_tv_entertainment/components/home_screen_pages/tv_show_pak/tv_show_pak_final_details_page.dart';
-// import 'package:mobi_tv_entertainment/main.dart'; 
+// import 'package:mobi_tv_entertainment/main.dart';
 // import 'package:mobi_tv_entertainment/components/services/history_service.dart';
 // import 'package:mobi_tv_entertainment/components/widgets/smart_style_image_card.dart';
 
@@ -2551,7 +2545,7 @@
 
 // class _TvShowPakSliderScreenState extends State<TvShowPakSliderScreen>
 //     with SingleTickerProviderStateMixin {
-  
+
 //   // 🔥 CRASH FIX: Disposal Check
 //   bool _isDisposed = false;
 
@@ -2620,7 +2614,7 @@
 //   String _searchText = '';
 //   Timer? _debounce;
 //   late FocusNode _searchButtonFocusNode;
-  
+
 //   // Timer for slider
 //   Timer? _sliderTimer;
 
@@ -2640,12 +2634,12 @@
 //     _searchButtonFocusNode = FocusNode();
 //     _searchButtonFocusNode.addListener(_setStateListener);
 //     _widgetFocusNode.addListener(_setStateListener);
-    
+
 //     // 🔥 CRASH FIX: Safe initialization call
 //     WidgetsBinding.instance.addPostFrameCallback((_) {
 //       if(!_isDisposed) _fetchDataForPage();
 //     });
-    
+
 //     _initializeAnimations();
 //   }
 
@@ -2655,14 +2649,14 @@
 //     _sliderTimer?.cancel();
 //     _debounce?.cancel();
 //     _navigationLockTimer?.cancel();
-    
+
 //     _sliderPageController.dispose();
 //     _fadeController.dispose();
-    
+
 //     // Dispose Focus Nodes & Listeners
 //     _widgetFocusNode.removeListener(_setStateListener);
 //     _widgetFocusNode.dispose();
-    
+
 //     _searchButtonFocusNode.removeListener(_setStateListener);
 //     _searchButtonFocusNode.dispose();
 
@@ -2674,7 +2668,7 @@
 //     _listScrollController.dispose();
 //     _networkScrollController.dispose();
 //     _channelFilterScrollController.dispose();
-    
+
 //     super.dispose();
 //   }
 
@@ -2743,7 +2737,7 @@
 //     try {
 //       final fetchedNetworks = await _fetchNetworks();
 //       if (_isDisposed || !mounted) return;
-      
+
 //       fetchedNetworks.sort((a, b) => a.networksOrder.compareTo(b.networksOrder));
 
 //       if (fetchedNetworks.isEmpty) {
@@ -2771,7 +2765,7 @@
 //       });
 
 //       final fetchedList = await _fetchTvShowsForNetwork(networkIdToFetch);
-      
+
 //       if (_isDisposed || !mounted) return;
 
 //       setState(() {
@@ -2936,7 +2930,7 @@
 //     try {
 //       if (_selectedChannelFilterId != null) {
 //         final List<TvShowItemModel> showItems = await _fetchTvShowsForChannel(_selectedChannelFilterId!);
-        
+
 //         if (_isDisposed) return;
 
 //         newMasterList = showItems.map((show) => TvShowModel(
@@ -3095,8 +3089,8 @@
 //           int next = (_sliderPageController.page?.round() ?? 0) + 1;
 //           if (next >= _currentTvShowSliders.length) next = 0;
 //           _sliderPageController.animateToPage(
-//             next, 
-//             duration: const Duration(milliseconds: 500), 
+//             next,
+//             duration: const Duration(milliseconds: 500),
 //             curve: Curves.easeInOut
 //           );
 //         }
@@ -4244,7 +4238,7 @@
 
 //   Widget _buildTvShowImage() {
 //     final imageUrl = tvShow.poster;
-    
+
 //     return imageUrl != null && imageUrl.isNotEmpty
 //         ? Image.network(
 //             imageUrl,
@@ -4259,7 +4253,7 @@
 //           )
 //         : _buildImagePlaceholder();
 //   }
-  
+
 //   Widget _buildImagePlaceholder() {
 //     return Container(
 //       decoration: const BoxDecoration(
@@ -4361,7 +4355,7 @@
 //               Image.network(
 //                 slider.banner,
 //                 fit: BoxFit.fill,
-//                 loadingBuilder: (context, child, progress) =>  
+//                 loadingBuilder: (context, child, progress) =>
 //                     progress == null ? child : Container(color: ProfessionalColors.surfaceDark),
 //                 errorBuilder: (context, error, stackTrace) {
 //                     return Container(color: ProfessionalColors.surfaceDark);
@@ -4390,48 +4384,116 @@
 //   }
 // }
 
-
-
-
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as https;
 import 'package:mobi_tv_entertainment/components/home_screen_pages/tv_show_pak/tv_show_pak_final_details_page.dart';
-import 'package:mobi_tv_entertainment/main.dart'; 
+import 'package:mobi_tv_entertainment/main.dart';
 import 'package:mobi_tv_entertainment/components/services/history_service.dart';
-import 'package:mobi_tv_entertainment/components/widgets/master_slider_layout.dart'; 
+import 'package:mobi_tv_entertainment/components/widgets/master_slider_layout.dart';
 
 class TvShowModel {
-  final int id; final String name; final String updatedAt; final String? poster; final String? banner; final String? genre; final int order; final String? language;
-  TvShowModel({required this.id, required this.name, required this.updatedAt, this.poster, this.banner, this.genre, required this.order, this.language});
-  factory TvShowModel.fromJson(Map<String, dynamic> json) => TvShowModel(id: json['id'] ?? 0, name: json['name'] ?? '', updatedAt: json['updated_at'] ?? '', poster: json['logo'], banner: json['logo'], genre: null, order: json['order'] ?? 9999, language: json['language']);
+  final int id;
+  final String name;
+  final String updatedAt;
+  final String? poster;
+  final String? banner;
+  final String? genre;
+  final int order;
+  final String? language;
+  TvShowModel(
+      {required this.id,
+      required this.name,
+      this.genre,
+      required this.updatedAt,
+      this.poster,
+      this.banner,
+      required this.order,
+      this.language});
+  String get genres => genre ?? "";
+  factory TvShowModel.fromJson(Map<String, dynamic> json) => TvShowModel(
+      id: json['id'] ?? 0,
+      name: json['name'] ?? '',
+      genre: json['genre'],
+      updatedAt: json['updated_at'] ?? '',
+      poster: json['logo'],
+      banner: json['logo'],
+      order: json['order'] ?? 9999,
+      language: json['language']);
 }
 
 class TvShowItemModel {
-  final int id; final String name; final String? thumbnail; final String? genre; final int tvChannelId; final int order;
-  TvShowItemModel({required this.id, required this.name, this.thumbnail, this.genre, required this.tvChannelId, required this.order});
-  factory TvShowItemModel.fromJson(Map<String, dynamic> json) => TvShowItemModel(id: json['id'] ?? 0, name: json['name'] ?? '', thumbnail: json['thumbnail'], genre: json['genre'], tvChannelId: json['tv_channel_id'] ?? 0, order: json['order'] ?? 9999);
+  final int id;
+  final String name;
+  final String? thumbnail;
+  final String? genre;
+  final int tvChannelId;
+  final int order;
+  TvShowItemModel(
+      {required this.id,
+      required this.name,
+      this.thumbnail,
+      this.genre,
+      required this.tvChannelId,
+      required this.order});
+  factory TvShowItemModel.fromJson(Map<String, dynamic> json) =>
+      TvShowItemModel(
+          id: json['id'] ?? 0,
+          name: json['name'] ?? '',
+          thumbnail: json['thumbnail'],
+          genre: json['genre'],
+          tvChannelId: json['tv_channel_id'] ?? 0,
+          order: json['order'] ?? 9999);
 }
 
 class SliderModel {
-  final int id; final String title; final String banner; final String sliderFor;
-  SliderModel({required this.id, required this.title, required this.banner, required this.sliderFor});
-  factory SliderModel.fromJson(Map<String, dynamic> json) => SliderModel(id: json['id'] ?? 0, title: json['title'] ?? '', banner: json['banner'] ?? '', sliderFor: json['slider_for'] ?? '');
+  final int id;
+  final String title;
+  final String banner;
+  final String sliderFor;
+  SliderModel(
+      {required this.id,
+      required this.title,
+      required this.banner,
+      required this.sliderFor});
+  factory SliderModel.fromJson(Map<String, dynamic> json) => SliderModel(
+      id: json['id'] ?? 0,
+      title: json['title'] ?? '',
+      banner: json['banner'] ?? '',
+      sliderFor: json['slider_for'] ?? '');
 }
 
 class ApiNetworkModel {
-  final int id; final String name; final String? logo; final int networksOrder; final List<SliderModel> sliders;
-  ApiNetworkModel({required this.id, required this.name, this.logo, required this.networksOrder, this.sliders = const []});
+  final int id;
+  final String name;
+  final String? logo;
+  final int networksOrder;
+  final List<SliderModel> sliders;
+  ApiNetworkModel(
+      {required this.id,
+      required this.name,
+      this.logo,
+      required this.networksOrder,
+      this.sliders = const []});
   factory ApiNetworkModel.fromJson(Map<String, dynamic> json) {
-    var sliders = (json['sliders'] as List? ?? []).map((item) => SliderModel.fromJson(item as Map<String, dynamic>)).toList();
-    return ApiNetworkModel(id: json['id'] ?? 0, name: json['name'] ?? '', logo: json['logo'], networksOrder: json['networks_order'] ?? 9999, sliders: sliders);
+    var sliders = (json['sliders'] as List? ?? [])
+        .map((item) => SliderModel.fromJson(item as Map<String, dynamic>))
+        .toList();
+    return ApiNetworkModel(
+        id: json['id'] ?? 0,
+        name: json['name'] ?? '',
+        logo: json['logo'],
+        networksOrder: json['networks_order'] ?? 9999,
+        sliders: sliders);
   }
 }
 
 class TvShowPakSliderScreen extends StatefulWidget {
   final String title;
   final int? initialNetworkId;
-  const TvShowPakSliderScreen({Key? key, this.title = 'All TV Shows', this.initialNetworkId}) : super(key: key);
+  const TvShowPakSliderScreen(
+      {Key? key, this.title = 'All TV Shows', this.initialNetworkId})
+      : super(key: key);
   @override
   _TvShowPakSliderScreenState createState() => _TvShowPakSliderScreenState();
 }
@@ -4445,9 +4507,9 @@ class _TvShowPakSliderScreenState extends State<TvShowPakSliderScreen> {
   List<ApiNetworkModel> _apiNetworks = [];
   List<TvShowModel> _channelsList = [];
   List<TvShowModel> _displayList = [];
-  List<TvShowModel> _masterShowsList = []; 
+  List<TvShowModel> _masterShowsList = [];
   Map<String, int?> _channelFilters = {};
-  
+
   int _selectedNetworkIndex = 0;
   int _selectedFilterIndex = 0;
   List<String> _sliderImages = [];
@@ -4466,72 +4528,139 @@ class _TvShowPakSliderScreenState extends State<TvShowPakSliderScreen> {
   }
 
   Future<void> _fetchInitialData() async {
-    setState(() { _isLoading = true; _errorMessage = null; });
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
     try {
-      final headers = {'auth-key': SessionManager.authKey, 'Content-Type': 'application/json', 'domain': SessionManager.savedDomain};
-      final netRes = await https.post(Uri.parse(SessionManager.baseUrl + 'getNetworks'), headers: headers, body: json.encode({"network_id": "", "data_for": "tvshowspak"}));
-      
+      final headers = {
+        'auth-key': SessionManager.authKey,
+        'Content-Type': 'application/json',
+        'domain': SessionManager.savedDomain
+      };
+      final netRes = await https.post(
+          Uri.parse(SessionManager.baseUrl + 'getNetworks'),
+          headers: headers,
+          body: json.encode({"network_id": "", "data_for": "tvshowspak"}));
+
       if (_isDisposed) return;
       if (netRes.statusCode == 200) {
-        _apiNetworks = safeDecodeList(json.decode(netRes.body)).map((i) => ApiNetworkModel.fromJson(i)).toList()..sort((a,b)=> a.networksOrder.compareTo(b.networksOrder));
-        
+        _apiNetworks = safeDecodeList(json.decode(netRes.body))
+            .map((i) => ApiNetworkModel.fromJson(i))
+            .toList()
+          ..sort((a, b) => a.networksOrder.compareTo(b.networksOrder));
+
         if (_apiNetworks.isNotEmpty) {
           if (widget.initialNetworkId != null) {
-            int idx = _apiNetworks.indexWhere((n) => n.id == widget.initialNetworkId);
+            int idx =
+                _apiNetworks.indexWhere((n) => n.id == widget.initialNetworkId);
             if (idx != -1) _selectedNetworkIndex = idx;
           }
-          await _fetchChannelsForNetwork(_apiNetworks[_selectedNetworkIndex].id);
-        } else { _errorMessage = "No Networks Found"; }
-      } else { throw Exception("API Error"); }
+          await _fetchChannelsForNetwork(
+              _apiNetworks[_selectedNetworkIndex].id);
+        } else {
+          _errorMessage = "No Networks Found";
+        }
+      } else {
+        throw Exception("API Error");
+      }
     } catch (e) {
-      if (!_isDisposed && mounted) setState(() { _errorMessage = "Connection Failed"; _isLoading = false; });
+      if (!_isDisposed && mounted)
+        setState(() {
+          _errorMessage = "Connection Failed";
+          _isLoading = false;
+        });
     }
   }
 
   Future<void> _fetchChannelsForNetwork(int netId) async {
     try {
-      final res = await https.get(Uri.parse(SessionManager.baseUrl + 'getTvChannelsPak?content_network=$netId'), headers: {'auth-key': SessionManager.authKey, 'domain': SessionManager.savedDomain});
+      final res = await https.get(
+          Uri.parse(SessionManager.baseUrl +
+              'getTvChannelsPak?content_network=$netId'),
+          headers: {
+            'auth-key': SessionManager.authKey,
+            'domain': SessionManager.savedDomain
+          });
       if (_isDisposed) return;
-      
+
       if (res.statusCode == 200) {
-        _channelsList = safeDecodeList(json.decode(res.body)).map((i) => TvShowModel.fromJson(i)).toList()..sort((a,b)=> a.order.compareTo(b.order));
-        
+        _channelsList = safeDecodeList(json.decode(res.body))
+            .map((i) => TvShowModel.fromJson(i))
+            .toList()
+          ..sort((a, b) => a.order.compareTo(b.order));
+
         _channelFilters.clear();
-        for (var c in _channelsList) { if (c.name.isNotEmpty) _channelFilters[c.name] = c.id; }
-        
+        for (var c in _channelsList) {
+          if (c.name.isNotEmpty) _channelFilters[c.name] = c.id;
+        }
+
         final net = _apiNetworks[_selectedNetworkIndex];
-        _sliderImages = net.sliders.where((s) => s.sliderFor == 'tvshowspak').map((e) => e.banner).toList();
-        if (_sliderImages.isEmpty && net.logo != null) _sliderImages.add(net.logo!);
+        _sliderImages = net.sliders
+            .where((s) => s.sliderFor == 'tvshowspak')
+            .map((e) => e.banner)
+            .toList();
+        if (_sliderImages.isEmpty && net.logo != null)
+          _sliderImages.add(net.logo!);
 
         if (_channelFilters.isNotEmpty) {
           _selectedFilterIndex = 0;
           await _fetchShowsForChannel(_channelFilters.values.elementAt(0)!);
         } else {
-          setState(() { _displayList = []; _isLoading = false; });
+          setState(() {
+            _displayList = [];
+            _isLoading = false;
+          });
         }
       }
     } catch (e) {
-      if (!_isDisposed && mounted) setState(() { _errorMessage = "Failed to load Channels"; _isLoading = false; });
+      if (!_isDisposed && mounted)
+        setState(() {
+          _errorMessage = "Failed to load Channels";
+          _isLoading = false;
+        });
     }
   }
 
   Future<void> _fetchShowsForChannel(int channelId) async {
     setState(() => _isLoading = true);
     try {
-      final res = await https.get(Uri.parse(SessionManager.baseUrl + 'getTvShowsPak/$channelId'), headers: {'auth-key': SessionManager.authKey, 'domain': SessionManager.savedDomain});
+      final res = await https.get(
+          Uri.parse(SessionManager.baseUrl + 'getTvShowsPak/$channelId'),
+          headers: {
+            'auth-key': SessionManager.authKey,
+            'domain': SessionManager.savedDomain
+          });
       if (_isDisposed) return;
       if (res.statusCode == 200) {
-        final showItems = safeDecodeList(json.decode(res.body)).map((i) => TvShowItemModel.fromJson(i)).toList()..sort((a,b)=> a.order.compareTo(b.order));
-        _masterShowsList = showItems.map((s) => TvShowModel(id: s.id, name: s.name, poster: s.thumbnail, banner: s.thumbnail, updatedAt: '', order: s.order)).toList();
+        final showItems = safeDecodeList(json.decode(res.body))
+            .map((i) => TvShowItemModel.fromJson(i))
+            .toList()
+          ..sort((a, b) => a.order.compareTo(b.order));
+        _masterShowsList = showItems
+            .map((s) => TvShowModel(
+                id: s.id,
+                name: s.name,
+                poster: s.thumbnail,
+                banner: s.thumbnail,
+                updatedAt: '',
+                order: s.order))
+            .toList();
         _displayList = List.from(_masterShowsList);
       }
-    } catch (e) { debugPrint("Error: $e"); }
+    } catch (e) {
+      debugPrint("Error: $e");
+    }
     if (mounted && !_isDisposed) setState(() => _isLoading = false);
   }
 
   void _onNetworkChange(int idx) {
     if (_isDisposed) return;
-    setState(() { _selectedNetworkIndex = idx; _searchText = ''; _isLoading = true; });
+    setState(() {
+      _selectedNetworkIndex = idx;
+      _searchText = '';
+      _isLoading = true;
+    });
     _fetchChannelsForNetwork(_apiNetworks[idx].id);
   }
 
@@ -4541,7 +4670,9 @@ class _TvShowPakSliderScreenState extends State<TvShowPakSliderScreen> {
       if (query.isEmpty) {
         _displayList = List.from(_masterShowsList);
       } else {
-        _displayList = _masterShowsList.where((s) => s.name.toLowerCase().contains(query.toLowerCase())).toList();
+        _displayList = _masterShowsList
+            .where((s) => s.name.toLowerCase().contains(query.toLowerCase()))
+            .toList();
       }
     });
   }
@@ -4553,12 +4684,26 @@ class _TvShowPakSliderScreenState extends State<TvShowPakSliderScreen> {
     // 🔥 HISTORY ISOLATED
     try {
       if (SessionManager.userId != null) {
-        await HistoryService.updateUserHistory(userId: SessionManager.userId!, contentType: 4, eventId: item.id, eventTitle: item.name, url: '', categoryId: 0);
+        await HistoryService.updateUserHistory(
+            userId: SessionManager.userId!,
+            contentType: 4,
+            eventId: item.id,
+            eventTitle: item.name,
+            url: '',
+            categoryId: 0);
       }
     } catch (_) {}
 
     if (!_isDisposed && mounted) {
-      await Navigator.push(context, MaterialPageRoute(builder: (context) => TvShowPakFinalDetailsPage(id: item.id, banner: item.banner ?? item.poster ?? '', poster: item.poster ?? item.banner ?? '', name: item.name, updatedAt: item.updatedAt))).catchError((_) {});
+      await Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => TvShowPakFinalDetailsPage(
+                  id: item.id,
+                  banner: item.banner ?? item.poster ?? '',
+                  poster: item.poster ?? item.banner ?? '',
+                  name: item.name,
+                  updatedAt: item.updatedAt))).catchError((_) {});
       if (mounted) setState(() => _isVideoLoading = false);
     }
   }
@@ -4567,35 +4712,42 @@ class _TvShowPakSliderScreenState extends State<TvShowPakSliderScreen> {
   Widget build(BuildContext context) {
     return MasterSliderLayout<TvShowModel>(
       title: widget.title,
-      logoUrl: _apiNetworks.isNotEmpty ? (_apiNetworks[_selectedNetworkIndex].logo ?? '') : '',
+      logoUrl: _apiNetworks.isNotEmpty
+          ? (_apiNetworks[_selectedNetworkIndex].logo ?? '')
+          : '',
       isLoading: _isLoading,
       isVideoLoading: _isVideoLoading,
       errorMessage: _errorMessage,
       onRetry: _fetchInitialData,
-      
       networkNames: _apiNetworks.map((e) => e.name).toList(),
       selectedNetworkIndex: _selectedNetworkIndex,
       onNetworkSelected: _onNetworkChange,
-      
       filterNames: _channelFilters.keys.toList(),
       selectedFilterIndex: _selectedFilterIndex,
       onFilterSelected: (idx) {
-        setState(() { _selectedFilterIndex = idx; _searchText = ''; });
+        setState(() {
+          _selectedFilterIndex = idx;
+          _searchText = '';
+        });
         _fetchShowsForChannel(_channelFilters.values.elementAt(idx)!);
       },
       onSearch: _onSearch,
-      
       contentList: _displayList,
       onContentTap: _onTap,
       getTitle: (s) => s.name,
       getImageUrl: (s) => s.poster ?? s.banner ?? '',
-      
       sliderImages: _sliderImages,
-      focusColors: const [Color(0xFF3B82F6), Color(0xFF8B5CF6), Color(0xFFF59E0B), Color(0xFFEC4899), Color(0xFFEF4444)],
+      focusColors: const [
+        Color(0xFF3B82F6),
+        Color(0xFF8B5CF6),
+        Color(0xFFF59E0B),
+        Color(0xFFEC4899),
+        Color(0xFFEF4444)
+      ],
       placeholderIcon: Icons.tv_rounded,
       emptyMessage: "No Shows Available",
-      cardWidth: bannerwdt * 1.2,
-      cardHeight: bannerhgt * 1.2,
+      cardWidth: bannerwdt,
+      cardHeight: bannerhgt,
     );
   }
 }

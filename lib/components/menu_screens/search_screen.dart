@@ -1115,8 +1115,7 @@ import 'package:flutter/services.dart';
 import 'package:http/http.dart' as https; // Renamed to 'https'
 import 'package:mobi_tv_entertainment/components/home_screen_pages/webseries_screen/webseries_details_page.dart';
 import 'package:mobi_tv_entertainment/components/provider/device_info_provider.dart';
-// InternalFocusProvider import (jaisa example mein tha)
-import 'package:mobi_tv_entertainment/components/provider/internal_focus_provider.dart';
+// FocusProvider import (jaisa example mein tha)
 import 'package:mobi_tv_entertainment/components/video_widget/custom_youtube_player.dart';
 import 'package:mobi_tv_entertainment/components/video_widget/secure_url_service.dart';
 import 'package:mobi_tv_entertainment/components/video_widget/video_screen.dart';
@@ -1125,7 +1124,6 @@ import 'package:mobi_tv_entertainment/components/widgets/models/news_item_model.
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:math' as math;
-
 import '../home_screen_pages/religious_channel/religious_channel_details_page.dart';
 import '../home_screen_pages/sports_category/sports_final_details_page.dart';
 import '../home_screen_pages/tv_show/tv_show_final_details_page.dart';
@@ -1320,7 +1318,7 @@ class _SearchScreenState extends State<SearchScreen>
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // Set initial focus on the Search Trigger button
       if (mounted) {
-        Provider.of<InternalFocusProvider>(context, listen: false)
+        Provider.of<FocusProvider>(context, listen: false)
             .updateName("Search");
         _searchTriggerFocusNode.requestFocus();
       }
@@ -1480,7 +1478,7 @@ class _SearchScreenState extends State<SearchScreen>
   //   if (key == LogicalKeyboardKey.arrowUp) {
   //     _searchTriggerFocusNode.requestFocus();
   //     setState(() => _focusedResultIndex = -1);
-  //     Provider.of<InternalFocusProvider>(context, listen: false)
+  //     Provider.of<FocusProvider>(context, listen: false)
   //         .updateName("Search");
   //     _isNavigationLocked = false;
   //     _navigationLockTimer?.cancel();
@@ -1549,7 +1547,7 @@ class _SearchScreenState extends State<SearchScreen>
         // Keyboard band hai, purana logic (focus search bar par le jaayein)
         _searchTriggerFocusNode.requestFocus();
         setState(() => _focusedResultIndex = -1);
-        Provider.of<InternalFocusProvider>(context, listen: false)
+        Provider.of<FocusProvider>(context, listen: false)
             .updateName("Search");
       }
       // === BADLAAV END ===
@@ -2145,7 +2143,7 @@ class _SearchScreenState extends State<SearchScreen>
 
   Widget _buildBeautifulAppBar() {
     bool searchBarHasFocus = _searchTriggerFocusNode.hasFocus;
-    final focusedName = context.watch<InternalFocusProvider>().focusedItemName;
+    final focusedName = context.watch<FocusProvider>().focusedItemName;
 
     return ClipRRect(
       child: BackdropFilter(
@@ -2201,7 +2199,7 @@ class _SearchScreenState extends State<SearchScreen>
                   focusNode: _searchTriggerFocusNode,
                   onFocusChange: (hasFocus) {
                     if (hasFocus) {
-                      Provider.of<InternalFocusProvider>(context, listen: false)
+                      Provider.of<FocusProvider>(context, listen: false)
                           .updateName("Search");
                     }
                     setState(() {}); // Rebuild to show focus highlight
@@ -2318,7 +2316,7 @@ class _SearchScreenState extends State<SearchScreen>
               onFocusChange: (hasFocus) {
                 if (hasFocus) {
                   setState(() => _focusedResultIndex = index);
-                  Provider.of<InternalFocusProvider>(context, listen: false)
+                  Provider.of<FocusProvider>(context, listen: false)
                       .updateName(item.name);
                   _updateAndScrollToFocus(_resultFocusNodes, index,
                       _resultScrollController, (screenwdt / 7) + 12);

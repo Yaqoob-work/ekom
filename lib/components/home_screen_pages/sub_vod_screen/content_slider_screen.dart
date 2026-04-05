@@ -3048,6 +3048,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as https;
+import 'package:mobi_tv_entertainment/components/home_screen_pages/tv_show/tv_show_final_details_page.dart';
+import 'package:mobi_tv_entertainment/components/home_screen_pages/tv_show/tv_show_slider_screen.dart';
 import 'package:provider/provider.dart';
 
 // Your imports - keep as-is
@@ -3079,12 +3081,19 @@ class Movie {
   });
 
   factory Movie.fromJson(Map<String, dynamic> json) => Movie(
+        // id: json['id'] ?? 0,
+        // name: json['name'] ?? 'No Name',
+        // banner: json['banner'],
+        // genres: json['genres'] ?? 'Uncategorized',
+        // description: json['description'],
+        // contentType: json['content_type'],
         id: json['id'] ?? 0,
-        name: json['name'] ?? 'No Name',
-        banner: json['banner'],
-        genres: json['genres'] ?? 'Uncategorized',
-        description: json['description'],
-        contentType: json['content_type'],
+      name: json['name'] ?? 'No Name',
+      banner: json['banner'] ?? json['thumbnail'], // Thumbnail ko banner ki tarah use karein agar banner null ho
+      // Dono singular aur plural fields ko check karein
+      genres: json['genres'] ?? json['genre'] ?? 'Uncategorized', 
+      description: json['description'],
+      contentType: json['content_type'],
         sourceType: json['source_type'],
         youtubeTrailer: json['youtube_trailer'],
         updatedAt: json['updated_at'],
@@ -3162,7 +3171,7 @@ class ContentSliderScreenState extends State<ContentSliderScreen> {
         https.post(
           Uri.parse(SessionManager.baseUrl + 'getAllContentsOfNetworkNew'), 
           headers: headers, 
-          body: json.encode({"network_id": widget.tvChannelId})
+          body: json.encode({"network_id": widget.tvChannelId, })
         ),
       ]);
 
@@ -3268,7 +3277,27 @@ class ContentSliderScreenState extends State<ContentSliderScreen> {
           debugPrint('Navigation error: $e');
           return null;
         });
-      } else if (rawUrl.isNotEmpty) {
+      }else
+      if (m.contentType == 4) {
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (c) => TvShowFinalDetailsPage(
+              id: m.id,
+              banner: m.banner ?? '',
+              poster: '',
+              // logo: widget.logoUrl,
+              name: m.name,
+              // updatedAt: m.updatedAt ?? '',
+            ),
+          ),
+        ).catchError((e) {
+          debugPrint('Navigation error: $e');
+          return null;
+        });
+      }
+      
+       else if (rawUrl.isNotEmpty) {
         final deviceInfo = context.read<DeviceInfoProvider>();
         if (m.sourceType == 'YoutubeLive' || (m.youtubeTrailer != null && m.youtubeTrailer!.isNotEmpty)) {
           if (deviceInfo.deviceName == 'AFTSS : Amazon Fire Stick HD') {
@@ -3349,7 +3378,7 @@ class ContentSliderScreenState extends State<ContentSliderScreen> {
       selectedFilterIndex: _selectedGenreIndex,
       onFilterSelected: _onGenreChange,
       onSearch: _onSearch,
-      
+      shouldShuffle: true,
       contentList: _displayList,
       onContentTap: _playContent,
       getTitle: (m) => m.name,
@@ -3367,8 +3396,8 @@ class ContentSliderScreenState extends State<ContentSliderScreen> {
       ],
       placeholderIcon: Icons.movie_creation_outlined,
       emptyMessage: "No Content Available",
-      cardWidth: bannerwdt * 1.1,
-      cardHeight: bannerhgt * 1.0,
+      cardWidth: bannerwdt ,
+      cardHeight: bannerhgt,
     );
   }
 }

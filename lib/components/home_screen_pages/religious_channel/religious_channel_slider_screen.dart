@@ -11,7 +11,7 @@
 // // NOTE: Update imports according to your project structure
 // // import 'package:mobi_tv_entertainment/components/home_screen_pages/religious/religious_final_details_page.dart';
 // import 'package:mobi_tv_entertainment/components/home_screen_pages/religious_channel/religious_channel_details_page.dart';
-// import 'package:mobi_tv_entertainment/main.dart'; 
+// import 'package:mobi_tv_entertainment/main.dart';
 // import 'package:mobi_tv_entertainment/components/services/history_service.dart';
 
 // //==============================================================================
@@ -40,13 +40,13 @@
 // }
 
 // // Model: ReligiousChannelModel
-// class ReligiousChannelModel { 
+// class ReligiousChannelModel {
 //   final int id;
-//   final String name; 
+//   final String name;
 //   final String updatedAt;
-//   final String? poster; 
-//   final String? banner; 
-//   final String? genre; 
+//   final String? poster;
+//   final String? banner;
+//   final String? genre;
 //   final int order;
 //   final String? language;
 
@@ -66,8 +66,8 @@
 //       id: json['id'] ?? 0,
 //       name: json['name'] ?? '',
 //       updatedAt: json['updated_at'] ?? '',
-//       poster: json['logo'], 
-//       banner: json['logo'], 
+//       poster: json['logo'],
+//       banner: json['logo'],
 //       genre: null,
 //       order: json['order'] ?? 9999,
 //       language: json['language'],
@@ -204,7 +204,7 @@
 //   final int? initialNetworkId;
 
 //   const ReligiousChannelSliderScreen({
-//     Key? key, 
+//     Key? key,
 //     this.title = 'Religious Channels',
 //     this.initialNetworkId,
 //     })
@@ -218,21 +218,21 @@
 // class _ReligiousChannelSliderScreenState
 //     extends State<ReligiousChannelSliderScreen>
 //     with SingleTickerProviderStateMixin {
-  
-//   List<ReligiousChannelModel> _religiousChannelList = []; 
-//   bool _isLoading = true; 
-//   bool _isListLoading = false; 
+
+//   List<ReligiousChannelModel> _religiousChannelList = [];
+//   bool _isLoading = true;
+//   bool _isListLoading = false;
 //   String? _errorMessage;
 
 //   // Focus and Scroll Controllers
 //   List<FocusNode> _itemFocusNodes = [];
 //   List<FocusNode> _networkFocusNodes = [];
-//   List<FocusNode> _channelFilterFocusNodes = [];  
+//   List<FocusNode> _channelFilterFocusNodes = [];
 //   List<FocusNode> _keyboardFocusNodes = [];
 //   final FocusNode _widgetFocusNode = FocusNode();
 //   final ScrollController _listScrollController = ScrollController();
 //   final ScrollController _networkScrollController = ScrollController();
-//   final ScrollController _channelFilterScrollController = ScrollController();  
+//   final ScrollController _channelFilterScrollController = ScrollController();
 
 //   late PageController _sliderPageController;
 
@@ -249,23 +249,23 @@
 
 //   // UI and Filter State
 //   int _focusedNetworkIndex = 0;
-//   int _focusedChannelFilterIndex = 0;  
+//   int _focusedChannelFilterIndex = 0;
 //   int _focusedItemIndex = -1;
 //   String _selectedNetworkName = '';
 //   String? _selectedNetworkLogo;
-  
-//   Map<String, int?> _channelFilters = {}; 
-//   String _selectedChannelFilterName = ''; 
-//   int? _selectedChannelFilterId; 
-//   bool _isDisplayingShows = false;  
 
-//   List<ReligiousChannelModel> _currentViewMasterList = []; 
-//   List<ReligiousChannelModel> _displayList = []; 
+//   Map<String, int?> _channelFilters = {};
+//   String _selectedChannelFilterName = '';
+//   int? _selectedChannelFilterId;
+//   bool _isDisplayingShows = false;
+
+//   List<ReligiousChannelModel> _currentViewMasterList = [];
+//   List<ReligiousChannelModel> _displayList = [];
 //   List<ApiNetworkModel> _apiNetworks = [];
 //   List<String> _uniqueNetworks = [];
-  
+
 //   // Animation and Loading State
-//   bool _isVideoLoading = false; 
+//   bool _isVideoLoading = false;
 //   late AnimationController _fadeController;
 //   late Animation<double> _fadeAnimation;
 //   String? _currentBackgroundUrl;
@@ -297,7 +297,7 @@
 //     super.initState();
 //     _sliderPageController = PageController();
 //     _searchButtonFocusNode = FocusNode();
-//     _searchButtonFocusNode.addListener(_setStateListener); 
+//     _searchButtonFocusNode.addListener(_setStateListener);
 //     _widgetFocusNode.addListener(_setStateListener);
 //     _fetchDataForPage();
 //     _initializeAnimations();
@@ -311,14 +311,14 @@
 //     _widgetFocusNode.dispose();
 //     _listScrollController.dispose();
 //     _networkScrollController.dispose();
-//     _channelFilterScrollController.dispose();  
+//     _channelFilterScrollController.dispose();
 //     _searchButtonFocusNode.removeListener(_setStateListener);
 //     _searchButtonFocusNode.dispose();
 //     _debounce?.cancel();
 //     _navigationLockTimer?.cancel();
 //     _disposeFocusNodes(_itemFocusNodes);
 //     _disposeFocusNodes(_networkFocusNodes);
-//     _disposeFocusNodes(_channelFilterFocusNodes);  
+//     _disposeFocusNodes(_channelFilterFocusNodes);
 //     _disposeFocusNodes(_keyboardFocusNodes);
 //     super.dispose();
 //   }
@@ -334,14 +334,14 @@
 //         child: Stack(
 //           children: [
 //             _buildBackgroundOrSlider(),
-//             _isLoading 
+//             _isLoading
 //                 ? const Center(
 //                     child: ProfessionalReligiousLoadingIndicator(
-//                         message: 'Loading Religious Channels...'))  
+//                         message: 'Loading Religious Channels...'))
 //                 : _errorMessage != null
-//                     ? _buildErrorWidget() 
-//                     : _buildPageContent(), 
-//             if (_isVideoLoading && _errorMessage == null) 
+//                     ? _buildErrorWidget()
+//                     : _buildPageContent(),
+//             if (_isVideoLoading && _errorMessage == null)
 //               Positioned.fill(
 //                 child: Container(
 //                   color: Colors.black.withOpacity(0.8),
@@ -383,7 +383,7 @@
 //       if (widget.initialNetworkId != null) {
 //         int foundIndex = fetchedNetworks.indexWhere((n) => n.id == widget.initialNetworkId);
 //         if (foundIndex != -1) {
-//           initialIndex = foundIndex; 
+//           initialIndex = foundIndex;
 //         }
 //       }
 
@@ -393,24 +393,24 @@
 //       setState(() {
 //         _apiNetworks = fetchedNetworks;
 //         _uniqueNetworks = _apiNetworks.map((n) => n.name).toList();
-//         _focusedNetworkIndex = initialIndex; 
+//         _focusedNetworkIndex = initialIndex;
 //         _selectedNetworkName = initialNetwork.name;
 //       });
 
 //       // 2. Fetch Religious Channels for the *selected* network
-//       final fetchedList = await _fetchReligiousChannelsForNetwork(networkIdToFetch); 
-      
+//       final fetchedList = await _fetchReligiousChannelsForNetwork(networkIdToFetch);
+
 //       if (!mounted) return;
 
 //       setState(() {
-//         _religiousChannelList = fetchedList;  
+//         _religiousChannelList = fetchedList;
 //         if (_religiousChannelList.isEmpty) _errorMessage = "No Religious Channels Found.";
 //       });
 
 //       if (_errorMessage == null) {
-//         _processInitialData();  
-//         _updateChannelFilters(); 
-//         await _fetchDataForView(); 
+//         _processInitialData();
+//         _updateChannelFilters();
+//         await _fetchDataForView();
 //         _initializeFocusNodes();
 //         _startAnimations();
 
@@ -421,7 +421,7 @@
 //               _networkFocusNodes,
 //               _focusedNetworkIndex,
 //               _networkScrollController,
-//               160 
+//               160
 //             );
 //           }
 //         });
@@ -459,14 +459,14 @@
 //         final List<dynamic> jsonData = json.decode(response.body);
 //         return jsonData
 //             .map(
-//                 (item) => ReligiousChannelModel.fromJson(item as Map<String, dynamic>))  
+//                 (item) => ReligiousChannelModel.fromJson(item as Map<String, dynamic>))
 //             .toList()
-//               ..sort((a, b) => a.order.compareTo(b.order));  
+//               ..sort((a, b) => a.order.compareTo(b.order));
 //       } else {
 //         throw Exception('API Error: ${response.statusCode}');
 //       }
 //     } catch (e) {
-//       debugPrint('Failed to load religious channels for network $networkId: $e');  
+//       debugPrint('Failed to load religious channels for network $networkId: $e');
 //       throw Exception('Failed to load religious channels for network $networkId: $e');
 //     }
 //   }
@@ -491,7 +491,7 @@
 //         return jsonData
 //             .map((item) => ReligiousShowItemModel.fromJson(item as Map<String, dynamic>))
 //             .toList()
-//               ..sort((a, b) => a.order.compareTo(b.order));  
+//               ..sort((a, b) => a.order.compareTo(b.order));
 //       } else {
 //         throw Exception('API Error: ${response.statusCode}');
 //       }
@@ -513,7 +513,7 @@
 //               'Accept': 'application/json',
 //               'domain': SessionManager.savedDomain,
 //             },
-//             body: json.encode({"network_id": "", "data_for": "religiouschannels"}),  
+//             body: json.encode({"network_id": "", "data_for": "religiouschannels"}),
 //           )
 //           .timeout(const Duration(seconds: 30));
 
@@ -535,9 +535,8 @@
 
 //   void _processInitialData() {
 //     if (_apiNetworks.isEmpty) return;
-//     _updateSelectedNetworkData(); 
+//     _updateSelectedNetworkData();
 //   }
-
 
 //   //=================================================
 //   // SECTION 2.2: KEYBOARD AND FOCUS NAVIGATION
@@ -549,11 +548,11 @@
 //     if (_listScrollController.hasClients) {
 //       _listScrollController.animateTo(
 //         0.0,
-//         duration: AnimationTiming.fast, 
+//         duration: AnimationTiming.fast,
 //         curve: Curves.easeInOut,
 //       );
 //     }
-    
+
 //     Future.delayed(const Duration(milliseconds: 250), () {
 //       if (mounted && _itemFocusNodes.isNotEmpty) {
 //         setState(() => _focusedItemIndex = 0);
@@ -578,7 +577,7 @@
 //         _searchButtonFocusNode.requestFocus();
 //         return KeyEventResult.handled;
 //       }
-//       if (listHasFocus || channelFilterHasFocus || searchHasFocus) {  
+//       if (listHasFocus || channelFilterHasFocus || searchHasFocus) {
 //           if (_networkFocusNodes.isNotEmpty) { _networkFocusNodes[_focusedNetworkIndex].requestFocus(); }
 //         return KeyEventResult.handled;
 //       }
@@ -596,10 +595,10 @@
 //         return KeyEventResult.handled;
 //       }
 //       if (key == LogicalKeyboardKey.arrowLeft) {
-//         return KeyEventResult.handled; 
+//         return KeyEventResult.handled;
 //       }
-//       if (key == LogicalKeyboardKey.arrowRight && _channelFilterFocusNodes.isNotEmpty) {  
-//         _channelFilterFocusNodes[0].requestFocus();  
+//       if (key == LogicalKeyboardKey.arrowRight && _channelFilterFocusNodes.isNotEmpty) {
+//         _channelFilterFocusNodes[0].requestFocus();
 //         return KeyEventResult.handled;
 //       }
 //       if (key == LogicalKeyboardKey.arrowUp && _networkFocusNodes.isNotEmpty) {
@@ -615,8 +614,8 @@
 
 //     if ([ LogicalKeyboardKey.arrowUp, LogicalKeyboardKey.arrowDown, LogicalKeyboardKey.arrowLeft, LogicalKeyboardKey.arrowRight, LogicalKeyboardKey.select, LogicalKeyboardKey.enter ].contains(key)) {
 //       if (networkHasFocus) { _navigateNetworks(key); }
-//       else if (channelFilterHasFocus) { _navigateChannelFilters(key); }  
-//       else if (listHasFocus) { _navigateList(key); } 
+//       else if (channelFilterHasFocus) { _navigateChannelFilters(key); }
+//       else if (listHasFocus) { _navigateList(key); }
 //       return KeyEventResult.handled;
 //     }
 
@@ -640,7 +639,7 @@
 //     });
 
 //     int newIndex = _focusedItemIndex;
-    
+
 //     if (key == LogicalKeyboardKey.arrowUp) {
 //       setState(() => _lastNavigationDirection = 'vertical');
 //       if (_channelFilterFocusNodes.isNotEmpty) {
@@ -664,7 +663,7 @@
 //         setState(() => _lastNavigationDirection = 'horizontal');
 //       }
 //     } else if (key == LogicalKeyboardKey.arrowRight) {
-//       final currentList = _displayList; 
+//       final currentList = _displayList;
 //       if (newIndex + 1 < currentList.length) {
 //         newIndex++;
 //         setState(() => _lastNavigationDirection = 'horizontal');
@@ -674,8 +673,8 @@
 //       _isNavigationLocked = false;
 //       _navigationLockTimer?.cancel();
 
-//       final currentList = _displayList; 
-//       _navigateToReligiousDetails(currentList[_focusedItemIndex], _focusedItemIndex); 
+//       final currentList = _displayList;
+//       _navigateToReligiousDetails(currentList[_focusedItemIndex], _focusedItemIndex);
 //       return;
 //     }
 
@@ -706,7 +705,7 @@
 //       return;
 //     } else if (key == LogicalKeyboardKey.select ||
 //         key == LogicalKeyboardKey.enter) {
-//       _updateSelectedNetwork(); 
+//       _updateSelectedNetwork();
 //       return;
 //     }
 //     if (newIndex != _focusedNetworkIndex) {
@@ -719,7 +718,7 @@
 
 //   void _navigateChannelFilters(LogicalKeyboardKey key) {
 //     final filterNames = _channelFilters.keys.toList();
-    
+
 //     if (filterNames.isEmpty) {
 //         if (key == LogicalKeyboardKey.arrowLeft) {
 //             _searchButtonFocusNode.requestFocus();
@@ -730,9 +729,9 @@
 //             setState(() => _lastNavigationDirection = 'vertical');
 //             _focusFirstListItemWithScroll();
 //         }
-//         return; 
+//         return;
 //     }
-    
+
 //     int newIndex = _focusedChannelFilterIndex;
 //     if (key == LogicalKeyboardKey.arrowLeft) {
 //       if (newIndex > 0) {
@@ -761,14 +760,14 @@
 //       return;
 //     } else if (key == LogicalKeyboardKey.select ||
 //         key == LogicalKeyboardKey.enter) {
-//       _updateSelectedChannelFilter(); 
+//       _updateSelectedChannelFilter();
 //       return;
 //     }
 //     if (newIndex != _focusedChannelFilterIndex) {
 //       setState(() => _focusedChannelFilterIndex = newIndex);
 //       _channelFilterFocusNodes[newIndex].requestFocus();
 //       _updateAndScrollToFocus(
-//           _channelFilterFocusNodes, newIndex, _channelFilterScrollController, 160); 
+//           _channelFilterFocusNodes, newIndex, _channelFilterScrollController, 160);
 //     }
 //   }
 
@@ -814,16 +813,16 @@
 //   //=================================================
 
 //   Future<void> _fetchDataForView() async {
-//     _debounce?.cancel();  
+//     _debounce?.cancel();
 
 //     setState(() {
 //       _isListLoading = true;
-//       _displayList.clear();  
-//       _currentViewMasterList.clear();  
-//       _rebuildItemFocusNodes();  
-//       _errorMessage = null;  
-      
-//       _searchText = '';  
+//       _displayList.clear();
+//       _currentViewMasterList.clear();
+//       _rebuildItemFocusNodes();
+//       _errorMessage = null;
+
+//       _searchText = '';
 //       _isSearching = false;
 //     });
 
@@ -832,21 +831,21 @@
 //     try {
 //       if (_selectedChannelFilterId != null) {
 //         final List<ReligiousShowItemModel> showItems =
-//             await _fetchReligiousShowsForChannel(_selectedChannelFilterId!); 
-        
+//             await _fetchReligiousShowsForChannel(_selectedChannelFilterId!);
+
 //         newMasterList = showItems.map((show) => ReligiousChannelModel(
 //               id: show.id,
 //               name: show.name,
-//               poster: show.thumbnail,  
-//               banner: show.thumbnail,  
-//               updatedAt: '',  
-//               order: show.order,  
+//               poster: show.thumbnail,
+//               banner: show.thumbnail,
+//               updatedAt: '',
+//               order: show.order,
 //               genre: show.genre,
 //               language: null,
 //             )).toList();
-//         _isDisplayingShows = true;  
+//         _isDisplayingShows = true;
 //       } else {
-//         newMasterList = [];  
+//         newMasterList = [];
 //         _isDisplayingShows = false;
 //       }
 //     } catch (e) {
@@ -855,23 +854,23 @@
 //           _errorMessage = "Failed to load data. Please try again.";
 //           debugPrint("Error in _fetchDataForView: $e");
 //         });
-//         newMasterList = [];  
+//         newMasterList = [];
 //       }
 //     }
 
 //     if (!mounted) return;
 
 //     setState(() {
-//       _currentViewMasterList = newMasterList;  
-//       _displayList = List.from(_currentViewMasterList);  
-//       _isListLoading = false;  
-//       _rebuildItemFocusNodes();  
-//       _focusedItemIndex = -1;  
+//       _currentViewMasterList = newMasterList;
+//       _displayList = List.from(_currentViewMasterList);
+//       _isListLoading = false;
+//       _rebuildItemFocusNodes();
+//       _focusedItemIndex = -1;
 //     });
 
 //     _startAnimations();
 //   }
-  
+
 //   void _applySearchFilter() {
 //     if (!mounted) return;
 
@@ -886,53 +885,53 @@
 //     }
 
 //     setState(() {
-//       _displayList = filteredList; 
+//       _displayList = filteredList;
 //       _rebuildItemFocusNodes();
-//       _focusedItemIndex = -1; 
+//       _focusedItemIndex = -1;
 //     });
 //     _startAnimations();
 //   }
 
 //   void _updateSelectedNetwork() async {
-//       if (_apiNetworks.isEmpty || _focusedNetworkIndex >= _apiNetworks.length) return;  
+//       if (_apiNetworks.isEmpty || _focusedNetworkIndex >= _apiNetworks.length) return;
 
 //     final selectedNetwork = _apiNetworks[_focusedNetworkIndex];
-//     _debounce?.cancel();  
+//     _debounce?.cancel();
 
 //     setState(() {
-//       _isListLoading = true;  
-//       _errorMessage = null;  
-//         _displayList = [];  
+//       _isListLoading = true;
+//       _errorMessage = null;
+//         _displayList = [];
 //         _currentViewMasterList.clear();
-//         _rebuildItemFocusNodes();  
-//         _isSearching = false;  
+//         _rebuildItemFocusNodes();
+//         _isSearching = false;
 //         _searchText = '';
 //     });
 
 //     try {
-//       final newChannelList = await _fetchReligiousChannelsForNetwork(selectedNetwork.id); 
+//       final newChannelList = await _fetchReligiousChannelsForNetwork(selectedNetwork.id);
 //       if (!mounted) return;
 
 //       setState(() {
-//         _religiousChannelList = newChannelList;  
+//         _religiousChannelList = newChannelList;
 //         _selectedNetworkName = selectedNetwork.name;
-//         _updateSelectedNetworkData();  
-        
-//         _updateChannelFilters();  
+//         _updateSelectedNetworkData();
+
+//         _updateChannelFilters();
 //         _rebuildChannelFilterFocusNodes();
 //       });
-      
-//       await _fetchDataForView();  
-      
+
+//       await _fetchDataForView();
+
 //     } catch (e) {
 //       if (mounted) {
 //         setState(() {
 //           _isListLoading = false;
 //           _errorMessage = "Failed to load channels for ${selectedNetwork.name}.";
-//           _religiousChannelList = [];  
+//           _religiousChannelList = [];
 //           _displayList = [];
 //           _currentViewMasterList.clear();
-//             _updateChannelFilters();  
+//             _updateChannelFilters();
 //             _rebuildChannelFilterFocusNodes();
 //             debugPrint("Error in _updateSelectedNetwork: $e");
 //         });
@@ -944,7 +943,7 @@
 //     final filterNames = _channelFilters.keys.toList();
 //     if (filterNames.isEmpty || _focusedChannelFilterIndex >= filterNames.length || _channelFilterFocusNodes.isEmpty) return;
 
-//     _debounce?.cancel();  
+//     _debounce?.cancel();
 
 //     final newFilterName = filterNames[_focusedChannelFilterIndex];
 //     if (newFilterName == _selectedChannelFilterName) return;
@@ -953,25 +952,25 @@
 //       _selectedChannelFilterName = newFilterName;
 //       _selectedChannelFilterId = _channelFilters[_selectedChannelFilterName];
 //       _isDisplayingShows = (_selectedChannelFilterId != null);
-      
+
 //       _fetchDataForView();
 //     });
 //   }
 
 //   void _updateSelectedNetworkData() {
-//       if (_apiNetworks.isEmpty || _focusedNetworkIndex >= _apiNetworks.length) return;  
+//       if (_apiNetworks.isEmpty || _focusedNetworkIndex >= _apiNetworks.length) return;
 
 //     final selectedNetwork = _apiNetworks.firstWhere(
 //         (n) => n.name == _selectedNetworkName,
 //         orElse: () => ApiNetworkModel(id: -1, name: '', networksOrder: 9999));
-        
+
 //     final religiousSliders = selectedNetwork.sliders
-//         .where((s) => s.sliderFor == 'religious') 
+//         .where((s) => s.sliderFor == 'religious')
 //         .toList();
 
 //     setState(() {
 //       _selectedNetworkLogo = selectedNetwork.logo;
-//       _currentReligiousSliders = religiousSliders; 
+//       _currentReligiousSliders = religiousSliders;
 //       _currentSliderIndex = 0;
 //       if (religiousSliders.isNotEmpty) {
 //         _currentBackgroundUrl = religiousSliders.first.banner;
@@ -980,7 +979,7 @@
 //       }
 //     });
 
-//     if (_sliderPageController.hasClients && _currentReligiousSliders.isNotEmpty) { 
+//     if (_sliderPageController.hasClients && _currentReligiousSliders.isNotEmpty) {
 //       _sliderPageController.jumpToPage(0);
 //     }
 //   }
@@ -988,9 +987,9 @@
 //   void _updateChannelFilters() {
 //     setState(() {
 //       if (_religiousChannelList.isEmpty) {
-//         _channelFilters = {};  
+//         _channelFilters = {};
 //       } else {
-//         final Map<String, int?> newFilters = {};  
+//         final Map<String, int?> newFilters = {};
 //         for (final channel in _religiousChannelList) {
 //           if (channel.name.isNotEmpty && !newFilters.containsKey(channel.name)) {
 //             newFilters[channel.name] = channel.id;
@@ -998,11 +997,11 @@
 //         }
 //         _channelFilters = newFilters;
 //       }
-      
+
 //       if (_channelFilters.isNotEmpty) {
 //         _selectedChannelFilterName = _channelFilters.keys.first;
 //         _selectedChannelFilterId = _channelFilters.values.first;
-//         _isDisplayingShows = true;  
+//         _isDisplayingShows = true;
 //         _focusedChannelFilterIndex = 0;
 //       } else {
 //         _selectedChannelFilterName = '';
@@ -1012,7 +1011,6 @@
 //       }
 //     });
 //   }
-
 
 //   void _onKeyPressed(String value) {
 //     setState(() {
@@ -1030,32 +1028,32 @@
 //           _searchText = _searchText.substring(0, _searchText.length - 1);
 //         }
 //       } else if (value == ' ') {
-//         if (_searchText.isNotEmpty && !_searchText.endsWith(' ')) { 
+//         if (_searchText.isNotEmpty && !_searchText.endsWith(' ')) {
 //           _searchText += ' ';
 //         }
 //       } else {
 //         _searchText += value;
 //       }
-//       _isSearching = _searchText.isNotEmpty; 
-//       _debounce?.cancel(); 
-//       _debounce = Timer(const Duration(milliseconds: 400), () { 
-//         _applySearchFilter(); 
+//       _isSearching = _searchText.isNotEmpty;
+//       _debounce?.cancel();
+//       _debounce = Timer(const Duration(milliseconds: 400), () {
+//         _applySearchFilter();
 //       });
 //     });
 //   }
 
 //   Future<void> _navigateToReligiousDetails(
-//       ReligiousChannelModel item, int index) async {  
+//       ReligiousChannelModel item, int index) async {
 //     if (_isVideoLoading) return;
 //     setState(() => _isVideoLoading = true);
-    
+
 //     try {
 //       int? currentUserId = SessionManager.userId;
 //       HistoryService.updateUserHistory(
 //         userId: currentUserId!,
 //         contentType: 5, // Assuming 5 for Religious
-//         eventId: item.id,  
-//         eventTitle: item.name,  
+//         eventId: item.id,
+//         eventTitle: item.name,
 //         url: '',
 //         categoryId: 0,
 //       ).catchError((e) { debugPrint("History update failed: $e"); });
@@ -1064,11 +1062,11 @@
 //     await Navigator.push(
 //       context,
 //       MaterialPageRoute(
-//         builder: (context) => ReligiousChannelDetailsPage( 
-//           id: item.id,  
-//           banner: item.banner ?? item.poster ?? '',  
-//           poster: item.poster ?? item.banner ?? '',  
-//           name: item.name, updatedAt: item.updatedAt ,  
+//         builder: (context) => ReligiousChannelDetailsPage(
+//           id: item.id,
+//           banner: item.banner ?? item.poster ?? '',
+//           poster: item.poster ?? item.banner ?? '',
+//           name: item.name, updatedAt: item.updatedAt ,
 //         ),
 //       ),
 //     );
@@ -1076,25 +1074,24 @@
 //     if (mounted) {
 //       setState(() {
 //         _isVideoLoading = false;
-//           if (index >= 0 && index < _itemFocusNodes.length) { 
+//           if (index >= 0 && index < _itemFocusNodes.length) {
 //             _focusedItemIndex = index;
 //               WidgetsBinding.instance.addPostFrameCallback((_) {
 //                   if(mounted && _itemFocusNodes.isNotEmpty && _focusedItemIndex < _itemFocusNodes.length) {
 //                     _itemFocusNodes[_focusedItemIndex].requestFocus();
 //                     _updateAndScrollToFocus(
-//                         _itemFocusNodes, _focusedItemIndex, _listScrollController, (bannerwdt * 1.2) + 12); 
+//                         _itemFocusNodes, _focusedItemIndex, _listScrollController, (bannerwdt * 1.2) + 12);
 //                   }
 //                 });
 //           } else {
 //             _focusedItemIndex = -1;
 //             if(_itemFocusNodes.isNotEmpty) { _focusFirstListItemWithScroll(); }
-//             else if (_channelFilterFocusNodes.isNotEmpty && _focusedChannelFilterIndex >= 0) { _channelFilterFocusNodes[_focusedChannelFilterIndex].requestFocus(); }  
+//             else if (_channelFilterFocusNodes.isNotEmpty && _focusedChannelFilterIndex >= 0) { _channelFilterFocusNodes[_focusedChannelFilterIndex].requestFocus(); }
 //             else { _searchButtonFocusNode.requestFocus(); }
 //           }
 //       });
 //     }
 //   }
-
 
 //   //=================================================
 //   // SECTION 2.4: INITIALIZATION AND CLEANUP
@@ -1108,14 +1105,14 @@
 //   }
 
 //   void _startAnimations() {
-//     _fadeController.reset(); 
+//     _fadeController.reset();
 //     _fadeController.forward();
 //   }
 
 //   void _initializeFocusNodes() {
 //     _disposeFocusNodes(_networkFocusNodes);
 //     _networkFocusNodes = List.generate(
-//         _apiNetworks.length, (index) => FocusNode(debugLabel: 'Network-$index')..addListener(_setStateListener)); 
+//         _apiNetworks.length, (index) => FocusNode(debugLabel: 'Network-$index')..addListener(_setStateListener));
 //     _rebuildChannelFilterFocusNodes();
 //     _rebuildItemFocusNodes();
 //     _rebuildKeyboardFocusNodes();
@@ -1124,14 +1121,14 @@
 //   void _rebuildChannelFilterFocusNodes() {
 //     _disposeFocusNodes(_channelFilterFocusNodes);
 //     _channelFilterFocusNodes = List.generate(
-//         _channelFilters.length, (index) => FocusNode(debugLabel: 'ChannelFilter-$index')..addListener(_setStateListener)); 
+//         _channelFilters.length, (index) => FocusNode(debugLabel: 'ChannelFilter-$index')..addListener(_setStateListener));
 //   }
 
 //   void _rebuildItemFocusNodes() {
 //     _disposeFocusNodes(_itemFocusNodes);
 //     final currentList = _displayList;
 //     _itemFocusNodes = List.generate(
-//         currentList.length, (index) => FocusNode(debugLabel: 'Item-$index')..addListener(_setStateListener)); 
+//         currentList.length, (index) => FocusNode(debugLabel: 'Item-$index')..addListener(_setStateListener));
 //   }
 
 //   void _rebuildKeyboardFocusNodes() {
@@ -1139,7 +1136,7 @@
 //     int totalKeys =
 //         _keyboardLayout.fold(0, (prev, row) => prev + row.length);
 //     _keyboardFocusNodes =
-//         List.generate(totalKeys, (index) => FocusNode(debugLabel: 'Key-$index')..addListener(_setStateListener)); 
+//         List.generate(totalKeys, (index) => FocusNode(debugLabel: 'Key-$index')..addListener(_setStateListener));
 //   }
 
 //   int _getFocusNodeIndexForKey(int row, int col) {
@@ -1154,10 +1151,10 @@
 
 //   void _disposeFocusNodes(List<FocusNode> nodes) {
 //     for (var node in nodes) {
-//       node.removeListener(_setStateListener); 
+//       node.removeListener(_setStateListener);
 //       node.dispose();
 //     }
-//     nodes.clear(); 
+//     nodes.clear();
 //   }
 
 //   void _updateAndScrollToFocus(List<FocusNode> nodes, int index,
@@ -1185,7 +1182,7 @@
 //       child: Column(
 //         children: [
 //           _buildTopFilterBar(),
-//           Expanded( 
+//           Expanded(
 //             child: FadeTransition(
 //               opacity: _fadeAnimation,
 //               child: _buildContentBody(),
@@ -1199,22 +1196,22 @@
 //   Widget _buildContentBody() {
 //     return Column(
 //       children: [
-//         SizedBox( 
+//         SizedBox(
 //           height: screenhgt * 0.5,
 //           child: _showKeyboard ? _buildSearchUI() : const SizedBox.shrink(),
 //         ),
 //         _buildSliderIndicators(),
-//         _buildChannelFilterAndSearchButtons(), 
+//         _buildChannelFilterAndSearchButtons(),
 //         SizedBox(height: screenhgt * 0.02),
-//         _buildReligiousList(), 
+//         _buildReligiousList(),
 //       ],
 //     );
 //   }
-  
+
 //   Widget _buildBackgroundOrSlider() {
-//     if (_currentReligiousSliders.isNotEmpty) { 
-//       return ReligiousBannerSlider( 
-//         sliders: _currentReligiousSliders, 
+//     if (_currentReligiousSliders.isNotEmpty) {
+//       return ReligiousBannerSlider(
+//         sliders: _currentReligiousSliders,
 //         controller: _sliderPageController,
 //         onPageChanged: (index) {
 //           if (mounted) {
@@ -1238,9 +1235,9 @@
 //               decoration: BoxDecoration(
 //                 image: DecorationImage(
 //                   // ✅ Use CachedNetworkImageProvider
-//                   image: CachedNetworkImageProvider(_currentBackgroundUrl!), 
+//                   image: CachedNetworkImageProvider(_currentBackgroundUrl!),
 //                   fit: BoxFit.cover,
-//                   onError: (exception, stackTrace) { 
+//                   onError: (exception, stackTrace) {
 //                     debugPrint('Error loading background image: $_currentBackgroundUrl');
 //                   },
 //                 ),
@@ -1316,11 +1313,11 @@
 //           scrollDirection: Axis.horizontal,
 //           itemCount: _uniqueNetworks.length,
 //           itemBuilder: (context, index) {
-//             if (index >= _networkFocusNodes.length) return const SizedBox.shrink(); 
+//             if (index >= _networkFocusNodes.length) return const SizedBox.shrink();
 //             final networkName = _uniqueNetworks[index];
 //             final focusNode = _networkFocusNodes[index];
 //             final isSelected = _selectedNetworkName == networkName;
-            
+
 //             return Focus(
 //               focusNode: focusNode,
 //               onFocusChange: (hasFocus) {
@@ -1328,7 +1325,7 @@
 //                   setState(() => _focusedNetworkIndex = index);
 //                 }
 //               },
-//               child: _buildGlassEffectButton( 
+//               child: _buildGlassEffectButton(
 //                 focusNode: focusNode,
 //                 isSelected: isSelected,
 //                 focusColor: _focusColors[index % _focusColors.length],
@@ -1359,9 +1356,9 @@
 //     final filterNames = _channelFilters.keys.toList();
 
 //     if (filterNames.isEmpty && !_isSearching) {
-//       return const SizedBox(height: 30); 
+//       return const SizedBox(height: 30);
 //     }
-    
+
 //     return SizedBox(
 //       height: 30,
 //       child: Center(
@@ -1376,7 +1373,7 @@
 //                 focusNode: _searchButtonFocusNode,
 //                 child: _buildGlassEffectButton(
 //                   focusNode: _searchButtonFocusNode,
-//                   isSelected: _isSearching || _showKeyboard, 
+//                   isSelected: _isSearching || _showKeyboard,
 //                   focusColor: ProfessionalColors.accentOrange,
 //                   onTap: () {
 //                     _searchButtonFocusNode.requestFocus();
@@ -1400,7 +1397,7 @@
 //                         ("Search").toUpperCase(),
 //                         style: TextStyle(
 //                           color: Colors.white,
-//                           fontWeight: FontWeight.bold, 
+//                           fontWeight: FontWeight.bold,
 //                           fontSize: 16,
 //                         ),
 //                       ),
@@ -1439,7 +1436,7 @@
 //                   filterName.toUpperCase(),
 //                   style: const TextStyle(
 //                     color: Colors.white,
-//                     fontWeight: FontWeight.bold, 
+//                     fontWeight: FontWeight.bold,
 //                     fontSize: 16,
 //                   ),
 //                 ),
@@ -1454,7 +1451,7 @@
 //   Widget _buildReligiousList() {
 //     final currentList = _displayList;
 
-//     if (currentList.isEmpty && !_isListLoading) { 
+//     if (currentList.isEmpty && !_isListLoading) {
 //       return Expanded(
 //         child: Center(
 //           child: Container(
@@ -1469,14 +1466,14 @@
 //               mainAxisSize: MainAxisSize.min,
 //               children: [
 //                 const Icon(
-//                   Icons.temple_hindu_rounded, 
+//                   Icons.temple_hindu_rounded,
 //                   size: 25,
 //                   color: ProfessionalColors.textSecondary,
 //                 ),
 //                 Text(
 //                   _isSearching && _searchText.isNotEmpty
 //                       ? "No results found for '$_searchText'"
-//                       : 'No religious content available.', 
+//                       : 'No religious content available.',
 //                   style: const TextStyle(
 //                     color: ProfessionalColors.textSecondary,
 //                     fontSize: 16,
@@ -1488,7 +1485,7 @@
 //         ),
 //       );
 //     }
-    
+
 //     return Expanded(
 //       child: Padding(
 //         padding: const EdgeInsets.only(top: 1.0),
@@ -1499,16 +1496,16 @@
 //           padding:  EdgeInsets.symmetric(horizontal: screenwdt * 0.015),
 //           itemCount: currentList.length,
 //           itemBuilder: (context, index) {
-//             if (index >= _itemFocusNodes.length) return const SizedBox.shrink(); 
+//             if (index >= _itemFocusNodes.length) return const SizedBox.shrink();
 //             final item = currentList[index];
 //             final focusNode = _itemFocusNodes[index];
-            
+
 //             return Container(
-//               width: bannerwdt * 1.2, 
+//               width: bannerwdt * 1.2,
 //               margin: const EdgeInsets.only(right: 12.0),
 //               child: InkWell(
 //                 focusNode: focusNode,
-//                 onTap: () => _navigateToReligiousDetails(item, index), 
+//                 onTap: () => _navigateToReligiousDetails(item, index),
 //                 onFocusChange: (hasFocus) {
 //                   if (hasFocus) {
 //                     setState(() => _focusedItemIndex = index);
@@ -1516,13 +1513,13 @@
 //                         _itemFocusNodes, index, _listScrollController, (bannerwdt * 1.2) + 12);
 //                   }
 //                 },
-//                 child: OptimizedReligiousCard( 
-//                   item: item, 
+//                 child: OptimizedReligiousCard(
+//                   item: item,
 //                   isFocused: _focusedItemIndex == index,
 //                   onTap: () =>
 //                       _navigateToReligiousDetails(item, index),
-//                   cardHeight: bannerhgt * 1.2, 
-//                   networkLogo: _isDisplayingShows ? null : _selectedNetworkLogo, 
+//                   cardHeight: bannerhgt * 1.2,
+//                   networkLogo: _isDisplayingShows ? null : _selectedNetworkLogo,
 //                   uniqueIndex: index,
 //                 ),
 //               ),
@@ -1553,9 +1550,9 @@
 //                     ],
 //                   ).createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
 //                   child: Text(
-//                     "Search in $_selectedChannelFilterName", 
+//                     "Search in $_selectedChannelFilterName",
 //                     style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-//                     maxLines: 2, 
+//                     maxLines: 2,
 //                     textAlign: TextAlign.center,
 //                   ),
 //                 ),
@@ -1607,7 +1604,7 @@
 //   }
 
 //   Widget _buildKeyboardRow(List<String> keys, int rowIndex) {
-//     int startIndex = _getFocusNodeIndexForKey(rowIndex, 0); 
+//     int startIndex = _getFocusNodeIndexForKey(rowIndex, 0);
 
 //     return Row(
 //       mainAxisAlignment: MainAxisAlignment.center,
@@ -1673,12 +1670,12 @@
 //   }
 
 //   Widget _buildSliderIndicators() {
-//     if (_currentReligiousSliders.length <= 1) { 
-//       return const SizedBox(height: 28); 
+//     if (_currentReligiousSliders.length <= 1) {
+//       return const SizedBox(height: 28);
 //     }
 //     return Row(
 //       mainAxisAlignment: MainAxisAlignment.center,
-//       children: List.generate(_currentReligiousSliders.length, (index) { 
+//       children: List.generate(_currentReligiousSliders.length, (index) {
 //         bool isActive = _currentSliderIndex == index;
 //         return AnimatedContainer(
 //           duration: const Duration(milliseconds: 300),
@@ -1790,7 +1787,7 @@
 //             ),
 //             const SizedBox(height: 24),
 //             ElevatedButton.icon(
-//               focusNode: FocusNode(), 
+//               focusNode: FocusNode(),
 //               onPressed: () => _fetchDataForPage(forceRefresh: true),
 //               icon: const Icon(Icons.refresh_rounded),
 //               label: const Text('Try Again'),
@@ -1817,7 +1814,7 @@
 // //==============================================================================
 
 // class OptimizedReligiousCard extends StatelessWidget {
-//   final ReligiousChannelModel item; 
+//   final ReligiousChannelModel item;
 //   final bool isFocused;
 //   final VoidCallback onTap;
 //   final double cardHeight;
@@ -1826,7 +1823,7 @@
 
 //   const OptimizedReligiousCard({
 //     Key? key,
-//     required this.item, 
+//     required this.item,
 //     required this.isFocused,
 //     required this.onTap,
 //     required this.cardHeight,
@@ -1876,7 +1873,7 @@
 //               child: Stack(
 //                 fit: StackFit.expand,
 //                 children: [
-//                   _buildReligiousImage(), 
+//                   _buildReligiousImage(),
 //                   if (isFocused)
 //                     Positioned(
 //                         left: 5,
@@ -1900,7 +1897,7 @@
 //         ),
 //         Padding(
 //           padding: const EdgeInsets.only(top: 8.0, left: 2.0, right: 2.0),
-//           child: Text(item.name, 
+//           child: Text(item.name,
 //               style: TextStyle(
 //                   color: isFocused
 //                       ? focusColor
@@ -1915,12 +1912,12 @@
 //   }
 
 //   Widget _buildReligiousImage() {
-//     final imageUrl = item.poster; 
-    
+//     final imageUrl = item.poster;
+
 //     return imageUrl != null && imageUrl.isNotEmpty
 //         ? CachedNetworkImage( // ✅ Use CachedNetworkImage
 //             imageUrl: imageUrl,
-//             fit: BoxFit.fill, 
+//             fit: BoxFit.fill,
 //             placeholder: (context, url) => _buildImagePlaceholder(),
 //             errorWidget: (context, url, error) {
 //               debugPrint('Error loading item image: $imageUrl, Error: $error');
@@ -1929,19 +1926,19 @@
 //           )
 //         : _buildImagePlaceholder();
 //   }
-  
+
 //   Widget _buildImagePlaceholder() {
 //     return Container(
 //       decoration: const BoxDecoration(
 //         gradient: LinearGradient(
 //           colors: [
-//             ProfessionalColors.accentGreen, 
+//             ProfessionalColors.accentGreen,
 //             ProfessionalColors.accentBlue,
 //           ],
 //         ),
 //       ),
 //       child: const Icon(
-//         Icons.temple_hindu_outlined, 
+//         Icons.temple_hindu_outlined,
 //         color: Colors.white,
 //         size: 24,
 //       ),
@@ -1967,7 +1964,7 @@
 
 // class _ReligiousBannerSliderState extends State<ReligiousBannerSlider> {
 //   Timer? _timer;
-//   double _opacity = 1.0; 
+//   double _opacity = 1.0;
 
 //   @override
 //   void initState() {
@@ -1990,7 +1987,7 @@
 
 //   void _startTimer() {
 //     _timer?.cancel();
-//     _timer = Timer.periodic(const Duration(seconds: 8), (timer) { 
+//     _timer = Timer.periodic(const Duration(seconds: 8), (timer) {
 //       if (!mounted || !widget.controller.hasClients || widget.sliders.length <= 1) return;
 
 //       int currentPage = widget.controller.page?.round() ?? 0;
@@ -2016,7 +2013,7 @@
 //       return const SizedBox.shrink();
 //     }
 
-//     return AnimatedOpacity( 
+//     return AnimatedOpacity(
 //       opacity: _opacity,
 //       duration: const Duration(milliseconds: 400),
 //       child: PageView.builder(
@@ -2048,7 +2045,7 @@
 //                     ],
 //                     begin: Alignment.topCenter,
 //                     end: Alignment.bottomCenter,
-//                     stops: const [0.0, 0.5, 0.7, 0.9], 
+//                     stops: const [0.0, 0.5, 0.7, 0.9],
 //                   ),
 //                 ),
 //               ),
@@ -2059,12 +2056,6 @@
 //     );
 //   }
 // }
-
-
-
-
-
-
 
 // import 'dart:async';
 // import 'dart:convert';
@@ -2108,13 +2099,13 @@
 // }
 
 // // Model: ReligiousChannelModel (Channels)
-// class ReligiousChannelModel { 
+// class ReligiousChannelModel {
 //   final int id;
-//   final String name; 
+//   final String name;
 //   final String updatedAt;
-//   final String? poster; 
-//   final String? banner; 
-//   final String? genre; 
+//   final String? poster;
+//   final String? banner;
+//   final String? genre;
 //   final int order;
 //   final String? language;
 
@@ -2135,7 +2126,7 @@
 //       name: json['name'] ?? '',
 //       updatedAt: json['updated_at'] ?? '',
 //       poster: json['logo'], // API 'logo' maps to poster
-//       banner: json['logo'], 
+//       banner: json['logo'],
 //       genre: null,
 //       order: json['order'] ?? 9999,
 //       language: json['language'],
@@ -2272,7 +2263,7 @@
 //   final int? initialNetworkId;
 
 //   const ReligiousChannelSliderScreen({
-//     Key? key, 
+//     Key? key,
 //     this.title = 'Religious Channels',
 //     this.initialNetworkId,
 //     })
@@ -2286,21 +2277,21 @@
 // class _ReligiousChannelSliderScreenState
 //     extends State<ReligiousChannelSliderScreen>
 //     with SingleTickerProviderStateMixin {
-  
-//   List<ReligiousChannelModel> _religiousChannelList = []; 
-//   bool _isLoading = true; 
-//   bool _isListLoading = false; 
+
+//   List<ReligiousChannelModel> _religiousChannelList = [];
+//   bool _isLoading = true;
+//   bool _isListLoading = false;
 //   String? _errorMessage;
 
 //   // Focus and Scroll Controllers
 //   List<FocusNode> _itemFocusNodes = [];
 //   List<FocusNode> _networkFocusNodes = [];
-//   List<FocusNode> _channelFilterFocusNodes = [];  
+//   List<FocusNode> _channelFilterFocusNodes = [];
 //   List<FocusNode> _keyboardFocusNodes = [];
 //   final FocusNode _widgetFocusNode = FocusNode();
 //   final ScrollController _listScrollController = ScrollController();
 //   final ScrollController _networkScrollController = ScrollController();
-//   final ScrollController _channelFilterScrollController = ScrollController();  
+//   final ScrollController _channelFilterScrollController = ScrollController();
 
 //   late PageController _sliderPageController;
 
@@ -2317,23 +2308,23 @@
 
 //   // UI and Filter State
 //   int _focusedNetworkIndex = 0;
-//   int _focusedChannelFilterIndex = 0;  
+//   int _focusedChannelFilterIndex = 0;
 //   int _focusedItemIndex = -1;
 //   String _selectedNetworkName = '';
 //   String? _selectedNetworkLogo;
-  
-//   Map<String, int?> _channelFilters = {}; 
-//   String _selectedChannelFilterName = ''; 
-//   int? _selectedChannelFilterId; 
-//   bool _isDisplayingShows = false;  
 
-//   List<ReligiousChannelModel> _currentViewMasterList = []; 
-//   List<ReligiousChannelModel> _displayList = []; 
+//   Map<String, int?> _channelFilters = {};
+//   String _selectedChannelFilterName = '';
+//   int? _selectedChannelFilterId;
+//   bool _isDisplayingShows = false;
+
+//   List<ReligiousChannelModel> _currentViewMasterList = [];
+//   List<ReligiousChannelModel> _displayList = [];
 //   List<ApiNetworkModel> _apiNetworks = [];
 //   List<String> _uniqueNetworks = [];
-  
+
 //   // Animation and Loading State
-//   bool _isVideoLoading = false; 
+//   bool _isVideoLoading = false;
 //   late AnimationController _fadeController;
 //   late Animation<double> _fadeAnimation;
 //   String? _currentBackgroundUrl;
@@ -2365,7 +2356,7 @@
 //     super.initState();
 //     _sliderPageController = PageController();
 //     _searchButtonFocusNode = FocusNode();
-//     _searchButtonFocusNode.addListener(_setStateListener); 
+//     _searchButtonFocusNode.addListener(_setStateListener);
 //     _widgetFocusNode.addListener(_setStateListener);
 //     _fetchDataForPage();
 //     _initializeAnimations();
@@ -2379,14 +2370,14 @@
 //     _widgetFocusNode.dispose();
 //     _listScrollController.dispose();
 //     _networkScrollController.dispose();
-//     _channelFilterScrollController.dispose();  
+//     _channelFilterScrollController.dispose();
 //     _searchButtonFocusNode.removeListener(_setStateListener);
 //     _searchButtonFocusNode.dispose();
 //     _debounce?.cancel();
 //     _navigationLockTimer?.cancel();
 //     _disposeFocusNodes(_itemFocusNodes);
 //     _disposeFocusNodes(_networkFocusNodes);
-//     _disposeFocusNodes(_channelFilterFocusNodes);  
+//     _disposeFocusNodes(_channelFilterFocusNodes);
 //     _disposeFocusNodes(_keyboardFocusNodes);
 //     super.dispose();
 //   }
@@ -2402,14 +2393,14 @@
 //         child: Stack(
 //           children: [
 //             _buildBackgroundOrSlider(),
-//             _isLoading 
+//             _isLoading
 //                 ? const Center(
 //                     child: ProfessionalReligiousLoadingIndicator(
-//                         message: 'Loading Religious Channels...'))  
+//                         message: 'Loading Religious Channels...'))
 //                 : _errorMessage != null
-//                     ? _buildErrorWidget() 
-//                     : _buildPageContent(), 
-//             if (_isVideoLoading && _errorMessage == null) 
+//                     ? _buildErrorWidget()
+//                     : _buildPageContent(),
+//             if (_isVideoLoading && _errorMessage == null)
 //               Positioned.fill(
 //                 child: Container(
 //                   color: Colors.black.withOpacity(0.8),
@@ -2451,7 +2442,7 @@
 //       if (widget.initialNetworkId != null) {
 //         int foundIndex = fetchedNetworks.indexWhere((n) => n.id == widget.initialNetworkId);
 //         if (foundIndex != -1) {
-//           initialIndex = foundIndex; 
+//           initialIndex = foundIndex;
 //         }
 //       }
 
@@ -2461,24 +2452,24 @@
 //       setState(() {
 //         _apiNetworks = fetchedNetworks;
 //         _uniqueNetworks = _apiNetworks.map((n) => n.name).toList();
-//         _focusedNetworkIndex = initialIndex; 
+//         _focusedNetworkIndex = initialIndex;
 //         _selectedNetworkName = initialNetwork.name;
 //       });
 
 //       // 2. Fetch Religious Channels
-//       final fetchedList = await _fetchReligiousChannelsForNetwork(networkIdToFetch); 
-      
+//       final fetchedList = await _fetchReligiousChannelsForNetwork(networkIdToFetch);
+
 //       if (!mounted) return;
 
 //       setState(() {
-//         _religiousChannelList = fetchedList;  
+//         _religiousChannelList = fetchedList;
 //         if (_religiousChannelList.isEmpty) _errorMessage = "No Religious Channels Found.";
 //       });
 
 //       if (_errorMessage == null) {
-//         _processInitialData();  
-//         _updateChannelFilters(); 
-//         await _fetchDataForView(); 
+//         _processInitialData();
+//         _updateChannelFilters();
+//         await _fetchDataForView();
 //         _initializeFocusNodes();
 //         _startAnimations();
 
@@ -2489,7 +2480,7 @@
 //               _networkFocusNodes,
 //               _focusedNetworkIndex,
 //               _networkScrollController,
-//               160 
+//               160
 //             );
 //           }
 //         });
@@ -2527,14 +2518,14 @@
 //         final List<dynamic> jsonData = json.decode(response.body);
 //         return jsonData
 //             .map(
-//                 (item) => ReligiousChannelModel.fromJson(item as Map<String, dynamic>))  
+//                 (item) => ReligiousChannelModel.fromJson(item as Map<String, dynamic>))
 //             .toList()
-//               ..sort((a, b) => a.order.compareTo(b.order));  
+//               ..sort((a, b) => a.order.compareTo(b.order));
 //       } else {
 //         throw Exception('API Error: ${response.statusCode}');
 //       }
 //     } catch (e) {
-//       debugPrint('Failed to load religious channels for network $networkId: $e');  
+//       debugPrint('Failed to load religious channels for network $networkId: $e');
 //       throw Exception('Failed to load religious channels for network $networkId: $e');
 //     }
 //   }
@@ -2559,7 +2550,7 @@
 //         return jsonData
 //             .map((item) => ReligiousShowItemModel.fromJson(item as Map<String, dynamic>))
 //             .toList()
-//               ..sort((a, b) => a.order.compareTo(b.order));  
+//               ..sort((a, b) => a.order.compareTo(b.order));
 //       } else {
 //         throw Exception('API Error: ${response.statusCode}');
 //       }
@@ -2581,7 +2572,7 @@
 //               'Accept': 'application/json',
 //               'domain': SessionManager.savedDomain,
 //             },
-//             body: json.encode({"network_id": "", "data_for": "religiouschannels"}),  
+//             body: json.encode({"network_id": "", "data_for": "religiouschannels"}),
 //           )
 //           .timeout(const Duration(seconds: 30));
 
@@ -2603,9 +2594,8 @@
 
 //   void _processInitialData() {
 //     if (_apiNetworks.isEmpty) return;
-//     _updateSelectedNetworkData(); 
+//     _updateSelectedNetworkData();
 //   }
-
 
 //   //=================================================
 //   // SECTION 2.2: KEYBOARD AND FOCUS NAVIGATION
@@ -2617,11 +2607,11 @@
 //     if (_listScrollController.hasClients) {
 //       _listScrollController.animateTo(
 //         0.0,
-//         duration: AnimationTiming.fast, 
+//         duration: AnimationTiming.fast,
 //         curve: Curves.easeInOut,
 //       );
 //     }
-    
+
 //     Future.delayed(const Duration(milliseconds: 250), () {
 //       if (mounted && _itemFocusNodes.isNotEmpty) {
 //         setState(() => _focusedItemIndex = 0);
@@ -2646,7 +2636,7 @@
 //         _searchButtonFocusNode.requestFocus();
 //         return KeyEventResult.handled;
 //       }
-//       if (listHasFocus || channelFilterHasFocus || searchHasFocus) {  
+//       if (listHasFocus || channelFilterHasFocus || searchHasFocus) {
 //           if (_networkFocusNodes.isNotEmpty) { _networkFocusNodes[_focusedNetworkIndex].requestFocus(); }
 //         return KeyEventResult.handled;
 //       }
@@ -2664,10 +2654,10 @@
 //         return KeyEventResult.handled;
 //       }
 //       if (key == LogicalKeyboardKey.arrowLeft) {
-//         return KeyEventResult.handled; 
+//         return KeyEventResult.handled;
 //       }
-//       if (key == LogicalKeyboardKey.arrowRight && _channelFilterFocusNodes.isNotEmpty) {  
-//         _channelFilterFocusNodes[0].requestFocus();  
+//       if (key == LogicalKeyboardKey.arrowRight && _channelFilterFocusNodes.isNotEmpty) {
+//         _channelFilterFocusNodes[0].requestFocus();
 //         return KeyEventResult.handled;
 //       }
 //       if (key == LogicalKeyboardKey.arrowUp && _networkFocusNodes.isNotEmpty) {
@@ -2683,8 +2673,8 @@
 
 //     if ([ LogicalKeyboardKey.arrowUp, LogicalKeyboardKey.arrowDown, LogicalKeyboardKey.arrowLeft, LogicalKeyboardKey.arrowRight, LogicalKeyboardKey.select, LogicalKeyboardKey.enter ].contains(key)) {
 //       if (networkHasFocus) { _navigateNetworks(key); }
-//       else if (channelFilterHasFocus) { _navigateChannelFilters(key); }  
-//       else if (listHasFocus) { _navigateList(key); } 
+//       else if (channelFilterHasFocus) { _navigateChannelFilters(key); }
+//       else if (listHasFocus) { _navigateList(key); }
 //       return KeyEventResult.handled;
 //     }
 
@@ -2708,7 +2698,7 @@
 //     });
 
 //     int newIndex = _focusedItemIndex;
-    
+
 //     if (key == LogicalKeyboardKey.arrowUp) {
 //       setState(() => _lastNavigationDirection = 'vertical');
 //       if (_channelFilterFocusNodes.isNotEmpty) {
@@ -2732,7 +2722,7 @@
 //         setState(() => _lastNavigationDirection = 'horizontal');
 //       }
 //     } else if (key == LogicalKeyboardKey.arrowRight) {
-//       final currentList = _displayList; 
+//       final currentList = _displayList;
 //       if (newIndex + 1 < currentList.length) {
 //         newIndex++;
 //         setState(() => _lastNavigationDirection = 'horizontal');
@@ -2742,8 +2732,8 @@
 //       _isNavigationLocked = false;
 //       _navigationLockTimer?.cancel();
 
-//       final currentList = _displayList; 
-//       _navigateToReligiousDetails(currentList[_focusedItemIndex], _focusedItemIndex); 
+//       final currentList = _displayList;
+//       _navigateToReligiousDetails(currentList[_focusedItemIndex], _focusedItemIndex);
 //       return;
 //     }
 
@@ -2774,7 +2764,7 @@
 //       return;
 //     } else if (key == LogicalKeyboardKey.select ||
 //         key == LogicalKeyboardKey.enter) {
-//       _updateSelectedNetwork(); 
+//       _updateSelectedNetwork();
 //       return;
 //     }
 //     if (newIndex != _focusedNetworkIndex) {
@@ -2787,7 +2777,7 @@
 
 //   void _navigateChannelFilters(LogicalKeyboardKey key) {
 //     final filterNames = _channelFilters.keys.toList();
-    
+
 //     if (filterNames.isEmpty) {
 //         if (key == LogicalKeyboardKey.arrowLeft) {
 //             _searchButtonFocusNode.requestFocus();
@@ -2798,9 +2788,9 @@
 //             setState(() => _lastNavigationDirection = 'vertical');
 //             _focusFirstListItemWithScroll();
 //         }
-//         return; 
+//         return;
 //     }
-    
+
 //     int newIndex = _focusedChannelFilterIndex;
 //     if (key == LogicalKeyboardKey.arrowLeft) {
 //       if (newIndex > 0) {
@@ -2829,14 +2819,14 @@
 //       return;
 //     } else if (key == LogicalKeyboardKey.select ||
 //         key == LogicalKeyboardKey.enter) {
-//       _updateSelectedChannelFilter(); 
+//       _updateSelectedChannelFilter();
 //       return;
 //     }
 //     if (newIndex != _focusedChannelFilterIndex) {
 //       setState(() => _focusedChannelFilterIndex = newIndex);
 //       _channelFilterFocusNodes[newIndex].requestFocus();
 //       _updateAndScrollToFocus(
-//           _channelFilterFocusNodes, newIndex, _channelFilterScrollController, 160); 
+//           _channelFilterFocusNodes, newIndex, _channelFilterScrollController, 160);
 //     }
 //   }
 
@@ -2882,16 +2872,16 @@
 //   //=================================================
 
 //   Future<void> _fetchDataForView() async {
-//     _debounce?.cancel();  
+//     _debounce?.cancel();
 
 //     setState(() {
 //       _isListLoading = true;
-//       _displayList.clear();  
-//       _currentViewMasterList.clear();  
-//       _rebuildItemFocusNodes();  
-//       _errorMessage = null;  
-      
-//       _searchText = '';  
+//       _displayList.clear();
+//       _currentViewMasterList.clear();
+//       _rebuildItemFocusNodes();
+//       _errorMessage = null;
+
+//       _searchText = '';
 //       _isSearching = false;
 //     });
 
@@ -2900,21 +2890,21 @@
 //     try {
 //       if (_selectedChannelFilterId != null) {
 //         final List<ReligiousShowItemModel> showItems =
-//             await _fetchReligiousShowsForChannel(_selectedChannelFilterId!); 
-        
+//             await _fetchReligiousShowsForChannel(_selectedChannelFilterId!);
+
 //         newMasterList = showItems.map((show) => ReligiousChannelModel(
 //               id: show.id,
 //               name: show.title,
-//               poster: show.thumbnail,  
-//               banner: show.thumbnail,  
-//               updatedAt: '',  
-//               order: show.order,  
+//               poster: show.thumbnail,
+//               banner: show.thumbnail,
+//               updatedAt: '',
+//               order: show.order,
 //               genre: show.genre,
 //               language: null,
 //             )).toList();
-//         _isDisplayingShows = true;  
+//         _isDisplayingShows = true;
 //       } else {
-//         newMasterList = [];  
+//         newMasterList = [];
 //         _isDisplayingShows = false;
 //       }
 //     } catch (e) {
@@ -2923,23 +2913,23 @@
 //           _errorMessage = "Failed to load data. Please try again.";
 //           debugPrint("Error in _fetchDataForView: $e");
 //         });
-//         newMasterList = [];  
+//         newMasterList = [];
 //       }
 //     }
 
 //     if (!mounted) return;
 
 //     setState(() {
-//       _currentViewMasterList = newMasterList;  
-//       _displayList = List.from(_currentViewMasterList);  
-//       _isListLoading = false;  
-//       _rebuildItemFocusNodes();  
-//       _focusedItemIndex = -1;  
+//       _currentViewMasterList = newMasterList;
+//       _displayList = List.from(_currentViewMasterList);
+//       _isListLoading = false;
+//       _rebuildItemFocusNodes();
+//       _focusedItemIndex = -1;
 //     });
 
 //     _startAnimations();
 //   }
-  
+
 //   void _applySearchFilter() {
 //     if (!mounted) return;
 
@@ -2954,53 +2944,53 @@
 //     }
 
 //     setState(() {
-//       _displayList = filteredList; 
+//       _displayList = filteredList;
 //       _rebuildItemFocusNodes();
-//       _focusedItemIndex = -1; 
+//       _focusedItemIndex = -1;
 //     });
 //     _startAnimations();
 //   }
 
 //   void _updateSelectedNetwork() async {
-//       if (_apiNetworks.isEmpty || _focusedNetworkIndex >= _apiNetworks.length) return;  
+//       if (_apiNetworks.isEmpty || _focusedNetworkIndex >= _apiNetworks.length) return;
 
 //     final selectedNetwork = _apiNetworks[_focusedNetworkIndex];
-//     _debounce?.cancel();  
+//     _debounce?.cancel();
 
 //     setState(() {
-//       _isListLoading = true;  
-//       _errorMessage = null;  
-//         _displayList = [];  
+//       _isListLoading = true;
+//       _errorMessage = null;
+//         _displayList = [];
 //         _currentViewMasterList.clear();
-//         _rebuildItemFocusNodes();  
-//         _isSearching = false;  
+//         _rebuildItemFocusNodes();
+//         _isSearching = false;
 //         _searchText = '';
 //     });
 
 //     try {
-//       final newChannelList = await _fetchReligiousChannelsForNetwork(selectedNetwork.id); 
+//       final newChannelList = await _fetchReligiousChannelsForNetwork(selectedNetwork.id);
 //       if (!mounted) return;
 
 //       setState(() {
-//         _religiousChannelList = newChannelList;  
+//         _religiousChannelList = newChannelList;
 //         _selectedNetworkName = selectedNetwork.name;
-//         _updateSelectedNetworkData();  
-        
-//         _updateChannelFilters();  
+//         _updateSelectedNetworkData();
+
+//         _updateChannelFilters();
 //         _rebuildChannelFilterFocusNodes();
 //       });
-      
-//       await _fetchDataForView();  
-      
+
+//       await _fetchDataForView();
+
 //     } catch (e) {
 //       if (mounted) {
 //         setState(() {
 //           _isListLoading = false;
 //           _errorMessage = "Failed to load channels for ${selectedNetwork.name}.";
-//           _religiousChannelList = [];  
+//           _religiousChannelList = [];
 //           _displayList = [];
 //           _currentViewMasterList.clear();
-//             _updateChannelFilters();  
+//             _updateChannelFilters();
 //             _rebuildChannelFilterFocusNodes();
 //             debugPrint("Error in _updateSelectedNetwork: $e");
 //         });
@@ -3012,7 +3002,7 @@
 //     final filterNames = _channelFilters.keys.toList();
 //     if (filterNames.isEmpty || _focusedChannelFilterIndex >= filterNames.length || _channelFilterFocusNodes.isEmpty) return;
 
-//     _debounce?.cancel();  
+//     _debounce?.cancel();
 
 //     final newFilterName = filterNames[_focusedChannelFilterIndex];
 //     if (newFilterName == _selectedChannelFilterName) return;
@@ -3021,25 +3011,25 @@
 //       _selectedChannelFilterName = newFilterName;
 //       _selectedChannelFilterId = _channelFilters[_selectedChannelFilterName];
 //       _isDisplayingShows = (_selectedChannelFilterId != null);
-      
+
 //       _fetchDataForView();
 //     });
 //   }
 
 //   void _updateSelectedNetworkData() {
-//       if (_apiNetworks.isEmpty || _focusedNetworkIndex >= _apiNetworks.length) return;  
+//       if (_apiNetworks.isEmpty || _focusedNetworkIndex >= _apiNetworks.length) return;
 
 //     final selectedNetwork = _apiNetworks.firstWhere(
 //         (n) => n.name == _selectedNetworkName,
 //         orElse: () => ApiNetworkModel(id: -1, name: '', networksOrder: 9999));
-        
+
 //     final religiousSliders = selectedNetwork.sliders
-//         .where((s) => s.sliderFor == 'religiouschannels') 
+//         .where((s) => s.sliderFor == 'religiouschannels')
 //         .toList();
 
 //     setState(() {
 //       _selectedNetworkLogo = selectedNetwork.logo;
-//       _currentReligiousSliders = religiousSliders; 
+//       _currentReligiousSliders = religiousSliders;
 //       _currentSliderIndex = 0;
 //       if (religiousSliders.isNotEmpty) {
 //         _currentBackgroundUrl = religiousSliders.first.banner;
@@ -3048,7 +3038,7 @@
 //       }
 //     });
 
-//     if (_sliderPageController.hasClients && _currentReligiousSliders.isNotEmpty) { 
+//     if (_sliderPageController.hasClients && _currentReligiousSliders.isNotEmpty) {
 //       _sliderPageController.jumpToPage(0);
 //     }
 //   }
@@ -3056,9 +3046,9 @@
 //   void _updateChannelFilters() {
 //     setState(() {
 //       if (_religiousChannelList.isEmpty) {
-//         _channelFilters = {};  
+//         _channelFilters = {};
 //       } else {
-//         final Map<String, int?> newFilters = {};  
+//         final Map<String, int?> newFilters = {};
 //         for (final channel in _religiousChannelList) {
 //           if (channel.name.isNotEmpty && !newFilters.containsKey(channel.name)) {
 //             newFilters[channel.name] = channel.id;
@@ -3066,11 +3056,11 @@
 //         }
 //         _channelFilters = newFilters;
 //       }
-      
+
 //       if (_channelFilters.isNotEmpty) {
 //         _selectedChannelFilterName = _channelFilters.keys.first;
 //         _selectedChannelFilterId = _channelFilters.values.first;
-//         _isDisplayingShows = true;  
+//         _isDisplayingShows = true;
 //         _focusedChannelFilterIndex = 0;
 //       } else {
 //         _selectedChannelFilterName = '';
@@ -3080,7 +3070,6 @@
 //       }
 //     });
 //   }
-
 
 //   void _onKeyPressed(String value) {
 //     setState(() {
@@ -3098,32 +3087,32 @@
 //           _searchText = _searchText.substring(0, _searchText.length - 1);
 //         }
 //       } else if (value == ' ') {
-//         if (_searchText.isNotEmpty && !_searchText.endsWith(' ')) { 
+//         if (_searchText.isNotEmpty && !_searchText.endsWith(' ')) {
 //           _searchText += ' ';
 //         }
 //       } else {
 //         _searchText += value;
 //       }
-//       _isSearching = _searchText.isNotEmpty; 
-//       _debounce?.cancel(); 
-//       _debounce = Timer(const Duration(milliseconds: 400), () { 
-//         _applySearchFilter(); 
+//       _isSearching = _searchText.isNotEmpty;
+//       _debounce?.cancel();
+//       _debounce = Timer(const Duration(milliseconds: 400), () {
+//         _applySearchFilter();
 //       });
 //     });
 //   }
 
 //   Future<void> _navigateToReligiousDetails(
-//       ReligiousChannelModel item, int index) async {  
+//       ReligiousChannelModel item, int index) async {
 //     if (_isVideoLoading) return;
 //     setState(() => _isVideoLoading = true);
-    
+
 //     try {
 //       int? currentUserId = SessionManager.userId;
 //       HistoryService.updateUserHistory(
 //         userId: currentUserId!,
 //         contentType: 5, // 5 = Religious Content
-//         eventId: item.id,  
-//         eventTitle: item.name,  
+//         eventId: item.id,
+//         eventTitle: item.name,
 //         url: '',
 //         categoryId: 0,
 //       ).catchError((e) { debugPrint("History update failed: $e"); });
@@ -3132,10 +3121,10 @@
 //     await Navigator.push(
 //       context,
 //       MaterialPageRoute(
-//         builder: (context) => ReligiousChannelDetailsPage( 
-//           id: item.id,  
-//           banner: item.banner ?? item.poster ?? '',  
-//           poster: item.poster ?? item.banner ?? '',  
+//         builder: (context) => ReligiousChannelDetailsPage(
+//           id: item.id,
+//           banner: item.banner ?? item.poster ?? '',
+//           poster: item.poster ?? item.banner ?? '',
 //           name: item.name,  updatedAt:item.updatedAt,
 //         ),
 //       ),
@@ -3144,25 +3133,24 @@
 //     if (mounted) {
 //       setState(() {
 //         _isVideoLoading = false;
-//           if (index >= 0 && index < _itemFocusNodes.length) { 
+//           if (index >= 0 && index < _itemFocusNodes.length) {
 //             _focusedItemIndex = index;
 //               WidgetsBinding.instance.addPostFrameCallback((_) {
 //                   if(mounted && _itemFocusNodes.isNotEmpty && _focusedItemIndex < _itemFocusNodes.length) {
 //                     _itemFocusNodes[_focusedItemIndex].requestFocus();
 //                     _updateAndScrollToFocus(
-//                         _itemFocusNodes, _focusedItemIndex, _listScrollController, (bannerwdt * 1.1) + 15); 
+//                         _itemFocusNodes, _focusedItemIndex, _listScrollController, (bannerwdt * 1.1) + 15);
 //                   }
 //                 });
 //           } else {
 //             _focusedItemIndex = -1;
 //             if(_itemFocusNodes.isNotEmpty) { _focusFirstListItemWithScroll(); }
-//             else if (_channelFilterFocusNodes.isNotEmpty && _focusedChannelFilterIndex >= 0) { _channelFilterFocusNodes[_focusedChannelFilterIndex].requestFocus(); }  
+//             else if (_channelFilterFocusNodes.isNotEmpty && _focusedChannelFilterIndex >= 0) { _channelFilterFocusNodes[_focusedChannelFilterIndex].requestFocus(); }
 //             else { _searchButtonFocusNode.requestFocus(); }
 //           }
 //       });
 //     }
 //   }
-
 
 //   //=================================================
 //   // SECTION 2.4: INITIALIZATION AND CLEANUP
@@ -3176,14 +3164,14 @@
 //   }
 
 //   void _startAnimations() {
-//     _fadeController.reset(); 
+//     _fadeController.reset();
 //     _fadeController.forward();
 //   }
 
 //   void _initializeFocusNodes() {
 //     _disposeFocusNodes(_networkFocusNodes);
 //     _networkFocusNodes = List.generate(
-//         _apiNetworks.length, (index) => FocusNode(debugLabel: 'Network-$index')..addListener(_setStateListener)); 
+//         _apiNetworks.length, (index) => FocusNode(debugLabel: 'Network-$index')..addListener(_setStateListener));
 //     _rebuildChannelFilterFocusNodes();
 //     _rebuildItemFocusNodes();
 //     _rebuildKeyboardFocusNodes();
@@ -3192,14 +3180,14 @@
 //   void _rebuildChannelFilterFocusNodes() {
 //     _disposeFocusNodes(_channelFilterFocusNodes);
 //     _channelFilterFocusNodes = List.generate(
-//         _channelFilters.length, (index) => FocusNode(debugLabel: 'ChannelFilter-$index')..addListener(_setStateListener)); 
+//         _channelFilters.length, (index) => FocusNode(debugLabel: 'ChannelFilter-$index')..addListener(_setStateListener));
 //   }
 
 //   void _rebuildItemFocusNodes() {
 //     _disposeFocusNodes(_itemFocusNodes);
 //     final currentList = _displayList;
 //     _itemFocusNodes = List.generate(
-//         currentList.length, (index) => FocusNode(debugLabel: 'Item-$index')..addListener(_setStateListener)); 
+//         currentList.length, (index) => FocusNode(debugLabel: 'Item-$index')..addListener(_setStateListener));
 //   }
 
 //   void _rebuildKeyboardFocusNodes() {
@@ -3207,7 +3195,7 @@
 //     int totalKeys =
 //         _keyboardLayout.fold(0, (prev, row) => prev + row.length);
 //     _keyboardFocusNodes =
-//         List.generate(totalKeys, (index) => FocusNode(debugLabel: 'Key-$index')..addListener(_setStateListener)); 
+//         List.generate(totalKeys, (index) => FocusNode(debugLabel: 'Key-$index')..addListener(_setStateListener));
 //   }
 
 //   int _getFocusNodeIndexForKey(int row, int col) {
@@ -3222,10 +3210,10 @@
 
 //   void _disposeFocusNodes(List<FocusNode> nodes) {
 //     for (var node in nodes) {
-//       node.removeListener(_setStateListener); 
+//       node.removeListener(_setStateListener);
 //       node.dispose();
 //     }
-//     nodes.clear(); 
+//     nodes.clear();
 //   }
 
 //   void _updateAndScrollToFocus(List<FocusNode> nodes, int index,
@@ -3253,7 +3241,7 @@
 //       child: Column(
 //         children: [
 //           _buildTopFilterBar(),
-//           Expanded( 
+//           Expanded(
 //             child: FadeTransition(
 //               opacity: _fadeAnimation,
 //               child: _buildContentBody(),
@@ -3267,22 +3255,22 @@
 //   Widget _buildContentBody() {
 //     return Column(
 //       children: [
-//         SizedBox( 
+//         SizedBox(
 //           height: screenhgt * 0.5,
 //           child: _showKeyboard ? _buildSearchUI() : const SizedBox.shrink(),
 //         ),
 //         _buildSliderIndicators(),
-//         _buildChannelFilterAndSearchButtons(), 
+//         _buildChannelFilterAndSearchButtons(),
 //         SizedBox(height: screenhgt * 0.02),
 //         _buildReligiousList(), // ✅ List build call
 //       ],
 //     );
 //   }
-  
+
 //   Widget _buildBackgroundOrSlider() {
-//     if (_currentReligiousSliders.isNotEmpty) { 
-//       return ReligiousBannerSlider( 
-//         sliders: _currentReligiousSliders, 
+//     if (_currentReligiousSliders.isNotEmpty) {
+//       return ReligiousBannerSlider(
+//         sliders: _currentReligiousSliders,
 //         controller: _sliderPageController,
 //         onPageChanged: (index) {
 //           if (mounted) {
@@ -3307,7 +3295,7 @@
 //                 image: DecorationImage(
 //                   image: CachedNetworkImageProvider(_currentBackgroundUrl!), // ✅ Cache
 //                   fit: BoxFit.cover,
-//                   onError: (exception, stackTrace) { 
+//                   onError: (exception, stackTrace) {
 //                     debugPrint('Error loading background image: $_currentBackgroundUrl');
 //                   },
 //                 ),
@@ -3383,11 +3371,11 @@
 //           scrollDirection: Axis.horizontal,
 //           itemCount: _uniqueNetworks.length,
 //           itemBuilder: (context, index) {
-//             if (index >= _networkFocusNodes.length) return const SizedBox.shrink(); 
+//             if (index >= _networkFocusNodes.length) return const SizedBox.shrink();
 //             final networkName = _uniqueNetworks[index];
 //             final focusNode = _networkFocusNodes[index];
 //             final isSelected = _selectedNetworkName == networkName;
-            
+
 //             return Focus(
 //               focusNode: focusNode,
 //               onFocusChange: (hasFocus) {
@@ -3395,7 +3383,7 @@
 //                   setState(() => _focusedNetworkIndex = index);
 //                 }
 //               },
-//               child: _buildGlassEffectButton( 
+//               child: _buildGlassEffectButton(
 //                 focusNode: focusNode,
 //                 isSelected: isSelected,
 //                 focusColor: _focusColors[index % _focusColors.length],
@@ -3426,9 +3414,9 @@
 //     final filterNames = _channelFilters.keys.toList();
 
 //     if (filterNames.isEmpty && !_isSearching) {
-//       return const SizedBox(height: 30); 
+//       return const SizedBox(height: 30);
 //     }
-    
+
 //     return SizedBox(
 //       height: 30,
 //       child: Center(
@@ -3443,7 +3431,7 @@
 //                 focusNode: _searchButtonFocusNode,
 //                 child: _buildGlassEffectButton(
 //                   focusNode: _searchButtonFocusNode,
-//                   isSelected: _isSearching || _showKeyboard, 
+//                   isSelected: _isSearching || _showKeyboard,
 //                   focusColor: ProfessionalColors.accentOrange,
 //                   onTap: () {
 //                     _searchButtonFocusNode.requestFocus();
@@ -3467,7 +3455,7 @@
 //                         ("Search").toUpperCase(),
 //                         style: TextStyle(
 //                           color: Colors.white,
-//                           fontWeight: FontWeight.bold, 
+//                           fontWeight: FontWeight.bold,
 //                           fontSize: 16,
 //                         ),
 //                       ),
@@ -3506,7 +3494,7 @@
 //                   filterName.toUpperCase(),
 //                   style: const TextStyle(
 //                     color: Colors.white,
-//                     fontWeight: FontWeight.bold, 
+//                     fontWeight: FontWeight.bold,
 //                     fontSize: 16,
 //                   ),
 //                 ),
@@ -3521,7 +3509,7 @@
 //   Widget _buildReligiousList() {
 //     final currentList = _displayList;
 
-//     if (currentList.isEmpty && !_isListLoading) { 
+//     if (currentList.isEmpty && !_isListLoading) {
 //       return Expanded(
 //         child: Center(
 //           child: Container(
@@ -3536,14 +3524,14 @@
 //               mainAxisSize: MainAxisSize.min,
 //               children: [
 //                 const Icon(
-//                   Icons.temple_hindu_rounded, 
+//                   Icons.temple_hindu_rounded,
 //                   size: 25,
 //                   color: ProfessionalColors.textSecondary,
 //                 ),
 //                 Text(
 //                   _isSearching && _searchText.isNotEmpty
 //                       ? "No results found for '$_searchText'"
-//                       : 'No religious content available.', 
+//                       : 'No religious content available.',
 //                   style: const TextStyle(
 //                     color: ProfessionalColors.textSecondary,
 //                     fontSize: 16,
@@ -3555,7 +3543,7 @@
 //         ),
 //       );
 //     }
-    
+
 //     // ✅ FIXED: Adjusted width and spacing for better text visibility
 //     return Expanded(
 //       child: Padding(
@@ -3567,17 +3555,17 @@
 //           padding:  EdgeInsets.symmetric(horizontal: screenwdt * 0.015),
 //           itemCount: currentList.length,
 //           itemBuilder: (context, index) {
-//             if (index >= _itemFocusNodes.length) return const SizedBox.shrink(); 
+//             if (index >= _itemFocusNodes.length) return const SizedBox.shrink();
 //             final item = currentList[index];
 //             final focusNode = _itemFocusNodes[index];
-            
+
 //             return Container(
 //               width: bannerwdt * 1.1, // Width sufficient for text
-//               margin: const EdgeInsets.only(right: 15.0), 
+//               margin: const EdgeInsets.only(right: 15.0),
 //               alignment: Alignment.topCenter,
 //               child: InkWell(
 //                 focusNode: focusNode,
-//                 onTap: () => _navigateToReligiousDetails(item, index), 
+//                 onTap: () => _navigateToReligiousDetails(item, index),
 //                 onFocusChange: (hasFocus) {
 //                   if (hasFocus) {
 //                     setState(() => _focusedItemIndex = index);
@@ -3585,14 +3573,14 @@
 //                         _itemFocusNodes, index, _listScrollController, (bannerwdt * 1.1) + 15);
 //                   }
 //                 },
-//                 child: OptimizedReligiousCard( 
-//                   item: item, 
+//                 child: OptimizedReligiousCard(
+//                   item: item,
 //                   isFocused: _focusedItemIndex == index,
 //                   onTap: () =>
 //                       _navigateToReligiousDetails(item, index),
 //                   // ✅ FIXED: Height 1.0 allows room for text in parent container
-//                   cardHeight: bannerhgt * 1.0, 
-//                   networkLogo: _isDisplayingShows ? null : _selectedNetworkLogo, 
+//                   cardHeight: bannerhgt * 1.0,
+//                   networkLogo: _isDisplayingShows ? null : _selectedNetworkLogo,
 //                   uniqueIndex: index,
 //                 ),
 //               ),
@@ -3623,9 +3611,9 @@
 //                     ],
 //                   ).createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
 //                   child: Text(
-//                     "Search in $_selectedChannelFilterName", 
+//                     "Search in $_selectedChannelFilterName",
 //                     style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-//                     maxLines: 2, 
+//                     maxLines: 2,
 //                     textAlign: TextAlign.center,
 //                   ),
 //                 ),
@@ -3677,7 +3665,7 @@
 //   }
 
 //   Widget _buildKeyboardRow(List<String> keys, int rowIndex) {
-//     int startIndex = _getFocusNodeIndexForKey(rowIndex, 0); 
+//     int startIndex = _getFocusNodeIndexForKey(rowIndex, 0);
 
 //     return Row(
 //       mainAxisAlignment: MainAxisAlignment.center,
@@ -3743,12 +3731,12 @@
 //   }
 
 //   Widget _buildSliderIndicators() {
-//     if (_currentReligiousSliders.length <= 1) { 
-//       return const SizedBox(height: 28); 
+//     if (_currentReligiousSliders.length <= 1) {
+//       return const SizedBox(height: 28);
 //     }
 //     return Row(
 //       mainAxisAlignment: MainAxisAlignment.center,
-//       children: List.generate(_currentReligiousSliders.length, (index) { 
+//       children: List.generate(_currentReligiousSliders.length, (index) {
 //         bool isActive = _currentSliderIndex == index;
 //         return AnimatedContainer(
 //           duration: const Duration(milliseconds: 300),
@@ -3860,7 +3848,7 @@
 //             ),
 //             const SizedBox(height: 24),
 //             ElevatedButton.icon(
-//               focusNode: FocusNode(), 
+//               focusNode: FocusNode(),
 //               onPressed: () => _fetchDataForPage(forceRefresh: true),
 //               icon: const Icon(Icons.refresh_rounded),
 //               label: const Text('Try Again'),
@@ -3887,7 +3875,7 @@
 // //==============================================================================
 
 // class OptimizedReligiousCard extends StatelessWidget {
-//   final ReligiousChannelModel item; 
+//   final ReligiousChannelModel item;
 //   final bool isFocused;
 //   final VoidCallback onTap;
 //   final double cardHeight;
@@ -3896,7 +3884,7 @@
 
 //   const OptimizedReligiousCard({
 //     Key? key,
-//     required this.item, 
+//     required this.item,
 //     required this.isFocused,
 //     required this.onTap,
 //     required this.cardHeight,
@@ -3918,12 +3906,12 @@
 
 //     // ✅ FIXED: Layout ensures text is visible below image
 //     return Column(
-//       crossAxisAlignment: CrossAxisAlignment.center, 
-//       mainAxisSize: MainAxisSize.min, 
+//       crossAxisAlignment: CrossAxisAlignment.center,
+//       mainAxisSize: MainAxisSize.min,
 //       children: [
 //         SizedBox(
 //           height: cardHeight, // Defines Image area height
-//           width: double.infinity, 
+//           width: double.infinity,
 //           child: AnimatedContainer(
 //             duration: AnimationTiming.fast,
 //             transform: isFocused
@@ -3948,10 +3936,10 @@
 //               child: Stack(
 //                 fit: StackFit.expand,
 //                 children: [
-//                   _buildReligiousImage(), 
+//                   _buildReligiousImage(),
 //                   if (isFocused)
 //                     Positioned(
-//                         left: 0, right: 0, top: 0, bottom: 0, 
+//                         left: 0, right: 0, top: 0, bottom: 0,
 //                         child: Container(
 //                             color: Colors.black.withOpacity(0.4),
 //                             child: Icon(Icons.play_circle_filled_outlined,
@@ -3973,19 +3961,19 @@
 //         Padding(
 //           padding: const EdgeInsets.symmetric(horizontal: 4.0),
 //           child: Text(
-//               item.name, 
-//               textAlign: TextAlign.center, 
+//               item.name,
+//               textAlign: TextAlign.center,
 //               style: TextStyle(
 //                   color: isFocused
 //                       ? focusColor
 //                       : Colors.white, // ✅ White color for visibility
-//                   fontSize: 15, 
+//                   fontSize: 15,
 //                   fontWeight: isFocused ? FontWeight.bold : FontWeight.w500,
 //                   shadows: [
 //                      Shadow(color: Colors.black.withOpacity(0.8), blurRadius: 2, offset: Offset(0, 1))
 //                   ]
 //               ),
-//               maxLines: 2, 
+//               maxLines: 2,
 //               overflow: TextOverflow.ellipsis
 //           ),
 //         ),
@@ -3994,12 +3982,12 @@
 //   }
 
 //   Widget _buildReligiousImage() {
-//     final imageUrl = item.poster; 
-    
+//     final imageUrl = item.poster;
+
 //     return imageUrl != null && imageUrl.isNotEmpty
 //         ? CachedNetworkImage( // ✅ Cached
 //             imageUrl: imageUrl,
-//             fit: BoxFit.fill, 
+//             fit: BoxFit.fill,
 //             placeholder: (context, url) => _buildImagePlaceholder(),
 //             errorWidget: (context, url, error) {
 //               debugPrint('Error loading item image: $imageUrl, Error: $error');
@@ -4008,19 +3996,19 @@
 //           )
 //         : _buildImagePlaceholder();
 //   }
-  
+
 //   Widget _buildImagePlaceholder() {
 //     return Container(
 //       decoration: const BoxDecoration(
 //         gradient: LinearGradient(
 //           colors: [
-//             ProfessionalColors.accentGreen, 
+//             ProfessionalColors.accentGreen,
 //             ProfessionalColors.accentBlue,
 //           ],
 //         ),
 //       ),
 //       child: const Icon(
-//         Icons.temple_hindu_outlined, 
+//         Icons.temple_hindu_outlined,
 //         color: Colors.white,
 //         size: 24,
 //       ),
@@ -4046,7 +4034,7 @@
 
 // class _ReligiousBannerSliderState extends State<ReligiousBannerSlider> {
 //   Timer? _timer;
-//   double _opacity = 1.0; 
+//   double _opacity = 1.0;
 
 //   @override
 //   void initState() {
@@ -4069,7 +4057,7 @@
 
 //   void _startTimer() {
 //     _timer?.cancel();
-//     _timer = Timer.periodic(const Duration(seconds: 8), (timer) { 
+//     _timer = Timer.periodic(const Duration(seconds: 8), (timer) {
 //       if (!mounted || !widget.controller.hasClients || widget.sliders.length <= 1) return;
 
 //       int currentPage = widget.controller.page?.round() ?? 0;
@@ -4095,7 +4083,7 @@
 //       return const SizedBox.shrink();
 //     }
 
-//     return AnimatedOpacity( 
+//     return AnimatedOpacity(
 //       opacity: _opacity,
 //       duration: const Duration(milliseconds: 400),
 //       child: PageView.builder(
@@ -4127,7 +4115,7 @@
 //                     ],
 //                     begin: Alignment.topCenter,
 //                     end: Alignment.bottomCenter,
-//                     stops: const [0.0, 0.5, 0.7, 0.9], 
+//                     stops: const [0.0, 0.5, 0.7, 0.9],
 //                   ),
 //                 ),
 //               ),
@@ -4138,10 +4126,6 @@
 //     );
 //   }
 // }
-
-
-
-
 
 // import 'dart:async';
 // import 'dart:convert';
@@ -4155,7 +4139,7 @@
 // // NOTE: Update these imports based on your project structure
 // import 'package:mobi_tv_entertainment/components/home_screen_pages/religious_channel/religious_channel_details_page.dart';
 // import 'package:mobi_tv_entertainment/components/widgets/smart_style_image_card.dart';
-// import 'package:mobi_tv_entertainment/main.dart'; 
+// import 'package:mobi_tv_entertainment/main.dart';
 // import 'package:mobi_tv_entertainment/components/services/history_service.dart';
 
 // //==============================================================================
@@ -4183,13 +4167,13 @@
 //   static const Duration medium = Duration(milliseconds: 400);
 // }
 
-// class ReligiousChannelModel { 
+// class ReligiousChannelModel {
 //   final int id;
-//   final String name; 
+//   final String name;
 //   final String updatedAt;
-//   final String? poster; 
-//   final String? banner; 
-//   final String? genre; 
+//   final String? poster;
+//   final String? banner;
+//   final String? genre;
 //   final int order;
 //   final String? language;
 
@@ -4204,7 +4188,7 @@
 //       name: json['name'] ?? '',
 //       updatedAt: json['updated_at'] ?? '',
 //       poster: json['logo'],
-//       banner: json['logo'], 
+//       banner: json['logo'],
 //       genre: null,
 //       order: json['order'] ?? 9999,
 //       language: json['language'],
@@ -4319,7 +4303,7 @@
 //   final int? initialNetworkId;
 
 //   const ReligiousChannelSliderScreen({
-//     Key? key, 
+//     Key? key,
 //     this.title = 'Religious Channels',
 //     this.initialNetworkId,
 //   }) : super(key: key);
@@ -4330,22 +4314,22 @@
 
 // class _ReligiousChannelSliderScreenState extends State<ReligiousChannelSliderScreen> with SingleTickerProviderStateMixin {
 //   // CRASH FIX: Disposal Flag
-//   bool _isDisposed = false; 
+//   bool _isDisposed = false;
 
-//   List<ReligiousChannelModel> _religiousChannelList = []; 
-//   bool _isLoading = true; 
-//   bool _isListLoading = false; 
+//   List<ReligiousChannelModel> _religiousChannelList = [];
+//   bool _isLoading = true;
+//   bool _isListLoading = false;
 //   String? _errorMessage;
 
 //   // Focus and Scroll Controllers
 //   List<FocusNode> _itemFocusNodes = [];
 //   List<FocusNode> _networkFocusNodes = [];
-//   List<FocusNode> _channelFilterFocusNodes = [];  
+//   List<FocusNode> _channelFilterFocusNodes = [];
 //   List<FocusNode> _keyboardFocusNodes = [];
 //   final FocusNode _widgetFocusNode = FocusNode();
 //   final ScrollController _listScrollController = ScrollController();
 //   final ScrollController _networkScrollController = ScrollController();
-//   final ScrollController _channelFilterScrollController = ScrollController();  
+//   final ScrollController _channelFilterScrollController = ScrollController();
 
 //   late PageController _sliderPageController;
 
@@ -4362,23 +4346,23 @@
 
 //   // UI and Filter State
 //   int _focusedNetworkIndex = 0;
-//   int _focusedChannelFilterIndex = 0;  
+//   int _focusedChannelFilterIndex = 0;
 //   int _focusedItemIndex = -1;
 //   String _selectedNetworkName = '';
 //   String? _selectedNetworkLogo;
-  
-//   Map<String, int?> _channelFilters = {}; 
-//   String _selectedChannelFilterName = ''; 
-//   int? _selectedChannelFilterId; 
-//   bool _isDisplayingShows = false;  
 
-//   List<ReligiousChannelModel> _currentViewMasterList = []; 
-//   List<ReligiousChannelModel> _displayList = []; 
+//   Map<String, int?> _channelFilters = {};
+//   String _selectedChannelFilterName = '';
+//   int? _selectedChannelFilterId;
+//   bool _isDisplayingShows = false;
+
+//   List<ReligiousChannelModel> _currentViewMasterList = [];
+//   List<ReligiousChannelModel> _displayList = [];
 //   List<ApiNetworkModel> _apiNetworks = [];
 //   List<String> _uniqueNetworks = [];
-  
+
 //   // Animation and Loading State
-//   bool _isVideoLoading = false; 
+//   bool _isVideoLoading = false;
 //   late AnimationController _fadeController;
 //   late Animation<double> _fadeAnimation;
 //   String? _currentBackgroundUrl;
@@ -4396,7 +4380,7 @@
 //   String _searchText = '';
 //   Timer? _debounce;
 //   late FocusNode _searchButtonFocusNode;
-  
+
 //   // Slider Timer
 //   Timer? _sliderTimer;
 
@@ -4414,14 +4398,14 @@
 //     _isDisposed = false; // Initialize
 //     _sliderPageController = PageController();
 //     _searchButtonFocusNode = FocusNode();
-//     _searchButtonFocusNode.addListener(_setStateListener); 
+//     _searchButtonFocusNode.addListener(_setStateListener);
 //     _widgetFocusNode.addListener(_setStateListener);
-    
+
 //     // CRASH FIX: Safe Initialization
 //     WidgetsBinding.instance.addPostFrameCallback((_) {
 //       if (!_isDisposed) _fetchDataForPage();
 //     });
-    
+
 //     _initializeAnimations();
 //   }
 
@@ -4431,26 +4415,26 @@
 //     _sliderTimer?.cancel();
 //     _debounce?.cancel();
 //     _navigationLockTimer?.cancel();
-    
+
 //     _sliderPageController.dispose();
 //     _fadeController.dispose();
-    
+
 //     _widgetFocusNode.removeListener(_setStateListener);
 //     _widgetFocusNode.dispose();
-    
+
 //     _searchButtonFocusNode.removeListener(_setStateListener);
 //     _searchButtonFocusNode.dispose();
-    
+
 //     _listScrollController.dispose();
 //     _networkScrollController.dispose();
 //     _channelFilterScrollController.dispose();
-    
+
 //     // Safe Node Disposal
 //     _disposeFocusNodes(_itemFocusNodes);
 //     _disposeFocusNodes(_networkFocusNodes);
-//     _disposeFocusNodes(_channelFilterFocusNodes);  
+//     _disposeFocusNodes(_channelFilterFocusNodes);
 //     _disposeFocusNodes(_keyboardFocusNodes);
-    
+
 //     super.dispose();
 //   }
 
@@ -4471,14 +4455,14 @@
 //         child: Stack(
 //           children: [
 //             _buildBackgroundOrSlider(),
-//             _isLoading 
+//             _isLoading
 //                 ? const Center(
 //                     child: ProfessionalReligiousLoadingIndicator(
-//                         message: 'Loading Religious Channels...'))  
+//                         message: 'Loading Religious Channels...'))
 //                 : _errorMessage != null
-//                     ? _buildErrorWidget() 
-//                     : _buildPageContent(), 
-//             if (_isVideoLoading && _errorMessage == null) 
+//                     ? _buildErrorWidget()
+//                     : _buildPageContent(),
+//             if (_isVideoLoading && _errorMessage == null)
 //               Positioned.fill(
 //                 child: Container(
 //                   color: Colors.black.withOpacity(0.8),
@@ -4507,7 +4491,7 @@
 //     try {
 //       final fetchedNetworks = await _fetchNetworks();
 //       if (_isDisposed || !mounted) return;
-      
+
 //       fetchedNetworks.sort((a, b) => a.networksOrder.compareTo(b.networksOrder));
 
 //       if (fetchedNetworks.isEmpty) {
@@ -4520,7 +4504,7 @@
 //       if (widget.initialNetworkId != null) {
 //         int foundIndex = fetchedNetworks.indexWhere((n) => n.id == widget.initialNetworkId);
 //         if (foundIndex != -1) {
-//           initialIndex = foundIndex; 
+//           initialIndex = foundIndex;
 //         }
 //       }
 
@@ -4530,23 +4514,23 @@
 //       setState(() {
 //         _apiNetworks = fetchedNetworks;
 //         _uniqueNetworks = _apiNetworks.map((n) => n.name).toList();
-//         _focusedNetworkIndex = initialIndex; 
+//         _focusedNetworkIndex = initialIndex;
 //         _selectedNetworkName = initialNetwork.name;
 //       });
 
-//       final fetchedList = await _fetchReligiousChannelsForNetwork(networkIdToFetch); 
-      
+//       final fetchedList = await _fetchReligiousChannelsForNetwork(networkIdToFetch);
+
 //       if (_isDisposed || !mounted) return;
 
 //       setState(() {
-//         _religiousChannelList = fetchedList;  
+//         _religiousChannelList = fetchedList;
 //         if (_religiousChannelList.isEmpty) _errorMessage = "No Religious Channels Found.";
 //       });
 
 //       if (_errorMessage == null) {
-//         _processInitialData();  
-//         _updateChannelFilters(); 
-//         await _fetchDataForView(); 
+//         _processInitialData();
+//         _updateChannelFilters();
+//         await _fetchDataForView();
 //         _initializeFocusNodes();
 //         _startAnimations();
 
@@ -4558,7 +4542,7 @@
 //                 _networkFocusNodes,
 //                 _focusedNetworkIndex,
 //                 _networkScrollController,
-//                 160 
+//                 160
 //               );
 //             } catch (_) {}
 //           }
@@ -4594,12 +4578,12 @@
 //       if (response.statusCode == 200) {
 //         final dynamic _decoded_jsonData = json.decode(response.body);
 //         final List<dynamic> jsonData = safeDecodeList(_decoded_jsonData);
-//         return jsonData.map((item) => ReligiousChannelModel.fromJson(item as Map<String, dynamic>)).toList()..sort((a, b) => a.order.compareTo(b.order));  
+//         return jsonData.map((item) => ReligiousChannelModel.fromJson(item as Map<String, dynamic>)).toList()..sort((a, b) => a.order.compareTo(b.order));
 //       } else {
 //         throw Exception('API Error: ${response.statusCode}');
 //       }
 //     } catch (e) {
-//       if (!_isDisposed) debugPrint('Failed to load religious channels for network $networkId: $e');  
+//       if (!_isDisposed) debugPrint('Failed to load religious channels for network $networkId: $e');
 //       return [];
 //     }
 //   }
@@ -4622,7 +4606,7 @@
 //       if (response.statusCode == 200) {
 //         final dynamic _decoded_jsonData = json.decode(response.body);
 //         final List<dynamic> jsonData = safeDecodeList(_decoded_jsonData);
-//         return jsonData.map((item) => ReligiousShowItemModel.fromJson(item as Map<String, dynamic>)).toList()..sort((a, b) => a.order.compareTo(b.order));  
+//         return jsonData.map((item) => ReligiousShowItemModel.fromJson(item as Map<String, dynamic>)).toList()..sort((a, b) => a.order.compareTo(b.order));
 //       } else {
 //         throw Exception('API Error: ${response.statusCode}');
 //       }
@@ -4643,7 +4627,7 @@
 //               'Accept': 'application/json',
 //               'domain': SessionManager.savedDomain,
 //             },
-//             body: json.encode({"network_id": "", "data_for": "religiouschannels"}),  
+//             body: json.encode({"network_id": "", "data_for": "religiouschannels"}),
 //           ).timeout(const Duration(seconds: 30));
 
 //         if (_isDisposed) return [];
@@ -4663,7 +4647,7 @@
 
 //   void _processInitialData() {
 //     if (_apiNetworks.isEmpty || _isDisposed) return;
-//     _updateSelectedNetworkData(); 
+//     _updateSelectedNetworkData();
 //   }
 
 //   //=================================================
@@ -4676,7 +4660,7 @@
 //     if (_listScrollController.hasClients) {
 //       _listScrollController.jumpTo(0);
 //     }
-    
+
 //     Future.delayed(const Duration(milliseconds: 250), () {
 //       if (!_isDisposed && mounted && _itemFocusNodes.isNotEmpty) {
 //         setState(() => _focusedItemIndex = 0);
@@ -4701,7 +4685,7 @@
 //         _searchButtonFocusNode.requestFocus();
 //         return KeyEventResult.handled;
 //       }
-//       if (listHasFocus || channelFilterHasFocus || searchHasFocus) {  
+//       if (listHasFocus || channelFilterHasFocus || searchHasFocus) {
 //           if (_networkFocusNodes.isNotEmpty) { _networkFocusNodes[_focusedNetworkIndex].requestFocus(); }
 //         return KeyEventResult.handled;
 //       }
@@ -4719,10 +4703,10 @@
 //         return KeyEventResult.handled;
 //       }
 //       if (key == LogicalKeyboardKey.arrowLeft) {
-//         return KeyEventResult.handled; 
+//         return KeyEventResult.handled;
 //       }
-//       if (key == LogicalKeyboardKey.arrowRight && _channelFilterFocusNodes.isNotEmpty) {  
-//         _channelFilterFocusNodes[0].requestFocus();  
+//       if (key == LogicalKeyboardKey.arrowRight && _channelFilterFocusNodes.isNotEmpty) {
+//         _channelFilterFocusNodes[0].requestFocus();
 //         return KeyEventResult.handled;
 //       }
 //       if (key == LogicalKeyboardKey.arrowUp && _networkFocusNodes.isNotEmpty) {
@@ -4738,8 +4722,8 @@
 
 //     if ([ LogicalKeyboardKey.arrowUp, LogicalKeyboardKey.arrowDown, LogicalKeyboardKey.arrowLeft, LogicalKeyboardKey.arrowRight, LogicalKeyboardKey.select, LogicalKeyboardKey.enter ].contains(key)) {
 //       if (networkHasFocus) { _navigateNetworks(key); }
-//       else if (channelFilterHasFocus) { _navigateChannelFilters(key); }  
-//       else if (listHasFocus) { _navigateList(key); } 
+//       else if (channelFilterHasFocus) { _navigateChannelFilters(key); }
+//       else if (listHasFocus) { _navigateList(key); }
 //       return KeyEventResult.handled;
 //     }
 
@@ -4757,7 +4741,7 @@
 //     });
 
 //     int newIndex = _focusedItemIndex;
-    
+
 //     if (key == LogicalKeyboardKey.arrowUp) {
 //       setState(() => _lastNavigationDirection = 'vertical');
 //       if (_channelFilterFocusNodes.isNotEmpty) {
@@ -4781,7 +4765,7 @@
 //         setState(() => _lastNavigationDirection = 'horizontal');
 //       }
 //     } else if (key == LogicalKeyboardKey.arrowRight) {
-//       final currentList = _displayList; 
+//       final currentList = _displayList;
 //       if (newIndex + 1 < currentList.length) {
 //         newIndex++;
 //         setState(() => _lastNavigationDirection = 'horizontal');
@@ -4789,8 +4773,8 @@
 //     } else if (key == LogicalKeyboardKey.select || key == LogicalKeyboardKey.enter) {
 //       _isNavigationLocked = false;
 //       _navigationLockTimer?.cancel();
-//       final currentList = _displayList; 
-//       _navigateToReligiousDetails(currentList[_focusedItemIndex], _focusedItemIndex); 
+//       final currentList = _displayList;
+//       _navigateToReligiousDetails(currentList[_focusedItemIndex], _focusedItemIndex);
 //       return;
 //     }
 
@@ -4820,7 +4804,7 @@
 //       _searchButtonFocusNode.requestFocus();
 //       return;
 //     } else if (key == LogicalKeyboardKey.select || key == LogicalKeyboardKey.enter) {
-//       _updateSelectedNetwork(); 
+//       _updateSelectedNetwork();
 //       return;
 //     }
 //     if (newIndex != _focusedNetworkIndex) {
@@ -4832,7 +4816,7 @@
 
 //   void _navigateChannelFilters(LogicalKeyboardKey key) {
 //     final filterNames = _channelFilters.keys.toList();
-    
+
 //     if (filterNames.isEmpty) {
 //         if (key == LogicalKeyboardKey.arrowLeft) {
 //             _searchButtonFocusNode.requestFocus();
@@ -4843,9 +4827,9 @@
 //             setState(() => _lastNavigationDirection = 'vertical');
 //             _focusFirstListItemWithScroll();
 //         }
-//         return; 
+//         return;
 //     }
-    
+
 //     int newIndex = _focusedChannelFilterIndex;
 //     if (key == LogicalKeyboardKey.arrowLeft) {
 //       if (newIndex > 0) {
@@ -4873,13 +4857,13 @@
 //       }
 //       return;
 //     } else if (key == LogicalKeyboardKey.select || key == LogicalKeyboardKey.enter) {
-//       _updateSelectedChannelFilter(); 
+//       _updateSelectedChannelFilter();
 //       return;
 //     }
 //     if (newIndex != _focusedChannelFilterIndex) {
 //       setState(() => _focusedChannelFilterIndex = newIndex);
 //       _channelFilterFocusNodes[newIndex].requestFocus();
-//       _updateAndScrollToFocus(_channelFilterFocusNodes, newIndex, _channelFilterScrollController, 160); 
+//       _updateAndScrollToFocus(_channelFilterFocusNodes, newIndex, _channelFilterScrollController, 160);
 //     }
 //   }
 
@@ -4921,16 +4905,16 @@
 
 //   Future<void> _fetchDataForView() async {
 //     if (_isDisposed) return;
-//     _debounce?.cancel();  
+//     _debounce?.cancel();
 
 //     setState(() {
 //       _isListLoading = true;
-//       _displayList.clear();  
-//       _currentViewMasterList.clear();  
-//       _rebuildItemFocusNodes();  
-//       _errorMessage = null;  
-      
-//       _searchText = '';  
+//       _displayList.clear();
+//       _currentViewMasterList.clear();
+//       _rebuildItemFocusNodes();
+//       _errorMessage = null;
+
+//       _searchText = '';
 //       _isSearching = false;
 //     });
 
@@ -4939,23 +4923,23 @@
 //     try {
 //       if (_selectedChannelFilterId != null) {
 //         final List<ReligiousShowItemModel> showItems =
-//             await _fetchReligiousShowsForChannel(_selectedChannelFilterId!); 
-        
+//             await _fetchReligiousShowsForChannel(_selectedChannelFilterId!);
+
 //         if (_isDisposed) return;
 
 //         newMasterList = showItems.map((show) => ReligiousChannelModel(
 //               id: show.id,
 //               name: show.title,
-//               poster: show.thumbnail,  
-//               banner: show.thumbnail,  
-//               updatedAt: '',  
-//               order: show.order,  
+//               poster: show.thumbnail,
+//               banner: show.thumbnail,
+//               updatedAt: '',
+//               order: show.order,
 //               genre: show.genre,
 //               language: null,
 //             )).toList();
-//         _isDisplayingShows = true;  
+//         _isDisplayingShows = true;
 //       } else {
-//         newMasterList = [];  
+//         newMasterList = [];
 //         _isDisplayingShows = false;
 //       }
 //     } catch (e) {
@@ -4963,23 +4947,23 @@
 //         setState(() {
 //           _errorMessage = "Failed to load data. Please try again.";
 //         });
-//         newMasterList = [];  
+//         newMasterList = [];
 //       }
 //     }
 
 //     if (_isDisposed || !mounted) return;
 
 //     setState(() {
-//       _currentViewMasterList = newMasterList;  
-//       _displayList = List.from(_currentViewMasterList);  
-//       _isListLoading = false;  
-//       _rebuildItemFocusNodes();  
-//       _focusedItemIndex = -1;  
+//       _currentViewMasterList = newMasterList;
+//       _displayList = List.from(_currentViewMasterList);
+//       _isListLoading = false;
+//       _rebuildItemFocusNodes();
+//       _focusedItemIndex = -1;
 //     });
 
 //     _startAnimations();
 //   }
-  
+
 //   void _applySearchFilter() {
 //     if (_isDisposed || !mounted) return;
 
@@ -4994,53 +4978,53 @@
 //     }
 
 //     setState(() {
-//       _displayList = filteredList; 
+//       _displayList = filteredList;
 //       _rebuildItemFocusNodes();
-//       _focusedItemIndex = -1; 
+//       _focusedItemIndex = -1;
 //     });
 //     _startAnimations();
 //   }
 
 //   void _updateSelectedNetwork() async {
-//       if (_isDisposed || _apiNetworks.isEmpty || _focusedNetworkIndex >= _apiNetworks.length) return;  
+//       if (_isDisposed || _apiNetworks.isEmpty || _focusedNetworkIndex >= _apiNetworks.length) return;
 
 //     final selectedNetwork = _apiNetworks[_focusedNetworkIndex];
-//     _debounce?.cancel();  
+//     _debounce?.cancel();
 
 //     setState(() {
-//       _isListLoading = true;  
-//       _errorMessage = null;  
-//         _displayList = [];  
+//       _isListLoading = true;
+//       _errorMessage = null;
+//         _displayList = [];
 //         _currentViewMasterList.clear();
-//         _rebuildItemFocusNodes();  
-//         _isSearching = false;  
+//         _rebuildItemFocusNodes();
+//         _isSearching = false;
 //         _searchText = '';
 //     });
 
 //     try {
-//       final newChannelList = await _fetchReligiousChannelsForNetwork(selectedNetwork.id); 
+//       final newChannelList = await _fetchReligiousChannelsForNetwork(selectedNetwork.id);
 //       if (_isDisposed || !mounted) return;
 
 //       setState(() {
-//         _religiousChannelList = newChannelList;  
+//         _religiousChannelList = newChannelList;
 //         _selectedNetworkName = selectedNetwork.name;
-//         _updateSelectedNetworkData();  
-        
-//         _updateChannelFilters();  
+//         _updateSelectedNetworkData();
+
+//         _updateChannelFilters();
 //         _rebuildChannelFilterFocusNodes();
 //       });
-      
-//       await _fetchDataForView();  
-      
+
+//       await _fetchDataForView();
+
 //     } catch (e) {
 //       if (!_isDisposed && mounted) {
 //         setState(() {
 //           _isListLoading = false;
 //           _errorMessage = "Failed to load channels for ${selectedNetwork.name}.";
-//           _religiousChannelList = [];  
+//           _religiousChannelList = [];
 //           _displayList = [];
 //           _currentViewMasterList.clear();
-//             _updateChannelFilters();  
+//             _updateChannelFilters();
 //             _rebuildChannelFilterFocusNodes();
 //         });
 //       }
@@ -5052,7 +5036,7 @@
 //     final filterNames = _channelFilters.keys.toList();
 //     if (filterNames.isEmpty || _focusedChannelFilterIndex >= filterNames.length || _channelFilterFocusNodes.isEmpty) return;
 
-//     _debounce?.cancel();  
+//     _debounce?.cancel();
 
 //     final newFilterName = filterNames[_focusedChannelFilterIndex];
 //     if (newFilterName == _selectedChannelFilterName) return;
@@ -5061,26 +5045,26 @@
 //       _selectedChannelFilterName = newFilterName;
 //       _selectedChannelFilterId = _channelFilters[_selectedChannelFilterName];
 //       _isDisplayingShows = (_selectedChannelFilterId != null);
-      
+
 //       _fetchDataForView();
 //     });
 //   }
 
 //   void _updateSelectedNetworkData() {
 //     if (_isDisposed) return;
-//     if (_apiNetworks.isEmpty || _focusedNetworkIndex >= _apiNetworks.length) return;  
+//     if (_apiNetworks.isEmpty || _focusedNetworkIndex >= _apiNetworks.length) return;
 
 //     final selectedNetwork = _apiNetworks.firstWhere(
 //         (n) => n.name == _selectedNetworkName,
 //         orElse: () => ApiNetworkModel(id: -1, name: '', networksOrder: 9999));
-        
+
 //     final religiousSliders = selectedNetwork.sliders
-//         .where((s) => s.sliderFor == 'religiouschannels') 
+//         .where((s) => s.sliderFor == 'religiouschannels')
 //         .toList();
 
 //     setState(() {
 //       _selectedNetworkLogo = selectedNetwork.logo;
-//       _currentReligiousSliders = religiousSliders; 
+//       _currentReligiousSliders = religiousSliders;
 //       _currentSliderIndex = 0;
 //       if (religiousSliders.isNotEmpty) {
 //         _currentBackgroundUrl = religiousSliders.first.banner;
@@ -5100,8 +5084,8 @@
 //           int next = (_sliderPageController.page?.round() ?? 0) + 1;
 //           if (next >= _currentReligiousSliders.length) next = 0;
 //           _sliderPageController.animateToPage(
-//             next, 
-//             duration: const Duration(milliseconds: 500), 
+//             next,
+//             duration: const Duration(milliseconds: 500),
 //             curve: Curves.easeInOut
 //           );
 //         }
@@ -5113,9 +5097,9 @@
 //     if (_isDisposed) return;
 //     setState(() {
 //       if (_religiousChannelList.isEmpty) {
-//         _channelFilters = {};  
+//         _channelFilters = {};
 //       } else {
-//         final Map<String, int?> newFilters = {};  
+//         final Map<String, int?> newFilters = {};
 //         for (final channel in _religiousChannelList) {
 //           if (channel.name.isNotEmpty && !newFilters.containsKey(channel.name)) {
 //             newFilters[channel.name] = channel.id;
@@ -5123,11 +5107,11 @@
 //         }
 //         _channelFilters = newFilters;
 //       }
-      
+
 //       if (_channelFilters.isNotEmpty) {
 //         _selectedChannelFilterName = _channelFilters.keys.first;
 //         _selectedChannelFilterId = _channelFilters.values.first;
-//         _isDisplayingShows = true;  
+//         _isDisplayingShows = true;
 //         _focusedChannelFilterIndex = 0;
 //       } else {
 //         _selectedChannelFilterName = '';
@@ -5154,32 +5138,32 @@
 //           _searchText = _searchText.substring(0, _searchText.length - 1);
 //         }
 //       } else if (value == ' ') {
-//         if (_searchText.isNotEmpty && !_searchText.endsWith(' ')) { 
+//         if (_searchText.isNotEmpty && !_searchText.endsWith(' ')) {
 //           _searchText += ' ';
 //         }
 //       } else {
 //         _searchText += value;
 //       }
-//       _isSearching = _searchText.isNotEmpty; 
-//       _debounce?.cancel(); 
-//       _debounce = Timer(const Duration(milliseconds: 400), () { 
-//         _applySearchFilter(); 
+//       _isSearching = _searchText.isNotEmpty;
+//       _debounce?.cancel();
+//       _debounce = Timer(const Duration(milliseconds: 400), () {
+//         _applySearchFilter();
 //       });
 //     });
 //   }
 
-//   Future<void> _navigateToReligiousDetails(ReligiousChannelModel item, int index) async {  
+//   Future<void> _navigateToReligiousDetails(ReligiousChannelModel item, int index) async {
 //     if (_isVideoLoading || _isDisposed) return;
 //     setState(() => _isVideoLoading = true);
-    
+
 //     try {
 //       int? currentUserId = SessionManager.userId;
 //       if (currentUserId != null) {
 //         HistoryService.updateUserHistory(
 //           userId: currentUserId,
-//           contentType: 5, 
-//           eventId: item.id,  
-//           eventTitle: item.name,  
+//           contentType: 5,
+//           eventId: item.id,
+//           eventTitle: item.name,
 //           url: '',
 //           categoryId: 0,
 //         ).catchError((e) {});
@@ -5189,10 +5173,10 @@
 //     await Navigator.push(
 //       context,
 //       MaterialPageRoute(
-//         builder: (context) => ReligiousChannelDetailsPage( 
-//           id: item.id,  
-//           banner: item.banner ?? item.poster ?? '',  
-//           poster: item.poster ?? item.banner ?? '',  
+//         builder: (context) => ReligiousChannelDetailsPage(
+//           id: item.id,
+//           banner: item.banner ?? item.poster ?? '',
+//           poster: item.poster ?? item.banner ?? '',
 //           name: item.name,  updatedAt:item.updatedAt,
 //         ),
 //       ),
@@ -5201,19 +5185,19 @@
 //     if (!_isDisposed && mounted) {
 //       setState(() {
 //         _isVideoLoading = false;
-//           if (index >= 0 && index < _itemFocusNodes.length) { 
+//           if (index >= 0 && index < _itemFocusNodes.length) {
 //             _focusedItemIndex = index;
 //               WidgetsBinding.instance.addPostFrameCallback((_) {
 //                   if(!_isDisposed && mounted && _itemFocusNodes.isNotEmpty && _focusedItemIndex < _itemFocusNodes.length) {
 //                     try { _itemFocusNodes[_focusedItemIndex].requestFocus(); } catch (_) {}
 //                     _updateAndScrollToFocus(
-//                         _itemFocusNodes, _focusedItemIndex, _listScrollController, (bannerwdt * 1.1) + 15); 
+//                         _itemFocusNodes, _focusedItemIndex, _listScrollController, (bannerwdt * 1.1) + 15);
 //                   }
 //                 });
 //           } else {
 //             _focusedItemIndex = -1;
 //             if(_itemFocusNodes.isNotEmpty) { _focusFirstListItemWithScroll(); }
-//             else if (_channelFilterFocusNodes.isNotEmpty && _focusedChannelFilterIndex >= 0) { _channelFilterFocusNodes[_focusedChannelFilterIndex].requestFocus(); }  
+//             else if (_channelFilterFocusNodes.isNotEmpty && _focusedChannelFilterIndex >= 0) { _channelFilterFocusNodes[_focusedChannelFilterIndex].requestFocus(); }
 //             else { _searchButtonFocusNode.requestFocus(); }
 //           }
 //       });
@@ -5230,13 +5214,13 @@
 //   }
 
 //   void _startAnimations() {
-//     _fadeController.reset(); 
+//     _fadeController.reset();
 //     _fadeController.forward();
 //   }
 
 //   void _initializeFocusNodes() {
 //     _disposeFocusNodes(_networkFocusNodes);
-//     _networkFocusNodes = List.generate(_apiNetworks.length, (index) => FocusNode(debugLabel: 'Network-$index')..addListener(_setStateListener)); 
+//     _networkFocusNodes = List.generate(_apiNetworks.length, (index) => FocusNode(debugLabel: 'Network-$index')..addListener(_setStateListener));
 //     _rebuildChannelFilterFocusNodes();
 //     _rebuildItemFocusNodes();
 //     _rebuildKeyboardFocusNodes();
@@ -5244,19 +5228,19 @@
 
 //   void _rebuildChannelFilterFocusNodes() {
 //     _disposeFocusNodes(_channelFilterFocusNodes);
-//     _channelFilterFocusNodes = List.generate(_channelFilters.length, (index) => FocusNode(debugLabel: 'ChannelFilter-$index')..addListener(_setStateListener)); 
+//     _channelFilterFocusNodes = List.generate(_channelFilters.length, (index) => FocusNode(debugLabel: 'ChannelFilter-$index')..addListener(_setStateListener));
 //   }
 
 //   void _rebuildItemFocusNodes() {
 //     _disposeFocusNodes(_itemFocusNodes);
 //     final currentList = _displayList;
-//     _itemFocusNodes = List.generate(currentList.length, (index) => FocusNode(debugLabel: 'Item-$index')..addListener(_setStateListener)); 
+//     _itemFocusNodes = List.generate(currentList.length, (index) => FocusNode(debugLabel: 'Item-$index')..addListener(_setStateListener));
 //   }
 
 //   void _rebuildKeyboardFocusNodes() {
 //     _disposeFocusNodes(_keyboardFocusNodes);
 //     int totalKeys = _keyboardLayout.fold(0, (prev, row) => prev + row.length);
-//     _keyboardFocusNodes = List.generate(totalKeys, (index) => FocusNode(debugLabel: 'Key-$index')..addListener(_setStateListener)); 
+//     _keyboardFocusNodes = List.generate(totalKeys, (index) => FocusNode(debugLabel: 'Key-$index')..addListener(_setStateListener));
 //   }
 
 //   int _getFocusNodeIndexForKey(int row, int col) {
@@ -5272,11 +5256,11 @@
 //   void _disposeFocusNodes(List<FocusNode> nodes) {
 //     for (var node in nodes) {
 //       try {
-//         node.removeListener(_setStateListener); 
+//         node.removeListener(_setStateListener);
 //         node.dispose();
 //       } catch (_) {}
 //     }
-//     nodes.clear(); 
+//     nodes.clear();
 //   }
 
 //   void _updateAndScrollToFocus(List<FocusNode> nodes, int index, ScrollController controller, double itemWidth) {
@@ -5300,7 +5284,7 @@
 //       child: Column(
 //         children: [
 //           _buildTopFilterBar(),
-//           Expanded( 
+//           Expanded(
 //             child: FadeTransition(
 //               opacity: _fadeAnimation,
 //               child: _buildContentBody(),
@@ -5319,17 +5303,17 @@
 //           child: _showKeyboard ? _buildSearchUI() : const SizedBox.shrink(),
 //         ),
 //         _buildSliderIndicators(),
-//         _buildChannelFilterAndSearchButtons(), 
+//         _buildChannelFilterAndSearchButtons(),
 //         SizedBox(height: screenhgt * 0.02),
-//         _buildReligiousList(), 
+//         _buildReligiousList(),
 //       ],
 //     );
 //   }
-   
+
 //   Widget _buildBackgroundOrSlider() {
-//     if (_currentReligiousSliders.isNotEmpty) { 
-//       return ReligiousBannerSlider( 
-//         sliders: _currentReligiousSliders, 
+//     if (_currentReligiousSliders.isNotEmpty) {
+//       return ReligiousBannerSlider(
+//         sliders: _currentReligiousSliders,
 //         controller: _sliderPageController,
 //         onPageChanged: (index) {
 //           if (!_isDisposed && mounted) {
@@ -5352,7 +5336,7 @@
 //               key: ValueKey<String>(_currentBackgroundUrl!),
 //               decoration: BoxDecoration(
 //                 image: DecorationImage(
-//                   image: CachedNetworkImageProvider(_currentBackgroundUrl!), 
+//                   image: CachedNetworkImageProvider(_currentBackgroundUrl!),
 //                   fit: BoxFit.cover,
 //                   onError: (exception, stackTrace) {},
 //                 ),
@@ -5428,11 +5412,11 @@
 //           scrollDirection: Axis.horizontal,
 //           itemCount: _uniqueNetworks.length,
 //           itemBuilder: (context, index) {
-//             if (index >= _networkFocusNodes.length) return const SizedBox.shrink(); 
+//             if (index >= _networkFocusNodes.length) return const SizedBox.shrink();
 //             final networkName = _uniqueNetworks[index];
 //             final focusNode = _networkFocusNodes[index];
 //             final isSelected = _selectedNetworkName == networkName;
-            
+
 //             return Focus(
 //               focusNode: focusNode,
 //               onFocusChange: (hasFocus) {
@@ -5440,7 +5424,7 @@
 //                   setState(() => _focusedNetworkIndex = index);
 //                 }
 //               },
-//               child: _buildGlassEffectButton( 
+//               child: _buildGlassEffectButton(
 //                 focusNode: focusNode,
 //                 isSelected: isSelected,
 //                 focusColor: _focusColors[index % _focusColors.length],
@@ -5471,24 +5455,24 @@
 //     final filterNames = _channelFilters.keys.toList();
 
 //     if (filterNames.isEmpty && !_isSearching) {
-//       return const SizedBox(height: 30); 
+//       return const SizedBox(height: 30);
 //     }
-    
+
 //     return SizedBox(
 //       height: 30,
 //       child: Center(
 //         child: ListView.builder(
 //           controller: _channelFilterScrollController,
 //           scrollDirection: Axis.horizontal,
-//           itemCount: filterNames.length + 1, 
+//           itemCount: filterNames.length + 1,
 //           padding: EdgeInsets.symmetric(horizontal: screenwdt * 0.015),
 //           itemBuilder: (context, index) {
-//             if (index == 0) { 
+//             if (index == 0) {
 //               return Focus(
 //                 focusNode: _searchButtonFocusNode,
 //                 child: _buildGlassEffectButton(
 //                   focusNode: _searchButtonFocusNode,
-//                   isSelected: _isSearching || _showKeyboard, 
+//                   isSelected: _isSearching || _showKeyboard,
 //                   focusColor: ProfessionalColors.accentOrange,
 //                   onTap: () {
 //                     _searchButtonFocusNode.requestFocus();
@@ -5512,7 +5496,7 @@
 //                         ("Search").toUpperCase(),
 //                         style: TextStyle(
 //                           color: Colors.white,
-//                           fontWeight: FontWeight.bold, 
+//                           fontWeight: FontWeight.bold,
 //                           fontSize: 16,
 //                         ),
 //                       ),
@@ -5550,7 +5534,7 @@
 //                   filterName.toUpperCase(),
 //                   style: const TextStyle(
 //                     color: Colors.white,
-//                     fontWeight: FontWeight.bold, 
+//                     fontWeight: FontWeight.bold,
 //                     fontSize: 16,
 //                   ),
 //                 ),
@@ -5565,7 +5549,7 @@
 //   Widget _buildReligiousList() {
 //     final currentList = _displayList;
 
-//     if (currentList.isEmpty && !_isListLoading) { 
+//     if (currentList.isEmpty && !_isListLoading) {
 //       return Expanded(
 //         child: Center(
 //           child: Container(
@@ -5580,14 +5564,14 @@
 //               mainAxisSize: MainAxisSize.min,
 //               children: [
 //                 const Icon(
-//                   Icons.temple_hindu_rounded, 
+//                   Icons.temple_hindu_rounded,
 //                   size: 25,
 //                   color: ProfessionalColors.textSecondary,
 //                 ),
 //                 Text(
 //                   _isSearching && _searchText.isNotEmpty
 //                       ? "No results found for '$_searchText'"
-//                       : 'No religious content available.', 
+//                       : 'No religious content available.',
 //                   style: const TextStyle(
 //                     color: ProfessionalColors.textSecondary,
 //                     fontSize: 16,
@@ -5599,10 +5583,10 @@
 //         ),
 //       );
 //     }
-    
+
 //     return Expanded(
 //       child: Padding(
-//         padding: const EdgeInsets.only(top: 1.0, bottom: 10.0), 
+//         padding: const EdgeInsets.only(top: 1.0, bottom: 10.0),
 //         child: ListView.builder(
 //           controller: _listScrollController,
 //           clipBehavior: Clip.none,
@@ -5610,31 +5594,31 @@
 //           padding:  EdgeInsets.symmetric(horizontal: screenwdt * 0.015),
 //           itemCount: currentList.length,
 //           itemBuilder: (context, index) {
-//             if (index >= _itemFocusNodes.length) return const SizedBox.shrink(); 
+//             if (index >= _itemFocusNodes.length) return const SizedBox.shrink();
 //             final item = currentList[index];
 //             final focusNode = _itemFocusNodes[index];
-            
+
 //             return Container(
-//               width: bannerwdt * 1.1, 
-//               margin: const EdgeInsets.only(right: 15.0), 
+//               width: bannerwdt * 1.1,
+//               margin: const EdgeInsets.only(right: 15.0),
 //               alignment: Alignment.topCenter,
 //               child: InkWell(
 //                 focusNode: focusNode,
-//                 onTap: () => _navigateToReligiousDetails(item, index), 
+//                 onTap: () => _navigateToReligiousDetails(item, index),
 //                 onFocusChange: (hasFocus) {
 //                   if (hasFocus && !_isDisposed) {
 //                     setState(() => _focusedItemIndex = index);
 //                     _updateAndScrollToFocus(
-//                         _itemFocusNodes, index, _listScrollController, (bannerwdt * 1.1) + 15); 
+//                         _itemFocusNodes, index, _listScrollController, (bannerwdt * 1.1) + 15);
 //                   }
 //                 },
-//                 child: OptimizedReligiousCard( 
-//                   item: item, 
+//                 child: OptimizedReligiousCard(
+//                   item: item,
 //                   isFocused: _focusedItemIndex == index,
 //                   onTap: () =>
 //                       _navigateToReligiousDetails(item, index),
-//                   cardHeight: bannerhgt * 1.0, 
-//                   networkLogo: _isDisplayingShows ? null : _selectedNetworkLogo, 
+//                   cardHeight: bannerhgt * 1.0,
+//                   networkLogo: _isDisplayingShows ? null : _selectedNetworkLogo,
 //                   uniqueIndex: index,
 //                 ),
 //               ),
@@ -5665,9 +5649,9 @@
 //                     ],
 //                   ).createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
 //                   child: Text(
-//                     "Search in $_selectedChannelFilterName", 
+//                     "Search in $_selectedChannelFilterName",
 //                     style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-//                     maxLines: 2, 
+//                     maxLines: 2,
 //                     textAlign: TextAlign.center,
 //                   ),
 //                 ),
@@ -5719,7 +5703,7 @@
 //   }
 
 //   Widget _buildKeyboardRow(List<String> keys, int rowIndex) {
-//     int startIndex = _getFocusNodeIndexForKey(rowIndex, 0); 
+//     int startIndex = _getFocusNodeIndexForKey(rowIndex, 0);
 
 //     return Row(
 //       mainAxisAlignment: MainAxisAlignment.center,
@@ -5785,12 +5769,12 @@
 //   }
 
 //   Widget _buildSliderIndicators() {
-//     if (_currentReligiousSliders.length <= 1) { 
-//       return const SizedBox(height: 28); 
+//     if (_currentReligiousSliders.length <= 1) {
+//       return const SizedBox(height: 28);
 //     }
 //     return Row(
 //       mainAxisAlignment: MainAxisAlignment.center,
-//       children: List.generate(_currentReligiousSliders.length, (index) { 
+//       children: List.generate(_currentReligiousSliders.length, (index) {
 //         bool isActive = _currentSliderIndex == index;
 //         return AnimatedContainer(
 //           duration: const Duration(milliseconds: 300),
@@ -5902,7 +5886,7 @@
 //             ),
 //             const SizedBox(height: 24),
 //             ElevatedButton.icon(
-//               focusNode: FocusNode(), 
+//               focusNode: FocusNode(),
 //               onPressed: () => _fetchDataForPage(forceRefresh: true),
 //               icon: const Icon(Icons.refresh_rounded),
 //               label: const Text('Try Again'),
@@ -5929,7 +5913,7 @@
 // //==============================================================================
 
 // class OptimizedReligiousCard extends StatelessWidget {
-//   final ReligiousChannelModel item; 
+//   final ReligiousChannelModel item;
 //   final bool isFocused;
 //   final VoidCallback onTap;
 //   final double cardHeight;
@@ -5938,7 +5922,7 @@
 
 //   const OptimizedReligiousCard({
 //     Key? key,
-//     required this.item, 
+//     required this.item,
 //     required this.isFocused,
 //     required this.onTap,
 //     required this.cardHeight,
@@ -5987,7 +5971,7 @@
 //             ),
 // /*        SizedBox(
 //           height: cardHeight, // Defines Image area height
-//           width: double.infinity, 
+//           width: double.infinity,
 //           child: AnimatedContainer(
 //             duration: AnimationTiming.fast,
 //             transform: isFocused
@@ -6013,10 +5997,10 @@
 //               child: Stack(
 //                 fit: StackFit.expand,
 //                 children: [
-//                   _buildReligiousImage(), 
+//                   _buildReligiousImage(),
 //                   if (isFocused)
 //                     Positioned(
-//                         left: 0, right: 0, top: 0, bottom: 0, 
+//                         left: 0, right: 0, top: 0, bottom: 0,
 //                         child: Container(
 //                             color: Colors.black.withOpacity(0.4),
 //                             child: Icon(Icons.play_circle_filled_outlined,
@@ -6038,19 +6022,19 @@
 //         Padding(
 //           padding: const EdgeInsets.symmetric(horizontal: 4.0),
 //           child: Text(
-//               item.name, 
-//               textAlign: TextAlign.center, 
+//               item.name,
+//               textAlign: TextAlign.center,
 //               style: TextStyle(
 //                   color: isFocused
 //                       ? focusColor
 //                       : Colors.white, // ✅ White color for visibility
-//                   fontSize: 15, 
+//                   fontSize: 15,
 //                   fontWeight: isFocused ? FontWeight.bold : FontWeight.w500,
 //                   shadows: [
 //                       Shadow(color: Colors.black.withOpacity(0.8), blurRadius: 2, offset: Offset(0, 1))
 //                   ]
 //               ),
-//               maxLines: 2, 
+//               maxLines: 2,
 //               overflow: TextOverflow.ellipsis
 //           ),
 //         ),
@@ -6059,12 +6043,12 @@
 //   }
 
 //   Widget _buildReligiousImage() {
-//     final imageUrl = item.poster; 
-    
+//     final imageUrl = item.poster;
+
 //     return imageUrl != null && imageUrl.isNotEmpty
 //         ? CachedNetworkImage( // ✅ Cached
 //             imageUrl: imageUrl,
-//             fit: BoxFit.fill, 
+//             fit: BoxFit.fill,
 //             placeholder: (context, url) => _buildImagePlaceholder(),
 //             errorWidget: (context, url, error) {
 //               debugPrint('Error loading item image: $imageUrl, Error: $error');
@@ -6073,19 +6057,19 @@
 //           )
 //         : _buildImagePlaceholder();
 //   }
-  
+
 //   Widget _buildImagePlaceholder() {
 //     return Container(
 //       decoration: const BoxDecoration(
 //         gradient: LinearGradient(
 //           colors: [
-//             ProfessionalColors.accentGreen, 
+//             ProfessionalColors.accentGreen,
 //             ProfessionalColors.accentBlue,
 //           ],
 //         ),
 //       ),
 //       child: const Icon(
-//         Icons.temple_hindu_outlined, 
+//         Icons.temple_hindu_outlined,
 //         color: Colors.white,
 //         size: 24,
 //       ),
@@ -6111,7 +6095,7 @@
 
 // class _ReligiousBannerSliderState extends State<ReligiousBannerSlider> {
 //   Timer? _timer;
-//   double _opacity = 1.0; 
+//   double _opacity = 1.0;
 
 //   @override
 //   void initState() {
@@ -6134,7 +6118,7 @@
 
 //   void _startTimer() {
 //     _timer?.cancel();
-//     _timer = Timer.periodic(const Duration(seconds: 8), (timer) { 
+//     _timer = Timer.periodic(const Duration(seconds: 8), (timer) {
 //       if (!mounted || !widget.controller.hasClients || widget.sliders.length <= 1) return;
 
 //       int currentPage = widget.controller.page?.round() ?? 0;
@@ -6160,7 +6144,7 @@
 //       return const SizedBox.shrink();
 //     }
 
-//     return AnimatedOpacity( 
+//     return AnimatedOpacity(
 //       opacity: _opacity,
 //       duration: const Duration(milliseconds: 400),
 //       child: PageView.builder(
@@ -6192,7 +6176,7 @@
 //                     ],
 //                     begin: Alignment.topCenter,
 //                     end: Alignment.bottomCenter,
-//                     stops: const [0.0, 0.5, 0.7, 0.9], 
+//                     stops: const [0.0, 0.5, 0.7, 0.9],
 //                   ),
 //                 ),
 //               ),
@@ -6203,10 +6187,6 @@
 //     );
 //   }
 // }
-
-
-
-
 
 // import 'dart:async';
 // import 'dart:convert';
@@ -6220,7 +6200,7 @@
 // // NOTE: Update these imports based on your project structure
 // import 'package:mobi_tv_entertainment/components/home_screen_pages/religious_channel/religious_channel_details_page.dart';
 // import 'package:mobi_tv_entertainment/components/widgets/smart_style_image_card.dart';
-// import 'package:mobi_tv_entertainment/main.dart'; 
+// import 'package:mobi_tv_entertainment/main.dart';
 // import 'package:mobi_tv_entertainment/components/services/history_service.dart';
 
 // //==============================================================================
@@ -6248,13 +6228,13 @@
 //   static const Duration medium = Duration(milliseconds: 400);
 // }
 
-// class ReligiousChannelModel { 
+// class ReligiousChannelModel {
 //   final int id;
-//   final String name; 
+//   final String name;
 //   final String updatedAt;
-//   final String? poster; 
-//   final String? banner; 
-//   final String? genre; 
+//   final String? poster;
+//   final String? banner;
+//   final String? genre;
 //   final int order;
 //   final String? language;
 
@@ -6269,7 +6249,7 @@
 //       name: json['name'] ?? '',
 //       updatedAt: json['updated_at'] ?? '',
 //       poster: json['logo'],
-//       banner: json['logo'], 
+//       banner: json['logo'],
 //       genre: null,
 //       order: json['order'] ?? 9999,
 //       language: json['language'],
@@ -6384,7 +6364,7 @@
 //   final int? initialNetworkId;
 
 //   const ReligiousChannelSliderScreen({
-//     Key? key, 
+//     Key? key,
 //     this.title = 'Religious Channels',
 //     this.initialNetworkId,
 //   }) : super(key: key);
@@ -6394,22 +6374,22 @@
 // }
 
 // class _ReligiousChannelSliderScreenState extends State<ReligiousChannelSliderScreen> with SingleTickerProviderStateMixin {
-//   bool _isDisposed = false; 
+//   bool _isDisposed = false;
 
-//   List<ReligiousChannelModel> _religiousChannelList = []; 
-//   bool _isLoading = true; 
-//   bool _isListLoading = false; 
+//   List<ReligiousChannelModel> _religiousChannelList = [];
+//   bool _isLoading = true;
+//   bool _isListLoading = false;
 //   String? _errorMessage;
 
 //   // Focus and Scroll Controllers
 //   List<FocusNode> _itemFocusNodes = [];
 //   List<FocusNode> _networkFocusNodes = [];
-//   List<FocusNode> _channelFilterFocusNodes = [];  
+//   List<FocusNode> _channelFilterFocusNodes = [];
 //   List<FocusNode> _keyboardFocusNodes = [];
 //   final FocusNode _widgetFocusNode = FocusNode();
 //   final ScrollController _listScrollController = ScrollController();
 //   final ScrollController _networkScrollController = ScrollController();
-//   final ScrollController _channelFilterScrollController = ScrollController();  
+//   final ScrollController _channelFilterScrollController = ScrollController();
 
 //   late PageController _sliderPageController;
 
@@ -6426,23 +6406,23 @@
 
 //   // UI and Filter State
 //   int _focusedNetworkIndex = 0;
-//   int _focusedChannelFilterIndex = 0;  
+//   int _focusedChannelFilterIndex = 0;
 //   int _focusedItemIndex = -1;
 //   String _selectedNetworkName = '';
 //   String? _selectedNetworkLogo;
-  
-//   Map<String, int?> _channelFilters = {}; 
-//   String _selectedChannelFilterName = ''; 
-//   int? _selectedChannelFilterId; 
-//   bool _isDisplayingShows = false;  
 
-//   List<ReligiousChannelModel> _currentViewMasterList = []; 
-//   List<ReligiousChannelModel> _displayList = []; 
+//   Map<String, int?> _channelFilters = {};
+//   String _selectedChannelFilterName = '';
+//   int? _selectedChannelFilterId;
+//   bool _isDisplayingShows = false;
+
+//   List<ReligiousChannelModel> _currentViewMasterList = [];
+//   List<ReligiousChannelModel> _displayList = [];
 //   List<ApiNetworkModel> _apiNetworks = [];
 //   List<String> _uniqueNetworks = [];
-  
+
 //   // Animation and Loading State
-//   bool _isVideoLoading = false; 
+//   bool _isVideoLoading = false;
 //   late AnimationController _fadeController;
 //   late Animation<double> _fadeAnimation;
 //   String? _currentBackgroundUrl;
@@ -6460,7 +6440,7 @@
 //   String _searchText = '';
 //   Timer? _debounce;
 //   late FocusNode _searchButtonFocusNode;
-  
+
 //   // Slider Timer
 //   Timer? _sliderTimer;
 
@@ -6478,13 +6458,13 @@
 //     _isDisposed = false;
 //     _sliderPageController = PageController();
 //     _searchButtonFocusNode = FocusNode();
-//     _searchButtonFocusNode.addListener(_setStateListener); 
+//     _searchButtonFocusNode.addListener(_setStateListener);
 //     _widgetFocusNode.addListener(_setStateListener);
-    
+
 //     WidgetsBinding.instance.addPostFrameCallback((_) {
 //       if (!_isDisposed) _fetchDataForPage();
 //     });
-    
+
 //     _initializeAnimations();
 //   }
 
@@ -6494,25 +6474,25 @@
 //     _sliderTimer?.cancel();
 //     _debounce?.cancel();
 //     _navigationLockTimer?.cancel();
-    
+
 //     _sliderPageController.dispose();
 //     _fadeController.dispose();
-    
+
 //     _widgetFocusNode.removeListener(_setStateListener);
 //     _widgetFocusNode.dispose();
-    
+
 //     _searchButtonFocusNode.removeListener(_setStateListener);
 //     _searchButtonFocusNode.dispose();
-    
+
 //     _listScrollController.dispose();
 //     _networkScrollController.dispose();
 //     _channelFilterScrollController.dispose();
-    
+
 //     _disposeFocusNodes(_itemFocusNodes);
 //     _disposeFocusNodes(_networkFocusNodes);
-//     _disposeFocusNodes(_channelFilterFocusNodes);  
+//     _disposeFocusNodes(_channelFilterFocusNodes);
 //     _disposeFocusNodes(_keyboardFocusNodes);
-    
+
 //     super.dispose();
 //   }
 
@@ -6533,14 +6513,14 @@
 //         child: Stack(
 //           children: [
 //             _buildBackgroundOrSlider(),
-//             _isLoading 
+//             _isLoading
 //                 ? const Center(
 //                     child: ProfessionalReligiousLoadingIndicator(
-//                         message: 'Loading Religious Channels...'))  
+//                         message: 'Loading Religious Channels...'))
 //                 : _errorMessage != null
-//                     ? _buildErrorWidget() 
-//                     : _buildPageContent(), 
-//             if (_isVideoLoading && _errorMessage == null) 
+//                     ? _buildErrorWidget()
+//                     : _buildPageContent(),
+//             if (_isVideoLoading && _errorMessage == null)
 //               Positioned.fill(
 //                 child: Container(
 //                   color: Colors.black.withOpacity(0.8),
@@ -6565,7 +6545,7 @@
 //     try {
 //       final fetchedNetworks = await _fetchNetworks();
 //       if (_isDisposed || !mounted) return;
-      
+
 //       fetchedNetworks.sort((a, b) => a.networksOrder.compareTo(b.networksOrder));
 
 //       if (fetchedNetworks.isEmpty) {
@@ -6578,7 +6558,7 @@
 //       if (widget.initialNetworkId != null) {
 //         int foundIndex = fetchedNetworks.indexWhere((n) => n.id == widget.initialNetworkId);
 //         if (foundIndex != -1) {
-//           initialIndex = foundIndex; 
+//           initialIndex = foundIndex;
 //         }
 //       }
 
@@ -6588,23 +6568,23 @@
 //       setState(() {
 //         _apiNetworks = fetchedNetworks;
 //         _uniqueNetworks = _apiNetworks.map((n) => n.name).toList();
-//         _focusedNetworkIndex = initialIndex; 
+//         _focusedNetworkIndex = initialIndex;
 //         _selectedNetworkName = initialNetwork.name;
 //       });
 
-//       final fetchedList = await _fetchReligiousChannelsForNetwork(networkIdToFetch); 
-      
+//       final fetchedList = await _fetchReligiousChannelsForNetwork(networkIdToFetch);
+
 //       if (_isDisposed || !mounted) return;
 
 //       setState(() {
-//         _religiousChannelList = fetchedList;  
+//         _religiousChannelList = fetchedList;
 //         if (_religiousChannelList.isEmpty) _errorMessage = "No Religious Channels Found.";
 //       });
 
 //       if (_errorMessage == null) {
-//         _processInitialData();  
-//         _updateChannelFilters(); 
-//         await _fetchDataForView(); 
+//         _processInitialData();
+//         _updateChannelFilters();
+//         await _fetchDataForView();
 //         _initializeFocusNodes();
 //         _startAnimations();
 
@@ -6616,7 +6596,7 @@
 //                 _networkFocusNodes,
 //                 _focusedNetworkIndex,
 //                 _networkScrollController,
-//                 160 
+//                 160
 //               );
 //             } catch (_) {}
 //           }
@@ -6652,12 +6632,12 @@
 //       if (response.statusCode == 200) {
 //         final dynamic _decoded_jsonData = json.decode(response.body);
 //         final List<dynamic> jsonData = safeDecodeList(_decoded_jsonData);
-//         return jsonData.map((item) => ReligiousChannelModel.fromJson(item as Map<String, dynamic>)).toList()..sort((a, b) => a.order.compareTo(b.order));  
+//         return jsonData.map((item) => ReligiousChannelModel.fromJson(item as Map<String, dynamic>)).toList()..sort((a, b) => a.order.compareTo(b.order));
 //       } else {
 //         throw Exception('API Error: ${response.statusCode}');
 //       }
 //     } catch (e) {
-//       if (!_isDisposed) debugPrint('Failed to load religious channels for network $networkId: $e');  
+//       if (!_isDisposed) debugPrint('Failed to load religious channels for network $networkId: $e');
 //       return [];
 //     }
 //   }
@@ -6680,7 +6660,7 @@
 //       if (response.statusCode == 200) {
 //         final dynamic _decoded_jsonData = json.decode(response.body);
 //         final List<dynamic> jsonData = safeDecodeList(_decoded_jsonData);
-//         return jsonData.map((item) => ReligiousShowItemModel.fromJson(item as Map<String, dynamic>)).toList()..sort((a, b) => a.order.compareTo(b.order));  
+//         return jsonData.map((item) => ReligiousShowItemModel.fromJson(item as Map<String, dynamic>)).toList()..sort((a, b) => a.order.compareTo(b.order));
 //       } else {
 //         throw Exception('API Error: ${response.statusCode}');
 //       }
@@ -6701,7 +6681,7 @@
 //               'Accept': 'application/json',
 //               'domain': SessionManager.savedDomain,
 //             },
-//             body: json.encode({"network_id": "", "data_for": "religiouschannels"}),  
+//             body: json.encode({"network_id": "", "data_for": "religiouschannels"}),
 //           ).timeout(const Duration(seconds: 30));
 
 //         if (_isDisposed) return [];
@@ -6721,7 +6701,7 @@
 
 //   void _processInitialData() {
 //     if (_apiNetworks.isEmpty || _isDisposed) return;
-//     _updateSelectedNetworkData(); 
+//     _updateSelectedNetworkData();
 //   }
 
 //   void _focusFirstListItemWithScroll() {
@@ -6730,7 +6710,7 @@
 //     if (_listScrollController.hasClients) {
 //       _listScrollController.jumpTo(0);
 //     }
-    
+
 //     Future.delayed(const Duration(milliseconds: 250), () {
 //       if (!_isDisposed && mounted && _itemFocusNodes.isNotEmpty) {
 //         setState(() => _focusedItemIndex = 0);
@@ -6755,7 +6735,7 @@
 //         _searchButtonFocusNode.requestFocus();
 //         return KeyEventResult.handled;
 //       }
-//       if (listHasFocus || channelFilterHasFocus || searchHasFocus) {  
+//       if (listHasFocus || channelFilterHasFocus || searchHasFocus) {
 //           if (_networkFocusNodes.isNotEmpty) { _networkFocusNodes[_focusedNetworkIndex].requestFocus(); }
 //         return KeyEventResult.handled;
 //       }
@@ -6773,10 +6753,10 @@
 //         return KeyEventResult.handled;
 //       }
 //       if (key == LogicalKeyboardKey.arrowLeft) {
-//         return KeyEventResult.handled; 
+//         return KeyEventResult.handled;
 //       }
-//       if (key == LogicalKeyboardKey.arrowRight && _channelFilterFocusNodes.isNotEmpty) {  
-//         _channelFilterFocusNodes[0].requestFocus();  
+//       if (key == LogicalKeyboardKey.arrowRight && _channelFilterFocusNodes.isNotEmpty) {
+//         _channelFilterFocusNodes[0].requestFocus();
 //         return KeyEventResult.handled;
 //       }
 //       if (key == LogicalKeyboardKey.arrowUp && _networkFocusNodes.isNotEmpty) {
@@ -6792,8 +6772,8 @@
 
 //     if ([ LogicalKeyboardKey.arrowUp, LogicalKeyboardKey.arrowDown, LogicalKeyboardKey.arrowLeft, LogicalKeyboardKey.arrowRight, LogicalKeyboardKey.select, LogicalKeyboardKey.enter ].contains(key)) {
 //       if (networkHasFocus) { _navigateNetworks(key); }
-//       else if (channelFilterHasFocus) { _navigateChannelFilters(key); }  
-//       else if (listHasFocus) { _navigateList(key); } 
+//       else if (channelFilterHasFocus) { _navigateChannelFilters(key); }
+//       else if (listHasFocus) { _navigateList(key); }
 //       return KeyEventResult.handled;
 //     }
 
@@ -6811,7 +6791,7 @@
 //     });
 
 //     int newIndex = _focusedItemIndex;
-    
+
 //     if (key == LogicalKeyboardKey.arrowUp) {
 //       setState(() => _lastNavigationDirection = 'vertical');
 //       if (_channelFilterFocusNodes.isNotEmpty) {
@@ -6835,7 +6815,7 @@
 //         setState(() => _lastNavigationDirection = 'horizontal');
 //       }
 //     } else if (key == LogicalKeyboardKey.arrowRight) {
-//       final currentList = _displayList; 
+//       final currentList = _displayList;
 //       if (newIndex + 1 < currentList.length) {
 //         newIndex++;
 //         setState(() => _lastNavigationDirection = 'horizontal');
@@ -6843,8 +6823,8 @@
 //     } else if (key == LogicalKeyboardKey.select || key == LogicalKeyboardKey.enter) {
 //       _isNavigationLocked = false;
 //       _navigationLockTimer?.cancel();
-//       final currentList = _displayList; 
-//       _navigateToReligiousDetails(currentList[_focusedItemIndex], _focusedItemIndex); 
+//       final currentList = _displayList;
+//       _navigateToReligiousDetails(currentList[_focusedItemIndex], _focusedItemIndex);
 //       return;
 //     }
 
@@ -6874,7 +6854,7 @@
 //       _searchButtonFocusNode.requestFocus();
 //       return;
 //     } else if (key == LogicalKeyboardKey.select || key == LogicalKeyboardKey.enter) {
-//       _updateSelectedNetwork(); 
+//       _updateSelectedNetwork();
 //       return;
 //     }
 //     if (newIndex != _focusedNetworkIndex) {
@@ -6886,7 +6866,7 @@
 
 //   void _navigateChannelFilters(LogicalKeyboardKey key) {
 //     final filterNames = _channelFilters.keys.toList();
-    
+
 //     if (filterNames.isEmpty) {
 //         if (key == LogicalKeyboardKey.arrowLeft) {
 //             _searchButtonFocusNode.requestFocus();
@@ -6897,9 +6877,9 @@
 //             setState(() => _lastNavigationDirection = 'vertical');
 //             _focusFirstListItemWithScroll();
 //         }
-//         return; 
+//         return;
 //     }
-    
+
 //     int newIndex = _focusedChannelFilterIndex;
 //     if (key == LogicalKeyboardKey.arrowLeft) {
 //       if (newIndex > 0) {
@@ -6927,13 +6907,13 @@
 //       }
 //       return;
 //     } else if (key == LogicalKeyboardKey.select || key == LogicalKeyboardKey.enter) {
-//       _updateSelectedChannelFilter(); 
+//       _updateSelectedChannelFilter();
 //       return;
 //     }
 //     if (newIndex != _focusedChannelFilterIndex) {
 //       setState(() => _focusedChannelFilterIndex = newIndex);
 //       _channelFilterFocusNodes[newIndex].requestFocus();
-//       _updateAndScrollToFocus(_channelFilterFocusNodes, newIndex, _channelFilterScrollController, 160); 
+//       _updateAndScrollToFocus(_channelFilterFocusNodes, newIndex, _channelFilterScrollController, 160);
 //     }
 //   }
 
@@ -6975,16 +6955,16 @@
 
 //   Future<void> _fetchDataForView() async {
 //     if (_isDisposed) return;
-//     _debounce?.cancel();  
+//     _debounce?.cancel();
 
 //     setState(() {
 //       _isListLoading = true;
-//       _displayList.clear();  
-//       _currentViewMasterList.clear();  
-//       _rebuildItemFocusNodes();  
-//       _errorMessage = null;  
-      
-//       _searchText = '';  
+//       _displayList.clear();
+//       _currentViewMasterList.clear();
+//       _rebuildItemFocusNodes();
+//       _errorMessage = null;
+
+//       _searchText = '';
 //       _isSearching = false;
 //     });
 
@@ -6993,23 +6973,23 @@
 //     try {
 //       if (_selectedChannelFilterId != null) {
 //         final List<ReligiousShowItemModel> showItems =
-//             await _fetchReligiousShowsForChannel(_selectedChannelFilterId!); 
-        
+//             await _fetchReligiousShowsForChannel(_selectedChannelFilterId!);
+
 //         if (_isDisposed) return;
 
 //         newMasterList = showItems.map((show) => ReligiousChannelModel(
 //               id: show.id,
 //               name: show.title,
-//               poster: show.thumbnail,  
-//               banner: show.thumbnail,  
-//               updatedAt: '',  
-//               order: show.order,  
+//               poster: show.thumbnail,
+//               banner: show.thumbnail,
+//               updatedAt: '',
+//               order: show.order,
 //               genre: show.genre,
 //               language: null,
 //             )).toList();
-//         _isDisplayingShows = true;  
+//         _isDisplayingShows = true;
 //       } else {
-//         newMasterList = [];  
+//         newMasterList = [];
 //         _isDisplayingShows = false;
 //       }
 //     } catch (e) {
@@ -7017,23 +6997,23 @@
 //         setState(() {
 //           _errorMessage = "Failed to load data. Please try again.";
 //         });
-//         newMasterList = [];  
+//         newMasterList = [];
 //       }
 //     }
 
 //     if (_isDisposed || !mounted) return;
 
 //     setState(() {
-//       _currentViewMasterList = newMasterList;  
-//       _displayList = List.from(_currentViewMasterList);  
-//       _isListLoading = false;  
-//       _rebuildItemFocusNodes();  
-//       _focusedItemIndex = -1;  
+//       _currentViewMasterList = newMasterList;
+//       _displayList = List.from(_currentViewMasterList);
+//       _isListLoading = false;
+//       _rebuildItemFocusNodes();
+//       _focusedItemIndex = -1;
 //     });
 
 //     _startAnimations();
 //   }
-  
+
 //   void _applySearchFilter() {
 //     if (_isDisposed || !mounted) return;
 
@@ -7048,53 +7028,53 @@
 //     }
 
 //     setState(() {
-//       _displayList = filteredList; 
+//       _displayList = filteredList;
 //       _rebuildItemFocusNodes();
-//       _focusedItemIndex = -1; 
+//       _focusedItemIndex = -1;
 //     });
 //     _startAnimations();
 //   }
 
 //   void _updateSelectedNetwork() async {
-//       if (_isDisposed || _apiNetworks.isEmpty || _focusedNetworkIndex >= _apiNetworks.length) return;  
+//       if (_isDisposed || _apiNetworks.isEmpty || _focusedNetworkIndex >= _apiNetworks.length) return;
 
 //     final selectedNetwork = _apiNetworks[_focusedNetworkIndex];
-//     _debounce?.cancel();  
+//     _debounce?.cancel();
 
 //     setState(() {
-//       _isListLoading = true;  
-//       _errorMessage = null;  
-//         _displayList = [];  
+//       _isListLoading = true;
+//       _errorMessage = null;
+//         _displayList = [];
 //         _currentViewMasterList.clear();
-//         _rebuildItemFocusNodes();  
-//         _isSearching = false;  
+//         _rebuildItemFocusNodes();
+//         _isSearching = false;
 //         _searchText = '';
 //     });
 
 //     try {
-//       final newChannelList = await _fetchReligiousChannelsForNetwork(selectedNetwork.id); 
+//       final newChannelList = await _fetchReligiousChannelsForNetwork(selectedNetwork.id);
 //       if (_isDisposed || !mounted) return;
 
 //       setState(() {
-//         _religiousChannelList = newChannelList;  
+//         _religiousChannelList = newChannelList;
 //         _selectedNetworkName = selectedNetwork.name;
-//         _updateSelectedNetworkData();  
-        
-//         _updateChannelFilters();  
+//         _updateSelectedNetworkData();
+
+//         _updateChannelFilters();
 //         _rebuildChannelFilterFocusNodes();
 //       });
-      
-//       await _fetchDataForView();  
-      
+
+//       await _fetchDataForView();
+
 //     } catch (e) {
 //       if (!_isDisposed && mounted) {
 //         setState(() {
 //           _isListLoading = false;
 //           _errorMessage = "Failed to load channels for ${selectedNetwork.name}.";
-//           _religiousChannelList = [];  
+//           _religiousChannelList = [];
 //           _displayList = [];
 //           _currentViewMasterList.clear();
-//             _updateChannelFilters();  
+//             _updateChannelFilters();
 //             _rebuildChannelFilterFocusNodes();
 //         });
 //       }
@@ -7106,7 +7086,7 @@
 //     final filterNames = _channelFilters.keys.toList();
 //     if (filterNames.isEmpty || _focusedChannelFilterIndex >= filterNames.length || _channelFilterFocusNodes.isEmpty) return;
 
-//     _debounce?.cancel();  
+//     _debounce?.cancel();
 
 //     final newFilterName = filterNames[_focusedChannelFilterIndex];
 //     if (newFilterName == _selectedChannelFilterName) return;
@@ -7115,26 +7095,26 @@
 //       _selectedChannelFilterName = newFilterName;
 //       _selectedChannelFilterId = _channelFilters[_selectedChannelFilterName];
 //       _isDisplayingShows = (_selectedChannelFilterId != null);
-      
+
 //       _fetchDataForView();
 //     });
 //   }
 
 //   void _updateSelectedNetworkData() {
 //     if (_isDisposed) return;
-//     if (_apiNetworks.isEmpty || _focusedNetworkIndex >= _apiNetworks.length) return;  
+//     if (_apiNetworks.isEmpty || _focusedNetworkIndex >= _apiNetworks.length) return;
 
 //     final selectedNetwork = _apiNetworks.firstWhere(
 //         (n) => n.name == _selectedNetworkName,
 //         orElse: () => ApiNetworkModel(id: -1, name: '', networksOrder: 9999));
-        
+
 //     final religiousSliders = selectedNetwork.sliders
-//         .where((s) => s.sliderFor == 'religiouschannels') 
+//         .where((s) => s.sliderFor == 'religiouschannels')
 //         .toList();
 
 //     setState(() {
 //       _selectedNetworkLogo = selectedNetwork.logo;
-//       _currentReligiousSliders = religiousSliders; 
+//       _currentReligiousSliders = religiousSliders;
 //       _currentSliderIndex = 0;
 //       if (religiousSliders.isNotEmpty) {
 //         _currentBackgroundUrl = religiousSliders.first.banner;
@@ -7154,8 +7134,8 @@
 //           int next = (_sliderPageController.page?.round() ?? 0) + 1;
 //           if (next >= _currentReligiousSliders.length) next = 0;
 //           _sliderPageController.animateToPage(
-//             next, 
-//             duration: const Duration(milliseconds: 500), 
+//             next,
+//             duration: const Duration(milliseconds: 500),
 //             curve: Curves.easeInOut
 //           );
 //         }
@@ -7167,9 +7147,9 @@
 //     if (_isDisposed) return;
 //     setState(() {
 //       if (_religiousChannelList.isEmpty) {
-//         _channelFilters = {};  
+//         _channelFilters = {};
 //       } else {
-//         final Map<String, int?> newFilters = {};  
+//         final Map<String, int?> newFilters = {};
 //         for (final channel in _religiousChannelList) {
 //           if (channel.name.isNotEmpty && !newFilters.containsKey(channel.name)) {
 //             newFilters[channel.name] = channel.id;
@@ -7177,11 +7157,11 @@
 //         }
 //         _channelFilters = newFilters;
 //       }
-      
+
 //       if (_channelFilters.isNotEmpty) {
 //         _selectedChannelFilterName = _channelFilters.keys.first;
 //         _selectedChannelFilterId = _channelFilters.values.first;
-//         _isDisplayingShows = true;  
+//         _isDisplayingShows = true;
 //         _focusedChannelFilterIndex = 0;
 //       } else {
 //         _selectedChannelFilterName = '';
@@ -7208,32 +7188,32 @@
 //           _searchText = _searchText.substring(0, _searchText.length - 1);
 //         }
 //       } else if (value == ' ') {
-//         if (_searchText.isNotEmpty && !_searchText.endsWith(' ')) { 
+//         if (_searchText.isNotEmpty && !_searchText.endsWith(' ')) {
 //           _searchText += ' ';
 //         }
 //       } else {
 //         _searchText += value;
 //       }
-//       _isSearching = _searchText.isNotEmpty; 
-//       _debounce?.cancel(); 
-//       _debounce = Timer(const Duration(milliseconds: 400), () { 
-//         _applySearchFilter(); 
+//       _isSearching = _searchText.isNotEmpty;
+//       _debounce?.cancel();
+//       _debounce = Timer(const Duration(milliseconds: 400), () {
+//         _applySearchFilter();
 //       });
 //     });
 //   }
 
-//   Future<void> _navigateToReligiousDetails(ReligiousChannelModel item, int index) async {  
+//   Future<void> _navigateToReligiousDetails(ReligiousChannelModel item, int index) async {
 //     if (_isVideoLoading || _isDisposed) return;
 //     setState(() => _isVideoLoading = true);
-    
+
 //     try {
 //       int? currentUserId = SessionManager.userId;
 //       if (currentUserId != null) {
 //         HistoryService.updateUserHistory(
 //           userId: currentUserId,
-//           contentType: 5, 
-//           eventId: item.id,  
-//           eventTitle: item.name,  
+//           contentType: 5,
+//           eventId: item.id,
+//           eventTitle: item.name,
 //           url: '',
 //           categoryId: 0,
 //         ).catchError((e) {});
@@ -7243,10 +7223,10 @@
 //     await Navigator.push(
 //       context,
 //       MaterialPageRoute(
-//         builder: (context) => ReligiousChannelDetailsPage( 
-//           id: item.id,  
-//           banner: item.banner ?? item.poster ?? '',  
-//           poster: item.poster ?? item.banner ?? '',  
+//         builder: (context) => ReligiousChannelDetailsPage(
+//           id: item.id,
+//           banner: item.banner ?? item.poster ?? '',
+//           poster: item.poster ?? item.banner ?? '',
 //           name: item.name,  updatedAt:item.updatedAt,
 //         ),
 //       ),
@@ -7255,19 +7235,19 @@
 //     if (!_isDisposed && mounted) {
 //       setState(() {
 //         _isVideoLoading = false;
-//           if (index >= 0 && index < _itemFocusNodes.length) { 
+//           if (index >= 0 && index < _itemFocusNodes.length) {
 //             _focusedItemIndex = index;
 //               WidgetsBinding.instance.addPostFrameCallback((_) {
 //                   if(!_isDisposed && mounted && _itemFocusNodes.isNotEmpty && _focusedItemIndex < _itemFocusNodes.length) {
 //                     try { _itemFocusNodes[_focusedItemIndex].requestFocus(); } catch (_) {}
 //                     _updateAndScrollToFocus(
-//                         _itemFocusNodes, _focusedItemIndex, _listScrollController, (bannerwdt * 1.1) + 15); 
+//                         _itemFocusNodes, _focusedItemIndex, _listScrollController, (bannerwdt * 1.1) + 15);
 //                   }
 //                 });
 //           } else {
 //             _focusedItemIndex = -1;
 //             if(_itemFocusNodes.isNotEmpty) { _focusFirstListItemWithScroll(); }
-//             else if (_channelFilterFocusNodes.isNotEmpty && _focusedChannelFilterIndex >= 0) { _channelFilterFocusNodes[_focusedChannelFilterIndex].requestFocus(); }  
+//             else if (_channelFilterFocusNodes.isNotEmpty && _focusedChannelFilterIndex >= 0) { _channelFilterFocusNodes[_focusedChannelFilterIndex].requestFocus(); }
 //             else { _searchButtonFocusNode.requestFocus(); }
 //           }
 //       });
@@ -7280,13 +7260,13 @@
 //   }
 
 //   void _startAnimations() {
-//     _fadeController.reset(); 
+//     _fadeController.reset();
 //     _fadeController.forward();
 //   }
 
 //   void _initializeFocusNodes() {
 //     _disposeFocusNodes(_networkFocusNodes);
-//     _networkFocusNodes = List.generate(_apiNetworks.length, (index) => FocusNode(debugLabel: 'Network-$index')..addListener(_setStateListener)); 
+//     _networkFocusNodes = List.generate(_apiNetworks.length, (index) => FocusNode(debugLabel: 'Network-$index')..addListener(_setStateListener));
 //     _rebuildChannelFilterFocusNodes();
 //     _rebuildItemFocusNodes();
 //     _rebuildKeyboardFocusNodes();
@@ -7294,19 +7274,19 @@
 
 //   void _rebuildChannelFilterFocusNodes() {
 //     _disposeFocusNodes(_channelFilterFocusNodes);
-//     _channelFilterFocusNodes = List.generate(_channelFilters.length, (index) => FocusNode(debugLabel: 'ChannelFilter-$index')..addListener(_setStateListener)); 
+//     _channelFilterFocusNodes = List.generate(_channelFilters.length, (index) => FocusNode(debugLabel: 'ChannelFilter-$index')..addListener(_setStateListener));
 //   }
 
 //   void _rebuildItemFocusNodes() {
 //     _disposeFocusNodes(_itemFocusNodes);
 //     final currentList = _displayList;
-//     _itemFocusNodes = List.generate(currentList.length, (index) => FocusNode(debugLabel: 'Item-$index')..addListener(_setStateListener)); 
+//     _itemFocusNodes = List.generate(currentList.length, (index) => FocusNode(debugLabel: 'Item-$index')..addListener(_setStateListener));
 //   }
 
 //   void _rebuildKeyboardFocusNodes() {
 //     _disposeFocusNodes(_keyboardFocusNodes);
 //     int totalKeys = _keyboardLayout.fold(0, (prev, row) => prev + row.length);
-//     _keyboardFocusNodes = List.generate(totalKeys, (index) => FocusNode(debugLabel: 'Key-$index')..addListener(_setStateListener)); 
+//     _keyboardFocusNodes = List.generate(totalKeys, (index) => FocusNode(debugLabel: 'Key-$index')..addListener(_setStateListener));
 //   }
 
 //   int _getFocusNodeIndexForKey(int row, int col) {
@@ -7320,11 +7300,11 @@
 //   void _disposeFocusNodes(List<FocusNode> nodes) {
 //     for (var node in nodes) {
 //       try {
-//         node.removeListener(_setStateListener); 
+//         node.removeListener(_setStateListener);
 //         node.dispose();
 //       } catch (_) {}
 //     }
-//     nodes.clear(); 
+//     nodes.clear();
 //   }
 
 //   void _updateAndScrollToFocus(List<FocusNode> nodes, int index, ScrollController controller, double itemWidth) {
@@ -7344,7 +7324,7 @@
 //       child: Column(
 //         children: [
 //           _buildTopFilterBar(),
-//           Expanded( 
+//           Expanded(
 //             child: FadeTransition(
 //               opacity: _fadeAnimation,
 //               child: _buildContentBody(),
@@ -7363,17 +7343,17 @@
 //           child: _showKeyboard ? _buildSearchUI() : const SizedBox.shrink(),
 //         ),
 //         _buildSliderIndicators(),
-//         _buildChannelFilterAndSearchButtons(), 
+//         _buildChannelFilterAndSearchButtons(),
 //         SizedBox(height: screenhgt * 0.02),
-//         _buildReligiousList(), 
+//         _buildReligiousList(),
 //       ],
 //     );
 //   }
-   
+
 //   Widget _buildBackgroundOrSlider() {
-//     if (_currentReligiousSliders.isNotEmpty) { 
-//       return ReligiousBannerSlider( 
-//         sliders: _currentReligiousSliders, 
+//     if (_currentReligiousSliders.isNotEmpty) {
+//       return ReligiousBannerSlider(
+//         sliders: _currentReligiousSliders,
 //         controller: _sliderPageController,
 //         onPageChanged: (index) {
 //           if (!_isDisposed && mounted) {
@@ -7396,7 +7376,7 @@
 //               key: ValueKey<String>(_currentBackgroundUrl!),
 //               decoration: BoxDecoration(
 //                 image: DecorationImage(
-//                   image: CachedNetworkImageProvider(_currentBackgroundUrl!), 
+//                   image: CachedNetworkImageProvider(_currentBackgroundUrl!),
 //                   fit: BoxFit.cover,
 //                   onError: (exception, stackTrace) {},
 //                 ),
@@ -7472,11 +7452,11 @@
 //           scrollDirection: Axis.horizontal,
 //           itemCount: _uniqueNetworks.length,
 //           itemBuilder: (context, index) {
-//             if (index >= _networkFocusNodes.length) return const SizedBox.shrink(); 
+//             if (index >= _networkFocusNodes.length) return const SizedBox.shrink();
 //             final networkName = _uniqueNetworks[index];
 //             final focusNode = _networkFocusNodes[index];
 //             final isSelected = _selectedNetworkName == networkName;
-            
+
 //             return Focus(
 //               focusNode: focusNode,
 //               onFocusChange: (hasFocus) {
@@ -7484,7 +7464,7 @@
 //                   setState(() => _focusedNetworkIndex = index);
 //                 }
 //               },
-//               child: _buildGlassEffectButton( 
+//               child: _buildGlassEffectButton(
 //                 focusNode: focusNode,
 //                 isSelected: isSelected,
 //                 focusColor: _focusColors[index % _focusColors.length],
@@ -7515,24 +7495,24 @@
 //     final filterNames = _channelFilters.keys.toList();
 
 //     if (filterNames.isEmpty && !_isSearching) {
-//       return const SizedBox(height: 30); 
+//       return const SizedBox(height: 30);
 //     }
-    
+
 //     return SizedBox(
 //       height: 30,
 //       child: Center(
 //         child: ListView.builder(
 //           controller: _channelFilterScrollController,
 //           scrollDirection: Axis.horizontal,
-//           itemCount: filterNames.length + 1, 
+//           itemCount: filterNames.length + 1,
 //           padding: EdgeInsets.symmetric(horizontal: screenwdt * 0.015),
 //           itemBuilder: (context, index) {
-//             if (index == 0) { 
+//             if (index == 0) {
 //               return Focus(
 //                 focusNode: _searchButtonFocusNode,
 //                 child: _buildGlassEffectButton(
 //                   focusNode: _searchButtonFocusNode,
-//                   isSelected: _isSearching || _showKeyboard, 
+//                   isSelected: _isSearching || _showKeyboard,
 //                   focusColor: ProfessionalColors.accentOrange,
 //                   onTap: () {
 //                     _searchButtonFocusNode.requestFocus();
@@ -7556,7 +7536,7 @@
 //                         ("Search").toUpperCase(),
 //                         style: TextStyle(
 //                           color: Colors.white,
-//                           fontWeight: FontWeight.bold, 
+//                           fontWeight: FontWeight.bold,
 //                           fontSize: 16,
 //                         ),
 //                       ),
@@ -7594,7 +7574,7 @@
 //                   filterName.toUpperCase(),
 //                   style: const TextStyle(
 //                     color: Colors.white,
-//                     fontWeight: FontWeight.bold, 
+//                     fontWeight: FontWeight.bold,
 //                     fontSize: 16,
 //                   ),
 //                 ),
@@ -7609,7 +7589,7 @@
 //   Widget _buildReligiousList() {
 //     final currentList = _displayList;
 
-//     if (currentList.isEmpty && !_isListLoading) { 
+//     if (currentList.isEmpty && !_isListLoading) {
 //       return Expanded(
 //         child: Center(
 //           child: Container(
@@ -7624,14 +7604,14 @@
 //               mainAxisSize: MainAxisSize.min,
 //               children: [
 //                 const Icon(
-//                   Icons.temple_hindu_rounded, 
+//                   Icons.temple_hindu_rounded,
 //                   size: 25,
 //                   color: ProfessionalColors.textSecondary,
 //                 ),
 //                 Text(
 //                   _isSearching && _searchText.isNotEmpty
 //                       ? "No results found for '$_searchText'"
-//                       : 'No religious content available.', 
+//                       : 'No religious content available.',
 //                   style: const TextStyle(
 //                     color: ProfessionalColors.textSecondary,
 //                     fontSize: 16,
@@ -7643,10 +7623,10 @@
 //         ),
 //       );
 //     }
-    
+
 //     return Expanded(
 //       child: Padding(
-//         padding: const EdgeInsets.only(top: 1.0, bottom: 10.0), 
+//         padding: const EdgeInsets.only(top: 1.0, bottom: 10.0),
 //         child: ListView.builder(
 //           controller: _listScrollController,
 //           clipBehavior: Clip.none,
@@ -7654,31 +7634,31 @@
 //           padding:  EdgeInsets.symmetric(horizontal: screenwdt * 0.015),
 //           itemCount: currentList.length,
 //           itemBuilder: (context, index) {
-//             if (index >= _itemFocusNodes.length) return const SizedBox.shrink(); 
+//             if (index >= _itemFocusNodes.length) return const SizedBox.shrink();
 //             final item = currentList[index];
 //             final focusNode = _itemFocusNodes[index];
-            
+
 //             return Container(
-//               width: bannerwdt * 1.1, 
-//               margin: const EdgeInsets.only(right: 15.0), 
+//               width: bannerwdt * 1.1,
+//               margin: const EdgeInsets.only(right: 15.0),
 //               alignment: Alignment.topCenter,
 //               child: InkWell(
 //                 focusNode: focusNode,
-//                 onTap: () => _navigateToReligiousDetails(item, index), 
+//                 onTap: () => _navigateToReligiousDetails(item, index),
 //                 onFocusChange: (hasFocus) {
 //                   if (hasFocus && !_isDisposed) {
 //                     setState(() => _focusedItemIndex = index);
 //                     _updateAndScrollToFocus(
-//                         _itemFocusNodes, index, _listScrollController, (bannerwdt * 1.1) + 15); 
+//                         _itemFocusNodes, index, _listScrollController, (bannerwdt * 1.1) + 15);
 //                   }
 //                 },
-//                 child: OptimizedReligiousCard( 
-//                   item: item, 
+//                 child: OptimizedReligiousCard(
+//                   item: item,
 //                   isFocused: _focusedItemIndex == index,
 //                   onTap: () =>
 //                       _navigateToReligiousDetails(item, index),
-//                   cardHeight: bannerhgt * 1.0, 
-//                   networkLogo: _isDisplayingShows ? null : _selectedNetworkLogo, 
+//                   cardHeight: bannerhgt * 1.0,
+//                   networkLogo: _isDisplayingShows ? null : _selectedNetworkLogo,
 //                   uniqueIndex: index,
 //                 ),
 //               ),
@@ -7709,9 +7689,9 @@
 //                     ],
 //                   ).createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
 //                   child: Text(
-//                     "Search in $_selectedChannelFilterName", 
+//                     "Search in $_selectedChannelFilterName",
 //                     style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-//                     maxLines: 2, 
+//                     maxLines: 2,
 //                     textAlign: TextAlign.center,
 //                   ),
 //                 ),
@@ -7763,7 +7743,7 @@
 //   }
 
 //   Widget _buildKeyboardRow(List<String> keys, int rowIndex) {
-//     int startIndex = _getFocusNodeIndexForKey(rowIndex, 0); 
+//     int startIndex = _getFocusNodeIndexForKey(rowIndex, 0);
 
 //     return Row(
 //       mainAxisAlignment: MainAxisAlignment.center,
@@ -7829,12 +7809,12 @@
 //   }
 
 //   Widget _buildSliderIndicators() {
-//     if (_currentReligiousSliders.length <= 1) { 
-//       return const SizedBox(height: 28); 
+//     if (_currentReligiousSliders.length <= 1) {
+//       return const SizedBox(height: 28);
 //     }
 //     return Row(
 //       mainAxisAlignment: MainAxisAlignment.center,
-//       children: List.generate(_currentReligiousSliders.length, (index) { 
+//       children: List.generate(_currentReligiousSliders.length, (index) {
 //         bool isActive = _currentSliderIndex == index;
 //         return AnimatedContainer(
 //           duration: const Duration(milliseconds: 300),
@@ -7946,7 +7926,7 @@
 //             ),
 //             const SizedBox(height: 24),
 //             ElevatedButton.icon(
-//               focusNode: FocusNode(), 
+//               focusNode: FocusNode(),
 //               onPressed: () => _fetchDataForPage(forceRefresh: true),
 //               icon: const Icon(Icons.refresh_rounded),
 //               label: const Text('Try Again'),
@@ -7972,7 +7952,7 @@
 // //==============================================================================
 
 // class OptimizedReligiousCard extends StatelessWidget {
-//   final ReligiousChannelModel item; 
+//   final ReligiousChannelModel item;
 //   final bool isFocused;
 //   final VoidCallback onTap;
 //   final double cardHeight;
@@ -7981,7 +7961,7 @@
 
 //   const OptimizedReligiousCard({
 //     Key? key,
-//     required this.item, 
+//     required this.item,
 //     required this.isFocused,
 //     required this.onTap,
 //     required this.cardHeight,
@@ -8044,7 +8024,7 @@
 //           height: cardHeight,
 //           isFocused: isFocused,
 //           focusGlowColor: focusColor,
-//           focusedTitleColor: focusColor, 
+//           focusedTitleColor: focusColor,
 //           unfocusedTitleColor: ProfessionalColors.textSecondary,
 //           titleFontSize: 14,
 //           titleSpacing: 8,
@@ -8075,7 +8055,7 @@
 
 // class _ReligiousBannerSliderState extends State<ReligiousBannerSlider> {
 //   Timer? _timer;
-//   double _opacity = 1.0; 
+//   double _opacity = 1.0;
 
 //   @override
 //   void initState() {
@@ -8098,7 +8078,7 @@
 
 //   void _startTimer() {
 //     _timer?.cancel();
-//     _timer = Timer.periodic(const Duration(seconds: 8), (timer) { 
+//     _timer = Timer.periodic(const Duration(seconds: 8), (timer) {
 //       if (!mounted || !widget.controller.hasClients || widget.sliders.length <= 1) return;
 
 //       int currentPage = widget.controller.page?.round() ?? 0;
@@ -8124,7 +8104,7 @@
 //       return const SizedBox.shrink();
 //     }
 
-//     return AnimatedOpacity( 
+//     return AnimatedOpacity(
 //       opacity: _opacity,
 //       duration: const Duration(milliseconds: 400),
 //       child: PageView.builder(
@@ -8156,7 +8136,7 @@
 //                     ],
 //                     begin: Alignment.topCenter,
 //                     end: Alignment.bottomCenter,
-//                     stops: const [0.0, 0.5, 0.7, 0.9], 
+//                     stops: const [0.0, 0.5, 0.7, 0.9],
 //                   ),
 //                 ),
 //               ),
@@ -8168,60 +8148,129 @@
 //   }
 // }
 
-
-
-
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as https;
 
 import 'package:mobi_tv_entertainment/components/home_screen_pages/religious_channel/religious_channel_details_page.dart';
-import 'package:mobi_tv_entertainment/main.dart'; 
+import 'package:mobi_tv_entertainment/main.dart';
 import 'package:mobi_tv_entertainment/components/services/history_service.dart';
-import 'package:mobi_tv_entertainment/components/widgets/master_slider_layout.dart'; 
+import 'package:mobi_tv_entertainment/components/widgets/master_slider_layout.dart';
 
-class ReligiousChannelModel { 
-  final int id; final String name; final String updatedAt; final String? poster; final String? banner; final String? genre; final int order; final String? language;
-  ReligiousChannelModel({required this.id, required this.name, required this.updatedAt, this.poster, this.banner, this.genre, required this.order, this.language});
+class ReligiousChannelModel {
+  final int id;
+  final String name;
+  final String updatedAt;
+  final String? poster;
+  final String? banner;
+  final String? genre;
+  final int order;
+  final String? language;
+  ReligiousChannelModel(
+      {required this.id,
+      required this.name,
+      required this.updatedAt,
+      this.poster,
+      this.banner,
+      this.genre,
+      required this.order,
+      this.language});
+  String get genres => genre ?? "";
   factory ReligiousChannelModel.fromJson(Map<String, dynamic> json) {
-    return ReligiousChannelModel(id: json['id'] ?? 0, name: json['name'] ?? '', updatedAt: json['updated_at'] ?? '', poster: json['logo'], banner: json['logo'], genre: null, order: json['order'] ?? 9999, language: json['language']);
+    return ReligiousChannelModel(
+        id: json['id'] ?? 0,
+        name: json['name'] ?? '',
+        updatedAt: json['updated_at'] ?? '',
+        poster: json['logo'],
+        banner: json['logo'],
+        genre: json['genre'],
+        order: json['order'] ?? 9999,
+        language: json['language']);
   }
 }
 
 class ReligiousShowItemModel {
-  final int id; final String title; final String? thumbnail; final String? genre; final int religiousChannelId; final int order;
-  ReligiousShowItemModel({required this.id, required this.title, this.thumbnail, this.genre, required this.religiousChannelId, required this.order});
+  final int id;
+  final String title;
+  final String? thumbnail;
+  final String? genre;
+  final int religiousChannelId;
+  final int order;
+  ReligiousShowItemModel(
+      {required this.id,
+      required this.title,
+      this.thumbnail,
+      this.genre,
+      required this.religiousChannelId,
+      required this.order});
   factory ReligiousShowItemModel.fromJson(Map<String, dynamic> json) {
-    return ReligiousShowItemModel(id: json['id'] ?? 0, title: json['title'] ?? '', thumbnail: json['thumbnail'], genre: json['genre'], religiousChannelId: json['religious_channel_id'] ?? 0, order: json['order'] ?? 9999);
+    return ReligiousShowItemModel(
+        id: json['id'] ?? 0,
+        title: json['title'] ?? '',
+        thumbnail: json['thumbnail'],
+        genre: json['genre'],
+        religiousChannelId: json['religious_channel_id'] ?? 0,
+        order: json['order'] ?? 9999);
   }
 }
 
 class SliderModel {
-  final int id; final String title; final String banner; final String sliderFor;
-  SliderModel({required this.id, required this.title, required this.banner, required this.sliderFor});
+  final int id;
+  final String title;
+  final String banner;
+  final String sliderFor;
+  SliderModel(
+      {required this.id,
+      required this.title,
+      required this.banner,
+      required this.sliderFor});
   factory SliderModel.fromJson(Map<String, dynamic> json) {
-    return SliderModel(id: json['id'] ?? 0, title: json['title'] ?? '', banner: json['banner'] ?? '', sliderFor: json['slider_for'] ?? '');
+    return SliderModel(
+        id: json['id'] ?? 0,
+        title: json['title'] ?? '',
+        banner: json['banner'] ?? '',
+        sliderFor: json['slider_for'] ?? '');
   }
 }
 
 class ApiNetworkModel {
-  final int id; final String name; final String? logo; final int networksOrder; final List<SliderModel> sliders;
-  ApiNetworkModel({required this.id, required this.name, this.logo, required this.networksOrder, this.sliders = const []});
+  final int id;
+  final String name;
+  final String? logo;
+  final int networksOrder;
+  final List<SliderModel> sliders;
+  ApiNetworkModel(
+      {required this.id,
+      required this.name,
+      this.logo,
+      required this.networksOrder,
+      this.sliders = const []});
   factory ApiNetworkModel.fromJson(Map<String, dynamic> json) {
-    var sliders = (json['sliders'] as List? ?? []).map((item) => SliderModel.fromJson(item as Map<String, dynamic>)).toList();
-    return ApiNetworkModel(id: json['id'] ?? 0, name: json['name'] ?? '', logo: json['logo'], networksOrder: json['networks_order'] ?? 9999, sliders: sliders);
+    var sliders = (json['sliders'] as List? ?? [])
+        .map((item) => SliderModel.fromJson(item as Map<String, dynamic>))
+        .toList();
+    return ApiNetworkModel(
+        id: json['id'] ?? 0,
+        name: json['name'] ?? '',
+        logo: json['logo'],
+        networksOrder: json['networks_order'] ?? 9999,
+        sliders: sliders);
   }
 }
 
 class ReligiousChannelSliderScreen extends StatefulWidget {
   final String title;
   final int? initialNetworkId;
-  const ReligiousChannelSliderScreen({Key? key, this.title = 'Religious Channels', this.initialNetworkId}) : super(key: key);
+  const ReligiousChannelSliderScreen(
+      {Key? key, this.title = 'Religious Channels', this.initialNetworkId})
+      : super(key: key);
   @override
-  _ReligiousChannelSliderScreenState createState() => _ReligiousChannelSliderScreenState();
+  _ReligiousChannelSliderScreenState createState() =>
+      _ReligiousChannelSliderScreenState();
 }
 
-class _ReligiousChannelSliderScreenState extends State<ReligiousChannelSliderScreen> {
+class _ReligiousChannelSliderScreenState
+    extends State<ReligiousChannelSliderScreen> {
   bool _isDisposed = false;
   bool _isLoading = true;
   bool _isVideoLoading = false;
@@ -8230,9 +8279,9 @@ class _ReligiousChannelSliderScreenState extends State<ReligiousChannelSliderScr
   List<ApiNetworkModel> _apiNetworks = [];
   List<ReligiousChannelModel> _channelsList = [];
   List<ReligiousChannelModel> _displayList = [];
-  List<ReligiousChannelModel> _masterShowsList = []; 
+  List<ReligiousChannelModel> _masterShowsList = [];
   Map<String, int?> _channelFilters = {};
-  
+
   int _selectedNetworkIndex = 0;
   int _selectedFilterIndex = 0;
   List<String> _sliderImages = [];
@@ -8251,72 +8300,140 @@ class _ReligiousChannelSliderScreenState extends State<ReligiousChannelSliderScr
   }
 
   Future<void> _fetchInitialData() async {
-    setState(() { _isLoading = true; _errorMessage = null; });
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
     try {
-      final headers = {'auth-key': SessionManager.authKey, 'Content-Type': 'application/json', 'domain': SessionManager.savedDomain};
-      final netRes = await https.post(Uri.parse(SessionManager.baseUrl + 'getNetworks'), headers: headers, body: json.encode({"network_id": "", "data_for": "religiouschannels"}));
-      
+      final headers = {
+        'auth-key': SessionManager.authKey,
+        'Content-Type': 'application/json',
+        'domain': SessionManager.savedDomain
+      };
+      final netRes = await https.post(
+          Uri.parse(SessionManager.baseUrl + 'getNetworks'),
+          headers: headers,
+          body:
+              json.encode({"network_id": "", "data_for": "religiouschannels"}));
+
       if (_isDisposed) return;
       if (netRes.statusCode == 200) {
-        _apiNetworks = safeDecodeList(json.decode(netRes.body)).map((i) => ApiNetworkModel.fromJson(i)).toList()..sort((a,b)=> a.networksOrder.compareTo(b.networksOrder));
-        
+        _apiNetworks = safeDecodeList(json.decode(netRes.body))
+            .map((i) => ApiNetworkModel.fromJson(i))
+            .toList()
+          ..sort((a, b) => a.networksOrder.compareTo(b.networksOrder));
+
         if (_apiNetworks.isNotEmpty) {
           if (widget.initialNetworkId != null) {
-            int idx = _apiNetworks.indexWhere((n) => n.id == widget.initialNetworkId);
+            int idx =
+                _apiNetworks.indexWhere((n) => n.id == widget.initialNetworkId);
             if (idx != -1) _selectedNetworkIndex = idx;
           }
-          await _fetchChannelsForNetwork(_apiNetworks[_selectedNetworkIndex].id);
-        } else { _errorMessage = "No Networks Found"; }
-      } else { throw Exception("API Error"); }
+          await _fetchChannelsForNetwork(
+              _apiNetworks[_selectedNetworkIndex].id);
+        } else {
+          _errorMessage = "No Networks Found";
+        }
+      } else {
+        throw Exception("API Error");
+      }
     } catch (e) {
-      if (!_isDisposed && mounted) setState(() { _errorMessage = "Connection Failed"; _isLoading = false; });
+      if (!_isDisposed && mounted)
+        setState(() {
+          _errorMessage = "Connection Failed";
+          _isLoading = false;
+        });
     }
   }
 
   Future<void> _fetchChannelsForNetwork(int netId) async {
     try {
-      final res = await https.get(Uri.parse(SessionManager.baseUrl + 'getReligiousChannels?content_network=$netId'), headers: {'auth-key': SessionManager.authKey, 'domain': SessionManager.savedDomain});
+      final res = await https.get(
+          Uri.parse(SessionManager.baseUrl +
+              'getReligiousChannels?content_network=$netId'),
+          headers: {
+            'auth-key': SessionManager.authKey,
+            'domain': SessionManager.savedDomain
+          });
       if (_isDisposed) return;
-      
+
       if (res.statusCode == 200) {
-        _channelsList = safeDecodeList(json.decode(res.body)).map((i) => ReligiousChannelModel.fromJson(i)).toList()..sort((a,b)=> a.order.compareTo(b.order));
-        
+        _channelsList = safeDecodeList(json.decode(res.body))
+            .map((i) => ReligiousChannelModel.fromJson(i))
+            .toList()
+          ..sort((a, b) => a.order.compareTo(b.order));
+
         _channelFilters.clear();
-        for (var c in _channelsList) { if (c.name.isNotEmpty) _channelFilters[c.name] = c.id; }
-        
+        for (var c in _channelsList) {
+          if (c.name.isNotEmpty) _channelFilters[c.name] = c.id;
+        }
+
         final net = _apiNetworks[_selectedNetworkIndex];
-        _sliderImages = net.sliders.where((s) => s.sliderFor == 'religiouschannels').map((e) => e.banner).toList();
-        if (_sliderImages.isEmpty && net.logo != null) _sliderImages.add(net.logo!);
+        _sliderImages = net.sliders
+            .where((s) => s.sliderFor == 'religiouschannels')
+            .map((e) => e.banner)
+            .toList();
+        if (_sliderImages.isEmpty && net.logo != null)
+          _sliderImages.add(net.logo!);
 
         if (_channelFilters.isNotEmpty) {
           _selectedFilterIndex = 0;
           await _fetchShowsForChannel(_channelFilters.values.elementAt(0)!);
         } else {
-          setState(() { _displayList = []; _isLoading = false; });
+          setState(() {
+            _displayList = [];
+            _isLoading = false;
+          });
         }
       }
     } catch (e) {
-      if (!_isDisposed && mounted) setState(() { _errorMessage = "Failed to load Channels"; _isLoading = false; });
+      if (!_isDisposed && mounted)
+        setState(() {
+          _errorMessage = "Failed to load Channels";
+          _isLoading = false;
+        });
     }
   }
 
   Future<void> _fetchShowsForChannel(int channelId) async {
     setState(() => _isLoading = true);
     try {
-      final res = await https.get(Uri.parse(SessionManager.baseUrl + 'getReligiousShows/$channelId'), headers: {'auth-key': SessionManager.authKey, 'domain': SessionManager.savedDomain});
+      final res = await https.get(
+          Uri.parse(SessionManager.baseUrl + 'getReligiousShows/$channelId'),
+          headers: {
+            'auth-key': SessionManager.authKey,
+            'domain': SessionManager.savedDomain
+          });
       if (_isDisposed) return;
       if (res.statusCode == 200) {
-        final showItems = safeDecodeList(json.decode(res.body)).map((i) => ReligiousShowItemModel.fromJson(i)).toList()..sort((a,b)=> a.order.compareTo(b.order));
-        _masterShowsList = showItems.map((s) => ReligiousChannelModel(id: s.id, name: s.title, poster: s.thumbnail, banner: s.thumbnail, updatedAt: '', order: s.order)).toList();
+        final showItems = safeDecodeList(json.decode(res.body))
+            .map((i) => ReligiousShowItemModel.fromJson(i))
+            .toList()
+          ..sort((a, b) => a.order.compareTo(b.order));
+        _masterShowsList = showItems
+            .map((s) => ReligiousChannelModel(
+                id: s.id,
+                name: s.title,
+                poster: s.thumbnail,
+                banner: s.thumbnail,
+                updatedAt: '',
+                order: s.order))
+            .toList();
         _displayList = List.from(_masterShowsList);
       }
-    } catch (e) { debugPrint("Error: $e"); }
+    } catch (e) {
+      debugPrint("Error: $e");
+    }
     if (mounted && !_isDisposed) setState(() => _isLoading = false);
   }
 
   void _onNetworkChange(int idx) {
     if (_isDisposed) return;
-    setState(() { _selectedNetworkIndex = idx; _searchText = ''; _isLoading = true; });
+    setState(() {
+      _selectedNetworkIndex = idx;
+      _searchText = '';
+      _isLoading = true;
+    });
     _fetchChannelsForNetwork(_apiNetworks[idx].id);
   }
 
@@ -8326,7 +8443,9 @@ class _ReligiousChannelSliderScreenState extends State<ReligiousChannelSliderScr
       if (query.isEmpty) {
         _displayList = List.from(_masterShowsList);
       } else {
-        _displayList = _masterShowsList.where((s) => s.name.toLowerCase().contains(query.toLowerCase())).toList();
+        _displayList = _masterShowsList
+            .where((s) => s.name.toLowerCase().contains(query.toLowerCase()))
+            .toList();
       }
     });
   }
@@ -8337,12 +8456,27 @@ class _ReligiousChannelSliderScreenState extends State<ReligiousChannelSliderScr
 
     try {
       if (SessionManager.userId != null) {
-        HistoryService.updateUserHistory(userId: SessionManager.userId!, contentType: 5, eventId: item.id, eventTitle: item.name, url: '', categoryId: 0).catchError((_) {});
+        HistoryService.updateUserHistory(
+                userId: SessionManager.userId!,
+                contentType: 5,
+                eventId: item.id,
+                eventTitle: item.name,
+                url: '',
+                categoryId: 0)
+            .catchError((_) {});
       }
     } catch (_) {}
 
     if (!_isDisposed && mounted) {
-      await Navigator.push(context, MaterialPageRoute(builder: (context) => ReligiousChannelDetailsPage(id: item.id, banner: item.banner ?? item.poster ?? '', poster: item.poster ?? item.banner ?? '', name: item.name, updatedAt: item.updatedAt))).catchError((_) {});
+      await Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => ReligiousChannelDetailsPage(
+                  id: item.id,
+                  banner: item.banner ?? item.poster ?? '',
+                  poster: item.poster ?? item.banner ?? '',
+                  name: item.name,
+                  updatedAt: item.updatedAt))).catchError((_) {});
       if (mounted) setState(() => _isVideoLoading = false);
     }
   }
@@ -8351,37 +8485,42 @@ class _ReligiousChannelSliderScreenState extends State<ReligiousChannelSliderScr
   Widget build(BuildContext context) {
     return MasterSliderLayout<ReligiousChannelModel>(
       title: widget.title,
-      logoUrl: _apiNetworks.isNotEmpty ? (_apiNetworks[_selectedNetworkIndex].logo ?? '') : '',
+      logoUrl: _apiNetworks.isNotEmpty
+          ? (_apiNetworks[_selectedNetworkIndex].logo ?? '')
+          : '',
       isLoading: _isLoading,
       isVideoLoading: _isVideoLoading,
       errorMessage: _errorMessage,
       onRetry: _fetchInitialData,
-      
       networkNames: _apiNetworks.map((e) => e.name).toList(),
       selectedNetworkIndex: _selectedNetworkIndex,
       onNetworkSelected: _onNetworkChange,
-      
       filterNames: _channelFilters.keys.toList(),
       selectedFilterIndex: _selectedFilterIndex,
       onFilterSelected: (idx) {
-        setState(() { _selectedFilterIndex = idx; _searchText = ''; });
+        setState(() {
+          _selectedFilterIndex = idx;
+          _searchText = '';
+        });
         _fetchShowsForChannel(_channelFilters.values.elementAt(idx)!);
       },
       onSearch: _onSearch,
-      
       contentList: _displayList,
       onContentTap: _onTap,
       getTitle: (s) => s.name,
       getImageUrl: (s) => s.poster ?? s.banner ?? '',
-      
       sliderImages: _sliderImages,
-      focusColors: const [Color(0xFF3B82F6), Color(0xFF8B5CF6), Color(0xFFF59E0B), Color(0xFFEC4899), Color(0xFFEF4444)],
+      focusColors: const [
+        Color(0xFF3B82F6),
+        Color(0xFF8B5CF6),
+        Color(0xFFF59E0B),
+        Color(0xFFEC4899),
+        Color(0xFFEF4444)
+      ],
       placeholderIcon: Icons.temple_hindu_outlined,
       emptyMessage: "No Content Available",
-      cardWidth: bannerwdt * 1.1,
-      cardHeight: bannerhgt * 1.0,
+      cardWidth: bannerwdt,
+      cardHeight: bannerhgt,
     );
   }
 }
-
-

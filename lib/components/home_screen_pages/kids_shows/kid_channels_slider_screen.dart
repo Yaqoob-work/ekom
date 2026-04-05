@@ -78,7 +78,7 @@
 //       title: json['name'] ?? json['title'] ?? '',
 //       image: extractedImage,
 //       updatedAt: json['updated_at'] ?? '',
-//       genre: null, 
+//       genre: null,
 //       order: json['order'] ?? 9999,
 //       language: json['language'],
 //     );
@@ -111,7 +111,7 @@
 //       id: json['id'] ?? 0,
 //       title: json['name'] ?? json['title'] ?? '',
 //       // Explicit mapping: API 'thumbnail' -> Model 'thumbnail'
-//       thumbnail: json['thumbnail'] ?? json['logo'] ?? '', 
+//       thumbnail: json['thumbnail'] ?? json['logo'] ?? '',
 //       genre: json['genre'],
 //       kidChannelsId: json['kid_channel_id'] ?? json['category_id'] ?? 0,
 //       order: json['order'] ?? 9999,
@@ -888,7 +888,7 @@
 //                   id: show.id,
 //                   title: show.title,
 //                   // IMPORTANT: Map show.thumbnail to the generic 'image' field
-//                   image: show.thumbnail, 
+//                   image: show.thumbnail,
 //                   updatedAt: '',
 //                   order: show.order,
 //                   genre: show.genre,
@@ -1128,10 +1128,10 @@
 //          builder: (context) => KidChannelsDetailsPage(
 //            id: item.id,
 //            // IMPORTANT: Use the unified 'image' field here
-//           //  thumbnail: item.image, 
+//           //  thumbnail: item.image,
 //            poster: item.image,
-//           //  title: item.title, 
-//           //  updatedAt: item.updatedAt, 
+//           //  title: item.title,
+//           //  updatedAt: item.updatedAt,
 //            banner: item.image, name: item.title,
 //          ),
 //        ),
@@ -1290,7 +1290,7 @@
 //         _buildSliderIndicators(),
 //         _buildChannelFilterAndSearchButtons(),
 //         SizedBox(height: screenhgt * 0.02),
-//         _buildKidChannelsList(), 
+//         _buildKidChannelsList(),
 //       ],
 //     );
 //   }
@@ -2177,10 +2177,6 @@
 //   }
 // }
 
-
-
-
-
 // import 'dart:async';
 // import 'dart:convert';
 // import 'dart:ui';
@@ -2192,7 +2188,7 @@
 
 // // NOTE: Update paths based on your project
 // import 'package:mobi_tv_entertainment/components/home_screen_pages/kids_shows/kid_channels_details_page.dart';
-// import 'package:mobi_tv_entertainment/main.dart'; 
+// import 'package:mobi_tv_entertainment/main.dart';
 // import 'package:mobi_tv_entertainment/components/services/history_service.dart';
 // import 'package:mobi_tv_entertainment/components/widgets/smart_style_image_card.dart';
 
@@ -2224,7 +2220,7 @@
 // class KidChannelsModel {
 //   final int id;
 //   final String title;
-//   final String image; 
+//   final String image;
 //   final String updatedAt;
 //   final String? genre;
 //   final int order;
@@ -2246,7 +2242,7 @@
 //       title: json['name'] ?? json['title'] ?? '',
 //       image: extractedImage,
 //       updatedAt: json['updated_at'] ?? '',
-//       genre: null, 
+//       genre: null,
 //       order: json['order'] ?? 9999,
 //       language: json['language'],
 //     );
@@ -2270,7 +2266,7 @@
 //     return KidChannelsShowItemModel(
 //       id: json['id'] ?? 0,
 //       title: json['name'] ?? json['title'] ?? '',
-//       thumbnail: json['thumbnail'] ?? json['logo'] ?? '', 
+//       thumbnail: json['thumbnail'] ?? json['logo'] ?? '',
 //       genre: json['genre'],
 //       kidChannelsId: json['kid_channel_id'] ?? json['category_id'] ?? 0,
 //       order: json['order'] ?? 9999,
@@ -2370,7 +2366,7 @@
 // }
 
 // class _KidChannelsSliderScreenState extends State<KidChannelsSliderScreen> with SingleTickerProviderStateMixin {
-  
+
 //   // 🔥 CRASH FIX: Disposal Flag
 //   bool _isDisposed = false;
 
@@ -2438,7 +2434,7 @@
 //   String _searchText = '';
 //   Timer? _debounce;
 //   late FocusNode _searchButtonFocusNode;
-  
+
 //   Timer? _sliderTimer;
 
 //   final List<Color> _focusColors = [
@@ -2457,12 +2453,12 @@
 //     _searchButtonFocusNode = FocusNode();
 //     _searchButtonFocusNode.addListener(_setStateListener);
 //     _widgetFocusNode.addListener(_setStateListener);
-    
+
 //     // 🔥 CRASH FIX: Safe Init
 //     WidgetsBinding.instance.addPostFrameCallback((_) {
 //       if(!_isDisposed) _fetchDataForPage();
 //     });
-    
+
 //     _initializeAnimations();
 //   }
 
@@ -2472,43 +2468,43 @@
 //     _sliderTimer?.cancel();
 //     _debounce?.cancel();
 //     _navigationLockTimer?.cancel();
-    
+
 //     _sliderPageController.dispose();
 //     _fadeController.dispose();
-    
+
 //     _widgetFocusNode.removeListener(_setStateListener);
 //     _widgetFocusNode.dispose();
-    
+
 //     _searchButtonFocusNode.removeListener(_setStateListener);
 //     _searchButtonFocusNode.dispose();
-    
+
 //     _listScrollController.dispose();
 //     _networkScrollController.dispose();
 //     _channelFilterScrollController.dispose();
-    
+
 //     // Safe Node Disposal
 //     _disposeFocusNodes(_itemFocusNodes);
 //     _disposeFocusNodes(_networkFocusNodes);
 //     _disposeFocusNodes(_channelFilterFocusNodes);
 //     _disposeFocusNodes(_keyboardFocusNodes);
-    
+
 //     super.dispose();
 //   }
-  
+
 //   void _setStateListener() {
 //     if (mounted && !_isDisposed) {
 //       setState(() {});
 //     }
 //   }
-  
+
 //   void _disposeFocusNodes(List<FocusNode> nodes) {
 //     for (var node in nodes) {
 //       try {
-//         node.removeListener(_setStateListener); 
+//         node.removeListener(_setStateListener);
 //         node.dispose();
 //       } catch (_) {}
 //     }
-//     nodes.clear(); 
+//     nodes.clear();
 //   }
 
 //   @override
@@ -3254,7 +3250,7 @@
 //         builder: (context) => KidChannelsDetailsPage(
 //           id: item.id,
 //           poster: item.image,
-//           banner: item.image, 
+//           banner: item.image,
 //           name: item.title,
 //         ),
 //       ),
@@ -4181,10 +4177,6 @@
 //   }
 // }
 
-
-
-
-
 // import 'dart:async';
 // import 'dart:convert';
 // import 'dart:ui';
@@ -4196,7 +4188,7 @@
 
 // // NOTE: Update paths based on your project
 // import 'package:mobi_tv_entertainment/components/home_screen_pages/kids_shows/kid_channels_details_page.dart';
-// import 'package:mobi_tv_entertainment/main.dart'; 
+// import 'package:mobi_tv_entertainment/main.dart';
 // import 'package:mobi_tv_entertainment/components/services/history_service.dart';
 // import 'package:mobi_tv_entertainment/components/widgets/smart_style_image_card.dart';
 
@@ -4228,7 +4220,7 @@
 // class KidChannelsModel {
 //   final int id;
 //   final String title;
-//   final String image; 
+//   final String image;
 //   final String updatedAt;
 //   final String? genre;
 //   final int order;
@@ -4250,7 +4242,7 @@
 //       title: json['name'] ?? json['title'] ?? '',
 //       image: extractedImage,
 //       updatedAt: json['updated_at'] ?? '',
-//       genre: null, 
+//       genre: null,
 //       order: json['order'] ?? 9999,
 //       language: json['language'],
 //     );
@@ -4274,7 +4266,7 @@
 //     return KidChannelsShowItemModel(
 //       id: json['id'] ?? 0,
 //       title: json['name'] ?? json['title'] ?? '',
-//       thumbnail: json['thumbnail'] ?? json['logo'] ?? '', 
+//       thumbnail: json['thumbnail'] ?? json['logo'] ?? '',
 //       genre: json['genre'],
 //       kidChannelsId: json['kid_channel_id'] ?? json['category_id'] ?? 0,
 //       order: json['order'] ?? 9999,
@@ -4374,7 +4366,7 @@
 // }
 
 // class _KidChannelsSliderScreenState extends State<KidChannelsSliderScreen> with SingleTickerProviderStateMixin {
-  
+
 //   bool _isDisposed = false;
 
 //   List<KidChannelsModel> _kidChannelsList = [];
@@ -4441,7 +4433,7 @@
 //   String _searchText = '';
 //   Timer? _debounce;
 //   late FocusNode _searchButtonFocusNode;
-  
+
 //   Timer? _sliderTimer;
 
 //   final List<Color> _focusColors = [
@@ -4455,61 +4447,61 @@
 //   @override
 //   void initState() {
 //     super.initState();
-//     _isDisposed = false; 
+//     _isDisposed = false;
 //     _sliderPageController = PageController();
 //     _searchButtonFocusNode = FocusNode();
 //     _searchButtonFocusNode.addListener(_setStateListener);
 //     _widgetFocusNode.addListener(_setStateListener);
-    
+
 //     WidgetsBinding.instance.addPostFrameCallback((_) {
 //       if(!_isDisposed) _fetchDataForPage();
 //     });
-    
+
 //     _initializeAnimations();
 //   }
 
 //   @override
 //   void dispose() {
-//     _isDisposed = true; 
+//     _isDisposed = true;
 //     _sliderTimer?.cancel();
 //     _debounce?.cancel();
 //     _navigationLockTimer?.cancel();
-    
+
 //     _sliderPageController.dispose();
 //     _fadeController.dispose();
-    
+
 //     _widgetFocusNode.removeListener(_setStateListener);
 //     _widgetFocusNode.dispose();
-    
+
 //     _searchButtonFocusNode.removeListener(_setStateListener);
 //     _searchButtonFocusNode.dispose();
-    
+
 //     _listScrollController.dispose();
 //     _networkScrollController.dispose();
 //     _channelFilterScrollController.dispose();
-    
+
 //     _disposeFocusNodes(_itemFocusNodes);
 //     _disposeFocusNodes(_networkFocusNodes);
 //     _disposeFocusNodes(_channelFilterFocusNodes);
 //     _disposeFocusNodes(_keyboardFocusNodes);
-    
+
 //     super.dispose();
 //   }
-  
+
 //   void _setStateListener() {
 //     if (mounted && !_isDisposed) {
 //       setState(() {});
 //     }
 //   }
-  
+
 //   void _disposeFocusNodes(List<FocusNode> nodes) {
 //     for (var node in nodes) {
 //       try {
-//         node.removeListener(_setStateListener); 
+//         node.removeListener(_setStateListener);
 //         node.dispose();
 //       } catch (_) {}
 //     }
-//     nodes.clear(); 
+//     nodes.clear();
 //   }
 
 //   @override
@@ -5247,7 +5239,7 @@
 //         builder: (context) => KidChannelsDetailsPage(
 //           id: item.id,
 //           poster: item.image,
-//           banner: item.image, 
+//           banner: item.image,
 //           name: item.title,
 //         ),
 //       ),
@@ -6039,7 +6031,7 @@
 //           height: cardHeight,
 //           isFocused: isFocused,
 //           focusGlowColor: focusColor,
-//           focusedTitleColor: focusColor, 
+//           focusedTitleColor: focusColor,
 //           unfocusedTitleColor: KidChannelsColors.textSecondary,
 //           titleFontSize: 14,
 //           titleSpacing: 8,
@@ -6167,44 +6159,109 @@
 //   }
 // }
 
-
-
-
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as https;
 import 'package:mobi_tv_entertainment/components/home_screen_pages/kids_shows/kid_channels_details_page.dart';
-import 'package:mobi_tv_entertainment/main.dart'; 
+import 'package:mobi_tv_entertainment/main.dart';
 import 'package:mobi_tv_entertainment/components/services/history_service.dart';
 import 'package:mobi_tv_entertainment/components/widgets/master_slider_layout.dart'; // 🔥 Master Widget
 
 // --- MODELS ---
 class KidChannelsModel {
-  final int id; final String title; final String image; final String updatedAt; final String? genre; final int order; final String? language;
-  KidChannelsModel({required this.id, required this.title, required this.image, required this.updatedAt, this.genre, required this.order, this.language});
+  final int id;
+  final String title;
+  final String image;
+  final String updatedAt;
+  final String? genre;
+  final int order;
+  final String? language;
+  KidChannelsModel(
+      {required this.id,
+      required this.title,
+      required this.image,
+      required this.updatedAt,
+      this.genre,
+      required this.order,
+      this.language});
+  String get genres => genre ?? "";
   factory KidChannelsModel.fromJson(Map<String, dynamic> json) {
     String img = json['logo'] ?? json['thumbnail'] ?? json['poster'] ?? '';
-    return KidChannelsModel(id: json['id'] ?? 0, title: json['name'] ?? json['title'] ?? '', image: img, updatedAt: json['updated_at'] ?? '', genre: null, order: json['order'] ?? 9999, language: json['language']);
+    return KidChannelsModel(
+        id: json['id'] ?? 0,
+        title: json['name'] ?? json['title'] ?? '',
+        image: img,
+        updatedAt: json['updated_at'] ?? '',
+        genre: json['genre'],
+        order: json['order'] ?? 9999,
+        language: json['language']);
   }
 }
+
 class KidChannelsShowItemModel {
-  final int id; final String title; final String thumbnail; final String? genre; final int kidChannelsId; final int order;
-  KidChannelsShowItemModel({required this.id, required this.title, required this.thumbnail, this.genre, required this.kidChannelsId, required this.order});
+  final int id;
+  final String title;
+  final String thumbnail;
+  final String? genre;
+  final int kidChannelsId;
+  final int order;
+  KidChannelsShowItemModel(
+      {required this.id,
+      required this.title,
+      required this.thumbnail,
+      this.genre,
+      required this.kidChannelsId,
+      required this.order});
   factory KidChannelsShowItemModel.fromJson(Map<String, dynamic> json) {
-    return KidChannelsShowItemModel(id: json['id'] ?? 0, title: json['name'] ?? json['title'] ?? '', thumbnail: json['thumbnail'] ?? json['logo'] ?? '', genre: json['genre'], kidChannelsId: json['kid_channel_id'] ?? json['category_id'] ?? 0, order: json['order'] ?? 9999);
+    return KidChannelsShowItemModel(
+        id: json['id'] ?? 0,
+        title: json['name'] ?? json['title'] ?? '',
+        thumbnail: json['thumbnail'] ?? json['logo'] ?? '',
+        genre: json['genre'],
+        kidChannelsId: json['kid_channel_id'] ?? json['category_id'] ?? 0,
+        order: json['order'] ?? 9999);
   }
 }
+
 class SliderModel {
-  final int id; final String title; final String thumbnail; final String sliderFor;
-  SliderModel({required this.id, required this.title, required this.thumbnail, required this.sliderFor});
-  factory SliderModel.fromJson(Map<String, dynamic> json) => SliderModel(id: json['id'] ?? 0, title: json['title'] ?? '', thumbnail: json['thumbnail'] ?? '', sliderFor: json['slider_for'] ?? '');
+  final int id;
+  final String title;
+  final String thumbnail;
+  final String sliderFor;
+  SliderModel(
+      {required this.id,
+      required this.title,
+      required this.thumbnail,
+      required this.sliderFor});
+  factory SliderModel.fromJson(Map<String, dynamic> json) => SliderModel(
+      id: json['id'] ?? 0,
+      title: json['title'] ?? '',
+      thumbnail: json['thumbnail'] ?? '',
+      sliderFor: json['slider_for'] ?? '');
 }
+
 class ApiNetworkModel {
-  final int id; final String name; final String? logo; final int networksOrder; final List<SliderModel> sliders;
-  ApiNetworkModel({required this.id, required this.name, this.logo, required this.networksOrder, this.sliders = const []});
+  final int id;
+  final String name;
+  final String? logo;
+  final int networksOrder;
+  final List<SliderModel> sliders;
+  ApiNetworkModel(
+      {required this.id,
+      required this.name,
+      this.logo,
+      required this.networksOrder,
+      this.sliders = const []});
   factory ApiNetworkModel.fromJson(Map<String, dynamic> json) {
-    var sliders = (json['sliders'] as List? ?? []).map((item) => SliderModel.fromJson(item as Map<String, dynamic>)).toList();
-    return ApiNetworkModel(id: json['id'] ?? 0, name: json['name'] ?? '', logo: json['logo'], networksOrder: json['networks_order'] ?? 9999, sliders: sliders);
+    var sliders = (json['sliders'] as List? ?? [])
+        .map((item) => SliderModel.fromJson(item as Map<String, dynamic>))
+        .toList();
+    return ApiNetworkModel(
+        id: json['id'] ?? 0,
+        name: json['name'] ?? '',
+        logo: json['logo'],
+        networksOrder: json['networks_order'] ?? 9999,
+        sliders: sliders);
   }
 }
 
@@ -6212,9 +6269,12 @@ class ApiNetworkModel {
 class KidChannelsSliderScreen extends StatefulWidget {
   final String title;
   final int? initialNetworkId;
-  const KidChannelsSliderScreen({Key? key, this.title = 'Kid Channels', this.initialNetworkId}) : super(key: key);
+  const KidChannelsSliderScreen(
+      {Key? key, this.title = 'Kid Channels', this.initialNetworkId})
+      : super(key: key);
   @override
-  _KidChannelsSliderScreenState createState() => _KidChannelsSliderScreenState();
+  _KidChannelsSliderScreenState createState() =>
+      _KidChannelsSliderScreenState();
 }
 
 class _KidChannelsSliderScreenState extends State<KidChannelsSliderScreen> {
@@ -6227,7 +6287,7 @@ class _KidChannelsSliderScreenState extends State<KidChannelsSliderScreen> {
   List<KidChannelsModel> _kidChannelsList = [];
   List<KidChannelsModel> _displayList = [];
   Map<String, int?> _channelFilters = {};
-  
+
   int _selectedNetworkIndex = 0;
   int _selectedFilterIndex = 0;
   List<String> _sliderImages = [];
@@ -6247,26 +6307,43 @@ class _KidChannelsSliderScreenState extends State<KidChannelsSliderScreen> {
   }
 
   Future<void> _fetchDataForPage() async {
-    setState(() { _isLoading = true; _errorMessage = null; });
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
     try {
       final String authKey = SessionManager.authKey;
-      final netRes = await https.post(Uri.parse(SessionManager.baseUrl + 'getNetworks'), headers: {'auth-key': authKey, 'Content-Type': 'application/json', 'domain': SessionManager.savedDomain}, body: json.encode({"network_id": "", "data_for": "kidchannels"}));
-      
+      final netRes =
+          await https.post(Uri.parse(SessionManager.baseUrl + 'getNetworks'),
+              headers: {
+                'auth-key': authKey,
+                'Content-Type': 'application/json',
+                'domain': SessionManager.savedDomain
+              },
+              body: json.encode({"network_id": "", "data_for": "kidchannels"}));
+
       if (_isDisposed) return;
 
       if (netRes.statusCode == 200) {
-        _apiNetworks = safeDecodeList(json.decode(netRes.body)).map((i) => ApiNetworkModel.fromJson(i)).toList()..sort((a, b) => a.networksOrder.compareTo(b.networksOrder));
-        
+        _apiNetworks = safeDecodeList(json.decode(netRes.body))
+            .map((i) => ApiNetworkModel.fromJson(i))
+            .toList()
+          ..sort((a, b) => a.networksOrder.compareTo(b.networksOrder));
+
         if (_apiNetworks.isNotEmpty) {
           if (widget.initialNetworkId != null) {
-            int idx = _apiNetworks.indexWhere((n) => n.id == widget.initialNetworkId);
+            int idx =
+                _apiNetworks.indexWhere((n) => n.id == widget.initialNetworkId);
             if (idx != -1) _selectedNetworkIndex = idx;
           }
-          await _fetchChannelsForNetwork(_apiNetworks[_selectedNetworkIndex].id);
+          await _fetchChannelsForNetwork(
+              _apiNetworks[_selectedNetworkIndex].id);
         } else {
           _errorMessage = "No networks found.";
         }
-      } else { throw Exception("API Error"); }
+      } else {
+        throw Exception("API Error");
+      }
     } catch (e) {
       if (!_isDisposed && mounted) _errorMessage = "Connection Failed";
     } finally {
@@ -6275,17 +6352,28 @@ class _KidChannelsSliderScreenState extends State<KidChannelsSliderScreen> {
   }
 
   Future<void> _fetchChannelsForNetwork(int netId) async {
-    final res = await https.get(Uri.parse(SessionManager.baseUrl + 'getKidsChannels?content_network=$netId'), headers: {'auth-key': SessionManager.authKey, 'domain': SessionManager.savedDomain});
+    final res = await https.get(
+        Uri.parse(
+            SessionManager.baseUrl + 'getKidsChannels?content_network=$netId'),
+        headers: {
+          'auth-key': SessionManager.authKey,
+          'domain': SessionManager.savedDomain
+        });
     if (_isDisposed) return;
-    
+
     if (res.statusCode == 200) {
-      _kidChannelsList = safeDecodeList(json.decode(res.body)).map((i) => KidChannelsModel.fromJson(i)).toList()..sort((a,b)=> a.order.compareTo(b.order));
+      _kidChannelsList = safeDecodeList(json.decode(res.body))
+          .map((i) => KidChannelsModel.fromJson(i))
+          .toList()
+        ..sort((a, b) => a.order.compareTo(b.order));
       _channelFilters.clear();
-      for (var c in _kidChannelsList) { if (c.title.isNotEmpty) _channelFilters[c.title] = c.id; }
-      
+      for (var c in _kidChannelsList) {
+        if (c.title.isNotEmpty) _channelFilters[c.title] = c.id;
+      }
+
       _selectedFilterIndex = _channelFilters.isNotEmpty ? 0 : -1;
       _updateSliders();
-      
+
       if (_channelFilters.isNotEmpty) {
         await _fetchShowsForChannel(_channelFilters.values.elementAt(0)!);
       } else {
@@ -6297,24 +6385,48 @@ class _KidChannelsSliderScreenState extends State<KidChannelsSliderScreen> {
   Future<void> _fetchShowsForChannel(int channelId) async {
     setState(() => _isLoading = true);
     try {
-      final res = await https.get(Uri.parse(SessionManager.baseUrl + 'getKidsShows/$channelId'), headers: {'auth-key': SessionManager.authKey, 'domain': SessionManager.savedDomain});
+      final res = await https.get(
+          Uri.parse(SessionManager.baseUrl + 'getKidsShows/$channelId'),
+          headers: {
+            'auth-key': SessionManager.authKey,
+            'domain': SessionManager.savedDomain
+          });
       if (_isDisposed) return;
       if (res.statusCode == 200) {
-        final showItems = safeDecodeList(json.decode(res.body)).map((i) => KidChannelsShowItemModel.fromJson(i)).toList()..sort((a,b)=> a.order.compareTo(b.order));
-        _displayList = showItems.map((s) => KidChannelsModel(id: s.id, title: s.title, image: s.thumbnail, updatedAt: '', order: s.order)).toList();
+        final showItems = safeDecodeList(json.decode(res.body))
+            .map((i) => KidChannelsShowItemModel.fromJson(i))
+            .toList()
+          ..sort((a, b) => a.order.compareTo(b.order));
+        _displayList = showItems
+            .map((s) => KidChannelsModel(
+                id: s.id,
+                title: s.title,
+                image: s.thumbnail,
+                updatedAt: '',
+                order: s.order))
+            .toList();
       }
-    } catch (e) { debugPrint("Error fetching kids shows: $e"); }
+    } catch (e) {
+      debugPrint("Error fetching kids shows: $e");
+    }
     if (mounted && !_isDisposed) setState(() => _isLoading = false);
   }
 
   void _updateSliders() {
     final net = _apiNetworks[_selectedNetworkIndex];
-    _sliderImages = net.sliders.where((s) => s.sliderFor == 'kidchannels').map((e) => e.thumbnail).toList();
+    _sliderImages = net.sliders
+        .where((s) => s.sliderFor == 'kidchannels')
+        .map((e) => e.thumbnail)
+        .toList();
     if (_sliderImages.isEmpty && net.logo != null) _sliderImages.add(net.logo!);
   }
 
   void _onNetworkChange(int idx) async {
-    setState(() { _isLoading = true; _selectedNetworkIndex = idx; _searchText = ''; });
+    setState(() {
+      _isLoading = true;
+      _selectedNetworkIndex = idx;
+      _searchText = '';
+    });
     await _fetchChannelsForNetwork(_apiNetworks[idx].id);
   }
 
@@ -6329,32 +6441,52 @@ class _KidChannelsSliderScreenState extends State<KidChannelsSliderScreen> {
     // 🔥 HISTORY ISOLATED
     try {
       if (SessionManager.userId != null) {
-        await HistoryService.updateUserHistory(userId: SessionManager.userId!, contentType: 6, eventId: item.id, eventTitle: item.title, url: '', categoryId: 0);
+        await HistoryService.updateUserHistory(
+            userId: SessionManager.userId!,
+            contentType: 6,
+            eventId: item.id,
+            eventTitle: item.title,
+            url: '',
+            categoryId: 0);
       }
-    } catch (e) { debugPrint("History Error: $e"); }
+    } catch (e) {
+      debugPrint("History Error: $e");
+    }
 
     if (!_isDisposed && mounted) {
-      await Navigator.push(context, MaterialPageRoute(builder: (context) => KidChannelsDetailsPage(id: item.id, poster: item.image, banner: item.image, name: item.title))).catchError((_) {});
+      await Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => KidChannelsDetailsPage(
+                  id: item.id,
+                  poster: item.image,
+                  banner: item.image,
+                  name: item.title))).catchError((_) {});
       if (mounted) setState(() => _isVideoLoading = false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    List<KidChannelsModel> filteredList = _searchText.isEmpty ? _displayList : _displayList.where((i) => i.title.toLowerCase().contains(_searchText.toLowerCase())).toList();
+    List<KidChannelsModel> filteredList = _searchText.isEmpty
+        ? _displayList
+        : _displayList
+            .where((i) =>
+                i.title.toLowerCase().contains(_searchText.toLowerCase()))
+            .toList();
 
     return MasterSliderLayout<KidChannelsModel>(
       title: widget.title,
-      logoUrl: _apiNetworks.isNotEmpty ? (_apiNetworks[_selectedNetworkIndex].logo ?? '') : '',
+      logoUrl: _apiNetworks.isNotEmpty
+          ? (_apiNetworks[_selectedNetworkIndex].logo ?? '')
+          : '',
       isLoading: _isLoading,
       isVideoLoading: _isVideoLoading,
       errorMessage: _errorMessage,
       onRetry: _fetchDataForPage,
-      
       networkNames: _apiNetworks.map((e) => e.name).toList(),
       selectedNetworkIndex: _selectedNetworkIndex,
       onNetworkSelected: _onNetworkChange,
-      
       filterNames: _channelFilters.keys.toList(),
       selectedFilterIndex: _selectedFilterIndex,
       onFilterSelected: (idx) {
@@ -6362,18 +6494,22 @@ class _KidChannelsSliderScreenState extends State<KidChannelsSliderScreen> {
         _fetchShowsForChannel(_channelFilters.values.elementAt(idx)!);
       },
       onSearch: _onSearch,
-      
       contentList: filteredList,
       onContentTap: _onTap,
       getTitle: (s) => s.title,
       getImageUrl: (s) => s.image,
-      
       sliderImages: _sliderImages,
-      focusColors: const [Color(0xFFF59E0B), Color(0xFF10B981), Color(0xFF3B82F6), Color(0xFF8B5CF6), Color(0xFFEC4899)],
+      focusColors: const [
+        Color(0xFFF59E0B),
+        Color(0xFF10B981),
+        Color(0xFF3B82F6),
+        Color(0xFF8B5CF6),
+        Color(0xFFEC4899)
+      ],
       placeholderIcon: Icons.toys_outlined,
       emptyMessage: "No Kid Channels Available",
-      cardWidth: bannerwdt * 1.1,
-      cardHeight: bannerhgt * 1.0,
+      cardWidth: bannerwdt,
+      cardHeight: bannerhgt,
     );
   }
 }

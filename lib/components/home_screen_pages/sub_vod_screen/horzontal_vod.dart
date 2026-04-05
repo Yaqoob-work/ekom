@@ -2032,7 +2032,7 @@ class _HorzontalVodState extends State<HorzontalVod> with AutomaticKeepAliveClie
 
   Future<List<CommonContentModel>> fetchContentsAPI() async {
     var url = Uri.parse(SessionManager.baseUrl + 'getNetworks');
-    final response = await https.post(url, headers: {'auth-key': SessionManager.authKey, 'Content-Type': 'application/json', 'domain': SessionManager.savedDomain}, body: json.encode({"network_id": "", "data_for": ""})).timeout(const Duration(seconds: 30));
+    final response = await https.post(url, headers: {'auth-key': SessionManager.authKey, 'Content-Type': 'application/json', 'domain': SessionManager.savedDomain}, body: json.encode({"network_id": "", "data_for": "content"})).timeout(const Duration(seconds: 30));
 
     if (response.statusCode == 200) {
       final dynamic _decoded_jsonData = json.decode(response.body);
@@ -2061,13 +2061,14 @@ class _HorzontalVodState extends State<HorzontalVod> with AutomaticKeepAliveClie
   Widget build(BuildContext context) {
     super.build(context);
     return SmartCommonHorizontalList(
-      sectionTitle: "CONTENTS",
+      sectionTitle: "OTT APPS",
       titleGradient: const [ProfessionalColorsForHomePages.accentGreen, ProfessionalColorsForHomePages.accentBlue],
       accentColor: ProfessionalColorsForHomePages.accentBlue,
-      placeholderIcon: Icons.live_tv_rounded, badgeDefaultText: 'CONTENTS',
+      placeholderIcon: Icons.live_tv_rounded, badgeDefaultText: 'O T T',
       focusIdentifier: 'subVod',
       fetchApiData: fetchContentsAPI,
       onItemTap: _onItemTap,
+      
       maxVisibleItems: 100, // No view all
     );
   }

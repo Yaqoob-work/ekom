@@ -1235,7 +1235,7 @@ class _MoviesScreenState extends State<MoviesScreen> with AutomaticKeepAliveClie
   Widget build(BuildContext context) {
     super.build(context);
     return SmartCommonHorizontalList(
-      sectionTitle: "RECENTLY ADDED",
+      sectionTitle: "LATEST MOVIES",
       titleGradient: const [ProfessionalColorsForHomePages.accentBlue, ProfessionalColorsForHomePages.accentPurple],
       accentColor: ProfessionalColorsForHomePages.accentBlue,
       placeholderIcon: Icons.movie_outlined, badgeDefaultText: 'HD',
@@ -1246,3 +1246,119 @@ class _MoviesScreenState extends State<MoviesScreen> with AutomaticKeepAliveClie
     );
   }
 }
+
+
+
+
+
+// import 'dart:convert';
+// import 'package:flutter/material.dart';
+// import 'package:http/http.dart' as https;
+// import 'package:mobi_tv_entertainment/components/services/professional_colors_for_home_pages.dart';
+// import 'package:mobi_tv_entertainment/main.dart';
+// import 'package:mobi_tv_entertainment/components/video_widget/video_screen.dart';
+// import 'package:mobi_tv_entertainment/components/services/history_service.dart';
+// import 'package:mobi_tv_entertainment/components/widgets/smart_common_horizontal_list.dart';
+
+// class MoviesScreen extends StatefulWidget {
+//   const MoviesScreen({super.key});
+//   @override
+//   State<MoviesScreen> createState() => _MoviesScreenState();
+// }
+
+// class _MoviesScreenState extends State<MoviesScreen> with AutomaticKeepAliveClientMixin {
+//   @override
+//   bool get wantKeepAlive => true;
+
+//   Future<List<CommonContentModel>> fetchMoviesAPI() async {
+//     var url = Uri.parse(SessionManager.baseUrl + 'getAllMovies?records=50');
+//     final response = await https.get(
+//       url, 
+//       headers: {
+//         'auth-key': SessionManager.authKey, 
+//         'Content-Type': 'application/json', 
+//         'domain': SessionManager.savedDomain
+//       }
+//     ).timeout(const Duration(seconds: 30));
+
+//     if (response.statusCode == 200) {
+//       final dynamic responseBody = json.decode(response.body);
+//       List<dynamic> jsonData = (responseBody is List) ? responseBody : (responseBody['data'] as List);
+//       var activeData = jsonData.where((m) => m['status'] == 1 || m['status'] == '1').toList();
+      
+//       // ✅ SORTING BY MOVIE ORDER
+//       activeData.sort((a, b) {
+//         // Safely parse movie_order to handle nulls or string values
+//         int orderA = a['movie_order'] != null ? int.tryParse(a['movie_order'].toString()) ?? 0 : 0;
+//         int orderB = b['movie_order'] != null ? int.tryParse(b['movie_order'].toString()) ?? 0 : 0;
+        
+//         // Use orderB.compareTo(orderA) for Descending (Highest order first / Latest)
+//         // Use orderA.compareTo(orderB) for Ascending (Lowest order first)
+//         return orderA.compareTo(orderB); 
+//       });
+
+//       return activeData.map((item) {
+//         String badge = 'HD';
+//         String rawGenres = (item['genres'] ?? '').toString().toLowerCase();
+//         if (rawGenres.contains('comedy')) badge = 'COMEDY';
+//         else if (rawGenres.contains('action')) badge = 'ACTION';
+//         else if (rawGenres.contains('romantic')) badge = 'ROMANCE';
+
+//         return CommonContentModel(
+//           id: item['id'].toString(), 
+//           title: item['name'] ?? 'Unknown', 
+//           imageUrl: item['banner'] ?? item['poster'] ?? '', 
+//           badgeText: badge, 
+//           originalData: item
+//         );
+//       }).toList();
+//     } else { 
+//       throw Exception('Failed to load movies'); 
+//     }
+//   }
+
+//   Future<void> _onItemTap(CommonContentModel item) async {
+//     final movieData = item.originalData;
+//     try { 
+//       await HistoryService.updateUserHistory(
+//         userId: SessionManager.userId!, 
+//         contentType: 1, 
+//         eventId: int.parse(item.id), 
+//         eventTitle: item.title, 
+//         url: movieData['movie_url'] ?? '', 
+//         categoryId: 0
+//       ); 
+//     } catch (e) {}
+    
+//     await Navigator.push(context, MaterialPageRoute(builder: (context) => VideoScreen(
+//       videoUrl: movieData['movie_url'] ?? '', 
+//       bannerImageUrl: item.imageUrl, 
+//       channelList: const [], 
+//       source: 'isRecentlyAdded', 
+//       videoId: int.parse(item.id), 
+//       name: item.title, 
+//       liveStatus: false, 
+//       updatedAt: movieData['updated_at'] ?? ''
+//     )));
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     super.build(context);
+//     return SmartCommonHorizontalList(
+//       sectionTitle: "LATEST MOVIES",
+//       titleGradient: const [ProfessionalColorsForHomePages.accentBlue, ProfessionalColorsForHomePages.accentPurple],
+//       accentColor: ProfessionalColorsForHomePages.accentBlue,
+//       placeholderIcon: Icons.movie_outlined, 
+//       badgeDefaultText: 'HD',
+//       focusIdentifier: 'manageMovies',
+//       fetchApiData: fetchMoviesAPI,
+//       onItemTap: _onItemTap,
+//       maxVisibleItems: 50, // No view all
+//     );
+//   }
+// }
+
+
+
+

@@ -997,8 +997,8 @@ class _SmartCommonHorizontalListState extends State<SmartCommonHorizontalList> w
     double targetOffset = index * itemWidth;
     await _scrollController.animateTo(
       targetOffset.clamp(0.0, _scrollController.position.maxScrollExtent),
-      duration: const Duration(milliseconds: 300), 
-      curve: Curves.easeOutCubic,
+      duration: const Duration(milliseconds: 600), 
+      curve: Curves.linear,
     );
   }
 
@@ -1022,7 +1022,7 @@ class _SmartCommonHorizontalListState extends State<SmartCommonHorizontalList> w
     }
 
     // ✅ FIX 1: WAPAS AANE PAR ANIMATION KHATAM HONE KA WAIT KARO
-    await Future.delayed(const Duration(milliseconds: 500));
+    await Future.delayed(const Duration(milliseconds: 300));
 
     if (!mounted) return;
     setState(() {
@@ -1043,7 +1043,7 @@ class _SmartCommonHorizontalListState extends State<SmartCommonHorizontalList> w
       targetNode.requestFocus();
 
       // Backup check in case OS still fighting
-      Future.delayed(const Duration(milliseconds: 150), () {
+      Future.delayed(const Duration(milliseconds:400), () {
         if (mounted && !targetNode.hasFocus && targetNode.canRequestFocus) {
           targetNode.requestFocus();
         }
@@ -1142,6 +1142,50 @@ class _SmartCommonHorizontalListState extends State<SmartCommonHorizontalList> w
     }
   }
 
+
+
+
+  // Widget _buildList(double sw, double sh) {
+  //   bool showViewAll = widget.onViewAllTap != null && _fullList.isNotEmpty;
+  //   int itemCount = _displayedList.length + (showViewAll ? 1 : 0);
+  //   final double itemWidth = bannerwdt ?? sw * 0.18;
+  //   const double horizontalMargin = 15.0;
+  //   final double itemExtent = itemWidth + (horizontalMargin * 2);
+  //   final List<int> paintOrder = _buildPaintOrder(itemCount);
+
+  //   return FadeTransition(
+  //     opacity: _listFadeAnimation,
+  //     child: LayoutBuilder(
+  //       builder: (context, constraints) => SingleChildScrollView(
+  //         scrollDirection: Axis.horizontal,
+  //         clipBehavior: Clip.none,
+  //         controller: _scrollController,
+  //         padding: EdgeInsets.only(left: sw * 0.16, right: sw * 0.7),
+  //         child: SizedBox(
+  //           width: itemCount * itemExtent,
+  //           height: constraints.maxHeight,
+  //           child: Stack(
+  //             clipBehavior: Clip.none,
+  //             children: [
+  //               for (final index in paintOrder)
+  //                 Positioned(
+  //                   left: index * itemExtent,
+  //                   top: 0,
+  //                   bottom: 0,
+  //                   child: index < _displayedList.length
+  //                       ? _buildItemCard(_displayedList[index], index)
+  //                       : _buildViewAllCard(),
+  //                 ),
+  //             ],
+  //           ),
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
+
+
+
   Widget _buildList(double sw, double sh) {
     bool showViewAll = widget.onViewAllTap != null && _fullList.isNotEmpty;
     int itemCount = _displayedList.length + (showViewAll ? 1 : 0);
@@ -1166,6 +1210,12 @@ class _SmartCommonHorizontalListState extends State<SmartCommonHorizontalList> w
               children: [
                 for (final index in paintOrder)
                   Positioned(
+                    // ✅ FIX: Add a unique Key here so Flutter preserves the animation state
+                    key: ValueKey<String>(
+                      index < _displayedList.length 
+                          ? 'positioned-${_displayedList[index].id}' 
+                          : 'positioned-view-all'
+                    ),
                     left: index * itemExtent,
                     top: 0,
                     bottom: 0,
@@ -1258,7 +1308,7 @@ class _SmartCommonHorizontalListState extends State<SmartCommonHorizontalList> w
     if (key == LogicalKeyboardKey.arrowRight || key == LogicalKeyboardKey.arrowLeft) {
       if (_isNavigationLocked) return KeyEventResult.handled;
       setState(() => _isNavigationLocked = true);
-      _navLockTimer = Timer(const Duration(milliseconds: 500), () { if (mounted) setState(() => _isNavigationLocked = false); });
+      _navLockTimer = Timer(const Duration(milliseconds: 600), () { if (mounted) setState(() => _isNavigationLocked = false); });
 
       if (key == LogicalKeyboardKey.arrowRight) {
         if (!isViewAll && index < _displayedList.length - 1) {
@@ -1295,7 +1345,7 @@ class _SmartCommonHorizontalListState extends State<SmartCommonHorizontalList> w
   Widget _buildShadowOverlay() {
     return IgnorePointer(
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
+        duration: const Duration(milliseconds: 100),
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter, end: Alignment.bottomCenter,
@@ -1328,14 +1378,44 @@ class _CommonContentCardWidgetState extends State<CommonContentCardWidget> with 
   late Animation<double> _scaleAnimation;
   bool _isFocused = false;
 
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   _scaleController = AnimationController(duration: const Duration(milliseconds: 600), vsync: this);
+  //   _scaleAnimation = Tween<double>(begin: 1.0, end: 1.28).animate(CurvedAnimation(parent: _scaleController, curve: Curves.easeOutCubic));
+  //   _borderAnimationController = AnimationController(duration: const Duration(milliseconds: 2500), vsync: this);
+  //   widget.focusNode.addListener(_handleFocus);
+  //   _syncFocusState();
+  // }
+
+  // @override
+  // void didUpdateWidget(covariant CommonContentCardWidget oldWidget) {
+  //   super.didUpdateWidget(oldWidget);
+  //   if (oldWidget.focusNode != widget.focusNode) {
+  //     oldWidget.focusNode.removeListener(_handleFocus);
+  //     widget.focusNode.addListener(_handleFocus);
+  //   }
+  //   _syncFocusState();
+  // }
+
+
+
+
   @override
   void initState() {
     super.initState();
-    _scaleController = AnimationController(duration: const Duration(milliseconds: 250), vsync: this);
+    _scaleController = AnimationController(duration: const Duration(milliseconds: 600), vsync: this);
     _scaleAnimation = Tween<double>(begin: 1.0, end: 1.28).animate(CurvedAnimation(parent: _scaleController, curve: Curves.easeOutCubic));
     _borderAnimationController = AnimationController(duration: const Duration(milliseconds: 2500), vsync: this);
+    
     widget.focusNode.addListener(_handleFocus);
-    _syncFocusState();
+    
+    // Set the initial state without forcing an animation snap later
+    _isFocused = widget.focusNode.hasFocus;
+    _scaleController.value = _isFocused ? 1.0 : 0.0;
+    if (_isFocused) {
+      _borderAnimationController.repeat();
+    }
   }
 
   @override
@@ -1344,19 +1424,8 @@ class _CommonContentCardWidgetState extends State<CommonContentCardWidget> with 
     if (oldWidget.focusNode != widget.focusNode) {
       oldWidget.focusNode.removeListener(_handleFocus);
       widget.focusNode.addListener(_handleFocus);
-    }
-    _syncFocusState();
-  }
-
-  void _syncFocusState() {
-    _isFocused = widget.focusNode.hasFocus;
-    _scaleController.value = _isFocused ? 1.0 : 0.0;
-    if (_isFocused) {
-      if (!_borderAnimationController.isAnimating) {
-        _borderAnimationController.repeat();
-      }
-    } else {
-      _borderAnimationController.stop();
+      // Let handleFocus drive the smooth animation if the node changes
+      _handleFocus(); 
     }
   }
 
@@ -1375,6 +1444,34 @@ class _CommonContentCardWidgetState extends State<CommonContentCardWidget> with 
       _borderAnimationController.stop();
     }
   }
+
+  void _syncFocusState() {
+    _isFocused = widget.focusNode.hasFocus;
+    _scaleController.value = _isFocused ? 1.0 : 0.0;
+    if (_isFocused) {
+      if (!_borderAnimationController.isAnimating) {
+        _borderAnimationController.repeat();
+      }
+    } else {
+      _borderAnimationController.stop();
+    }
+  }
+
+  // void _handleFocus() {
+  //   if (!mounted) return;
+  //   final bool hasFocus = widget.focusNode.hasFocus;
+  //   if (_isFocused == hasFocus) return;
+
+  //   setState(() => _isFocused = hasFocus);
+  //   if (hasFocus) {
+  //     _scaleController.forward();
+  //     _borderAnimationController.repeat();
+  //     HapticFeedback.lightImpact();
+  //   } else {
+  //     _scaleController.reverse();
+  //     _borderAnimationController.stop();
+  //   }
+  // }
 
   @override
   void dispose() {
@@ -1447,7 +1544,9 @@ class _CommonContentCardWidgetState extends State<CommonContentCardWidget> with 
                 fit: StackFit.expand,
                 children: [
                   widget.item.imageUrl.isNotEmpty 
-                      ? Image.network(widget.item.imageUrl, fit: BoxFit.cover, errorBuilder: (c, e, s) => _placeholder(h))
+                      ? Image.network(widget.item.imageUrl,
+                      cacheWidth: 300, 
+                       fit: BoxFit.cover, errorBuilder: (c, e, s) => _placeholder(h))
                       : _placeholder(h),
                   
                   if (widget.item.badgeText.isNotEmpty || widget.defaultBadge.isNotEmpty)
@@ -1485,7 +1584,7 @@ class _CommonContentCardWidgetState extends State<CommonContentCardWidget> with 
   Widget _buildTitle() => SizedBox(
     width: bannerwdt,
     child: AnimatedDefaultTextStyle(
-      duration: const Duration(milliseconds: 250),
+      duration: const Duration(milliseconds: 600),
       style: TextStyle(
         fontSize: 13,
         fontWeight: _isFocused ? FontWeight.w800 : FontWeight.w600,
@@ -1510,14 +1609,43 @@ class _CommonViewAllContentsStyleCardState extends State<CommonViewAllContentsSt
   late Animation<double> _scaleAnimation;
   bool _isFocused = false;
 
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   _scaleController = AnimationController(duration: const Duration(milliseconds: 600), vsync: this);
+  //   _scaleAnimation = Tween<double>(begin: 1.0, end: 1.28).animate(CurvedAnimation(parent: _scaleController, curve: Curves.easeOutCubic));
+  //   _borderAnimationController = AnimationController(duration: const Duration(milliseconds: 2500), vsync: this);
+  //   widget.focusNode.addListener(_handleFocus);
+  //   _syncFocusState();
+  // }
+
+  // @override
+  // void didUpdateWidget(covariant CommonViewAllContentsStyleCard oldWidget) {
+  //   super.didUpdateWidget(oldWidget);
+  //   if (oldWidget.focusNode != widget.focusNode) {
+  //     oldWidget.focusNode.removeListener(_handleFocus);
+  //     widget.focusNode.addListener(_handleFocus);
+  //   }
+  //   _syncFocusState();
+  // }
+
+
+
   @override
   void initState() {
     super.initState();
-    _scaleController = AnimationController(duration: const Duration(milliseconds: 250), vsync: this);
+    _scaleController = AnimationController(duration: const Duration(milliseconds: 600), vsync: this);
     _scaleAnimation = Tween<double>(begin: 1.0, end: 1.28).animate(CurvedAnimation(parent: _scaleController, curve: Curves.easeOutCubic));
     _borderAnimationController = AnimationController(duration: const Duration(milliseconds: 2500), vsync: this);
+    
     widget.focusNode.addListener(_handleFocus);
-    _syncFocusState();
+    
+    // Set the initial state
+    _isFocused = widget.focusNode.hasFocus;
+    _scaleController.value = _isFocused ? 1.0 : 0.0;
+    if (_isFocused) {
+      _borderAnimationController.repeat();
+    }
   }
 
   @override
@@ -1526,19 +1654,7 @@ class _CommonViewAllContentsStyleCardState extends State<CommonViewAllContentsSt
     if (oldWidget.focusNode != widget.focusNode) {
       oldWidget.focusNode.removeListener(_handleFocus);
       widget.focusNode.addListener(_handleFocus);
-    }
-    _syncFocusState();
-  }
-
-  void _syncFocusState() {
-    _isFocused = widget.focusNode.hasFocus;
-    _scaleController.value = _isFocused ? 1.0 : 0.0;
-    if (_isFocused) {
-      if (!_borderAnimationController.isAnimating) {
-        _borderAnimationController.repeat();
-      }
-    } else {
-      _borderAnimationController.stop();
+      _handleFocus();
     }
   }
 
@@ -1556,6 +1672,33 @@ class _CommonViewAllContentsStyleCardState extends State<CommonViewAllContentsSt
       _borderAnimationController.stop();
     }
   }
+
+  void _syncFocusState() {
+    _isFocused = widget.focusNode.hasFocus;
+    _scaleController.value = _isFocused ? 1.0 : 0.0;
+    if (_isFocused) {
+      if (!_borderAnimationController.isAnimating) {
+        _borderAnimationController.repeat();
+      }
+    } else {
+      _borderAnimationController.stop();
+    }
+  }
+
+  // void _handleFocus() {
+  //   if (!mounted) return;
+  //   final bool hasFocus = widget.focusNode.hasFocus;
+  //   if (_isFocused == hasFocus) return;
+
+  //   setState(() => _isFocused = hasFocus);
+  //   if (hasFocus) {
+  //     _scaleController.forward();
+  //     _borderAnimationController.repeat();
+  //   } else {
+  //     _scaleController.reverse();
+  //     _borderAnimationController.stop();
+  //   }
+  // }
 
   @override
   void dispose() {
@@ -1644,7 +1787,7 @@ class _CommonViewAllContentsStyleCardState extends State<CommonViewAllContentsSt
           SizedBox(
             width: bannerwdt,
             child: AnimatedDefaultTextStyle(
-              duration: const Duration(milliseconds: 250),
+              duration: const Duration(milliseconds: 600),
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: _isFocused ? FontWeight.w800 : FontWeight.w600,
@@ -1659,3 +1802,5 @@ class _CommonViewAllContentsStyleCardState extends State<CommonViewAllContentsSt
     );
   }
 }
+
+
