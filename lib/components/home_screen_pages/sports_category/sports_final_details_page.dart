@@ -3462,6 +3462,7 @@ class _TournamentFinalDetailsPageState extends State<TournamentFinalDetailsPage>
                 name: match.matchTitle,
                 liveStatus: false,
                 updatedAt: match.updatedAt,
+                streamType: match.streamType ?? ''
               ),
             ),
           );

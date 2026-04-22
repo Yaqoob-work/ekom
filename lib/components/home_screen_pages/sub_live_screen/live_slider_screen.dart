@@ -3414,7 +3414,108 @@ class liveSliderScreenState extends State<liveSliderScreen> {
     super.dispose();
   }
 
-  Future<void> _fetchAndProcessData() async {
+  // Future<void> _fetchAndProcessData() async {
+  //   setState(() {
+  //     _isLoading = true;
+  //     _error = null;
+  //   });
+  //   try {
+  //     final headers = {
+  //       'auth-key': SessionManager.authKey,
+  //       'domain': SessionManager.savedDomain,
+  //       'Content-Type': 'application/json'
+  //     };
+  //     final results = await Future.wait([
+  //       https.get(Uri.parse(SessionManager.baseUrl + 'getAllLanguages'),
+  //           headers: headers),
+  //       https.post(Uri.parse(SessionManager.baseUrl + 'getAllLiveTV'),
+  //           headers: headers,
+  //           body: json.encode({"genere": "", "languageId": widget.languageId})),
+  //       https.post(
+  //           Uri.parse(SessionManager.baseUrl + 'getGenreByContentNetwork'),
+  //           headers: headers,
+  //           body: json.encode({"language_id": widget.languageId})),
+  //     ]);
+
+  //     if (_isDisposed || !mounted) return;
+
+  //     // 1. Process Sliders
+  //     List<String> tempSliders = [];
+  //     if (results[0].statusCode == 200) {
+  //       final langData = json.decode(results[0].body);
+  //       if (langData['languages'] is List) {
+  //         final currentLang = (langData['languages'] as List).firstWhere(
+  //             (l) => l['id'].toString() == widget.languageId,
+  //             orElse: () => null);
+  //         if (currentLang != null && currentLang['slider'] is List) {
+  //           tempSliders = (currentLang['slider'] as List)
+  //               .map((i) => i['banner'].toString())
+  //               .toList();
+  //         }
+  //       }
+  //     }
+
+  //     // 2. Process Channels
+  //     if (results[1].statusCode == 200) {
+  //       final channelsData = safeDecodeList(json.decode(results[1].body));
+  //       _allChannels = channelsData
+  //           .map((item) => NewsChannel.fromJson(item))
+  //           .where((c) => c.status == 1)
+  //           .toList();
+
+  //       if (tempSliders.isEmpty && _allChannels.isNotEmpty)
+  //         tempSliders.add(_allChannels.first.banner);
+
+  //       // 3. Process Genres
+  //       List<String> apiGenres = [];
+  //       if (results[2].statusCode == 200) {
+  //         final gData = json.decode(results[2].body);
+  //         if (gData['genres'] != null)
+  //           apiGenres = List<String>.from(gData['genres']);
+  //       }
+
+  //       if (apiGenres.isEmpty) {
+  //         final Set<String> extracted = {};
+  //         for (var c in _allChannels) {
+  //           c.genres.split(',').forEach((g) => extracted.add(g.trim()));
+  //         }
+  //         extracted.removeWhere((e) => e.isEmpty);
+  //         apiGenres = extracted.toList()..sort();
+  //       }
+
+  //       Map<String, List<NewsChannel>> mapTemp = {};
+  //       for (var g in apiGenres) {
+  //         mapTemp[g] = _allChannels.where((c) => c.genres.contains(g)).toList();
+  //       }
+  //       apiGenres.removeWhere((g) => (mapTemp[g] ?? []).isEmpty);
+
+  //       if (_isDisposed || !mounted) return;
+
+  //       setState(() {
+  //         _genres = apiGenres;
+  //         _channelsByGenre = mapTemp;
+  //         _sliderImages = tempSliders;
+  //         if (_genres.isNotEmpty) {
+  //           _selectedGenreIndex = 0;
+  //           _displayList = _channelsByGenre[_genres[0]] ?? [];
+  //         } else {
+  //           _displayList = _allChannels;
+  //         }
+  //         _isLoading = false;
+  //       });
+  //     } else {
+  //       throw Exception("API Error");
+  //     }
+  //   } catch (e) {
+  //     if (!_isDisposed && mounted)
+  //       setState(() {
+  //         _isLoading = false;
+  //         _error = e.toString();
+  //       });
+  //   }
+  // }
+
+Future<void> _fetchAndProcessData() async {
     setState(() {
       _isLoading = true;
       _error = null;
@@ -3489,6 +3590,48 @@ class liveSliderScreenState extends State<liveSliderScreen> {
         }
         apiGenres.removeWhere((g) => (mapTemp[g] ?? []).isEmpty);
 
+        // ==========================================
+        // 🔥 CUSTOM GENRE SORTING LOGIC START 🔥
+        // ==========================================
+        final List<String> preferredOrder = [
+          'latest',
+          'entertainment',
+          'movies',
+          'music',
+          'news',
+          'sports',
+          'religious',
+          'kids'
+        ];
+
+        apiGenres.sort((a, b) {
+          String lowerA = a.toLowerCase().trim();
+          String lowerB = b.toLowerCase().trim();
+
+          int indexA = preferredOrder.indexOf(lowerA);
+          int indexB = preferredOrder.indexOf(lowerB);
+
+          // Agar dono preferred list mein hain to unke order ke hisaab se sort karo
+          if (indexA != -1 && indexB != -1) {
+            return indexA.compareTo(indexB);
+          }
+          // Agar sirf A preferred list mein hai, to A ko pehle rakho
+          else if (indexA != -1) {
+            return -1;
+          }
+          // Agar sirf B preferred list mein hai, to B ko pehle rakho
+          else if (indexB != -1) {
+            return 1;
+          }
+          // Agar dono preferred list mein nahi hain, to unhe aapas mein alphabetically sort karo
+          else {
+            return lowerA.compareTo(lowerB);
+          }
+        });
+        // ==========================================
+        // 🔥 CUSTOM GENRE SORTING LOGIC END 🔥
+        // ==========================================
+
         if (_isDisposed || !mounted) return;
 
         setState(() {
@@ -3514,6 +3657,7 @@ class liveSliderScreenState extends State<liveSliderScreen> {
         });
     }
   }
+
 
   void _onSearch(String query) {
     if (_isDisposed || !mounted) return;
@@ -3628,7 +3772,7 @@ class liveSliderScreenState extends State<liveSliderScreen> {
                     videoId: channel.id,
                     name: channel.name,
                     liveStatus: true,
-                    updatedAt: channel.updatedAt ?? '')));
+                    updatedAt: channel.updatedAt ?? '', streamType: channel.streamType ?? '')));
       }
     } catch (e) {
       if (!_isDisposed && mounted) {

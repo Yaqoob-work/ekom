@@ -3646,6 +3646,7 @@ class _TvShowFinalDetailsPageState extends State<TvShowFinalDetailsPage>
                 liveStatus: false,
                 updatedAt: episode.updatedAt,
                 source: 'isTvShow',
+                streamType: episode.streamingType ?? ''
               ),
             ),
           );

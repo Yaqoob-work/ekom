@@ -3337,6 +3337,7 @@ class ContentSliderScreenState extends State<ContentSliderScreen> {
                 source: 'isVod',
                 channelList: const [],
                 liveStatus: false,
+                streamType: m.sourceType ?? ''
               ),
             ),
           ).catchError((e) => null);

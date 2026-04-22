@@ -387,6 +387,7 @@ class _KidChannelsDetailsPageState extends State<KidChannelsDetailsPage>
                 liveStatus: false,
                 updatedAt: '',
                 source: 'isKidsShow',
+                streamType:  ''
               ),
             ),
           );

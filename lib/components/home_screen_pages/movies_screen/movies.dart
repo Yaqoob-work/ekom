@@ -1203,32 +1203,70 @@ class _MoviesScreenState extends State<MoviesScreen> with AutomaticKeepAliveClie
   @override
   bool get wantKeepAlive => true;
 
-  Future<List<CommonContentModel>> fetchMoviesAPI() async {
+  // Future<List<CommonContentModel>> fetchMoviesAPI() async {
+  //   var url = Uri.parse(SessionManager.baseUrl + 'getAllMovies?records=50');
+  //   final response = await https.get(url, headers: {'auth-key': SessionManager.authKey, 'Content-Type': 'application/json', 'domain': SessionManager.savedDomain}).timeout(const Duration(seconds: 30));
+
+  //   if (response.statusCode == 200) {
+  //     final dynamic responseBody = json.decode(response.body);
+  //     List<dynamic> jsonData = (responseBody is List) ? responseBody : (responseBody['data'] as List);
+  //     var activeData = jsonData.where((m) => m['status'] == 1 || m['status'] == '1').toList();
+  //     activeData.sort((a, b) => (a['recent_index'] ?? 0).compareTo(b['recent_index'] ?? 0));
+
+  //     return activeData.map((item) {
+  //       String badge = 'HD';
+  //       String rawGenres = (item['genres'] ?? '').toString().toLowerCase();
+  //       if (rawGenres.contains('comedy')) badge = 'COMEDY';
+  //       else if (rawGenres.contains('action')) badge = 'ACTION';
+  //       else if (rawGenres.contains('romantic')) badge = 'ROMANCE';
+
+  //       return CommonContentModel(id: item['id'].toString(), title: item['name'] ?? 'Unknown', imageUrl: item['banner'] ?? item['poster'] ?? '', badgeText: badge, originalData: item);
+  //     }).toList();
+  //   } else { throw Exception('Failed to load movies'); }
+  // }
+
+
+
+Future<List<CommonContentModel>> fetchMoviesAPI() async {
     var url = Uri.parse(SessionManager.baseUrl + 'getAllMovies?records=50');
-    final response = await https.get(url, headers: {'auth-key': SessionManager.authKey, 'Content-Type': 'application/json', 'domain': SessionManager.savedDomain}).timeout(const Duration(seconds: 30));
+    final response = await https.get(url, headers: {
+      'auth-key': SessionManager.authKey, 
+      'Content-Type': 'application/json', 
+      'domain': SessionManager.savedDomain
+    }).timeout(const Duration(seconds: 30));
 
     if (response.statusCode == 200) {
       final dynamic responseBody = json.decode(response.body);
       List<dynamic> jsonData = (responseBody is List) ? responseBody : (responseBody['data'] as List);
       var activeData = jsonData.where((m) => m['status'] == 1 || m['status'] == '1').toList();
-      activeData.sort((a, b) => (a['movie_order'] ?? 0).compareTo(b['movie_order'] ?? 0));
+      activeData.sort((a, b) => (a['recent_index'] ?? 0).compareTo(b['recent_index'] ?? 0));
 
       return activeData.map((item) {
-        String badge = 'HD';
-        String rawGenres = (item['genres'] ?? '').toString().toLowerCase();
-        if (rawGenres.contains('comedy')) badge = 'COMEDY';
-        else if (rawGenres.contains('action')) badge = 'ACTION';
-        else if (rawGenres.contains('romantic')) badge = 'ROMANCE';
+        String rawGenres = (item['genres'] ?? '').toString().trim();
+        String badge = '';
+        
+        if (rawGenres.isNotEmpty) {
+          // Split by comma, take the first item, remove extra spaces, and make it uppercase
+          badge = rawGenres.split(',').first.trim().toUpperCase();
+        }
 
-        return CommonContentModel(id: item['id'].toString(), title: item['name'] ?? 'Unknown', imageUrl: item['banner'] ?? item['poster'] ?? '', badgeText: badge, originalData: item);
+        return CommonContentModel(
+          id: item['id'].toString(), 
+          title: item['name'] ?? 'Unknown', 
+          imageUrl: item['banner'] ?? item['poster'] ?? '', 
+          badgeText: badge, 
+          originalData: item
+        );
       }).toList();
-    } else { throw Exception('Failed to load movies'); }
+    } else { 
+      throw Exception('Failed to load movies'); 
+    }
   }
 
   Future<void> _onItemTap(CommonContentModel item) async {
     final movieData = item.originalData;
     try { await HistoryService.updateUserHistory(userId: SessionManager.userId!, contentType: 1, eventId: int.parse(item.id), eventTitle: item.title, url: movieData['movie_url'] ?? '', categoryId: 0); } catch (e) {}
-    await Navigator.push(context, MaterialPageRoute(builder: (context) => VideoScreen(videoUrl: movieData['movie_url'] ?? '', bannerImageUrl: item.imageUrl, channelList: const [], source: 'isRecentlyAdded', videoId: int.parse(item.id), name: item.title, liveStatus: false, updatedAt: movieData['updated_at'] ?? '')));
+    await Navigator.push(context, MaterialPageRoute(builder: (context) => VideoScreen(videoUrl: movieData['movie_url'] ?? '', bannerImageUrl: item.imageUrl, channelList: const [], source: 'isRecentlyAdded', videoId: int.parse(item.id), name: item.title, liveStatus: false, updatedAt: movieData['updated_at'] ?? '', streamType: '')));
   }
 
   @override

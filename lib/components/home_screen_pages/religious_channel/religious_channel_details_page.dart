@@ -2515,6 +2515,7 @@ class _ReligiousChannelDetailsPageState
                 name: episode.title,
                 liveStatus: false,
                 updatedAt: episode.updatedAt,
+                streamType:   ''
               ),
             ),
           );

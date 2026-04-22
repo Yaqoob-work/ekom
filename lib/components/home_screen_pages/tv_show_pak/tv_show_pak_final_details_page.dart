@@ -3356,6 +3356,7 @@ class _TvShowPakFinalDetailsPageState extends State<TvShowPakFinalDetailsPage>
                 liveStatus: false,
                 updatedAt: episode.updatedAt,
                 source: 'isTvShowPak',
+                streamType: episode.streamingType ?? ''
               ),
             ),
           );

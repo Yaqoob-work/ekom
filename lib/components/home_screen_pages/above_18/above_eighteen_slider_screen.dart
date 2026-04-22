@@ -5110,7 +5110,10 @@ class _AboveEighteenSliderScreenState extends State<AboveEighteenSliderScreen> {
                       updatedAt: content.updatedAt ?? '',
                       source: 'isVod',
                       channelList: const [],
-                      liveStatus: false))).catchError((_) => null);
+                      liveStatus: false,
+                      streamType: content.sourceType ?? ''
+
+                      ))).catchError((_) => null);
         }
       } else {
         throw Exception('No playable video URL found.');

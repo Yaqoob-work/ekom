@@ -703,6 +703,7 @@ class _BannerSliderState extends State<BannerSlider>
               liveStatus: isLive,
               updatedAt: banner.updatedAt,
               source: 'isBannerSlider',
+              streamType: banner.sourceType ?? ''
             )));
       }
     } catch (e) {

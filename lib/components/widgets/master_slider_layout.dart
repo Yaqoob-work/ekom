@@ -7165,6 +7165,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mobi_tv_entertainment/components/provider/focus_provider.dart';
 import 'package:mobi_tv_entertainment/components/widgets/focused_overlay_list.dart';
+import 'package:mobi_tv_entertainment/main.dart';
 import 'package:provider/provider.dart';
 
 class ProfessionalColors {
@@ -7180,6 +7181,33 @@ class ProfessionalColors {
 class AnimationTiming {
   static const Duration fast = Duration(milliseconds: 250);
   static const Duration medium = Duration(milliseconds: 600);
+}
+
+
+class GridPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    // Styling the lines. Opacity is set low so the grid doesn't overpower your content.
+    final paint = Paint()
+      ..color = Colors.black.withOpacity(0.15) // Subtle black lines
+      ..strokeWidth = 1.0; // Very thin lines
+
+    // Spacing of 10.0 pixels gives roughly the "5 lines per centimeter" feel
+    double spacing = 5.0;
+
+    // Draw Vertical Lines
+    for (double i = 0; i <= size.width; i += spacing) {
+      canvas.drawLine(Offset(i, 0), Offset(i, size.height), paint);
+    }
+
+    // Draw Horizontal Lines
+    for (double i = 0; i <= size.height; i += spacing) {
+      canvas.drawLine(Offset(0, i), Offset(size.width, i), paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
 class MasterSliderLayout<T> extends StatefulWidget {
@@ -7553,7 +7581,7 @@ class _MasterSliderLayoutState<T> extends State<MasterSliderLayout<T>>
       return KeyEventResult.ignored;
 
     final key = event.logicalKey;
-    if (key == LogicalKeyboardKey.goBack || key == LogicalKeyboardKey.escape) {
+    if ( key == LogicalKeyboardKey.escape) {
       if (_showKeyboard) {
         setState(() {
           _showKeyboard = false;
@@ -8033,21 +8061,46 @@ class _MasterSliderLayoutState<T> extends State<MasterSliderLayout<T>>
                     ),
                   ),
 
+                  // // --- 2. THE KEYBOARD & INDICATORS AREA ---
+                  // SizedBox(
+                  //   height: keyboardAreaHeight,
+                  //   child: Stack(
+                  //     children: [
+                  //       // Search UI
+                  //       Positioned.fill(
+                  //         child: AnimatedSwitcher(
+                  //           duration: const Duration(milliseconds: 500),
+                  //           switchInCurve: Curves.easeIn,
+                  //           switchOutCurve: Curves.easeOut,
+                  //           child: _showKeyboard 
+                  //               ? _buildSearchUI() 
+                  //               : const SizedBox.shrink(),
+                  //         ),
+                  //       ),
+                        
+                  //       // The Slider Indicators
+                  //       Align(
+                  //         alignment: Alignment.bottomLeft,
+                  //         child: Container(
+                  //           width: MediaQuery.of(context).size.width * 0.4, 
+                  //           padding: const EdgeInsets.only(bottom: 20),
+                  //           child: _buildSliderIndicators(),
+                  //         ),
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ),
+
+
+
                   // --- 2. THE KEYBOARD & INDICATORS AREA ---
                   SizedBox(
                     height: keyboardAreaHeight,
                     child: Stack(
                       children: [
-                        // Search UI
+                        // Search UI & Permanent Title
                         Positioned.fill(
-                          child: AnimatedSwitcher(
-                            duration: const Duration(milliseconds: 500),
-                            switchInCurve: Curves.easeIn,
-                            switchOutCurve: Curves.easeOut,
-                            child: _showKeyboard 
-                                ? _buildSearchUI() 
-                                : const SizedBox.shrink(),
-                          ),
+                          child: _buildSearchUI(), // <--- Always call this now
                         ),
                         
                         // The Slider Indicators
@@ -8092,6 +8145,35 @@ class _MasterSliderLayoutState<T> extends State<MasterSliderLayout<T>>
                       ),
                     ),
                   ),
+
+
+                  // // --- 4. WHITE AREA WITH ENHANCED BLACK SHADOW ---
+                  // Expanded(
+                  //   child: Container(
+                  //     width: double.infinity,
+                  //     decoration: BoxDecoration(
+                  //       color: Colors.white,
+                  //       boxShadow: [
+                  //         BoxShadow(
+                  //           color: Colors.black.withOpacity(0.8), 
+                  //           blurRadius: 30, 
+                  //           spreadRadius: 5, 
+                  //           offset: const Offset(0, -8), 
+                  //         ),
+                  //       ],
+                  //     ),
+                  //     // ADDED CustomPaint HERE to draw the background grid
+                  //     child: CustomPaint(
+                  //       painter: GridPainter(),
+                  //       child: Column(
+                  //         children: [
+                  //           const SizedBox(height: 30), 
+                  //           _buildContentArea(),
+                  //         ],
+                  //       ),
+                  //     ),
+                  //   ),
+                  // ),
                 ],
               ),
             ),
@@ -8207,8 +8289,10 @@ Widget _buildBeautifulAppBar() {
     
     return Container(
       margin: const EdgeInsets.only(left: 50, right: 50, top: 30, bottom: 10),
-      height: 80, 
+      height: screenhgt * 0.1, 
       color: Colors.transparent,
+      // color: Colors.black26 ,
+
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -8317,40 +8401,74 @@ Widget _buildBeautifulAppBar() {
                   ),
                 );
               },
-              child: Container(
-                key: ValueKey<String>(displayText),
-                alignment: Alignment.centerLeft,
-                child: ShaderMask(
-                  shaderCallback: (bounds) => const LinearGradient(
-                    colors: [
-                      Color(0xFF00B0FF), // Bright light blue
-                      Color.fromARGB(255, 208, 4, 235), 
-                      Color.fromARGB(255, 212, 101, 10), // Very light cyan
-                    ],
-                    stops: [0.0, 0.6, 1.0],
-                    begin: Alignment.topLeft ,
-                    end: Alignment.bottomRight,
-                  ).createShader(bounds),
-                  child: Text(
-                    displayText,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w700, // Increased weight for sharpness
-                      fontSize: 22, // Increased size
-                      letterSpacing: 1.5,
-                      shadows: [
-                        // Soft icy glow
-                        Shadow(color: Color(0xFF00B0FF), blurRadius: 15, offset: Offset(0, 0)),
-                        // Hard black drop shadow to contrast against the slider image
-                        Shadow(color: Colors.black, blurRadius: 10, offset: Offset(2, 4)),
-                      ],
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ),
-            ),
+              child: 
+              // Container(
+              //   key: ValueKey<String>(displayText),
+              //   alignment: Alignment.centerLeft,
+              //   child: ShaderMask(
+              //     shaderCallback: (bounds) => const LinearGradient(
+              //       colors: [
+              //         Color(0xFF00B0FF), // Bright light blue
+              //         Color.fromARGB(255, 208, 4, 235), 
+              //         Color.fromARGB(255, 212, 101, 10), // Very light cyan
+              //       ],
+              //       stops: [0.0, 0.6, 1.0],
+              //       begin: Alignment.topLeft ,
+              //       end: Alignment.bottomRight,
+              //     ).createShader(bounds),
+              //     child: Text(
+              //       displayText,
+              //       style: const TextStyle(
+              //         color: Colors.white,
+              //         fontWeight: FontWeight.w700, // Increased weight for sharpness
+              //         fontSize: 22, // Increased size
+              //         letterSpacing: 1.5,
+              //         shadows: [
+              //           // Soft icy glow
+              //           Shadow(color: Color(0xFF00B0FF), blurRadius: 15, offset: Offset(0, 0)),
+              //           // Hard black drop shadow to contrast against the slider image
+              //           Shadow(color: Colors.black, blurRadius: 10, offset: Offset(2, 4)),
+              //         ],
+              //       ),
+              //       maxLines: 1,
+              //       overflow: TextOverflow.ellipsis,
+              //     ),
+              //   ),
+              // ),
+
+              // 4. Ultra-Crisp Dynamic Content Title
+
+     Container(
+      key: ValueKey<String>(displayText),
+      alignment: Alignment.centerLeft,
+      child: ShaderMask(
+        shaderCallback: (bounds) => const LinearGradient(
+          colors: [
+            Color(0xFF00B0FF), // Bright light blue
+            Color.fromARGB(255, 208, 4, 235), 
+            Color.fromARGB(255, 212, 101, 10), // Very light cyan
+          ],
+          stops: [0.0, 0.6, 1.0],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ).createShader(bounds),
+        child: Text(
+          displayText,
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w700,
+            fontSize: 22,
+            letterSpacing: 1.5,
+            // YAHAN SE SHADOWS REMOVE KAR DI GAYI HAIN
+          ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ),
+    ),
+  ),
+
+            
           ),
         ],
       ),
@@ -9071,10 +9189,337 @@ Widget _buildContentList() {
   // }
 
 
+// Widget _buildSearchUI() {
+//     // Fetch the currently focused item name
+//     final focusName = context.watch<FocusProvider>().focusedItemName;
+//     final String displayText = focusName.isEmpty ? "Search" : focusName;
+
+//     return Row(
+//       children: [
+//         // LEFT SIDE: Focused Name and Search Input
+//         Expanded(
+//           flex: 4,
+//           child: Padding(
+//             padding: const EdgeInsets.only(left: 40, right: 20), // Adjusted for better TV alignment
+//             child: Column(
+//               mainAxisAlignment: MainAxisAlignment.center,
+//               crossAxisAlignment: CrossAxisAlignment.start, // Align text and box to the left
+//               children: [
+//                 // 1. Focused Image Name (Right above the search box)
+//                 AnimatedSwitcher(
+//                   duration: const Duration(milliseconds: 300),
+//                   child: ShaderMask(
+//                     key: ValueKey<String>(displayText),
+//                     shaderCallback: (bounds) => const LinearGradient(
+//                       colors: [Colors.white, Color(0xFF00E5FF)],
+//                       begin: Alignment.topCenter,
+//                       end: Alignment.bottomCenter,
+//                     ).createShader(bounds),
+//                     child: Text(
+//                       displayText,
+//                       style: const TextStyle(
+//                         fontSize: 24, 
+//                         fontWeight: FontWeight.w800, 
+//                         color: Colors.white,
+//                         letterSpacing: 1.2,
+//                         shadows: [
+//                           Shadow(color: Color(0xFF00B0FF), blurRadius: 10, offset: Offset(0, 0)),
+//                           Shadow(color: Colors.black, blurRadius: 5, offset: Offset(1, 2)),
+//                         ]
+//                       ),
+//                       maxLines: 1,
+//                       overflow: TextOverflow.ellipsis,
+//                     ),
+//                   ),
+//                 ),
+                
+//                 const SizedBox(height: 12), // Space between title and input box
+                
+//                 // 2. Wide, Slim Search Input Box
+//                 Container(
+//                   width: double.infinity, // Stretches to fill available space
+//                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10), 
+//                   decoration: BoxDecoration(
+//                       color: Colors.black.withOpacity(0.6), // Slightly darker for better contrast
+//                       borderRadius: BorderRadius.circular(8),
+//                       border: Border.all(color: ProfessionalColors.accentPurple, width: 1.5),
+//                       boxShadow: [
+//                         BoxShadow(
+//                           color: Colors.black.withOpacity(0.5),
+//                           blurRadius: 8,
+//                           offset: const Offset(0, 4),
+//                         )
+//                       ]
+//                   ),
+//                   child: Row(
+//                     children: [
+//                       const Icon(Icons.search, color: Colors.white70, size: 20),
+//                       const SizedBox(width: 10),
+//                       Expanded(
+//                         child: Text(
+//                           _searchText.isEmpty ? 'Type to search...' : _searchText,
+//                           style: TextStyle(
+//                             color: _searchText.isEmpty ? Colors.white54 : Colors.white, 
+//                             fontSize: 18, 
+//                             fontWeight: FontWeight.w500
+//                           ),
+//                           maxLines: 1,
+//                           overflow: TextOverflow.ellipsis,
+//                         ),
+//                       ),
+//                       // Optional: Show a blinking cursor effect when empty
+//                       if (_searchText.isEmpty)
+//                         Container(
+//                           width: 2,
+//                           height: 18,
+//                           color: Colors.white70,
+//                         )
+//                     ],
+//                   ),
+//                 ),
+//               ],
+//             ),
+//           ),
+//         ),
+        
+//         // RIGHT SIDE: The Keyboard 
+//         Expanded(
+//           flex: 6,
+//           child: Column(
+//             mainAxisAlignment: MainAxisAlignment.center,
+//             children: _keyboardLayout.asMap().entries.map((r) => Row(
+//                 mainAxisAlignment: MainAxisAlignment.center,
+//                 children: r.value.asMap().entries.map((c) {
+//                   int idx = _keyboardLayout
+//                           .take(r.key)
+//                           .fold(0, (p, e) => p + e.length) +
+//                       c.key;
+//                   if (idx >= _keyboardFocusNodes.length) {
+//                     return const SizedBox.shrink();
+//                   }
+//                   bool isFocused = _focusedKeyRow == r.key && _focusedKeyCol == c.key;
+//                   String key = c.value;
+//                   double w = key == 'SPACE'
+//                       ? 150
+//                       : (key == 'OK' || key == 'DEL' ? 70 : 40);
+//                   return Container(
+//                     width: w,
+//                     height: 35, 
+//                     margin: const EdgeInsets.all(2),
+//                     child: Focus(
+//                       focusNode: _keyboardFocusNodes[idx],
+//                       onFocusChange: (has) {
+//                         if (has) {
+//                           setState(() {
+//                             _focusedKeyRow = r.key;
+//                             _focusedKeyCol = c.key;
+//                           });
+//                         }
+//                       },
+//                       child: ElevatedButton(
+//                         onPressed: () => _handleKeyClick(key),
+//                         style: ElevatedButton.styleFrom(
+//                           backgroundColor: isFocused
+//                               ? ProfessionalColors.accentPurple
+//                               : Colors.white10,
+//                           shape: RoundedRectangleBorder(
+//                               borderRadius: BorderRadius.circular(6),
+//                               side: isFocused
+//                                   ? const BorderSide(color: Colors.white, width: 2)
+//                                   : BorderSide.none),
+//                           padding: EdgeInsets.zero,
+//                         ),
+//                         child: Text(key,
+//                             style: const TextStyle(color: Colors.white, fontSize: 16)),
+//                       ),
+//                     ),
+//                   );
+//                 }).toList(),
+//               )).toList(),
+//           ),
+//         )
+//       ],
+//     );
+//   }
+
+
+// Widget _buildSearchUI() {
+//     // Fetch the currently focused item name
+//     final focusName = context.watch<FocusProvider>().focusedItemName;
+//     final String displayText = focusName.isEmpty ? "Search" : focusName;
+
+//     return Row(
+//       children: [
+//         // LEFT SIDE: Focused Name and Search Input
+//         Expanded(
+//           flex: 4,
+//           child: Padding(
+//             padding: const EdgeInsets.only(left: 40, right: 20), // Adjusted for better TV alignment
+//             child: Column(
+//               mainAxisAlignment: MainAxisAlignment.center,
+//               crossAxisAlignment: CrossAxisAlignment.start, // Align text and box to the left
+//               children: [
+//                 // 1. Focused Image Name (ALWAYS VISIBLE)
+//                 AnimatedSwitcher(
+//                   duration: const Duration(milliseconds: 300),
+//                   child: ShaderMask(
+//                     key: ValueKey<String>(displayText),
+//                     shaderCallback: (bounds) => const LinearGradient(
+//                       colors: [Colors.white, Color(0xFF00E5FF)],
+//                       begin: Alignment.topCenter,
+//                       end: Alignment.bottomCenter,
+//                     ).createShader(bounds),
+//                     child: Text(
+//                       displayText,
+//                       style: const TextStyle(
+//                         fontSize: 24, 
+//                         fontWeight: FontWeight.w800, 
+//                         color: Colors.white,
+//                         letterSpacing: 1.2,
+//                         shadows: [
+//                           Shadow(color: Color(0xFF00B0FF), blurRadius: 10, offset: Offset(0, 0)),
+//                           Shadow(color: Colors.black, blurRadius: 5, offset: Offset(1, 2)),
+//                         ]
+//                       ),
+//                       maxLines: 1,
+//                       overflow: TextOverflow.ellipsis,
+//                     ),
+//                   ),
+//                 ),
+                
+//                 // Animate the space and input box out when keyboard is hidden
+//                 AnimatedSize(
+//                   duration: const Duration(milliseconds: 400),
+//                   curve: Curves.easeInOut,
+//                   child: _showKeyboard 
+//                     ? Column(
+//                         crossAxisAlignment: CrossAxisAlignment.start,
+//                         children: [
+//                           const SizedBox(height: 12), // Space between title and input box
+//                           // 2. Wide, Slim Search Input Box
+//                           Container(
+//                             width: double.infinity, // Stretches to fill available space
+//                             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10), 
+//                             decoration: BoxDecoration(
+//                                 color: Colors.black.withOpacity(0.6), // Slightly darker for better contrast
+//                                 borderRadius: BorderRadius.circular(8),
+//                                 border: Border.all(color: ProfessionalColors.accentPurple, width: 1.5),
+//                                 boxShadow: [
+//                                   BoxShadow(
+//                                     color: Colors.black.withOpacity(0.5),
+//                                     blurRadius: 8,
+//                                     offset: const Offset(0, 4),
+//                                   )
+//                                 ]
+//                             ),
+//                             child: Row(
+//                               children: [
+//                                 const Icon(Icons.search, color: Colors.white70, size: 20),
+//                                 const SizedBox(width: 10),
+//                                 Expanded(
+//                                   child: Text(
+//                                     _searchText.isEmpty ? 'Type to search...' : _searchText,
+//                                     style: TextStyle(
+//                                       color: _searchText.isEmpty ? Colors.white54 : Colors.white, 
+//                                       fontSize: 18, 
+//                                       fontWeight: FontWeight.w500
+//                                     ),
+//                                     maxLines: 1,
+//                                     overflow: TextOverflow.ellipsis,
+//                                   ),
+//                                 ),
+//                                 // Optional: Show a blinking cursor effect when empty
+//                                 if (_searchText.isEmpty)
+//                                   Container(
+//                                     width: 2,
+//                                     height: 18,
+//                                     color: Colors.white70,
+//                                   )
+//                               ],
+//                             ),
+//                           ),
+//                         ],
+//                       )
+//                     : const SizedBox(width: double.infinity, height: 0),
+//                 ),
+//               ],
+//             ),
+//           ),
+//         ),
+        
+//         // RIGHT SIDE: The Keyboard (ANIMATED IN AND OUT)
+//         Expanded(
+//           flex: 6,
+//           child: AnimatedSwitcher(
+//             duration: const Duration(milliseconds: 400),
+//             child: _showKeyboard
+//                 ? Column(
+//                     mainAxisAlignment: MainAxisAlignment.center,
+//                     children: _keyboardLayout.asMap().entries.map((r) => Row(
+//                         mainAxisAlignment: MainAxisAlignment.center,
+//                         children: r.value.asMap().entries.map((c) {
+//                           int idx = _keyboardLayout
+//                                   .take(r.key)
+//                                   .fold(0, (p, e) => p + e.length) +
+//                               c.key;
+//                           if (idx >= _keyboardFocusNodes.length) {
+//                             return const SizedBox.shrink();
+//                           }
+//                           bool isFocused = _focusedKeyRow == r.key && _focusedKeyCol == c.key;
+//                           String key = c.value;
+//                           double w = key == 'SPACE'
+//                               ? 150
+//                               : (key == 'OK' || key == 'DEL' ? 70 : 40);
+//                           return Container(
+//                             width: w,
+//                             height: 35, 
+//                             margin: const EdgeInsets.all(2),
+//                             child: Focus(
+//                               focusNode: _keyboardFocusNodes[idx],
+//                               onFocusChange: (has) {
+//                                 if (has) {
+//                                   setState(() {
+//                                     _focusedKeyRow = r.key;
+//                                     _focusedKeyCol = c.key;
+//                                   });
+//                                 }
+//                               },
+//                               child: ElevatedButton(
+//                                 onPressed: () => _handleKeyClick(key),
+//                                 style: ElevatedButton.styleFrom(
+//                                   backgroundColor: isFocused
+//                                       ? ProfessionalColors.accentPurple
+//                                       : Colors.white10,
+//                                   shape: RoundedRectangleBorder(
+//                                       borderRadius: BorderRadius.circular(6),
+//                                       side: isFocused
+//                                           ? const BorderSide(color: Colors.white, width: 2)
+//                                           : BorderSide.none),
+//                                   padding: EdgeInsets.zero,
+//                                 ),
+//                                 child: Text(key,
+//                                     style: const TextStyle(color: Colors.white, fontSize: 16)),
+//                               ),
+//                             ),
+//                           );
+//                         }).toList(),
+//                       )).toList(),
+//                   )
+//                 : const SizedBox.shrink(), // Disappears cleanly when not searching
+//           ),
+//         )
+//       ],
+//     );
+//   }
+
+
 Widget _buildSearchUI() {
     // Fetch the currently focused item name
     final focusName = context.watch<FocusProvider>().focusedItemName;
     final String displayText = focusName.isEmpty ? "Search" : focusName;
+    
+    // Check if Top Filter Bar is active (networks exist)
+    final bool hasNetworks = widget.networkNames.isNotEmpty;
 
     return Row(
       children: [
@@ -9084,145 +9529,165 @@ Widget _buildSearchUI() {
           child: Padding(
             padding: const EdgeInsets.only(left: 40, right: 20), // Adjusted for better TV alignment
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start, // Align text and box to the left
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center, // Align text and box to the left
               children: [
-                // 1. Focused Image Name (Right above the search box)
-                AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 300),
-                  child: ShaderMask(
-                    key: ValueKey<String>(displayText),
-                    shaderCallback: (bounds) => const LinearGradient(
-                      colors: [Colors.white, Color(0xFF00E5FF)],
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                    ).createShader(bounds),
-                    child: Text(
-                      displayText,
-                      style: const TextStyle(
-                        fontSize: 24, 
-                        fontWeight: FontWeight.w800, 
-                        color: Colors.white,
-                        letterSpacing: 1.2,
-                        shadows: [
-                          Shadow(color: Color(0xFF00B0FF), blurRadius: 10, offset: Offset(0, 0)),
-                          Shadow(color: Colors.black, blurRadius: 5, offset: Offset(1, 2)),
-                        ]
+                // 1. Focused Image Name (ONLY SHOW IF NETWORKS EXIST)
+                if (hasNetworks) ...[
+                  AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 300),
+                    child: ShaderMask(
+                      key: ValueKey<String>(displayText),
+                      shaderCallback: (bounds) => const LinearGradient(
+                        colors: [Colors.white, Color(0xFF00E5FF)],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                      ).createShader(bounds),
+                      child: Text(
+                        displayText,
+                        style: const TextStyle(
+                          fontSize: 20, 
+                          fontWeight: FontWeight.w800, 
+                          color: Colors.white,
+                          letterSpacing: 1.2,
+                          shadows: [
+                            Shadow(color: Color(0xFF00B0FF), blurRadius: 10, offset: Offset(0, 0)),
+                            Shadow(color: Colors.black, blurRadius: 5, offset: Offset(1, 2)),
+                          ]
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                ),
+                  const SizedBox(height: 12), // Space between title and input box
+                ],
                 
-                const SizedBox(height: 12), // Space between title and input box
-                
-                // 2. Wide, Slim Search Input Box
-                Container(
-                  width: double.infinity, // Stretches to fill available space
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10), 
-                  decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.6), // Slightly darker for better contrast
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: ProfessionalColors.accentPurple, width: 1.5),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.5),
-                          blurRadius: 8,
-                          offset: const Offset(0, 4),
-                        )
-                      ]
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.search, color: Colors.white70, size: 20),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Text(
-                          _searchText.isEmpty ? 'Type to search...' : _searchText,
-                          style: TextStyle(
-                            color: _searchText.isEmpty ? Colors.white54 : Colors.white, 
-                            fontSize: 18, 
-                            fontWeight: FontWeight.w500
+                // Animate the space and input box out when keyboard is hidden
+                AnimatedSize(
+                  duration: const Duration(milliseconds: 400),
+                  curve: Curves.easeInOut,
+                  child: _showKeyboard 
+                    ? Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (!hasNetworks) const SizedBox(height: 12), // Fallback space if title is hidden
+                          // 2. Wide, Slim Search Input Box
+                          Container(
+                            width: double.infinity, // Stretches to fill available space
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10), 
+                            decoration: BoxDecoration(
+                                color: Colors.black.withOpacity(0.6), // Slightly darker for better contrast
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(color: ProfessionalColors.accentPurple, width: 1.5),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.5),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 4),
+                                  )
+                                ]
+                            ),
+                            child: Row(
+                              children: [
+                                const Icon(Icons.search, color: Colors.white70, size: 20),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: Text(
+                                    _searchText.isEmpty ? 'Type to search...' : _searchText,
+                                    style: TextStyle(
+                                      color: _searchText.isEmpty ? Colors.white54 : Colors.white, 
+                                      fontSize: 18, 
+                                      fontWeight: FontWeight.w500
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                // Optional: Show a blinking cursor effect when empty
+                                if (_searchText.isEmpty)
+                                  Container(
+                                    width: 2,
+                                    height: 18,
+                                    color: Colors.white70,
+                                  )
+                              ],
+                            ),
                           ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      // Optional: Show a blinking cursor effect when empty
-                      if (_searchText.isEmpty)
-                        Container(
-                          width: 2,
-                          height: 18,
-                          color: Colors.white70,
-                        )
-                    ],
-                  ),
+                        ],
+                      )
+                    : const SizedBox(width: double.infinity, height: 0),
                 ),
               ],
             ),
           ),
         ),
         
-        // RIGHT SIDE: The Keyboard 
+        // RIGHT SIDE: The Keyboard (ANIMATED IN AND OUT)
         Expanded(
           flex: 6,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: _keyboardLayout.asMap().entries.map((r) => Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: r.value.asMap().entries.map((c) {
-                  int idx = _keyboardLayout
-                          .take(r.key)
-                          .fold(0, (p, e) => p + e.length) +
-                      c.key;
-                  if (idx >= _keyboardFocusNodes.length) {
-                    return const SizedBox.shrink();
-                  }
-                  bool isFocused = _focusedKeyRow == r.key && _focusedKeyCol == c.key;
-                  String key = c.value;
-                  double w = key == 'SPACE'
-                      ? 150
-                      : (key == 'OK' || key == 'DEL' ? 70 : 40);
-                  return Container(
-                    width: w,
-                    height: 35, 
-                    margin: const EdgeInsets.all(2),
-                    child: Focus(
-                      focusNode: _keyboardFocusNodes[idx],
-                      onFocusChange: (has) {
-                        if (has) {
-                          setState(() {
-                            _focusedKeyRow = r.key;
-                            _focusedKeyCol = c.key;
-                          });
-                        }
-                      },
-                      child: ElevatedButton(
-                        onPressed: () => _handleKeyClick(key),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: isFocused
-                              ? ProfessionalColors.accentPurple
-                              : Colors.white10,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(6),
-                              side: isFocused
-                                  ? const BorderSide(color: Colors.white, width: 2)
-                                  : BorderSide.none),
-                          padding: EdgeInsets.zero,
-                        ),
-                        child: Text(key,
-                            style: const TextStyle(color: Colors.white, fontSize: 16)),
-                      ),
-                    ),
-                  );
-                }).toList(),
-              )).toList(),
+          child: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 400),
+            child: _showKeyboard
+                ? Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: _keyboardLayout.asMap().entries.map((r) => Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: r.value.asMap().entries.map((c) {
+                          int idx = _keyboardLayout
+                                  .take(r.key)
+                                  .fold(0, (p, e) => p + e.length) +
+                              c.key;
+                          if (idx >= _keyboardFocusNodes.length) {
+                            return const SizedBox.shrink();
+                          }
+                          bool isFocused = _focusedKeyRow == r.key && _focusedKeyCol == c.key;
+                          String key = c.value;
+                          double w = key == 'SPACE'
+                              ? 150
+                              : (key == 'OK' || key == 'DEL' ? 70 : 40);
+                          return Container(
+                            width: w,
+                            height: 35, 
+                            margin: const EdgeInsets.all(2),
+                            child: Focus(
+                              focusNode: _keyboardFocusNodes[idx],
+                              onFocusChange: (has) {
+                                if (has) {
+                                  setState(() {
+                                    _focusedKeyRow = r.key;
+                                    _focusedKeyCol = c.key;
+                                  });
+                                }
+                              },
+                              child: ElevatedButton(
+                                onPressed: () => _handleKeyClick(key),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: isFocused
+                                      ? ProfessionalColors.accentPurple
+                                      : Colors.white10,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(6),
+                                      side: isFocused
+                                          ? const BorderSide(color: Colors.white, width: 2)
+                                          : BorderSide.none),
+                                  padding: EdgeInsets.zero,
+                                ),
+                                child: Text(key,
+                                    style: const TextStyle(color: Colors.white, fontSize: 16)),
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      )).toList(),
+                  )
+                : const SizedBox.shrink(), // Disappears cleanly when not searching
           ),
         )
       ],
     );
   }
+
 
   Widget _buildBackgroundSlider() {
     if (widget.sliderImages.isEmpty) {
@@ -9232,7 +9697,7 @@ Widget _buildSearchUI() {
           children: [
             CachedNetworkImage(
               imageUrl: _fallbackBackgroundImageUrl!,
-              fit: BoxFit.cover ,
+              fit: BoxFit.fill ,
               errorWidget: (c, u, e) => Container(color: ProfessionalColors.primaryDark),
             ),
           ],
@@ -9546,7 +10011,7 @@ class __MasterSliderCardState<T> extends State<_MasterSliderCard<T>>
                 children: [
                   CachedNetworkImage(
                     imageUrl: widget.getImageUrl(widget.item),
-                    fit: BoxFit.cover,
+                    fit: BoxFit.fill,
                     placeholder: (c, u) => _placeholder(),
                     errorWidget: (c, u, e) => _placeholder(),
                   ),

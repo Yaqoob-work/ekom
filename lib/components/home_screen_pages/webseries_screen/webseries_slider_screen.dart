@@ -9006,6 +9006,10 @@
 //   }
 // }
 
+
+
+
+
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
@@ -9139,6 +9143,34 @@ class _WebseriesSliderScreenState extends State<WebseriesSliderScreen> {
     super.dispose();
   }
 
+  // Future<List<String>> _fetchGenresFromApi(int networkId) async {
+  //   try {
+  //     final response = await https.post(
+  //       Uri.parse(SessionManager.baseUrl + 'getGenreByContentNetwork'),
+  //       headers: {
+  //         'auth-key': SessionManager.authKey,
+  //         'Content-Type': 'application/json',
+  //         'domain': SessionManager.savedDomain
+  //       },
+  //       body: json.encode({"network_id": networkId, "data_for": "webseries"}),
+  //     );
+  //     if (response.statusCode == 200) {
+  //       final data = json.decode(response.body);
+  //       if (data['status'] == true && data['genres'] != null) {
+  //         List<String> g = (data['genres'] as List)
+  //             .map((e) => e.toString().trim())
+  //             .toList()
+  //           ..sort();
+  //         if (!g.contains('All')) g.insert(0, 'All');
+  //         return g;
+  //       }
+  //     }
+  //   } catch (_) {}
+  //   return ['All'];
+  // }
+
+
+
   Future<List<String>> _fetchGenresFromApi(int networkId) async {
     try {
       final response = await https.post(
@@ -9155,8 +9187,13 @@ class _WebseriesSliderScreenState extends State<WebseriesSliderScreen> {
         if (data['status'] == true && data['genres'] != null) {
           List<String> g = (data['genres'] as List)
               .map((e) => e.toString().trim())
-              .toList()
-            ..sort();
+              .toList();
+
+          // 🔥 YAHAN PAR 'Web Series' KO FILTER KIYA GAYA HAI
+          g.removeWhere((genre) => genre.toLowerCase() == 'web series');
+
+          g.sort(); // Iske baad list ko sort kar diya
+          
           if (!g.contains('All')) g.insert(0, 'All');
           return g;
         }

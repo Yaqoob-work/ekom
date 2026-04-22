@@ -1618,6 +1618,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as https; 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mobi_tv_entertainment/components/home_screen_pages/live_sports_screen/live_sports_screen.dart';
+import 'package:mobi_tv_entertainment/components/home_screen_pages/sd_movies_screen/sd_movies_screen.dart';
 import 'dart:math' as math; 
 
 // ✅ IMPORT EXIT & EXPIRED SCREENS
@@ -1661,6 +1663,7 @@ class _MainDashboardScreenState extends State<MainDashboardScreen> with Automati
 
   bool _showContentNetwork = false;
   bool _showMovies = false;
+  bool _showSdMovies = false;
   bool _showWebseries = false;
   bool _showTvShows = false;
   bool _showTvShowsPak = false;
@@ -1727,11 +1730,12 @@ class _MainDashboardScreenState extends State<MainDashboardScreen> with Automati
         setState(() {
           _showContentNetwork = (domainContent['content_network'] ?? 0) == 1;
           _showMovies = (domainContent['movies'] ?? 0) == 1;
+          // _showSdMovies = (domainContent['sd_movies'] ?? 0) == 1;
           _showWebseries = (domainContent['webseries'] ?? 0) == 1;
           _showTvShows = (domainContent['tvshow'] ?? 0) == 1;
-          _showTvShowsPak = (domainContent['tvshow_pak'] ?? 0) == 1;
-          _showSports = (domainContent['sports'] ?? 0) == 1;
-          _showReligious = (domainContent['religious'] ?? 0) == 1;
+          // _showTvShowsPak = (domainContent['tvshow_pak'] ?? 0) == 1;
+          // _showSports = (domainContent['sports'] ?? 0) == 1;
+          // _showReligious = (domainContent['religious'] ?? 0) == 1;
           _showKids = (domainContent['kids_show'] ?? 0) == 1;
         });
         _buildDynamicMenu();
@@ -1794,11 +1798,12 @@ class _MainDashboardScreenState extends State<MainDashboardScreen> with Automati
           setState(() {
             _showContentNetwork = (domainContent['content_network'] ?? 0) == 1;
             _showMovies = (domainContent['movies'] ?? 0) == 1;
+            // _showSdMovies = (domainContent['sd_movies'] ?? 0) == 1;
             _showWebseries = (domainContent['webseries'] ?? 0) == 1;
             _showTvShows = (domainContent['tvshow'] ?? 0) == 1;
-            _showTvShowsPak = (domainContent['tvshow_pak'] ?? 0) == 1;
-            _showSports = (domainContent['sports'] ?? 0) == 1;
-            _showReligious = (domainContent['religious'] ?? 0) == 1;
+            // _showTvShowsPak = (domainContent['tvshow_pak'] ?? 0) == 1;
+            // _showSports = (domainContent['sports'] ?? 0) == 1;
+            // _showReligious = (domainContent['religious'] ?? 0) == 1;
             _showKids = (domainContent['kids_show'] ?? 0) == 1;
           });
           _buildDynamicMenu();
@@ -1850,14 +1855,17 @@ class _MainDashboardScreenState extends State<MainDashboardScreen> with Automati
 
       _menuItems.add('LIVE TV');
       _pageIdentifiers.add('liveChannelLanguage');
+      _menuItems.add('LIVE SPORTS');
+      _pageIdentifiers.add('liveSports');
 
       if (_showContentNetwork) { _menuItems.add('OTT APPS'); _pageIdentifiers.add('subVod'); }
-      if (_showMovies) { _menuItems.add('LATEST MOVIES'); _pageIdentifiers.add('manageMovies'); }
+      if (_showMovies) { _menuItems.add('LATEST 4K MOVIES'); _pageIdentifiers.add('manageMovies'); }
+      // if (_showSdMovies) { _menuItems.add('LATEST SD MOVIES'); _pageIdentifiers.add('manageSdMovies'); }
       if (_showWebseries) { _menuItems.add('WEB SERIES'); _pageIdentifiers.add('manageWebseries'); }
       if (_showTvShows) { _menuItems.add('TV SHOWS'); _pageIdentifiers.add('tvShows'); }
-      if (_showTvShowsPak) { _menuItems.add('TV SHOWS PAK'); _pageIdentifiers.add('tvShowPak'); }
-      if (_showReligious) { _menuItems.add('RELIGIOUS'); _pageIdentifiers.add('religiousChannels'); }
-      if (_showSports) { _menuItems.add('SPORTS'); _pageIdentifiers.add('sports'); }
+      // if (_showTvShowsPak) { _menuItems.add('TV SHOWS PAK'); _pageIdentifiers.add('tvShowPak'); }
+      // if (_showReligious) { _menuItems.add('RELIGIOUS'); _pageIdentifiers.add('religiousChannels'); }
+      // if (_showSports) { _menuItems.add('SPORTS'); _pageIdentifiers.add('sports'); }
       if (_showKids) { _menuItems.add('KIDS ZONE'); _pageIdentifiers.add('kids_show'); }
       
       if (_show18Plus) { 
@@ -2027,12 +2035,14 @@ class _MainDashboardScreenState extends State<MainDashboardScreen> with Automati
     
     switch (currentId) {
       case 'liveChannelLanguage': return const LiveChannelLanguageScreen();
+      case 'liveSports': return const LiveSportsScreen();
       case 'subVod': return const HorzontalVod();
       case 'manageMovies': return const MoviesScreen();
+      case 'manageSdMovies': return const SdMoviesScreen();
       case 'manageWebseries': return const ManageWebSeries();
       case 'tvShows': return const ManageTvShows();
-      case 'tvShowPak': return const TvShowsPak();
-      case 'religiousChannels': return const ManageReligiousShows();
+      // case 'tvShowPak': return const TvShowsPak();
+      // case 'religiousChannels': return const ManageReligiousShows();
       case 'sports': return const ManageSports();
       case 'kids_show': return const ManageKidsShows();
       case 'eighteenPlus': return const AdultMoviesScreen();

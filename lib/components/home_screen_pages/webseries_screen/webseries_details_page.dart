@@ -5297,7 +5297,7 @@ class _WebSeriesDetailsPageState extends State<WebSeriesDetailsPage>
         // Navigation fixed: episode.id is already int, no int.tryParse needed
         await Navigator.push(context, MaterialPageRoute(builder: (context) => VideoScreen(
           videoUrl: playUrl, bannerImageUrl: episode.image, videoId: episode.id,
-          name: episode.name, source: 'isWebSeries', channelList: [], liveStatus: false, updatedAt: episode.updatedAt,
+          name: episode.name, source: 'isWebSeries', channelList: [], liveStatus: false, updatedAt: episode.updatedAt, streamType:  ''
         )));
       }
     } catch (e) {

@@ -1919,6 +1919,7 @@ class _SearchScreenState extends State<SearchScreen>
               liveStatus: true,
               updatedAt: content.updatedAt,
               source: 'isSearch',
+              streamType: content.streamingType ?? ''
             ),
           ),
         );
@@ -1970,6 +1971,7 @@ class _SearchScreenState extends State<SearchScreen>
                 liveStatus: false, // It's VOD
                 updatedAt: content.updatedAt,
                 source: 'isSearch',
+                streamType: content.streamingType ?? ''
               ),
             ),
           );
