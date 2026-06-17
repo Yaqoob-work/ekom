@@ -1113,6 +1113,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as https; // Renamed to 'https'
+import 'package:mobi_tv_entertainment/components/home_screen_pages/tv_show/tvshow_calling_screen.dart';
+import 'package:mobi_tv_entertainment/components/home_screen_pages/webseries_screen/web_series_calling_screen.dart';
 import 'package:mobi_tv_entertainment/components/home_screen_pages/webseries_screen/webseries_details_page.dart';
 import 'package:mobi_tv_entertainment/components/provider/device_info_provider.dart';
 // FocusProvider import (jaisa example mein tha)
@@ -1817,25 +1819,29 @@ class _SearchScreenState extends State<SearchScreen>
           await Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => WebSeriesDetailsPage(
-                id: int.tryParse(content.id) ?? 0,
-                banner: content.banner,
-                poster: content.poster,
-                logo: content.banner, // Assuming banner is used as logo
-                name: content.name,
-                updatedAt: content.updatedAt,
-              ),
+              builder: (context) => 
+              // WebSeriesDetailsPage(
+              //   id: int.tryParse(content.id) ?? 0,
+              //   banner: content.banner,
+              //   poster: content.poster,
+              //   logo: content.banner, // Assuming banner is used as logo
+              //   name: content.name,
+              //   updatedAt: content.updatedAt,
+              // ),
+    WebSeriesCallingScreen( showId: int.tryParse(content.id) ?? 0, showName: content.name, bannerUrl: content.banner ?? content.poster ?? '',)
+
             ),
           );
         } else if (parsedContentType == 4) {
           await Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => TvShowFinalDetailsPage(
-                id: int.tryParse(content.id) ?? 0,
-                banner: content.banner,
-                poster: content.poster,
-                name: content.name,
+              builder: (context) => TvShowCallingScreen(
+                // id: int.tryParse(content.id) ?? 0,
+                // banner: content.banner,
+                // poster: content.poster,
+                // name: content.name,
+                 showId: int.tryParse(content.id) ?? 0, showName: content.name, bannerUrl: content.banner ?? '',
               ),
             ),
           );

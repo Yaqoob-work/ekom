@@ -10598,6 +10598,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as https;
 import 'package:mobi_tv_entertainment/components/home_screen_pages/tv_show/tv_show_final_details_page.dart';
+import 'package:mobi_tv_entertainment/components/home_screen_pages/tv_show/tvshow_calling_screen.dart';
 import 'package:mobi_tv_entertainment/main.dart';
 import 'package:mobi_tv_entertainment/components/services/history_service.dart';
 import 'package:mobi_tv_entertainment/components/widgets/master_slider_layout.dart';
@@ -10917,11 +10918,10 @@ class _TvShowSliderScreenState extends State<TvShowSliderScreen> {
       await Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) => TvShowFinalDetailsPage(
-                    id: item.id,
-                    banner: item.banner ?? item.poster ?? '',
-                    poster: item.poster ?? item.banner ?? '',
-                    name: item.name,
+              builder: (context) => TvShowCallingScreen(
+                    showId: item.id,
+                    showName: item.name,
+                    bannerUrl: item.banner ?? item.poster ?? '',
                   ))).catchError((_) {});
       if (mounted) setState(() => _isVideoLoading = false);
     }

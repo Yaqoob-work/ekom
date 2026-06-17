@@ -5061,19 +5061,21 @@ class _AboveEighteenSliderScreenState extends State<AboveEighteenSliderScreen> {
 
     try {
       String rawUrl = content.getrawUrl();
-      if (content.contentType == 2) {
-        await Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => WebSeriesDetailsPage(
-                        id: content.id,
-                        banner: content.banner ?? '',
-                        poster: content.poster ?? '',
-                        logo: widget.logoUrl,
-                        name: content.name,
-                        updatedAt: content.updatedAt ?? '')))
-            .catchError((_) => null);
-      } else if (rawUrl.isNotEmpty) {
+      // if (content.contentType == 2) {
+      //   await Navigator.push(
+      //           context,
+      //           MaterialPageRoute(
+      //               builder: (context) => WebSeriesDetailsPage(
+      //                   id: content.id,
+      //                   banner: content.banner ?? '',
+      //                   poster: content.poster ?? '',
+      //                   logo: widget.logoUrl,
+      //                   name: content.name,
+      //                   updatedAt: content.updatedAt ?? '')))
+      //       .catchError((_) => null);
+      // } 
+      // else 
+      if (rawUrl.isNotEmpty) {
         if (content.sourceType == 'YoutubeLive' ||
             (content.youtubeTrailer != null &&
                 content.youtubeTrailer!.isNotEmpty)) {

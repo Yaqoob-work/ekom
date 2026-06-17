@@ -1237,6 +1237,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as https;
+import 'package:mobi_tv_entertainment/components/home_screen_pages/webseries_screen/web_series_calling_screen.dart';
 import 'package:mobi_tv_entertainment/components/services/professional_colors_for_home_pages.dart';
 import 'package:mobi_tv_entertainment/main.dart';
 import 'package:mobi_tv_entertainment/components/home_screen_pages/webseries_screen/webseries_details_page.dart';
@@ -1273,7 +1274,8 @@ class _ManageWebSeriesState extends State<ManageWebSeries> with AutomaticKeepAli
   Future<void> _onItemTap(CommonContentModel item) async {
     final data = item.originalData;
     try { await HistoryService.updateUserHistory(userId: SessionManager.userId!, contentType: 2, eventId: int.parse(item.id), eventTitle: item.title, url: '', categoryId: 0); } catch (e) {}
-    await Navigator.push(context, MaterialPageRoute(builder: (context) => WebSeriesDetailsPage(id: int.parse(item.id), banner: data['banner'] ?? data['poster'] ?? '', poster: data['poster'] ?? data['banner'] ?? '', logo: data['poster'] ?? data['banner'] ?? '', name: item.title, updatedAt: data['updated_at'] ?? '')));
+    await Navigator.push(context, MaterialPageRoute(builder: (context) => 
+    WebSeriesCallingScreen( showId: int.parse(item.id), showName: item.title, bannerUrl: data['banner'] ?? data['poster'] ?? '',)));
   }
 
   Future<void> _onViewAllTap() async {

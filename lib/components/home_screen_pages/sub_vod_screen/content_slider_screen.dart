@@ -3050,6 +3050,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as https;
 import 'package:mobi_tv_entertainment/components/home_screen_pages/tv_show/tv_show_final_details_page.dart';
 import 'package:mobi_tv_entertainment/components/home_screen_pages/tv_show/tv_show_slider_screen.dart';
+import 'package:mobi_tv_entertainment/components/home_screen_pages/tv_show/tvshow_calling_screen.dart';
+import 'package:mobi_tv_entertainment/components/home_screen_pages/webseries_screen/web_series_calling_screen.dart';
 import 'package:provider/provider.dart';
 
 // Your imports - keep as-is
@@ -3264,14 +3266,17 @@ class ContentSliderScreenState extends State<ContentSliderScreen> {
         await Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (c) => WebSeriesDetailsPage(
-              id: m.id,
-              banner: m.banner ?? '',
-              poster: '',
-              logo: widget.logoUrl,
-              name: m.name,
-              updatedAt: m.updatedAt ?? '',
-            ),
+            builder: (c) => 
+            // WebSeriesDetailsPage(
+            //   id: m.id,
+            //   banner: m.banner ?? '',
+            //   poster: '',
+            //   logo: widget.logoUrl,
+            //   name: m.name,
+            //   updatedAt: m.updatedAt ?? '',
+            // ),
+    WebSeriesCallingScreen( showId: m.id, showName: m.name, bannerUrl: m.banner ?? '',)
+            
           ),
         ).catchError((e) {
           debugPrint('Navigation error: $e');
@@ -3282,12 +3287,13 @@ class ContentSliderScreenState extends State<ContentSliderScreen> {
         await Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (c) => TvShowFinalDetailsPage(
-              id: m.id,
-              banner: m.banner ?? '',
-              poster: '',
-              // logo: widget.logoUrl,
-              name: m.name,
+            builder: (c) => TvShowCallingScreen(
+              // id: m.id,
+              // banner: m.banner ?? '',
+              // poster: '',
+              // // logo: widget.logoUrl,
+              // name: m.name,
+               showId: m.id, showName: m.name, bannerUrl: m.banner ?? '',
               // updatedAt: m.updatedAt ?? '',
             ),
           ),

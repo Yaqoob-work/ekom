@@ -6163,6 +6163,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as https;
 import 'package:mobi_tv_entertainment/components/home_screen_pages/kids_shows/kid_channels_details_page.dart';
+import 'package:mobi_tv_entertainment/components/home_screen_pages/kids_shows/kids_show_calling_screen.dart';
 import 'package:mobi_tv_entertainment/main.dart';
 import 'package:mobi_tv_entertainment/components/services/history_service.dart';
 import 'package:mobi_tv_entertainment/components/widgets/master_slider_layout.dart'; // 🔥 Master Widget
@@ -6457,11 +6458,14 @@ class _KidChannelsSliderScreenState extends State<KidChannelsSliderScreen> {
       await Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) => KidChannelsDetailsPage(
-                  id: item.id,
-                  poster: item.image,
-                  banner: item.image,
-                  name: item.title))).catchError((_) {});
+              builder: (context) => 
+              // KidChannelsDetailsPage(
+              //     id: item.id,
+              //     poster: item.image,
+              //     banner: item.image,
+              //     name: item.title)
+              KidsShowCallingScreen(showId: item.id, showName: item.title, bannerUrl: item.image)
+                  )).catchError((_) {});
       if (mounted) setState(() => _isVideoLoading = false);
     }
   }

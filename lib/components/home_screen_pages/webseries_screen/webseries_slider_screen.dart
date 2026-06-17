@@ -9014,6 +9014,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as https;
+import 'package:mobi_tv_entertainment/components/home_screen_pages/webseries_screen/web_series_calling_screen.dart';
 import 'package:mobi_tv_entertainment/components/home_screen_pages/webseries_screen/webseries_details_page.dart';
 import 'package:mobi_tv_entertainment/main.dart';
 import 'package:mobi_tv_entertainment/components/services/history_service.dart';
@@ -9324,13 +9325,18 @@ class _WebseriesSliderScreenState extends State<WebseriesSliderScreen> {
       await Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) => WebSeriesDetailsPage(
-                  id: series.id,
-                  banner: series.banner ?? series.poster ?? '',
-                  poster: series.poster ?? series.banner ?? '',
-                  logo: _apiNetworks[_selectedNetworkIndex].logo ?? '',
-                  name: series.name,
-                  updatedAt: series.updatedAt))).catchError((_) {});
+              builder: (context) => 
+              // WebSeriesDetailsPage(
+              //     id: series.id,
+              //     banner: series.banner ?? series.poster ?? '',
+              //     poster: series.poster ?? series.banner ?? '',
+              //     logo: _apiNetworks[_selectedNetworkIndex].logo ?? '',
+              //     name: series.name,
+              //     updatedAt: series.updatedAt)
+    WebSeriesCallingScreen( showId: series.id, showName: series.name, bannerUrl: series.banner ?? series.poster ?? '',)
+
+                  
+                  )).catchError((_) {});
       if (mounted) setState(() => _isVideoLoading = false);
     }
   }
