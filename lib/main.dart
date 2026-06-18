@@ -4721,6 +4721,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:ui';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -4961,57 +4962,88 @@ class MyHttpOverrides extends HttpOverrides {
   }
 }
 
-void main() async {
+void main() {
   // VideoPlayerAvplay.init();
   WidgetsFlutterBinding.ensureInitialized();
-  // MediaKit.ensureInitialized();
-  HttpOverrides.global = MyHttpOverrides();
-  await initializeDateFormatting(null, null);
-  await SessionManager.initialize();
 
-  // SystemChrome.setEnabledSystemUIMode(
-  //   SystemUiMode.immersiveSticky,
-  //   overlays: [],
-  // );
+  // 🛡️ CRASH SAFETY NET — koi bhi single channel/screen error ab poori app
+  // ko crash nahi karega. Error ko log karke graceful fallback dikhayenge.
+  FlutterError.onError = (FlutterErrorDetails details) {
+    FlutterError.presentError(details);
+    debugPrint('FlutterError caught (app not crashing): ${details.exceptionAsString()}');
+  };
 
-  // SystemChrome.setSystemUIOverlayStyle(
-  //   const SystemUiOverlayStyle(
-  //     statusBarColor: Colors.transparent,
-  //     systemNavigationBarColor: Colors.transparent,
-  //     statusBarBrightness: Brightness.dark,
-  //     statusBarIconBrightness: Brightness.light,
-  //     systemNavigationBarIconBrightness: Brightness.light,
-  //   ),
-  // );
+  ErrorWidget.builder = (FlutterErrorDetails details) {
+    debugPrint('ErrorWidget shown instead of crashing: ${details.exceptionAsString()}');
+    return Container(
+      color: Colors.black,
+      alignment: Alignment.center,
+      padding: const EdgeInsets.all(20),
+      child: const Text(
+        'Something went wrong. Please go back and try again.',
+        textAlign: TextAlign.center,
+        style: TextStyle(color: Colors.white70, fontSize: 16),
+      ),
+    );
+  };
 
-  // // Hive को Flutter के लिए इनिशियलाइज़ करें
-  // // await Hive.initFlutter();
+  PlatformDispatcher.instance.onError = (Object error, StackTrace stack) {
+    debugPrint('Uncaught platform error (app not crashing): $error\n$stack');
+    return true;
+  };
 
-  // // TypeAdapters को रजिस्टर करें
-  // // महत्वपूर्ण: सुनिश्चित करें कि typeId आपके मॉडल में दिए गए आईडी से मेल खाता है
-  // Hive.registerAdapter(ChannelDataCacheAdapter()); // typeId: 0
-  // Hive.registerAdapter(ContentItemAdapter()); // typeId: 1
-  // Hive.registerAdapter(NetworkDataAdapter()); // typeId: 2
-  // Hive.registerAdapter(HorizontalVodModelAdapter()); // typeId: 3
-  // Hive.registerAdapter(HorizontalVodCacheAdapter()); // typeId: 4
+  runZonedGuarded(() async {
+    // MediaKit.ensureInitialized();
+    HttpOverrides.global = MyHttpOverrides();
+    await initializeDateFormatting(null, null);
+    await SessionManager.initialize();
 
-  // // Hive बॉक्स खोलें जिसे आप ऐप में इस्तेमाल करेंगे
-  // await Hive.openBox('channelCache');
-  // await Hive.openBox('vodCache');
-  final deviceInfoProvider = DeviceInfoProvider();
-  await deviceInfoProvider.loadDeviceInfo();
+    // SystemChrome.setEnabledSystemUIMode(
+    //   SystemUiMode.immersiveSticky,
+    //   overlays: [],
+    // );
 
-  runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => ColorProvider()),
-        ChangeNotifierProvider(create: (_) => FocusProvider()),
-        ChangeNotifierProvider.value(value: deviceInfoProvider),
-        // ChangeNotifierProvider(create: (_) => InternalFocusProvider()),
-      ],
-      child: MyApp(),
-    ),
-  );
+    // SystemChrome.setSystemUIOverlayStyle(
+    //   const SystemUiOverlayStyle(
+    //     statusBarColor: Colors.transparent,
+    //     systemNavigationBarColor: Colors.transparent,
+    //     statusBarBrightness: Brightness.dark,
+    //     statusBarIconBrightness: Brightness.light,
+    //     systemNavigationBarIconBrightness: Brightness.light,
+    //   ),
+    // );
+
+    // // Hive को Flutter के लिए इनिशियलाइज़ करें
+    // // await Hive.initFlutter();
+
+    // // TypeAdapters को रजिस्टर करें
+    // // महत्वपूर्ण: सुनिश्चित करें कि typeId आपके मॉडल में दिए गए आईडी से मेल खाता है
+    // Hive.registerAdapter(ChannelDataCacheAdapter()); // typeId: 0
+    // Hive.registerAdapter(ContentItemAdapter()); // typeId: 1
+    // Hive.registerAdapter(NetworkDataAdapter()); // typeId: 2
+    // Hive.registerAdapter(HorizontalVodModelAdapter()); // typeId: 3
+    // Hive.registerAdapter(HorizontalVodCacheAdapter()); // typeId: 4
+
+    // // Hive बॉक्स खोलें जिसे आप ऐप में इस्तेमाल करेंगे
+    // await Hive.openBox('channelCache');
+    // await Hive.openBox('vodCache');
+    final deviceInfoProvider = DeviceInfoProvider();
+    await deviceInfoProvider.loadDeviceInfo();
+
+    runApp(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => ColorProvider()),
+          ChangeNotifierProvider(create: (_) => FocusProvider()),
+          ChangeNotifierProvider.value(value: deviceInfoProvider),
+          // ChangeNotifierProvider(create: (_) => InternalFocusProvider()),
+        ],
+        child: MyApp(),
+      ),
+    );
+  }, (error, stack) {
+    debugPrint('Uncaught zone error (app not crashing): $error\n$stack');
+  });
 }
 
 // Global variables

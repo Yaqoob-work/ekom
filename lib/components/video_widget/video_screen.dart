@@ -8776,2376 +8776,6 @@
 
 
 
-// import 'dart:async';
-// import 'dart:convert';
-// import 'dart:io';
-// import 'package:cached_network_image/cached_network_image.dart';
-// import 'package:flutter/material.dart';
-// import 'package:flutter/services.dart';
-// import 'package:flutter_inappwebview/flutter_inappwebview.dart';
-// import 'package:flutter_spinkit/flutter_spinkit.dart';
-// import 'package:flutter_vlc_player/flutter_vlc_player.dart';
-// import 'package:keep_screen_on/keep_screen_on.dart';
-// import 'package:mobi_tv_entertainment/components/video_widget/secure_url_service.dart';
-// import 'package:mobi_tv_entertainment/components/widgets/small_widgets/rainbow_page.dart';
-
-// class VideoScreen extends StatefulWidget {
-//   final String videoUrl;
-//   final String name;
-//   final bool liveStatus;
-//   final String updatedAt;
-//   final List<dynamic> channelList;
-//   final String bannerImageUrl;
-//   final int? videoId;
-//   final String source;
-//   final String streamType;
-
-//   VideoScreen({
-//     required this.videoUrl,
-//     required this.updatedAt,
-//     required this.channelList,
-//     required this.bannerImageUrl,
-//     required this.videoId,
-//     required this.source,
-//     required this.streamType,
-//     required this.name,
-//     required this.liveStatus,
-//   });
-
-//   @override
-//   _VideoScreenState createState() => _VideoScreenState();
-// }
-
-// class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
-//   // --- Hybrid Player Controllers ---
-//   InAppWebViewController? webViewController;
-//   VlcPlayerController? vlcController;
-//   String activePlayer = 'NONE';
-
-//   // --- High-Frequency Update Notifiers (Prevents Lag) ---
-//   final ValueNotifier<Duration> _currentPosition = ValueNotifier(Duration.zero);
-//   final ValueNotifier<Duration> _totalDuration = ValueNotifier(Duration.zero);
-//   final ValueNotifier<Duration> _previewPosition = ValueNotifier(Duration.zero);
-//   Timer? _keyRepeatTimer;
-//   DateTime _lastKeyRepeatTime = DateTime.now();
-//   final FocusNode _mainFocusNode = FocusNode();
-
-//   // --- UI State Variables ---
-//   bool _isVideoInitialized = false;
-//   bool _isPlaying = false;
-//   bool _isBuffering = true;
-//   bool _loadingVisible = true;
-//   bool _controlsVisible = true;
-//   String? _currentModifiedUrl;
-//   bool _isSeeking = false;
-
-//   // --- Focus Variables ---
-//   Timer? _hideControlsTimer;
-//   int _focusedIndex = 0;
-//   List<FocusNode> focusNodes = [];
-//   final ScrollController _scrollController = ScrollController();
-//   final FocusNode playPauseButtonFocusNode = FocusNode();
-//   final FocusNode subtitleButtonFocusNode = FocusNode();
-//   final FocusNode audioButtonFocusNode = FocusNode(); // 🟢 NEW: Language focus node
-
-//   // --- Seek Variables ---
-//   bool _isScrubbing = false;
-//   int _accumulatedSeekForward = 0;
-//   int _accumulatedSeekBackward = 0;
-//   Timer? _seekTimer;
-//   Duration _baseSeekPosition = Duration.zero;
-//   final int _seekDuration = 10;
-//   final int _seekDelay = 800;
-
-//   // --- Track Selection Variables (Subtitles & Audio) ---
-//   Map<int, String> _spuTracks = {};
-//   int _currentSpuTrack = -1;
-//   Map<int, String> _audioTracks = {}; // 🟢 NEW: Audio Tracks Map
-//   int _currentAudioTrack = -1; // 🟢 NEW: Current Audio Track ID
-//   bool _hasFetchedTracks = false; // 🟢 Consolidated fetch flag
-
-//   // --- Network & Stall Recovery Variables ---
-//   Timer? _networkCheckTimer;
-//   bool _wasDisconnected = false;
-//   bool _isAttemptingResume = false;
-//   DateTime _lastPlayingTime = DateTime.now();
-//   Duration _lastPositionCheck = Duration.zero;
-//   int _stallCounter = 0;
-//   bool _hasStartedPlaying = false;
-//   bool _isUserPaused = false;
-  
-//   // 🟢 Error tracking variables
-//   int _errorRetryCount = 0;
-//   bool _hasPlaybackError = false;
-
-//   // 🟢 Anti-crash cooldown and setState throttle trackers
-//   DateTime _lastRecoveryAttempt =
-//       DateTime.now().subtract(const Duration(seconds: 15));
-//   DateTime _lastSetStateTime = DateTime.now();
-//   DateTime _lastPositionUpdateTime = DateTime.now(); 
-
-//   Map<String, Uint8List> _bannerCache = {};
-//   bool _isDisposing = false;
-//   final String localImage = "";
-//   bool _isAppInBackground = false;
-
-//   final InAppWebViewSettings settings = InAppWebViewSettings(
-//     userAgent:
-//         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
-//     allowsInlineMediaPlayback: true,
-//     mediaPlaybackRequiresUserGesture: false,
-//     javaScriptEnabled: true,
-//     useHybridComposition: false,
-//     transparentBackground: true,
-//     hardwareAcceleration: true,
-//     supportZoom: false,
-//     displayZoomControls: false,
-//     builtInZoomControls: false,
-//     disableHorizontalScroll: true,
-//     disableVerticalScroll: true,
-//   );
-
-//   Uint8List _getCachedImage(String base64String) {
-//     try {
-//       if (!_bannerCache.containsKey(base64String)) {
-//         if (_bannerCache.length >= 15) {
-//           _bannerCache.remove(_bannerCache.keys.first);
-//         }
-//         _bannerCache[base64String] = base64Decode(base64String.split(',').last);
-//       }
-//       return _bannerCache[base64String]!;
-//     } catch (e) {
-//       return Uint8List.fromList([0, 0, 0, 0]);
-//     }
-//   }
-
-//   Future<String> _getSecureUrlSafe(String rawUrl) async {
-//     try {
-//       return await SecureUrlService.getSecureUrl(rawUrl, expirySeconds: 10);
-//     } catch (e) {
-//       print("Secure URL fetch failed, falling back to raw URL: $e");
-//       return rawUrl;
-//     }
-//   }
-
-//   @override
-//   void initState() {
-//     super.initState();
-//     WidgetsBinding.instance.addObserver(this);
-//     KeepScreenOn.turnOn();
-
-//     SystemChrome.setPreferredOrientations([
-//       DeviceOrientation.landscapeLeft,
-//       DeviceOrientation.landscapeRight,
-//     ]);
-//     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
-
-//     _focusedIndex = widget.channelList.indexWhere(
-//       (channel) => channel.id.toString() == widget.videoId.toString(),
-//     );
-//     _focusedIndex = (_focusedIndex >= 0) ? _focusedIndex : 0;
-
-//     focusNodes = List.generate(
-//       widget.channelList.length,
-//       (index) => FocusNode(),
-//     );
-
-//     WidgetsBinding.instance.addPostFrameCallback((_) async {
-//       _focusAndScrollToInitialItem();
-//       String initialTarget =
-//           (widget.streamType.trim().toLowerCase() == 'custom') ? 'WEB' : 'VLC';
-
-//       String secureUrl = await _getSecureUrlSafe(widget.videoUrl);
-
-//       await _switchPlayerSafely(initialTarget, secureUrl);
-//     });
-
-//     _startHideControlsTimer();
-//     _startNetworkMonitor();
-//     _startPositionUpdater();
-//   }
-
-//   @override
-//   void didChangeAppLifecycleState(AppLifecycleState state) {
-//     if (state == AppLifecycleState.inactive ||
-//         state == AppLifecycleState.paused ||
-//         state == AppLifecycleState.detached) {
-//       _isAppInBackground = true;
-//       if (activePlayer == 'VLC') vlcController?.pause();
-//       if (activePlayer == 'WEB') {
-//         webViewController?.evaluateJavascript(
-//             source: "document.getElementById('video').pause();");
-//       }
-//     } else if (state == AppLifecycleState.resumed) {
-//       _isAppInBackground = false;
-//       if (!_isUserPaused) {
-//         if (activePlayer == 'VLC') vlcController?.play();
-//         if (activePlayer == 'WEB') {
-//           webViewController?.evaluateJavascript(
-//               source: "document.getElementById('video').play();");
-//         }
-//       }
-//     }
-//   }
-
-//   void _startNetworkMonitor() {
-//     _networkCheckTimer?.cancel();
-//     _networkCheckTimer = Timer.periodic(const Duration(seconds: 5), (_) async {
-//       if (_isDisposing) return;
-//       bool isConnected = await _isInternetAvailable();
-//       if (!isConnected && !_wasDisconnected) {
-//         _wasDisconnected = true;
-//       } else if (isConnected && _wasDisconnected) {
-//         _wasDisconnected = false;
-//         _onNetworkReconnected();
-//       }
-//     });
-//   }
-
-//   Future<bool> _isInternetAvailable() async {
-//     try {
-//       final result = await InternetAddress.lookup('google.com');
-//       return result.isNotEmpty && result[0].rawAddress.isNotEmpty;
-//     } catch (_) {
-//       return false;
-//     }
-//   }
-
-//   Future<void> _onNetworkReconnected() async {
-//     if (_currentModifiedUrl == null || _isDisposing || _isAppInBackground)
-//       return;
-//     try {
-//       if (widget.liveStatus == true) {
-//         await _attemptResumeLiveStream();
-//       } else {
-//         if (activePlayer == 'VLC' && vlcController != null) {
-//           await vlcController!.play();
-//         } else if (activePlayer == 'WEB' && webViewController != null) {
-//           await webViewController!.evaluateJavascript(
-//               source: "document.getElementById('video').play();");
-//         }
-//       }
-//     } catch (e) {
-//       print("Critical error during reconnection: $e");
-//     }
-//   }
-
-//   Future<void> _attemptResumeLiveStream() async {
-//     if (!mounted ||
-//         _isAttemptingResume ||
-//         widget.liveStatus == false ||
-//         _currentModifiedUrl == null ||
-//         _isDisposing) {
-//       return;
-//     }
-
-//     if (DateTime.now().difference(_lastRecoveryAttempt).inSeconds < 3) {
-//       print("Recovery is on cooldown. Skipping...");
-//       return;
-//     }
-//     _lastRecoveryAttempt = DateTime.now();
-
-//     setState(() {
-//       _isAttemptingResume = true;
-//       _loadingVisible = true;
-//     });
-
-//     try {
-//       String newSecureUrl = await _getSecureUrlSafe(widget.videoUrl);
-//       await _switchPlayerSafely(activePlayer, newSecureUrl);
-
-//       _lastPlayingTime = DateTime.now();
-//       _stallCounter = 0;
-//       _isUserPaused = false;
-//     } catch (e) {
-//       print("Error: Recovery failed: $e");
-//     } finally {
-//       if (mounted) {
-//         setState(() {
-//           _isAttemptingResume = false;
-//         });
-//       }
-//     }
-//   }
-
-//   void _startPositionUpdater() {
-//     Timer.periodic(const Duration(seconds: 2), (_) {
-//       if (!mounted ||
-//           _isScrubbing ||
-//           _isAttemptingResume ||
-//           _isDisposing ||
-//           _isAppInBackground) {
-//         return;
-//       }
-
-//       if (_loadingVisible && !_isUserPaused) {
-//         int timeoutSeconds = widget.liveStatus == true ? 7 : 12;
-
-//         if (DateTime.now().difference(_lastPlayingTime) > Duration(seconds: timeoutSeconds)) {
-//           print("Watchdog triggered: Stuck in loading for ${timeoutSeconds}s. Forcing recovery...");
-//           if (_errorRetryCount < 3) {
-//             _errorRetryCount++;
-//             _attemptResumeLiveStream();
-//           } else {
-//             setState(() {
-//               _loadingVisible = false;
-//               _hasPlaybackError = true;
-//             });
-//           }
-//           _lastPlayingTime = DateTime.now();
-//           return;
-//         }
-//       }
-
-//       if (widget.liveStatus == true && _hasStartedPlaying && !_isUserPaused) {
-//         if (_currentPosition.value == _lastPositionCheck) {
-//           _stallCounter++;
-//         } else {
-//           _stallCounter = 0;
-
-//           if (_loadingVisible && _hasStartedPlaying) {
-//             setState(() {
-//               _loadingVisible = false;
-//             });
-//           }
-//         }
-
-//         if (_stallCounter >= 4) {
-//           print("Watchdog triggered: Video frame frozen. Forcing recovery...");
-//           _attemptResumeLiveStream();
-//           _stallCounter = 0;
-//         }
-//         _lastPositionCheck = _currentPosition.value;
-//       }
-//     });
-//   }
-
-//   String _buildVlcUrl(String baseUrl) {
-//     final String rtspTcp = "rtsp-tcp";
-//     return baseUrl.contains('?') ? '$baseUrl&$rtspTcp' : '$baseUrl?$rtspTcp';
-//   }
-
-//   Future<void> _initVlcPlayer(String baseUrl) async {
-//     if (_isDisposing) return;
-
-//     if (vlcController != null) {
-//       final oldController = vlcController;
-//       vlcController = null;
-
-//       try {
-//         oldController!.removeListener(_vlcListener);
-//       } catch (_) {}
-
-//       Future.delayed(const Duration(milliseconds: 100), () async {
-//         try {
-//           await oldController?.stop().timeout(const Duration(seconds: 2));
-//         } catch (_) {}
-//         try {
-//           await oldController?.dispose().timeout(const Duration(seconds: 2));
-//         } catch (_) {}
-//       });
-//     }
-
-//     _lastPlayingTime = DateTime.now();
-//     _stallCounter = 0;
-//     _hasStartedPlaying = false;
-//     _hasFetchedTracks = false;
-
-//     if (mounted) {
-//       setState(() {
-//         _hasPlaybackError = false;
-//       });
-//     }
-
-//     try {
-//       bool isMkv = baseUrl.toLowerCase().contains('.mkv');
-//       vlcController = VlcPlayerController.network(
-//         _buildVlcUrl(baseUrl),
-//         hwAcc: isMkv ? HwAcc.auto : HwAcc.auto,
-//         autoPlay: true,
-//         options: VlcPlayerOptions(
-//           http: VlcHttpOptions([
-//             ':http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-//             ':http-reconnect=true', 
-//           ]),
-//           video: VlcVideoOptions([
-//             VlcVideoOptions.dropLateFrames(true),
-//             VlcVideoOptions.skipFrames(true),
-//           ]),
-//           audio: VlcAudioOptions([
-//             VlcAudioOptions.audioTimeStretch(true),
-//           ]),
-//           advanced: VlcAdvancedOptions([
-//             VlcAdvancedOptions.networkCaching(2000), 
-//             VlcAdvancedOptions.liveCaching(2000),
-//             VlcAdvancedOptions.clockJitter(0),
-//             VlcAdvancedOptions.clockSynchronization(0),
-//           ]),
-//         ),
-//       );
-
-//       vlcController!.addListener(_vlcListener);
-//       if (mounted) setState(() {});
-//     } catch (e) {
-//       print("Failed to initialize VLC Player: $e");
-//       if (mounted) {
-//         setState(() {
-//           _hasPlaybackError = true;
-//           _loadingVisible = false;
-//         });
-//       }
-//     }
-//   }
-
-//   // 🟢 NEW: Fetches both Audio and Subtitle tracks together
-//   Future<void> _fetchTracks() async {
-//     await Future.delayed(const Duration(seconds: 2));
-//     if (vlcController != null && vlcController!.value.isInitialized) {
-//       final spuTracks = await vlcController!.getSpuTracks();
-//       final currentSpu = await vlcController!.getSpuTrack() ?? -1;
-
-//       final audioTracks = await vlcController!.getAudioTracks();
-//       final currentAudio = await vlcController!.getAudioTrack() ?? -1;
-
-//       if (mounted) {
-//         setState(() {
-//           _spuTracks = spuTracks;
-//           _currentSpuTrack = currentSpu;
-//           _audioTracks = audioTracks;
-//           _currentAudioTrack = currentAudio;
-//           _hasFetchedTracks = true;
-//         });
-//       }
-//     }
-//   }
-
-//   void _vlcListener() {
-//     if (!mounted || vlcController == null || _isDisposing) return;
-    
-//     final value = vlcController!.value;
-//     final PlayingState playingState = value.playingState;
-//     final now = DateTime.now();
-
-//     if (now.difference(_lastPositionUpdateTime).inMilliseconds > 250) {
-//       _currentPosition.value = value.position;
-//       _totalDuration.value = value.duration;
-//       _lastPositionUpdateTime = now;
-//     }
-
-//     if (widget.liveStatus == true && !_isAttemptingResume) {
-//       if (playingState == PlayingState.playing) {
-//         _lastPlayingTime = DateTime.now();
-//         if (!_hasStartedPlaying) _hasStartedPlaying = true;
-        
-//         if (_errorRetryCount > 0 || _hasPlaybackError) {
-//           setState(() {
-//             _errorRetryCount = 0;
-//             _hasPlaybackError = false;
-//           });
-//         }
-//       } else if (playingState == PlayingState.buffering && _hasStartedPlaying) {
-//         if (DateTime.now().difference(_lastPlayingTime) > const Duration(seconds: 8)) {
-//           _attemptResumeLiveStream();
-//         }
-//       } else if (playingState == PlayingState.error) {
-//         if (_errorRetryCount < 3) {
-//           _errorRetryCount++;
-//           Future.delayed(const Duration(seconds: 3), () {
-//             if (mounted && !_isDisposing) _attemptResumeLiveStream();
-//           });
-//         } else {
-//           if (mounted && !_hasPlaybackError) { 
-//             setState(() {
-//               _isAttemptingResume = false;
-//               _loadingVisible = false;
-//               _hasPlaybackError = true;
-//             });
-//           }
-//         }
-//       } else if ((playingState == PlayingState.stopped || playingState == PlayingState.ended) && _hasStartedPlaying) {
-//         if (DateTime.now().difference(_lastPlayingTime) > const Duration(seconds: 5)) {
-//           _attemptResumeLiveStream();
-//         }
-//       }
-//     } else if (playingState == PlayingState.paused) {
-//        if (_isUserPaused) {
-//          _lastPlayingTime = DateTime.now();
-//        }
-//     } else if (playingState == PlayingState.playing && widget.liveStatus == false) {
-//       // 🟢 Update condition to use _hasFetchedTracks
-//       if (!_hasFetchedTracks) _fetchTracks();
-//     }
-
-//     bool newIsPlaying = value.isPlaying;
-//     bool newIsBuffering = value.isBuffering;
-//     bool newIsVideoInitialized = value.isInitialized;
-    
-//     bool newLoadingVisible = newIsBuffering || playingState == PlayingState.initializing || _isAttemptingResume;
-//     if (playingState == PlayingState.playing) {
-//       newLoadingVisible = false;
-//     }
-
-//     bool needsRebuild = false;
-
-//     if (_isPlaying != newIsPlaying) {
-//       _isPlaying = newIsPlaying;
-//       needsRebuild = true;
-//     }
-//     if (_isBuffering != newIsBuffering) {
-//       _isBuffering = newIsBuffering;
-//       needsRebuild = true;
-//     }
-//     if (!_isVideoInitialized && newIsVideoInitialized) {
-//       _isVideoInitialized = true;
-//       needsRebuild = true;
-//     }
-//     if (_loadingVisible != newLoadingVisible) {
-//       _loadingVisible = newLoadingVisible;
-//       needsRebuild = true;
-//     }
-
-//     if (needsRebuild && mounted) {
-//       if (now.difference(_lastSetStateTime).inMilliseconds > 250) {
-//         setState(() {});
-//         _lastSetStateTime = now;
-//       }
-//     }
-//   }
-
-//   Future<void> _switchPlayerSafely(
-//       String targetPlayerType, String secureUrl) async {
-//     if (_isDisposing) return;
-
-//     _seekTimer?.cancel();
-//     _networkCheckTimer?.cancel();
-
-//     setState(() {
-//       _loadingVisible = true;
-//       _isVideoInitialized = false;
-//       _hasPlaybackError = false;
-      
-//       if (targetPlayerType != 'WEB') {
-//         activePlayer = 'NONE';
-//       }
-//     });
-
-//     if (activePlayer == 'VLC' && vlcController != null) {
-//       final oldController = vlcController;
-//       vlcController = null;
-
-//       try {
-//         oldController!.removeListener(_vlcListener);
-//       } catch (_) {}
-
-//       Future.delayed(const Duration(milliseconds: 100), () async {
-//         try {
-//           await oldController?.stop().timeout(const Duration(seconds: 2));
-//         } catch (e) {
-//           print("Handled VLC stop error during switch: $e");
-//         }
-//         try {
-//           await oldController?.dispose().timeout(const Duration(seconds: 2));
-//         } catch (e) {
-//           print("Handled VLC dispose error during switch: $e");
-//         }
-//       });
-//     }
-//     webViewController = null;
-
-//     setState(() {
-//       activePlayer = 'NONE';
-//     });
-
-//     await Future.delayed(const Duration(milliseconds: 1500));
-//     if (_isDisposing) return;
-
-//     _currentModifiedUrl = secureUrl;
-//     setState(() {
-//       activePlayer = targetPlayerType;
-//     });
-
-//     if (targetPlayerType == 'WEB') {
-//       if (webViewController != null) {
-//         await webViewController!.evaluateJavascript(
-//             source: "loadNewVideo('$_currentModifiedUrl');");
-//       }
-//     } else if (targetPlayerType == 'VLC') {
-//       await _initVlcPlayer(_currentModifiedUrl!);
-//     }
-//   }
-
-//   Future<void> _onItemTap(int index) async {
-//     if (!mounted || _isDisposing) return;
-//     setState(() {
-//       _focusedIndex = index;
-//       _errorRetryCount = 0;
-//       _hasPlaybackError = false;
-//     });
-
-//     var selectedChannel = widget.channelList[index];
-//     String typeFromData = widget.streamType;
-
-//     if (selectedChannel is Map) {
-//       typeFromData = selectedChannel['stream_type']?.toString() ??
-//           selectedChannel['streamType']?.toString() ??
-//           widget.streamType;
-//     } else {
-//       try {
-//         typeFromData = selectedChannel.stream_type?.toString() ?? typeFromData;
-//       } catch (_) {
-//         try {
-//           typeFromData = selectedChannel.streamType?.toString() ?? typeFromData;
-//         } catch (_) {}
-//       }
-//     }
-
-//     String targetPlayer =
-//         (typeFromData.trim().toLowerCase() == 'custom') ? 'WEB' : 'VLC';
-//     String rawUrl = "";
-
-//     if (selectedChannel is Map) {
-//       rawUrl = selectedChannel['url']?.toString() ?? "";
-//     } else {
-//       try {
-//         rawUrl = selectedChannel.url?.toString() ?? "";
-//       } catch (_) {}
-//     }
-
-//     if (rawUrl.isEmpty) return;
-
-//     String secureUrl = await _getSecureUrlSafe(rawUrl);
-
-//     if (_isDisposing) return;
-//     await _switchPlayerSafely(targetPlayer, secureUrl);
-
-//     _scrollToFocusedItem();
-//     _resetHideControlsTimer();
-//   }
-
-//   bool _handleKeyEvent(KeyEvent event) {
-//     if (_isDisposing) return false;
-
-//     if (event is KeyDownEvent ||
-//         event is RawKeyDownEvent ||
-//         event is KeyRepeatEvent) {
-//       if (!_controlsVisible) {
-//         _resetHideControlsTimer();
-//         return true;
-//       }
-
-//       _resetHideControlsTimer();
-
-//       switch (event.logicalKey) {
-//         case LogicalKeyboardKey.escape:
-//         case LogicalKeyboardKey.browserBack:
-//           return false;
-
-//         case LogicalKeyboardKey.arrowUp:
-//           if (event is KeyRepeatEvent) {
-//             final now = DateTime.now();
-//             if (now.difference(_lastKeyRepeatTime).inMilliseconds < 300)
-//               return true;
-//             _lastKeyRepeatTime = now;
-
-//             if (!playPauseButtonFocusNode.hasFocus &&
-//                 !subtitleButtonFocusNode.hasFocus &&
-//                 !audioButtonFocusNode.hasFocus) {
-//               if (_focusedIndex > 0) _changeFocusAndScroll(_focusedIndex - 1);
-//             }
-//             return true;
-//           }
-//           // 🟢 Modified Up arrow handling for new row logic
-//           if (subtitleButtonFocusNode.hasFocus || audioButtonFocusNode.hasFocus) {
-//             FocusScope.of(context).requestFocus(playPauseButtonFocusNode);
-//           } else if (playPauseButtonFocusNode.hasFocus) {
-//             if (widget.liveStatus == false && widget.channelList.isNotEmpty) {
-//               FocusScope.of(context).requestFocus(focusNodes[_focusedIndex]);
-//             }
-//           } else if (_focusedIndex > 0) {
-//             _changeFocusAndScroll(_focusedIndex - 1);
-//           }
-//           return true;
-
-//         case LogicalKeyboardKey.arrowDown:
-//           if (event is KeyRepeatEvent) {
-//             final now = DateTime.now();
-//             if (now.difference(_lastKeyRepeatTime).inMilliseconds < 300)
-//               return true;
-//             _lastKeyRepeatTime = now;
-
-//             if (!playPauseButtonFocusNode.hasFocus &&
-//                 !subtitleButtonFocusNode.hasFocus &&
-//                 !audioButtonFocusNode.hasFocus) {
-//               if (_focusedIndex < widget.channelList.length - 1) {
-//                 _changeFocusAndScroll(_focusedIndex + 1);
-//               }
-//             }
-//             return true;
-//           }
-//           // 🟢 Modified Down arrow handling to focus language button first
-//           if (playPauseButtonFocusNode.hasFocus &&
-//               widget.liveStatus == false &&
-//               activePlayer == 'VLC') {
-//             FocusScope.of(context).requestFocus(audioButtonFocusNode);
-//           } else if (_focusedIndex < widget.channelList.length - 1 && !subtitleButtonFocusNode.hasFocus && !audioButtonFocusNode.hasFocus) {
-//             _changeFocusAndScroll(_focusedIndex + 1);
-//           }
-//           return true;
-
-//         case LogicalKeyboardKey.arrowRight:
-//           // 🟢 Audio button -> Subtitle button
-//           if (audioButtonFocusNode.hasFocus) {
-//             FocusScope.of(context).requestFocus(subtitleButtonFocusNode);
-//             return true;
-//           }
-//           if (widget.liveStatus == false && !subtitleButtonFocusNode.hasFocus && !audioButtonFocusNode.hasFocus) {
-//             _seekForward();
-//           }
-//           return true;
-
-//         case LogicalKeyboardKey.arrowLeft:
-//           // 🟢 Subtitle button -> Audio button
-//           if (subtitleButtonFocusNode.hasFocus) {
-//             FocusScope.of(context).requestFocus(audioButtonFocusNode);
-//             return true;
-//           }
-//           if (widget.liveStatus == false && !audioButtonFocusNode.hasFocus && !subtitleButtonFocusNode.hasFocus) {
-//             _seekBackward();
-//           }
-//           if (playPauseButtonFocusNode.hasFocus &&
-//               widget.channelList.isNotEmpty) {
-//             FocusScope.of(context).requestFocus(focusNodes[_focusedIndex]);
-//           }
-//           return true;
-
-//         case LogicalKeyboardKey.select:
-//         case LogicalKeyboardKey.enter:
-//         case LogicalKeyboardKey.mediaPlayPause:
-//           if (event is KeyRepeatEvent) return true;
-//           // 🟢 Handle actions for both Subtitle and Audio button presses
-//           if (subtitleButtonFocusNode.hasFocus) {
-//             _showSubtitleMenu();
-//             return true;
-//           }
-//           if (audioButtonFocusNode.hasFocus) {
-//             _showAudioMenu();
-//             return true;
-//           }
-//           if (widget.liveStatus == false) {
-//             _togglePlayPause();
-//           } else {
-//             if (playPauseButtonFocusNode.hasFocus ||
-//                 widget.channelList.isEmpty) {
-//               _togglePlayPause();
-//             } else {
-//               _onItemTap(_focusedIndex);
-//             }
-//           }
-//           return true;
-
-//         default:
-//           return false;
-//       }
-//     }
-//     return false;
-//   }
-
-//   void _togglePlayPause() {
-//     if (_isDisposing) return;
-//     if (activePlayer == 'WEB' && webViewController != null) {
-//       webViewController!.evaluateJavascript(source: """
-//         var v = document.getElementById('video');
-//         if (v.paused) { v.play(); } else { v.pause(); }
-//       """);
-//       setState(() {
-//         _isPlaying = !_isPlaying;
-//         _isUserPaused = !_isPlaying;
-//       });
-//       _lastPlayingTime = DateTime.now();
-//     } else if (activePlayer == 'VLC' && vlcController != null) {
-//       if (vlcController!.value.isPlaying) {
-//         vlcController!.pause();
-//         setState(() {
-//           _isUserPaused = true;
-//           _isPlaying = false;
-//         });
-//       } else {
-//         vlcController!.play();
-//         setState(() {
-//           _isUserPaused = false;
-//           _isPlaying = true;
-//         });
-//         _lastPlayingTime = DateTime.now();
-//         _stallCounter = 0;
-//       }
-//     }
-//     FocusScope.of(context).requestFocus(playPauseButtonFocusNode);
-//     _resetHideControlsTimer();
-//   }
-
-//   Future<void> _seekToPosition(Duration position) async {
-//     if (_isSeeking || _isDisposing) return;
-//     _isSeeking = true;
-
-//     setState(() {
-//       _loadingVisible = true;
-//     });
-
-//     try {
-//       if (activePlayer == 'WEB' && webViewController != null) {
-//         double seconds = position.inMilliseconds / 1000.0;
-//         await webViewController!.evaluateJavascript(
-//             source:
-//                 "document.getElementById('video').currentTime = $seconds; document.getElementById('video').play();");
-//       } else if (activePlayer == 'VLC' && vlcController != null) {
-        
-//         bool wasPlaying = vlcController!.value.isPlaying;
-        
-//         if (wasPlaying) {
-//           await vlcController!.pause();
-//         }
-        
-//         await vlcController!.seekTo(position);
-        
-//         await Future.delayed(const Duration(milliseconds: 400));
-        
-//         if (wasPlaying) {
-//           await vlcController!.play();
-//         }
-//       }
-//     } catch (e) {
-//       print("Error during seek: $e");
-//     } finally {
-//       await Future.delayed(const Duration(milliseconds: 500));
-//       if (mounted) {
-//         setState(() {
-//           _isSeeking = false;
-//           _loadingVisible = false;
-//         });
-//       }
-//     }
-//   }
-
-//   void _seekForward() {
-//     if (_totalDuration.value <= Duration.zero || _isDisposing) return;
-
-//     _accumulatedSeekForward += _seekDuration;
-//     final newPosition =
-//         _currentPosition.value + Duration(seconds: _accumulatedSeekForward);
-
-//     setState(() {
-//       _previewPosition.value = newPosition > _totalDuration.value
-//           ? _totalDuration.value
-//           : newPosition;
-//     });
-
-//     _seekTimer?.cancel();
-//     _seekTimer = Timer(Duration(milliseconds: _seekDelay), () {
-//       if (_isDisposing) return;
-//       _seekToPosition(_previewPosition.value).then((_) {
-//         if (mounted && !_isDisposing) {
-//           setState(() {
-//             _accumulatedSeekForward = 0;
-//           });
-//         }
-//       });
-//     });
-//   }
-
-//   void _seekBackward() {
-//     if (_totalDuration.value <= Duration.zero || _isDisposing) return;
-
-//     _accumulatedSeekBackward += _seekDuration;
-//     final newPosition =
-//         _currentPosition.value - Duration(seconds: _accumulatedSeekBackward);
-
-//     setState(() {
-//       _previewPosition.value =
-//           newPosition > Duration.zero ? newPosition : Duration.zero;
-//     });
-
-//     _seekTimer?.cancel();
-//     _seekTimer = Timer(Duration(milliseconds: _seekDelay), () {
-//       if (_isDisposing) return;
-//       _seekToPosition(_previewPosition.value).then((_) {
-//         if (mounted && !_isDisposing) {
-//           setState(() {
-//             _accumulatedSeekBackward = 0;
-//           });
-//         }
-//       });
-//     });
-//   }
-
-//   void _onScrubStart(DragStartDetails details, BoxConstraints constraints) {
-//     if (_totalDuration.value <= Duration.zero || _isDisposing) return;
-//     _resetHideControlsTimer();
-//     setState(() {
-//       _isScrubbing = true;
-//       _accumulatedSeekForward = 1;
-//     });
-//     final double progress =
-//         (details.localPosition.dx / constraints.maxWidth).clamp(0.0, 1.0);
-//     _previewPosition.value = _totalDuration.value * progress;
-//   }
-
-//   void _onScrubUpdate(DragUpdateDetails details, BoxConstraints constraints) {
-//     if (!_isScrubbing || _totalDuration.value <= Duration.zero || _isDisposing)
-//       return;
-//     _resetHideControlsTimer();
-//     final double progress =
-//         (details.localPosition.dx / constraints.maxWidth).clamp(0.0, 1.0);
-//     _previewPosition.value = _totalDuration.value * progress;
-//   }
-
-//   void _onScrubEnd(DragEndDetails details) {
-//     if (!_isScrubbing || _isDisposing) return;
-//     _seekToPosition(_previewPosition.value).then((_) {
-//       if (mounted && !_isDisposing) {
-//         setState(() {
-//           _accumulatedSeekForward = 0;
-//           _isScrubbing = false;
-//         });
-//       }
-//     });
-//     _resetHideControlsTimer();
-//   }
-
-//   // 🟢 NEW: Audio / Language Menu Logic
-//   void _showAudioMenu() {
-//     _hideControlsTimer?.cancel();
-
-//     showDialog(
-//         context: context,
-//         builder: (context) {
-//           final size = MediaQuery.of(context).size;
-          
-//           final List<MapEntry<int, String>> tracksList = _audioTracks.entries.toList();
-          
-//           int focusedIndex = tracksList.indexWhere((entry) => entry.key == _currentAudioTrack);
-//           if (focusedIndex == -1) focusedIndex = 0;
-
-//           final ScrollController dialogScrollController = ScrollController();
-
-//           return StatefulBuilder(builder: (context, setDialogState) {
-//             return Align(
-//               alignment: Alignment.bottomLeft,
-//               child: Padding(
-//                 padding: EdgeInsets.only(
-//                     left: size.width * 0.03, bottom: size.height * 0.18),
-//                 child: Material(
-//                   color: Colors.transparent,
-//                   child: Container(
-//                     width: size.width * 0.35,
-//                     height: size.height * 0.4,
-//                     decoration: BoxDecoration(
-//                         color: Colors.black.withOpacity(0.9),
-//                         borderRadius: BorderRadius.circular(8),
-//                         border: Border.all(color: Colors.white24, width: 1),
-//                         boxShadow: [
-//                           BoxShadow(
-//                             color: Colors.black.withOpacity(0.5),
-//                             blurRadius: 10,
-//                             offset: const Offset(0, 4),
-//                           ),
-//                         ]),
-//                     child: Column(
-//                       children: [
-//                         const Padding(
-//                           padding: EdgeInsets.symmetric(
-//                               vertical: 12.0, horizontal: 16.0),
-//                           child: Align(
-//                             alignment: Alignment.centerLeft,
-//                             child: Text("Select Audio/Language",
-//                                 style: TextStyle(
-//                                     color: Colors.white,
-//                                     fontWeight: FontWeight.bold,
-//                                     fontSize: 16)),
-//                           ),
-//                         ),
-//                         const Divider(color: Colors.white24, height: 1),
-//                         Expanded(
-//                           child: _audioTracks.isEmpty
-//                               ? const Padding(
-//                                   padding: EdgeInsets.all(16.0),
-//                                   child: Text("No audio tracks available",
-//                                       style: TextStyle(color: Colors.white70)),
-//                                 )
-//                               : ListView.builder(
-//                                   controller: dialogScrollController,
-//                                   padding: EdgeInsets.zero,
-//                                   itemCount: tracksList.length,
-//                                   itemBuilder: (context, index) {
-//                                     final trackId = tracksList[index].key;
-//                                     final trackName = tracksList[index].value;
-
-//                                     final isSelected = _currentAudioTrack == trackId;
-//                                     final isFocused = focusedIndex == index;
-
-//                                     return Focus(
-//                                       autofocus: isSelected,
-//                                       onFocusChange: (hasFocus) {
-//                                         if (hasFocus) {
-//                                           setDialogState(
-//                                               () => focusedIndex = index);
-
-//                                           const double itemHeight = 48.0;
-//                                           final double viewportHeight =
-//                                               (size.height * 0.4) - 48.0;
-//                                           final double targetOffset =
-//                                               (itemHeight * index) -
-//                                                   (viewportHeight / 2) +
-//                                                   (itemHeight / 2);
-
-//                                           final maxScroll =
-//                                               dialogScrollController
-//                                                   .position.maxScrollExtent;
-//                                           final double clampedOffset =
-//                                               targetOffset.clamp(
-//                                                   0.0,
-//                                                   maxScroll > 0
-//                                                       ? maxScroll
-//                                                       : 0.0);
-
-//                                           dialogScrollController.animateTo(
-//                                               clampedOffset,
-//                                               duration: const Duration(
-//                                                   milliseconds: 200),
-//                                               curve: Curves.easeInOut);
-//                                         }
-//                                       },
-//                                       onKey: (node, event) {
-//                                         if (event is RawKeyDownEvent &&
-//                                             (event.logicalKey ==
-//                                                     LogicalKeyboardKey.select ||
-//                                                 event.logicalKey ==
-//                                                     LogicalKeyboardKey.enter)) {
-//                                           vlcController?.setAudioTrack(trackId);
-//                                           setState(() {
-//                                             _currentAudioTrack = trackId;
-//                                           });
-//                                           Navigator.pop(context);
-//                                           return KeyEventResult.handled;
-//                                         }
-//                                         return KeyEventResult.ignored;
-//                                       },
-//                                       child: GestureDetector(
-//                                         onTap: () {
-//                                           vlcController?.setAudioTrack(trackId);
-//                                           setState(() {
-//                                             _currentAudioTrack = trackId;
-//                                           });
-//                                           Navigator.pop(context);
-//                                         },
-//                                         child: Container(
-//                                           color: isFocused
-//                                               ? Colors.purple.withOpacity(0.8)
-//                                               : Colors.transparent,
-//                                           height: 48.0,
-//                                           child: Padding(
-//                                             padding: const EdgeInsets.symmetric(
-//                                                 horizontal: 16.0),
-//                                             child: Row(
-//                                               mainAxisAlignment:
-//                                                   MainAxisAlignment
-//                                                       .spaceBetween,
-//                                               children: [
-//                                                 Text(trackName,
-//                                                     style: const TextStyle(
-//                                                         color: Colors.white,
-//                                                         fontSize: 14)),
-//                                                 if (isSelected)
-//                                                   const Icon(Icons.check,
-//                                                       color: Colors.white,
-//                                                       size: 20),
-//                                               ],
-//                                             ),
-//                                           ),
-//                                         ),
-//                                       ),
-//                                     );
-//                                   },
-//                                 ),
-//                         ),
-//                       ],
-//                     ),
-//                   ),
-//                 ),
-//               ),
-//             );
-//           });
-//         }).then((_) {
-//       FocusScope.of(context).requestFocus(audioButtonFocusNode);
-//       _resetHideControlsTimer();
-//     });
-//   }
-
-//   // --- Subtitle Menu Logic ---
-//   void _showSubtitleMenu() {
-//     _hideControlsTimer?.cancel();
-
-//     showDialog(
-//         context: context,
-//         builder: (context) {
-//           final size = MediaQuery.of(context).size;
-//           int focusedIndex =
-//               _spuTracks.keys.toList().indexOf(_currentSpuTrack) + 1;
-//           if (_currentSpuTrack == -1) focusedIndex = 0;
-
-//           final ScrollController dialogScrollController = ScrollController();
-//           final List<MapEntry<int, String>> tracksList =
-//               _spuTracks.entries.toList();
-
-//           return StatefulBuilder(builder: (context, setDialogState) {
-//             return Align(
-//               alignment: Alignment.bottomLeft,
-//               child: Padding(
-//                 padding: EdgeInsets.only(
-//                     left: size.width * 0.03, bottom: size.height * 0.18),
-//                 child: Material(
-//                   color: Colors.transparent,
-//                   child: Container(
-//                     width: size.width * 0.35,
-//                     height: size.height * 0.4,
-//                     decoration: BoxDecoration(
-//                         color: Colors.black.withOpacity(0.9),
-//                         borderRadius: BorderRadius.circular(8),
-//                         border: Border.all(color: Colors.white24, width: 1),
-//                         boxShadow: [
-//                           BoxShadow(
-//                             color: Colors.black.withOpacity(0.5),
-//                             blurRadius: 10,
-//                             offset: const Offset(0, 4),
-//                           ),
-//                         ]),
-//                     child: Column(
-//                       children: [
-//                         const Padding(
-//                           padding: EdgeInsets.symmetric(
-//                               vertical: 12.0, horizontal: 16.0),
-//                           child: Align(
-//                             alignment: Alignment.centerLeft,
-//                             child: Text("Select Subtitle",
-//                                 style: TextStyle(
-//                                     color: Colors.white,
-//                                     fontWeight: FontWeight.bold,
-//                                     fontSize: 16)),
-//                           ),
-//                         ),
-//                         const Divider(color: Colors.white24, height: 1),
-//                         Expanded(
-//                           child: _spuTracks.isEmpty
-//                               ? const Padding(
-//                                   padding: EdgeInsets.all(16.0),
-//                                   child: Text("No subtitles available",
-//                                       style: TextStyle(color: Colors.white70)),
-//                                 )
-//                               : ListView.builder(
-//                                   controller: dialogScrollController,
-//                                   padding: EdgeInsets.zero,
-//                                   itemCount: tracksList.length + 1,
-//                                   itemBuilder: (context, index) {
-//                                     final isOffOption = index == 0;
-//                                     final trackId = isOffOption
-//                                         ? -1
-//                                         : tracksList[index - 1].key;
-//                                     final trackName = isOffOption
-//                                         ? "Off"
-//                                         : tracksList[index - 1].value;
-
-//                                     final isSelected =
-//                                         _currentSpuTrack == trackId;
-//                                     final isFocused = focusedIndex == index;
-
-//                                     return Focus(
-//                                       autofocus: isSelected,
-//                                       onFocusChange: (hasFocus) {
-//                                         if (hasFocus) {
-//                                           setDialogState(
-//                                               () => focusedIndex = index);
-
-//                                           const double itemHeight = 48.0;
-//                                           final double viewportHeight =
-//                                               (size.height * 0.4) - 48.0;
-//                                           final double targetOffset =
-//                                               (itemHeight * index) -
-//                                                   (viewportHeight / 2) +
-//                                                   (itemHeight / 2);
-
-//                                           final maxScroll =
-//                                               dialogScrollController
-//                                                   .position.maxScrollExtent;
-//                                           final double clampedOffset =
-//                                               targetOffset.clamp(
-//                                                   0.0,
-//                                                   maxScroll > 0
-//                                                       ? maxScroll
-//                                                       : 0.0);
-
-//                                           dialogScrollController.animateTo(
-//                                               clampedOffset,
-//                                               duration: const Duration(
-//                                                   milliseconds: 200),
-//                                               curve: Curves.easeInOut);
-//                                         }
-//                                       },
-//                                       onKey: (node, event) {
-//                                         if (event is RawKeyDownEvent &&
-//                                             (event.logicalKey ==
-//                                                     LogicalKeyboardKey.select ||
-//                                                 event.logicalKey ==
-//                                                     LogicalKeyboardKey.enter)) {
-//                                           vlcController?.setSpuTrack(trackId);
-//                                           setState(() {
-//                                             _currentSpuTrack = trackId;
-//                                           });
-//                                           Navigator.pop(context);
-//                                           return KeyEventResult.handled;
-//                                         }
-//                                         return KeyEventResult.ignored;
-//                                       },
-//                                       child: GestureDetector(
-//                                         onTap: () {
-//                                           vlcController?.setSpuTrack(trackId);
-//                                           setState(() {
-//                                             _currentSpuTrack = trackId;
-//                                           });
-//                                           Navigator.pop(context);
-//                                         },
-//                                         child: Container(
-//                                           color: isFocused
-//                                               ? Colors.purple.withOpacity(0.8)
-//                                               : Colors.transparent,
-//                                           height: 48.0,
-//                                           child: Padding(
-//                                             padding: const EdgeInsets.symmetric(
-//                                                 horizontal: 16.0),
-//                                             child: Row(
-//                                               mainAxisAlignment:
-//                                                   MainAxisAlignment
-//                                                       .spaceBetween,
-//                                               children: [
-//                                                 Text(trackName,
-//                                                     style: const TextStyle(
-//                                                         color: Colors.white,
-//                                                         fontSize: 14)),
-//                                                 if (isSelected)
-//                                                   const Icon(Icons.check,
-//                                                       color: Colors.white,
-//                                                       size: 20),
-//                                               ],
-//                                             ),
-//                                           ),
-//                                         ),
-//                                       ),
-//                                     );
-//                                   },
-//                                 ),
-//                         ),
-//                       ],
-//                     ),
-//                   ),
-//                 ),
-//               ),
-//             );
-//           });
-//         }).then((_) {
-//       FocusScope.of(context).requestFocus(subtitleButtonFocusNode);
-//       _resetHideControlsTimer();
-//     });
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     final double screenwdt = MediaQuery.of(context).size.width;
-//     final double screenhgt = MediaQuery.of(context).size.height;
-//     final double bottomBarHeight = screenhgt * 0.15;
-//     final double topTitleHeight = screenhgt * 0.10;
-//     final double leftPanelWidth = screenwdt * 0.13;
-
-//     final double targetScale =
-//         (_controlsVisible && widget.channelList.isNotEmpty) ? 0.8 : 1.0;
-
-//     final bool isLive = widget.liveStatus == true;
-
-//     final double offsetLeft = 0.0;
-//     const double fixedRight = 0.0;
-//     final double offsetTop = 0.0;
-//     final double offsetBottom = 0.0;
-
-//     return PopScope(
-//       canPop: false, 
-//       onPopInvokedWithResult: (bool didPop, dynamic result) async {
-//         if (didPop) return;
-
-//         _isDisposing = true;
-//         _hideControlsTimer?.cancel();
-//         _networkCheckTimer?.cancel();
-//         _seekTimer?.cancel();
-
-//         if (activePlayer == 'VLC' && vlcController != null) {
-//           try {
-//             vlcController!.removeListener(_vlcListener);
-//             await vlcController!.stop(); 
-//           } catch (e) {
-//             print("VLC stop error during pop: $e");
-//           }
-//         } 
-//         else if (activePlayer == 'WEB' && webViewController != null) {
-//           try {
-//             await webViewController!.evaluateJavascript(
-//                 source: "var v = document.getElementById('video'); if(v) { v.pause(); v.removeAttribute('src'); v.load(); }");
-//           } catch (_) {}
-//         }
-
-//         if (mounted) {
-//           Navigator.of(context).pop();
-//         }
-//       },
-//       child: Scaffold(
-//         backgroundColor: Colors.black,
-//         body: Focus(
-//           focusNode: _mainFocusNode,
-//           autofocus: true,
-//           onKeyEvent: (node, event) {
-//             bool isHandled = _handleKeyEvent(event);
-//             return isHandled ? KeyEventResult.handled : KeyEventResult.ignored;
-//           },
-//           child: GestureDetector(
-//             onTap: _resetHideControlsTimer,
-//             child: Stack(
-//               children: [
-//                 // 1. VIDEO LAYER 
-//                 Positioned.fill(
-//                   child: Stack(
-//                     children: [
-//                       // WEB PLAYER
-//                       if (activePlayer == 'WEB')
-//                         ExcludeFocus(
-//                           child: Container(
-//                             color: Colors.black,
-//                             width: screenwdt,
-//                             height: screenhgt,
-//                             child: InAppWebView(
-//                               key: const ValueKey('WEB_Player'),
-//                               initialData: InAppWebViewInitialData(
-//                                 data: _getHtmlString(),
-//                                 mimeType: "text/html",
-//                                 encoding: "utf-8",
-//                               ),
-//                               initialSettings: settings,
-//                               onWebViewCreated: (controller) {
-//                                 webViewController = controller;
-//                                 controller.addJavaScriptHandler(
-//                                     handlerName: 'videoState',
-//                                     callback: (args) {
-//                                       if (!mounted ||
-//                                           _isDisposing ||
-//                                           args.isEmpty) return;
-//                                       var state = args[0];
-
-//                                       _currentPosition.value = Duration(
-//                                           milliseconds:
-//                                               state['position'].toInt());
-//                                       _totalDuration.value = Duration(
-//                                           milliseconds:
-//                                               state['duration'].toInt());
-
-//                                       bool newIsPlaying = state['isPlaying'];
-//                                       bool newIsBuffering =
-//                                           state['isBuffering'];
-//                                       bool needsRebuild = false;
-
-//                                       if (!_isVideoInitialized) {
-//                                         _isVideoInitialized = true;
-//                                         needsRebuild = true;
-//                                       }
-//                                       if (_isPlaying != newIsPlaying) {
-//                                         _isPlaying = newIsPlaying;
-//                                         needsRebuild = true;
-//                                       }
-//                                       if (_isBuffering != newIsBuffering) {
-//                                         _isBuffering = newIsBuffering;
-//                                         needsRebuild = true;
-//                                       }
-
-//                                       bool newLoadingVisible = newIsBuffering;
-//                                       if (newIsPlaying && !newIsBuffering) {
-//                                         newLoadingVisible = false;
-//                                         _lastPlayingTime = DateTime.now();
-//                                       }
-
-//                                       if (_loadingVisible !=
-//                                           newLoadingVisible) {
-//                                         _loadingVisible = newLoadingVisible;
-//                                         needsRebuild = true;
-//                                       }
-
-//                                       if (needsRebuild && mounted)
-//                                         setState(() {});
-//                                     });
-//                               },
-//                             ),
-//                           ),
-//                         ),
-
-//                       if (activePlayer == 'VLC' && vlcController != null)
-//                         AnimatedPositioned(
-//                           duration: const Duration(milliseconds: 3),
-//                           curve: Curves.linear,
-//                           left: offsetLeft,
-//                           top: offsetTop,
-//                           right: fixedRight,
-//                           bottom: offsetBottom,
-//                           child: Container(
-//                             decoration: BoxDecoration(
-//                               color: Colors.black,
-//                               borderRadius: BorderRadius.circular(0.0),
-//                               boxShadow: [],
-//                             ),
-//                             child: ClipRRect(
-//                               borderRadius: BorderRadius.circular(0.0),
-//                               child: LayoutBuilder(
-//                                 builder: (context, constraints) {
-//                                   final screenWidth = constraints.maxWidth;
-//                                   final screenHeight = constraints.maxHeight;
-
-//                                   double videoWidth =
-//                                       vlcController!.value.size.width;
-//                                   double videoHeight =
-//                                       vlcController!.value.size.height;
-
-//                                   if (videoWidth <= 0 || videoHeight <= 0) {
-//                                     videoWidth = 16.0;
-//                                     videoHeight = 9.0;
-//                                   }
-
-//                                   final videoRatio = videoWidth / videoHeight;
-//                                   final screenRatio =
-//                                       screenWidth > 0 && screenHeight > 0
-//                                           ? screenWidth / screenHeight
-//                                           : 16 / 9;
-
-//                                   double scaleXInner = 1.0;
-//                                   double scaleYInner = 1.0;
-
-//                                   if (videoRatio < screenRatio) {
-//                                     scaleXInner = screenRatio / videoRatio;
-//                                   } else {
-//                                     scaleYInner = videoRatio / screenRatio;
-//                                   }
-
-//                                   const double maxScaleLimit = 1.35;
-//                                   if (scaleXInner > maxScaleLimit)
-//                                     scaleXInner = maxScaleLimit;
-//                                   if (scaleYInner > maxScaleLimit)
-//                                     scaleYInner = maxScaleLimit;
-
-//                                   return Container(
-//                                     width: screenWidth,
-//                                     height: screenHeight,
-//                                     color: Colors.black,
-//                                     child: Center(
-//                                       child: Transform.scale(
-//                                         scaleX: scaleXInner,
-//                                         scaleY: scaleYInner,
-//                                         child: VlcPlayer(
-//                                           key: const ValueKey('VLC_PLAYER'),
-//                                           controller: vlcController!,
-//                                           aspectRatio: videoRatio,
-//                                           placeholder: const Center(
-//                                             child: RainbowPage(
-//                                               backgroundColor:
-//                                                   Colors.transparent,
-//                                             ),
-//                                           ),
-//                                         ),
-//                                       ),
-//                                     ),
-//                                   );
-//                                 },
-//                               ),
-//                             ),
-//                           ),
-//                         ),
-//                     ],
-//                   ),
-//                 ),
-
-//                 // 2. LOADING LAYER
-//                 if (_loadingVisible ||
-//                     !_isVideoInitialized ||
-//                     _isAttemptingResume ||
-//                     (_isBuffering && !_loadingVisible))
-//                   Container(
-//                     color: _loadingVisible || !_isVideoInitialized
-//                         ? Colors.black54
-//                         : Colors.transparent,
-//                     child: Center(
-//                       child: RainbowPage(
-//                         backgroundColor: _loadingVisible || !_isVideoInitialized
-//                             ? Colors.black
-//                             : Colors.transparent,
-//                       ),
-//                     ),
-//                   ),
-
-//                 // 3. ERROR LAYER
-//                 if (_hasPlaybackError && !_loadingVisible)
-//                   Container(
-//                     color: Colors.black87,
-//                     child: Center(
-//                       child: Column(
-//                         mainAxisSize: MainAxisSize.min,
-//                         children: [
-//                           const Icon(Icons.error_outline,
-//                               color: Colors.white70, size: 50),
-//                           const SizedBox(height: 10),
-//                           const Text("Stream Disconnected",
-//                               style: TextStyle(
-//                                   color: Colors.white70,
-//                                   fontSize: 16,
-//                                   fontWeight: FontWeight.bold)),
-//                           const SizedBox(height: 15),
-//                           ElevatedButton(
-//                             style: ElevatedButton.styleFrom(
-//                               backgroundColor:
-//                                   const Color(0xFF9B28F8), 
-//                               padding: const EdgeInsets.symmetric(
-//                                   horizontal: 24, vertical: 12),
-//                             ),
-//                             onPressed: () => _onItemTap(_focusedIndex),
-//                             child: const Text("Retry",
-//                                 style: TextStyle(
-//                                     color: Colors.white, fontSize: 16)),
-//                           )
-//                         ],
-//                       ),
-//                     ),
-//                   ),
-
-//                 // 3. TITLE LAYER
-//                 if (_controlsVisible)
-//                   Positioned(
-//                     top: 0,
-//                     left: widget.channelList.isNotEmpty ? leftPanelWidth : 0.0,
-//                     right: 0,
-//                     height: topTitleHeight,
-//                     child: Container(
-//                       color: Colors.black.withOpacity(0.5),
-//                       padding: EdgeInsets.only(top: screenhgt * 0.03),
-//                       alignment: Alignment.topCenter,
-//                       child: ShaderMask(
-//                         shaderCallback: (bounds) {
-//                           return const LinearGradient(
-//                             colors: [
-//                               Color(0xFF9B28F8),
-//                               Color(0xFFE62B1E),
-//                               Color.fromARGB(255, 53, 255, 53)
-//                             ],
-//                             begin: Alignment.topLeft,
-//                             end: Alignment.bottomRight,
-//                           ).createShader(
-//                               Rect.fromLTWH(0, 0, bounds.width, bounds.height));
-//                         },
-//                         child: Text(
-//                           (widget.channelList.isNotEmpty &&
-//                                   _focusedIndex >= 0 &&
-//                                   _focusedIndex < widget.channelList.length)
-//                               ? _getFormattedName(
-//                                   widget.channelList[_focusedIndex])
-//                               : widget.name,
-//                           style: const TextStyle(
-//                             color: Colors.white,
-//                             fontSize: 18,
-//                             fontWeight: FontWeight.bold,
-//                             letterSpacing: 1.0,
-//                           ),
-//                           maxLines: 1,
-//                           overflow: TextOverflow.ellipsis,
-//                           textAlign: TextAlign.center,
-//                         ),
-//                       ),
-//                     ),
-//                   ),
-
-//                 // 4. CHANNEL LIST
-//                 if (_controlsVisible && widget.channelList.isNotEmpty)
-//                   Positioned(
-//                     left: 0,
-//                     top: 0,
-//                     bottom: 0,
-//                     width: leftPanelWidth,
-//                     child: Container(
-//                       color: Colors.black.withOpacity(0.5),
-//                       padding: const EdgeInsets.only(
-//                           top: 20, bottom: 20, left: 20, right: 10),
-//                       child: ListView.builder(
-//                         controller: _scrollController,
-//                         itemCount: widget.channelList.length,
-//                         itemBuilder: (context, index) {
-//                           final channel = widget.channelList[index];
-//                           final String channelId = channel.id?.toString() ?? '';
-//                           final bool isBase64 =
-//                               channel.banner?.startsWith('data:image') ?? false;
-//                           final bool isFocused = _focusedIndex == index;
-
-//                           return Padding(
-//                             padding: const EdgeInsets.symmetric(vertical: 8.0),
-//                             child: Focus(
-//                               focusNode: focusNodes[index],
-//                               autofocus: widget.liveStatus == true && isFocused,
-//                               onFocusChange: (hasFocus) {
-//                                 if (hasFocus) _scrollToFocusedItem();
-//                               },
-//                               child: GestureDetector(
-//                                 onTap: () => _onItemTap(index),
-//                                 child: Container(
-//                                   height: screenhgt * 0.108,
-//                                   decoration: BoxDecoration(
-//                                     border: Border.all(
-//                                       color: isFocused &&
-//                                               !playPauseButtonFocusNode
-//                                                   .hasFocus &&
-//                                               !subtitleButtonFocusNode.hasFocus &&
-//                                               !audioButtonFocusNode.hasFocus
-//                                           ? const Color.fromARGB(
-//                                               211, 155, 40, 248)
-//                                           : Colors.transparent,
-//                                       width: 4.0,
-//                                     ),
-//                                     borderRadius: BorderRadius.circular(8),
-//                                     color: isFocused
-//                                         ? Colors.white24
-//                                         : Colors.transparent,
-//                                   ),
-//                                   child: ClipRRect(
-//                                     borderRadius: BorderRadius.circular(4),
-//                                     child: Stack(
-//                                       children: [
-//                                         Positioned.fill(
-//                                           child: Opacity(
-//                                             opacity: 0.8,
-//                                             child: isBase64
-//                                                 ? Image.memory(
-//                                                     _bannerCache[channelId] ??
-//                                                         _getCachedImage(
-//                                                             channel.banner ??
-//                                                                 localImage),
-//                                                     fit: BoxFit.fill)
-//                                                 : CachedNetworkImage(
-//                                                     imageUrl: channel.banner ??
-//                                                         localImage,
-//                                                     fit: BoxFit.fill,
-//                                                     errorWidget: (context, url,
-//                                                             error) =>
-//                                                         const Icon(Icons.error,
-//                                                             color:
-//                                                                 Colors.white),
-//                                                   ),
-//                                           ),
-//                                         ),
-//                                         if (isFocused)
-//                                           Positioned(
-//                                             left: 8,
-//                                             bottom: 8,
-//                                             right: 8,
-//                                             child: FittedBox(
-//                                               fit: BoxFit.scaleDown,
-//                                               alignment: Alignment.centerLeft,
-//                                               child: Text(
-//                                                 _getFormattedName(channel),
-//                                                 style: const TextStyle(
-//                                                     color: Colors.white,
-//                                                     fontSize: 14,
-//                                                     fontWeight:
-//                                                         FontWeight.bold),
-//                                               ),
-//                                             ),
-//                                           ),
-//                                       ],
-//                                     ),
-//                                   ),
-//                                 ),
-//                               ),
-//                             ),
-//                           );
-//                         },
-//                       ),
-//                     ),
-//                   ),
-
-//                 // 5. BOTTOM CONTROLS
-//                 if (_controlsVisible)
-//                   _buildControls(screenwdt, bottomBarHeight, leftPanelWidth),
-//               ],
-//             ),
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-
-//   Widget _buildControls(
-//       double screenwdt, double bottomBarHeight, double leftPanelWidth) {
-//     return Positioned(
-//       bottom: 0,
-//       left: widget.channelList.isNotEmpty ? leftPanelWidth : 0.0,
-//       right: 0,
-//       height: bottomBarHeight,
-//       child: Container(
-//         color: Colors.black.withOpacity(0.8),
-//         padding: const EdgeInsets.symmetric(horizontal: 16.0),
-//         child: Column(
-//           mainAxisAlignment: MainAxisAlignment.center,
-//           crossAxisAlignment: CrossAxisAlignment.start,
-//           children: [
-//             // --- UPAR WALI ROW (Play/Pause, Time, Progress Bar, Live Indicator) ---
-//             Row(
-//               crossAxisAlignment: CrossAxisAlignment.center,
-//               children: [
-//                 const SizedBox(width: 10),
-//                 // 1. Play / Pause Button
-//                 Container(
-//                   color: playPauseButtonFocusNode.hasFocus
-//                       ? const Color.fromARGB(200, 16, 62, 99)
-//                       : Colors.transparent,
-//                   child: Focus(
-//                     focusNode: playPauseButtonFocusNode,
-//                     autofocus: widget.liveStatus == false,
-//                     onFocusChange: (hasFocus) => setState(() {}),
-//                     child: GestureDetector(
-//                       onTap: _togglePlayPause,
-//                       child: Container(
-//                         width: 24,
-//                         height: 24,
-//                         color: Colors.transparent,
-//                         child: ClipRect(
-//                           child: Transform.scale(
-//                             scale: 1.2,
-//                             child: Image.asset(
-//                               _isPlaying
-//                                   ? 'assets/pause.png'
-//                                   : 'assets/play.png',
-//                               fit: BoxFit.cover,
-//                               errorBuilder: (context, error, stackTrace) =>
-//                                   Icon(
-//                                 _isPlaying ? Icons.pause : Icons.play_arrow,
-//                                 color: Colors.white,
-//                                 size: 20,
-//                               ),
-//                             ),
-//                           ),
-//                         ),
-//                       ),
-//                     ),
-//                   ),
-//                 ),
-//                 SizedBox(width: 10),
-//                 if (widget.liveStatus == false)
-
-//                   // 2. Current Time
-//                   Padding(
-//                     padding: const EdgeInsets.only(left: 12.0, right: 8.0),
-//                     child: ListenableBuilder(
-//                         listenable: Listenable.merge(
-//                             [_currentPosition, _previewPosition]),
-//                         builder: (context, child) {
-//                           final Duration displayPosition =
-//                               _accumulatedSeekForward > 0 ||
-//                                       _accumulatedSeekBackward > 0 ||
-//                                       _isScrubbing
-//                                   ? _previewPosition.value
-//                                   : _currentPosition.value;
-//                           return Text(
-//                             _formatDuration(displayPosition),
-//                             style: const TextStyle(
-//                                 color: Colors.white,
-//                                 fontSize: 16,
-//                                 fontWeight: FontWeight.bold),
-//                           );
-//                         }),
-//                   ),
-
-//                 // 3. Progress Bar
-//                 Expanded(
-//                   child: LayoutBuilder(
-//                     builder: (context, constraints) {
-//                       return GestureDetector(
-//                         onHorizontalDragStart: (details) =>
-//                             _onScrubStart(details, constraints),
-//                         onHorizontalDragUpdate: (details) =>
-//                             _onScrubUpdate(details, constraints),
-//                         onHorizontalDragEnd: (details) => _onScrubEnd(details),
-//                         child: Container(
-//                           height: 30,
-//                           color: Colors.transparent,
-//                           child: Center(
-//                             child: ListenableBuilder(
-//                                 listenable: Listenable.merge([
-//                                   _currentPosition,
-//                                   _previewPosition,
-//                                   _totalDuration
-//                                 ]),
-//                                 builder: (context, child) {
-//                                   final Duration displayPosition =
-//                                       _accumulatedSeekForward > 0 ||
-//                                               _accumulatedSeekBackward > 0 ||
-//                                               _isScrubbing
-//                                           ? _previewPosition.value
-//                                           : _currentPosition.value;
-//                                   return _buildBeautifulProgressBar(
-//                                       displayPosition, _totalDuration.value);
-//                                 }),
-//                           ),
-//                         ),
-//                       );
-//                     },
-//                   ),
-//                 ),
-//                 if (widget.liveStatus == false)
-//                   // 4. Total Time
-//                   Padding(
-//                     padding: const EdgeInsets.only(left: 8.0, right: 12.0),
-//                     child: ValueListenableBuilder<Duration>(
-//                         valueListenable: _totalDuration,
-//                         builder: (context, totalDuration, child) {
-//                           return Text(
-//                             _formatDuration(totalDuration),
-//                             style: const TextStyle(
-//                                 color: Colors.white,
-//                                 fontSize: 16,
-//                                 fontWeight: FontWeight.bold),
-//                           );
-//                         }),
-//                   ),
-
-//                 // 5. Live Indicator
-//                 if (widget.liveStatus == true)
-//                   Padding(
-//                     padding: const EdgeInsets.only(left: 8.0),
-//                     child: Row(
-//                       mainAxisSize: MainAxisSize.min,
-//                       children: const [
-//                         Icon(Icons.circle, color: Colors.red, size: 15),
-//                         SizedBox(width: 5),
-//                         Text('Live',
-//                             style: TextStyle(
-//                                 color: Colors.red,
-//                                 fontSize: 18,
-//                                 fontWeight: FontWeight.bold)),
-//                       ],
-//                     ),
-//                   ),
-//                 SizedBox(width: 10),
-//               ],
-//             ),
-
-//             // --- NEECHE WALI ROW (Language aur Subtitles) ---
-//             if (widget.liveStatus == false && activePlayer == 'VLC') ...[
-//               const SizedBox(height: 1),
-//               Row(
-//                 children: [
-//                   // 🟢 NEW: Language/Audio Button
-//                   Container(
-//                     decoration: BoxDecoration(
-//                       color: audioButtonFocusNode.hasFocus
-//                           ? const Color.fromARGB(200, 16, 62, 99)
-//                           : Colors.transparent,
-//                       borderRadius: BorderRadius.circular(6),
-//                       border: Border.all(
-//                           color: audioButtonFocusNode.hasFocus
-//                               ? Colors.purple
-//                               : Colors.transparent,
-//                           width: 2),
-//                     ),
-//                     child: Focus(
-//                       focusNode: audioButtonFocusNode,
-//                       onFocusChange: (hasFocus) => setState(() {}),
-//                       child: InkWell(
-//                         onTap: _showAudioMenu,
-//                         child: const Padding(
-//                           padding:
-//                               EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
-//                           child: Row(
-//                             mainAxisSize: MainAxisSize.min,
-//                             children: [
-//                               Icon(Icons.audiotrack, color: Colors.white, size: 18),
-//                               SizedBox(width: 4),
-//                               Text("Language",
-//                                   style: TextStyle(
-//                                       color: Colors.white,
-//                                       fontWeight: FontWeight.bold,
-//                                       fontSize: 14)),
-//                             ],
-//                           ),
-//                         ),
-//                       ),
-//                     ),
-//                   ),
-//                   const SizedBox(width: 15), // Gap between Language and Subtitle
-                  
-//                   // 🟢 EXISTING: Subtitle Button
-//                   Container(
-//                     decoration: BoxDecoration(
-//                       color: subtitleButtonFocusNode.hasFocus
-//                           ? const Color.fromARGB(200, 16, 62, 99)
-//                           : Colors.transparent,
-//                       borderRadius: BorderRadius.circular(6),
-//                       border: Border.all(
-//                           color: subtitleButtonFocusNode.hasFocus
-//                               ? Colors.purple
-//                               : Colors.transparent,
-//                           width: 2),
-//                     ),
-//                     child: Focus(
-//                       focusNode: subtitleButtonFocusNode,
-//                       onFocusChange: (hasFocus) => setState(() {}),
-//                       child: InkWell(
-//                         onTap: _showSubtitleMenu,
-//                         child: const Padding(
-//                           padding:
-//                               EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
-//                           child: Row(
-//                             mainAxisSize: MainAxisSize.min,
-//                             children: [
-//                               Icon(Icons.subtitles, color: Colors.white, size: 18),
-//                               SizedBox(width: 4),
-//                               Text("Subtitles",
-//                                   style: TextStyle(
-//                                       color: Colors.white,
-//                                       fontWeight: FontWeight.bold,
-//                                       fontSize: 14)),
-//                             ],
-//                           ),
-//                         ),
-//                       ),
-//                     ),
-//                   ),
-//                 ],
-//               ),
-//             ],
-//             SizedBox(height: 10)
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-
-//   Widget _buildBeautifulProgressBar(
-//       Duration displayPosition, Duration totalDuration) {
-//     final totalDurationMs = totalDuration.inMilliseconds.toDouble();
-
-//     if (totalDurationMs <= 0 || widget.liveStatus == true) {
-//       return Container(
-//         padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
-//         child: Container(
-//             height: 8,
-//             decoration: BoxDecoration(
-//                 color: Colors.grey[800],
-//                 borderRadius: BorderRadius.circular(4))),
-//       );
-//     }
-
-//     double playedProgress =
-//         (displayPosition.inMilliseconds / totalDurationMs).clamp(0.0, 1.0);
-//     double bufferedProgress = (playedProgress + 0.005).clamp(0.0, 1.0);
-
-//     return Container(
-//       padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
-//       child: Container(
-//         height: 8,
-//         decoration: BoxDecoration(
-//           borderRadius: BorderRadius.circular(4),
-//           boxShadow: [
-//             BoxShadow(
-//               color: Colors.black.withOpacity(0.3),
-//               blurRadius: 4,
-//               offset: const Offset(0, 2),
-//             ),
-//           ],
-//         ),
-//         child: ClipRRect(
-//           borderRadius: BorderRadius.circular(4),
-//           child: Stack(
-//             children: [
-//               Container(
-//                 width: double.infinity,
-//                 decoration: BoxDecoration(
-//                   gradient: LinearGradient(
-//                     colors: [Colors.grey[800]!, Colors.grey[700]!],
-//                   ),
-//                 ),
-//               ),
-//               FractionallySizedBox(
-//                 widthFactor: bufferedProgress,
-//                 child: Container(
-//                   decoration: BoxDecoration(
-//                     gradient: LinearGradient(
-//                       colors: [Colors.grey[600]!, Colors.grey[500]!],
-//                     ),
-//                   ),
-//                 ),
-//               ),
-//               FractionallySizedBox(
-//                 widthFactor: playedProgress,
-//                 child: Container(
-//                   decoration: BoxDecoration(
-//                     gradient: const LinearGradient(
-//                       colors: [
-//                         Color(0xFF9B28F8),
-//                         Color(0xFFE62B1E),
-//                         Color(0xFFFF6B35),
-//                       ],
-//                       stops: [0.0, 0.7, 1.0],
-//                     ),
-//                     boxShadow: [
-//                       BoxShadow(
-//                         color: const Color(0xFF9B28F8).withOpacity(0.6),
-//                         blurRadius: 8,
-//                         spreadRadius: 1,
-//                       ),
-//                     ],
-//                   ),
-//                 ),
-//               ),
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-
-//   void _updateWebBounds(bool showControls) {
-//     if (activePlayer != 'WEB' || webViewController == null) return;
-
-//     final double screenwdt = MediaQuery.of(context).size.width;
-//     final double screenhgt = MediaQuery.of(context).size.height;
-
-//     final double leftPanelWidth = screenwdt * 0.13;
-//     final double topTitleHeight = screenhgt * 0.10;
-//     final double bottomBarHeight = screenhgt * 0.15;
-
-//     final bool isLive = widget.liveStatus == true;
-
-//     final double offsetLeft =
-//         (isLive && showControls && widget.channelList.isNotEmpty)
-//             ? leftPanelWidth
-//             : 0.0;
-//     final double offsetTop = (isLive && showControls) ? topTitleHeight : 0.0;
-//     final double offsetBottom =
-//         (isLive && showControls) ? bottomBarHeight : 0.0;
-
-//     final double offsetRight = 0.0;
-
-//     final int radius = (isLive && showControls) ? 24 : 0;
-
-//     webViewController?.evaluateJavascript(
-//         source:
-//             "if(typeof window.setVideoBounds === 'function') window.setVideoBounds($offsetLeft, $offsetTop, $offsetRight, $offsetBottom, $radius);");
-//   }
-
-//   String _getHtmlString() {
-//     return """
-//     <!DOCTYPE html>
-//     <html>
-//     <head>
-//       <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-//       <style>
-//         * { margin: 0; padding: 0; box-sizing: border-box; }
-//         body {
-//           background: #000;
-//           width: 100vw;
-//           height: 100vh;
-//           overflow: hidden;
-//           -webkit-tap-highlight-color: transparent;
-//         }
-//         #wrapper {
-//           position: absolute;
-//           top: 0px; left: 0px; right: 0px; bottom: 0px; /* Full screen by default */
-//           transition: top 0.03s ease, left 0.03s ease, right 0.03s ease, bottom 0.03s ease, border-radius 0.03s ease, box-shadow 0.03s ease;
-//           overflow: hidden;
-//           background: #000;
-//         }
-//         video {
-//           width: 100%; height: 100%; /* Ye ensure karega video bahar na nikle */
-//           object-fit: contain; 
-//           background: transparent;
-//           outline: none; border: none;
-//         }
-//         video::-webkit-media-controls { display: none !important; }
-//         video::-webkit-media-controls-enclosure { display: none !important; }
-//       </style>
-//       <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-//     </head>
-//     <body>
-//       <div id="wrapper">
-//         <video id="video" autoplay playsinline></video>
-//       </div>
-//       <script>
-//         var video = document.getElementById('video');
-//         var wrapper = document.getElementById('wrapper');
-//         var hls;
-
-//         window.setVideoBounds = function(l, t, r, b, rad) {
-//            wrapper.style.left = l + "px";
-//            wrapper.style.top = t + "px";
-//            wrapper.style.right = r + "px";
-//            wrapper.style.bottom = b + "px";
-//            wrapper.style.borderRadius = rad + "px";
-           
-//            if(l === 0 && t === 0) {
-//                wrapper.style.boxShadow = "none";
-//            } else {
-//                wrapper.style.boxShadow = "0px 0px 20px 5px rgba(0,0,0,0.5)";
-//            }
-//         };
-
-//         function sendState() {
-//           var state = { position: video.currentTime * 1000, duration: video.duration ? video.duration * 1000 : 0, isPlaying: !video.paused, isBuffering: video.readyState < 3 };
-//           window.flutter_inappwebview.callHandler('videoState', state);
-//         }
-
-//         video.addEventListener('timeupdate', sendState);
-//         video.addEventListener('play', sendState);
-//         video.addEventListener('pause', sendState);
-//         video.addEventListener('waiting', sendState);
-//         video.addEventListener('playing', sendState);
-//         video.addEventListener('loadstart', sendState);
-//         video.addEventListener('loadeddata', sendState);
-//         video.addEventListener('stalled', sendState);
-//         video.addEventListener('canplay', sendState);
-
-//         function loadNewVideo(src) {
-//           if (Hls.isSupported()) {
-//             if (hls) hls.destroy();
-//             hls = new Hls();
-//             hls.loadSource(src);
-//             hls.attachMedia(video);
-//             hls.on(Hls.Events.MANIFEST_PARSED, function() {
-//               if (hls.levels && hls.levels.length > 0) { hls.currentLevel = hls.levels.length - 1; }
-//               video.play().catch(function(e) { console.log(e); });
-//             });
-//           } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-//             video.src = src;
-//             video.addEventListener('loadedmetadata', function() { video.play(); });
-//           }
-//         }
-//         loadNewVideo('${_currentModifiedUrl ?? widget.videoUrl}');
-//       </script>
-//     </body>
-//     </html>
-//     """;
-//   }
-
-//   void _focusAndScrollToInitialItem() {
-//     if (_isDisposing) return;
-//     if (!mounted ||
-//         focusNodes.isEmpty ||
-//         _focusedIndex < 0 ||
-//         _focusedIndex >= focusNodes.length) {
-//       WidgetsBinding.instance.addPostFrameCallback((_) {
-//         if (!mounted || _isDisposing) return;
-//         FocusScope.of(context).requestFocus(playPauseButtonFocusNode);
-//       });
-//       return;
-//     }
-//     _scrollToFocusedItem();
-//     WidgetsBinding.instance.addPostFrameCallback((_) {
-//       if (!mounted || _isDisposing) return;
-//       if (widget.liveStatus == false) {
-//         FocusScope.of(context).requestFocus(playPauseButtonFocusNode);
-//       } else {
-//         FocusScope.of(context).requestFocus(focusNodes[_focusedIndex]);
-//       }
-//     });
-//   }
-
-//   void _changeFocusAndScroll(int newIndex) {
-//     if (newIndex < 0 || newIndex >= widget.channelList.length || _isDisposing)
-//       return;
-//     setState(() {
-//       _focusedIndex = newIndex;
-//     });
-//     _scrollToFocusedItem();
-//     WidgetsBinding.instance.addPostFrameCallback((_) {
-//       if (!mounted || _isDisposing) return;
-//       FocusScope.of(context).requestFocus(focusNodes[_focusedIndex]);
-//     });
-//   }
-
-//   void _scrollToFocusedItem() {
-//     if (_isDisposing) return;
-//     WidgetsBinding.instance.addPostFrameCallback((_) {
-//       if (!mounted ||
-//           _isDisposing ||
-//           _focusedIndex < 0 ||
-//           !_scrollController.hasClients ||
-//           _focusedIndex >= focusNodes.length) return;
-//       final screenhgt = MediaQuery.of(context).size.height;
-//       final double itemHeight = (screenhgt * 0.108) + 16.0;
-//       final double viewportHeight = screenhgt * 0.88;
-//       final double targetOffset = (itemHeight * _focusedIndex) -
-//           (viewportHeight / 2) +
-//           (itemHeight / 2);
-//       final double clampedOffset = targetOffset.clamp(
-//           _scrollController.position.minScrollExtent,
-//           _scrollController.position.maxScrollExtent);
-//       _scrollController.jumpTo(clampedOffset);
-//     });
-//   }
-
-//   void _resetHideControlsTimer() {
-//     _hideControlsTimer?.cancel();
-//     if (_isDisposing) return;
-
-//     if (!_controlsVisible) {
-//       setState(() {
-//         _controlsVisible = true;
-//       });
-
-//       _updateWebBounds(true);
-
-//       WidgetsBinding.instance.addPostFrameCallback((_) {
-//         if (!mounted || _isDisposing) return;
-//         if (widget.liveStatus == false || widget.channelList.isEmpty) {
-//           FocusScope.of(context).requestFocus(playPauseButtonFocusNode);
-//         } else {
-//           FocusScope.of(context).requestFocus(focusNodes[_focusedIndex]);
-//           _scrollToFocusedItem();
-//         }
-//       });
-//     }
-//     _startHideControlsTimer();
-//   }
-
-//   void _startHideControlsTimer() {
-//     _hideControlsTimer?.cancel();
-//     if (_isDisposing) return;
-//     _hideControlsTimer = Timer(const Duration(seconds: 10), () {
-//       if (mounted && !_isDisposing) {
-//         setState(() {
-//           _controlsVisible = false;
-//         });
-
-//         _updateWebBounds(false);
-
-//         FocusScope.of(context).requestFocus(_mainFocusNode);
-//       }
-//     });
-//   }
-
-//   String _formatDuration(Duration duration) {
-//     if (duration.isNegative) duration = Duration.zero;
-//     String twoDigits(int n) => n.toString().padLeft(2, '0');
-//     final String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
-//     final String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
-//     return "${twoDigits(duration.inHours)}:$twoDigitMinutes:$twoDigitSeconds";
-//   }
-
-//   String _getFormattedName(dynamic channel) {
-//     String name = "";
-//     try {
-//       name = channel.name?.toString() ?? "";
-//     } catch (_) {
-//       try {
-//         name = channel['name']?.toString() ?? "";
-//       } catch (_) {}
-//     }
-//     String? cNo;
-//     try {
-//       cNo = channel.channel_number?.toString();
-//     } catch (_) {
-//       try {
-//         cNo = channel.channelNumber?.toString();
-//       } catch (_) {
-//         try {
-//           cNo = channel['channel_number']?.toString() ??
-//               channel['channelNumber']?.toString();
-//         } catch (_) {
-//           cNo = null;
-//         }
-//       }
-//     }
-//     if (cNo != null && cNo.trim().isNotEmpty && cNo != "null")
-//       return "${cNo.trim()} $name";
-//     return name;
-//   }
-
-//   void _safeDispose() {
-//     if (_isDisposing) return;
-//     _isDisposing = true;
-//     _hideControlsTimer?.cancel();
-//     _seekTimer?.cancel();
-//     _networkCheckTimer?.cancel();
-//     _keyRepeatTimer?.cancel();
-
-//     if (vlcController != null) {
-//       final oldController = vlcController;
-//       vlcController = null; 
-
-//       try {
-//         oldController!.removeListener(_vlcListener);
-//       } catch (_) {}
-
-//       Future.delayed(const Duration(milliseconds: 300), () async {
-//         try {
-//           await oldController?.stop().timeout(const Duration(seconds: 2));
-//         } catch (e) {
-//           print("VLC stop timed out or failed: $e");
-//         }
-
-//         try {
-//           await oldController?.dispose().timeout(const Duration(seconds: 2));
-//         } catch (e) {
-//           print("VLC dispose timed out or failed: $e");
-//         }
-//       });
-//     }
-
-//     if (webViewController != null) {
-//       try {
-//         webViewController!.evaluateJavascript(
-//             source:
-//                 "var v = document.getElementById('video'); if(v) { v.pause(); v.removeAttribute('src'); v.load(); }");
-//       } catch (_) {}
-//     }
-
-//     KeepScreenOn.turnOff();
-//   }
-
-//   @override
-//   void dispose() {
-//     _safeDispose();
-//     _mainFocusNode.dispose();
-//     _currentPosition.dispose();
-//     _totalDuration.dispose();
-//     _previewPosition.dispose();
-
-//     for (var node in focusNodes) {
-//       node.dispose();
-//     }
-//     playPauseButtonFocusNode.dispose();
-//     subtitleButtonFocusNode.dispose();
-//     audioButtonFocusNode.dispose(); // 🟢 NEW
-//     _scrollController.dispose();
-
-//     SystemChrome.setPreferredOrientations([
-//       DeviceOrientation.portraitUp,
-//       DeviceOrientation.landscapeLeft,
-//       DeviceOrientation.landscapeRight,
-//     ]);
-//     WidgetsBinding.instance.removeObserver(this);
-//     super.dispose();
-//   }
-// }
-
-
-
-
-
-
-
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -11218,6 +8848,12 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
   final FocusNode subtitleButtonFocusNode = FocusNode();
   final FocusNode audioButtonFocusNode = FocusNode(); // 🟢 NEW: Language focus node
 
+  // 🛡️ Error-overlay (Retry / Next Channel) ke liye dedicated focus nodes —
+  // taaki TV remote/D-pad se bhi yeh buttons navigate + select kiye ja sakein,
+  // sirf touch-tap par depend na rahein.
+  final FocusNode _retryButtonFocusNode = FocusNode();
+  final FocusNode _nextChannelButtonFocusNode = FocusNode();
+
   // --- Seek Variables ---
   bool _isScrubbing = false;
   int _accumulatedSeekForward = 0;
@@ -11236,6 +8872,7 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
 
   // --- Network & Stall Recovery Variables ---
   Timer? _networkCheckTimer;
+  Timer? _vlcInitWatchdogTimer; // 🛡️ Agar VLC kabhi initialize/error event hi na bheje to bhi error dikhayein
   bool _wasDisconnected = false;
   bool _isAttemptingResume = false;
   DateTime _lastPlayingTime = DateTime.now();
@@ -11258,6 +8895,105 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
   bool _isDisposing = false;
   final String localImage = "";
   bool _isAppInBackground = false;
+
+  // 🛡️ CRASH FIX (detachFromGLContext / AWindowHandler): VLC ka native
+  // texture/GL-context teardown ek dedicated background thread par hota
+  // hai. Agar user channel ko bahut tezi se badalta hai (e.g. remote ke
+  // up/down button ko jaldi-jaldi dabana), to ek switch ke beech mein hi
+  // dusra switch shuru ho jaata hai, jisse VLC ka surface/texture state
+  // race condition mein aa jaata hai aur kabhi-kabhi native crash
+  // (SurfaceTexture.detachFromGLContext) ho jaata hai. Isliye ek waqt
+  // mein sirf ek switch chalne dete hain — beech mein aaye naye taps ko
+  // "pending" mein rakh kar current switch poora hone ke baad process
+  // karte hain (sirf sabse aakhri wala, taaki UI bhi responsive rahe).
+  bool _isSwitchingPlayer = false;
+  String? _pendingSwitchPlayerType;
+  String? _pendingSwitchUrl;
+
+  // 🛡️ FALLBACK FIX: jab koi channel safaltapoorvak chalna shuru ho jaata
+  // hai, uska RAW url (secure-token lagne se pehle wala), player type aur
+  // list-index yahan save kar lete hain. Pehle recovery hamesha
+  // widget.videoUrl (is screen ka SHURUATI channel) par wapas jaata tha —
+  // jo galat hai agar user beech mein kayi channels badal chuka ho. Ab
+  // recovery isi "last working" channel par jaata hai. Agar koi channel
+  // kabhi successfully chala hi nahi (jaise pehla hi channel band ho), to
+  // yeh null rehta hai aur hum bina kisi risky retry-loop ke seedha error
+  // dikha dete hain.
+  String? _lastWorkingRawUrl;
+  String? _lastWorkingPlayerType;
+  int? _lastWorkingFocusedIndex;
+
+  // Jis channel ka switch abhi attempt ho raha hai uska raw url/type/index —
+  // switch safal (playing) hone par yeh _lastWorking* mein copy ho jaata hai.
+  String? _pendingAttemptRawUrl;
+  String? _pendingAttemptPlayerType;
+  int? _pendingAttemptFocusedIndex;
+
+  // 🛡️ AUTO-ADVANCE: Jab error message dikh rahi ho, 8 second ka countdown
+  // chalate hain — agar list mein iske baad koi channel maujood hai, to use
+  // automatically chala dete hain (taaki user ko khud retry/next dabane ki
+  // zaroorat na pade, aur ek dead channel par atka na rahe). Yeh
+  // _syncAutoAdvanceTimer() ke through build() se reactively manage hota
+  // hai — jaise hi error clear ho ya naya switch shuru ho, timer cancel ho
+  // jaata hai.
+  static const int _autoAdvanceTotalSeconds = 8;
+  Timer? _autoAdvanceTimer;
+  final ValueNotifier<int> _autoAdvanceSecondsLeft =
+      ValueNotifier<int>(_autoAdvanceTotalSeconds);
+
+  bool get _hasNextChannelToAutoAdvance =>
+      widget.channelList.isNotEmpty &&
+      (_focusedIndex + 1) < widget.channelList.length;
+
+  // build() se har rebuild par call hota hai — idempotent (timer sirf ek
+  // baar banta hai jab tak error state nahi badalti).
+  void _syncAutoAdvanceTimer() {
+    final bool errorShowing = _hasPlaybackError && !_loadingVisible;
+    if (errorShowing && !_isDisposing) {
+      if (_autoAdvanceTimer == null) {
+        _autoAdvanceSecondsLeft.value = _autoAdvanceTotalSeconds;
+        _autoAdvanceTimer =
+            Timer.periodic(const Duration(seconds: 1), (timer) {
+          if (!mounted ||
+              _isDisposing ||
+              !_hasPlaybackError ||
+              _loadingVisible) {
+            timer.cancel();
+            _autoAdvanceTimer = null;
+            return;
+          }
+          final int remaining = _autoAdvanceSecondsLeft.value - 1;
+          if (remaining <= 0) {
+            timer.cancel();
+            _autoAdvanceTimer = null;
+            _autoAdvanceSecondsLeft.value = 0;
+            _autoAdvanceToNextChannel();
+          } else {
+            _autoAdvanceSecondsLeft.value = remaining;
+          }
+        });
+      }
+    } else {
+      _autoAdvanceTimer?.cancel();
+      _autoAdvanceTimer = null;
+      _autoAdvanceSecondsLeft.value = _autoAdvanceTotalSeconds;
+    }
+  }
+
+  void _autoAdvanceToNextChannel() {
+    if (!mounted || _isDisposing) return;
+    if (!_hasPlaybackError || _loadingVisible) return; // already resolved
+
+    if (!_hasNextChannelToAutoAdvance) {
+      // 🛡️ Aage koi channel nahi hai — error message hi dikhate rahenge,
+      // koi auto-advance nahi (wraparound user ne nahi maanga).
+      return;
+    }
+
+    final int nextIndex = _focusedIndex + 1;
+    print("Auto-advancing to next channel ($nextIndex) after playback error.");
+    _onItemTap(nextIndex);
+  }
 
   final InAppWebViewSettings settings = InAppWebViewSettings(
     userAgent:
@@ -11298,32 +9034,6 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
     }
   }
 
-  // --- NATIVE CRASH PREVENTION: HTTP PRE-CHECK ---
-  Future<bool> _checkStreamValidity(String url) async {
-    if (url.toLowerCase().startsWith('rtsp') || url.toLowerCase().startsWith('rtmp')) {
-      return true;
-    }
-
-    try {
-      final client = HttpClient();
-      client.connectionTimeout = const Duration(seconds: 4); // Fast timeout prevents UI freeze
-      final request = await client.getUrl(Uri.parse(url));
-      request.headers.set(
-          'User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36');
-
-      final response = await request.close().timeout(const Duration(seconds: 5));
-      
-      if (response.statusCode >= 400 && response.statusCode != 403) {
-        print("Stream check failed with status code: ${response.statusCode}");
-        return false;
-      }
-      return true;
-    } catch (e) {
-      print("Stream is totally dead (timeout/refused): $e");
-      return false; 
-    }
-  }
-
   @override
   void initState() {
     super.initState();
@@ -11336,9 +9046,21 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
     ]);
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
 
-    _focusedIndex = widget.channelList.indexWhere(
-      (channel) => channel.id.toString() == widget.videoId.toString(),
-    );
+    try {
+      _focusedIndex = widget.channelList.indexWhere((channel) {
+        try {
+          if (channel is Map) {
+            return channel['id'].toString() == widget.videoId.toString();
+          }
+          return channel.id.toString() == widget.videoId.toString();
+        } catch (_) {
+          return false;
+        }
+      });
+    } catch (e) {
+      print("Failed to resolve focused channel index (non-fatal): $e");
+      _focusedIndex = -1;
+    }
     _focusedIndex = (_focusedIndex >= 0) ? _focusedIndex : 0;
 
     focusNodes = List.generate(
@@ -11347,13 +9069,27 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
     );
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      _focusAndScrollToInitialItem();
-      String initialTarget =
-          (widget.streamType.trim().toLowerCase() == 'custom') ? 'WEB' : 'VLC';
+      try {
+        _focusAndScrollToInitialItem();
+        String initialTarget =
+            (widget.streamType.trim().toLowerCase() == 'custom') ? 'WEB' : 'VLC';
 
-      String secureUrl = await _getSecureUrlSafe(widget.videoUrl);
+        String secureUrl = await _getSecureUrlSafe(widget.videoUrl);
 
-      await _switchPlayerSafely(initialTarget, secureUrl);
+        _pendingAttemptRawUrl = widget.videoUrl;
+        _pendingAttemptPlayerType = initialTarget;
+        _pendingAttemptFocusedIndex = _focusedIndex;
+
+        await _switchPlayerSafely(initialTarget, secureUrl);
+      } catch (e) {
+        print("Initial player start failed (showing error instead of crashing): $e");
+        if (mounted) {
+          setState(() {
+            _loadingVisible = false;
+            _hasPlaybackError = true;
+          });
+        }
+      }
     });
 
     _startHideControlsTimer();
@@ -11426,6 +9162,18 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
     }
   }
 
+  // 🛡️ Jab bhi koi channel (VLC ya WEB, dono) safalta se chalna shuru ho
+  // jaaye, uski info "last working" mein save kar lete hain taaki future
+  // failure recovery isi par wapas aa sake — na ki hamesha is screen ke
+  // shuruati channel (widget.videoUrl) par.
+  void _markCurrentChannelAsWorking() {
+    if (_pendingAttemptRawUrl != null) {
+      _lastWorkingRawUrl = _pendingAttemptRawUrl;
+      _lastWorkingPlayerType = _pendingAttemptPlayerType ?? activePlayer;
+      _lastWorkingFocusedIndex = _pendingAttemptFocusedIndex ?? _focusedIndex;
+    }
+  }
+
   Future<void> _attemptResumeLiveStream() async {
     if (!mounted ||
         _isAttemptingResume ||
@@ -11441,14 +9189,53 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
     }
     _lastRecoveryAttempt = DateTime.now();
 
+    // 🛡️ FALLBACK FIX: widget.videoUrl sirf is screen ka SHURUATI channel
+    // hota hai — user beech mein kayi channels badal chuka ho to usi purane
+    // shuruati channel par wapas jaana galat hai (ulta confusing bhi).
+    // Iski jagah hum "last working" channel (jo abhi tak safalta se chal
+    // raha tha) par resume karte hain.
+    //
+    // Agar koi channel kabhi successfully chala hi nahi (e.g. pehla hi
+    // channel jo open hua woh band/galat tha), to _lastWorkingRawUrl null
+    // rahega. Aise mein dobara switch/setMediaFromNetwork try karna ek
+    // already-broken VLC controller par risky hai (yahi repeated retry
+    // VLC ke native crash ka trigger ban sakta hai) — isliye hum bina
+    // retry-loop ke seedha error dikha dete hain.
+    final String? fallbackRawUrl = _lastWorkingRawUrl;
+    final String? fallbackPlayerType = _lastWorkingPlayerType;
+
+    if (fallbackRawUrl == null || fallbackPlayerType == null) {
+      print(
+          "No previously-working channel to fall back to — showing error instead of retrying.");
+      if (mounted) {
+        setState(() {
+          _isAttemptingResume = false;
+          _loadingVisible = false;
+          _hasPlaybackError = true;
+        });
+      }
+      return;
+    }
+
     setState(() {
       _isAttemptingResume = true;
       _loadingVisible = true;
     });
 
     try {
-      String newSecureUrl = await _getSecureUrlSafe(widget.videoUrl);
-      await _switchPlayerSafely(activePlayer, newSecureUrl);
+      String newSecureUrl = await _getSecureUrlSafe(fallbackRawUrl);
+
+      _pendingAttemptRawUrl = fallbackRawUrl;
+      _pendingAttemptPlayerType = fallbackPlayerType;
+      _pendingAttemptFocusedIndex = _lastWorkingFocusedIndex;
+
+      // UI list-highlight ko bhi actual playing channel ke saath sync rakhein.
+      if (_lastWorkingFocusedIndex != null &&
+          _lastWorkingFocusedIndex != _focusedIndex) {
+        _changeFocusAndScroll(_lastWorkingFocusedIndex!);
+      }
+
+      await _switchPlayerSafely(fallbackPlayerType, newSecureUrl);
 
       _lastPlayingTime = DateTime.now();
       _stallCounter = 0;
@@ -11474,12 +9261,26 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
         return;
       }
 
-      if (_loadingVisible && !_isUserPaused) {
+      // 🛡️ Agar ek channel-switch abhi process ho raha hai (lock active hai),
+      // to is generic watchdog ko skip karte hain — switch ka apna dedicated
+      // 15s watchdog (_vlcInitWatchdogTimer) already isi naye attempt ko
+      // sambhal raha hai. Warna yeh 7s wala generic watchdog ek legitimate
+      // (thoda slow) load ko bhi "stuck" samajh kar samay se pehle purane
+      // channel par wapas bhej deta — confusing aur galat fallback target.
+      if (_loadingVisible && !_isUserPaused && !_isSwitchingPlayer) {
         int timeoutSeconds = widget.liveStatus == true ? 7 : 12;
 
         if (DateTime.now().difference(_lastPlayingTime) > Duration(seconds: timeoutSeconds)) {
           print("Watchdog triggered: Stuck in loading for ${timeoutSeconds}s. Forcing recovery...");
-          if (_errorRetryCount < 3) {
+          // 🛡️ Yahan bhi same churn/crash-risk fix: agar yeh attempt kabhi
+          // play hi nahi hua, retry-loop ki jagah seedha error dikhayein
+          // (dekhiye _vlcListener ke error-branch mein same reasoning).
+          if (!_hasStartedPlaying) {
+            setState(() {
+              _loadingVisible = false;
+              _hasPlaybackError = true;
+            });
+          } else if (_errorRetryCount < 3) {
             _errorRetryCount++;
             _attemptResumeLiveStream();
           } else {
@@ -11524,6 +9325,35 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
   Future<void> _initVlcPlayer(String baseUrl) async {
     if (_isDisposing) return;
 
+    // 🛡️ Khaali ya invalid URL ko VLC engine tak bhejne se pehle hi rok dein —
+    // isi se zyada tar "channel crash" cases bachte hain (native player ko
+    // garbage URL milne par woh crash kar sakta hai).
+    bool isValidUrl = false;
+    try {
+      if (baseUrl.trim().isNotEmpty) {
+        final uri = Uri.tryParse(baseUrl.trim());
+        isValidUrl = uri != null &&
+            uri.hasScheme &&
+            (uri.scheme.startsWith('http') ||
+                uri.scheme.startsWith('rtsp') ||
+                uri.scheme.startsWith('rtmp') ||
+                uri.scheme == 'file');
+      }
+    } catch (_) {
+      isValidUrl = false;
+    }
+
+    if (!isValidUrl) {
+      print("Invalid/empty stream URL, showing error instead of crashing: $baseUrl");
+      if (mounted) {
+        setState(() {
+          _hasPlaybackError = true;
+          _loadingVisible = false;
+        });
+      }
+      return;
+    }
+
     if (vlcController != null) {
       final oldController = vlcController;
       vlcController = null;
@@ -11532,6 +9362,8 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
         oldController!.removeListener(_vlcListener);
       } catch (_) {}
 
+      // 🛡️ Sirf dispose() (yeh internally stop bhi kar deta hai) — alag se
+      // stop()+dispose() double native call hi crash ka trigger tha.
       Future.delayed(const Duration(milliseconds: 100), () async {
         try {
           await oldController?.dispose().timeout(const Duration(seconds: 2));
@@ -11547,21 +9379,7 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
     if (mounted) {
       setState(() {
         _hasPlaybackError = false;
-        _loadingVisible = true;
       });
-    }
-
-    // 🟢 CRITICAL: Check if the link is actually alive before feeding it to LibVLC
-    bool isAlive = await _checkStreamValidity(baseUrl);
-    
-    if (!isAlive) {
-      if (mounted) {
-        setState(() {
-          _hasPlaybackError = true;
-          _loadingVisible = false;
-        });
-      }
-      return; // Abort VLC initialization completely
     }
 
     try {
@@ -11593,6 +9411,27 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
 
       vlcController!.addListener(_vlcListener);
       if (mounted) setState(() {});
+
+      // 🛡️ Watchdog: agar 15 second mein VLC ne na to playing aur na hi
+      // error state diya (kuch native/plugin issues mein listener kabhi
+      // fire hi nahi hota), to bhi hum manually error dikha dein, hang ya
+      // crash hone se bachne ke liye.
+      final controllerAtSchedule = vlcController;
+      _vlcInitWatchdogTimer?.cancel();
+      _vlcInitWatchdogTimer = Timer(const Duration(seconds: 15), () {
+        if (!mounted || _isDisposing) return;
+        if (vlcController != controllerAtSchedule) return; // player switched already
+        if (_hasStartedPlaying) return; // already playing fine
+        try {
+          if (vlcController?.value.playingState == PlayingState.playing) return;
+        } catch (_) {}
+        print("VLC init watchdog: no playback after 15s, showing error.");
+        setState(() {
+          _isAttemptingResume = false;
+          _loadingVisible = false;
+          _hasPlaybackError = true;
+        });
+      });
     } catch (e) {
       print("Failed to initialize VLC Player: $e");
       if (mounted) {
@@ -11642,8 +9481,12 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
     if (widget.liveStatus == true && !_isAttemptingResume) {
       if (playingState == PlayingState.playing) {
         _lastPlayingTime = DateTime.now();
-        if (!_hasStartedPlaying) _hasStartedPlaying = true;
-        
+        if (!_hasStartedPlaying) {
+          _hasStartedPlaying = true;
+          _markCurrentChannelAsWorking();
+        }
+        _vlcInitWatchdogTimer?.cancel();
+
         if (_errorRetryCount > 0 || _hasPlaybackError) {
           setState(() {
             _errorRetryCount = 0;
@@ -11655,20 +9498,40 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
           _attemptResumeLiveStream();
         }
       } else if (playingState == PlayingState.error) {
-        if (_errorRetryCount < 3) {
-          _errorRetryCount++;
-          Future.delayed(const Duration(seconds: 3), () {
-            if (mounted && !_isDisposing) _attemptResumeLiveStream();
-          });
-        } else {
-          if (mounted && !_hasPlaybackError) { 
+        _vlcInitWatchdogTimer?.cancel();
+        // 🛡️ CHURN/CRASH-RISK FIX: agar yeh channel abhi tap/switch hua tha
+        // aur kabhi ek bhi frame play nahi hua (_hasStartedPlaying == false),
+        // to ispar 3x silent retry-then-fallback loop chalana (jisme har
+        // retry native VLC layer par setMediaFromNetwork dobara call karta
+        // hai) sirf extra native churn hai — ek dead channel khud retry se
+        // theek nahi ho jaata. Lambi dead-channel streak (5-7+ channels) mein
+        // yeh churn AWindowHandler/GL surface race ka risk badhata hai aur
+        // naye auto-advance UX ko bhi 9+ second tak delay karta hai. Isliye
+        // is case mein seedha error dikhayein — yeh wahi pattern hai jo
+        // dedicated 15s init watchdog (_vlcInitWatchdogTimer) mein already
+        // istemal hota hai.
+        if (!_hasStartedPlaying) {
+          if (mounted && !_hasPlaybackError) {
             setState(() {
               _isAttemptingResume = false;
               _loadingVisible = false;
               _hasPlaybackError = true;
             });
-            // CRITICAL FIX: DO NOT call vlcController?.stop() here. 
-            // It causes a fatal native crash when the player is already in an error state.
+          }
+        } else if (_errorRetryCount < 3) {
+          // Yeh ek established stream tha jo abhi blip/error hua — short
+          // retry-then-resume-to-last-working sahi hai.
+          _errorRetryCount++;
+          Future.delayed(const Duration(seconds: 3), () {
+            if (mounted && !_isDisposing) _attemptResumeLiveStream();
+          });
+        } else {
+          if (mounted && !_hasPlaybackError) {
+            setState(() {
+              _isAttemptingResume = false;
+              _loadingVisible = false;
+              _hasPlaybackError = true;
+            });
           }
         }
       } else if ((playingState == PlayingState.stopped || playingState == PlayingState.ended) && _hasStartedPlaying) {
@@ -11681,16 +9544,33 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
          _lastPlayingTime = DateTime.now();
        }
     } else if (playingState == PlayingState.playing && widget.liveStatus == false) {
+      // 🟢 Update condition to use _hasFetchedTracks
       if (!_hasFetchedTracks) _fetchTracks();
     }
 
     bool newIsPlaying = value.isPlaying;
     bool newIsBuffering = value.isBuffering;
     bool newIsVideoInitialized = value.isInitialized;
-    
-    bool newLoadingVisible = newIsBuffering || playingState == PlayingState.initializing || _isAttemptingResume;
+
+    // 🛡️ LOADING-INDICATOR RACE FIX: pehle yahan har tick par _loadingVisible
+    // ko raw VLC state se dobara compute karke force-overwrite kiya jaata tha
+    // (buffering/initializing/resume -> true, baaki sab kuch -> false). Channel
+    // switch shuru hote hi hum explicitly _loadingVisible=true set karte hain,
+    // lekin naye stream ke "buffering"/"initializing" report hone se PEHLE
+    // controller ka playingState transient states (stopped/paused/ended) mein
+    // ho sakta hai — tab yeh block galti se _loadingVisible ko turant false
+    // kar deta tha, jisse switch ke dauraan loading indicator hi nahi dikhta
+    // tha. Ab hum sirf do confirmed transitions par hi loadingVisible chhedte
+    // hain: "playing" -> hide, ya buffering/initializing/resume -> show.
+    // Baaki transient states mein jo bhi explicit code (switch/error/watchdog)
+    // ne set kiya hai, usi ko untouched rehne dete hain.
+    bool? newLoadingVisible;
     if (playingState == PlayingState.playing) {
       newLoadingVisible = false;
+    } else if (newIsBuffering ||
+        playingState == PlayingState.initializing ||
+        _isAttemptingResume) {
+      newLoadingVisible = true;
     }
 
     bool needsRebuild = false;
@@ -11707,7 +9587,7 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
       _isVideoInitialized = true;
       needsRebuild = true;
     }
-    if (_loadingVisible != newLoadingVisible) {
+    if (newLoadingVisible != null && _loadingVisible != newLoadingVisible) {
       _loadingVisible = newLoadingVisible;
       needsRebuild = true;
     }
@@ -11720,18 +9600,116 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
     }
   }
 
+  // 🛡️ Public entry point: agar koi switch already chal raha hai, to is
+  // request ko "pending" mein store kar dete hain (purani pending request
+  // overwrite ho jaati hai — sirf sabse latest target hi matter karta
+  // hai). Current switch khatam hone par pending request automatically
+  // process ho jaati hai. Isse VLC ke native texture/GL teardown par kabhi
+  // do switches overlap nahi karte — jo detachFromGLContext crash ka
+  // sabse common trigger hai.
   Future<void> _switchPlayerSafely(
+      String targetPlayerType, String secureUrl) async {
+    if (_isDisposing) return;
+
+    if (_isSwitchingPlayer) {
+      _pendingSwitchPlayerType = targetPlayerType;
+      _pendingSwitchUrl = secureUrl;
+      return;
+    }
+
+    _isSwitchingPlayer = true;
+    try {
+      await _switchPlayerSafelyInner(targetPlayerType, secureUrl);
+    } finally {
+      _isSwitchingPlayer = false;
+    }
+
+    // Jab tak yeh switch chal raha tha, agar koi naya channel-tap aaya tha,
+    // usse ab process karein (sirf sabse aakhri wala).
+    if (_pendingSwitchPlayerType != null && _pendingSwitchUrl != null) {
+      final nextType = _pendingSwitchPlayerType!;
+      final nextUrl = _pendingSwitchUrl!;
+      _pendingSwitchPlayerType = null;
+      _pendingSwitchUrl = null;
+      if (!_isDisposing) {
+        await _switchPlayerSafely(nextType, nextUrl);
+      }
+    }
+  }
+
+  Future<void> _switchPlayerSafelyInner(
       String targetPlayerType, String secureUrl) async {
     if (_isDisposing) return;
 
     _seekTimer?.cancel();
     _networkCheckTimer?.cancel();
 
+    // 🛡️ REAL CRASH FIX: jab bhi VLC se VLC par hi switch ho raha hai (channel
+    // badalna ya recovery/resume attempt), purane controller ko dispose karke
+    // naya banane ki jagah SAME controller par naya stream load karein
+    // (setMediaFromNetwork). Logcat se confirm hua ki crash isi dispose() call
+    // ke andar ho raha tha — FlutterVlcPlayer.dispose() -> MediaPlayer.stop()
+    // -> native vout_Close/vlc_join (pthread_join) kabhi-kabhi deadlock ho
+    // jaata hai jab pichla stream kharab/error state mein tha, aur yeh native
+    // hang Dart ke try/catch ya .timeout() se roka nahi ja sakta (native call
+    // platform thread ko hi block kar deta hai). Dispose ko jitna kam call
+    // karenge, crash/hang utna kam hoga.
+    if (targetPlayerType == 'VLC' &&
+        activePlayer == 'VLC' &&
+        vlcController != null) {
+      bool switched = false;
+      try {
+        if (mounted) {
+          setState(() {
+            _loadingVisible = true;
+            _hasPlaybackError = false;
+          });
+        }
+
+        _currentModifiedUrl = secureUrl;
+        _lastPlayingTime = DateTime.now();
+        _stallCounter = 0;
+        _hasStartedPlaying = false;
+        _hasFetchedTracks = false;
+
+        await vlcController!
+            .setMediaFromNetwork(_buildVlcUrl(secureUrl), autoPlay: true)
+            .timeout(const Duration(seconds: 6));
+
+        final controllerAtSchedule = vlcController;
+        _vlcInitWatchdogTimer?.cancel();
+        _vlcInitWatchdogTimer = Timer(const Duration(seconds: 15), () {
+          if (!mounted || _isDisposing) return;
+          if (vlcController != controllerAtSchedule) return;
+          if (_hasStartedPlaying) return;
+          try {
+            if (vlcController?.value.playingState == PlayingState.playing) {
+              return;
+            }
+          } catch (_) {}
+          print("VLC switch watchdog: no playback after 15s, showing error.");
+          setState(() {
+            _isAttemptingResume = false;
+            _loadingVisible = false;
+            _hasPlaybackError = true;
+          });
+        });
+
+        switched = true;
+      } catch (e) {
+        print(
+            "setMediaFromNetwork failed, falling back to full re-init (non-fatal): $e");
+      }
+      if (switched) return;
+      // Agar setMediaFromNetwork fail hua, neeche wala purana dispose+recreate
+      // fallback chalega taaki user ko phir bhi video/error milta rahe.
+    }
+
     setState(() {
       _loadingVisible = true;
       _isVideoInitialized = false;
       _hasPlaybackError = false;
-      
+
       if (targetPlayerType != 'WEB') {
         activePlayer = 'NONE';
       }
@@ -11763,6 +9741,10 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
     if (_isDisposing) return;
 
     _currentModifiedUrl = secureUrl;
+    // 🛡️ Naye attempt ke liye reset — taaki "playing" event par
+    // _markCurrentChannelAsWorking() sahi se fire ho (WEB target ke liye
+    // _initVlcPlayer jaisa apna reset nahi karta tha).
+    _hasStartedPlaying = false;
     setState(() {
       activePlayer = targetPlayerType;
     });
@@ -11779,50 +9761,78 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
 
   Future<void> _onItemTap(int index) async {
     if (!mounted || _isDisposing) return;
-    setState(() {
-      _focusedIndex = index;
-      _errorRetryCount = 0;
-      _hasPlaybackError = false;
-    });
 
-    var selectedChannel = widget.channelList[index];
-    String typeFromData = widget.streamType;
+    try {
+      if (index < 0 || index >= widget.channelList.length) return;
 
-    if (selectedChannel is Map) {
-      typeFromData = selectedChannel['stream_type']?.toString() ??
-          selectedChannel['streamType']?.toString() ??
-          widget.streamType;
-    } else {
-      try {
-        typeFromData = selectedChannel.stream_type?.toString() ?? typeFromData;
-      } catch (_) {
+      setState(() {
+        _focusedIndex = index;
+        _errorRetryCount = 0;
+        _hasPlaybackError = false;
+      });
+
+      var selectedChannel = widget.channelList[index];
+      String typeFromData = widget.streamType;
+
+      if (selectedChannel is Map) {
+        typeFromData = selectedChannel['stream_type']?.toString() ??
+            selectedChannel['streamType']?.toString() ??
+            widget.streamType;
+      } else {
         try {
-          typeFromData = selectedChannel.streamType?.toString() ?? typeFromData;
+          typeFromData = selectedChannel.stream_type?.toString() ?? typeFromData;
+        } catch (_) {
+          try {
+            typeFromData = selectedChannel.streamType?.toString() ?? typeFromData;
+          } catch (_) {}
+        }
+      }
+
+      String targetPlayer =
+          (typeFromData.trim().toLowerCase() == 'custom') ? 'WEB' : 'VLC';
+      String rawUrl = "";
+
+      if (selectedChannel is Map) {
+        rawUrl = selectedChannel['url']?.toString() ?? "";
+      } else {
+        try {
+          rawUrl = selectedChannel.url?.toString() ?? "";
         } catch (_) {}
       }
+
+      if (rawUrl.isEmpty) {
+        // 🛡️ Is channel ka URL hi available nahi hai — crash/silent-stuck
+        // hone ki jagah seedha error message dikhayein.
+        if (mounted) {
+          setState(() {
+            _loadingVisible = false;
+            _hasPlaybackError = true;
+          });
+        }
+        return;
+      }
+
+      String secureUrl = await _getSecureUrlSafe(rawUrl);
+
+      if (_isDisposing) return;
+
+      _pendingAttemptRawUrl = rawUrl;
+      _pendingAttemptPlayerType = targetPlayer;
+      _pendingAttemptFocusedIndex = index;
+
+      await _switchPlayerSafely(targetPlayer, secureUrl);
+
+      _scrollToFocusedItem();
+      _resetHideControlsTimer();
+    } catch (e) {
+      print("_onItemTap failed (showing error instead of crashing): $e");
+      if (mounted) {
+        setState(() {
+          _loadingVisible = false;
+          _hasPlaybackError = true;
+        });
+      }
     }
-
-    String targetPlayer =
-        (typeFromData.trim().toLowerCase() == 'custom') ? 'WEB' : 'VLC';
-    String rawUrl = "";
-
-    if (selectedChannel is Map) {
-      rawUrl = selectedChannel['url']?.toString() ?? "";
-    } else {
-      try {
-        rawUrl = selectedChannel.url?.toString() ?? "";
-      } catch (_) {}
-    }
-
-    if (rawUrl.isEmpty) return;
-
-    String secureUrl = await _getSecureUrlSafe(rawUrl);
-
-    if (_isDisposing) return;
-    await _switchPlayerSafely(targetPlayer, secureUrl);
-
-    _scrollToFocusedItem();
-    _resetHideControlsTimer();
   }
 
   bool _handleKeyEvent(KeyEvent event) {
@@ -11837,6 +9847,52 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
       }
 
       _resetHideControlsTimer();
+
+      // 🛡️ ERROR-OVERLAY FOCUS NAVIGATION: Retry / Next Channel buttons ko
+      // bhi D-pad/remote se navigate + select karne ke liye. Jab error overlay
+      // visible ho, yeh block channel-list ke normal key-handling se pehle
+      // chalta hai taaki focus jab buttons par ho to wahi priority mile.
+      if (_hasPlaybackError && !_loadingVisible) {
+        final bool onRetry = _retryButtonFocusNode.hasFocus;
+        final bool onNext = _nextChannelButtonFocusNode.hasFocus;
+
+        if (onRetry || onNext) {
+          switch (event.logicalKey) {
+            case LogicalKeyboardKey.arrowLeft:
+            case LogicalKeyboardKey.arrowRight:
+              if (_hasNextChannelToAutoAdvance) {
+                FocusScope.of(context).requestFocus(
+                    onRetry ? _nextChannelButtonFocusNode : _retryButtonFocusNode);
+              }
+              return true;
+            case LogicalKeyboardKey.arrowUp:
+              if (widget.channelList.isNotEmpty) {
+                FocusScope.of(context).requestFocus(focusNodes[_focusedIndex]);
+              }
+              return true;
+            case LogicalKeyboardKey.arrowDown:
+              return true; // neeche kuch nahi hai, key swallow karein
+            case LogicalKeyboardKey.select:
+            case LogicalKeyboardKey.enter:
+            case LogicalKeyboardKey.mediaPlayPause:
+              if (event is KeyRepeatEvent) return true;
+              if (onRetry) {
+                _onItemTap(_focusedIndex);
+              } else {
+                _autoAdvanceToNextChannel();
+              }
+              return true;
+            case LogicalKeyboardKey.escape:
+            case LogicalKeyboardKey.browserBack:
+              return false;
+            default:
+              return true;
+          }
+        } else if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
+          FocusScope.of(context).requestFocus(_retryButtonFocusNode);
+          return true;
+        }
+      }
 
       switch (event.logicalKey) {
         case LogicalKeyboardKey.escape:
@@ -11857,6 +9913,7 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
             }
             return true;
           }
+          // 🟢 Modified Up arrow handling for new row logic
           if (subtitleButtonFocusNode.hasFocus || audioButtonFocusNode.hasFocus) {
             FocusScope.of(context).requestFocus(playPauseButtonFocusNode);
           } else if (playPauseButtonFocusNode.hasFocus) {
@@ -11884,6 +9941,7 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
             }
             return true;
           }
+          // 🟢 Modified Down arrow handling to focus language button first
           if (playPauseButtonFocusNode.hasFocus &&
               widget.liveStatus == false &&
               activePlayer == 'VLC') {
@@ -11894,6 +9952,7 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
           return true;
 
         case LogicalKeyboardKey.arrowRight:
+          // 🟢 Audio button -> Subtitle button
           if (audioButtonFocusNode.hasFocus) {
             FocusScope.of(context).requestFocus(subtitleButtonFocusNode);
             return true;
@@ -11904,6 +9963,7 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
           return true;
 
         case LogicalKeyboardKey.arrowLeft:
+          // 🟢 Subtitle button -> Audio button
           if (subtitleButtonFocusNode.hasFocus) {
             FocusScope.of(context).requestFocus(audioButtonFocusNode);
             return true;
@@ -11921,6 +9981,7 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
         case LogicalKeyboardKey.enter:
         case LogicalKeyboardKey.mediaPlayPause:
           if (event is KeyRepeatEvent) return true;
+          // 🟢 Handle actions for both Subtitle and Audio button presses
           if (subtitleButtonFocusNode.hasFocus) {
             _showSubtitleMenu();
             return true;
@@ -11950,36 +10011,32 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
 
   void _togglePlayPause() {
     if (_isDisposing) return;
-    try {
-      if (activePlayer == 'WEB' && webViewController != null) {
-        webViewController!.evaluateJavascript(source: """
-          var v = document.getElementById('video');
-          if (v.paused) { v.play(); } else { v.pause(); }
-        """);
+    if (activePlayer == 'WEB' && webViewController != null) {
+      webViewController!.evaluateJavascript(source: """
+        var v = document.getElementById('video');
+        if (v.paused) { v.play(); } else { v.pause(); }
+      """);
+      setState(() {
+        _isPlaying = !_isPlaying;
+        _isUserPaused = !_isPlaying;
+      });
+      _lastPlayingTime = DateTime.now();
+    } else if (activePlayer == 'VLC' && vlcController != null) {
+      if (vlcController!.value.isPlaying) {
+        vlcController!.pause();
         setState(() {
-          _isPlaying = !_isPlaying;
-          _isUserPaused = !_isPlaying;
+          _isUserPaused = true;
+          _isPlaying = false;
+        });
+      } else {
+        vlcController!.play();
+        setState(() {
+          _isUserPaused = false;
+          _isPlaying = true;
         });
         _lastPlayingTime = DateTime.now();
-      } else if (activePlayer == 'VLC' && vlcController != null) {
-        if (vlcController!.value.isPlaying) {
-          vlcController!.pause();
-          setState(() {
-            _isUserPaused = true;
-            _isPlaying = false;
-          });
-        } else {
-          vlcController!.play();
-          setState(() {
-            _isUserPaused = false;
-            _isPlaying = true;
-          });
-          _lastPlayingTime = DateTime.now();
-          _stallCounter = 0;
-        }
+        _stallCounter = 0;
       }
-    } catch (e) {
-      print("Ignored play/pause error on dead stream: $e");
     }
     FocusScope.of(context).requestFocus(playPauseButtonFocusNode);
     _resetHideControlsTimer();
@@ -12016,7 +10073,7 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
         }
       }
     } catch (e) {
-      print("Ignored seek error on dead stream: $e");
+      print("Error during seek: $e");
     } finally {
       await Future.delayed(const Duration(milliseconds: 500));
       if (mounted) {
@@ -12113,6 +10170,7 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
     _resetHideControlsTimer();
   }
 
+  // 🟢 NEW: Audio / Language Menu Logic
   void _showAudioMenu() {
     _hideControlsTimer?.cancel();
 
@@ -12281,6 +10339,7 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
     });
   }
 
+  // --- Subtitle Menu Logic ---
   void _showSubtitleMenu() {
     _hideControlsTimer?.cancel();
 
@@ -12457,6 +10516,10 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
+    // 🛡️ Error overlay dikhne/chhupne ke saath hi auto-advance countdown ko
+    // reactively sync rakhein (idempotent — dekhiye _syncAutoAdvanceTimer).
+    _syncAutoAdvanceTimer();
+
     final double screenwdt = MediaQuery.of(context).size.width;
     final double screenhgt = MediaQuery.of(context).size.height;
     final double bottomBarHeight = screenhgt * 0.15;
@@ -12486,9 +10549,9 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
         if (activePlayer == 'VLC' && vlcController != null) {
           try {
             vlcController!.removeListener(_vlcListener);
-            // Removed stop() to prevent native SIGSEGV on back button
+            await vlcController!.stop(); 
           } catch (e) {
-            print("VLC error during pop: $e");
+            print("VLC stop error during pop: $e");
           }
         } 
         else if (activePlayer == 'WEB' && webViewController != null) {
@@ -12539,6 +10602,7 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
                                 controller.addJavaScriptHandler(
                                     handlerName: 'videoState',
                                     callback: (args) {
+                                      try {
                                       if (!mounted ||
                                           _isDisposing ||
                                           args.isEmpty) return;
@@ -12573,6 +10637,10 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
                                       if (newIsPlaying && !newIsBuffering) {
                                         newLoadingVisible = false;
                                         _lastPlayingTime = DateTime.now();
+                                        if (!_hasStartedPlaying) {
+                                          _hasStartedPlaying = true;
+                                          _markCurrentChannelAsWorking();
+                                        }
                                       }
 
                                       if (_loadingVisible !=
@@ -12583,6 +10651,28 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
 
                                       if (needsRebuild && mounted)
                                         setState(() {});
+                                      } catch (e) {
+                                        print("videoState handler error (non-fatal): $e");
+                                      }
+                                    });
+
+                                // 🛡️ WEB player (hls.js) ke andar ki playback
+                                // failure ko bhi catch karein, taaki "custom"
+                                // stream type wale channels bhi crash/hang ki
+                                // jagah error message dikhayein.
+                                controller.addJavaScriptHandler(
+                                    handlerName: 'videoError',
+                                    callback: (args) {
+                                      try {
+                                        if (!mounted || _isDisposing) return;
+                                        print("WEB player reported error: ${args.isNotEmpty ? args[0] : 'unknown'}");
+                                        setState(() {
+                                          _loadingVisible = false;
+                                          _hasPlaybackError = true;
+                                        });
+                                      } catch (e) {
+                                        print("videoError handler error (non-fatal): $e");
+                                      }
                                     });
                               },
                             ),
@@ -12610,17 +10700,12 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
                                   final screenWidth = constraints.maxWidth;
                                   final screenHeight = constraints.maxHeight;
 
-                                  double videoWidth = 16.0;
-                                  double videoHeight = 9.0;
+                                  double videoWidth =
+                                      vlcController!.value.size.width;
+                                  double videoHeight =
+                                      vlcController!.value.size.height;
 
-                                  try {
-                                    if (vlcController != null && vlcController!.value.isInitialized) {
-                                      videoWidth = vlcController!.value.size.width;
-                                      videoHeight = vlcController!.value.size.height;
-                                    }
-                                  } catch (_) {}
-
-                                  if (videoWidth <= 0 || videoHeight <= 0 || videoWidth.isNaN || videoHeight.isNaN) {
+                                  if (videoWidth <= 0 || videoHeight <= 0) {
                                     videoWidth = 16.0;
                                     videoHeight = 9.0;
                                   }
@@ -12703,27 +10788,111 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.error_outline,
+                          const Icon(Icons.live_tv_outlined,
                               color: Colors.white70, size: 50),
-                          const SizedBox(height: 10),
-                          const Text("Stream Disconnected",
+                          const SizedBox(height: 14),
+                          Builder(builder: (context) {
+                            final String _errChannelName =
+                                (widget.channelList.isNotEmpty &&
+                                        _focusedIndex >= 0 &&
+                                        _focusedIndex <
+                                            widget.channelList.length)
+                                    ? _getFormattedName(
+                                        widget.channelList[_focusedIndex])
+                                    : widget.name;
+                            return Text(
+                                _errChannelName.trim().isNotEmpty
+                                    ? "This $_errChannelName channel is currently unavailable"
+                                    : "This channel is currently unavailable",
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold));
+                          }),
+                          const SizedBox(height: 8),
+                          const Text(
+                              "We're sorry for the inconvenience. Please try again, or choose another channel from the list.",
+                              textAlign: TextAlign.center,
                               style: TextStyle(
-                                  color: Colors.white70,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold)),
-                          const SizedBox(height: 15),
-                          ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor:
-                                  const Color(0xFF9B28F8), 
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 24, vertical: 12),
+                                  color: Colors.white60, fontSize: 13)),
+                          const SizedBox(height: 10),
+                          if (_hasNextChannelToAutoAdvance)
+                            ValueListenableBuilder<int>(
+                              valueListenable: _autoAdvanceSecondsLeft,
+                              builder: (context, secondsLeft, _) => Text(
+                                "Switching to the next channel in $secondsLeft" "s...",
+                                style: const TextStyle(
+                                    color: Color(0xFF9B28F8),
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w600),
+                              ),
                             ),
-                            onPressed: () => _onItemTap(_focusedIndex),
-                            child: const Text("Retry",
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 16)),
-                          )
+                          const SizedBox(height: 18),
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              // 🛡️ Retry button — ab Focus + GestureDetector pattern se
+                              // D-pad/remote se bhi navigate + select kiya ja sakta hai.
+                              Focus(
+                                focusNode: _retryButtonFocusNode,
+                                autofocus: widget.channelList.isEmpty,
+                                onFocusChange: (hasFocus) => setState(() {}),
+                                child: GestureDetector(
+                                  onTap: () => _onItemTap(_focusedIndex),
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 24, vertical: 12),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFF9B28F8),
+                                      borderRadius:
+                                          BorderRadius.circular(4),
+                                      border: Border.all(
+                                        color: _retryButtonFocusNode.hasFocus
+                                            ? Colors.white
+                                            : Colors.transparent,
+                                        width: 2,
+                                      ),
+                                    ),
+                                    child: const Text("Retry",
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 16)),
+                                  ),
+                                ),
+                              ),
+                              if (_hasNextChannelToAutoAdvance) ...[
+                                const SizedBox(width: 12),
+                                Focus(
+                                  focusNode: _nextChannelButtonFocusNode,
+                                  onFocusChange: (hasFocus) =>
+                                      setState(() {}),
+                                  child: GestureDetector(
+                                    onTap: _autoAdvanceToNextChannel,
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 24, vertical: 12),
+                                      decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(4),
+                                        border: Border.all(
+                                          color: _nextChannelButtonFocusNode
+                                                  .hasFocus
+                                              ? Colors.white
+                                              : Colors.white54,
+                                          width: 2,
+                                        ),
+                                      ),
+                                      child: const Text("Next Channel",
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 16)),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ],
+                          ),
                         ],
                       ),
                     ),
@@ -13321,19 +11490,47 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
         video.addEventListener('stalled', sendState);
         video.addEventListener('canplay', sendState);
 
+        function reportError(msg) {
+          try {
+            window.flutter_inappwebview.callHandler('videoError', String(msg));
+          } catch (e) {}
+        }
+
+        // Native <video> element errors (bad/unsupported source, network failure, etc.)
+        video.addEventListener('error', function() {
+          var err = video.error;
+          reportError(err ? ('video error code ' + err.code) : 'unknown video error');
+        });
+
         function loadNewVideo(src) {
-          if (Hls.isSupported()) {
-            if (hls) hls.destroy();
-            hls = new Hls();
-            hls.loadSource(src);
-            hls.attachMedia(video);
-            hls.on(Hls.Events.MANIFEST_PARSED, function() {
-              if (hls.levels && hls.levels.length > 0) { hls.currentLevel = hls.levels.length - 1; }
-              video.play().catch(function(e) { console.log(e); });
-            });
-          } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-            video.src = src;
-            video.addEventListener('loadedmetadata', function() { video.play(); });
+          if (!src) {
+            reportError('empty source url');
+            return;
+          }
+          try {
+            if (Hls.isSupported()) {
+              if (hls) hls.destroy();
+              hls = new Hls();
+              hls.loadSource(src);
+              hls.attachMedia(video);
+              hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                if (hls.levels && hls.levels.length > 0) { hls.currentLevel = hls.levels.length - 1; }
+                video.play().catch(function(e) { console.log(e); });
+              });
+              // 🛡️ hls.js fatal errors (network/media/manifest) -> surface to Flutter
+              hls.on(Hls.Events.ERROR, function(event, data) {
+                if (data && data.fatal) {
+                  reportError(data.type + ': ' + data.details);
+                }
+              });
+            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+              video.src = src;
+              video.addEventListener('loadedmetadata', function() { video.play(); });
+            } else {
+              reportError('HLS not supported on this device');
+            }
+          } catch (e) {
+            reportError('loadNewVideo exception: ' + e);
           }
         }
         loadNewVideo('${_currentModifiedUrl ?? widget.videoUrl}');
@@ -13484,6 +11681,9 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
     _seekTimer?.cancel();
     _networkCheckTimer?.cancel();
     _keyRepeatTimer?.cancel();
+    _vlcInitWatchdogTimer?.cancel();
+    _autoAdvanceTimer?.cancel();
+    _autoAdvanceTimer = null;
 
     if (vlcController != null) {
       final oldController = vlcController;
@@ -13493,11 +11693,15 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
         oldController!.removeListener(_vlcListener);
       } catch (_) {}
 
-      Future.delayed(const Duration(milliseconds: 200), () async {
+      Future.delayed(const Duration(milliseconds: 300), () async {
+        // 🛡️ Sirf dispose() call karte hain (yeh internally stop bhi karta
+        // hai) — alag se .stop() phir .dispose() call karne se do baar
+        // native stop hota tha, jo libvlc ke vout_Close/vlc_join mein
+        // deadlock/crash ka real trigger tha (logcat se confirmed).
         try {
           await oldController?.dispose().timeout(const Duration(seconds: 2));
         } catch (e) {
-          print("VLC dispose safely handled on exit: $e");
+          print("VLC dispose timed out or failed: $e");
         }
       });
     }
@@ -13520,6 +11724,7 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
     _currentPosition.dispose();
     _totalDuration.dispose();
     _previewPosition.dispose();
+    _autoAdvanceSecondsLeft.dispose();
 
     for (var node in focusNodes) {
       node.dispose();
@@ -13527,6 +11732,8 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
     playPauseButtonFocusNode.dispose();
     subtitleButtonFocusNode.dispose();
     audioButtonFocusNode.dispose(); // 🟢 NEW
+    _retryButtonFocusNode.dispose();
+    _nextChannelButtonFocusNode.dispose();
     _scrollController.dispose();
 
     SystemChrome.setPreferredOrientations([
@@ -13538,7 +11745,6 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
     super.dispose();
   }
 }
-
 
 
 
