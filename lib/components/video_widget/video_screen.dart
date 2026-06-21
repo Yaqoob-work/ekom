@@ -9251,6 +9251,89 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
     }
   }
 
+  // 🟢 RETRY-BEFORE-GIVEUP FIX: pehle jab koi channel pehli baar play hi
+  // nahi hota tha (_hasStartedPlaying == false — abhi tak ek bhi frame
+  // nahi aaya), hum seedha "channel unavailable" error dikha dete the,
+  // chahe wo channel asal mein theek/playable ho aur sirf ek transient
+  // network/server hiccup ki wajah se fail hua ho. Reported bug: kuch
+  // channel playable hone ke baawajood error message dikh jaata tha aur
+  // (auto-advance ki wajah se) seedha agla channel chal jaata, current
+  // channel khud kabhi retry/play nahi hota. Fix: ab error/timeout par
+  // hum pehle SAME channel ko 2 baar thodi delay ke saath retry karte hain
+  // (na ki "last working" channel par jump, aur na hi seedha next channel)
+  // — sirf retries exhaust hone ke baad hi error overlay dikhate hain
+  // (jiske baad hi manual "Next Channel"/8s auto-advance kaam karta hai).
+  void _handleStartupFailure() {
+    if (!mounted || _isDisposing) return;
+
+    if (DateTime.now().difference(_lastRecoveryAttempt).inSeconds < 2) {
+      // Doosra watchdog/listener already isi failure ko handle kar raha
+      // hai — duplicate retry trigger na karein.
+      return;
+    }
+
+    const int maxStartupRetries = 2;
+    if (_errorRetryCount < maxStartupRetries) {
+      _lastRecoveryAttempt = DateTime.now();
+      _errorRetryCount++;
+      print(
+          "Channel hasn't started playing yet — retrying same channel (attempt $_errorRetryCount/$maxStartupRetries) before giving up.");
+      if (mounted) {
+        setState(() {
+          _isAttemptingResume = false;
+          _loadingVisible = true;
+        });
+      }
+      Future.delayed(const Duration(seconds: 2), () {
+        if (mounted && !_isDisposing) _retryCurrentChannel();
+      });
+    } else {
+      if (mounted) {
+        setState(() {
+          _isAttemptingResume = false;
+          _loadingVisible = false;
+          _hasPlaybackError = true;
+        });
+      }
+    }
+  }
+
+  // Channel jo abhi attempt ho raha tha (_pendingAttemptRawUrl) usi ko
+  // dobara try karta hai — "last working" channel ka istemal nahi karta,
+  // kyunki ho sakta hai koi channel kabhi successfully chala hi na ho
+  // (jaise screen ka pehla hi channel), aur user yahi chahta hai ki
+  // jo channel saamne hai wahi retry ho, koi aur channel na khul jaaye.
+  Future<void> _retryCurrentChannel() async {
+    if (!mounted || _isDisposing) return;
+
+    final String? rawUrl = _pendingAttemptRawUrl;
+    final String? playerType = _pendingAttemptPlayerType;
+
+    if (rawUrl == null || playerType == null) {
+      if (mounted) {
+        setState(() {
+          _loadingVisible = false;
+          _hasPlaybackError = true;
+        });
+      }
+      return;
+    }
+
+    try {
+      String secureUrl = await _getSecureUrlSafe(rawUrl);
+      if (_isDisposing || !mounted) return;
+      await _switchPlayerSafely(playerType, secureUrl);
+    } catch (e) {
+      print("Retry attempt failed: $e");
+      if (mounted) {
+        setState(() {
+          _loadingVisible = false;
+          _hasPlaybackError = true;
+        });
+      }
+    }
+  }
+
   void _startPositionUpdater() {
     Timer.periodic(const Duration(seconds: 2), (_) {
       if (!mounted ||
@@ -9276,10 +9359,7 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
           // play hi nahi hua, retry-loop ki jagah seedha error dikhayein
           // (dekhiye _vlcListener ke error-branch mein same reasoning).
           if (!_hasStartedPlaying) {
-            setState(() {
-              _loadingVisible = false;
-              _hasPlaybackError = true;
-            });
+            _handleStartupFailure();
           } else if (_errorRetryCount < 3) {
             _errorRetryCount++;
             _attemptResumeLiveStream();
@@ -9425,12 +9505,8 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
         try {
           if (vlcController?.value.playingState == PlayingState.playing) return;
         } catch (_) {}
-        print("VLC init watchdog: no playback after 15s, showing error.");
-        setState(() {
-          _isAttemptingResume = false;
-          _loadingVisible = false;
-          _hasPlaybackError = true;
-        });
+        print("VLC init watchdog: no playback after 15s, retrying before giving up.");
+        _handleStartupFailure();
       });
     } catch (e) {
       print("Failed to initialize VLC Player: $e");
@@ -9499,25 +9575,19 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
         }
       } else if (playingState == PlayingState.error) {
         _vlcInitWatchdogTimer?.cancel();
-        // 🛡️ CHURN/CRASH-RISK FIX: agar yeh channel abhi tap/switch hua tha
-        // aur kabhi ek bhi frame play nahi hua (_hasStartedPlaying == false),
-        // to ispar 3x silent retry-then-fallback loop chalana (jisme har
-        // retry native VLC layer par setMediaFromNetwork dobara call karta
-        // hai) sirf extra native churn hai — ek dead channel khud retry se
-        // theek nahi ho jaata. Lambi dead-channel streak (5-7+ channels) mein
-        // yeh churn AWindowHandler/GL surface race ka risk badhata hai aur
-        // naye auto-advance UX ko bhi 9+ second tak delay karta hai. Isliye
-        // is case mein seedha error dikhayein — yeh wahi pattern hai jo
-        // dedicated 15s init watchdog (_vlcInitWatchdogTimer) mein already
-        // istemal hota hai.
+        // 🟢 RETRY-BEFORE-GIVEUP FIX: pehle yahan, agar channel kabhi ek bhi
+        // frame play nahi hua tha (_hasStartedPlaying == false), seedha
+        // error dikha dete the — koi retry nahi (churn/crash-risk concern
+        // ki wajah se). Lekin isi se asli bug aaya: kayi baar channel khud
+        // theek/playable hota hai, sirf shuru mein ek transient hiccup
+        // (server/network) aata hai — aur user ko seedha error + auto-skip
+        // mil jaata, jabki retry karne par wahi channel chal jaata. Ab hum
+        // _handleStartupFailure() ke through bounded (max 2) retry karte
+        // hain SAME channel par, sirf retries exhaust hone ke baad hi error
+        // dikhate hain — isse churn bhi bounded rehta hai aur playable
+        // channels khud-ba-khud recover ho jaate hain.
         if (!_hasStartedPlaying) {
-          if (mounted && !_hasPlaybackError) {
-            setState(() {
-              _isAttemptingResume = false;
-              _loadingVisible = false;
-              _hasPlaybackError = true;
-            });
-          }
+          _handleStartupFailure();
         } else if (_errorRetryCount < 3) {
           // Yeh ek established stream tha jo abhi blip/error hua — short
           // retry-then-resume-to-last-working sahi hai.
@@ -9687,12 +9757,8 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
               return;
             }
           } catch (_) {}
-          print("VLC switch watchdog: no playback after 15s, showing error.");
-          setState(() {
-            _isAttemptingResume = false;
-            _loadingVisible = false;
-            _hasPlaybackError = true;
-          });
+          print("VLC switch watchdog: no playback after 15s, retrying before giving up.");
+          _handleStartupFailure();
         });
 
         switched = true;
@@ -11745,9 +11811,3 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
     super.dispose();
   }
 }
-
-
-
-
-
-
