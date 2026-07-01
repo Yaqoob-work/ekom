@@ -15,13 +15,13 @@ if (localPropertiesFile.exists()) {
 
 def flutterVersionCode = localProperties.getProperty("flutter.versionCode")
 if (flutterVersionCode == null) {
-    flutterVersionCode = "24"
+    flutterVersionCode = "27"
 }
 
 def flutterVersionName = localProperties.getProperty("flutter.versionName")
 if (flutterVersionName == null) {
-    flutterVersionName = "1.0.24"
-}z
+    flutterVersionName = "1.0.27"
+}
 
 android {
     namespace = "com.example.mobi_tv_entertainment"
@@ -64,19 +64,42 @@ android {
 
 
     defaultConfig {
-        applicationId "com.TV.player"
-        minSdkVersion flutter.minSdkVersion
-        targetSdk 36
+        applicationId "com.getplaybox.tvapp"
+        minSdkVersion flutter.minSdkVersion        // Android 5.0+ — Fire TV Gen 1 tak sab cover
+        targetSdkVersion 34     // Android 14 — stable, widely tested
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         multiDexEnabled true
+
+        ndk {
+            // arm64-v8a  — Fire TV Stick 4K, modern phones, Android TV boxes
+            // armeabi-v7a — purane Fire TV Stick (1st/2nd gen), 32-bit boxes
+            abiFilters 'armeabi-v7a', 'arm64-v8a'
+        }
+
+        // += zaroori hai — "=" Flutter ke auto-injected ${applicationName}
+        // placeholder ko delete kar deta hai aur build fail ho jaata hai.
+        manifestPlaceholders += [leanbackRequired: "false"]
+    }
+
+    // "sideload" flavor — direct APK ke liye (TV + phones + sabhi devices)
+    // "playstore" flavor — Play Store ke liye (sirf TV, listing protect rahegi)
+    flavorDimensions "distribution"
+    productFlavors {
+        sideload {
+            dimension "distribution"
+            manifestPlaceholders += [leanbackRequired: "false"]
+        }
+        playstore {
+            dimension "distribution"
+            manifestPlaceholders += [leanbackRequired: "true"]
+        }
     }
 
     buildTypes {
         release {
             signingConfig signingConfigs.release
-            // Additional release configuration options can be added here
-                      minifyEnabled true
+            minifyEnabled true
             proguardFiles getDefaultProguardFile(
                     'proguard-android-optimize.txt'),
                     'proguard-rules.pro'

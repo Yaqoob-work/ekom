@@ -8872,6 +8872,7 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
 
   // --- Network & Stall Recovery Variables ---
   Timer? _networkCheckTimer;
+  Timer? _positionUpdaterTimer;
   Timer? _vlcInitWatchdogTimer; // 🛡️ Agar VLC kabhi initialize/error event hi na bheje to bhi error dikhayein
   bool _wasDisconnected = false;
   bool _isAttemptingResume = false;
@@ -8948,7 +8949,7 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
   // build() se har rebuild par call hota hai — idempotent (timer sirf ek
   // baar banta hai jab tak error state nahi badalti).
   void _syncAutoAdvanceTimer() {
-    final bool errorShowing = _hasPlaybackError && !_loadingVisible;
+    final bool errorShowing = _hasPlaybackError && !_loadingVisible && widget.liveStatus == true;
     if (errorShowing && !_isDisposing) {
       if (_autoAdvanceTimer == null) {
         _autoAdvanceSecondsLeft.value = _autoAdvanceTotalSeconds;
@@ -9136,7 +9137,8 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
 
   Future<bool> _isInternetAvailable() async {
     try {
-      final result = await InternetAddress.lookup('google.com');
+      final result = await InternetAddress.lookup('google.com')
+          .timeout(const Duration(seconds: 4));
       return result.isNotEmpty && result[0].rawAddress.isNotEmpty;
     } catch (_) {
       return false;
@@ -9335,7 +9337,8 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
   }
 
   void _startPositionUpdater() {
-    Timer.periodic(const Duration(seconds: 2), (_) {
+    _positionUpdaterTimer?.cancel();
+    _positionUpdaterTimer = Timer.periodic(const Duration(seconds: 2), (_) {
       if (!mounted ||
           _isScrubbing ||
           _isAttemptingResume ||
@@ -9350,7 +9353,10 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
       // sambhal raha hai. Warna yeh 7s wala generic watchdog ek legitimate
       // (thoda slow) load ko bhi "stuck" samajh kar samay se pehle purane
       // channel par wapas bhej deta — confusing aur galat fallback target.
-      if (_loadingVisible && !_isUserPaused && !_isSwitchingPlayer) {
+      // _isSeeking ke dauraan _loadingVisible = true hota hai — watchdog ko
+      // yeh "stuck" nahi samajhna chahiye, warna seek > 7s lene par stream
+      // restart ho jaata hai aur video 0 se start ho jaata hai.
+      if (_loadingVisible && !_isUserPaused && !_isSwitchingPlayer && !_isSeeking) {
         int timeoutSeconds = widget.liveStatus == true ? 7 : 12;
 
         if (DateTime.now().difference(_lastPlayingTime) > Duration(seconds: timeoutSeconds)) {
@@ -9374,7 +9380,9 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
         }
       }
 
-      if (widget.liveStatus == true && _hasStartedPlaying && !_isUserPaused) {
+      // Seek ke dauraan position freeze hoti hai (_vlcListener guard) — stall
+      // counter ko yeh real stall nahi samajhna chahiye.
+      if (widget.liveStatus == true && _hasStartedPlaying && !_isUserPaused && !_isSeeking) {
         if (_currentPosition.value == _lastPositionCheck) {
           _stallCounter++;
         } else {
@@ -9442,11 +9450,11 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
         oldController!.removeListener(_vlcListener);
       } catch (_) {}
 
-      // 🛡️ Sirf dispose() (yeh internally stop bhi kar deta hai) — alag se
-      // stop()+dispose() double native call hi crash ka trigger tha.
-      Future.delayed(const Duration(milliseconds: 100), () async {
+      // 500ms gap: naye controller ka GL surface pehle attach ho jaata hai,
+      // purana surface tab tak safely detach hota hai — GL race prevent.
+      Future.delayed(const Duration(milliseconds: 500), () async {
         try {
-          await oldController?.dispose().timeout(const Duration(seconds: 2));
+          await oldController?.dispose().timeout(const Duration(seconds: 3));
         } catch (_) {}
       });
     }
@@ -9471,7 +9479,7 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
         options: VlcPlayerOptions(
           http: VlcHttpOptions([
             ':http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-            ':http-reconnect=true', 
+            ':http-reconnect=true',
           ]),
           video: VlcVideoOptions([
             VlcVideoOptions.dropLateFrames(true),
@@ -9481,7 +9489,7 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
             VlcAudioOptions.audioTimeStretch(true),
           ]),
           advanced: VlcAdvancedOptions([
-            VlcAdvancedOptions.networkCaching(2000), 
+            VlcAdvancedOptions.networkCaching(2000),
             VlcAdvancedOptions.liveCaching(2000),
             VlcAdvancedOptions.clockJitter(0),
             VlcAdvancedOptions.clockSynchronization(0),
@@ -9519,25 +9527,25 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
     }
   }
 
-  // 🟢 NEW: Fetches both Audio and Subtitle tracks together
   Future<void> _fetchTracks() async {
     await Future.delayed(const Duration(seconds: 2));
-    if (vlcController != null && vlcController!.value.isInitialized) {
-      final spuTracks = await vlcController!.getSpuTracks();
-      final currentSpu = await vlcController!.getSpuTrack() ?? -1;
-
-      final audioTracks = await vlcController!.getAudioTracks();
-      final currentAudio = await vlcController!.getAudioTrack() ?? -1;
-
-      if (mounted) {
-        setState(() {
-          _spuTracks = spuTracks;
-          _currentSpuTrack = currentSpu;
-          _audioTracks = audioTracks;
-          _currentAudioTrack = currentAudio;
-          _hasFetchedTracks = true;
-        });
-      }
+    // Har await ke baad recheck: channel switch ne vlcController null kar diya hoga
+    if (_isDisposing || !mounted || vlcController == null || !vlcController!.value.isInitialized) return;
+    final spuTracks = await vlcController!.getSpuTracks();
+    if (_isDisposing || vlcController == null) return;
+    final currentSpu = await vlcController!.getSpuTrack() ?? -1;
+    if (_isDisposing || vlcController == null) return;
+    final audioTracks = await vlcController!.getAudioTracks();
+    if (_isDisposing || vlcController == null) return;
+    final currentAudio = await vlcController!.getAudioTrack() ?? -1;
+    if (mounted) {
+      setState(() {
+        _spuTracks = spuTracks;
+        _currentSpuTrack = currentSpu;
+        _audioTracks = audioTracks;
+        _currentAudioTrack = currentAudio;
+        _hasFetchedTracks = true;
+      });
     }
   }
 
@@ -9548,7 +9556,11 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
     final PlayingState playingState = value.playingState;
     final now = DateTime.now();
 
-    if (now.difference(_lastPositionUpdateTime).inMilliseconds > 250) {
+    // Seek ke dauraan VLC position ko briefly Duration.zero report karta hai —
+    // _isSeeking flag active ho tab yeh galat value _currentPosition mein na
+    // likhi jaaye, warna agla forward/backward press 0 ko base maan kar
+    // video beginning par jump kar deta hai.
+    if (!_isSeeking && now.difference(_lastPositionUpdateTime).inMilliseconds > 250) {
       _currentPosition.value = value.position;
       _totalDuration.value = value.duration;
       _lastPositionUpdateTime = now;
@@ -9662,7 +9674,7 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
       needsRebuild = true;
     }
 
-    if (needsRebuild && mounted) {
+    if (needsRebuild && mounted && !_isDisposing) {
       if (now.difference(_lastSetStateTime).inMilliseconds > 250) {
         setState(() {});
         _lastSetStateTime = now;
@@ -9789,9 +9801,9 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
         oldController!.removeListener(_vlcListener);
       } catch (_) {}
 
-      Future.delayed(const Duration(milliseconds: 100), () async {
+      Future.delayed(const Duration(milliseconds: 500), () async {
         try {
-          await oldController?.dispose().timeout(const Duration(seconds: 2));
+          await oldController?.dispose().timeout(const Duration(seconds: 3));
         } catch (e) {
           print("Handled VLC dispose error during switch: $e");
         }
@@ -9918,7 +9930,7 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
       // bhi D-pad/remote se navigate + select karne ke liye. Jab error overlay
       // visible ho, yeh block channel-list ke normal key-handling se pehle
       // chalta hai taaki focus jab buttons par ho to wahi priority mile.
-      if (_hasPlaybackError && !_loadingVisible) {
+      if (_hasPlaybackError && !_loadingVisible && widget.liveStatus == true) {
         final bool onRetry = _retryButtonFocusNode.hasFocus;
         final bool onNext = _nextChannelButtonFocusNode.hasFocus;
 
@@ -10111,6 +10123,10 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
   Future<void> _seekToPosition(Duration position) async {
     if (_isSeeking || _isDisposing) return;
     _isSeeking = true;
+    // Seek shuru hone par stall counter aur lastPlayingTime reset — taaki
+    // watchdog ko seek ki duration "stuck" na maane.
+    _stallCounter = 0;
+    _lastPlayingTime = DateTime.now();
 
     setState(() {
       _loadingVisible = true;
@@ -10123,20 +10139,13 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
             source:
                 "document.getElementById('video').currentTime = $seconds; document.getElementById('video').play();");
       } else if (activePlayer == 'VLC' && vlcController != null) {
-        
         bool wasPlaying = vlcController!.value.isPlaying;
-        
-        if (wasPlaying) {
-          await vlcController!.pause();
-        }
-        
+        if (wasPlaying) await vlcController!.pause();
+        if (vlcController == null || _isDisposing) return;
         await vlcController!.seekTo(position);
-        
         await Future.delayed(const Duration(milliseconds: 400));
-        
-        if (wasPlaying) {
-          await vlcController!.play();
-        }
+        if (vlcController == null || _isDisposing) return;
+        if (wasPlaying) await vlcController!.play();
       }
     } catch (e) {
       print("Error during seek: $e");
@@ -10154,9 +10163,18 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
   void _seekForward() {
     if (_totalDuration.value <= Duration.zero || _isDisposing) return;
 
+    // Pehli press par current position ko snapshot karo — VLC seeking ke
+    // dauraan _currentPosition.value 0 ya galat value report kar sakta hai,
+    // jo baad ki presses mein galat base ban jaata hai aur video 0 se start
+    // ho jaata hai. _baseSeekPosition ek baar set hoti hai aur tab tak
+    // stable rehti hai jab tak accumulated reset nahi hota.
+    if (_accumulatedSeekForward == 0 && _accumulatedSeekBackward == 0) {
+      _baseSeekPosition = _currentPosition.value;
+    }
+
     _accumulatedSeekForward += _seekDuration;
     final newPosition =
-        _currentPosition.value + Duration(seconds: _accumulatedSeekForward);
+        _baseSeekPosition + Duration(seconds: _accumulatedSeekForward);
 
     setState(() {
       _previewPosition.value = newPosition > _totalDuration.value
@@ -10167,10 +10185,17 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
     _seekTimer?.cancel();
     _seekTimer = Timer(Duration(milliseconds: _seekDelay), () {
       if (_isDisposing) return;
-      _seekToPosition(_previewPosition.value).then((_) {
+      final Duration seekTarget = _previewPosition.value;
+      _seekToPosition(seekTarget).then((_) {
         if (mounted && !_isDisposing) {
+          // VLC seek ke baad thodi der ke liye 0 report karta hai — listener
+          // mein _isSeeking guard hai lekin us flag ke false hone ke baad bhi
+          // ek-do events aa sakte hain. Is se agla press galat base nahi uthaye
+          // isiliye yahan manually correct position set kar dete hain.
+          _currentPosition.value = seekTarget;
           setState(() {
             _accumulatedSeekForward = 0;
+            _baseSeekPosition = Duration.zero;
           });
         }
       });
@@ -10180,9 +10205,13 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
   void _seekBackward() {
     if (_totalDuration.value <= Duration.zero || _isDisposing) return;
 
+    if (_accumulatedSeekForward == 0 && _accumulatedSeekBackward == 0) {
+      _baseSeekPosition = _currentPosition.value;
+    }
+
     _accumulatedSeekBackward += _seekDuration;
     final newPosition =
-        _currentPosition.value - Duration(seconds: _accumulatedSeekBackward);
+        _baseSeekPosition - Duration(seconds: _accumulatedSeekBackward);
 
     setState(() {
       _previewPosition.value =
@@ -10192,10 +10221,13 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
     _seekTimer?.cancel();
     _seekTimer = Timer(Duration(milliseconds: _seekDelay), () {
       if (_isDisposing) return;
-      _seekToPosition(_previewPosition.value).then((_) {
+      final Duration seekTarget = _previewPosition.value;
+      _seekToPosition(seekTarget).then((_) {
         if (mounted && !_isDisposing) {
+          _currentPosition.value = seekTarget;
           setState(() {
             _accumulatedSeekBackward = 0;
+            _baseSeekPosition = Duration.zero;
           });
         }
       });
@@ -10606,30 +10638,30 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
       canPop: false, 
       onPopInvokedWithResult: (bool didPop, dynamic result) async {
         if (didPop) return;
-
-        _isDisposing = true;
+        // Timers pehle band karo — pop ke baad inka fire hona crash karta hai
         _hideControlsTimer?.cancel();
         _networkCheckTimer?.cancel();
+        _positionUpdaterTimer?.cancel();
         _seekTimer?.cancel();
-
         if (activePlayer == 'VLC' && vlcController != null) {
           try {
             vlcController!.removeListener(_vlcListener);
-            await vlcController!.stop(); 
-          } catch (e) {
-            print("VLC stop error during pop: $e");
-          }
-        } 
-        else if (activePlayer == 'WEB' && webViewController != null) {
+            // stop() zaroori hai taaki VLC surface NavigatorPop se pehle
+            // native rendering band kar de (warna GL detach crash hota hai).
+            // Timeout: broken streams par stop() hang ho sakta tha —
+            // 800ms baad automatically cancel ho jaata hai.
+            await vlcController!
+                .stop()
+                .timeout(const Duration(milliseconds: 800));
+          } catch (_) {}
+        } else if (activePlayer == 'WEB' && webViewController != null) {
           try {
             await webViewController!.evaluateJavascript(
-                source: "var v = document.getElementById('video'); if(v) { v.pause(); v.removeAttribute('src'); v.load(); }");
+                source:
+                    "var v=document.getElementById('video');if(v){v.pause();v.removeAttribute('src');v.load();}");
           } catch (_) {}
         }
-
-        if (mounted) {
-          Navigator.of(context).pop();
-        }
+        if (mounted) Navigator.of(context).pop();
       },
       child: Scaffold(
         backgroundColor: Colors.black,
@@ -10745,8 +10777,14 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
                           ),
                         ),
 
-                      if (activePlayer == 'VLC' && vlcController != null)
-                        AnimatedPositioned(
+                      Builder(builder: (ctx) {
+                        // Cache karo — vlcController doosre microtask mein
+                        // null ho sakta hai null-check aur widget use ke beech
+                        final ctrl = vlcController;
+                        if (activePlayer != 'VLC' || ctrl == null) {
+                          return const SizedBox.shrink();
+                        }
+                        return AnimatedPositioned(
                           duration: const Duration(milliseconds: 3),
                           curve: Curves.linear,
                           left: offsetLeft,
@@ -10766,10 +10804,8 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
                                   final screenWidth = constraints.maxWidth;
                                   final screenHeight = constraints.maxHeight;
 
-                                  double videoWidth =
-                                      vlcController!.value.size.width;
-                                  double videoHeight =
-                                      vlcController!.value.size.height;
+                                  double videoWidth = ctrl.value.size.width;
+                                  double videoHeight = ctrl.value.size.height;
 
                                   if (videoWidth <= 0 || videoHeight <= 0) {
                                     videoWidth = 16.0;
@@ -10807,7 +10843,7 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
                                         scaleY: scaleYInner,
                                         child: VlcPlayer(
                                           key: const ValueKey('VLC_PLAYER'),
-                                          controller: vlcController!,
+                                          controller: ctrl,
                                           aspectRatio: videoRatio,
                                           placeholder: const Center(
                                             child: RainbowPage(
@@ -10823,7 +10859,8 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
                               ),
                             ),
                           ),
-                        ),
+                        );
+                      }),
                     ],
                   ),
                 ),
@@ -10846,8 +10883,8 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
                     ),
                   ),
 
-                // 3. ERROR LAYER
-                if (_hasPlaybackError && !_loadingVisible)
+                // 3. ERROR LAYER (sirf Live TV ke liye — VOD mein nahi dikhana)
+                if (_hasPlaybackError && !_loadingVisible && widget.liveStatus == true)
                   Container(
                     color: Colors.black87,
                     child: Center(
@@ -11746,6 +11783,7 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
     _hideControlsTimer?.cancel();
     _seekTimer?.cancel();
     _networkCheckTimer?.cancel();
+    _positionUpdaterTimer?.cancel();
     _keyRepeatTimer?.cancel();
     _vlcInitWatchdogTimer?.cancel();
     _autoAdvanceTimer?.cancel();
@@ -11759,13 +11797,9 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
         oldController!.removeListener(_vlcListener);
       } catch (_) {}
 
-      Future.delayed(const Duration(milliseconds: 300), () async {
-        // 🛡️ Sirf dispose() call karte hain (yeh internally stop bhi karta
-        // hai) — alag se .stop() phir .dispose() call karne se do baar
-        // native stop hota tha, jo libvlc ke vout_Close/vlc_join mein
-        // deadlock/crash ka real trigger tha (logcat se confirmed).
+      Future.delayed(const Duration(milliseconds: 500), () async {
         try {
-          await oldController?.dispose().timeout(const Duration(seconds: 2));
+          await oldController?.dispose().timeout(const Duration(seconds: 3));
         } catch (e) {
           print("VLC dispose timed out or failed: $e");
         }
@@ -11811,3 +11845,7 @@ class _VideoScreenState extends State<VideoScreen> with WidgetsBindingObserver {
     super.dispose();
   }
 }
+
+
+
+

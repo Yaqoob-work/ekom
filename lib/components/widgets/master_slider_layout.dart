@@ -11533,7 +11533,7 @@ Widget _buildBeautifulAppBar() {
                   child: ListView.builder(
                     controller: _networkScrollController,
                     scrollDirection: Axis.horizontal,
-                    cacheExtent: 5000,
+                    cacheExtent: 1000,
                     itemCount: widget.networkNames.length,
                     itemBuilder: (ctx, i) {
                       if (i >= _networkFocusNodes.length) return const SizedBox.shrink();
@@ -11589,7 +11589,7 @@ Widget _buildBeautifulAppBar() {
       child: ListView.builder(
         controller: _filterScrollController,
         scrollDirection: Axis.horizontal,
-        cacheExtent: 5000,
+        cacheExtent: 1000,
         itemCount: prioritizedList.length + 1,
         padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.03),
         itemBuilder: (ctx, i) {

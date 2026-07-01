@@ -1,6 +1,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 <uses-permission android:name="android.permission.INTERNET"/>
-<uses-feature android:name="android.software.leanback" android:required="true"/>
+<!-- Build flavor se control hota hai:
+     sideload  → required="false"  (TV + phones + sabhi devices)
+     playstore → required="true"   (sirf TV — Play Store listing safe) -->
+<uses-feature android:name="android.software.leanback"
+    android:required="${leanbackRequired}"/>
 <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 <uses-feature android:name="android.hardware.faketouch" android:required="false" />
 <!-- <uses-feature android:name="android.software.leanback" /> -->
@@ -11,7 +15,7 @@
 
 
     <application
-        android:label="TV Player"
+        android:label="Get Play Box"
         android:name="${applicationName}"
         android:banner="@drawable/banner"
         android:icon="@mipmap/ic_launcher"

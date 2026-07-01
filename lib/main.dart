@@ -4727,8 +4727,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 // import 'package:hive_flutter/hive_flutter.dart';
 import 'package:http/http.dart' as https;
-import 'package:mobi_tv_entertainment/exit_confirmation_screen.dart';
-import 'package:mobi_tv_entertainment/home_screen.dart';
+import 'package:mobi_tv_entertainment/components/exit_confirmation_screen.dart';
+import 'package:mobi_tv_entertainment/components/home_screen.dart';
 import 'package:mobi_tv_entertainment/components/menu_screens/search_screen.dart';
 import 'package:mobi_tv_entertainment/components/provider/color_provider.dart';
 import 'package:mobi_tv_entertainment/components/provider/device_info_provider.dart';
@@ -4748,8 +4748,7 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 // import 'package:video_player_avplay/video_player_avplay.dart'; // <-- Add this import
 import 'package:flutter/material.dart';
-// import 'package:media_kit/media_kit.dart'; // Provides [Player], [Media], [Playlist] etc.
-// import 'package:media_kit_video/media_kit_video.dart'; // Provides [VideoController] & [Video] etc.
+// import 'package:media_kit/media_kit.dart';
 
 const double kSideMenuWidthFactor = 0.14;
 class SessionManager {
@@ -4965,6 +4964,7 @@ class MyHttpOverrides extends HttpOverrides {
 void main() {
   // VideoPlayerAvplay.init();
   WidgetsFlutterBinding.ensureInitialized();
+  // MediaKit.ensureInitialized();
 
   // 🛡️ CRASH SAFETY NET — koi bhi single channel/screen error ab poori app
   // ko crash nahi karega. Error ko log karke graceful fallback dikhayenge.

@@ -8748,7 +8748,7 @@ import 'package:qr_flutter/qr_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart'; // ✅ ADDED SHARED PREFERENCES IMPORT
 
 // ✅ IMPORT EXIT & EXPIRED SCREENS
-import 'package:mobi_tv_entertainment/exit_confirmation_screen.dart';
+import 'package:mobi_tv_entertainment/components/exit_confirmation_screen.dart';
 // Agar neeche error aaye toh is import ko comment kar dena kyunki class yahi neeche likhi hai
 // import 'package:mobi_tv_entertainment/plan_expired_screen.dart';
 

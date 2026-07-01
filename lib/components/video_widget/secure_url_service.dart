@@ -690,6 +690,23 @@ class TokenizedUrlResponse {
 class SecureUrlService {
   static CdnSettings? _cachedSettings;
 
+  // 🛡️ LOW-NET FREEZE/CRASH FIX: pehle in_flight HTTP calls (refreshSettings
+  // / _tokenizeUrl) ke paas koi timeout nahi tha. Jab net slow/flaky hota,
+  // http.get/http.post ka await indefinitely (kabhi-kabhi minutes tak) latka
+  // reh sakta tha. Aur agar refreshSettings() kabhi fail ho jaaye (jo bad
+  // network mein bahut common hai), _cachedSettings hamesha null rehta —
+  // jiski wajah se HAR retry/resume attempt (jo channel "atak-atak" karne
+  // par video_screen.dart ke watchdogs se baar-baar trigger hota hai) DOBARA
+  // se yeh poora un-timed-out HTTP call chalata. Net jitna kharab, retries
+  // utne frequent, aur har retry par ek aur latakta hua request — yeh
+  // dher saare pending requests/threads jama kar deta, jo resource-limited
+  // device (Fire TV Stick) par ANR/freeze aur phir OS-kill ("crash") ban
+  // jaata. Fix: har network call par hard timeout, aur fail hone par thodi
+  // der (cooldown) dobara refreshSettings try na karein.
+  static DateTime? _lastRefreshFailureAt;
+  static const Duration _refreshFailureCooldown = Duration(seconds: 20);
+  static const Duration _httpTimeout = Duration(seconds: 8);
+
   /// Headers Helper
   static Map<String, String> get _headers {
     return {
@@ -703,9 +720,10 @@ class SecureUrlService {
   static Future<void> refreshSettings() async {
     try {
       final uri = Uri.parse('https://dashboard.cpplayers.com/api/v3/getCDNSettings');
-      
+
       print("🔄 Fetching CDN Settings...");
-      final response = await https.get(uri, headers: _headers);
+      final response =
+          await https.get(uri, headers: _headers).timeout(_httpTimeout);
 
       if (response.statusCode == 200) {
         // Debugging ke liye Raw Body print karein
@@ -713,17 +731,20 @@ class SecureUrlService {
 
         // Decode JSON
         final decodedJson = json.decode(response.body);
-        
+
         // Parse settings
         _cachedSettings = CdnSettings.fromJson(decodedJson);
-        
+        _lastRefreshFailureAt = null;
+
         print("✅ CDN Settings Parsed Successfully!");
         print("✅ CDN Enabled Status: ${_cachedSettings?.enabled}");
       } else {
         print("❌ Settings Failed: ${response.statusCode} | ${response.body}");
+        _lastRefreshFailureAt = DateTime.now();
       }
     } catch (e) {
-      print("❌ SecureUrlService Error: $e");
+      print("❌ SecureUrlService Error (timeout ya network issue, non-fatal): $e");
+      _lastRefreshFailureAt = DateTime.now();
     }
   }
 
@@ -732,6 +753,16 @@ class SecureUrlService {
   static Future<String> getSecureUrl(String originalUrl, {int? expirySeconds}) async {
     // Cache check
     if (_cachedSettings == null) {
+      // 🛡️ Agar pichli baar refreshSettings recently (cooldown window mein)
+      // fail hui thi, to dobara turant retry na karein — seedha original
+      // URL use karein. Isse low-net par har channel-retry ek naya latakta
+      // hua HTTP call nahi banata.
+      if (_lastRefreshFailureAt != null &&
+          DateTime.now().difference(_lastRefreshFailureAt!) <
+              _refreshFailureCooldown) {
+        print("⚠️ Recent CDN settings fetch failed — skipping retry (cooldown), using original URL.");
+        return originalUrl;
+      }
       print("⚠️ Settings not cached. Fetching...");
       await refreshSettings();
     }
@@ -776,11 +807,13 @@ class SecureUrlService {
 
       print("🔐 Sending tokenize request: $bodyParams");
 
-      final response = await https.post(
-        uri,
-        headers: _headers,
-        body: json.encode(bodyParams),
-      );
+      final response = await https
+          .post(
+            uri,
+            headers: _headers,
+            body: json.encode(bodyParams),
+          )
+          .timeout(_httpTimeout);
 
       if (response.statusCode == 200) {
         // print("📥 Token Response: ${response.body}");

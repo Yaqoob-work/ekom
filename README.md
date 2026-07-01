@@ -17,6 +17,12 @@ samples, guidance on mobile development, and a full API reference.
 
 
 
+# Direct APK (sabhi devices ke liye — phones, TV, tablets)
+flutter build apk --flavor sideload --release
+
+# Play Store AAB (sirf TV — existing listing safe)
+flutter build appbundle --flavor playstore --release
+
 
   "playstore_version": "1.0.2",
   "playstore_apkUrl": "https://play.google.com/store/apps/details?id=com.ekamflixtv.cti",
